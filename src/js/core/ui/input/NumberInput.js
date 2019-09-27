@@ -84,7 +84,7 @@ export default class NumberInput extends Input {
              * The spin down button
              * @type {Button}
              */
-            this.spindown_btn = new Button({'label': '-', 'icon': 'arrow-down'})
+            this.spindown_btn = new Button({'icon': this.configs.spinDirection === 'vertical' ? 'spinner-left' : 'spinner-down'})
                 .data('action', 'spin')
                 .data('direction', 'down')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
@@ -96,7 +96,7 @@ export default class NumberInput extends Input {
              * The spin up button
              * @type {Button}
              */
-            this.spinup_btn = new Button({'label': '-', 'icon': 'arrow-up'})
+            this.spinup_btn = new Button({'icon': this.configs.spinDirection === 'vertical' ? 'spinner-right' : 'spinner-up'})
                 .data('action', 'spin')
                 .data('direction', 'up')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))

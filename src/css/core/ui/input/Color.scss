@@ -1,25 +1,50 @@
+@import "../../../theme";
+
 :local(.className){
     position: relative;
-    background: url('../../../../img/core/ui/input/color/transparency-grid.png') repeat left top;
 
     input{
-        width: 100%;
-        padding-right: 17px !important;
-        box-sizing: border-box;
+        width: 4em;
+        color: transparent;
+        border-radius: 0.25em;
+        box-shadow: 1px 1px 0.25em 2px rgba(0, 0, 0, 0.15);
+    }
 
-        background-image: url('../../../../img/core/ui/input/color/picker.png');
-        background-repeat: no-repeat;
-        background-position: left center;
-        background-size: contain;
+    .buttons{
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        background: $mediumgray;
+        border-radius: 0 0.25em 0.25em 0;
+        overflow: hidden;
 
-        &:hover{
-            opacity: 1;
+        button{
+            height: 100%;
+            padding: 0 0.5em;
+            opacity: 0.5;
+
+            .icon{
+                color: #fff;
+            }
+
+            &:hover{
+                opacity: 1;
+            }
+        }
+    }
+
+    &:hover{
+        .buttons{
+            display: block;
         }
     }
 
     &.disabled{
-        button{
+        .buttons{
             cursor: default;
+            pointer-events: none;
         }
     }
 }

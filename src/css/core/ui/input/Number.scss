@@ -1,10 +1,21 @@
+@import "../../../theme";
+
 :local(.className){
+    position: relative;
+
     input{
-        padding-right: 2em;
+        padding: 0.25em 0.5em;
+        color: #fff;
+        background: $mediumgray;
+        border-radius: 0.25em;
     }
 
     .buttons{
-        width: 2em;
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
         flex-direction: column-reverse;
         justify-content: center;
 
@@ -13,18 +24,20 @@
         }
 
         button{
-            width: auto;
-            margin: 0;
-            background-size: contain;
+            font-size: 0.5em;
+            opacity: 0.5;
 
-            &[data-action="spin"]{
-                &[data-direction="down"]{
-                    background-image: url('../../../../img/core/ui/input/number/spinner-down.svg');
-                }
+            .icon{
+                color: #fff;
+                vertical-align: top;
 
-                &[data-direction="up"]{
-                    background-image: url('../../../../img/core/ui/input/number/spinner-up.svg');
+                &::before{
+                    vertical-align: top;
                 }
+            }
+
+            &:hover{
+                opacity: 1;
             }
         }
     }
@@ -32,18 +45,6 @@
     &.vertical{
         .buttons{
             flex-direction: row;
-
-            button{
-                &[data-action="spin"]{
-                    &[data-direction="down"]{
-                        background-image: url('../../../../img/core/ui/input/number/spinner-left.svg');
-                    }
-
-                    &[data-direction="up"]{
-                        background-image: url('../../../../img/core/ui/input/number/spinner-right.svg');
-                    }
-                }
-            }
         }
     }
 

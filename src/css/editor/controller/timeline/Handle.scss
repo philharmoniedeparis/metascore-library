@@ -1,4 +1,4 @@
-@import "../../theme";
+@import "../../../theme";
 
 :local(.className){
     cursor: pointer;
@@ -22,7 +22,6 @@
 
         .label{
             flex: 1 1 auto;
-            font-size: 1em;
             padding: 0 0.25em;
             white-space: nowrap;
             overflow: hidden;

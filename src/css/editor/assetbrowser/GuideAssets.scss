@@ -1,4 +1,4 @@
-@import "../theme";
+@import "../../theme";
 
 :local(.className){
     display: flex;
@@ -7,12 +7,13 @@
     overflow: hidden;
 
     .import-assets{
+        display: block;
+
         label{
             display: block;
             padding: 0.5em;
             background: $lightgray;
             margin-bottom: 0.25em;
-            line-height: 2em;
             user-select: none;
             cursor: pointer;
         }
@@ -66,7 +67,6 @@
         color: #fff;
         background: $lightgray;
         margin-top: 0.25em;
-        line-height: 2em;
         user-select: none;
         cursor: pointer;
     }

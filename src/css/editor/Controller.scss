@@ -1,11 +1,10 @@
-@import "./theme";
-@import "../../fonts/metascore-icons/metascore-icons.css";
+@import "../theme";
 
 :local(.className){
-    $top-height: 3em;
-    $sticky-height: 10em;
+    $top-height: 2.5em;
+    $sticky-height: 8em;
     $left-width: 14vw;
-    $left-min-width: 10em;
+    $left-min-width: 8em;
 
     height: 100%;
     display: flex;
@@ -13,9 +12,9 @@
     flex-wrap: nowrap;
 
     > .top {
-        height: $top-height;
         display: flex;
         flex-direction: row;
+        flex: 0 0 $top-height;
         border-bottom: 2px solid $darkgray;
 
         .time.input{
@@ -32,11 +31,6 @@
 
                 .icon{
                     color: $darkgray;
-
-                    &::before{
-                        font-size: 1.25em;
-                        line-height: 1.25em;
-                    }
                 }
             }
 
@@ -47,7 +41,6 @@
                 padding: 0;
                 text-align: center;
                 color: #fff;
-                font-size: 1.25em;
                 letter-spacing: .05em;
             }
         }
@@ -66,6 +59,11 @@
             }
 
         }
+
+        .zoom-controls{
+            background: $darkgray;
+        }
+
     }
 
     > .bottom {
@@ -105,11 +103,6 @@
                         .icon{
                             color: #fff;
                             text-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
-
-                            &::before{
-                                font-size: 1em;
-                                line-height: 1em;
-                            }
                         }
                     }
 
@@ -125,8 +118,8 @@
                             color: $darkgray;
 
                             &::before{
-                                font-size: 1.5em;
-                                line-height: 1.5em;
+                                font-size: 1.25em;
+                                line-height: 1.25em;
                             }
                         }
                     }

@@ -1,40 +1,10 @@
 :local(.className){
-    position: relative;
+    display: flex;
 
-    .buttons{
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        display: none;
-        background-color: rgb(238, 238, 238);
-
-        button{
-            display: inline-block;
-            width: 25px;
-            height: 100%;
-            padding: 0;
-            overflow: hidden;
-            text-indent: 999px;
-            background-repeat: no-repeat;
-            background-position: center center;
-
-            &:hover{
-                background-color: rgb(204, 204, 204);
-                opacity: 1;
-            }
-
-            &[data-action="clear"]{
-                background-image: url('../../../img/core/ui/input/clear.svg');
-                background-size: 1.5em;
-            }
-        }
-    }
-
-    &:hover{
-        .buttons{
-            display: block;
-        }
+    input{
+        margin: 0;
+        padding: 0;
+        border: none;
     }
 
     &:focus{
@@ -42,6 +12,7 @@
     }
 
     &.readonly{
+        pointer-events: none;
         opacity: 0.75;
         cursor: default;
     }
@@ -49,9 +20,5 @@
     &.disabled{
         opacity: 0.25;
         cursor: default;
-
-        .buttons{
-            pointer-events: none;
-        }
     }
 }

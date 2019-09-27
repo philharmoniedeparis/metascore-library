@@ -1,7 +1,14 @@
 import Dom from '../core/Dom';
-import {isFunction, isArray} from '../core/utils/Var';
+import {isArray} from '../core/utils/Var';
 import Locale from '../core/Locale';
 import Field from './Field';
+import RadioButtonsInput from '../core/ui/input/RadioButtonsInput';
+import TextInput from '../core/ui/input/TextInput';
+import SelectInput from '../core/ui/input/SelectInput';
+import ColorInput from '../core/ui/input/ColorInput';
+import NumberInput from '../core/ui/input/NumberInput';
+import BorderRadiusInput from '../core/ui/input/BorderRadiusInput';
+import TimeInput from '../core/ui/input/TimeInput';
 import {getImageMetadata} from '../core/utils/Media';
 
 import {className} from '../../css/editor/ComponentForm.scss';
@@ -57,17 +64,7 @@ export default class ComponentForm extends Dom {
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
             .appendTo(this);
 
-        /**
-         * The list of fields
-         * @type {Object}
-         */
-        this.fields = {};
-
-        Object.entries(this.configs.fields).forEach(([field_name, field_configs]) => {
-            this.fields[field_name] = new Field(field_configs)
-                .data('name', field_name)
-                .appendTo(this.contents);
-        });
+        this.setupFields();
     }
 
     /**
@@ -77,52 +74,110 @@ export default class ComponentForm extends Dom {
     */
     static getDefaults() {
         return {
-            'allowMultiple': true,
-            'fields': {
-                'name': {
-                    'type': 'text',
-                    'label': 'Name'
-                },
-                'visible': {
-                    'type': 'radiobuttons',
-                    'label': Locale.t('editor.ComponentForm.fields.visible.label', 'Visible on start'),
-                    'input': {
-                        'options': [
-                            {'value': false, 'text': Locale.t('editor.ComponentForm.fields.visible.options.no.text', 'No')},
-                            {'value': true, 'text': Locale.t('editor.ComponentForm.fields.visible.options.yes.text', 'Yes')},
-                        ]
-                    }
-                },
-                'scenario': {
-                    'type': 'select',
-                    'label': Locale.t('editor.ComponentForm.fields.scenario.label', 'Scenario')
-                },
-                'background-image': {
-                    'type': 'select',
-                    'label': Locale.t('editor.ComponentForm.fields.background-image.label', 'Background image')
-                },
-                'background-color': {
-                    'type': 'color',
-                    'label': Locale.t('editor.ComponentForm.fields.background-color.label', 'Background color')
-                },
-                'border-color': {
-                    'type': 'color',
-                    'label': Locale.t('editor.ComponentForm.fields.border-color.label', 'Border color')
-                },
-                'border-radius': {
-                    'type': 'borderradius',
-                    'label': Locale.t('editor.ComponentForm.fields.border-radius.label', 'Border radius')
-                },
-                'start-time': {
-                    'type': 'time',
-                    'label': Locale.t('editor.ComponentForm.fields.start-time.label', 'Start')
-                },
-                'end-time': {
-                    'type': 'time',
-                    'label': Locale.t('editor.ComponentForm.fields.end-time.label', 'End')
-                }
-            }
+            'allowMultiple': true
         };
+    }
+
+    setupFields(){
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
+
+        this.fields.name = new Field(
+            new TextInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.name.label', 'Name')
+            })
+            .data('name', 'name')
+            .appendTo(this.contents);
+
+        this.fields.visible = new Field(
+            new RadioButtonsInput({
+                'options': [
+                    {'value': false, 'text': Locale.t('editor.ComponentForm.fields.visible.options.no.text', 'No')},
+                    {'value': true, 'text': Locale.t('editor.ComponentForm.fields.visible.options.yes.text', 'Yes')},
+                ]
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.visible.label', 'Visible on start')
+            })
+            .data('name', 'visible')
+            .appendTo(this.contents);
+
+        this.fields.scenario = new Field(
+            new SelectInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.scenario.label', 'Scenario')
+            })
+            .data('name', 'scenario')
+            .appendTo(this.contents);
+
+        this.fields['background-image'] = new Field(
+            new SelectInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.background-image.label', 'Background image')
+            })
+            .data('name', 'background-image')
+            .appendTo(this.contents);
+
+        this.fields['background-color'] = new Field(
+            new ColorInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.background-color.label', 'Background color')
+            })
+            .data('name', 'background-color')
+            .appendTo(this.contents);
+
+        this.fields['border-width'] = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.border-width.label', 'Border width')
+            })
+            .data('name', 'border-width')
+            .appendTo(this.contents);
+
+        this.fields['border-color'] = new Field(
+            new ColorInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.border-color.label', 'Border color')
+            })
+            .data('name', 'border-color')
+            .appendTo(this.contents);
+
+        this.fields['border-radius'] = new Field(
+            new BorderRadiusInput(),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.border-radius.label', 'Border radius')
+            })
+            .data('name', 'border-radius')
+            .appendTo(this.contents);
+
+        this.fields['start-time'] = new Field(
+            new TimeInput({
+                'inButton': true,
+                'outButton': true
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.start-time.label', 'Start')
+            })
+            .data('name', 'start-time')
+            .appendTo(this.contents);
+
+        this.fields['end-time'] = new Field(
+            new TimeInput({
+                'inButton': true,
+                'outButton': true
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.end-time.label', 'End')
+            })
+            .data('name', 'end-time')
+            .appendTo(this.contents);
     }
 
     /**
@@ -134,31 +189,8 @@ export default class ComponentForm extends Dom {
     updateUI(){
         const has_components = this.components.length > 0;
 
-        /**
-         * The list of fields
-         * @type {Object}
-         */
-        this.fields = {};
-
-        this.contents.empty();
-
         if(has_components){
-            const properties = this.getComponent().getProperties();
-
-            Object.entries(properties).forEach(([key, prop]) => {
-                if(prop.editable !== false){
-                    const configs = prop.field || {};
-
-                    const field = new Field(configs)
-                        .data('name', key)
-                        .appendTo(this.contents);
-
-                    this.fields[key] = field;
-                }
-            });
-
             this.refreshFieldValues(Object.keys(this.fields), true);
-
             this.updateFieldsVisibility();
         }
 
@@ -177,46 +209,10 @@ export default class ComponentForm extends Dom {
         Object.entries(this.getField()).forEach(([name, field]) => {
             const common = this.components.every((component) => {
                 // Check that the component has the given property
-                if(!component.hasProperty(name)){
-                    return false;
-                }
-
-                const prop = component.getProperty(name);
-
-                // Check that the given property is editable.
-                if('editable' in prop && prop.editable === false){
-                    return false;
-                }
-
-                // Check that the given property applies.
-                if('applies' in prop && isFunction(prop.applies) && !prop.applies.call(component)){
-                    return false;
-                }
-
-                // Update Select field options.
-                if(field.getInput().getType() === 'SelectInput'){
-                    field.configs.input.options.forEach((opt) => {
-                        if('applies' in opt && isFunction(opt.applies)){
-                            const option = field.getInput().getOption(opt.value);
-                            const hidden = option.hidden();
-
-                            if(opt.applies.call(component)){
-                                if(hidden){
-                                    field.getInput().setValue(null);
-                                    option.show();
-                                }
-                            }
-                            else if(!hidden){
-                                option.hide();
-                            }
-                        }
-                    });
-                }
-
-                return true;
+                return component.hasProperty(name);
             });
 
-            this[`${common ? 'show' : 'hide'}Field`](name);
+            field[`${common ? 'show' : 'hide'}`]();
         });
 
         return this;

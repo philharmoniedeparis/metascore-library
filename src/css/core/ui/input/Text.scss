@@ -1,0 +1,10 @@
+@import "../../../theme";
+
+:local(.className){
+    input{
+        padding: 0.25em 0.5em;
+        color: #fff;
+        background: $mediumgray;
+        border-radius: 0.25em;
+    }
+}

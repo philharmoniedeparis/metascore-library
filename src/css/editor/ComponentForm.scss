@@ -1,39 +1,32 @@
-@import "./theme";
+@import "../theme";
 
 :local(.className){
     position: relative;
 
     .fields{
+        display: none;
         padding: 0.5em;
+        background: $lightgray;
 
         .field{
+            margin: 0.25em 0;
+
             > label{
                 padding: 0.25em;
-                font-size: 1.25em;
                 color: #fff;
                 white-space: nowrap;
             }
 
-            .input{
-                display: inline-block;
-
-                input{
-                    margin: 0;
-                    padding: 0;
-                    border: none;
-                }
-
-                &.text{
-                    input{
-                        background: $darkgray;
-                    }
-                }
-            }
-
             &[data-name="name"]{
+                display: flex;
+
                 > label{
                     display: none;
                 }
+            }
+
+            &[data-name="visible"]{
+                display: flex;
             }
 
             &.warning{
@@ -53,28 +46,12 @@
                     }
                 }
             }
+        }
+    }
 
-            &.buttons.field{
-                .input{
-                    background-repeat: repeat;
-
-                    button{
-                        float: left;
-                        width: 20px;
-                        height: 20px;
-                        background-repeat: no-repeat;
-                        background-position: center center;
-
-                        &.pressed{
-                            background-color: #aaaaaa;
-                        }
-                    }
-                }
-            }
-
-            &.fontStyle{
-                border-bottom: none;
-            }
+    &.has-component{
+        .fields{
+            display: block;
         }
     }
 }

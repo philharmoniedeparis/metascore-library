@@ -5,6 +5,7 @@ import Button from '../../core/ui/Button';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Alert from '../../core/ui/overlay/Alert';
 import Confirm from '../../core/ui/overlay/Confirm';
+import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
 import {isValidMimeType} from '../../core/utils/Media';
 
@@ -44,13 +45,13 @@ export default class GuideAssets extends Dom {
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
 
-        new Field({
-                'type': 'file',
+        new Field(
+            new FileInput({
+                'multiple': true,
+                'accept': this.configs.import.allowed_types
+            }),
+            {
                 'label': Locale.t('editor.assetbrowser.GuideAssets.import-assets-field.label', 'Import files'),
-                'input': {
-                    'multiple': true,
-                    'accept': this.configs.import.allowed_types
-                }
             })
             .addClass('import-assets')
             .addListener('valuechange', this.onAssetImportFieldVlueChange.bind(this))

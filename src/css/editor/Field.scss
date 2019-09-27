@@ -1,4 +1,8 @@
 :local(.className){
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
     .description{
         opacity: 0.5;
     }

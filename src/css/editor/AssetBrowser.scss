@@ -1,4 +1,4 @@
-@import "./theme";
+@import "../theme";
 
 :local(.className){
     display: flex;
@@ -22,7 +22,7 @@
 
             button{
                 flex: 1 1 auto;
-                padding: 0.5em;
+                padding: 0.25em;
                 color: #fff;
                 background: $mediumgray;
                 margin-bottom: 0.25em;
@@ -47,7 +47,7 @@
             margin-left: 0.25em;
 
             .input{
-                margin: 0 0.5em;
+                margin: 0 0.25em;
 
                 &.text{
                     flex: 1 1 auto;
@@ -59,7 +59,7 @@
                         padding: 0.5em 1em;
                         box-sizing: border-box;
                         border: 0;
-                        border-radius: 5em;
+                        border-radius: 4em;
                         background: #282828;
                         color: #fff;
 
@@ -72,6 +72,7 @@
 
             button{
                 margin-left: auto;
+                color: #fff;
             }
         }
     }

@@ -53,7 +53,7 @@ export default class BorderRadiusInput extends Input{
          * The clear button
          * @type {Dom}
          */
-        this.clear = new Button({'icon': 'clear'})
+        this.clear = new Button({'icon': 'close'})
             .data('action', 'clear')
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);

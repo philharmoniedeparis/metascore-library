@@ -103,6 +103,9 @@ export default class Controller extends Dom {
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(sticky);
 
+        this.waveform_zoom.getControls()
+            .appendTo(top);
+
         /**
          * The timeline
          * @type {Timeline}

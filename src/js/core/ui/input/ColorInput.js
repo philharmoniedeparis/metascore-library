@@ -59,7 +59,7 @@ export default class ColorInput extends Input {
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(this);
 
-        new Button({'icon': 'clear'})
+        new Button({'icon': 'close'})
             .attr('title', Locale.t('core.ui.input.ColorInput.clear.tooltip', 'Clear value'))
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);

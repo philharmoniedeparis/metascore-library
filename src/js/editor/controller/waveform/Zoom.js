@@ -4,7 +4,7 @@ import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
-import {className} from '../../../../css/editor/controller/WaveformZoom.scss';
+import {className, controlsClassName} from '../../../../css/editor/controller/WaveformZoom.scss';
 
 /**
  * A waveform zoomable view
@@ -87,14 +87,18 @@ export default class Zoom extends Dom {
         this.playhead_layer = new Dom('<canvas/>', {'class': 'layer playhead'})
             .appendTo(layers);
 
-        const controls = new Dom('<div/>', {'class': 'controls'})
+        /**
+         * The controls element
+         * @type {Dom}
+         */
+        this.controls = new Dom('<div/>', {'class': `${controlsClassName} zoom-controls`})
             .appendTo(this);
 
         /**
          * The zoom out button
          * @type {Button}
          */
-        this.zoom_out_btn = new Button({'icon': 'minus'})
+        this.zoom_out_btn = new Button({'icon': 'zoom'})
             .data('action', 'zoom-out')
             .addListener('mousedown', () => {
                 /**
@@ -112,7 +116,7 @@ export default class Zoom extends Dom {
             .addListener('click', (evt) => {
                 evt.stopPropagation();
             })
-            .appendTo(controls);
+            .appendTo(this.controls);
 
         /**
          * The zoom slider input
@@ -122,13 +126,13 @@ export default class Zoom extends Dom {
             .addListener('valuechange', (evt) => {
                 this.setZoom(evt.detail.value);
             })
-            .appendTo(controls);
+            .appendTo(this.controls);
 
         /**
          * The zoom in button
          * @type {Button}
          */
-        this.zoom_in_btn = new Button({'icon': 'plus'})
+        this.zoom_in_btn = new Button({'icon': 'zoom'})
             .data('action', 'zoom-in')
             .addListener('mousedown', () => {
                 this._zoom_interval = setInterval(() => {
@@ -142,7 +146,7 @@ export default class Zoom extends Dom {
             .addListener('click', (evt) => {
                 evt.stopPropagation();
             })
-            .appendTo(controls);
+            .appendTo(this.controls);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
@@ -801,6 +805,15 @@ export default class Zoom extends Dom {
         const offset = this._wave_range;
 
         return height - ((amplitude + offset) * height) / range;
+    }
+
+    /**
+     * Get the controls element
+     *
+     * @return {Dom} The controls element
+     */
+    getControls() {
+        return this.controls;
     }
 
 }

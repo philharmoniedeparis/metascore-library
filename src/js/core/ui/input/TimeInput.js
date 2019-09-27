@@ -193,7 +193,7 @@ export default class TimeInput extends Input {
                  * The potential clear button
                  * @type {Button}
                  */
-                this.clear_button = new Button({'icon': 'clear'})
+                this.clear_button = new Button({'icon': 'close'})
                     .data('action', 'clear')
                     .attr('title', Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value'))
                     .addListener('click', this.onClearClick.bind(this))

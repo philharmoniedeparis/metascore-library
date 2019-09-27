@@ -1,9 +1,46 @@
+@import "../../../theme";
+
 :local(.className){
     position: relative;
 
     input{
-        width: 100%;
-        padding-right: 17px !important;
-        box-sizing: border-box;
+        padding: 0.25em 0.5em;
+        color: #fff;
+        background: $mediumgray;
+        border-radius: 0.25em;
+    }
+
+    .buttons{
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+
+        button{
+            height: 100%;
+            opacity: 0.5;
+
+            .icon{
+                color: #fff;
+            }
+
+            &:hover{
+                opacity: 1;
+            }
+        }
+    }
+
+    &:hover{
+        .buttons{
+            display: block;
+        }
+    }
+
+    &.disabled{
+        .buttons{
+            cursor: default;
+            pointer-events: none;
+        }
     }
 }

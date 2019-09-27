@@ -78,15 +78,6 @@ export default class Media extends Component{
                         this.css('height', `${value}px`);
                     }
                 },
-                'z-index': {
-                    'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.css('z-index', value);
-                    }
-                },
                 'background-color': {
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);

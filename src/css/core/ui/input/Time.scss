@@ -1,25 +1,49 @@
+@import "../../../theme";
+
 :local(.className){
-    display: inline-block;
-    vertical-align: top;
+    position: relative;
 
     input{
-        width: 6em;
-        height: 100%;
-        border: none;
-        background: none;
+        width: 9em;
+        padding: 0.25em 0.5em;
+        color: #fff;
+        background: $mediumgray;
+        border-radius: 0.25em;
+        box-sizing: border-box;
     }
 
     .buttons{
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+
         button{
-            background-size: 1.25em;
+            height: 100%;
+            padding: 0 0.25em;
+            opacity: 0.5;
 
-            &[data-action="in"]{
-                background-image: url('../../../../img/core/ui/input/time/in.svg');
+            .icon{
+                color: #fff;
             }
 
-            &[data-action="out"]{
-                background-image: url('../../../../img/core/ui/input/time/out.svg');
+            &:hover{
+                opacity: 1;
             }
+        }
+    }
+
+    &:hover{
+        .buttons{
+            display: block;
+        }
+    }
+
+    &.disabled{
+        .buttons{
+            cursor: default;
+            pointer-events: none;
         }
     }
 
@@ -34,7 +58,9 @@
             button{
                 &[data-action="in"]{
                     opacity: 0.25;
-                    pointer-events: none;
+                }
+                &[data-action="out"]{
+                    pointer-events: all;
                 }
             }
         }
