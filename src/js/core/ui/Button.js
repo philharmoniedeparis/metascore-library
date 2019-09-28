@@ -1,4 +1,5 @@
 import Dom from '../Dom';
+import Icon from './Icon';
 
 import {className} from '../../../css/core/ui/Button.scss';
 
@@ -76,15 +77,11 @@ export default class Button extends Dom {
              * An eventual label
              * @type {Dom}
              */
-            this.icon = new Dom('<i/>', {'class': `icon`})
+            this.icon = new Icon()
                 .appendTo(this);
         }
-        else{
-            this.icon.removeClass(`icon-${this._icon_class}`);
-        }
 
-        this.icon.addClass(`icon-${name}`);
-        this._icon_class = name;
+        this.icon.setSymbol(name);
 
         return this;
     }

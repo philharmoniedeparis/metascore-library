@@ -1,6 +1,7 @@
 import Dom from '../../../core/Dom';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 
+import '../../../../img/editor/controller/timeline/handle/locked.svg?sprite';
 import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
 /**
@@ -33,17 +34,9 @@ export default class Handle extends Dom {
         const togglers = new Dom('<div/>', {'class': 'togglers'})
             .appendTo(inner);
 
-        new CheckboxInput()
-            .data('action', 'visibility')
-            .attr('title', 'Toggle visibility')
-            .appendTo(togglers);
-
-        new CheckboxInput()
-            .data('action', 'isolation')
-            .attr('title', 'Toggle isolation')
-            .appendTo(togglers);
-
-        new CheckboxInput()
+        new CheckboxInput({
+                'icon': 'locked'
+            })
             .data('action', 'lock')
             .attr('title', 'Toggle lock')
             .appendTo(togglers);

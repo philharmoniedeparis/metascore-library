@@ -1,6 +1,8 @@
 import Input from '../Input';
+import Icon from '../Icon';
 import Dom from '../../Dom';
 
+import '../../../../img/core/ui/input/checkbox/check.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Checkbox.scss';
 
 /**
@@ -16,6 +18,7 @@ export default class CheckboxInput extends Input{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
+     * @property {String} [label] An optional label text
      * @property {Boolean} [checked=false] Whether the field is checked by default
      * @property {Boolean} [checked_value=true] The value when checked
      * @property {Boolean} [unchecked_value=false] The value when unchecked
@@ -37,6 +40,7 @@ export default class CheckboxInput extends Input{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'label': null,
+            'icon': 'check',
             'checked': false,
             'checked_value': true,
             'unchecked_value': false
@@ -55,8 +59,16 @@ export default class CheckboxInput extends Input{
             .attr('type', 'checkbox')
             .addListener('click', this.onClick.bind(this));
 
-        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
+        const state = new Dom('<div/>', {'class': 'state'})
             .appendTo(this);
+
+        if(this.configs.icon){
+            this.icon = new Icon({'symbol': this.configs.icon})
+                .appendTo(state);
+        }
+
+        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
+            .appendTo(state);
     }
 
     /**

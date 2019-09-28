@@ -32,34 +32,39 @@
             display: flex;
             flex-direction: row;
             flex-wrap: nowrap;
+            padding: 0 0.25em;
 
             .input{
-                margin-right: 1px;
+                margin-left: 1px;
+                pointer-events: auto;
 
                 input{
-                    + label{
-                        width: 1em;
-                        height: 1em;
-                        padding: 0;
-                        background: #494949;
-                        border-radius: 0;
-                        pointer-events: auto;
-                        transition: none;
+                    + .state{
+                        .icon{
+                            display: block;
+                            top: 0;
+                            left: 0;
+                            width: 0.8em;
+                            height: 0.8em;
+                            margin: 0.1em;
+                            color: #fff;
+                            opacity: 0.25;
+                        }
 
-                        &::after{
-                            content: none;
+                        label{
+                            &::before{
+                                background: $darkgray;
+                            }
                         }
                     }
 
                     &:checked{
-                        + label{
-                            background: #fff;
+                       + .state{
+                            .icon{
+                                opacity: 1;
+                            }
                         }
                     }
-                }
-
-                &:last-child{
-                    margin-right: 0;
                 }
             }
         }

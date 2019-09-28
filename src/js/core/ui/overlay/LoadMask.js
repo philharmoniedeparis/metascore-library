@@ -1,7 +1,9 @@
 import Overlay from '../Overlay';
 import Dom from '../../Dom';
+import Icon from '../Icon';
 import Locale from '../../Locale';
 
+import '../../../../img/core/loading.svg?sprite';
 import {className} from '../../../../css/core/ui/overlay/LoadMask.scss';
 
 /**
@@ -20,6 +22,13 @@ export default class LoadMask extends Overlay{
         super(configs);
 
         this.addClass(`loadmask ${className}`);
+
+        /**
+         * The loading icon
+         * @type {Icon}
+         */
+        this.icon = new Icon({'symbol': 'loading'})
+            .appendTo(this.getContents());
 
         /**
          * The text container

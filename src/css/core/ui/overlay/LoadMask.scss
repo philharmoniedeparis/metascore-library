@@ -3,12 +3,20 @@
 :local(.className){
     > .inner{
         > .contents{
-            padding: 1em 1em 1em 4em;
-            background: url('../../../../img/core/loading.svg') no-repeat 1em center;
-            background-size: 2em;
+            padding: 1em;
+
+            .icon{
+                display: inline-block;
+                width: 1.5em;
+                height: 1.5em;
+                margin-right: 1em;
+                vertical-align: middle;
+            }
 
             .text{
+                display: inline-block;
                 color: #fff;
+                vertical-align: middle;
             }
         }
     }
@@ -19,6 +27,10 @@
                 min-width: 10em;
                 padding-left: 1em;
                 background-image: none;
+
+                .icon{
+                    display: none;
+                }
 
                 .bar{
                     position: relative;

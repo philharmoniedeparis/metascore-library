@@ -399,9 +399,10 @@ export default class Dom {
      * @param {HTMLElement} element The element
      * @param {Mixed} name The attribute's name, or a list of name/value pairs
      * @param {Mixed} [value] The attribute's value
+     * @param {String} [namespace] The attribute's namespace
      * @return {Mixed} The attribute's value, nothing is returned for 'special' attributes such as "class" or "text"
      */
-    static attr(element, name, value){
+    static attr(element, name, value, namespace){
         if(isObject(name)){
 			Object.entries(name).forEach(([key, val]) => {
                 this.attr(element, key, val);
@@ -422,7 +423,12 @@ export default class Dom {
                     }
                     else{
                         if(typeof value !== "undefined"){
-                            element.setAttribute(name, value);
+                            if(typeof namespace !== "undefined"){
+                                element.setAttributeNS(namespace, name, value);
+                            }
+                            else{
+                                element.setAttribute(name, value);
+                            }
                         }
 
                         return element.getAttribute(name);
@@ -1097,12 +1103,13 @@ export default class Dom {
      *
      * @param {String} name The name of the attribute to set or get
      * @param {String} [value] The value to set
+     * @param {String} [namespace] The attribute's namespace
      * @return {Mixed} The Dom object if used as a setter, the value of the first element if used as a getter
      */
-    attr(name, value) {
+    attr(name, value, namespace) {
         if((typeof value !== "undefined") || isObject(name)){
             this.forEach((element) => {
-                Dom.attr(element, name, value);
+                Dom.attr(element, name, value, namespace);
             });
             return this;
         }

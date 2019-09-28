@@ -1322,10 +1322,6 @@ export default class Editor extends Dom {
      */
     onPlayerPlay(){
         this.addClass('playing');
-
-        this.controller.find('button .icon-play')
-            .removeClass('icon-play')
-            .addClass('icon-pause');
     }
 
     /**
@@ -1335,10 +1331,6 @@ export default class Editor extends Dom {
      */
     onPlayerPause(){
         this.removeClass('playing');
-
-        this.controller.find('button .icon-pause')
-            .removeClass('icon-pause')
-            .addClass('icon-play');
     }
 
     /**

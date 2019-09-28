@@ -93,22 +93,38 @@ module.exports = (env, argv) => {
             ]
         },
         {
-          // Pack images.
           test: /\.(gif|png|jpe?g|svg)$/i,
-          use: [
+          oneOf: [
             {
-              loader: 'file-loader',
-              options: {
-                context: './src',
-                name: '[path][name].[ext]?[hash]'
-              }
+              // Pack SVG sprites.
+              resourceQuery: /sprite/, // foo.svg?sprite
+              use: [
+                {
+                  loader: 'svg-sprite-loader',
+                  options: {
+                    symbolId: filePath => path.basename(filePath, '.svg')
+                  }
+                }
+              ]
             },
             {
-              loader: 'image-webpack-loader',
-              options: {
-                disable: true,
-              },
-            },
+              // Pack images.
+              use: [
+                {
+                  loader: 'file-loader',
+                  options: {
+                    context: './src',
+                    name: '[path][name].[ext]?[hash]'
+                  }
+                },
+                {
+                  loader: 'image-webpack-loader',
+                  options: {
+                    disable: true,
+                  },
+                },
+              ],
+            }
           ],
         },
         {

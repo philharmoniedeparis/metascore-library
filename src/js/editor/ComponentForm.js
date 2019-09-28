@@ -2,7 +2,7 @@ import Dom from '../core/Dom';
 import {isArray} from '../core/utils/Var';
 import Locale from '../core/Locale';
 import Field from './Field';
-import RadioButtonsInput from '../core/ui/input/RadioButtonsInput';
+import RadiosInput from '../core/ui/input/RadiosInput';
 import TextInput from '../core/ui/input/TextInput';
 import SelectInput from '../core/ui/input/SelectInput';
 import ColorInput from '../core/ui/input/ColorInput';
@@ -94,7 +94,7 @@ export default class ComponentForm extends Dom {
             .appendTo(this.contents);
 
         this.fields.visible = new Field(
-            new RadioButtonsInput({
+            new RadiosInput({
                 'options': [
                     {'value': false, 'text': Locale.t('editor.ComponentForm.fields.visible.options.no.text', 'No')},
                     {'value': true, 'text': Locale.t('editor.ComponentForm.fields.visible.options.yes.text', 'Yes')},

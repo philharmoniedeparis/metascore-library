@@ -1,45 +1,54 @@
 @import "../../../theme";
 
 :local(.className){
-    &.slide{
-        input{
-            position: absolute;
-            visibility: hidden;
-            z-index: -1;
+    position: relative;
+    cursor: pointer;
 
-            + label{
-                display: block;
-                width: 3em;
-                height: 1.5em;
-                padding: 2px;
-                background-color: #f0f0f0;
-                border-radius: 1.5em;
-                cursor: pointer;
-                user-select: none;
-                outline: 0;
-                transition: background-color .4s ease;
+    input{
+        position: absolute;
+        visibility: hidden;
+        z-index: -1;
 
-                &::after{
-                    content: "";
-                    position: relative;
-                    display: block;
-                    left: 0;
-                    width: 50%;
-                    height: 100%;
-                    border-radius: 50%;
-                    background: #fff;
-                    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
-                    transition: left 0.2s ease;
-                }
+        + .state{
+            .icon{
+                display: none;
+                position: absolute;
+                top: -0.1em;
+                left: 0.2em;
+                width: 1em;
+                color: #000;
+                pointer-events: none;
+                z-index: 1;
             }
 
-            &:checked{
-                + label{
-                    background-color: $metascore-color;
+            label{
+                display: inline-block;
 
-                    &::after{
-                        left: 50%;
+                &::before{
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 1em;
+                    height: 1em;
+                    background: #fff;
+                }
+
+                padding-left: 1.5em;
+
+                &:empty{
+                    &::before{
+                        padding-left: 0;
                     }
+                }
+            }
+        }
+
+        &:checked{
+           + .state{
+                .icon{
+                    display: block;
                 }
             }
         }
@@ -47,25 +56,35 @@
 
     &.toggle-button{
         input{
-            position: absolute;
-            visibility: hidden;
-            z-index: -1;
+            + .state{
+                .icon{
+                    display: none;
+                }
 
-            + label{
-                padding: 0.25em 0.5em;
-                color: #fff;
-                border: 1px solid #fff;
-                border-radius: 1.5em;
-                cursor: pointer;
-                user-select: none;
-                outline: 0;
-                transition: all .4s ease;
+                label{
+                    width: auto;
+                    height: auto;
+                    padding: 0.25em 0.5em;
+                    color: #fff;
+                    border: 1px solid #fff;
+                    border-radius: 1.5em;
+                    cursor: pointer;
+                    user-select: none;
+                    outline: 0;
+                    transition: all .4s ease;
+
+                    &::before{
+                        content: none;
+                    }
+                }
             }
 
             &:checked{
-                + label{
-                    background: #fff;
-                    color: #000;
+                + .state{
+                    label{
+                        background: #fff;
+                        color: #000;
+                    }
                 }
             }
         }

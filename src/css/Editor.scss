@@ -1,6 +1,5 @@
 @import "./theme";
 @import "../fonts/source-sans-pro/source-sans-variable.css";
-@import "../fonts/metascore-icons/style.css";
 
 :local(.className){
     /* General styles *******************/
@@ -54,50 +53,6 @@
         td, th{
             padding: 0;
             border: 0;
-        }
-    }
-
-    fieldset{
-        margin: 0;
-        padding: 0;
-        border: none;
-        background: #eee;
-
-        legend{
-            display: block;
-            width: 100%;
-            padding: 1em;
-            box-sizing: border-box;
-            background: inherit;
-        }
-
-        > .contents{
-            padding: 1em;
-        }
-
-        &.collapsible{
-            legend{
-                cursor: pointer;
-
-                &::before{
-                    content: '';
-                    margin-right: 0.25em;
-                    padding-left: 8px;
-                    background: transparent url('../img/editor/fieldset/expanded.png') left center no-repeat;
-                }
-            }
-
-            &.collapsed{
-                legend{
-                    &::before{
-                        background-image: url('../img/editor/fieldset/collapsed.png');
-                    }
-                }
-
-                > .contents{
-                    display: none;
-                }
-            }
         }
     }
 

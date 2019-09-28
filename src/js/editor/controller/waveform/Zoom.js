@@ -4,6 +4,7 @@ import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
+import '../../../../img/editor/controller/waveform/zoom.svg?sprite';
 import {className, controlsClassName} from '../../../../css/editor/controller/WaveformZoom.scss';
 
 /**

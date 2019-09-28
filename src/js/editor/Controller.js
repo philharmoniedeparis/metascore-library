@@ -7,6 +7,10 @@ import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
 import ResizeObserver from 'resize-observer-polyfill';
 
+import '../../img/editor/controller/play.svg?sprite';
+import '../../img/editor/controller/pause.svg?sprite';
+import '../../img/editor/controller/rewind.svg?sprite';
+
 import {className} from '../../css/editor/Controller.scss';
 
 /**
@@ -50,11 +54,10 @@ export default class Controller extends Dom {
         this.timeinput = new TimeInput()
             .appendTo(top);
 
-        new Button({'icon': 'play'})
+        this.timeinput.play_btn = new Button({'icon': 'play'})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.timeinput);
-
 
         const overview = new Dom('<div/>', {'class': 'overview'})
             .appendTo(top);
@@ -84,11 +87,11 @@ export default class Controller extends Dom {
         this.controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(sticky);
 
-        new Button({'icon': 'rewind'})
+        this.controls.rewind_btn = new Button({'icon': 'rewind'})
             .data('action', 'rewind')
             .appendTo(this.controls);
 
-        new Button({'icon': 'play'})
+        this.controls.play_btn = new Button({'icon': 'play'})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.controls);
@@ -231,6 +234,9 @@ export default class Controller extends Dom {
      */
     onMediaPlay(){
         this.addClass('playing');
+
+        this.timeinput.play_btn.setIcon('pause');
+        this.controls.play_btn.setIcon('pause');
     }
 
     /**
@@ -240,6 +246,9 @@ export default class Controller extends Dom {
      */
     onMediaPause(){
         this.removeClass('playing');
+
+        this.timeinput.play_btn.setIcon('play');
+        this.controls.play_btn.setIcon('play');
     }
 
     /**
