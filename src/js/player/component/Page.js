@@ -1,7 +1,6 @@
 import Component from '../Component';
 import Element from './Element';
 import Locale from '../../core/Locale';
-import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
 import CursorElement from './element/Cursor';
@@ -63,7 +62,7 @@ export default class Page extends Component {
                         return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('background-color', toCSS(value));
+                        this.css('background-color', value);
                     }
                 },
                 'background-image': {

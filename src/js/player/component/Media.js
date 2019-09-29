@@ -1,5 +1,4 @@
 import Component from '../Component';
-import {toCSS} from '../../core/utils/Color';
 import {getRendererForMime} from '../../core/utils/Media';
 
 /**
@@ -83,7 +82,7 @@ export default class Media extends Component{
                         return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('background-color', toCSS(value));
+                        this.css('background-color', value);
                     }
                 },
                 'border-width': {
@@ -100,7 +99,7 @@ export default class Media extends Component{
                         return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('border-color', toCSS(value));
+                        this.css('border-color', value);
                     }
                 },
                 'border-radius': {

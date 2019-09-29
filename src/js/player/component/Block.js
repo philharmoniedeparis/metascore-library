@@ -2,7 +2,6 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Pager from '../Pager';
 import Page from './Page';
-import {toCSS} from '../../core/utils/Color';
 import {isString, isNumber} from '../../core/utils/Var';
 
 /**
@@ -94,7 +93,7 @@ export default class Block extends Component {
                         return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('background-color', toCSS(value));
+                        this.css('background-color', value);
                     }
                 },
                 'background-image': {
@@ -130,7 +129,7 @@ export default class Block extends Component {
                         return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('border-color', toCSS(value));
+                        this.css('border-color', value);
                     }
                 },
                 'border-radius': {

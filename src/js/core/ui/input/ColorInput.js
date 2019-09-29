@@ -1,11 +1,10 @@
 import Input from '../Input';
-import Dom from '../../Dom';
-import Button from '../Button';
 import Locale from '../../Locale';
-import {toRGBA} from '../../utils/Color';
-import ColorSelector from '../overlay/ColorSelector';
+import Pickr from '@simonwep/pickr';
 
-import {className} from '../../../../css/core/ui/input/Color.scss';
+import '@simonwep/pickr/dist/themes/nano.min.css';
+import {className, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
+import Dom from '../../Dom';
 /**
  * A color selection field
  *
@@ -25,6 +24,9 @@ export default class ColorInput extends Input {
         // call parent constructor
         super(configs);
 
+        // fix event handlers scope
+        this.onPickrSave = this.onPickrSave.bind(this);
+
         this.addClass(`color ${className}`);
     }
 
@@ -34,14 +36,7 @@ export default class ColorInput extends Input {
     * @return {Object} The default values
     */
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            value: {
-                r: 255,
-                g: 255,
-                b: 255,
-                a: 1
-            }
-        });
+        return Object.assign({}, super.getDefaults(), {});
     }
 
     /**
@@ -50,26 +45,58 @@ export default class ColorInput extends Input {
      * @private
      */
     setupUI() {
-        super.setupUI();
-
-        this.native_input
-            .attr('readonly', 'readonly')
-            .addListener('click', this.onClick.bind(this));
-
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
+        const pickr_el = new Dom('<div/>')
             .appendTo(this);
 
-        new Button({'icon': 'close'})
-            .attr('title', Locale.t('core.ui.input.ColorInput.clear.tooltip', 'Clear value'))
-            .addListener('click', this.onClearClick.bind(this))
-            .appendTo(buttons);
+        this.pickr = Pickr.create({
+            'el': pickr_el.get(0),
+            'theme': 'nano',
+            'appClass': pickrClassName,
+            'swatches': [],
+            'components': {
+                'palette': true,
+                'preview': true,
+                'opacity': true,
+                'hue': true,
+                'interaction': {
+                    'hex': true,
+                    'rgba': true,
+                    'input': true,
+                    'clear': true,
+                    'cancel': true,
+                    'save': true
+                }
+            },
+            'strings': {
+                'save': Locale.t('core.ui.input.ColorInput.pickr.save', 'Save'),
+                'clear': Locale.t('core.ui.input.ColorInput.pickr.reset', 'Reset'),
+                'cancel': Locale.t('core.ui.input.ColorInput.pickr.cancel', 'Cancel')
+             }
+        });
+
+        this.pickr
+            .on('show', this.onPickrShow.bind(this))
+            .on('cancel', this.onPickrCancel.bind(this));
+    }
+
+    onPickrShow(){
+        this.pickr.on('save', this.onPickrSave);
+    }
+
+    onPickrCancel(){
+        this.pickr.hide();
+    }
+
+    onPickrSave(color){
+        this.pickr.off('save', this.onPickrSave);
 
         /**
-         * The overlay
-         * @type {ColorSelector}
+         * The current value
+         * @type {Object}
          */
-        this.overlay = new ColorSelector()
-            .addListener('submit', this.onOverlaySubmit.bind(this));
+        this.value = color ? color.toRGBA().toString(3) : null;
+
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
     }
 
     /**
@@ -80,58 +107,41 @@ export default class ColorInput extends Input {
      * @return {this}
      */
     setValue(value, supressEvent){
-        /**
-         * The current value
-         * @type {Object}
-         */
-        this.value = value ? toRGBA(value) : null;
+        this.pickr.setColor(value);
 
-        const rgba = this.value ? `rgba(${this.value.r},${this.value.g},${this.value.b},${this.value.a})` : null;
-
-        this.native_input
-            .attr('title', rgba)
-            .css('background-color', rgba);
+        this.value = this.pickr.getColor().toRGBA().toString(3);
 
         if(supressEvent !== true){
             this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
         }
 
         return this;
-
     }
 
     /**
-     * The click event handler
+     * Disable the input
      *
-     * @private
+     * @return {this}
      */
-    onClick(){
-        if(this.disabled){
-            return;
-        }
+    disable() {
+        super.disable();
 
-        this.overlay
-            .setValue(Object.assign({}, this.value))
-            .show();
+        this.pickr.disable();
+
+        return this;
     }
 
     /**
-     * The overlay's submit event handler
+     * Enable the input
      *
-     * @private
-     * @param {Event} evt The event object
+     * @return {this}
      */
-    onOverlaySubmit(evt){
-        this.setValue(evt.detail.value);
-    }
+    enable() {
+        super.enable();
 
-    /**
-     * The clear button click event handler
-     *
-     * @private
-     */
-    onClearClick(){
-        this.setValue("transparent");
+        this.pickr.enable();
+
+        return this;
     }
 
 }

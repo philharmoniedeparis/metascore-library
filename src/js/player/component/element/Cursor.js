@@ -1,6 +1,5 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import {toCSS} from '../../../core/utils/Color';
 import {map, radians} from '../../../core/utils/Math';
 
 /**
@@ -142,10 +141,10 @@ export default class Cursor extends Element {
                 'cursor-color': {
                     'getter': function(){
                         const value = this.data('cursor-color');
-                        return value ? value : toCSS('#000');
+                        return value ? value : '#000';
                     },
                     'setter': function(value){
-                        this.data('cursor-color', toCSS(value));
+                        this.data('cursor-color', value);
                     }
                 }
             })

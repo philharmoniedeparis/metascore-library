@@ -109,6 +109,23 @@ export default class Editor extends Dom {
     * Initialize
     */
     init(){
+        // Top pane ////////////////////////
+        const top_pane = new Pane({
+                'axis': 'horizontal',
+            })
+            .attr('id', 'top-pane')
+            .appendTo(this);
+
+        /**
+         * The top menu
+         * @type {MainMenu}
+         */
+        this.mainmenu = new MainMenu()
+            .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('.checkbox.input[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
+            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this))
+            .appendTo(top_pane.getContents());
+
         // Tools pane ////////////////////////
         const tools_pane = new Pane({
                 'axis': 'vertical',
@@ -129,16 +146,6 @@ export default class Editor extends Dom {
             })
             .attr('id', 'center-pane')
             .appendTo(this);
-
-        /**
-         * The top menu
-         * @type {MainMenu}
-         */
-        this.mainmenu = new MainMenu()
-            .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.checkbox.input[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
-            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this))
-            .appendTo(center_pane.getContents());
 
         /**
          * The workspace

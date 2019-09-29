@@ -7,9 +7,9 @@ import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import '../../img/editor/controller/play.svg?sprite';
-import '../../img/editor/controller/pause.svg?sprite';
-import '../../img/editor/controller/rewind.svg?sprite';
+import play_icon from '../../img/editor/controller/play.svg?sprite';
+import pause_icon from '../../img/editor/controller/pause.svg?sprite';
+import rewind_icon from '../../img/editor/controller/rewind.svg?sprite';
 
 import {className} from '../../css/editor/Controller.scss';
 
@@ -54,7 +54,7 @@ export default class Controller extends Dom {
         this.timeinput = new TimeInput()
             .appendTo(top);
 
-        this.timeinput.play_btn = new Button({'icon': 'play'})
+        this.timeinput.play_btn = new Button({'icon': play_icon})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.timeinput);
@@ -87,11 +87,11 @@ export default class Controller extends Dom {
         this.controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(sticky);
 
-        this.controls.rewind_btn = new Button({'icon': 'rewind'})
+        this.controls.rewind_btn = new Button({'icon': rewind_icon})
             .data('action', 'rewind')
             .appendTo(this.controls);
 
-        this.controls.play_btn = new Button({'icon': 'play'})
+        this.controls.play_btn = new Button({'icon': play_icon})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.controls);
@@ -235,8 +235,8 @@ export default class Controller extends Dom {
     onMediaPlay(){
         this.addClass('playing');
 
-        this.timeinput.play_btn.setIcon('pause');
-        this.controls.play_btn.setIcon('pause');
+        this.timeinput.play_btn.setIcon(pause_icon);
+        this.controls.play_btn.setIcon(pause_icon);
     }
 
     /**
@@ -247,8 +247,8 @@ export default class Controller extends Dom {
     onMediaPause(){
         this.removeClass('playing');
 
-        this.timeinput.play_btn.setIcon('play');
-        this.controls.play_btn.setIcon('play');
+        this.timeinput.play_btn.setIcon(play_icon);
+        this.controls.play_btn.setIcon(play_icon);
     }
 
     /**

@@ -2,7 +2,7 @@ import Input from '../Input';
 import Icon from '../Icon';
 import Dom from '../../Dom';
 
-import '../../../../img/core/ui/input/checkbox/check.svg?sprite';
+import check_icon from '../../../../img/core/ui/input/checkbox/check.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Checkbox.scss';
 
 /**
@@ -40,7 +40,7 @@ export default class CheckboxInput extends Input{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'label': null,
-            'icon': 'check',
+            'icon': check_icon,
             'checked': false,
             'checked_value': true,
             'unchecked_value': false
@@ -62,13 +62,13 @@ export default class CheckboxInput extends Input{
         const state = new Dom('<div/>', {'class': 'state'})
             .appendTo(this);
 
+        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
+            .appendTo(state);
+
         if(this.configs.icon){
             this.icon = new Icon({'symbol': this.configs.icon})
                 .appendTo(state);
         }
-
-        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
-            .appendTo(state);
     }
 
     /**

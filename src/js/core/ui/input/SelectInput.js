@@ -1,6 +1,8 @@
 import Input from '../Input';
+import Icon from '../../ui/Icon';
 import Dom from '../../Dom';
 
+import arrow_icon from '../../../../img/core/ui/input/select/arrow.svg?sprite'
 import {className} from '../../../../css/core/ui/input/Select.scss';
 
 /**
@@ -48,6 +50,9 @@ export default class SelectInput extends Input {
          */
         this.native_input = new Dom('<select/>', {'id': id})
             .addListener('change', this.onChange.bind(this))
+            .appendTo(this);
+
+        new Icon({'symbol': arrow_icon})
             .appendTo(this);
 
         if(this.configs.multiple){

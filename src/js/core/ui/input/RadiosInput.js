@@ -146,13 +146,13 @@ export default class CheckboxInput extends Input{
         const state = new Dom('<div/>', {'class': 'state'})
             .appendTo(radio_wrapper);
 
+        new Dom('<label/>', {'text': text, 'for': uid})
+            .appendTo(state);
+
         if(this.configs.icon){
             this.icon = new Icon({'symbol': this.configs.icon})
                 .appendTo(state);
         }
-
-        new Dom('<label/>', {'text': text, 'for': uid})
-            .appendTo(state);
 
         return radio;
     }

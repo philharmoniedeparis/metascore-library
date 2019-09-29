@@ -29,18 +29,27 @@ export default class Icon extends Dom {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
+     * Get the default config values
+     *
+     * @return {Object} The default values
+     */
     static getDefaults(){
         return {
             'symbol': null
         };
     }
 
+    /**
+     * Set the SVG symbol
+     *
+     * @param {Object} symbol An object describing the symbol
+     * @property {String} id The symbol's id
+     * @property {String} viewBox The symbol'S viewBox
+     * @return {Object} The default values
+     */
     setSymbol(symbol){
-        this.child('use').attr('xlink:href', `#${symbol}`, 'http://www.w3.org/1999/xlink');
+        this.attr('viewBox', symbol.viewBox);
+        this.child('use').attr('xlink:href', `#${symbol.id}`, 'http://www.w3.org/1999/xlink');
     }
 
 }

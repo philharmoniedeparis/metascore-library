@@ -4,7 +4,7 @@ import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
-import '../../../../img/editor/controller/waveform/zoom.svg?sprite';
+import zoom_icon from '../../../../img/editor/controller/waveform/zoom.svg?sprite';
 import {className, controlsClassName} from '../../../../css/editor/controller/WaveformZoom.scss';
 
 /**
@@ -99,7 +99,7 @@ export default class Zoom extends Dom {
          * The zoom out button
          * @type {Button}
          */
-        this.zoom_out_btn = new Button({'icon': 'zoom'})
+        this.zoom_out_btn = new Button({'icon': zoom_icon})
             .data('action', 'zoom-out')
             .addListener('mousedown', () => {
                 /**
@@ -133,7 +133,7 @@ export default class Zoom extends Dom {
          * The zoom in button
          * @type {Button}
          */
-        this.zoom_in_btn = new Button({'icon': 'zoom'})
+        this.zoom_in_btn = new Button({'icon': zoom_icon})
             .data('action', 'zoom-in')
             .addListener('mousedown', () => {
                 this._zoom_interval = setInterval(() => {

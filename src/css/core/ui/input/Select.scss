@@ -1,6 +1,8 @@
 @import "../../../theme";
 
 :local(.className){
+    position: relative;
+
     select{
         display: inline-block;
         width: auto;
@@ -13,10 +15,6 @@
         border-radius: .25em;
         appearance: none;
         background-color: transparent;
-        background-image: url('../../../../img/core/ui/input/select/arrow.svg');
-        background-repeat: no-repeat;
-        background-position: right 0.5em top 50%;
-        background-size: 1.5em auto;
 
         option {
             font-weight: normal;
@@ -32,5 +30,14 @@
             box-shadow: 0 0 1px 3px rgba(255, 255, 255, .5);
             outline: none;
         }
+    }
+
+    .icon{
+        position: absolute;
+        top: 0;
+        right: 0.5em;
+        width: 1em;
+        height: 100%;
+        pointer-events: none;
     }
 }

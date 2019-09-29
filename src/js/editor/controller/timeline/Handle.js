@@ -1,7 +1,7 @@
 import Dom from '../../../core/Dom';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 
-import '../../../../img/editor/controller/timeline/handle/locked.svg?sprite';
+import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?sprite';
 import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
 /**
@@ -35,7 +35,7 @@ export default class Handle extends Dom {
             .appendTo(inner);
 
         new CheckboxInput({
-                'icon': 'locked'
+                'icon': locked_icon
             })
             .data('action', 'lock')
             .attr('title', 'Toggle lock')

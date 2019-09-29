@@ -4,8 +4,9 @@
     position: relative;
 
     input{
-        width: 9em;
-        padding: 0.25em 0.5em;
+        width: 6em;
+        padding: 0 0.5em;
+        line-height: 1.5em;
         color: #fff;
         background: $mediumgray;
         border-radius: 0.25em;
@@ -15,9 +16,11 @@
     .buttons{
         display: none;
         position: absolute;
-        top: 0;
+        bottom: 100%;
         right: 0;
         height: 100%;
+        background: $mediumgray;
+        border-radius: 0.5em 0.5em 0 0;
 
         button{
             height: 100%;
@@ -35,6 +38,10 @@
     }
 
     &:hover{
+        input{
+            border-top-right-radius: 0;
+        }
+
         .buttons{
             display: block;
         }

@@ -1,7 +1,6 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
 import {isArray, isString, isEmpty} from '../../core/utils/Var';
-import {toCSS} from '../../core/utils/Color';
 
 /**
  * A block toggler component
@@ -93,7 +92,7 @@ export default class BlockToggler extends Component{
                         return this.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('background-color', toCSS(value));
+                        this.css('background-color', value);
                     }
                 },
                 'border-width': {
@@ -110,7 +109,7 @@ export default class BlockToggler extends Component{
                         return this.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.css('border-color', toCSS(value));
+                        this.css('border-color', value);
                     }
                 },
                 'border-radius': {

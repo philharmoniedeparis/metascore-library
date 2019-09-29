@@ -36,8 +36,11 @@
         color: #fff;
         line-height: 0.5em;
 
-        &[data-action="zoom-out"]{
-            font-size: 1.8em;
+        &[data-action="zoom-in"]{
+            .icon{
+                width: 1.5em;
+                height: 1.5em;
+            }
         }
     }
 }

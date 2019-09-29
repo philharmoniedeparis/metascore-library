@@ -5,6 +5,9 @@ import Locale from '../../Locale';
 import {pad} from '../../utils/String';
 import {isNumeric} from '../../utils/Var';
 
+import in_icon from '../../../../img/core/ui/input/time/time-in.svg?sprite';
+import out_icon from '../../../../img/core/ui/input/time/time-out.svg?sprite';
+import clear_icon from '../../../../img/core/ui/input/time/clear.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Time.scss';
 
 /**
@@ -106,9 +109,9 @@ export default class TimeInput extends Input {
             'value': null,
             'min': 0,
             'max': null,
-            'clearButton': false,
             'inButton': false,
-            'outButton': false
+            'outButton': false,
+            'clearButton': false
         });
     }
 
@@ -188,24 +191,12 @@ export default class TimeInput extends Input {
             const buttons = new Dom('<div/>', {'class': 'buttons'})
                 .appendTo(this);
 
-            if(this.configs.clearButton){
-                /**
-                 * The potential clear button
-                 * @type {Button}
-                 */
-                this.clear_button = new Button({'icon': 'close'})
-                    .data('action', 'clear')
-                    .attr('title', Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value'))
-                    .addListener('click', this.onClearClick.bind(this))
-                    .appendTo(buttons);
-            }
-
             if(this.configs.inButton){
                 /**
                  * The potential time-in button
                  * @type {Button}
                  */
-                this.in_button = new Button({'icon': 'time-in'})
+                this.in_button = new Button({'icon': in_icon})
                     .data('action', 'in')
                     .attr('title', Locale.t('core.ui.input.TimeInput.in.tooltip', 'Set field value to current time'))
                     .addListener('click', this.onInClick.bind(this))
@@ -217,10 +208,22 @@ export default class TimeInput extends Input {
                  * The potential time-out button
                  * @type {Button}
                  */
-                this.out_button = new Button({'icon': 'time-out'})
+                this.out_button = new Button({'icon': out_icon})
                     .data('action', 'out')
                     .attr('title', Locale.t('core.ui.input.TimeInput.out.tooltip', 'Set current time to field value'))
                     .addListener('click', this.onOutClick.bind(this))
+                    .appendTo(buttons);
+            }
+
+            if(this.configs.clearButton){
+                /**
+                 * The potential clear button
+                 * @type {Button}
+                 */
+                this.clear_button = new Button({'icon': clear_icon})
+                    .data('action', 'clear')
+                    .attr('title', Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value'))
+                    .addListener('click', this.onClearClick.bind(this))
                     .appendTo(buttons);
             }
         }

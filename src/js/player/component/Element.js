@@ -1,6 +1,5 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import {toCSS} from '../../core/utils/Color';
 import {isString} from '../../core/utils/Var';
 
 /**
@@ -93,7 +92,7 @@ export default class Element extends Component{
                         return this.contents.css('background-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.contents.css('background-color', toCSS(value));
+                        this.contents.css('background-color', value);
                     }
                 },
                 'background-image': {
@@ -129,7 +128,7 @@ export default class Element extends Component{
                         return this.contents.css('border-color', void 0, skipDefault);
                     },
                     'setter': function(value){
-                        this.contents.css('border-color', toCSS(value));
+                        this.contents.css('border-color', value);
                     }
                 },
                 'border-radius': {

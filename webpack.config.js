@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const path = require("path");
 const git = require('git-rev-sync');
 const pckg = require('./package.json');
+const filenamify = require('filenamify');
 
 const BeepPlugin = require('./webpack/plugins/BeepPlugin');
 const ShellPlugin = require('./webpack/plugins/ShellPlugin');
@@ -102,7 +103,13 @@ module.exports = (env, argv) => {
                 {
                   loader: 'svg-sprite-loader',
                   options: {
-                    symbolId: filePath => path.basename(filePath, '.svg')
+                    symbolId: (filePath) => {
+                      let dirname = path.dirname(filePath);
+                      dirname = path.relative('./src/img', dirname);
+                      dirname = filenamify(dirname, {replacement: '-'});
+                      const basename = path.basename(filePath, '.svg');
+                      return `${dirname}-${basename}`;
+                    }
                   }
                 }
               ]

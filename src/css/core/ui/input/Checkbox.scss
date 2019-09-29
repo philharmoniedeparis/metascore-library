@@ -10,17 +10,6 @@
         z-index: -1;
 
         + .state{
-            .icon{
-                display: none;
-                position: absolute;
-                top: -0.1em;
-                left: 0.2em;
-                width: 1em;
-                color: #000;
-                pointer-events: none;
-                z-index: 1;
-            }
-
             label{
                 display: inline-block;
 
@@ -43,6 +32,16 @@
                     }
                 }
             }
+
+            .icon{
+                display: none;
+                position: absolute;
+                top: -0.1em;
+                left: 0.2em;
+                width: 1em;
+                color: #000;
+                pointer-events: none;
+            }
         }
 
         &:checked{
@@ -57,10 +56,6 @@
     &.toggle-button{
         input{
             + .state{
-                .icon{
-                    display: none;
-                }
-
                 label{
                     width: auto;
                     height: auto;
@@ -76,6 +71,10 @@
                     &::before{
                         content: none;
                     }
+                }
+
+                .icon{
+                    display: none;
                 }
             }
 
