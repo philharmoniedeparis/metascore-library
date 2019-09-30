@@ -40,7 +40,8 @@ export default class Button extends Dom {
     */
     static getDefaults(){
         return {
-            'label': null
+            'label': null,
+            'icon': null
         };
     }
 

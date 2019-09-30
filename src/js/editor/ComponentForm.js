@@ -86,97 +86,136 @@ export default class ComponentForm extends Dom {
         this.fields = {};
 
         this.fields.name = new Field(
-            new TextInput(),
+            new TextInput({
+                'name': 'name'
+            }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.name.label', 'Name')
             })
             .data('name', 'name')
             .appendTo(this.contents);
 
-        this.fields.visible = new Field(
+        this.fields.hidden = new Field(
             new RadiosInput({
-                'options': [
-                    {'value': false, 'text': Locale.t('editor.ComponentForm.fields.visible.options.no.text', 'No')},
-                    {'value': true, 'text': Locale.t('editor.ComponentForm.fields.visible.options.yes.text', 'Yes')},
-                ]
+                'name': 'hidden',
+                'options': {
+                    0: Locale.t('editor.ComponentForm.fields.hidden.options.no.text', 'No'),
+                    1: Locale.t('editor.ComponentForm.fields.hidden.options.yes.text', 'Yes'),
+                },
+                'value': 0
             }),
             {
-                'label': Locale.t('editor.ComponentForm.fields.visible.label', 'Visible on start')
+                'label': Locale.t('editor.ComponentForm.fields.hidden.label', 'Hidden on start')
             })
-            .data('name', 'visible')
             .appendTo(this.contents);
 
         this.fields.scenario = new Field(
-            new SelectInput(),
+            new SelectInput({
+                'name': 'scenario'
+            }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.scenario.label', 'Scenario')
             })
             .data('name', 'scenario')
             .appendTo(this.contents);
 
+        this.fields.form = new Field(
+            new SelectInput({
+                'name': 'form',
+                'options': {
+                    'linear': Locale.t('player.component.element.Cursor.form.linear', 'Linear'),
+                    'circular': Locale.t('player.component.element.Cursor.form.circular', 'Circular')
+                }
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.form.label', 'Form')
+            })
+            .appendTo(this.contents);
+
+        this.fields.direction = new Field(
+            new SelectInput({
+                'name': 'direction',
+                'options': {
+                    'right': Locale.t('player.component.element.Cursor.form.linear', 'Linear'),
+                    'left': Locale.t('player.component.element.Cursor.direction.left', 'Right > Left'),
+                    'bottom': Locale.t('player.component.element.Cursor.direction.bottom', 'Top > Bottom'),
+                    'top': Locale.t('player.component.element.Cursor.direction.top', 'Bottom > Top'),
+                    'cw': Locale.t('player.component.element.Cursor.direction.cw', 'Clockwise'),
+                    'ccw': Locale.t('player.component.element.Cursor.direction.ccw', 'Counterclockwise')
+                }
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.form.label', 'Form')
+            })
+            .appendTo(this.contents);
+
         this.fields['background-image'] = new Field(
-            new SelectInput(),
+            new SelectInput({
+                'name': 'background-image'
+            }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.background-image.label', 'Background image')
             })
-            .data('name', 'background-image')
             .appendTo(this.contents);
 
         this.fields['background-color'] = new Field(
-            new ColorInput(),
+            new ColorInput({
+                'name': 'background-color'
+            }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.background-color.label', 'Background color')
             })
-            .data('name', 'background-color')
+            .appendTo(this.contents);
+
+        this.fields['border-color'] = new Field(
+            new ColorInput({
+                'name': 'border-color'
+            }),
+            {
+                'label': Locale.t('editor.ComponentForm.fields.border-color.label', 'Border color')
+            })
             .appendTo(this.contents);
 
         this.fields['border-width'] = new Field(
             new NumberInput({
+                'name': 'border-width',
                 'min': 0,
                 'spinButtons': true
             }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.border-width.label', 'Border width')
             })
-            .data('name', 'border-width')
-            .appendTo(this.contents);
-
-        this.fields['border-color'] = new Field(
-            new ColorInput(),
-            {
-                'label': Locale.t('editor.ComponentForm.fields.border-color.label', 'Border color')
-            })
-            .data('name', 'border-color')
             .appendTo(this.contents);
 
         this.fields['border-radius'] = new Field(
-            new BorderRadiusInput(),
+            new BorderRadiusInput({
+                'name': 'border-radius'
+            }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.border-radius.label', 'Border radius')
             })
-            .data('name', 'border-radius')
             .appendTo(this.contents);
 
         this.fields['start-time'] = new Field(
             new TimeInput({
+                'name': 'start-time',
                 'inButton': true,
                 'outButton': true
             }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.start-time.label', 'Start')
             })
-            .data('name', 'start-time')
             .appendTo(this.contents);
 
         this.fields['end-time'] = new Field(
             new TimeInput({
+                'name': 'end-time',
                 'inButton': true,
                 'outButton': true
             }),
             {
                 'label': Locale.t('editor.ComponentForm.fields.end-time.label', 'End')
             })
-            .data('name', 'end-time')
             .appendTo(this.contents);
     }
 
@@ -550,7 +589,7 @@ export default class ComponentForm extends Dom {
      * @param {Event} evt The event object
      */
     onFieldValueChange(evt){
-        const name = evt.detail.field.data('name');
+        const name = evt.detail.field.getInput().getName();
         const value = evt.detail.value;
         const values = [];
 

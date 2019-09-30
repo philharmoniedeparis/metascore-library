@@ -71,7 +71,7 @@ export default class Input extends Dom{
     static getDefaults(){
         return {
             'value': null,
-            'name': null,
+            'name': `input-${uuid(5)}`,
             'placeholder': null,
             'required': false,
             'disabled': false,

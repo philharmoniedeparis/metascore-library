@@ -111,6 +111,9 @@ module.exports = (env, argv) => {
                       return `${dirname}-${basename}`;
                     }
                   }
+                },
+                {
+                  loader: 'svgo-loader'
                 }
               ]
             },

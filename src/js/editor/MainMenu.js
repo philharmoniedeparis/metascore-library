@@ -1,9 +1,16 @@
 import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
+import Icon from '../core/ui/Icon';
 import Locale from '../core/Locale';
-import NumberInput from '../core/ui/input/NumberInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
+import SelectInput from '../core/ui/input/SelectInput';
 
+import logo_icon from '../../img/editor/logo.svg?sprite';
+import save_icon from '../../img/editor/mainmenu/save.svg?sprite';
+import revert_icon from '../../img/editor/mainmenu/revert.svg?sprite';
+import undo_icon from '../../img/editor/mainmenu/undo.svg?sprite';
+import redo_icon from '../../img/editor/mainmenu/redo.svg?sprite';
+import preview_toggle_icon from '../../img/editor/mainmenu/preview-toggle.svg?sprite';
 import {className} from '../../css/editor/MainMenu.scss';
 
 /**
@@ -27,64 +34,67 @@ export default class MainMenu extends Dom {
      * @private
      */
     setupUI() {
+        new Icon({
+                'symbol': logo_icon
+            })
+            .addClass('logo')
+            .appendTo(this);
+
         this._items = {};
 
-        this._items.save = new Button()
+        this._items.save = new Button({
+                'icon': save_icon
+            })
             .attr({
                 'title': Locale.t('editor.MainMenu.save', 'Save')
             })
             .data('action', 'save')
             .appendTo(this);
 
-        new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this._items['r-index'] = new NumberInput({
-                'min': 0,
-                'max': 999,
-                'spinIncremental': false
+        this._items.revert = new Button({
+                'icon': revert_icon
             })
-            .attr({
-                'title': Locale.t('editor.MainMenu.r-index', 'Reading index')
-            })
-            .data('action', 'r-index')
-            .appendTo(this);
-
-        new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this._items['edit-toggle'] = new CheckboxInput()
-            .attr({
-                'title': Locale.t('editor.MainMenu.edit-toggle', 'Toggle edit mode')
-            })
-            .data('action', 'edit-toggle')
-            .appendTo(this);
-
-        new Dom('<div/>', {'class': 'separator'})
-            .appendTo(this);
-
-        this._items.revert = new Button()
             .attr({
                 'title': Locale.t('editor.MainMenu.revert', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
 
-        this._items.undo = new Button()
+        this._items.undo = new Button({
+                'icon': undo_icon
+            })
             .attr({
                 'title': Locale.t('editor.MainMenu.undo', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
 
-        this._items.redo = new Button()
+        this._items.redo = new Button({
+                'icon': redo_icon
+            })
             .attr({
                 'title': Locale.t('editor.MainMenu.redo', 'Redo')
             })
             .data('action', 'redo')
             .appendTo(this);
 
-        new Dom('<div/>', {'class': 'separator'})
+        this._items['preview-toggle'] = new CheckboxInput({
+                'icon': preview_toggle_icon
+            })
+            .attr({
+                'title': Locale.t('editor.MainMenu.preview-toggle', 'Toggle preview mode')
+            })
+            .data('action', 'preview-toggle')
+            .appendTo(this);
+
+        this._items.revisions = new SelectInput()
+            .data('action', 'revisions')
+            .appendTo(this);
+
+        this._items.restore = new Button({
+                'label': Locale.t('editor.MainMenu.restore', 'Restore')
+            })
+            .data('action', 'restore')
             .appendTo(this);
 
     }

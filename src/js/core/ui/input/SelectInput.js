@@ -14,7 +14,7 @@ export default class SelectInput extends Input {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Object} [options=[]] A list of select options as objects with 'value' and 'text' keys
+     * @property {Object} [options={}] A list of select options
      * @property {Boolean} [multiple=false] Whether multiple options can be selected at once
      */
     constructor(configs) {
@@ -31,7 +31,7 @@ export default class SelectInput extends Input {
     */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'options': [],
+            'options': {},
             'multiple': false
         });
     }
@@ -59,8 +59,8 @@ export default class SelectInput extends Input {
             this.native_input.attr('multiple', '');
         }
 
-        this.configs.options.forEach((option) => {
-            this.addOption(option.value, option.text);
+        Object.entries(this.configs.options).forEach(([value, text]) => {
+            this.addOption(value, text);
         });
     }
 

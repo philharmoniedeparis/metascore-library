@@ -23,6 +23,7 @@ export default class Cursor extends Element {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'border-radius': {
+                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.contents.css('border-radius', void 0, skipDefault);
                     },
@@ -34,6 +35,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'start-time': {
+                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -43,6 +45,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'end-time': {
+                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;
@@ -52,6 +55,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'form': {
+                    'type': 'string',
                     'getter': function(){
                         const value = this.data('form');
                         return value ? value : 'linear';
@@ -61,6 +65,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'mode': {
+                    'type': 'string',
                     'getter': function(){
                         const value = this.data('mode');
                         return value ? value : 'simple';
@@ -73,6 +78,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'keyframes': {
+                    'type': 'array',
                     'getter': function(){
                         return this.data('keyframes');
                     },
@@ -84,6 +90,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'direction': {
+                    'type': 'string',
                     'getter': function(){
                         const value = this.data('direction');
                         const form = this.data('form');
@@ -94,6 +101,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'start-angle': {
+                    'type': 'number',
                     'getter': function(){
                         const value = parseInt(this.data('start-angle'), 10);
                         return isNaN(value) ? 0 : value;
@@ -106,6 +114,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'loop-duration': {
+                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('loop-duration'));
                         return isNaN(value) ? null : value;
@@ -118,6 +127,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'acceleration': {
+                    'type': 'number',
                     'getter': function(){
                         const value = parseFloat(this.data('accel'));
                         return isNaN(value) ? 1 : value;
@@ -130,6 +140,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'cursor-width': {
+                    'type': 'number',
                     'getter': function(){
                         const value = parseInt(this.data('cursor-width'), 10);
                         return isNaN(value) ? 1 : value;
@@ -139,6 +150,7 @@ export default class Cursor extends Element {
                     }
                 },
                 'cursor-color': {
+                    'type': 'color',
                     'getter': function(){
                         const value = this.data('cursor-color');
                         return value ? value : '#000';

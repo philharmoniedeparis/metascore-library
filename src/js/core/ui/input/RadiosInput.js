@@ -18,7 +18,8 @@ export default class CheckboxInput extends Input{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [label] An optional label text
+     * @property {Object} [options={}] A list of select options
+     * @property {Object} [icon] An optional icon
      * @property {Boolean} [checked=false] Whether the field is checked by default
      * @property {Boolean} [checked_value=true] The value when checked
      * @property {Boolean} [unchecked_value=false] The value when unchecked
@@ -37,8 +38,7 @@ export default class CheckboxInput extends Input{
     */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'name': `radios-${uuid(5)}`,
-            'options': [],
+            'options': {},
             'icon': null,
             'checked': false,
             'checked_value': true,
@@ -52,8 +52,8 @@ export default class CheckboxInput extends Input{
      * @private
      */
     setupUI() {
-        this.configs.options.forEach((option) => {
-            this.addRadio(option.value, option.text);
+        Object.entries(this.configs.options).forEach(([value, text]) => {
+            this.addRadio(value, text);
         });
     }
 

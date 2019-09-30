@@ -27,11 +27,13 @@ export default class Block extends Component {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
+                    'type': 'string',
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'name': {
+                    'type': 'string',
                     'getter': function(){
                         return this.data('name');
                     },
@@ -40,6 +42,7 @@ export default class Block extends Component {
                     }
                 },
                 'hidden': {
+                    'type': 'boolean',
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -48,6 +51,7 @@ export default class Block extends Component {
                     }
                 },
                 'x': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -56,6 +60,7 @@ export default class Block extends Component {
                     }
                 },
                 'y': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -64,6 +69,7 @@ export default class Block extends Component {
                     },
                 },
                 'width': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -72,6 +78,7 @@ export default class Block extends Component {
                     }
                 },
                 'height': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -79,16 +86,8 @@ export default class Block extends Component {
                         this.css('height', `${value}px`);
                     }
                 },
-                'z-index': {
-                    'getter': function(skipDefault){
-                        const value = parseInt(this.css('z-index', void 0, skipDefault), 10);
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.css('z-index', value);
-                    }
-                },
                 'background-color': {
+                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -97,6 +96,7 @@ export default class Block extends Component {
                     }
                 },
                 'background-image': {
+                    'type': 'string',
                     'getter': function(skipDefault){
                         let value = this.css('background-image', void 0, skipDefault);
 
@@ -116,6 +116,7 @@ export default class Block extends Component {
                     }
                 },
                 'border-width': {
+                    'type': 'number',
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -125,6 +126,7 @@ export default class Block extends Component {
                     }
                 },
                 'border-color': {
+                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('border-color', void 0, skipDefault);
                     },
@@ -133,6 +135,7 @@ export default class Block extends Component {
                     }
                 },
                 'border-radius': {
+                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },
@@ -141,6 +144,7 @@ export default class Block extends Component {
                     }
                 },
                 'synched': {
+                    'type': 'boolean',
                     'getter': function(){
                         return this.data('synched') === "true";
                     },
@@ -149,6 +153,7 @@ export default class Block extends Component {
                     }
                 },
                 'pages': {
+                    'type': 'array',
                     'getter': function(skipDefault, skipID){
                         const pages = [];
 

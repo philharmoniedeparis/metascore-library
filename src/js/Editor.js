@@ -122,7 +122,7 @@ export default class Editor extends Dom {
          */
         this.mainmenu = new MainMenu()
             .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.checkbox.input[data-action="edit-toggle"]', 'valuechange', this.onMainmenuEditToggleFieldChange.bind(this))
+            .addDelegate('.checkbox.input[data-action="preview-toggle"]', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
             .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this))
             .appendTo(top_pane.getContents());
 
@@ -827,15 +827,15 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Mainmenu edit toggle field valuechange event callback
+     * Mainmenu preview toggle valuechange event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onMainmenuEditToggleFieldChange(evt){
+    onMainmenuPreviewToggleChange(evt){
         const value = evt.detail.value;
 
-        this.setEditing(value);
+        this.setEditing(!value);
     }
 
     /**
@@ -1053,16 +1053,17 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Player rindex event callback
+     * Player scenariochange event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPlayerReadingIndex(evt){
-        const rindex = evt.detail.value;
-        const input = this.mainmenu.getItem('r-index');
-
-        input.setValue(rindex, true);
+    onPlayerScenarioChange(evt){
+        const scenario = evt.detail.value;
+        /**
+         * @todo: implement
+         */
+        console.log(scenario);
     }
 
     /**
@@ -1209,7 +1210,7 @@ export default class Editor extends Dom {
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('rindex', this.onPlayerReadingIndex.bind(this))
+            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
@@ -1226,6 +1227,22 @@ export default class Editor extends Dom {
                 .setTarget(player_body)
                 .enable();
 
+            // Update the revision selector
+            const revisions_select = this.mainmenu.getItem('revisions');
+            const current_vid = this.player.getData('vid');
+            this.player.getData('revisions').forEach((revision) => {
+                const date = new Date(revision.created * 1000);
+                const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date by @author', {
+                    '@id': revision.vid,
+                    '@date': date.toLocaleDateString(),
+                    '@author': revision.author
+                });
+                revisions_select.addOption(revision.vid, text);
+            });
+            revisions_select
+                .setValue(current_vid)
+                .getOption(current_vid).attr('disabled', 'true');
+
             this.asset_browser.getGuideAssets()
                 .addAssets(this.player.getData('assets'), true)
                 .addAssets(this.player.getData('shared_assets'), true);
@@ -1233,8 +1250,6 @@ export default class Editor extends Dom {
             this
                 .setEditing(true)
                 .updateMainmenu();
-
-            this.mainmenu.getItem('r-index').setValue(0, true);
 
             loadmask.hide();
     }
@@ -1589,7 +1604,7 @@ export default class Editor extends Dom {
 
         this.toggleClass('editing', this.editing);
 
-        this.mainmenu.getItem('edit-toggle').setValue(this.editing, true);
+        this.mainmenu.getItem('preview-toggle').setValue(!this.editing, true);
 
         if(player){
             player.toggleClass('editing', this.editing);
@@ -1610,7 +1625,7 @@ export default class Editor extends Dom {
 
         this.mainmenu
             .toggleItem('save', hasPlayer)
-            .toggleItem('edit-toggle', hasPlayer)
+            .toggleItem('preview-toggle', hasPlayer)
             .toggleItem('undo', this.history.hasUndo())
             .toggleItem('redo', this.history.hasRedo())
             .toggleItem('revert', this.isDirty());
@@ -1695,6 +1710,8 @@ export default class Editor extends Dom {
         this.controller.dettachMedia();
 
         this.player_contextmenu.disable();
+
+        this.mainmenu.getItem('revisions').clear();
 
         this.asset_browser.getGuideAssets().clearAssets();
 

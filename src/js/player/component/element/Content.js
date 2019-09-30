@@ -43,6 +43,7 @@ export default class Content extends Element {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'text': {
+                    'type': 'string',
                     'getter': function(){
                         return this.contents.text();
                     },

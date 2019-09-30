@@ -33,11 +33,13 @@ export default class Media extends Component{
             'type': 'audio',
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
+                    'type': 'string',
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'hidden': {
+                    'type': 'boolean',
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -46,6 +48,7 @@ export default class Media extends Component{
                     }
                 },
                 'x': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -54,6 +57,7 @@ export default class Media extends Component{
                     }
                 },
                 'y': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -62,6 +66,7 @@ export default class Media extends Component{
                     },
                 },
                 'width': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -70,6 +75,7 @@ export default class Media extends Component{
                     }
                 },
                 'height': {
+                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -78,6 +84,7 @@ export default class Media extends Component{
                     }
                 },
                 'background-color': {
+                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -86,6 +93,7 @@ export default class Media extends Component{
                     }
                 },
                 'border-width': {
+                    'type': 'number',
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -95,6 +103,7 @@ export default class Media extends Component{
                     }
                 },
                 'border-color': {
+                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('border-color', void 0, skipDefault);
                     },
@@ -103,6 +112,7 @@ export default class Media extends Component{
                     }
                 },
                 'border-radius': {
+                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },

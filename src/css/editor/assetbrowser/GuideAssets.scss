@@ -16,6 +16,12 @@
             margin-bottom: 0.25em;
             user-select: none;
             cursor: pointer;
+
+            .icon{
+                float: left;
+                font-size: 1.5em;
+                margin-right: 0.5em;
+            }
         }
 
         .input{

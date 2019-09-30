@@ -28,6 +28,7 @@ export default class Animation extends Element{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'src': {
+                    'type': 'string',
                     'getter': function(){
                         return this.data('src');
                     },
@@ -36,6 +37,7 @@ export default class Animation extends Element{
                     }
                 },
                 'start-frame': {
+                    'type': 'number',
                     'getter': function(){
                         const value = parseInt(this.data('start-frame'), 10);
                         return isNaN(value) ? 0 : value;
@@ -45,6 +47,7 @@ export default class Animation extends Element{
                     }
                 },
                 'fps': {
+                    'type': 'number',
                     'getter': function(){
                         const value = parseFloat(this.data('fps'));
                         return isNaN(value) ? this.getDefaultFPS() : value;
@@ -54,6 +57,7 @@ export default class Animation extends Element{
                     }
                 },
                 'reversed': {
+                    'type': 'boolean',
                     'getter': function(){
                         return this.data('reversed') === "true";
                     },
@@ -62,6 +66,7 @@ export default class Animation extends Element{
                     }
                 },
                 'colors': {
+                    'type': 'array',
                     'getter': function(){
                         const value = this.data('colors');
                         return value ? value : null;

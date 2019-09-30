@@ -1,6 +1,8 @@
 import Dom from '../../../core/Dom';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
+import Icon from '../../../core/ui/Icon';
 
+import expander_icon from '../../../../img/editor/controller/timeline/handle/expander.svg?sprite';
 import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?sprite';
 import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
@@ -25,7 +27,10 @@ export default class Handle extends Dom {
         const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
-        new Dom('<div/>', {'class': 'expander'})
+        new Icon({
+                'symbol': expander_icon
+            })
+            .addClass('expander')
             .appendTo(inner);
 
         this.label = new Dom('<div/>', {'class': 'label'})

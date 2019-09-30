@@ -45,6 +45,8 @@ export default class ColorInput extends Input {
      * @private
      */
     setupUI() {
+        super.setupUI();
+
         const pickr_el = new Dom('<div/>')
             .appendTo(this);
 
@@ -52,15 +54,13 @@ export default class ColorInput extends Input {
             'el': pickr_el.get(0),
             'theme': 'nano',
             'appClass': pickrClassName,
-            'swatches': [],
+            'defaultRepresentation': 'HEX',
             'components': {
                 'palette': true,
                 'preview': true,
                 'opacity': true,
                 'hue': true,
                 'interaction': {
-                    'hex': true,
-                    'rgba': true,
                     'input': true,
                     'clear': true,
                     'cancel': true,
@@ -90,13 +90,7 @@ export default class ColorInput extends Input {
     onPickrSave(color){
         this.pickr.off('save', this.onPickrSave);
 
-        /**
-         * The current value
-         * @type {Object}
-         */
-        this.value = color ? color.toRGBA().toString(3) : null;
-
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+        this.setValue(color ? color.toHEXA().toString(3) : null, false, false);
     }
 
     /**
@@ -106,13 +100,17 @@ export default class ColorInput extends Input {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    setValue(value, supressEvent){
-        this.pickr.setColor(value);
+    setValue(value, supressEvent, updatePickr){
+        if(updatePickr !== false){
+            this.pickr.setColor(value);
+            this.pickr.setColorRepresentation('HEX');
+        }
 
-        this.value = this.pickr.getColor().toRGBA().toString(3);
+        this.native_input.val(value);
+        this.value = value;
 
         if(supressEvent !== true){
-            this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+            this.native_input.triggerEvent('change');
         }
 
         return this;

@@ -67,6 +67,7 @@ export default class Component extends Dom {
             'resizable': true,
             'properties': {
                 'id': {
+                    'type': 'string',
                     'getter': function(){
                         return this.attr('id');
                     },
@@ -75,6 +76,7 @@ export default class Component extends Dom {
                     }
                 },
                 'name': {
+                    'type': 'string',
                     'getter': function(){
                         return this.data('name');
                     },

@@ -2,6 +2,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Ajax from '../../core/Ajax';
 import Button from '../../core/ui/Button';
+import Icon from '../../core/ui/Icon';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Alert from '../../core/ui/overlay/Alert';
 import Confirm from '../../core/ui/overlay/Confirm';
@@ -9,6 +10,7 @@ import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
 import {isValidMimeType} from '../../core/utils/Media';
 
+import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?sprite';
 import {className} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
@@ -45,7 +47,7 @@ export default class GuideAssets extends Dom {
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
 
-        new Field(
+        const import_field = new Field(
             new FileInput({
                 'multiple': true,
                 'accept': this.configs.import.allowed_types
@@ -56,6 +58,9 @@ export default class GuideAssets extends Dom {
             .addClass('import-assets')
             .addListener('valuechange', this.onAssetImportFieldVlueChange.bind(this))
             .appendTo(this);
+
+        new Icon({'symbol': import_icon})
+            .appendTo(import_field.getLabel());
 
         this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
             .appendTo(this);
@@ -94,7 +99,6 @@ export default class GuideAssets extends Dom {
             .addDelegate('a.component-link', 'click', this.onComponentLinkClick.bind(this))
             .addDelegate('a.component-link', 'dragstart', this.onComponentLinkDragStart.bind(this))
             .addDelegate('a.component-link', 'dragend', this.onComponentLinkDragEnd.bind(this))
-            .addListener('dragenter', this.onDragEnter.bind(this))
             .addListener('dragover', this.onDragOver.bind(this))
             .addListener('dragleave', this.onDragLeave.bind(this))
             .addListener('drop', this.onDrop.bind(this));
@@ -180,16 +184,10 @@ export default class GuideAssets extends Dom {
         return files;
     }
 
-    onDragEnter(evt){
-        const files = this.getDraggedFiles(evt.dataTransfer);
-        if(files.length > 0){
-            this.addClass('droppable');
-        }
-    }
-
     onDragOver(evt){
         const files = this.getDraggedFiles(evt.dataTransfer);
         if(files.length > 0){
+            this.addClass('droppable');
             evt.preventDefault();
         }
     }
