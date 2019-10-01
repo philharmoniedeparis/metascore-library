@@ -11,7 +11,14 @@ import Field from  '../Field';
 import {isValidMimeType} from '../../core/utils/Media';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?sprite';
-import {className} from '../../../css/editor/assetbrowser/GuideAssets.scss';
+import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?sprite';
+import asset_icon from '../../../img/editor/assetbrowser/guideassets/asset.svg?sprite';
+import synched_block_icon from '../../../img/editor/assetbrowser/guideassets/synched-block.svg?sprite';
+import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets/non-synched-block.svg?sprite';
+import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?sprite';
+import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?sprite';
+import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?sprite';
+import {className, dragImgClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
  * A guide assets browser class
@@ -65,35 +72,50 @@ export default class GuideAssets extends Dom {
         this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
             .appendTo(this);
 
-        new Dom('<a/>', {'class': 'component-link'})
-            .text(Locale.t('editor.AssetBrowser.create-sync-block.text', 'Create a synched block'))
+        const synched_block_link = new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a synched block'))
             .attr('draggable', 'true')
-            .data('action', 'create-sync-block')
+            .data('action', 'create-synced-block')
             .appendTo(this);
 
-        new Dom('<a/>', {'class': 'component-link'})
-            .text(Locale.t('editor.AssetBrowser.create-nonsync-block.text', 'Create a non-synched block'))
+        new Icon({'symbol': synched_block_icon})
+            .appendTo(synched_block_link);
+
+        const non_synched_block_link = new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-non-synced-block.text', 'Create a non-synched block'))
             .attr('draggable', 'true')
-            .data('action', 'create-nonsync-block')
+            .data('action', 'create-non-synced-block')
             .appendTo(this);
 
-        new Dom('<a/>', {'class': 'component-link'})
+        new Icon({'symbol': non_synched_block_icon})
+            .appendTo(non_synched_block_link);
+
+        const page_link = new Dom('<a/>', {'class': 'component-link'})
             .text(Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'))
             .attr('draggable', 'true')
             .data('action', 'create-page')
             .appendTo(this);
 
-        new Dom('<a/>', {'class': 'component-link'})
+        new Icon({'symbol': page_icon})
+            .appendTo(page_link);
+
+        const cursor_element_link = new Dom('<a/>', {'class': 'component-link'})
             .text(Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'))
             .attr('draggable', 'true')
             .data('action', 'create-cursor-element')
             .appendTo(this);
 
-        new Dom('<a/>', {'class': 'component-link'})
-            .text(Locale.t('editor.AssetBrowser.create-text-element.text', 'Create a text element'))
+        new Icon({'symbol': cursor_element_icon})
+            .appendTo(cursor_element_link);
+
+        const content_element_link = new Dom('<a/>', {'class': 'component-link'})
+            .text(Locale.t('editor.AssetBrowser.create-content-element.text', 'Create a content element'))
             .attr('draggable', 'true')
-            .data('action', 'create-text-element')
+            .data('action', 'create-content-element')
             .appendTo(this);
+
+        new Icon({'symbol': content_element_icon})
+            .appendTo(content_element_link);
 
         this
             .addDelegate('a.component-link', 'click', this.onComponentLinkClick.bind(this))
@@ -127,42 +149,52 @@ export default class GuideAssets extends Dom {
     }
 
     onComponentLinkClick(evt){
-        console.log(evt);
+        const link = new Dom(evt.target);
+        const data = this.getComponentDataForLink(link);
+
+        this.triggerEvent('componentlinkclick', {'component': data});
     }
 
     onComponentLinkDragStart(evt){
         const link = new Dom(evt.target);
-
-        const action =  link.data('action');
-        let data = null;
-        switch(action){
-            case 'create-sync-block':
-                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': true}};
-                break;
-            case 'create-nonsync-block':
-                data = {'type': 'block', 'configs': {'type': 'Block', 'synched': false}};
-                break;
-            case 'create-page':
-                data = {'type': 'page', 'configs': {'position': 'before'}};
-                break;
-            case 'create-cursor-element':
-                data = {'type': 'element', 'configs': {'type': 'Cursor'}};
-                break;
-            case 'create-text-element':
-                data = {'type': 'element', 'configs': {'type': 'Text'}};
-                break;
-        }
+        const data = this.getComponentDataForLink(link);
 
         if(data){
             link.addClass('dragging');
             evt.dataTransfer.effectAllowed = 'copy';
             evt.dataTransfer.setData('metascore/component', JSON.stringify(data));
+
+            this._drag_img = new Dom(link.child('.icon').get(0).cloneNode(true))
+                .addClass(dragImgClassName)
+                .appendTo('body');
+
+            evt.dataTransfer.setDragImage(this._drag_img.get(0), 0, 0);
         }
     }
 
     onComponentLinkDragEnd(evt){
         const link = new Dom(evt.target);
         link.removeClass('dragging');
+
+        this._drag_img.remove();
+        delete this._drag_img;
+    }
+
+    getComponentDataForLink(link){
+        const action =  link.data('action');
+
+        switch(action){
+            case 'create-synced-block':
+                return {'type': 'block', 'configs': {'type': 'Block', 'synched': true}};
+            case 'create-non-synced-block':
+                return {'type': 'block', 'configs': {'type': 'Block', 'synched': false}};
+            case 'create-page':
+                return {'type': 'page', 'configs': {'position': 'before'}};
+            case 'create-cursor-element':
+                return {'type': 'element', 'configs': {'type': 'Cursor'}};
+            case 'create-content-element':
+                return {'type': 'element', 'configs': {'type': 'Content'}};
+        }
     }
 
     getDraggedFiles(dataTransfer){
@@ -330,15 +362,19 @@ export default class GuideAssets extends Dom {
             new Dom('<img/>', {'src': asset.url})
                 .appendTo(figure);
         }
+        else{
+            new Icon({'symbol': asset_icon})
+                .appendTo(figure);
+        }
 
-        new Dom('<div/>', {'class': 'label'})
-            .text(asset.name)
+        new Dom('<div/>', {'class': 'label', 'text': asset.name, 'title': asset.name})
             .appendTo(item);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(item);
 
-        new Button({'icon': 'delete', 'label': Locale.t('editor.assetbrowser.GuideAssets.AssetDeleteButton.label', 'Delete')})
+        new Button({'icon': delete_icon})
+            .attr('title', Locale.t('editor.assetbrowser.GuideAssets.AssetDeleteButton.label', 'Delete'))
             .data('action', 'delete')
             .appendTo(buttons);
 
@@ -382,17 +418,19 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.setData("text/uri-list", asset.url);
         evt.dataTransfer.setData("text/plain", asset.url);
 
-        if(/^image\/.*/.test(asset.mimetype)){
-            const img = new Image();
-            img.src = asset.url;
-            evt.dataTransfer.setDragImage(img, 0, 0);
-            evt.dataTransfer.setData('text/html', img.outerHTML);
-        }
+        this._drag_img = new Dom(item.child('figure').get(0).cloneNode(true))
+            .addClass(dragImgClassName)
+            .appendTo('body');
+
+        evt.dataTransfer.setDragImage(this._drag_img.get(0), 0, 0);
     }
 
     onAssetDragEnd(evt){
         const item = new Dom(evt.target);
         item.removeClass('dragging');
+
+        this._drag_img.remove();
+        delete this._drag_img;
     }
 
     onAssetButtonClick(evt){

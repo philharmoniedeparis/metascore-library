@@ -28,9 +28,10 @@
 
 :local(.controlsClassName){
     display: flex;
-    width: 12em;
     flex-direction: row;
     align-items: stretch;
+    width: 12em;
+    padding: 0 0.5em;
 
     button{
         color: #fff;

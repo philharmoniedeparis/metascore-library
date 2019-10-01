@@ -2,6 +2,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Ajax from '../../core/Ajax';
 import Button from '../../core/ui/Button';
+import Icon from '../../core/ui/Icon';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Alert from '../../core/ui/overlay/Alert';
 import TextInput from '../../core/ui/input/TextInput';
@@ -9,7 +10,8 @@ import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import Lottie from 'lottie-web';
 import Fuse from 'fuse.js';
 
-import {className} from '../../../css/editor/assetbrowser/SharedAssets.scss';
+import search_icon from '../../../img/editor/assetbrowser/sharedassets/search.svg?sprite';
+import {className, toolbarClassName} from '../../../css/editor/assetbrowser/SharedAssets.scss';
 
 /**
  * An asset browser class
@@ -36,16 +38,19 @@ export default class AssetBrowser extends Dom {
         // fix event handlers scope
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
 
-        this.toolbar = new Dom('<div/>', {'class': 'toolbar'})
+        this.toolbar = new Dom('<div/>', {'class': `${toolbarClassName} toolbar`})
             .appendTo(this);
 
         this.filters = {};
         this.filters.search = new TextInput({
                 'name': 'search',
-                'placeholder': Locale.t('editor.assetbrowser.SharedAssets.filters.search.placeholder', 'Search'),
+                'placeholder': Locale.t('editor.assetbrowser.SharedAssets.filters.search.placeholder', 'Filter'),
             })
             .addListener('input', this.onFilterSearchInput.bind(this))
             .appendTo(this.toolbar);
+
+        new Icon({'symbol': search_icon})
+            .appendTo(this.filters.search);
 
         this.filters.animated = new CheckboxInput({
                 'name': 'animated',

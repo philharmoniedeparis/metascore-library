@@ -2,7 +2,11 @@
 
 :local(.className){
     input{
-        display: none;
+        position: absolute;
+        width: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
     }
 
     .pickr{

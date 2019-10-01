@@ -4,6 +4,7 @@ import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
+import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
 import ComponentForm from './editor/ComponentForm';
 import UndoRedo from './editor/UndoRedo';
@@ -20,6 +21,7 @@ import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
 import AssetBrowser from './editor/AssetBrowser';
 
+import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
 import {className} from '../css/Editor.scss';
 
 /**
@@ -138,6 +140,7 @@ export default class Editor extends Dom {
 
         this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
+            .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
             .appendTo(tools_pane.getContents());
 
         // Center pane ////////////////////////
@@ -797,6 +800,28 @@ export default class Editor extends Dom {
         this.toggleClass('assetbrowser-expanded', evt.detail.tab === 'shared-assets');
     }
 
+    onAssetBrowserComponentLinkClick(evt){
+        const component = evt.detail.component;
+        const type = component.type;
+        const configs = component.configs;
+
+        switch(type){
+            case 'element':
+                this.component_form.getComponents('Page').forEach((page) => {
+                    this.addPlayerComponents(type, configs, page);
+                });
+                break;
+            case 'page':
+                this.component_form.getComponents('Block').forEach((block) => {
+                    this.addPlayerComponents(type, configs, block);
+                });
+                break;
+            case 'block':
+                this.addPlayerComponents(type, configs, this.getPlayer());
+                break;
+        }
+    }
+
     /**
      * Mainmenu click event callback
      *
@@ -1217,14 +1242,17 @@ export default class Editor extends Dom {
 
             this.player
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
-                .addListener('drop', this.onPlayerDrop.bind(this))
-                .setInEditor(true);
+                .addListener('drop', this.onPlayerDrop.bind(this));
 
             this.player.contextmenu.disable();
 
-            const player_body = this.player_frame.get(0).contentWindow.document.body;
+            const player_document = this.player_frame.get(0).contentWindow.document;
+
+            new StyleSheet(player_css)
+                .appendTo(player_document.head);
+
             this.player_contextmenu
-                .setTarget(player_body)
+                .setTarget(player_document.body)
                 .enable();
 
             // Update the revision selector
@@ -1294,7 +1322,7 @@ export default class Editor extends Dom {
             let configs = data.configs;
             let parent = null;
 
-            switch(data.type){
+            switch(type){
                 case 'element':
                     parent = evt.target.closest('.metaScore-component.page')._metaScore;
                     const rect = parent.get(0).getBoundingClientRect();

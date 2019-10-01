@@ -47,6 +47,8 @@ export default class ColorInput extends Input {
     setupUI() {
         super.setupUI();
 
+        this.native_input.addListener('focus', this.onInputFocus.bind(this));
+
         const pickr_el = new Dom('<div/>')
             .appendTo(this);
 
@@ -77,6 +79,10 @@ export default class ColorInput extends Input {
         this.pickr
             .on('show', this.onPickrShow.bind(this))
             .on('cancel', this.onPickrCancel.bind(this));
+    }
+
+    onInputFocus(){
+        this.pickr.show();
     }
 
     onPickrShow(){

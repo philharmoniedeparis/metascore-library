@@ -15,26 +15,20 @@
         position: absolute;
         top: 0;
         right: 0;
+        width: 2em;
         height: 100%;
-        flex-direction: column-reverse;
-        justify-content: center;
+        flex-direction: column;
+        align-items: stretch;
 
-        &.flip{
-            transform: rotate(180deg);
-        }
-
-        button{
-            font-size: 0.5em;
+        .icon{
+            height: auto;
+            width: auto;
+            padding: 0.25em;
+            color: #fff;
+            vertical-align: top;
+            box-sizing: border-box;
             opacity: 0.5;
-
-            .icon{
-                color: #fff;
-                vertical-align: top;
-
-                &::before{
-                    vertical-align: top;
-                }
-            }
+            cursor: pointer;
 
             &:hover{
                 opacity: 1;
@@ -42,9 +36,16 @@
         }
     }
 
-    &.vertical{
+    &.flip-buttons{
         .buttons{
-            flex-direction: row;
+            transform-origin: center;
+            transform: rotate(180deg);
+        }
+    }
+
+    &.horizontal{
+        .buttons{
+            flex-direction: row-reverse;
         }
     }
 

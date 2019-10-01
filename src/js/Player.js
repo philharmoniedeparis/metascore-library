@@ -1102,19 +1102,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Set whether the player is embedded in an editor
-     *
-     * @param {Boolean} in_editor Whether the player is in an editor or not
-     * @return {this}
-     */
-    setInEditor(in_editor) {
-        this.in_editor = in_editor === true;
-        this.toggleClass('in-editor', this.in_editor);
-
-        return this;
-    }
-
-    /**
     * Update a block toggler
     *
     * @return {this}

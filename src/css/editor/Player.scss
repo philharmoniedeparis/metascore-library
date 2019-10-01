@@ -1,0 +1,135 @@
+@import "../theme";
+
+$selected-shadow: 0 0 0.5em 0;
+
+.metaScore-player{
+    .resizable{
+        .resize-handle{
+            display: none;
+        }
+    }
+
+    .metaScore-component{
+        &.element{
+            &.Cursor{
+                outline-color: $cursor-element-color;
+            }
+
+            &.Content{
+                outline-color: $content-element-color;
+            }
+
+            &.Animation{
+                outline-color: $animation-element-color;
+            }
+        }
+    }
+
+    &.editing{
+        .draggable{
+            &.drag-handle,
+            .drag-handle{
+                cursor: move;
+            }
+        }
+
+        .resizable > .resize-handle{
+            display: block;
+        }
+
+        .metaScore-component{
+            &.media,
+            &.controller,
+            &.block,
+            &.block-toggler{
+                &.selected{
+                    box-shadow: $block-color $selected-shadow;
+                }
+
+                &:hover,
+                &.dragging{
+                    .pager{
+                        display: block !important;
+                    }
+                }
+            }
+
+            &.block-toggler{
+                .button{
+                    pointer-events: none;
+                }
+            }
+
+            &.page{
+                &.selected{
+                    box-shadow: $page-color $selected-shadow inset;
+                }
+            }
+
+            &.element{
+                outline-width: 1px;
+                outline-style: dashed;
+                pointer-events: auto;
+
+                &.selected{
+                    display: block;
+
+                    &.Cursor{
+                        box-shadow: $cursor-element-color $selected-shadow;
+
+                        &.resizing{
+                            canvas{
+                                opacity: 0.25;
+                            }
+                        }
+                    }
+
+                    &.Content{
+                        box-shadow: $content-element-color $selected-shadow;
+
+                        .contents{
+                            &[contenteditable]{
+                                outline-color: $content-element-color;
+                                outline-width: 2px;
+                                outline-style: solid;
+                            }
+                        }
+                    }
+
+                    &.Animation{
+                        box-shadow: $animation-element-color $selected-shadow;
+                    }
+                }
+
+                &.Content{
+                    .contents{
+                        user-select: none;
+
+                        a{
+                            pointer-events: none;
+                        }
+                    }
+
+                    &.text-unlocked{
+                        .contents{
+                            visibility: visible;
+                            pointer-events: auto;
+                            user-select: auto;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.show-contents{
+            .metaScore-component.element{
+                &.active{
+                    .contents{
+                        visibility: visible;
+                        pointer-events: auto;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,13 +1,15 @@
 @import "../../../theme";
 
 :local(.className){
+    position: relative;
+
     input{
         appearance: none;
         width: 100%;
-        height: 3px;
-        margin: auto;
-        background-color: $mediumgray;
+        height: 100%;
         vertical-align: middle;
+        background: none;
+        z-index: 0;
         cursor: pointer;
 
         &:focus{
@@ -23,6 +25,17 @@
             background: #fff;
             border: 0;
         }
+    }
+
+    &::before{
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: $mediumgray;
+        margin-top: -1px;
     }
 
     &.reversed{

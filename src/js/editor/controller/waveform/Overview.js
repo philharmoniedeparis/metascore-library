@@ -15,8 +15,8 @@ export default class Overview extends Dom {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [waveColor='#ccc'] The wave fill color
-     * @property {String} [highlightColor='rgba(0, 0, 254, 0.25)'] The highlight rectangle color
+     * @property {String} [waveColor='#fff'] The wave fill color
+     * @property {String} [highlightColor='#000'] The highlight rectangle color
      * @property {Number} [playheadWidth=1] The playhead line width
      * @property {String} [playheadColor='#0000fe'] The playhead line color
      */
@@ -72,7 +72,7 @@ export default class Overview extends Dom {
     static getDefaults(){
         return {
             'waveColor': '#fff',
-            'highlightColor': '#fff',
+            'highlightColor': '#000',
             'playheadWidth': 1,
             'playheadColor': '#0000fe'
         };

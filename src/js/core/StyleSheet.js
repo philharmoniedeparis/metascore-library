@@ -8,7 +8,7 @@ export default class StyleSheet extends Dom {
     /**
      * Instantiate
      */
-    constructor() {
+    constructor(value) {
         // call the super constructor.
         super('<style/>', {'type': 'text/css'});
 
@@ -18,8 +18,7 @@ export default class StyleSheet extends Dom {
          */
         this.el = this.get(0);
 
-        // WebKit hack
-        this.setInternalValue("");
+        this.setInternalValue(value ? value : "");
     }
 
     /**

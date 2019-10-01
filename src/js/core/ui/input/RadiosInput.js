@@ -12,7 +12,7 @@ import {className} from '../../../../css/core/ui/input/Radios.scss';
  * @param {Object} field The field instance
  * @param {Mixed} value The new value
  */
-export default class CheckboxInput extends Input{
+export default class RadiosInput extends Input{
 
     /**
      * Instantiate
@@ -20,9 +20,6 @@ export default class CheckboxInput extends Input{
      * @param {Object} configs Custom configs to override defaults
      * @property {Object} [options={}] A list of select options
      * @property {Object} [icon] An optional icon
-     * @property {Boolean} [checked=false] Whether the field is checked by default
-     * @property {Boolean} [checked_value=true] The value when checked
-     * @property {Boolean} [unchecked_value=false] The value when unchecked
      */
     constructor(configs) {
         // call parent constructor
@@ -39,10 +36,7 @@ export default class CheckboxInput extends Input{
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': {},
-            'icon': null,
-            'checked': false,
-            'checked_value': true,
-            'unchecked_value': false
+            'icon': null
         });
     }
 
@@ -105,11 +99,17 @@ export default class CheckboxInput extends Input{
     setValue(value, supressEvent){
         this.value = null;
 
+        let matched_checkbox = null;
+
         this.find('input').forEach((radio_el) => {
             const radio = new Dom(radio_el);
 
+            console.log(radio.attr('value'), value);
+
             if(radio.attr('value') === value){
                 radio_el.checked = true;
+
+                matched_checkbox = radio;
                 this.value = value;
             }
             else{
@@ -117,8 +117,8 @@ export default class CheckboxInput extends Input{
             }
         });
 
-        if(supressEvent !== true){
-            this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+        if(matched_checkbox && supressEvent !== true){
+            matched_checkbox.triggerEvent('change');
         }
 
         return this;

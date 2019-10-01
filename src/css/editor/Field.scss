@@ -3,6 +3,10 @@
     flex-direction: row;
     align-items: center;
 
+    label{
+        user-select: none;
+    }
+
     .description{
         opacity: 0.5;
     }

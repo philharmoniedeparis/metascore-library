@@ -74,15 +74,6 @@ export default class Component extends Dom {
                     'setter': function(value){
                         this.attr('id', value);
                     }
-                },
-                'name': {
-                    'type': 'string',
-                    'getter': function(){
-                        return this.data('name');
-                    },
-                    'setter': function(value){
-                        this.data('name', value);
-                    }
                 }
             }
         };
