@@ -1,4 +1,4 @@
-@import "../theme";
+@import "../../theme";
 
 :local(.className){
     h2{
@@ -43,31 +43,6 @@
                 flex: 1;
             }
 
-            &[data-name="name"]{
-                display: flex;
-
-                > label{
-                    display: none;
-                }
-            }
-
-            &[data-name="visible"]{
-                display: flex;
-            }
-
-            &[data-name="x"],
-            &[data-name="width"],
-            &[data-name="y"],
-            &[data-name="height"]{
-                display: flex;
-                flex-direction: row;
-                width: 45%;
-            }
-
-            &[data-name="border-radius"]{
-                flex: 100%;
-            }
-
             &.warning{
                 label{
                     position: relative;
@@ -80,26 +55,9 @@
                         bottom: 0;
                         right: 0.25em;
                         pointer-events: none;
-                        background: url('../../img/editor/field/warning.svg') no-repeat right center;
+                        background: url('../../../img/editor/field/warning.svg') no-repeat right center;
                         background-size: 1em;
                     }
-                }
-            }
-        }
-
-        .border-fields{
-            > label{
-                margin-right: 0.5em;
-            }
-
-            .field{
-                label{
-                    display: none;
-                }
-
-                &[data-name="border-width"]{
-                    width: 3em;
-                    margin-left: 0.5em;
                 }
             }
         }
@@ -109,9 +67,5 @@
             height: 1px;
             background: $darkgray;
         }
-    }
-
-    &:not(.has-component){
-        display: none;
     }
 }

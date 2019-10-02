@@ -89,6 +89,22 @@ export default class Component extends Dom {
     }
 
     /**
+    * Get the types of the component and its parent classes
+    *
+    * @return {Array} The component's types
+    */
+    static getTypes(){
+        let types = [this.getType()];
+
+        const parent = Object.getPrototypeOf(this);
+        if('getTypes' in parent){
+            types = types.concat(parent.getTypes());
+        }
+
+        return types;
+    }
+
+    /**
     * Check if the component is an instance of a component type
     *
     * @param {String} type The type to check for
@@ -151,6 +167,15 @@ export default class Component extends Dom {
      */
     getType() {
         return this.constructor.getType();
+    }
+
+    /**
+     * Get the types of the component and its parent classes
+     *
+     * @return {Array} The component's types
+     */
+    getTypes() {
+        return this.constructor.getTypes();
     }
 
     /**

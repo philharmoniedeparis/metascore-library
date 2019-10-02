@@ -128,11 +128,8 @@ export default class ColorInput extends Input {
      * @return {this}
      */
     disable() {
-        super.disable();
-
         this.pickr.disable();
-
-        return this;
+        return super.disable();
     }
 
     /**
@@ -141,11 +138,13 @@ export default class ColorInput extends Input {
      * @return {this}
      */
     enable() {
-        super.enable();
-
         this.pickr.enable();
+        return super.enable();
+    }
 
-        return this;
+    destroy(){
+        this.pickr.destroyAndRemove();
+        return super.destroy();
     }
 
 }

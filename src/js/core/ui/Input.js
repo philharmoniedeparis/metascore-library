@@ -261,4 +261,7 @@ export default class Input extends Dom{
         return this;
     }
 
+    destroy(){
+    }
+
 }

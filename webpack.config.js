@@ -19,11 +19,11 @@ module.exports = (env, argv) => {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
-        Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
-        API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
+        polyfills: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills'],
+        Player: ['./src/js/Player'],
+        Editor: ['./src/js/Editor'],
+        API: ['./src/js/API']
     },
-    devtool: "source-map",
     output: {
         filename: LIB_NAME +'.[name].js',
         path: DIST_DIR,
@@ -32,6 +32,20 @@ module.exports = (env, argv) => {
         libraryExport: 'default',
         devtoolNamespace: LIB_NAME
     },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          core: {
+            test: /[\\/]src[\\/](js|css)[\\/]core[\\/]/,
+            name: 'Core',
+            chunks: 'all',
+            minSize: 0,
+            reuseExistingChunk: true
+          }
+        }
+      }
+    },
+    devtool: "source-map",
     watchOptions: {
       ignored: /src\/i18n/
     },
@@ -78,7 +92,7 @@ module.exports = (env, argv) => {
                 loader: 'css-loader',
                 options: {
                   modules: 'global',
-                  localIdentName: '[path][name]--[hash:base64:5]',
+                  localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
                   context: './src/css',
                 }
               },

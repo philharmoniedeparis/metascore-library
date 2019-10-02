@@ -150,4 +150,8 @@ export default class Field extends Dom{
         return this.input;
     }
 
+    destroy(){
+        this.getInput().destroy();
+    }
+
 }

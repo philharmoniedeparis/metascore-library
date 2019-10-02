@@ -6,7 +6,7 @@ import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
-import ComponentForm from './editor/ComponentForm';
+import ConfigsEditor from './editor/ConfigsEditor';
 import UndoRedo from './editor/UndoRedo';
 import Alert from './core/ui/overlay/Alert';
 import Confirm from './core/ui/overlay/Confirm';
@@ -199,11 +199,11 @@ export default class Editor extends Dom {
 
         /**
          * The component form
-         * @type {ComponentForm}
+         * @type {ConfigsEditor}
          */
-        this.component_form = new ComponentForm()
-            .addListener('componentset', this.onComponentFormComponentSet.bind(this))
-            .addListener('beforecursoradvancededitmodeunlock', this.onComponentFormBeforeCursorAdvancedEditModeUnlock.bind(this))
+        this.configs_editor = new ConfigsEditor()
+            .addListener('componentset', this.onConfigsEditorComponentSet.bind(this))
+            .addListener('beforecursoradvancededitmodeunlock', this.onConfigsEditorBeforeCursorAdvancedEditModeUnlock.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -328,10 +328,10 @@ export default class Editor extends Dom {
                     'callback': (context) => {
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.component_form.unsetComponents();
+                        this.configs_editor.unsetComponents();
 
                         page.getChildren().forEach((element, index) => {
-                            this.component_form.setComponent(element, index > 0);
+                            this.configs_editor.setComponent(element, index > 0);
                         });
                     },
                     'toggler': (context) => {
@@ -344,11 +344,11 @@ export default class Editor extends Dom {
                         const rindex = this.getPlayer().getReadingIndex();
                         const page = context.el.closest('.metaScore-component.page')._metaScore;
 
-                        this.component_form.unsetComponents();
+                        this.configs_editor.unsetComponents();
 
                         page.getChildren().forEach((element) => {
                             if(element.getPropertyValue('r-index') === rindex){
-                                this.component_form.setComponent(element, true);
+                                this.configs_editor.setComponent(element, true);
                             }
                         });
                     },
@@ -379,7 +379,7 @@ export default class Editor extends Dom {
                         if(this.editing !== true){
                             return false;
                         }
-                        const components = this.component_form.getComponents('Element');
+                        const components = this.configs_editor.getComponents('Element');
                         if(components.length > 0){
                             context.data.selected = true;
                             context.data.elements = components;
@@ -807,12 +807,12 @@ export default class Editor extends Dom {
 
         switch(type){
             case 'element':
-                this.component_form.getComponents('Page').forEach((page) => {
+                this.configs_editor.getComponents('Page').forEach((page) => {
                     this.addPlayerComponents(type, configs, page);
                 });
                 break;
             case 'page':
-                this.component_form.getComponents('Block').forEach((block) => {
+                this.configs_editor.getComponents('Block').forEach((block) => {
                     this.addPlayerComponents(type, configs, block);
                 });
                 break;
@@ -956,12 +956,12 @@ export default class Editor extends Dom {
     }
 
     /**
-     * ComponentForm componentset event callback
+     * ConfigsEditor componentset event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentFormComponentSet(evt){
+    onConfigsEditorComponentSet(evt){
         /**
          * @todo
          */
@@ -969,7 +969,7 @@ export default class Editor extends Dom {
 
         if(component.instanceOf('BlockToggler')){
             // Update the 'blocks' field options and value
-            const field = this.component_form.getField('blocks');
+            const field = this.configs_editor.getField('blocks');
 
             this.getPlayer().getComponents('.media.video, .controller, .block').forEach((component) => {
                 field.addOption(component.getId(), component.getName());
@@ -980,8 +980,8 @@ export default class Editor extends Dom {
         else if(component.instanceOf('Page')){
             const page = evt.detail.component;
             const block = page.getParent();
-            const start_time_field = this.component_form.getField('start-time');
-            const end_time_field = this.component_form.getField('end-time');
+            const start_time_field = this.configs_editor.getField('start-time');
+            const end_time_field = this.configs_editor.getField('end-time');
 
             if(block.getPropertyValue('synched')){
                 const index = block.getChildIndex(page);
@@ -1020,12 +1020,12 @@ export default class Editor extends Dom {
     }
 
     /**
-     * ComponentForm beforecursoradvancededitmodeunlock event callback
+     * ConfigsEditor beforecursoradvancededitmodeunlock event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentFormBeforeCursorAdvancedEditModeUnlock(evt){
+    onConfigsEditorBeforeCursorAdvancedEditModeUnlock(evt){
         evt.detail.media = this.getPlayer().getMedia();
     }
 
@@ -1139,7 +1139,7 @@ export default class Editor extends Dom {
     */
     onComponentBeforeRemove(evt){
         const component = evt.target._metaScore;
-        this.component_form.unsetComponent(component, true);
+        this.configs_editor.unsetComponent(component, true);
     }
 
     /**
@@ -1360,7 +1360,7 @@ export default class Editor extends Dom {
             return;
         }
 
-		this.component_form.unsetComponents();
+		this.configs_editor.unsetComponents();
 
         evt.stopPropagation();
     }
@@ -1727,7 +1727,7 @@ export default class Editor extends Dom {
     unloadPlayer() {
         delete this.player;
 
-        this.component_form.unsetComponents();
+        this.configs_editor.unsetComponents();
 
         this
             .removeClass('has-player')
@@ -1775,13 +1775,13 @@ export default class Editor extends Dom {
 
                 configs.forEach((element_config, index) => {
                     const component = page.addElement(element_config);
-                    this.component_form.setComponent(component, index > 0);
+                    this.configs_editor.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
                     'undo': () => {
-                        this.component_form.unsetComponents();
+                        this.configs_editor.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         })
@@ -1789,7 +1789,7 @@ export default class Editor extends Dom {
                     'redo': () => {
                         components.forEach((component, index) => {
                             page.addElement(component);
-                            this.component_form.setComponent(component, index > 0);
+                            this.configs_editor.setComponent(component, index > 0);
                         });
                     }
                 });
@@ -1835,7 +1835,7 @@ export default class Editor extends Dom {
 
                 this.history.add({
                     'undo': () => {
-                        this.component_form.unsetComponents();
+                        this.configs_editor.unsetComponents();
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(before ? index + 1 : index);
                             const prop = before ? 'start-time' : 'end-time';
@@ -1875,13 +1875,13 @@ export default class Editor extends Dom {
                         }
                     }
 
-                    this.component_form.setComponent(component, index > 0);
+                    this.configs_editor.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
                     'undo': () => {
-                        this.component_form.unsetComponents();
+                        this.configs_editor.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         });
@@ -1889,7 +1889,7 @@ export default class Editor extends Dom {
                     'redo': () => {
                         components.forEach((component, index) => {
                             parent[`add${component.getPropertyValue('type')}`](component);
-                            this.component_form.setComponent(component, index > 0);
+                            this.configs_editor.setComponent(component, index > 0);
                         });
                     }
                 });
@@ -1960,7 +1960,7 @@ export default class Editor extends Dom {
             switch(type){
                 case 'block': {
                     components.forEach((component) => {
-                        this.component_form.unsetComponent(component);
+                        this.configs_editor.unsetComponent(component);
                         component.remove();
                     });
 
@@ -1973,7 +1973,7 @@ export default class Editor extends Dom {
                         },
                         'redo': () => {
                             components.forEach((component) => {
-                                this.component_form.unsetComponent(component);
+                                this.configs_editor.unsetComponent(component);
                                 component.remove();
                             });
                         }
@@ -2020,7 +2020,7 @@ export default class Editor extends Dom {
                             // remove deleted pages
                             context.pages.forEach((ctx) => {
                                 const index = context.block.getChildIndex(ctx.component);
-                                this.component_form.unsetComponent(ctx.component);
+                                this.configs_editor.unsetComponent(ctx.component);
 
                                 if(index > 0){
                                     // if there is a page before, update it's end time
@@ -2102,7 +2102,7 @@ export default class Editor extends Dom {
                             'page': component.getParent()
                         });
 
-                        this.component_form.unsetComponent(component);
+                        this.configs_editor.unsetComponent(component);
                         component.remove();
                     });
 
@@ -2114,7 +2114,7 @@ export default class Editor extends Dom {
                         },
                         'redo': () => {
                             context.forEach((ctx) => {
-                                this.component_form.unsetComponent(ctx.component);
+                                this.configs_editor.unsetComponent(ctx.component);
                                 ctx.component.remove();
                             });
                         }
@@ -2138,11 +2138,11 @@ export default class Editor extends Dom {
      * @return {this}
      */
     selectPlayerComponent(component, keep_existing){
-        if(keep_existing && this.component_form.getComponents().includes(component)){
-            this.component_form.unsetComponent(component);
+        if(keep_existing && this.configs_editor.getComponents().includes(component)){
+            this.configs_editor.unsetComponent(component);
         }
         else{
-            this.component_form.setComponent(component, keep_existing);
+            this.configs_editor.setComponent(component, keep_existing);
         }
 
         return this;

@@ -1,0 +1,208 @@
+import ComponentForm from './ComponentForm';
+import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
+import Field from '../Field';
+import CheckboxInput from '../../core/ui/input/CheckboxInput';
+import TextInput from '../../core/ui/input/TextInput';
+import SelectInput from '../../core/ui/input/SelectInput';
+import ColorInput from '../../core/ui/input/ColorInput';
+import NumberInput from '../../core/ui/input/NumberInput';
+import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
+import TimeInput from '../../core/ui/input/TimeInput';
+
+import {className} from '../../../css/editor/configseditor/ElementForm.scss';
+
+/**
+ * A media component form class
+ */
+export default class ElementForm extends ComponentForm {
+
+    /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(components, configs) {
+        // call parent constructor
+        super(components, configs);
+
+        this.addClass(`element-form ${className}`);
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults() {
+        return {
+            'title': Locale.t('editor.configseditor.ElementForm.title.single', 'Attributes of element'),
+            'title_plural': Locale.t('editor.configseditor.ElementForm.title.plural', 'Attributes of @count elements')
+        };
+    }
+
+    setupFields(){
+        super.setupFields();
+
+        // Name
+        this.fields.name = new Field(
+            new TextInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.name.label', 'Name')
+            })
+            .data('property', 'name')
+            .appendTo(this.fields_wrapper);
+
+        // Hidden on start
+        this.fields.hidden = new Field(
+            new CheckboxInput({
+                'checked': false
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.hidden.label', 'Hidden on start')
+            })
+            .data('property', 'hidden')
+            .appendTo(this.fields_wrapper);
+
+        // Scenario
+        this.fields.scenario = new Field(
+            new SelectInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.scenario.label', 'Scenario')
+            })
+            .data('property', 'scenario')
+            .appendTo(this.fields_wrapper);
+
+        // Background image
+        this.fields['background-image'] = new Field(
+            new SelectInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.background-image.label', 'Background image')
+            })
+            .data('property', 'background-image')
+            .appendTo(this.fields_wrapper);
+
+        // Background color
+        this.fields['background-color'] = new Field(
+            new ColorInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.background-color.label', 'Background color')
+            })
+            .data('property', 'background-color')
+            .appendTo(this.fields_wrapper);
+
+        const border_fields_wrapper = new Dom('<div/>', {'class': 'border-fields'})
+            .appendTo(this.fields_wrapper);
+
+        const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ElementForm.fields.border-fields.label', 'Border')})
+            .appendTo(border_fields_wrapper);
+
+        // Border color
+        this.fields['border-color'] = new Field(
+            new ColorInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.border-color.label', 'Border color')
+            })
+            .data('property', 'border-color')
+            .appendTo(border_fields_wrapper);
+
+        border_fields_label.attr('for', this.fields['border-color'].getInput().getId());
+
+        // Border width
+        this.fields['border-width'] = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.border-width.label', 'Border width')
+            })
+            .data('property', 'border-width')
+            .appendTo(border_fields_wrapper);
+
+        // Border radius
+        this.fields['border-radius'] = new Field(
+            new BorderRadiusInput(),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.border-radius.label', 'Border radius')
+            })
+            .data('property', 'border-radius')
+            .appendTo(this.fields_wrapper);
+
+        // Start
+        this.fields.start_time = new Field(
+            new TimeInput({
+                'inButton': true,
+                'outButton': true
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.start-time.label', 'Start')
+            })
+            .data('property', 'start-time')
+            .appendTo(this.fields_wrapper);
+
+        // End
+        this.fields.end_time = new Field(
+            new TimeInput({
+                'inButton': true,
+                'outButton': true
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.end-time.label', 'End')
+            })
+            .data('property', 'end-time')
+            .appendTo(this.fields_wrapper);
+
+        // X
+        this.fields.x = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true,
+                'spinDirection': 'horizontal'
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.x.label', 'X')
+            })
+            .data('property', 'x')
+            .appendTo(this.fields_wrapper);
+
+        // Y
+        this.fields.y = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.y.label', 'Y')
+            })
+            .data('property', 'y')
+            .appendTo(this.fields_wrapper);
+
+        // Width
+        this.fields.width = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true,
+                'spinDirection': 'horizontal'
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.width.label', 'Width')
+            })
+            .data('property', 'width')
+            .appendTo(this.fields_wrapper);
+
+        // Height
+        this.fields.height = new Field(
+            new NumberInput({
+                'min': 0,
+                'spinButtons': true
+            }),
+            {
+                'label': Locale.t('editor.configseditor.ElementForm.fields.height.label', 'Height')
+            })
+            .data('property', 'height')
+            .appendTo(this.fields_wrapper);
+
+        return this;
+    }
+}
