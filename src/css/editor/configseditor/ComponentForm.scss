@@ -43,6 +43,35 @@
                 flex: 1;
             }
 
+            &[data-property="name"]{
+                flex: 100%;
+
+                label{
+                    display: none;
+                }
+
+                input{
+                    border-radius: 0.25em;
+                }
+            }
+
+            &[data-property="hidden"]{
+                flex: 100%;
+            }
+
+            &[data-property="x"],
+            &[data-property="y"],
+            &[data-property="width"],
+            &[data-property="height"]{
+                display: flex;
+                flex-direction: row;
+                width: 45%;
+            }
+
+            &[data-property="border-radius"]{
+                flex: 100%;
+            }
+
             &.warning{
                 label{
                     position: relative;
@@ -58,6 +87,23 @@
                         background: url('../../../img/editor/field/warning.svg') no-repeat right center;
                         background-size: 1em;
                     }
+                }
+            }
+        }
+
+        .border-fields{
+            > label{
+                margin-right: 0.5em;
+            }
+
+            .field{
+                label{
+                    display: none;
+                }
+
+                &[data-property="border-width"]{
+                    width: 3em;
+                    margin-left: 0.5em;
                 }
             }
         }

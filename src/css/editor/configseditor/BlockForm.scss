@@ -1,49 +1,4 @@
 @import "../../theme";
 
 :local(.className){
-    .fields{
-        .field{
-            &[data-property="name"]{
-                display: flex;
-
-                > label{
-                    display: none;
-                }
-            }
-
-            &[data-property="hidden"]{
-                display: flex;
-            }
-
-            &[data-property="x"],
-            &[data-property="width"],
-            &[data-property="y"],
-            &[data-property="height"]{
-                display: flex;
-                flex-direction: row;
-                width: 45%;
-            }
-
-            &[data-property="border-radius"]{
-                flex: 100%;
-            }
-        }
-
-        .border-fields{
-            > label{
-                margin-right: 0.5em;
-            }
-
-            .field{
-                label{
-                    display: none;
-                }
-
-                &[data-property="border-width"]{
-                    width: 3em;
-                    margin-left: 0.5em;
-                }
-            }
-        }
-    }
 }

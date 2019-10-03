@@ -38,12 +38,12 @@ export default class Draggable {
         this._snap_guides = [];
 
         // fix event handlers scope
-        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onDragStart = this.onDragStart.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onClick = this.onClick.bind(this);
 
-        this.configs.handle.addListener('mousedown', this.onMouseDown);
+        this.configs.handle.addListener('dragstart', this.onDragStart);
 
         this.enable();
     }
@@ -68,12 +68,12 @@ export default class Draggable {
     }
 
     /**
-     * The mousedown event handler
+     * The dragstart event handler
      *
      * @private
      * @param {Event} evt The event object
      */
-    onMouseDown(evt){
+    onDragStart(evt){
         if(!this.enabled){
             return;
         }
@@ -347,7 +347,9 @@ export default class Draggable {
     enable(){
         this.configs.target.addClass(`draggable ${className}`);
 
-        this.configs.handle.addClass('drag-handle');
+        this.configs.handle
+            .addClass('drag-handle')
+            .attr('draggable', 'true');
 
         /**
          * Whether the behavior is enabled
@@ -366,7 +368,9 @@ export default class Draggable {
     disable(){
         this.configs.target.removeClass(`draggable ${className}`);
 
-        this.configs.handle.removeClass('drag-handle');
+        this.configs.handle
+            .removeClass('drag-handle')
+            .attr('draggable', null);
 
         delete this.enabled;
 

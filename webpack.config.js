@@ -19,10 +19,9 @@ module.exports = (env, argv) => {
     mode: 'production',
     bail: true,
     entry: {
-        polyfills: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills'],
-        Player: ['./src/js/Player'],
-        Editor: ['./src/js/Editor'],
-        API: ['./src/js/API']
+        Player: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
+        Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
+        API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
     },
     output: {
         filename: LIB_NAME +'.[name].js',
@@ -31,19 +30,6 @@ module.exports = (env, argv) => {
         libraryTarget: 'var',
         libraryExport: 'default',
         devtoolNamespace: LIB_NAME
-    },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          core: {
-            test: /[\\/]src[\\/](js|css)[\\/]core[\\/]/,
-            name: 'Core',
-            chunks: 'all',
-            minSize: 0,
-            reuseExistingChunk: true
-          }
-        }
-      }
     },
     devtool: "source-map",
     watchOptions: {

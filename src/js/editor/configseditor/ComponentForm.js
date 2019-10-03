@@ -1,5 +1,14 @@
 import Dom from '../../core/Dom';
+import {clone} from '../../core/utils/Array';
 import Locale from '../../core/Locale';
+import Field from '../Field';
+import CheckboxInput from '../../core/ui/input/CheckboxInput';
+import TextInput from '../../core/ui/input/TextInput';
+import SelectInput from '../../core/ui/input/SelectInput';
+import ColorInput from '../../core/ui/input/ColorInput';
+import NumberInput from '../../core/ui/input/NumberInput';
+import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
+import TimeInput from '../../core/ui/input/TimeInput';
 
 import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
 
@@ -14,7 +23,7 @@ export default class ComponentForm extends Dom {
      * @param {Object} configs Custom configs to override defaults
      * @property {Boolean} [allowMultiple=true] Whether multiple selection is allowed
      */
-    constructor(components, configs) {
+    constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': `component-form ${className}`});
 
@@ -28,14 +37,6 @@ export default class ComponentForm extends Dom {
         this.onComponentResizeEnd = this.onComponentResizeEnd.bind(this);
 
         /**
-         * The components
-         * @type {Array}
-         */
-        this.components = components;
-
-        this.master_component = this.components[0];
-
-        /**
          * The configuration values
          * @type {Object}
          */
@@ -43,13 +44,6 @@ export default class ComponentForm extends Dom {
 
         this.title = new Dom('<h2/>', {'class': 'title'})
             .appendTo(this);
-
-        if(this.components.length > 1){
-            this.title.text(Locale.formatString(this.configs.title_plural, {'@count': this.components.length}));
-        }
-        else{
-            this.title.text(this.configs.title);
-        }
 
         /**
          * The fields container
@@ -59,9 +53,30 @@ export default class ComponentForm extends Dom {
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
             .appendTo(this);
 
-        this
-            .setupFields()
-            .updateFieldValues(true);
+        this.setupFields();
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults() {
+        return {
+            'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
+            'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
+            'fields': []
+        };
+    }
+
+    setComponents(components){
+        /**
+         * The components
+         * @type {Array}
+         */
+        this.components = clone(components);
+
+        this.master_component = this.components[0];
 
         this.components.forEach((component) => {
             // Create a new Dom instance to workaround the different JS contexts of the player and editor.
@@ -74,18 +89,41 @@ export default class ComponentForm extends Dom {
                 .addListener('resize', this.onComponentResize)
                 .addListener('resizeend', this.onComponentResizeEnd);
         });
+
+        if(this.components.length > 1){
+            this.title.text(Locale.formatString(this.configs.title_plural, {'@count': this.components.length}));
+        }
+        else{
+            this.title.text(this.configs.title);
+        }
+
+        this.updateFieldValues(true);
+
+        return this;
     }
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
-            'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components')
-        };
+    unsetComponents(){
+        if(this.components){
+            this.components.forEach((component) => {
+                // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+                new Dom(component.get(0))
+                    .removeListener('propchange', this.onComponentPropChange)
+                    .removeListener('dragstart', this.onComponentDragStart)
+                    .removeListener('drag', this.onComponentDrag)
+                    .removeListener('dragend', this.onComponentDragEnd)
+                    .removeListener('resizestart', this.onComponentResizeStart)
+                    .removeListener('resize', this.onComponentResize)
+                    .removeListener('resizeend', this.onComponentResizeEnd);
+            });
+        }
+
+        delete this.components;
+
+        return this;
+    }
+
+    getMasterComponent(){
+        return this.master_component;
     }
 
     /**
@@ -314,6 +352,179 @@ export default class ComponentForm extends Dom {
          */
         this.fields = {};
 
+        this.configs.fields.forEach((name) => {
+            this.addField(name);
+        });
+
+        return this;
+    }
+
+    addField(name){
+        switch(name){
+            case 'name':
+                this.fields.name = new Field(
+                    new TextInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.name.label', 'Name')
+                    })
+                    .data('property', 'name')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'hidden':
+                this.fields.hidden = new Field(
+                    new CheckboxInput({
+                        'checked': false
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.hidden.label', 'Hidden on start')
+                    })
+                    .data('property', 'hidden')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'scenario':
+                this.fields.scenario = new Field(
+                    new SelectInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.scenario.label', 'Scenario')
+                    })
+                    .data('property', 'scenario')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'background':
+                this.fields['background-image'] = new Field(
+                    new SelectInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.background-image.label', 'Background image')
+                    })
+                    .data('property', 'background-image')
+                    .appendTo(this.fields_wrapper);
+
+                this.fields['background-color'] = new Field(
+                    new ColorInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.background-color.label', 'Background color')
+                    })
+                    .data('property', 'background-color')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'border': {
+                    const border_fields_wrapper = new Dom('<div/>', {'class': 'border-fields'})
+                        .appendTo(this.fields_wrapper);
+
+                    const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ElementForm.fields.border-fields.label', 'Border')})
+                        .appendTo(border_fields_wrapper);
+
+                    this.fields['border-color'] = new Field(
+                        new ColorInput(),
+                        {
+                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-color.label', 'Border color')
+                        })
+                        .data('property', 'border-color')
+                        .appendTo(border_fields_wrapper);
+
+                    border_fields_label.attr('for', this.fields['border-color'].getInput().getId());
+
+                    this.fields['border-width'] = new Field(
+                        new NumberInput({
+                            'min': 0,
+                            'spinButtons': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-width.label', 'Border width')
+                        })
+                        .data('property', 'border-width')
+                        .appendTo(border_fields_wrapper);
+
+                    this.fields['border-radius'] = new Field(
+                        new BorderRadiusInput(),
+                        {
+                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-radius.label', 'Border radius')
+                        })
+                        .data('property', 'border-radius')
+                        .appendTo(this.fields_wrapper);
+                }
+                break;
+
+            case 'time':
+                this.fields.start_time = new Field(
+                    new TimeInput({
+                        'inButton': true,
+                        'outButton': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.start-time.label', 'Start')
+                    })
+                    .data('property', 'start-time')
+                    .appendTo(this.fields_wrapper);
+
+                this.fields.end_time = new Field(
+                    new TimeInput({
+                        'inButton': true,
+                        'outButton': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.end-time.label', 'End')
+                    })
+                    .data('property', 'end-time')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'position':
+                this.fields.x = new Field(
+                    new NumberInput({
+                        'min': 0,
+                        'spinButtons': true,
+                        'spinDirection': 'horizontal'
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.x.label', 'X')
+                    })
+                    .data('property', 'x')
+                    .appendTo(this.fields_wrapper);
+
+                // Y
+                this.fields.y = new Field(
+                    new NumberInput({
+                        'min': 0,
+                        'spinButtons': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.y.label', 'Y')
+                    })
+                    .data('property', 'y')
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            case 'dimension':
+                this.fields.width = new Field(
+                    new NumberInput({
+                        'min': 0,
+                        'spinButtons': true,
+                        'spinDirection': 'horizontal'
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.width.label', 'Width')
+                    })
+                    .data('property', 'width')
+                    .appendTo(this.fields_wrapper);
+
+                this.fields.height = new Field(
+                    new NumberInput({
+                        'min': 0,
+                        'spinButtons': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ElementForm.fields.height.label', 'Height')
+                    })
+                    .data('property', 'height')
+                    .appendTo(this.fields_wrapper);
+                break;
+        }
+
         return this;
     }
 
@@ -342,7 +553,7 @@ export default class ComponentForm extends Dom {
         const value = this.master_component.getPropertyValue(name);
         const field = this.getField(name);
 
-        if(field){
+        if(field && field instanceof Field){
             const multival = this.components.length > 1 && this.components.some((component) => {
                 return component.getPropertyValue(name) !== value;
             });
@@ -452,22 +663,7 @@ export default class ComponentForm extends Dom {
     }
 
     remove(){
-        this.components.forEach((component) => {
-            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-            new Dom(component.get(0))
-                .removeListener('propchange', this.onComponentPropChange)
-                .removeListener('dragstart', this.onComponentDragStart)
-                .removeListener('drag', this.onComponentDrag)
-                .removeListener('dragend', this.onComponentDragEnd)
-                .removeListener('resizestart', this.onComponentResizeStart)
-                .removeListener('resize', this.onComponentResize)
-                .removeListener('resizeend', this.onComponentResizeEnd);
-        });
-
-        Object.values(this.getFields()).forEach((field) => {
-            field.destroy();
-        });
-
+        this.unsetComponents();
         super.remove();
     }
 

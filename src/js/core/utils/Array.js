@@ -22,3 +22,13 @@ export function naturalSortSensitive(){
         return naturalCompare(a, b, false);
     }
 }
+
+
+/**
+ * A natural case-sentive sorting function to use with Array.sort
+ *
+ * @return {Function} The sorting function
+ */
+export function clone(array){
+    return [...array];
+}

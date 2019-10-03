@@ -51,8 +51,7 @@ export default class Pane extends Dom {
         };
     }
 
-    onResizeHandleDblclick(evt){
-        console.log(evt);
+    onResizeHandleDblclick(){
         this.toggleClass('collapsed');
     }
 

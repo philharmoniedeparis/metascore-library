@@ -1,20 +1,4 @@
 @import "../../theme";
 
 :local(.className){
-    .fields{
-        .field{
-            &[data-property="hidden"]{
-                display: flex;
-            }
-
-            &[data-property="x"],
-            &[data-property="width"],
-            &[data-property="y"],
-            &[data-property="height"]{
-                display: flex;
-                flex-direction: row;
-                width: 45%;
-            }
-        }
-    }
 }

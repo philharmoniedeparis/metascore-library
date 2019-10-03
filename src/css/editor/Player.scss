@@ -9,22 +9,6 @@ $selected-shadow: 0 0 0.5em 0;
         }
     }
 
-    .metaScore-component{
-        &.element{
-            &.Cursor{
-                outline-color: $cursor-element-color;
-            }
-
-            &.Content{
-                outline-color: $content-element-color;
-            }
-
-            &.Animation{
-                outline-color: $animation-element-color;
-            }
-        }
-    }
-
     &.editing{
         .draggable{
             &.drag-handle,
@@ -71,11 +55,23 @@ $selected-shadow: 0 0 0.5em 0;
                 outline-style: dashed;
                 pointer-events: auto;
 
+                &.Cursor{
+                    outline-color: $cursor-element-color;
+                }
+
+                &.Content{
+                    outline-color: $content-element-color;
+                }
+
+                &.Animation{
+                    outline-color: $animation-element-color;
+                }
+
                 &.selected{
                     display: block;
 
                     &.Cursor{
-                        box-shadow: $cursor-element-color $selected-shadow;
+                        box-shadow: $cursor-element-color $selected-shadow inset;
 
                         &.resizing{
                             canvas{
@@ -85,7 +81,7 @@ $selected-shadow: 0 0 0.5em 0;
                     }
 
                     &.Content{
-                        box-shadow: $content-element-color $selected-shadow;
+                        box-shadow: $content-element-color $selected-shadow inset;
 
                         .contents{
                             &[contenteditable]{
@@ -97,7 +93,7 @@ $selected-shadow: 0 0 0.5em 0;
                     }
 
                     &.Animation{
-                        box-shadow: $animation-element-color $selected-shadow;
+                        box-shadow: $animation-element-color $selected-shadow inset;
                     }
                 }
 

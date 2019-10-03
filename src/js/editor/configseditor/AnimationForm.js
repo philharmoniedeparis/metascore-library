@@ -13,9 +13,9 @@ export default class AnimationForm extends ElementForm {
      *
      * @param {Object} configs Custom configs to override defaults
      */
-    constructor(components, configs) {
+    constructor(configs) {
         // call parent constructor
-        super(components, configs);
+        super(configs);
 
         this.addClass(`animation-form ${className}`);
     }
@@ -26,15 +26,24 @@ export default class AnimationForm extends ElementForm {
     * @return {Object} The default values
     */
     static getDefaults() {
-        return {
-            'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of cursor'),
-            'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count cursors')
-        };
-    }
+        const defaults = super.getDefaults();
 
-    setupFields(){
-        super.setupFields();
-
-        return this;
+        return Object.assign({}, defaults, {
+            'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
+            'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
+            'fields': [
+                'name',
+                'hidden',
+                'scenario',
+                'start-frame',
+                'loop-duration',
+                'color-theme',
+                'background',
+                'border',
+                'time',
+                'position',
+                'dimention'
+            ]
+        });
     }
 }

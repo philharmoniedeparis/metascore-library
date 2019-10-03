@@ -13,9 +13,9 @@ export default class ControllerForm extends ComponentForm {
      *
      * @param {Object} configs Custom configs to override defaults
      */
-    constructor(components, configs) {
+    constructor(configs) {
         // call parent constructor
-        super(components, configs);
+        super(configs);
 
         this.addClass(`controller-form ${className}`);
     }
@@ -26,15 +26,14 @@ export default class ControllerForm extends ComponentForm {
     * @return {Object} The default values
     */
     static getDefaults() {
-        return {
+        const defaults = super.getDefaults();
+
+        return Object.assign({}, defaults, {
             'title': Locale.t('editor.configseditor.ControllerForm.title.single', 'Attributes of controller'),
-            'title_plural': Locale.t('editor.configseditor.ControllerForm.title.plural', 'Attributes of @count controllers')
-        };
-    }
-
-    setupFields(){
-        super.setupFields();
-
-        return this;
+            'title_plural': Locale.t('editor.configseditor.ControllerForm.title.plural', 'Attributes of @count controllers'),
+            'fields': [
+                'position'
+            ]
+        });
     }
 }

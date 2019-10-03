@@ -5,24 +5,13 @@ import MediaForm from './configseditor/MediaForm';
 import ControllerForm from './configseditor/ControllerForm';
 import BlockForm from './configseditor/BlockForm';
 import BlockTogglerForm from './configseditor/BlockTogglerForm';
+import PageForm from './configseditor/PageForm';
 import ElementForm from './configseditor/ElementForm';
 import CursorForm from './configseditor/CursorForm';
 import ContentForm from './configseditor/ContentForm';
 import AnimationForm from './configseditor/AnimationForm';
 
 import {className} from '../../css/editor/ConfigsEditor.scss';
-
-const forms = {
-    'Component': ComponentForm,
-    'Media': MediaForm,
-    'Controller': ControllerForm,
-    'Block': BlockForm,
-    'BlockToggler': BlockTogglerForm,
-    'Element': ElementForm,
-    'Cursor': CursorForm,
-    'Content': ContentForm,
-    'Animation': AnimationForm,
-};
 
 /**
  * A component form class
@@ -51,6 +40,23 @@ export default class ConfigsEditor extends Dom {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        /**
+         * The list of already instantiated forms
+         * @type {Object}
+         */
+        this.forms = {
+            'Component': new ComponentForm(),
+            'Media': new MediaForm(),
+            'Controller': new ControllerForm(),
+            'Block': new BlockForm(),
+            'BlockToggler': new BlockTogglerForm(),
+            'Page': new PageForm(),
+            'Element': new ElementForm(),
+            'Cursor': new CursorForm(),
+            'Content': new ContentForm(),
+            'Animation': new AnimationForm()
+        };
 
         /**
          * The list of selected components
@@ -108,27 +114,32 @@ export default class ConfigsEditor extends Dom {
      * @return {this}
      */
     updateUI(){
-        if(this.form){
-            this.form.remove();
-            delete this.form;
-        }
-
+        let form = null;
         const components = this.getComponents();
+
+        // Find the best matching form
         if(components.length > 0){
-            let form = null;
             this.getComponentsCommonTypes().some((type) => {
-                if(type in forms){
-                    form = forms[type];
+                if(type in this.forms){
+                    form = this.forms[type];
                     return true;
                 }
 
                 return false;
             });
+        }
 
-            if(form){
-                this.form = new form(components)
-                    .appendTo(this);
-            }
+        // Remove the old form if not the same one
+        if(this.form && form !== this.form){
+            this.form.remove();
+            delete this.form;
+        }
+
+        if(form){
+            // Add the new form
+            this.form = form
+                .setComponents(components)
+                .appendTo(this);
         }
 
         this.toggleClass('has-component', components.length > 0);

@@ -1,9 +1,9 @@
-import Dom from '../core/Dom';
-import TimeField from '../editor/field/Time';
-import {isEmpty} from '../core/utils/Var';
-import {clamp} from '../core/utils/Math';
-import ContextMenu from '../core/ui/ContextMenu';
-import Locale from '../core/Locale';
+import Dom from '../../core/Dom';
+import TimeInput from '../../core/ui/input/TimeInput';
+import {isEmpty} from '../../core/utils/Var';
+import {clamp} from '../../core/utils/Math';
+import ContextMenu from '../../core/ui/ContextMenu';
+import Locale from '../../core/Locale';
 
 /**
  * A helper class to manage a cursor component's keyframes
@@ -535,7 +535,7 @@ export default class CursorKeyframesEditor extends Dom {
             if(over){
                 this
                     .data('state', 'over')
-                    .attr('title', TimeField.getTextualValue(keyframe.time));
+                    .attr('title', TimeInput.getTextualValue(keyframe.time));
 
                 keyframe.over = true;
                 over_keyframe = true;
@@ -552,7 +552,7 @@ export default class CursorKeyframesEditor extends Dom {
             if(over_label){
                 this
                     .data('state', 'overlabel')
-                    .attr('title', TimeField.getTextualValue(keyframe.time));
+                    .attr('title', TimeInput.getTextualValue(keyframe.time));
 
                 keyframe.over = true;
                 over_keyframe = true;
@@ -678,7 +678,7 @@ export default class CursorKeyframesEditor extends Dom {
         this.context.restore();
 
         // Draw the cursor label.
-        const label_text = TimeField.getTextualValue(keyframe.time);
+        const label_text = TimeInput.getTextualValue(keyframe.time);
         const label_size = this.context.measureText(label_text);
         Object.assign(keyframe.label, {
             'x': pos_1.x,

@@ -1,4 +1,23 @@
 @import "../../theme";
 
 :local(.className){
+    .fields{
+        .contents-toggle{
+            flex: 100%;
+            margin: 0.5em 0;
+
+            input{
+                + .state label{
+                    color: #000;
+                    background: #fff;
+                    border: 0;
+                }
+
+                &:checked + .state label{
+                    color: #fff;
+                    background: $darkgray;
+                }
+            }
+        }
+    }
 }

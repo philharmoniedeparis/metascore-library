@@ -144,7 +144,6 @@ export default class ColorInput extends Input {
 
     destroy(){
         this.pickr.destroyAndRemove();
-        return super.destroy();
     }
 
 }
