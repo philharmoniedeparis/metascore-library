@@ -6,16 +6,16 @@
 
     ul{
         min-width: 150px;
-        margin: 0 !important;
-        padding: 0.25em 0 !important;
-        list-style: none !important;
+        margin: 0;
+        padding: 0.25em 0;
+        list-style: none;
         background: #fff;
         border: 1px solid rgba(0, 0, 0, 0.1);
         box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
 
         li{
             position: relative;
-            padding: 0.25em 1em !important;
+            padding: 0.25em 1em;
             white-space: nowrap;
             color: #000;
             cursor: pointer;
@@ -36,7 +36,7 @@
             &.separator{
                 height: 1px;
                 margin: 0.5em 0;
-                padding: 0 !important;
+                padding: 0;
                 background: rgba(0, 0, 0, 0.1);
                 pointer-events: none;
             }

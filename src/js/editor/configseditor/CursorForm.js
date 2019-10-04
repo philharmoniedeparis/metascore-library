@@ -28,10 +28,8 @@ export default class CursorForm extends ElementForm {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
+     * @inheritdoc
+     */
     static getDefaults() {
         const defaults = super.getDefaults();
 
@@ -59,6 +57,9 @@ export default class CursorForm extends ElementForm {
         });
     }
 
+    /**
+     * @inheritdoc
+     */
     setComponents(components){
         super.setComponents(components);
 
@@ -72,6 +73,9 @@ export default class CursorForm extends ElementForm {
         return this;
     }
 
+    /**
+     * @inheritdoc
+     */
     unsetComponents(){
         if(this.components.length === 1){
             this.exitKeyframesEditMode();
@@ -80,6 +84,49 @@ export default class CursorForm extends ElementForm {
         super.unsetComponents();
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    onComponentPropChange(evt){
+        if(evt.target === evt.currentTarget){
+            const component = evt.detail.component;
+
+            const form = component.getPropertyValue('form');
+            const advanced = component.getPropertyValue('keyframes') ? true : false;
+
+            if(form === 'linear' && advanced){
+                const property = evt.detail.property;
+                const direction = component.getPropertyValue('direction');
+                const vertical = direction === 'top' || direction === 'bottom';
+
+                if((property === 'width' && !vertical) || (property === 'height' && vertical)){
+                    this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
+                }
+            }
+        }
+
+        super.onComponentPropChange(evt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    onComponentResizeEnd(evt){
+        const component = evt.target._metaScore;
+        const advanced = component.getPropertyValue('keyframes') ? true : false;
+
+        if(advanced){
+            const direction = component.getPropertyValue('direction');
+            const vertical = direction === 'top' || direction === 'bottom';
+            const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
+            const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
+
+            this.repositionCursorKeyframes(component, new_value / old_value);
+        }
+
+        super.onComponentResizeEnd(evt);
     }
 
     addField(name){
@@ -225,6 +272,37 @@ export default class CursorForm extends ElementForm {
         if(component._keyframes_editor){
             component._keyframes_editor.remove();
             delete component._keyframes_editor;
+        }
+
+        return this;
+    }
+
+    /**
+     * Helper method to reposition a cursor component's keyframes after a resize
+     *
+     * @private
+     * @param {Component} component The cursor component
+     * @param {Number} multiplier A multiplier to multiply the position of each keyframe with
+     * @return {this}
+     */
+    repositionCursorKeyframes(component, multiplier){
+        if(component._keyframes_editor){
+            component._keyframes_editor.keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            component._keyframes_editor
+                .updateComponentKeyframes()
+                .draw();
+        }
+        else{
+            const keyframes = CursorKeyframesEditor.parseComponentKeyframes(component);
+
+            keyframes.forEach((keyframe) => {
+                keyframe.position *= multiplier;
+            });
+
+            CursorKeyframesEditor.updateComponentKeyframes(component, keyframes);
         }
 
         return this;

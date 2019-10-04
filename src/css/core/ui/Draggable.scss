@@ -1,6 +1,6 @@
 :local(.bodyClassName) * {
-    user-select: none !important;
-    pointer-events: none !important;
+    user-select: none;
+    pointer-events: none;
 }
 
 :local(.className){

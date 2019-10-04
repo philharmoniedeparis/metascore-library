@@ -1,3 +1,5 @@
+import {className} from '../css/Player.scss';
+
 import Dom from './core/Dom';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
@@ -11,8 +13,6 @@ import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
 import {isEmpty} from './core/utils/Var';
 import {toCentiseconds, toSeconds} from './core/utils/Media';
-
-import {className} from '../css/Player.scss';
 
 /**
  * Provides the main Player class

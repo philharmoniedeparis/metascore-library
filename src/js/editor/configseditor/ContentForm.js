@@ -155,6 +155,8 @@ export default class ContentForm extends ElementForm {
     enterContentsEditMode(supressEvent){
         const component = this.getMasterComponent();
 
+        this.contents_toggle.setValue(true, true);
+
         if(component._draggable){
             component._draggable.disable();
         }
@@ -171,12 +173,10 @@ export default class ContentForm extends ElementForm {
             .addListener('keyup', this.onComponentContentsKey);
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.get(0))
-            .removeListener('dblclick', this.onComponentDblClick)
-            .addClass('contents-unlocked');
+        new Dom(component.get(0)).addClass('contents-unlocked');
 
         if(supressEvent !== true){
-            this.triggerEvent('contentsunlock', {'component': component}, false);
+            this.triggerEvent('contentsunlock', {'component': component});
         }
 
         return this;
@@ -191,6 +191,8 @@ export default class ContentForm extends ElementForm {
      */
     exitContentsEditMode(supressEvent){
         const component = this.getMasterComponent();
+
+        this.contents_toggle.setValue(false, true);
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(component.get(0)).removeClass('contents-unlocked');
@@ -211,7 +213,7 @@ export default class ContentForm extends ElementForm {
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('contentslock', {'component': component}, false);
+            this.triggerEvent('contentslock', {'component': component});
         }
 
         return this;

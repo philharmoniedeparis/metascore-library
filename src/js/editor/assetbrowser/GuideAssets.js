@@ -315,6 +315,14 @@ export default class GuideAssets extends Dom {
         loadmask.hide();
     }
 
+    getAsset(id){
+        return this.assets[id];
+    }
+
+    getAssets(){
+        return this.assets;
+    }
+
     clearAssets(){
         this.assets = {};
         this.assets_container.empty();
@@ -408,7 +416,9 @@ export default class GuideAssets extends Dom {
     onAssetDragStart(evt){
         const item = new Dom(evt.target);
         const asset_id = item.data('id');
-        const asset = this.assets[asset_id];
+        const asset = Object.assign({}, this.getAsset(asset_id));
+
+        delete asset._animation;
 
         item.addClass('dragging');
 
@@ -439,7 +449,7 @@ export default class GuideAssets extends Dom {
 
         const item = new Dom(evt.currentTarget);
         const asset_id = item.data('id');
-        const asset = this.assets[asset_id];
+        const asset = this.getAsset(asset_id);
 
         switch(action){
             case 'delete':

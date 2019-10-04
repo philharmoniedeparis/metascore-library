@@ -1,4 +1,6 @@
 /* eslint-disable */
+import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
+import {className} from '../css/Editor.scss';
 
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
@@ -20,9 +22,6 @@ import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
 import AssetBrowser from './editor/AssetBrowser';
-
-import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
-import {className} from '../css/Editor.scss';
 
 /**
  * Provides the main Editor class
@@ -150,6 +149,9 @@ export default class Editor extends Dom {
             .attr('id', 'center-pane')
             .appendTo(this);
 
+        new Dom('<div/>', {'id': 'wysiwyg-top'})
+            .appendTo(center_pane.getContents());
+
         /**
          * The workspace
          * @type {Dom}
@@ -186,6 +188,9 @@ export default class Editor extends Dom {
         this.grid = new Grid()
             .appendTo(this.workspace)
             .init();
+
+        new Dom('<div/>', {'id': 'wysiwyg-bottom'})
+            .appendTo(center_pane.getContents());
 
         // Config pane ////////////////////////
         const config_pane = new Pane({
@@ -1273,7 +1278,7 @@ export default class Editor extends Dom {
 
             this.asset_browser.getGuideAssets()
                 .addAssets(this.player.getData('assets'), true)
-                .addAssets(this.player.getData('shared_assets'), true);
+                .addSharedAssets(this.player.getData('shared_assets'), true);
 
             this
                 .setEditing(true)
@@ -2158,9 +2163,14 @@ export default class Editor extends Dom {
         const components = player.getComponents('.media, .controller, .block, .block-toggler');
         const data = new FormData();
 
-        // append blocks data
+        // Add blocks
         components.forEach((component) => {
             data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
+        });
+
+        // Add assets
+        Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
+            data.append('assets[]', JSON.stringify(asset));
         });
 
         // add a loading mask

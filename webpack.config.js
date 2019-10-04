@@ -79,7 +79,7 @@ module.exports = (env, argv) => {
                 options: {
                   modules: 'global',
                   localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
-                  context: './src/css',
+                  context: path.resolve(__dirname, './src/css'),
                 }
               },
               {
@@ -118,7 +118,7 @@ module.exports = (env, argv) => {
                 {
                   loader: 'file-loader',
                   options: {
-                    context: './src',
+                    context: path.resolve(__dirname, './src'),
                     name: '[path][name].[ext]?[hash]'
                   }
                 },
@@ -139,7 +139,7 @@ module.exports = (env, argv) => {
             {
               loader: 'file-loader',
               options: {
-                context: './src',
+                context: path.resolve(__dirname, './src'),
                 name: '[path][name].[ext]'
               }
             }

@@ -27,11 +27,11 @@ $resize-handle-size: 0.5em;
 
     &.collapsed{
         &.vertical{
-            min-width: auto !important;
+            min-width: auto;
             width: 0 !important;
         }
         &.horizontal{
-            min-height: auto !important;
+            min-height: auto;
             height: 0 !important;
         }
     }

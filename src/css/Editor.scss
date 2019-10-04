@@ -3,7 +3,6 @@
 
 :local(.className){
     /* General styles *******************/
-
     *{
         font-size: 14px;
         font-family: 'Source Sans Variable', sans-serif;
@@ -199,7 +198,7 @@
         grid-template-columns: auto 0 minmax(0, min-content);
 
         #tools-pane{
-            width: auto !important;
+            width: auto;
             max-width: none;
             padding: 0;
 
