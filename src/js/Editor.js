@@ -139,6 +139,8 @@ export default class Editor extends Dom {
 
         this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
+            .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
+            .addListener('assetremove', this.onAssetBrowserAssetRemove.bind(this))
             .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
             .appendTo(tools_pane.getContents());
 
@@ -805,6 +807,14 @@ export default class Editor extends Dom {
         this.toggleClass('assetbrowser-expanded', evt.detail.tab === 'shared-assets');
     }
 
+    onAssetBrowserAssetAdd(){
+        this.setDirty(true);
+    }
+
+    onAssetBrowserAssetRemove(){
+        this.setDirty(true);
+    }
+
     onAssetBrowserComponentLinkClick(evt){
         const component = evt.detail.component;
         const type = component.type;
@@ -1278,7 +1288,7 @@ export default class Editor extends Dom {
 
             this.asset_browser.getGuideAssets()
                 .addAssets(this.player.getData('assets'), true)
-                .addSharedAssets(this.player.getData('shared_assets'), true);
+                .addAssets(this.player.getData('shared_assets'), true);
 
             this
                 .setEditing(true)

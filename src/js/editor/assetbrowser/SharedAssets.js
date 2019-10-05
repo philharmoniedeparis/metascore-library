@@ -161,14 +161,18 @@ export default class AssetBrowser extends Dom {
                 new Dom('<img/>', {'src': asset.file.url}).appendTo(figure);
                 break;
 
-            case 'lottie_animation':
-                asset._animation = Lottie.loadAnimation({
-                    container: figure.get(0),
-                    path: asset.file.url,
-                    renderer: 'svg',
-                    loop: true,
-                    autoplay: true,
-                });
+            case 'lottie_animation':{
+                    const animation = Lottie.loadAnimation({
+                        container: figure.get(0),
+                        path: asset.file.url,
+                        renderer: 'svg',
+                        loop: true,
+                        autoplay: true,
+                    });
+
+                    this._animations = this._animations || [];
+                    this._animations.push(animation);
+                }
                 break;
         }
 
@@ -287,11 +291,11 @@ export default class AssetBrowser extends Dom {
         }
         else{
             // Play all animations
-            this.assets.forEach((asset) => {
-                if(asset.type === 'lottie_animation'){
-                    asset._animation.play();
-                }
-            });
+            if(this._animations){
+                this._animations.forEach((animation) => {
+                    animation.play();
+                });
+            }
         }
     }
 
@@ -302,11 +306,9 @@ export default class AssetBrowser extends Dom {
         }
 
         // Stop all animations
-        if(this.assets){
-            this.assets.forEach((asset) => {
-                if(asset.type === 'lottie_animation'){
-                    asset._animation.stop();
-                }
+        if(this._animations){
+            this._animations.forEach((animation) => {
+                animation.stop();
             });
         }
 

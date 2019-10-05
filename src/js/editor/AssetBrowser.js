@@ -111,7 +111,7 @@ export default class AssetBrowser extends Dom {
     }
 
     onSharedAssetImport(evt){
-        const asset = evt.detail.asset;
+        const asset = Object.assign({}, evt.detail.asset);
         this.getGuideAssets().addAsset(asset);
 
         this.showGuideAssets();

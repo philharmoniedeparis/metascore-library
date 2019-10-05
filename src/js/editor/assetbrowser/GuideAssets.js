@@ -315,21 +315,6 @@ export default class GuideAssets extends Dom {
         loadmask.hide();
     }
 
-    getAsset(id){
-        return this.assets[id];
-    }
-
-    getAssets(){
-        return this.assets;
-    }
-
-    clearAssets(){
-        this.assets = {};
-        this.assets_container.empty();
-
-        return this;
-    }
-
     /**
      * Add assets
      *
@@ -413,12 +398,25 @@ export default class GuideAssets extends Dom {
         return this;
     }
 
+    clearAssets(){
+        this.assets = {};
+        this.assets_container.empty();
+
+        return this;
+    }
+
+    getAsset(id){
+        return this.assets[id];
+    }
+
+    getAssets(){
+        return this.assets;
+    }
+
     onAssetDragStart(evt){
         const item = new Dom(evt.target);
         const asset_id = item.data('id');
-        const asset = Object.assign({}, this.getAsset(asset_id));
-
-        delete asset._animation;
+        const asset = this.getAsset(asset_id);
 
         item.addClass('dragging');
 
