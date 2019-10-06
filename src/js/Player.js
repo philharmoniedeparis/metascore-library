@@ -33,9 +33,9 @@ import {toCentiseconds, toSeconds} from './core/utils/Media';
  * @emits {componentadd} Fired when a component is added
  * @param {Object} component The component instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
- * @emits {rindex} Fired when the reading index is set
+ * @emits {scenariochange} Fired when the scenario changes
  * @param {Object} player The player instance
- * @param {Object} value The reading index value
+ * @param {Object} value The scenario
  */
 export default class Player extends Dom {
 
@@ -207,7 +207,7 @@ export default class Player extends Dom {
 
         switch(method){
             case 'play':
-                this.play(params.inTime, params.outTime, params.rIndex);
+                this.play(params.inTime, params.outTime, params.scenario);
                 break;
 
             case 'pause':
@@ -241,8 +241,8 @@ export default class Player extends Dom {
                 break;
             }
 
-            case 'rindex':
-                this.setReadingIndex(!isNaN(params.index) ? params.index : 0);
+            case 'scenario':
+                this.setScenario(params.value);
                 break;
 
             case 'playing':
@@ -285,7 +285,7 @@ export default class Player extends Dom {
                         });
                         break;
 
-                    case 'rindex':
+                    case 'scenariochange':
                         this.addListener(params.type, (event) => {
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback,
@@ -458,11 +458,10 @@ export default class Player extends Dom {
      */
     onPageActivate(evt){
         const page = evt.detail.page;
-        const rindex = this.getReadingIndex();
+        const scenario = this.getScenario();
 
         page.getChildren().forEach((element) => {
-            const el_rindex = element.getPropertyValue('r-index');
-            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+            if(element.getPropertyValue('scenario') === scenario){
                 element.activate();
             }
             else{
@@ -496,10 +495,9 @@ export default class Player extends Dom {
 
         if(page.isActive()){
             const element = evt.detail.element;
-            const rindex = this.getReadingIndex();
-            const el_rindex = element.getPropertyValue('r-index');
+            const scenario = this.getScenario();
 
-            if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+            if(element.getPropertyValue('scenario') === scenario){
                 element.activate();
             }
             else{
@@ -542,7 +540,7 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementPlay(evt){
-        this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.rIndex);
+        this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.scenario);
     }
 
     /**
@@ -1012,10 +1010,10 @@ export default class Player extends Dom {
      *
      * @param {String} [inTime] The time at which the media should start playing
      * @param {String} [outTime] The time at which the media should stop playing
-     * @param {String} [rIndex] A reading index to go to while playing
+     * @param {String} [scenario] A reading index to go to while playing
      * @return {this}
      */
-    play(inTime, outTime, rIndex){
+    play(inTime, outTime, scenario){
         const media = this.getMedia();
 
         if(this.cuepoint){
@@ -1024,7 +1022,6 @@ export default class Player extends Dom {
 
         const _inTime = parseFloat(inTime);
         const _outTime = parseFloat(outTime);
-        const _rIndex = parseInt(rIndex, 10);
 
         if(isNaN(_inTime)){
             media.play();
@@ -1040,19 +1037,26 @@ export default class Player extends Dom {
                 'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
             })
-            .addListener('start', () => {
-                this.setReadingIndex(!isNaN(_rIndex) ? _rIndex : 0);
-            })
             .addListener('seekout', (evt) => {
                 evt.target.deactivate();
                 delete this.cuepoint;
-
-                this.setReadingIndex(0);
             })
             .addListener('stop', (evt) => {
                 evt.target.getMedia().pause();
-            })
-            .activate();
+            });
+
+            if(scenario){
+                const previous_scenario = this.getScenario();
+                this.cuepoint
+                    .addListener('start', () => {
+                        this.setScenario(scenario);
+                    })
+                    .addListener('seekout', () => {
+                        this.setScenario(previous_scenario);
+                    });
+            }
+
+            this.cuepoint.activate();
 
             media.setTime(_inTime).play();
         }
@@ -1061,30 +1065,28 @@ export default class Player extends Dom {
     }
 
     /**
-     * Get the current reading index
+     * Get the current scenario
      *
-     * @return {Integer} The reading index
+     * @return {String} The scenario
      */
-    getReadingIndex(){
-        const value = parseInt(this.data('r-index'), 10);
-        return isNaN(value) ? null : value;
+    getScenario(){
+        return this.scenario;
     }
 
     /**
-     * Set the current reading index
+     * Set the current scenario
      *
-     * @param {Integer} rindex The reading index
-     * @param {Boolean} [supressEvent=false] Whether to supress the blockadd event or not
+     * @param {String} scenario The scenario
+     * @param {Boolean} [supressEvent=false] Whether to supress the scenariochange event or not
      * @return {this}
      */
-    setReadingIndex(rindex, supressEvent){
-        if(rindex !== this.getReadingIndex()){
-            this.data('r-index', rindex !== 0 ? rindex : null);
+    setScenario(scenario, supressEvent){
+        if(scenario !== this.scenario){
+            this.scenario = scenario;
 
             this.getComponents('.block').forEach((block) => {
                 block.getActivePage().getChildren().forEach((element) => {
-                    const el_rindex = element.getPropertyValue('r-index');
-                    if(el_rindex === null || el_rindex === 0 || el_rindex === rindex){
+                    if(element.getPropertyValue('scenario') === this.scenario){
                         element.activate();
                     }
                     else{
@@ -1094,7 +1096,7 @@ export default class Player extends Dom {
             });
 
             if(supressEvent !== true){
-                this.triggerEvent('rindex', {'player': this, 'value': rindex}, true, false);
+                this.triggerEvent('scenariochange', {'player': this, 'value': this.scenario}, true, false);
             }
         }
 

@@ -36,11 +36,11 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
  *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
- *         <a href="#rindex=2" rel="metascore" data-guide="guide-93">SET THE READING INDEX TO 2</a>
+ *         <a href="#scenario=2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO 2</a>
  *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
- *         <a href="#page=permanentText,3&rindex=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE READING INDEX TO 2 AND SEEK TO 500 CENTISECONDS</a>
+ *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
  */
 export default class API{
 
@@ -154,11 +154,11 @@ export default class API{
      *
      * @param {String} [inTime] The time at which the player should start playing
      * @param {String} [outTime] The time at which the player should stop playing
-     * @param {String} [rIndex] A reading index to go to while playing
+     * @param {String} [scenario] A scenario to go to while playing
      * @return {this}
      */
-    play(inTime, outTime, rIndex){
-        this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'rIndex': rIndex});
+    play(inTime, outTime, scenario){
+        this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'scenario': scenario});
 
         return this;
     }
@@ -242,14 +242,14 @@ export default class API{
     }
 
     /**
-     * Sends a 'rIndex' message to the player
-     * Used to set the reading index of the player
+     * Sends a 'scenario' message to the player
+     * Used to set the scenario of the player
      *
-     * @param {Integer} index The reading index to set
+     * @param {String} value The scenario to set
      * @return {this}
      */
-    rindex(index){
-        this.postMessage('rindex', {'index': parseInt(index, 10)});
+    scenario(value){
+        this.postMessage('scenario', {'value': value});
 
         return this;
     }

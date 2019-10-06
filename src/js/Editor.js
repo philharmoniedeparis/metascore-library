@@ -124,7 +124,6 @@ export default class Editor extends Dom {
         this.mainmenu = new MainMenu()
             .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
             .addDelegate('.checkbox.input[data-action="preview-toggle"]', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
-            .addDelegate('.number.input[data-action="r-index"]', 'valuechange', this.onMainmenuRindexFieldChange.bind(this))
             .appendTo(top_pane.getContents());
 
         // Tools pane ////////////////////////
@@ -339,24 +338,6 @@ export default class Editor extends Dom {
 
                         page.getChildren().forEach((element, index) => {
                             this.configs_editor.setComponent(element, index > 0);
-                        });
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.page') ? true : false);
-                    }
-                },
-                'select-elements-matching-index': {
-                    'text': Locale.t('editor.contextmenu.select-elements-matching-index', 'Select all elements of the current reading index'),
-                    'callback': (context) => {
-                        const rindex = this.getPlayer().getReadingIndex();
-                        const page = context.el.closest('.metaScore-component.page')._metaScore;
-
-                        this.configs_editor.unsetComponents();
-
-                        page.getChildren().forEach((element) => {
-                            if(element.getPropertyValue('r-index') === rindex){
-                                this.configs_editor.setComponent(element, true);
-                            }
                         });
                     },
                     'toggler': (context) => {
@@ -879,18 +860,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Mainmenu reading index field valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onMainmenuRindexFieldChange(evt){
-        const value = evt.detail.value;
-
-        this.getPlayer().setReadingIndex(value, true);
-    }
-
-    /**
      * Controller controls button click event callback
      *
      * @private
@@ -1021,14 +990,6 @@ export default class Editor extends Dom {
                 start_time_field.disable();
                 end_time_field.disable();
             }
-
-            evt.stopPropagation();
-        }
-        else if(component.instanceOf('Element')){
-            const element = evt.detail.component;
-            const player = this.getPlayer();
-
-            player.setReadingIndex(element.getPropertyValue('r-index') || 0);
 
             evt.stopPropagation();
         }*/
@@ -1322,45 +1283,95 @@ export default class Editor extends Dom {
          * @todo: handle page before, page after
          **/
 
-        if(evt.dataTransfer.getData('metascore/component')){
+        if(evt.dataTransfer.types.includes('metascore/component') || evt.dataTransfer.types.includes('metascore/asset')){
             evt.preventDefault();
         }
     }
 
     onPlayerDrop(evt){
-        let data = evt.dataTransfer.getData('metascore/component');
+        try{
+            if(evt.dataTransfer.types.includes('metascore/component')){
+                this.onPlayerDropComponent(evt);
+            }
+            else if(evt.dataTransfer.types.includes('metascore/asset')){
+                this.onPlayerDropAsset(evt);
+            }
+        }
+        catch(e){
+            console.error(e);
+        }
 
-        if(data){
-            data = JSON.parse(data);
+        evt.preventDefault();
+    }
 
-            const type = data.type;
-            let configs = data.configs;
-            let parent = null;
+    onPlayerDropComponent(evt){
+        const data = JSON.parse(evt.dataTransfer.getData('metascore/component'));
 
-            switch(type){
-                case 'element':
-                    parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                    const rect = parent.get(0).getBoundingClientRect();
+        switch(data.type){
+            case 'element': {
+                    const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                    const parent_rect = parent.get(0).getBoundingClientRect();
+                    const configs = Object.assign({
+                        'x': evt.clientX - parent_rect.left,
+                        'y': evt.clientY - parent_rect.top
+                    }, data.configs);
+                    this.addPlayerComponents(data.type, configs, parent);
+                }
+                break;
 
-                    configs = Object.assign({
-                        'x': evt.clientX - rect.left,
-                        'y': evt.clientY - rect.top
-                    }, configs);
-                    break;
-                case 'page':
-                    parent = evt.target.closest('.metaScore-component.block')._metaScore;
-                    break;
-                case 'block':
-                    configs = Object.assign({
+            case 'page': {
+                    const parent = evt.target.closest('.metaScore-component.block')._metaScore;
+                    this.addPlayerComponents(data.type, data.configs, parent);
+                }
+                break;
+
+            case 'block': {
+                    const configs = Object.assign({
                         'x': evt.clientX,
                         'y': evt.clientY
-                    }, configs);
+                    }, data.configs);
+                    this.addPlayerComponents(data.type, configs, this.getPlayer());
+                }
+                break;
+        }
 
-                    parent = this.player;
+    }
+
+    onPlayerDropAsset(evt){
+        const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
+
+        if('shared' in asset && asset.shared){
+            switch(asset.type){
+                case 'image': {
+                        const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                        const parent_rect = parent.get(0).getBoundingClientRect();
+
+                        const configs = {
+                            'type': 'Content',
+                            'background-image': asset.file.url,
+                            'x': evt.clientX - parent_rect.left,
+                            'y': evt.clientY - parent_rect.top,
+                        };
+
+                        this.addPlayerComponents('element', configs, parent);
+                    }
+                    break;
+
+                case 'lottie_animation': {
+                        const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                        const parent_rect = parent.get(0).getBoundingClientRect();
+
+                        const configs = {
+                            'type': 'Animation',
+                            'src': asset.file.url,
+                            'x': evt.clientX - parent_rect.left,
+                            'y': evt.clientY - parent_rect.top,
+                        };
+
+                        this.addPlayerComponents('element', configs, parent);
+                    }
                     break;
             }
-
-            this.addPlayerComponents(type, configs, parent);
         }
     }
 
