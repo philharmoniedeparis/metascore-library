@@ -450,7 +450,7 @@ export default class ComponentForm extends Dom {
                 break;
 
             case 'time':
-                this.fields.start_time = new Field(
+                this.fields['start-time'] = new Field(
                     new TimeInput({
                         'inButton': true,
                         'outButton': true
@@ -461,7 +461,7 @@ export default class ComponentForm extends Dom {
                     .data('property', 'start-time')
                     .appendTo(this.fields_wrapper);
 
-                this.fields.end_time = new Field(
+                this.fields['end-time'] = new Field(
                     new TimeInput({
                         'inButton': true,
                         'outButton': true

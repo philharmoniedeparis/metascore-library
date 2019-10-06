@@ -80,50 +80,61 @@
             border-bottom: 2px solid $darkgray;
             z-index: 1;
 
-            > .controls {
+            > .left{
+                display: flex;
+                flex-direction: column;
+                flex-wrap: nowrap;
                 width: $left-width;
                 flex: 0 0 auto;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
                 box-sizing: border-box;
                 border-right: 2px solid $darkgray;
 
-                button{
-                    border: none;
-                    outline: none;
-                    background-color: transparent;
-                    background-repeat: no-repeat;
+                .controls {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    flex: 1 1 auto;
 
-                    &[data-action="rewind"]{
-                        flex: 0 0 2em;
-                        margin-right: 0.5em;
+                    button{
+                        border: none;
+                        outline: none;
+                        background-color: transparent;
+                        background-repeat: no-repeat;
 
-                        .icon{
-                            color: #fff;
-                            filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75))
+                        &[data-action="rewind"]{
+                            flex: 0 0 2em;
+                            margin-right: 0.5em;
+
+                            .icon{
+                                color: #fff;
+                                filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75))
+                            }
                         }
-                    }
 
-                    &[data-action="play"]{
-                        flex: 0 0 4em;
-                        height: 4em;
-                        background: #fff;
-                        border-radius: 50%;
-                        box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
-                        margin-right: 2.5em;
+                        &[data-action="play"]{
+                            flex: 0 0 4em;
+                            height: 4em;
+                            background: #fff;
+                            border-radius: 50%;
+                            box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
+                            margin-right: 2.5em;
 
-                        .icon{
-                            height: 100%;
-                            color: $darkgray;
+                            .icon{
+                                height: 100%;
+                                color: $darkgray;
+                            }
                         }
                     }
                 }
             }
 
-            .waveform-zoom {
+            > .right{
                 flex: 1 1 auto;
+
+                .waveform-zoom{
+                    height: 100%;
+                }
             }
         }
 

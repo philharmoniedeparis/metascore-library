@@ -26,13 +26,17 @@ $resize-handle-size: 0.5em;
     }
 
     &.collapsed{
+        > .contents{
+            display: none;
+        }
+
         &.vertical{
             min-width: auto;
-            width: 0 !important;
+            width: 0;
         }
         &.horizontal{
             min-height: auto;
-            height: 0 !important;
+            height: 0;
         }
     }
 

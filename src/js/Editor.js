@@ -114,7 +114,7 @@ export default class Editor extends Dom {
         const top_pane = new Pane({
                 'axis': 'horizontal',
             })
-            .attr('id', 'top-pane')
+            .addClass('top-pane')
             .appendTo(this);
 
         /**
@@ -133,7 +133,7 @@ export default class Editor extends Dom {
                     'directions': ['right']
                 }
             })
-            .attr('id', 'tools-pane')
+            .addClass('tools-pane')
             .appendTo(this);
 
         this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
@@ -147,7 +147,7 @@ export default class Editor extends Dom {
         const center_pane = new Pane({
                 'axis': 'vertical'
             })
-            .attr('id', 'center-pane')
+            .addClass('center-pane')
             .appendTo(this);
 
         new Dom('<div/>', {'id': 'wysiwyg-top'})
@@ -200,7 +200,7 @@ export default class Editor extends Dom {
                     'directions': ['left']
                 }
             })
-            .attr('id', 'configs-pane')
+            .addClass('configs-pane')
             .appendTo(this);
 
         /**
@@ -219,7 +219,7 @@ export default class Editor extends Dom {
                     'directions': ['top']
                 }
             })
-            .attr('id', 'bottom-pane')
+            .addClass('bottom-pane')
             .appendTo(this);
 
         /**
@@ -228,10 +228,8 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('timeset', this.onControllerTimeSet.bind(this))
-            .appendTo(bottom_pane.getContents());
-
-        this.controller.getControls()
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
+            .appendTo(bottom_pane.getContents());
 
         this.controller.getTimeInput()
             .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
@@ -259,7 +257,6 @@ export default class Editor extends Dom {
         // prevent the custom contextmenu from overriding the native one in inputs
         this.addDelegate('input', 'contextmenu', (evt) => {
             evt.stopImmediatePropagation();
-            evt.stopPropagation();
         });
 
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));

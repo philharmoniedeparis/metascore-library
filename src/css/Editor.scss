@@ -78,58 +78,85 @@
     align-items: stretch;
     flex-wrap: nowrap;
 
-    #top-pane{
-        grid-area: top;
-        height: 2.5em;
-        background: $darkgray;
-    }
-
-    #tools-pane{
-        grid-area: left;
-        width: 20em;
-        min-width: min-content;
-        max-width: 25vw;
-    }
-
-    #center-pane{
-        grid-area: center;
-        flex: 1 1 auto;
-
-        > .contents{
-            display: flex;
-            flex-direction: column;
+    .pane{
+        &.top-pane{
+            grid-area: top;
+            height: 2.5em;
+            background: $darkgray;
         }
-    }
 
-    #configs-pane{
-        grid-area: right;
-        width: 20em;
-        min-width: min-content;
-        max-width: 25vw;
-    }
+        &.tools-pane{
+            grid-area: left;
+            width: 20em;
+            min-width: min-content;
+            max-width: 25vw;
+        }
 
-    #bottom-pane{
-        grid-area: bottom;
-        height: 300px;
-        min-height: 150px;
-        max-height: 50vh;
+        &.center-pane{
+            grid-area: center;
+            flex: 1 1 auto;
+
+            > .contents{
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        &.configs-pane{
+            grid-area: right;
+            width: 20em;
+            min-width: min-content;
+            max-width: 25vw;
+        }
+
+        &.bottom-pane{
+            grid-area: bottom;
+            height: 300px;
+            min-height: 150px;
+            max-height: 50vh;
+
+            &.collapsed{
+                height: auto;
+
+                > .contents{
+                    display: block;
+                    > .controller{
+                        > .top{
+                            .time.input{
+                                button[data-action="play"]{
+                                    display: block;
+                                }
+                            }
+                            .zoom-controls{
+                                display: none;
+                            }
+                        }
+                        > .bottom{
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     &.assetbrowser-expanded{
         grid-template-columns: auto 0 minmax(0, min-content);
 
-        #tools-pane{
-            width: auto;
-            max-width: none;
-            padding: 0;
+        .pane{
+            &.tools-pane{
+                width: auto;
+                max-width: none;
+                padding: 0;
 
-            > .resize-handle{
+                > .resize-handle{
+                    display: none;
+                }
+            }
+
+            &.center-pane{
                 display: none;
             }
-        }
-
-        #center-pane{
-            display: none;
         }
     }
 
@@ -181,51 +208,57 @@
     }
 
     &:not(.editing){
-        #tools-pane{
-            display: none;
-        }
-
-        #configs-pane{
-            display: none;
-        }
-
-        #center-pane{
-            .workspace{
-                padding: 0;
-
-                .ruler{
-                    display: none;
-                }
-
-                .grid{
-                    display: none;
-                }
-            }
-        }
-
-        #bottom-pane{
-            height: auto !important;
-            min-height: 0;
-
-            > .resize-handle{
+        .pane{
+            &.tools-pane{
                 display: none;
             }
 
-            .controller{
-                .top{
-                    .time.input{
-                        button[data-action="play"]{
-                            display: block;
-                        }
+            &.configs-pane{
+                display: none;
+            }
+
+            &.center-pane{
+                .workspace{
+                    padding: 0;
+
+                    .ruler{
+                        display: none;
+                    }
+
+                    .grid{
+                        display: none;
                     }
                 }
+            }
 
-                .middle{
+            &.bottom-pane{
+                height: auto;
+                min-height: 0;
+
+                > .resize-handle{
                     display: none;
                 }
 
-                .bottom{
-                    display: none;
+                .controller{
+                    .top{
+                        .time.input{
+                            button[data-action="play"]{
+                                display: block;
+                            }
+                        }
+
+                        .zoom-controls{
+                            display: none;
+                        }
+                    }
+
+                    .middle{
+                        display: none;
+                    }
+
+                    .bottom{
+                        display: none;
+                    }
                 }
             }
         }

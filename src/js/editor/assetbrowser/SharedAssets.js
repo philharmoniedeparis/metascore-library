@@ -11,6 +11,7 @@ import Lottie from 'lottie-web';
 import Fuse from 'fuse.js';
 
 import search_icon from '../../../img/editor/assetbrowser/sharedassets/search.svg?sprite';
+import close_icon from '../../../img/editor/assetbrowser/sharedassets/close.svg?sprite';
 import {className, toolbarClassName} from '../../../css/editor/assetbrowser/SharedAssets.scss';
 
 /**
@@ -71,7 +72,7 @@ export default class AssetBrowser extends Dom {
             .appendTo(this.toolbar);
 
         new Button({
-                'icon': 'close',
+                'icon': close_icon,
                 'label': Locale.t('editor.assetbrowser.SharedAssets.toolbar.close.label', 'Close')
             })
             .data('action', 'close')

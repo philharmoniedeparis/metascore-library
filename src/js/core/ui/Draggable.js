@@ -74,7 +74,7 @@ export default class Draggable {
      * @param {Event} evt The event object
      */
     onDragStart(evt){
-        if(!this.enabled){
+        if(!(evt instanceof DragEvent) || !this.enabled){
             return;
         }
 
@@ -122,7 +122,7 @@ export default class Draggable {
             .addClass('dragging')
             .triggerEvent('dragstart', {'behavior': this}, false, true);
 
-        evt.stopPropagation();
+        evt.stopImmediatePropagation();
         evt.preventDefault();
     }
 

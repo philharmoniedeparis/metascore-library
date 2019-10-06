@@ -138,6 +138,8 @@ body{
                     background-color: transparent;
                     background-image: url('../img/player/controller-buttons.png');
                     background-repeat: no-repeat;
+                    transition: none;
+                    opacity: 1;
 
                     &[data-action="rewind"]{
                         top: 22px;
@@ -153,6 +155,10 @@ body{
                         width: 43px;
                         height: 43px;
                         background-position: -47px 0;
+                    }
+
+                    &:hover{
+                        opacity: 0.75;
                     }
                 }
             }

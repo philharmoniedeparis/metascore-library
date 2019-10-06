@@ -28,6 +28,11 @@
                 margin-bottom: 0.25em;
                 line-height: 2em;
                 user-select: none;
+                opacity: 1;
+
+                &:hover{
+                    opacity: 0.75;
+                }
 
                 &.active{
                     pointer-events: none;

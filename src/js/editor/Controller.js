@@ -2,6 +2,7 @@ import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
+import ScenarioSelector from './controller/ScenarioSelector';
 import WaveformOverview from './controller/waveform/Overview';
 import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
@@ -84,8 +85,11 @@ export default class Controller extends Dom {
         const sticky = new Dom('<div/>', {'class': 'sticky'})
             .appendTo(bottom);
 
-        this.controls = new Dom('<div/>', {'class': 'controls'})
+        const left = new Dom('<div/>', {'class': 'left'})
             .appendTo(sticky);
+
+        this.controls = new Dom('<div/>', {'class': 'controls'})
+            .appendTo(left);
 
         this.controls.rewind_btn = new Button({'icon': rewind_icon})
             .data('action', 'rewind')
@@ -96,6 +100,12 @@ export default class Controller extends Dom {
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.controls);
 
+        this.scenario_selector = new ScenarioSelector()
+            .appendTo(left);
+
+        const right = new Dom('<div/>', {'class': 'right'})
+            .appendTo(sticky);
+
         /**
          * The zoom waveform
          * @type {WaveformZoom}
@@ -104,7 +114,7 @@ export default class Controller extends Dom {
             .addListener('offsetupdate', this.onWaveformZoomOffsetUpdate.bind(this))
             .addListener('playheadupdate', this.onWaveformZoomPlayheadUpdate.bind(this))
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
-            .appendTo(sticky);
+            .appendTo(right);
 
         this.waveform_zoom.getControls()
             .appendTo(top);

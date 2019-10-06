@@ -131,7 +131,6 @@
 	"editor.contextmenu.paste-elements": "Coller les éléments",
 	"editor.contextmenu.select-blocks": "Sélectionner tous les blocs",
 	"editor.contextmenu.select-elements": "Sélectionner tous les éléments",
-	"editor.contextmenu.select-elements-matching-index": "Sélectionner tous les éléments de l'indice de lecture actuel",
 	"editor.contextmenu.unlock-block": "Déverrouiller le bloc",
 	"editor.contextmenu.unlock-element": "Déverrouiller l'élément",
 	"editor.defaultBlockName": "sans titre",
