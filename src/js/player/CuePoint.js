@@ -1,4 +1,5 @@
 import EventEmitter from '../core/EventEmitter';
+import MediaClock from '../core/clock/MediaClock';
 import {uuid} from '../core/utils/String';
 
 /**
@@ -50,9 +51,9 @@ export default class CuePoint extends EventEmitter{
 
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-        this.onMediaSeeking = this.onMediaSeeking.bind(this);
-        this.onMediaSeeked = this.onMediaSeeked.bind(this);
+        this.onMediaClockTimeUpdate = this.onMediaClockTimeUpdate.bind(this);
+        this.onMediaRendererSeeking = this.onMediaRendererSeeking.bind(this);
+        this.onMediaRendererSeeked = this.onMediaRendererSeeked.bind(this);
     }
 
     /**
@@ -62,7 +63,6 @@ export default class CuePoint extends EventEmitter{
     */
     static getDefaults(){
         return {
-            'media': null,
             'inTime': null,
             'outTime': null,
             'considerError': false
@@ -70,11 +70,11 @@ export default class CuePoint extends EventEmitter{
     }
 
     /**
-     * The media's timeupdate event handler
+     * The media clock timeupdate event handler
      *
      * @private
      */
-    onMediaTimeUpdate(){
+    onMediaClockTimeUpdate(){
         this.update();
     }
 
@@ -83,10 +83,9 @@ export default class CuePoint extends EventEmitter{
      *
      * @private
      */
-    onMediaSeeking(){
-        this.getMedia()
-            .addListener('seeked', this.onMediaSeeked)
-            .removeListener('timeupdate', this.onMediaTimeUpdate);
+    onMediaRendererSeeking(){
+        MediaClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
+        MediaClock.getRenderer().addListener('seeked', this.onMediaRendererSeeked);
     }
 
     /**
@@ -94,12 +93,11 @@ export default class CuePoint extends EventEmitter{
      *
      * @private
      */
-    onMediaSeeked(){
-        const cur_time = this.getMedia().getTime();
+    onMediaRendererSeeked(){
+        const time = MediaClock.getTime();
 
-        this.getMedia()
-            .addListener('timeupdate', this.onMediaTimeUpdate)
-            .removeListener('seeked', this.onMediaSeeked);
+        MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
+        MediaClock.getRenderer().removeListener('seeked', this.onMediaRendererSeeked);
 
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
@@ -109,25 +107,16 @@ export default class CuePoint extends EventEmitter{
              * The previous media time
              * @type {Number}
              */
-            this.previous_time = cur_time;
+            this.previous_time = time;
         }
 
-        if((Math.ceil(cur_time) < this.configs.inTime) || (Math.floor(cur_time) > this.configs.outTime)){
+        if((Math.ceil(time) < this.configs.inTime) || (Math.floor(time) > this.configs.outTime)){
             this.triggerEvent('seekout');
             this.stop();
         }
         else{
             this.update();
         }
-    }
-
-    /**
-     * Get the media component on which this cuepoint is attached
-     *
-     * @return {player.component.Media} The media component
-     */
-    getMedia() {
-        return this.configs.media;
     }
 
     /**
@@ -139,7 +128,7 @@ export default class CuePoint extends EventEmitter{
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
             this.active = true;
 
-            this.getMedia().addListener('timeupdate', this.onMediaTimeUpdate);
+            MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
             this.update();
         }
 
@@ -154,7 +143,7 @@ export default class CuePoint extends EventEmitter{
     deactivate() {
         delete this.active;
 
-        this.getMedia().removeListener('timeupdate', this.onMediaTimeUpdate);
+        MediaClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
 
         this.stop();
 
@@ -177,7 +166,7 @@ export default class CuePoint extends EventEmitter{
         }
 
         this.running = true;
-        this.getMedia().addListener('seeking', this.onMediaSeeking);
+        MediaClock.getRenderer().addListener('seeking', this.onMediaRendererSeeking);
 
         this.triggerEvent('update');
     }
@@ -193,27 +182,27 @@ export default class CuePoint extends EventEmitter{
             return;
         }
 
-        const cur_time = this.getMedia().getTime();
+        const time = MediaClock.getTime();
 
         if(!this.running){
-            if(((this.configs.inTime === null) || (Math.floor(cur_time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(cur_time) < this.configs.outTime))){
+            if(((this.configs.inTime === null) || (Math.floor(time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(time) < this.configs.outTime))){
                 this.start();
             }
         }
         else{
             if(this.configs.considerError){
                 if('previous_time' in this){
-                    this.max_error = Math.max(this.max_error, Math.abs(cur_time - this.previous_time));
+                    this.max_error = Math.max(this.max_error, Math.abs(time - this.previous_time));
                 }
 
-                this.previous_time = cur_time;
+                this.previous_time = time;
             }
 
             if(supressEvent !== true){
                 this.triggerEvent('update');
             }
 
-            if((this.configs.outTime !== null) && (Math.floor(cur_time + this.max_error) >= this.configs.outTime)){
+            if((this.configs.outTime !== null) && (Math.floor(time + this.max_error) >= this.configs.outTime)){
                 this.stop();
             }
         }
@@ -230,7 +219,7 @@ export default class CuePoint extends EventEmitter{
             return;
         }
 
-        this.getMedia().removeListener('seeking', this.onMediaSeeking);
+        MediaClock.getRenderer().removeListener('seeking', this.onMediaRendererSeeking);
 
         if(supressEvent !== true){
             this.triggerEvent('stop');

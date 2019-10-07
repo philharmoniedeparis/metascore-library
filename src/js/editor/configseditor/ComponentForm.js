@@ -453,7 +453,8 @@ export default class ComponentForm extends Dom {
                 this.fields['start-time'] = new Field(
                     new TimeInput({
                         'inButton': true,
-                        'outButton': true
+                        'outButton': true,
+                        'clearButton': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.start-time.label', 'Start')
@@ -464,7 +465,8 @@ export default class ComponentForm extends Dom {
                 this.fields['end-time'] = new Field(
                     new TimeInput({
                         'inButton': true,
-                        'outButton': true
+                        'outButton': true,
+                        'clearButton': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.end-time.label', 'End')

@@ -1,4 +1,5 @@
 import Dom from '../../../core/Dom';
+import MediaClock from '../../../core/clock/MediaClock';
 import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
 import {className} from '../../../../css/editor/controller/WaveformOverview.scss';
@@ -33,7 +34,6 @@ export default class Overview extends Dom {
         // fix event handlers scope
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -62,6 +62,10 @@ export default class Overview extends Dom {
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
+
+        MediaClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -110,33 +114,6 @@ export default class Overview extends Dom {
         }
 
         this.update();
-
-        return this;
-    }
-
-    /**
-     * Set the associated media
-     *
-     * @param {Media} media The media component
-     * @return {this}
-     */
-    setMedia(media){
-        if(this.media){
-            this.media.removeListener('timeupdate', this.onMediaTimeUpdate);
-        }
-
-        /**
-         * The associated media
-         * @type {Media}
-         */
-        this.media = media;
-
-        this.media.addListener('timeupdate', this.onMediaTimeUpdate);
-        this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
-
-        this
-            .updateSize()
-            .update();
 
         return this;
     }
@@ -231,7 +208,7 @@ export default class Overview extends Dom {
     updatePlayhead(){
         const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        const x = Math.round(this.getPositionAt(this.time))  + 0.5;
+        const x = Math.round(this.getPositionAt(MediaClock.getTime()))  + 0.5;
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
@@ -274,7 +251,9 @@ export default class Overview extends Dom {
      * @private
      */
     onMousemove(evt){
-        if(!this.media && !this.resampled_data){
+        const renderer = MediaClock.getRenderer();
+
+        if(!renderer && !this.resampled_data){
             return;
         }
 
@@ -307,19 +286,27 @@ export default class Overview extends Dom {
         this.onMousemove(evt);
     }
 
+    onMediaClockRendererChange(evt){
+        const renderer = evt.detail.renderer;
+
+        if(renderer){
+            renderer.getWaveformData(this.onMediaWaveformData.bind(this));
+
+            this
+                .updateSize()
+                .update();
+        }
+    }
+
     /**
      * Media timeupdate event callback
      *
      * @private
      */
-    onMediaTimeUpdate(evt){
-        /**
-         * The current time in centiseconds
-         * @type {Number}
-         */
-        this.time = evt.detail.time;
+    onMediaClockTimeUpdate(){
+        const renderer = MediaClock.getRenderer();
 
-        if(this.media || this.resampled_data){
+        if(renderer || this.resampled_data){
             this.updatePlayhead();
         }
     }
@@ -374,8 +361,10 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x));
         }
-        else if(this.media){
-            return this.media.getDuration() * x / this.width;
+
+        const renderer = MediaClock.getRenderer();
+        if(renderer){
+            return renderer.getDuration() * x / this.width;
         }
 
         return null;
@@ -391,8 +380,10 @@ export default class Overview extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time));
         }
-        else if(this.media){
-            return time * this.width / this.media.getDuration();
+
+        const renderer = MediaClock.getRenderer();
+        if(renderer){
+            return time * this.width / renderer.getDuration();
         }
 
         return null;

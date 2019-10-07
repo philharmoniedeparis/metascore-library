@@ -1,4 +1,5 @@
 import Dom from '../core/Dom';
+import MediaClock from '../core/clock/MediaClock';
 import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
@@ -31,12 +32,14 @@ export default class Controller extends Dom {
         super('<div/>', {'class': `controller ${className}`});
 
         // fix event handlers scope
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-        this.onMediaPlay = this.onMediaPlay.bind(this);
-        this.onMediaPause = this.onMediaPause.bind(this);
-        this.onMediaSourceSet = this.onMediaSourceSet.bind(this);
+        this.onMediaRendererPlay = this.onMediaRendererPlay.bind(this);
+        this.onMediaRendererPause = this.onMediaRendererPause.bind(this);
 
         this.setupUI();
+
+        MediaClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -131,55 +134,6 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Set the media
-     *
-     * @param {Media} media The media component
-     * @return {this}
-     */
-    attachMedia(media){
-        media.getRenderer()
-            .addListener('timeupdate', this.onMediaTimeUpdate)
-            .addListener('play', this.onMediaPlay)
-            .addListener('pause', this.onMediaPause)
-            .addListener('sourceset', this.onMediaSourceSet);
-
-        this.getTimeInput().setMax(media.getDuration());
-
-        this.getBufferIndicator().setMedia(media);
-        this.getWaveformOverview().setMedia(media);
-        this.getWaveformZoom().setMedia(media);
-        this.getTimeline().setMedia(media);
-
-        this.removeClass('disabled');
-
-
-        return this;
-    }
-
-    /**
-     * Disable the controller
-     *
-     * @return {this}
-     */
-    dettachMedia(){
-        if(this.media){
-            this.media.getRenderer()
-                .removeListener('timeupdate', this.onMediaTimeUpdate)
-                .removeListener('play', this.onMediaPlay)
-                .removeListener('pause', this.onMediaPause)
-                .removeListener('sourceset', this.onMediaSourceSet);
-        }
-
-        this.getBufferIndicator().clear();
-        this.getWaveformOverview().clear();
-        this.getWaveformZoom().clear();
-
-        this.addClass('disabled');
-
-        return this;
-    }
-
-    /**
      * Progress bar's resize event callback
      *
      * @private
@@ -228,11 +182,36 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Media timeupdate event callback
+     * Set the media
+     *
+     * @param {Media} media The media component
+     * @return {this}
+     */
+    onMediaClockRendererChange(evt){
+        const renderer = evt.detail.renderer;
+
+        if(renderer){
+            renderer
+                .addListener('play', this.onMediaRendererPlay)
+                .addListener('pause', this.onMediaRendererPause);
+
+            this.getTimeInput().setMax(renderer.getDuration());
+
+            this.removeClass('disabled');
+        }
+        else{
+            this.addClass('disabled');
+        }
+
+        return this;
+    }
+
+    /**
+     * MediaClock timeupdate event callback
      *
      * @private
      */
-    onMediaTimeUpdate(evt){
+    onMediaClockTimeUpdate(evt){
         this.getTimeInput().setValue(evt.detail.time, true);
     }
 
@@ -242,7 +221,7 @@ export default class Controller extends Dom {
      *
      * @private
      */
-    onMediaPlay(){
+    onMediaRendererPlay(){
         this.addClass('playing');
 
         this.timeinput.play_btn.setIcon(pause_icon);
@@ -254,20 +233,11 @@ export default class Controller extends Dom {
      *
      * @private
      */
-    onMediaPause(){
+    onMediaRendererPause(){
         this.removeClass('playing');
 
         this.timeinput.play_btn.setIcon(play_icon);
         this.controls.play_btn.setIcon(play_icon);
-    }
-
-    /**
-     * Media sourceset event callback
-     *
-     * @private
-     */
-    onMediaSourceSet(){
-        console.log('onMediaSourceSet');
     }
 
     /**

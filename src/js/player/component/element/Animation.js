@@ -1,5 +1,6 @@
 import Element from '../Element';
 import {toSeconds, toCentiseconds} from '../../../core/utils/Media';
+import MediaClock from '../../../core/clock/MediaClock';
 import Lottie from 'lottie-web';
 
 /**
@@ -147,9 +148,7 @@ export default class Animation extends Element{
      * @private
      * @param {Event} evt The event object
      */
-    onCuePointUpdate(evt){
-        this.current_time = evt.target.getMedia().getTime();
-
+    onCuePointUpdate(){
         this.draw();
     }
 
@@ -164,8 +163,9 @@ export default class Animation extends Element{
             const start_time = this.getPropertyValue('start-time');
             const start_frame = this.getPropertyValue('start-frame');
             const loop_duration = this.getPropertyValue('loop-duration');
+            const current_time = MediaClock.getTime();
 
-            const time = toSeconds(this.current_time - start_time);
+            const time = toSeconds(current_time - start_time);
             const total_frames = animation.getDuration(true);
             const fps = total_frames / toSeconds(loop_duration);
             const frame = (time * fps + start_frame) % total_frames;

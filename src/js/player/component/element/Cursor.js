@@ -1,5 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
+import MediaClock from '../../../core/clock/MediaClock';
 import {map, radians} from '../../../core/utils/Math';
 
 /**
@@ -151,16 +152,6 @@ export default class Cursor extends Element {
         });
     }
 
-    constructor(configs) {
-        super(configs);
-
-        /**
-         * The current media time
-         * @type int
-         */
-        this.current_time = null;
-    }
-
     /**
      * Setup the cursor's UI
      *
@@ -286,9 +277,7 @@ export default class Cursor extends Element {
      * @private
      * @param {Event} evt The event object
      */
-    onCuePointUpdate(evt){
-        this.current_time = evt.target.getMedia().getTime();
-
+    onCuePointUpdate(){
         this.draw();
     }
 
@@ -300,8 +289,6 @@ export default class Cursor extends Element {
      */
     onCuePointStop(evt){
         super.onCuePointStop(evt);
-
-        this.current_time = null;
     }
 
     /**
@@ -349,8 +336,9 @@ export default class Cursor extends Element {
         const direction = this.getPropertyValue('direction');
         const cursor_width = this.getPropertyValue('cursor-width');
         const cursor_color = this.getPropertyValue('cursor-color');
+        const current_time = MediaClock.getTime();
 
-        const pos = this.getLinearPositionFromTime(this.current_time);
+        const pos = this.getLinearPositionFromTime(current_time);
         const vertical = direction === 'bottom' || direction === 'top';
         const width = vertical ? this.canvas.width : cursor_width;
         const height = vertical ? cursor_width : this.canvas.height;
@@ -551,12 +539,13 @@ export default class Cursor extends Element {
     drawCircularCursor(){
         const width = this.canvas.width;
         const height = this.canvas.height;
+        const current_time = MediaClock.getTime();
 
         const border_width = this.getPropertyValue('border-width');
         const cursor_width = this.getPropertyValue('cursor-width');
         const cursor_color = this.getPropertyValue('cursor-color');
 
-        const angle = this.getCircularAngleFromTime(this.current_time);
+        const angle = this.getCircularAngleFromTime(current_time);
 
         const centre = {
             x: width / 2,
@@ -638,6 +627,7 @@ export default class Cursor extends Element {
         const end_time = this.getPropertyValue('end-time');
         const start_angle = radians(this.getPropertyValue('start-angle'));
         const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
+        const current_time = MediaClock.getTime();
 
         let angle = a;
         angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
@@ -646,10 +636,8 @@ export default class Cursor extends Element {
         let time = map(angle, 0, Math.PI * 2, 0, loop_duration);
         time += start_time;
 
-        if(this.current_time !== null){
-            const current_loop = Math.floor((this.current_time - start_time) / loop_duration);
-            time += loop_duration * current_loop;
-        }
+        const current_loop = Math.floor((current_time - start_time) / loop_duration);
+        time += loop_duration * current_loop;
 
         return time;
     }

@@ -1,6 +1,7 @@
 import {className} from '../css/Player.scss';
 
 import Dom from './core/Dom';
+import MediaClock from './core/clock/MediaClock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
@@ -118,7 +119,6 @@ export default class Player extends Dom {
     * Initialize
     */
     init() {
-
         /**
          * The context menu
          * @type {ContextMenu}
@@ -137,6 +137,8 @@ export default class Player extends Dom {
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .appendTo(this.configs.container)
             .triggerEvent('ready', {'player': this}, false, false);
+
+        MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
 
         if(this.configs.autoload !== false){
             this.load();
@@ -327,6 +329,15 @@ export default class Player extends Dom {
     }
 
     /**
+     * Media sourceset event callback
+     *
+     * @private
+     */
+    onMediaSourceSet(evt){
+        MediaClock.setRenderer(evt.detail.renderer);
+    }
+
+    /**
      * Media waiting event callback
      *
      * @private
@@ -397,10 +408,9 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaTimeUpdate(){
+    onMediaClockTimeUpdate(){
         if(this.controller){
-            const currentTime = this.getMedia().getTime();
-            this.controller.updateTime(currentTime);
+            this.controller.updateTime(MediaClock.getTime());
         }
     }
 
@@ -574,9 +584,7 @@ export default class Player extends Dom {
         switch(evt.detail.property){
             case 'start-time':
             case 'end-time':
-                component.setCuePoint({
-                    'media': this.getMedia()
-                });
+                component.setCuePoint();
                 break;
 
             case 'direction':
@@ -842,13 +850,13 @@ export default class Player extends Dom {
         }
         else{
             media = new Media(media)
+                .addListener('sourceset', this.onMediaSourceSet.bind(this))
                 .addListener('waiting', this.onMediaWaiting.bind(this))
                 .addListener('seeking', this.onMediaSeeking.bind(this))
                 .addListener('seeked', this.onMediaSeeked.bind(this))
                 .addListener('playing', this.onMediaPlaying.bind(this))
                 .addListener('play', this.onMediaPlay.bind(this))
                 .addListener('pause', this.onMediaPause.bind(this))
-                .addListener('timeupdate', this.onMediaTimeUpdate.bind(this))
                 .addListener('suspend', this.onMediaSuspend.bind(this))
                 .addListener('stalled', this.onMediaStalled.bind(this))
                 .addListener('error', this.onMediaError.bind(this))

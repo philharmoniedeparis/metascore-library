@@ -1,4 +1,5 @@
 import Dom from '../../../core/Dom';
+import MediaClock from '../../../core/clock/MediaClock';
 import Button from '../../../core/ui/Button';
 import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
@@ -49,13 +50,6 @@ export default class Zoom extends Dom {
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-
-        /**
-         * The current time
-         * @type {Number}
-         */
-        this.time = 0;
 
         /**
          * The message text container
@@ -152,6 +146,10 @@ export default class Zoom extends Dom {
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
+
+        MediaClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -213,33 +211,6 @@ export default class Zoom extends Dom {
      */
     setMessage(text){
         this.message.text(text);
-
-        return this;
-    }
-
-    /**
-     * Set the associated media
-     *
-     * @param {Media} media The media component
-     * @return {this}
-     */
-    setMedia(media){
-        if(this.media){
-            this.media.removeListener('timeupdate', this.onMediaTimeUpdate);
-        }
-
-        /**
-         * The associated media
-         * @type {Media}
-         */
-        this.media = media;
-
-        this.media.addListener('timeupdate', this.onMediaTimeUpdate);
-        this.media.getRenderer().getWaveformData(this.onMediaWaveformData.bind(this));
-
-        this
-            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
-            .updateSize();
 
         return this;
     }
@@ -420,7 +391,7 @@ export default class Zoom extends Dom {
         if(this.width > 0 && this.height > 0){
             const canvas = this.playhead_layer.get(0);
             const context = canvas.getContext('2d');
-            const x = this.getPositionAt(this.time) + 0.5;
+            const x = this.getPositionAt(MediaClock.getTime()) + 0.5;
 
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
@@ -440,7 +411,7 @@ export default class Zoom extends Dom {
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
 
-            this.triggerEvent('playheadupdate', {'time': this.time, 'position': x});
+            this.triggerEvent('playheadupdate', {'position': x});
         }
 
         return this;
@@ -548,7 +519,7 @@ export default class Zoom extends Dom {
                 this.zoom_in_btn.toggleClass('disabled', clamped <= min);
                 this.zoom_slider.setValue(scale, true);
 
-                const offset = this.resampled_data.at_time(toSeconds(this.time)) - this.width/2;
+                const offset = this.resampled_data.at_time(toSeconds(MediaClock.getTime())) - this.width/2;
                 this.setOffset(offset, true);
             }
         }
@@ -651,18 +622,34 @@ export default class Zoom extends Dom {
     }
 
     /**
+     * Set the associated media
+     *
+     * @param {Media} media The media component
+     * @return {this}
+     */
+    onMediaClockRendererChange(evt){
+        const renderer = evt.detail.renderer;
+
+        if(renderer){
+            renderer.getWaveformData(this.onMediaWaveformData.bind(this));
+        }
+
+        this
+            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
+            .updateSize();
+
+        return this;
+    }
+
+    /**
      * Media timeupdate event callback
      *
      * @private
      */
-    onMediaTimeUpdate(evt){
-        /**
-         * The current time in centiseconds
-         * @type {Number}
-         */
-        this.time = evt.detail.time;
+    onMediaClockTimeUpdate(){
+        const renderer = MediaClock.getRenderer();
 
-        if(this.media || this.resampled_data){
+        if(renderer || this.resampled_data){
             this.updatePlayhead(true);
         }
     }
@@ -752,8 +739,10 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return toCentiseconds(this.resampled_data.time(x + this.offset));
         }
-        else if(this.media){
-            return x * this.media.getDuration() / this.width;
+
+        const renderer = MediaClock.getRenderer();
+        if(renderer){
+            return x * renderer.getDuration() / this.width;
         }
 
         return null;
@@ -769,8 +758,10 @@ export default class Zoom extends Dom {
         if(this.resampled_data){
             return this.resampled_data.at_time(toSeconds(time)) - this.offset;
         }
-        else if(this.media){
-            return Math.round(time / this.media.getDuration() * this.width);
+
+        const renderer = MediaClock.getRenderer();
+        if(renderer){
+            return Math.round(time / renderer.getDuration() * this.width);
         }
 
         return null;

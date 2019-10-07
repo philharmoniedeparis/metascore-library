@@ -4,6 +4,7 @@ import {className} from '../css/Editor.scss';
 
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
+import MediaClock from './core/clock/MediaClock';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
@@ -265,8 +266,8 @@ export default class Editor extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addDelegate('.time.field', 'valuein', this.onTimeFieldIn.bind(this))
-            .addDelegate('.time.field', 'valueout', this.onTimeFieldOut.bind(this))
+            .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
+            .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
             .setDirty(false)
             .setEditing(false)
             .updateMainmenu()
@@ -882,9 +883,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onControllerTimeFieldChange(evt){
-        const value = evt.detail.value;
-
-        this.getPlayer().getMedia().setTime(value);
+        MediaClock.setTime(evt.detail.value);
     }
 
     /**
@@ -902,28 +901,26 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Time field valuein event callback
+     * Time input valuein event callback
      *
      * @private
      * @param {CustomEvent} evt
      */
-    onTimeFieldIn(evt){
-        const field = evt.detail.field;
+    onTimeInputValueIn(evt){
+        const input = evt.detail.input;
         const time = this.getPlayer().getMedia().getTime();
 
-        field.getInput().setValue(time);
+        input.setValue(time);
     }
 
     /**
-     * Time field valueout event callback
+     * Time input valueout event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTimeFieldOut(evt){
-        const time = evt.detail.value;
-
-        this.getPlayer().getMedia().setTime(time);
+    onTimeInputValueOut(evt){
+        MediaClock.setTime(evt.detail.value);
     }
     /**
      * Controller timeset event callback
@@ -931,9 +928,7 @@ export default class Editor extends Dom {
      * @private
      */
     onControllerTimeSet(evt){
-        const time = evt.detail.time;
-
-        this.getPlayer().getMedia().setTime(time);
+        MediaClock.setTime(evt.detail.time);
     }
 
     /**
@@ -1015,7 +1010,7 @@ export default class Editor extends Dom {
 
         this.removeClass('metadata-loaded');
 
-        this.controller.dettachMedia();
+        MediaClock.setRenderer(null);
 
         this.getPlayer()
             .addOneTimeListener('mediaerror', (evt) => {
@@ -1030,7 +1025,7 @@ export default class Editor extends Dom {
                     'autoShow': true
                 });
             })
-            .addOneTimeListener('loadedmetadata', () => {
+            .addOneTimeListener('loadedmetadata', (evt) => {
                 loadmask.hide();
             });
     }
@@ -1040,12 +1035,12 @@ export default class Editor extends Dom {
      *
      * @private
      */
-    onPlayerLoadedMetadata(){
+    onPlayerLoadedMetadata(evt){
         const media = this.getPlayer().getMedia();
 
         this.addClass('metadata-loaded');
 
-        this.controller.attachMedia(media);
+        MediaClock.setRenderer(evt.detail.renderer);
 
         media.reset();
     }
@@ -1755,10 +1750,6 @@ export default class Editor extends Dom {
         this
             .removeClass('has-player')
             .removeClass('metadata-loaded');
-
-        this.player_contextmenu.disable();
-
-        this.controller.dettachMedia();
 
         this.player_contextmenu.disable();
 

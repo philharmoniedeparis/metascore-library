@@ -1,4 +1,5 @@
 import Dom from '../../core/Dom';
+import MediaClock from '../../core/clock/MediaClock';
 
 import {className} from '../../../css/editor/controller/BufferIndicator.scss';
 
@@ -43,12 +44,15 @@ export default class BufferIndicator extends Dom {
         // fix event handlers scope
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
-        this.onMediaTimeUpdate = this.onMediaTimeUpdate.bind(this);
-        this.onMediaProgress = this.onMediaProgress.bind(this);
+        this.onMediaRendererProgress = this.onMediaRendererProgress.bind(this);
 
         layers
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
+
+        MediaClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -92,36 +96,6 @@ export default class BufferIndicator extends Dom {
     }
 
     /**
-     * Set the associated media
-     *
-     * @param {Media} media The media component
-     * @return {this}
-     */
-    setMedia(media){
-        if(this.media){
-            this.media
-                .removeListener('timeupdate', this.onMediaTimeUpdate)
-                .removeListener('progress', this.onMediaProgress);
-        }
-
-        /**
-         * The associated media
-         * @type {Media}
-         */
-        this.media = media;
-
-        this.media
-            .addListener('timeupdate', this.onMediaTimeUpdate)
-            .addListener('progress', this.onMediaProgress);
-
-        this
-            .updateSize()
-            .update();
-
-        return this;
-    }
-
-    /**
      * Clear the <canvas> element
      *
      * @return {this}
@@ -141,10 +115,11 @@ export default class BufferIndicator extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        if(this.media){
-            const renderer = this.media.getRenderer();
+        const renderer = MediaClock.getRenderer();
+
+        if(renderer){
             const ranges = renderer.getBuffered();
-            const multiplier = canvas.width / this.media.getDuration();
+            const multiplier = canvas.width / renderer.getDuration();
 
             context.fillStyle = this.configs.bufferedColor;
 
@@ -166,11 +141,12 @@ export default class BufferIndicator extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        if(this.media){
-            const time = this.media.getTime();
+        const renderer = MediaClock.getRenderer();
+        if(renderer){
+            const time = MediaClock.getTime();
 
             context.fillStyle = this.configs.playbackColor;
-            context.fillRect(0, 0, (time * canvas.width / this.media.getDuration()) + 1, canvas.height);
+            context.fillRect(0, 0, (time * canvas.width / renderer.getDuration()) + 1, canvas.height);
         }
 
         return this;
@@ -206,10 +182,6 @@ export default class BufferIndicator extends Dom {
      * @private
      */
     onMousemove(evt){
-        if(!this.media){
-            return;
-        }
-
         const offset = this.get(0).getBoundingClientRect();
         const x = evt.pageX - offset.left;
         const time = this.getTimeAt(x);
@@ -239,12 +211,24 @@ export default class BufferIndicator extends Dom {
         this.onMousemove(evt);
     }
 
+    onMediaClockRendererChange(evt){
+        const renderer = evt.detail.renderer;
+
+        if(renderer){
+            renderer.addListener('progress', this.onMediaRendererProgress);
+        }
+
+        this
+            .updateSize()
+            .update();
+    }
+
     /**
      * The media's timeupdate event callback
      *
      * @private
      */
-    onMediaTimeUpdate(){
+    onMediaClockTimeUpdate(){
         this.updatePlayback();
     }
 
@@ -253,7 +237,7 @@ export default class BufferIndicator extends Dom {
      *
      * @private
      */
-    onMediaProgress(){
+    onMediaRendererProgress(){
         this.updateBuffered();
     }
 
@@ -264,11 +248,13 @@ export default class BufferIndicator extends Dom {
      * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x){
-        if(!this.media){
-            return -1;
+        const renderer = MediaClock.getRenderer();
+
+        if(renderer){
+            return renderer.getDuration() * x / this.width;
         }
 
-        return this.media.getDuration() * x / this.width;
+        return -1;
     }
 
 }

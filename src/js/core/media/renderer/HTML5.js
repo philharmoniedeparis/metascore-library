@@ -25,8 +25,6 @@ import WebAudioBuilder from 'waveform-data/webaudio';
  * @param {Object} renderer The renderer instance
  * @emits {progress} Fired as the resource loads
  * @param {Object} renderer The renderer instance
- * @emits {timeupdate} Fired when the renderer's time changed
- * @param {Object} renderer The renderer instance
  * @emits {waveformdataloaded} Fired when the waveform data has finished loading
  * @param {Object} renderer The renderer instance
  * @param {Mixed} data The waveformdata instance, or null
@@ -316,8 +314,6 @@ export default class HTML5 extends Dom {
 
         this.triggerEvent('play', {'renderer': this});
 
-        this.triggerTimeUpdate();
-
         if(isFunction(evt.stopPropagation)){
             evt.stopPropagation();
         }
@@ -415,23 +411,6 @@ export default class HTML5 extends Dom {
     }
 
     /**
-     * Trigger the timeupdate event
-     *
-     * @private
-     * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
-     * @return {this}
-     */
-    triggerTimeUpdate(loop) {
-        if(loop !== false && this.isPlaying()){
-            window.requestAnimationFrame(this.triggerTimeUpdate.bind(this));
-        }
-
-        this.triggerEvent('timeupdate', {'renderer': this, 'time': this.getTime()});
-
-        return this;
-    }
-
-    /**
      * Set the media time
      *
      * @param {Number} time The time in centiseconds
@@ -439,10 +418,6 @@ export default class HTML5 extends Dom {
      */
     setTime(time) {
         this.dom.currentTime = toSeconds(time);
-
-        if(!this.isPlaying()){
-            this.triggerTimeUpdate(false);
-        }
 
         return this;
     }

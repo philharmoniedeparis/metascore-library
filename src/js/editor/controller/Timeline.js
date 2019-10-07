@@ -1,4 +1,5 @@
 import Dom from '../../core/Dom';
+import MediaClock from '../../core/clock/MediaClock';
 import Track from './timeline/Track';
 
 import {className} from '../../../css/editor/controller/Timeline.scss';
@@ -33,6 +34,8 @@ export default class Timeline extends Dom {
         this.tracks = {};
 
         this.setupUI();
+
+        MediaClock.addListener('rendererchange', this.onMediaClockRendererChange.bind(this));
     }
 
     /**
@@ -181,17 +184,15 @@ export default class Timeline extends Dom {
      * @param {Media} media The media component
      * @return {this}
      */
-    setMedia(media){
-        /**
-         * The associated media
-         * @type {Media}
-         */
-        this.media = media;
+    onMediaClockRendererChange(evt){
+        const renderer = evt.detail.renderer;
 
-        const duration = this.media.getDuration();
-        Object.values(this.tracks).forEach((track) => {
-            track.setDuration(duration);
-        });
+        if(renderer){
+            const duration = renderer.getDuration();
+            Object.values(this.tracks).forEach((track) => {
+                track.setDuration(duration);
+            });
+        }
 
         this.updateSize();
 
@@ -208,6 +209,7 @@ export default class Timeline extends Dom {
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
         const parent_track = parent_component ? this.getTrack(parent_component.getId()) : null;
+        const renderer = MediaClock.getRenderer();
 
         if(parent_component && !parent_track){
             return this;
@@ -222,8 +224,8 @@ export default class Timeline extends Dom {
             },
         });
 
-        if(this.media){
-            track.setDuration(this.media.getDuration());
+        if(renderer){
+            track.setDuration(renderer.getDuration());
         }
 
         const handle = track.getHandle();
@@ -299,19 +301,23 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     setOffset(start, end, supressEvent){
-        const duration = this.media.getDuration();
-        const zoom = duration / (end - start);
+        const renderer = MediaClock.getRenderer();
 
-        this.tracks_container_inner.css('width', `${zoom * 100}%`);
+        if(renderer){
+            const duration = renderer.getDuration();
+            const zoom = duration / (end - start);
 
-        const container_dom = this.tracks_container_outer.get(0);
-        const scroll = container_dom.clientWidth * start / duration * zoom;
-        const max_scroll = container_dom.scrollWidth - container_dom.clientWidth;
+            this.tracks_container_inner.css('width', `${zoom * 100}%`);
 
-        container_dom.scrollLeft = Math.min(scroll, max_scroll);
+            const container_dom = this.tracks_container_outer.get(0);
+            const scroll = container_dom.clientWidth * start / duration * zoom;
+            const max_scroll = container_dom.scrollWidth - container_dom.clientWidth;
 
-        if(supressEvent !== true){
-            this.triggerEvent('offsetupdate', {'start': start, 'end': end});
+            container_dom.scrollLeft = Math.min(scroll, max_scroll);
+
+            if(supressEvent !== true){
+                this.triggerEvent('offsetupdate', {'start': start, 'end': end});
+            }
         }
     }
 
