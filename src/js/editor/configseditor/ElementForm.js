@@ -34,7 +34,6 @@ export default class ElementForm extends ComponentForm {
             'fields': [
                 'name',
                 'hidden',
-                'scenario',
                 'background',
                 'border',
                 'time',

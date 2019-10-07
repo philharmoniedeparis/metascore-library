@@ -1,7 +1,6 @@
 import Element from '../Element';
+import {toSeconds, toCentiseconds} from '../../../core/utils/Media';
 import Lottie from 'lottie-web';
-
-const renderer = 'svg';
 
 /**
  * An Animation element
@@ -28,7 +27,6 @@ export default class Animation extends Element{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'src': {
-                    'type': 'string',
                     'getter': function(){
                         return this.data('src');
                     },
@@ -37,7 +35,6 @@ export default class Animation extends Element{
                     }
                 },
                 'start-frame': {
-                    'type': 'number',
                     'getter': function(){
                         const value = parseInt(this.data('start-frame'), 10);
                         return isNaN(value) ? 0 : value;
@@ -46,18 +43,16 @@ export default class Animation extends Element{
                         this.data('start-frame', value);
                     }
                 },
-                'fps': {
-                    'type': 'number',
+                'loop-duration': {
                     'getter': function(){
-                        const value = parseFloat(this.data('fps'));
-                        return isNaN(value) ? this.getDefaultFPS() : value;
+                        const value = parseFloat(this.data('loop-duration'));
+                        return isNaN(value) ? null : value;
                     },
                     'setter': function(value){
-                        this.data('fps', isNaN(value) ? null : value);
+                        this.data('loop-duration', isNaN(value) ? null : value);
                     }
                 },
                 'reversed': {
-                    'type': 'boolean',
                     'getter': function(){
                         return this.data('reversed') === "true";
                     },
@@ -66,7 +61,6 @@ export default class Animation extends Element{
                     }
                 },
                 'colors': {
-                    'type': 'array',
                     'getter': function(){
                         const value = this.data('colors');
                         return value ? value : null;
@@ -83,8 +77,6 @@ export default class Animation extends Element{
         super(configs);
 
         this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
-
-        this.playing = false;
     }
 
     /**
@@ -98,7 +90,6 @@ export default class Animation extends Element{
 
         this
             .addListener('propchange', this.onPropChange.bind(this))
-            .addListener('resizeend', this.onResizeEnd.bind(this))
             .addListener('activate', this.onActivate.bind(this))
             .addListener('deactivate', this.onDeactivate.bind(this));
 
@@ -117,7 +108,7 @@ export default class Animation extends Element{
                 this.updateSrc();
                 break;
 
-            case 'fps':
+            case 'loop-duration':
                 this.updateFPS();
                 break;
 
@@ -131,38 +122,67 @@ export default class Animation extends Element{
         }
     }
 
-    /**
-     * The resizeend event handler
-     *
-     * @private
-     */
-    onResizeEnd(){
-    }
-
     onActivate(){
         if(!this.getCuePoint()){
             this.play();
         }
     }
 
-    onCuePointStart(){
-        // call parent function
-        super.onCuePointStart();
+    /**
+     * The cuepoint set event handler
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        const cuepoint = evt.detail.cuepoint;
+        cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
 
-        this.play();
+        super.onCuePointSet(evt);
+    }
+
+    /**
+     * The cuepoint update event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCuePointUpdate(evt){
+        this.current_time = evt.target.getMedia().getTime();
+
+        this.draw();
     }
 
     onDeactivate(){
+        this.stop();
+    }
 
+    draw(){
+        const animation = this.getAnimation();
+
+        if(animation && this._loaded){
+            const start_time = this.getPropertyValue('start-time');
+            const start_frame = this.getPropertyValue('start-frame');
+            const loop_duration = this.getPropertyValue('loop-duration');
+
+            const time = toSeconds(this.current_time - start_time);
+            const total_frames = animation.getDuration(true);
+            const fps = total_frames / toSeconds(loop_duration);
+            const frame = (time * fps + start_frame) % total_frames;
+
+            animation.goToAndStop(frame, true);
+        }
     }
 
     onAnimationLoaded(){
+        this._loaded = true;
+
         this
             .updateFPS()
             .updateDirection()
             .updateColors();
 
-        if(this.playing){
+        if(this._playing){
             this.play();
         }
     }
@@ -171,34 +191,36 @@ export default class Animation extends Element{
         return this.animation;
     }
 
-    getDefaultFPS(){
-        const animation = this.getAnimation();
-        if(!animation){
-            return null;
+    getLoopDuration(){
+        let duration = this.getPropertyValue('loop-duration');
+
+        if(!duration){
+            const animation = this.getAnimation();
+
+            if(animation){
+                duration = toCentiseconds(animation.getDuration());
+            }
         }
 
-        const duration = animation.getDuration();
-        const frames = animation.getDuration(true);
-
-        return Math.round(frames/duration);
+        return duration;
     }
 
     play(){
-        const animation = this.getAnimation();
-        if(animation){
-            animation.play();
+        if(this._loaded){
+            this.getAnimation().play();
         }
+
+        this._playing = true;
 
         return this;
     }
 
     stop(){
-        const animation = this.getAnimation();
-        if(animation){
-            animation.stop();
+        if(this._loaded){
+            this.getAnimation().stop();
         }
 
-        this.playing = false;
+        delete this._playing;
 
         return this;
     }
@@ -213,7 +235,7 @@ export default class Animation extends Element{
             this.animation = Lottie.loadAnimation({
                 container: this.contents.get(0),
                 path: src,
-                renderer: renderer,
+                renderer: 'svg',
                 loop: true,
                 autoplay: false,
             });
@@ -226,13 +248,14 @@ export default class Animation extends Element{
 
     updateFPS(){
         const animation = this.getAnimation();
-        if(animation){
-            const fps = this.getPropertyValue('fps');
-            const duration = animation.getDuration();
-            const frames = animation.getDuration(true);
-            const speed = Math.round(frames/duration) / fps;
 
-            animation.setSpeed(speed);
+        if(animation && this._loaded){
+            const duration = toCentiseconds(animation.getDuration());
+            const loop_duration = this.getLoopDuration();
+
+            animation.setSpeed(duration/loop_duration);
+
+            this.draw();
         }
 
         return this;
@@ -240,10 +263,12 @@ export default class Animation extends Element{
 
     updateDirection(){
         const animation = this.getAnimation();
-        if(animation){
-            const direction = this.getPropertyValue('reversed') ? -1 : 1;
 
+        if(animation && this._loaded){
+            const direction = this.getPropertyValue('reversed') ? -1 : 1;
             animation.setDirection(direction);
+
+            this.draw();
         }
 
         return this;
@@ -251,7 +276,8 @@ export default class Animation extends Element{
 
     updateColors(){
         const animation = this.getAnimation();
-        if(animation){
+
+        if(animation && this._loaded){
             let colors = this.getPropertyValue('colors');
 
             if(!colors){
@@ -278,11 +304,15 @@ export default class Animation extends Element{
     }
 
     removeAnimation(){
+        this.stop();
+
         if(this.animation){
             this.animation.removeEventListener('DOMLoaded', this.onAnimationLoaded);
             this.animation.destroy();
-            delete this.animation;
         }
+
+        delete this.animation;
+        delete this._loaded;
 
         return this;
     }

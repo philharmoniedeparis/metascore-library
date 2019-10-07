@@ -362,34 +362,34 @@ export default class ComponentForm extends Dom {
     addField(name){
         switch(name){
             case 'name':
-                this.fields.name = new Field(
+                this.fields[name] = new Field(
                     new TextInput(),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.name.label', 'Name')
                     })
-                    .data('property', 'name')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'hidden':
-                this.fields.hidden = new Field(
+                this.fields[name] = new Field(
                     new CheckboxInput({
                         'checked': false
                     }),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.hidden.label', 'Hidden on start')
                     })
-                    .data('property', 'hidden')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'scenario':
-                this.fields.scenario = new Field(
+                this.fields[name] = new Field(
                     new SelectInput(),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.scenario.label', 'Scenario')
                     })
-                    .data('property', 'scenario')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 

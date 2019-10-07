@@ -41,7 +41,6 @@ export default class ContentForm extends ElementForm {
             'fields': [
                 'name',
                 'hidden',
-                'scenario',
                 'contents',
                 'background',
                 'border',

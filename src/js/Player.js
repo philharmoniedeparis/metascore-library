@@ -458,15 +458,9 @@ export default class Player extends Dom {
      */
     onPageActivate(evt){
         const page = evt.detail.page;
-        const scenario = this.getScenario();
 
         page.getChildren().forEach((element) => {
-            if(element.getPropertyValue('scenario') === scenario){
-                element.activate();
-            }
-            else{
-                element.deactivate();
-            }
+            element.activate();
         });
     }
 
@@ -485,23 +479,18 @@ export default class Player extends Dom {
     }
 
     /**
-     * Page elementadd event callback
+     * componentadd event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPageElementAdd(evt){
-        const page = evt.detail.page;
+    onComponentAdd(evt){
+        const component = evt.detail.component;
 
-        if(page.isActive()){
-            const element = evt.detail.element;
-            const scenario = this.getScenario();
-
-            if(element.getPropertyValue('scenario') === scenario){
-                element.activate();
-            }
-            else{
-                element.deactivate();
+        if(component.instanceOf('Element')){
+            const page = component.getParent();
+            if(page.isActive()){
+                component.activate();
             }
         }
     }
@@ -622,7 +611,8 @@ export default class Player extends Dom {
         this.json = evt.target.getResponse();
 
         this.setId(this.json.id)
-            .setRevision(this.json.vid);
+            .setRevision(this.json.vid)
+            .setScenario(this.json.scenarios[0]);
 
         /**
          * A stylesheet containing the guide's custom css
@@ -947,9 +937,9 @@ export default class Player extends Dom {
         else{
             block = new Block(block)
                 .addListener('activepageset', this.onBlockActivePageSet.bind(this))
+                .addListener('componentadd', this.onComponentAdd.bind(this))
                 .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
                 .addDelegate('.page', 'deactivate', this.onPageDeactivate.bind(this))
-                .addDelegate('.page', 'elementadd', this.onPageElementAdd.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
@@ -1074,6 +1064,15 @@ export default class Player extends Dom {
     }
 
     /**
+     * Get the list of scenarios
+     *
+     * @return {Array} The scenarios
+     */
+    getScenarios(){
+        return this.getData('scenarios');
+    }
+
+    /**
      * Set the current scenario
      *
      * @param {String} scenario The scenario
@@ -1081,22 +1080,29 @@ export default class Player extends Dom {
      * @return {this}
      */
     setScenario(scenario, supressEvent){
-        if(scenario !== this.scenario){
-            this.scenario = scenario;
+        if(scenario !== this.scenario && this.getScenarios().includes(scenario)){
+            const scenarios = this.getScenarios();
 
-            this.getComponents('.block').forEach((block) => {
-                block.getActivePage().getChildren().forEach((element) => {
-                    if(element.getPropertyValue('scenario') === this.scenario){
-                        element.activate();
-                    }
-                    else{
-                        element.deactivate();
-                    }
+            if(!scenarios.includes(scenario)){
+                console.error(`scenario "${scenario}" does not exist`);
+            }
+            else{
+                this.scenario = scenario;
+
+                this.getComponents('.block').forEach((block) => {
+                    block.getActivePage().getChildren().forEach((element) => {
+                        if(element.getPropertyValue('scenario') === this.scenario){
+                            element.activate();
+                        }
+                        else{
+                            element.deactivate();
+                        }
+                    });
                 });
-            });
 
-            if(supressEvent !== true){
-                this.triggerEvent('scenariochange', {'player': this, 'value': this.scenario}, true, false);
+                if(supressEvent !== true){
+                    this.triggerEvent('scenariochange', {'player': this, 'value': this.scenario}, true, false);
+                }
             }
         }
 

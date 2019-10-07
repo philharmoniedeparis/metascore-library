@@ -34,6 +34,7 @@ export default class BlockTogglerForm extends BlockForm {
             'fields': [
                 'name',
                 'hidden',
+                'scenario',
                 'background',
                 'border',
                 'position',

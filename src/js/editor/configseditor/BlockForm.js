@@ -34,6 +34,7 @@ export default class BlockForm extends ComponentForm {
             'fields': [
                 'name',
                 'hidden',
+                'scenario',
                 'background',
                 'border',
                 'position',

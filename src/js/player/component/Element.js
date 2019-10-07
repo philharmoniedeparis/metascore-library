@@ -25,13 +25,11 @@ export default class Element extends Component{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'type': 'string',
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'name': {
-                    'type': 'string',
                     'getter': function(){
                         return this.data('name');
                     },
@@ -40,7 +38,6 @@ export default class Element extends Component{
                     }
                 },
                 'x': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -49,7 +46,6 @@ export default class Element extends Component{
                     }
                 },
                 'y': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -58,7 +54,6 @@ export default class Element extends Component{
                     }
                 },
                 'width': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -67,7 +62,6 @@ export default class Element extends Component{
                     }
                 },
                 'height': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -75,18 +69,7 @@ export default class Element extends Component{
                         this.css('height', `${value}px`);
                     }
                 },
-                'scenario': {
-                    'type': 'string',
-                    'getter': function(){
-                        const value = parseInt(this.data('scenario'), 10);
-                        return isNaN(value) || value === 0 ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('scenario', value);
-                    }
-                },
                 'background-color': {
-                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.contents.css('background-color', void 0, skipDefault);
                     },
@@ -95,7 +78,6 @@ export default class Element extends Component{
                     }
                 },
                 'background-image': {
-                    'type': 'string',
                     'getter': function(skipDefault){
                         let value = this.contents.css('background-image', void 0, skipDefault);
 
@@ -115,7 +97,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-width': {
-                    'type': 'number',
                     'getter': function(skipDefault){
                         const value = parseInt(this.contents.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -125,7 +106,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-color': {
-                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.contents.css('border-color', void 0, skipDefault);
                     },
@@ -134,7 +114,6 @@ export default class Element extends Component{
                     }
                 },
                 'border-radius': {
-                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.contents.css('border-radius', void 0, skipDefault);
                     },
@@ -143,7 +122,6 @@ export default class Element extends Component{
                     }
                 },
                 'opacity': {
-                    'type': 'number',
                     'getter': function(skipDefault){
                         return this.contents.css('opacity', void 0, skipDefault);
                     },
@@ -152,7 +130,6 @@ export default class Element extends Component{
                     }
                 },
                 'start-time': {
-                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -162,7 +139,6 @@ export default class Element extends Component{
                     }
                 },
                 'end-time': {
-                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;

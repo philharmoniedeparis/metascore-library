@@ -39,7 +39,6 @@ export default class CursorForm extends ElementForm {
             'fields': [
                 'name',
                 'hidden',
-                'scenario',
                 'form',
                 'direction',
                 'start-angle',
@@ -132,7 +131,7 @@ export default class CursorForm extends ElementForm {
     addField(name){
         switch(name){
             case 'form':
-                this.fields.form = new Field(
+                this.fields[name] = new Field(
                     new SelectInput({
                         'options': {
                             'linear': Locale.t('editor.configseditor.CursorForm.fields.form.options.linear', 'Linear'),
@@ -142,12 +141,12 @@ export default class CursorForm extends ElementForm {
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.form.label', 'Form')
                     })
-                    .data('property', 'form')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'direction':
-                this.fields.direction = new Field(
+                this.fields[name] = new Field(
                     new SelectInput({
                         'options': {
                             'right': Locale.t('editor.configseditor.CursorForm.fields.direction.options.right', 'Left > Right'),
@@ -161,12 +160,12 @@ export default class CursorForm extends ElementForm {
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.direction.label', 'Direction')
                     })
-                    .data('property', 'direction')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'start-angle':
-                this.fields['start-angle'] = new Field(
+                this.fields[name] = new Field(
                     new NumberInput({
                         'min': 0,
                         'max': 360
@@ -174,7 +173,7 @@ export default class CursorForm extends ElementForm {
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.start-angle.label', 'Start angle')
                     })
-                    .data('property', 'start-angle')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
@@ -192,36 +191,36 @@ export default class CursorForm extends ElementForm {
                 break;
 
             case 'loop-duration':
-                this.fields['loop-duration'] = new Field(
+                this.fields[name] = new Field(
                     new TimeInput({
                         'clearButton': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.loop-duration.label', 'Loop duration')
                     })
-                    .data('property', 'loop-duration')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'cursor-width':
-                this.fields['cursor-width'] = new Field(
+                this.fields[name] = new Field(
                     new NumberInput({
                         'min': 1
                     }),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.cursor-width.label', 'Cursor width')
                     })
-                    .data('property', 'cursor-width')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 
             case 'cursor-color':
-                this.fields['cursor-color'] = new Field(
+                this.fields[name] = new Field(
                     new ColorInput(),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.cursor-color.label', 'Cursor color')
                     })
-                    .data('property', 'cursor-color')
+                    .data('property', name)
                     .appendTo(this.fields_wrapper);
                 break;
 

@@ -20,13 +20,11 @@ export default class Controller extends Component{
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'type': 'string',
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'hidden': {
-                    'type': 'boolean',
                     'getter': function(){
                         return this.data('hidden') === "true";
                     },
@@ -35,7 +33,6 @@ export default class Controller extends Component{
                     }
                 },
                 'x': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -44,7 +41,6 @@ export default class Controller extends Component{
                     }
                 },
                 'y': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -53,19 +49,16 @@ export default class Controller extends Component{
                     }
                 },
                 'width': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     }
                 },
                 'height': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     }
                 },
                 'border-radius': {
-                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },

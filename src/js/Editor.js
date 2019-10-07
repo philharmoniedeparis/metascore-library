@@ -1790,6 +1790,8 @@ export default class Editor extends Dom {
      * @return {this}
      */
     addPlayerComponents(type, config, parent){
+        const scenario = this.getPlayer().getScenario();
+
         switch(type){
             case 'element': {
                 const configs = isArray(config) ? config : [config];
@@ -1854,6 +1856,7 @@ export default class Editor extends Dom {
                 }
 
                 const component = block.addPage(config, before ? index : index + 1);
+
                 block.setActivePage(index);
 
                 this.history.add({
@@ -1890,11 +1893,17 @@ export default class Editor extends Dom {
 
                     switch(block_config.type){
                         case 'BlockToggler':
-                            component = player.addBlockToggler(Object.assign({'name': Locale.t('editor.defaultBlockTogglerName', 'untitled')}, block_config));
+                            component = player.addBlockToggler(Object.assign({
+                                'scenario': scenario,
+                                'name': Locale.t('editor.defaultBlockTogglerName', 'untitled')
+                            }, block_config));
                             break;
 
                         default: {
-                            component = player.addBlock(Object.assign({'name': Locale.t('editor.defaultBlockName', 'untitled')}, block_config));
+                            component = player.addBlock(Object.assign({
+                                'scenario': scenario,
+                                'name': Locale.t('editor.defaultBlockName', 'untitled')
+                            }, block_config));
                         }
                     }
 

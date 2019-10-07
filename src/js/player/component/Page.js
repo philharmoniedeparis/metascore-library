@@ -58,7 +58,6 @@ export default class Page extends Component {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
-                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -67,7 +66,6 @@ export default class Page extends Component {
                     }
                 },
                 'background-image': {
-                    'type': 'string',
                     'getter': function(skipDefault){
                         let value = this.css('background-image', void 0, skipDefault);
 
@@ -86,7 +84,6 @@ export default class Page extends Component {
                     }
                 },
                 'start-time': {
-                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('start-time'));
                         return isNaN(value) ? null : value;
@@ -96,7 +93,6 @@ export default class Page extends Component {
                     }
                 },
                 'end-time': {
-                    'type': 'time',
                     'getter': function(){
                         const value = parseFloat(this.data('end-time'));
                         return isNaN(value) ? null : value;
@@ -106,7 +102,6 @@ export default class Page extends Component {
                     }
                 },
                 'elements': {
-                    'type': 'array',
                     'getter': function(skipDefault, skipID){
                         const elements = [];
 

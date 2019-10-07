@@ -18,13 +18,11 @@ export default class BlockToggler extends Component{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'type': 'string',
                     'getter': function(){
                         return this.constructor.getType();
                     }
                 },
                 'name': {
-                    'type': 'string',
                     'getter': function(){
                         return this.data('name');
                     },
@@ -32,8 +30,24 @@ export default class BlockToggler extends Component{
                         this.data('name', value);
                     }
                 },
+                'hidden': {
+                    'getter': function(){
+                        return this.data('hidden') === "true";
+                    },
+                    'setter': function(value){
+                        this.data('hidden', value ? "true" : null);
+                    }
+                },
+                'scenario': {
+                    'getter': function(){
+                        const value = parseInt(this.data('scenario'), 10);
+                        return isNaN(value) || value === 0 ? null : value;
+                    },
+                    'setter': function(value){
+                        this.data('scenario', value);
+                    }
+                },
                 'blocks': {
-                    'type': 'array',
                     'getter': function(){
                         const value = this.data('blocks');
                         if(isString(value)){
@@ -50,7 +64,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'x': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('left'), 10);
                     },
@@ -59,7 +72,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'y': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('top'), 10);
                     },
@@ -68,7 +80,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'width': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('width'), 10);
                     },
@@ -77,7 +88,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'height': {
-                    'type': 'number',
                     'getter': function(){
                         return parseInt(this.css('height'), 10);
                     },
@@ -86,7 +96,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'background-color': {
-                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('background-color', void 0, skipDefault);
                     },
@@ -95,7 +104,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-width': {
-                    'type': 'number',
                     'getter': function(skipDefault){
                         const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
                         return isNaN(value) ? null : value;
@@ -105,7 +113,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-color': {
-                    'type': 'color',
                     'getter': function(skipDefault){
                         return this.css('border-color', void 0, skipDefault);
                     },
@@ -114,7 +121,6 @@ export default class BlockToggler extends Component{
                     }
                 },
                 'border-radius': {
-                    'type': 'string',
                     'getter': function(skipDefault){
                         return this.css('border-radius', void 0, skipDefault);
                     },
