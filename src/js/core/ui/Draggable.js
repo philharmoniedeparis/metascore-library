@@ -38,12 +38,12 @@ export default class Draggable {
         this._snap_guides = [];
 
         // fix event handlers scope
-        this.onDragStart = this.onDragStart.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onClick = this.onClick.bind(this);
 
-        this.configs.handle.addListener('dragstart', this.onDragStart);
+        this.configs.handle.addListener('mousedown', this.onMouseDown);
 
         this.enable();
     }
@@ -68,42 +68,12 @@ export default class Draggable {
     }
 
     /**
-     * The dragstart event handler
+     * The mousedown event handler
      *
      * @private
      * @param {Event} evt The event object
      */
-    onDragStart(evt){
-        if(!(evt instanceof DragEvent) || !this.enabled){
-            return;
-        }
-
-        if(!this.configs.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
-            return;
-        }
-
-        const left = parseInt(this.configs.target.css('left'), 10);
-        const top = parseInt(this.configs.target.css('top'), 10);
-
-        /**
-         * State data needed during drag
-         * @type {Object}
-         */
-        this._state = {
-            'mouse': {
-                'x': evt.clientX,
-                'y': evt.clientY
-            },
-            'original_values': {
-                'left': left,
-                'top': top
-            },
-            'new_values': {
-                'left': left,
-                'top': top
-            }
-        };
-
+    onMouseDown(){
         if(!this.doc){
             /**
              * The target's owner document
@@ -115,15 +85,6 @@ export default class Draggable {
         this.doc
             .addListener('mousemove', this.onMouseMove)
             .addListener('mouseup', this.onMouseUp);
-
-        Dom.addClass(this.doc.get(0).body, bodyClassName);
-
-        this.configs.target
-            .addClass('dragging')
-            .triggerEvent('dragstart', {'behavior': this}, false, true);
-
-        evt.stopImmediatePropagation();
-        evt.preventDefault();
     }
 
     /**
@@ -133,6 +94,48 @@ export default class Draggable {
      * @param {Event} evt The event object
      */
     onMouseMove(evt){
+        if(!this._dragging){
+            if(!this.configs.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
+                return;
+            }
+
+            /**
+             * Whether the target is being dragged
+             * @type {Boolean}
+             */
+            this._dragging = true;
+
+            const left = parseInt(this.configs.target.css('left'), 10);
+            const top = parseInt(this.configs.target.css('top'), 10);
+
+            /**
+             * State data needed during drag
+             * @type {Object}
+             */
+            this._state = {
+                'mouse': {
+                    'x': evt.clientX,
+                    'y': evt.clientY
+                },
+                'original_values': {
+                    'left': left,
+                    'top': top
+                },
+                'new_values': {
+                    'left': left,
+                    'top': top
+                }
+            };
+
+            Dom.addClass(this.doc.get(0).body, bodyClassName);
+
+            this.configs.target
+                .addClass('dragging')
+                .triggerEvent('dragstart', {'behavior': this}, false, true);
+
+            return;
+        }
+
         const clientX = evt.clientX;
         const clientY = evt.clientY;
 
@@ -154,12 +157,6 @@ export default class Draggable {
             });
         }
 
-        /**
-         * Whether the target is being dragged
-         * @type {Boolean}
-         */
-        this._dragged = true;
-
         this.configs.target.triggerEvent('drag', {'behavior': this}, false, true);
 
         evt.stopPropagation();
@@ -177,22 +174,22 @@ export default class Draggable {
             .removeListener('mousemove', this.onMouseMove)
             .removeListener('mouseup', this.onMouseUp);
 
-        // if a drag did occur, prevent the next click event from propagating
-        if(this._dragged){
-            delete this._dragged;
+        if(this._dragging){
+            // prevent the upcoming click event from propagating
             this.doc.addOneTimeListener('click', this.onClick, true);
+
+            Dom.removeClass(this.doc.get(0).body, bodyClassName);
+
+            this.configs.target
+                .removeClass('dragging')
+                .triggerEvent('dragend', {'behavior': this}, false, true);
+
+            delete this._dragging;
+            delete this._state;
+
+            evt.stopPropagation();
+            evt.preventDefault();
         }
-
-        Dom.removeClass(this.doc.get(0).body, bodyClassName);
-
-        this.configs.target
-            .removeClass('dragging')
-            .triggerEvent('dragend', {'behavior': this}, false, true);
-
-        delete this._state;
-
-        evt.stopPropagation();
-        evt.preventDefault();
     }
 
     /**
@@ -347,9 +344,7 @@ export default class Draggable {
     enable(){
         this.configs.target.addClass(`draggable ${className}`);
 
-        this.configs.handle
-            .addClass('drag-handle')
-            .attr('draggable', 'true');
+        this.configs.handle.addClass('drag-handle');
 
         /**
          * Whether the behavior is enabled
@@ -368,9 +363,7 @@ export default class Draggable {
     disable(){
         this.configs.target.removeClass(`draggable ${className}`);
 
-        this.configs.handle
-            .removeClass('drag-handle')
-            .attr('draggable', null);
+        this.configs.handle.removeClass('drag-handle');
 
         delete this.enabled;
 
