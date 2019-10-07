@@ -7,10 +7,10 @@ import {getMimeTypeFromURL} from '../../utils/Media';
 import {className} from '../../../../css/core/ui/input/FileOrUrlInput.scss';
 
 /**
- * A multi-source file field based on an HTML input[type=file] element
+ * A multi-source file input based on an HTML input[type=file] element
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  */
 export default class FileOrUrlInput extends Input {
@@ -45,7 +45,7 @@ export default class FileOrUrlInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -211,7 +211,7 @@ export default class FileOrUrlInput extends Input {
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Object} value The new value
      * @property {String} name The file's name
@@ -308,7 +308,7 @@ export default class FileOrUrlInput extends Input {
     }
 
     /**
-     * Disable the field
+     * Disable the input
      *
      * @return {this}
      */
@@ -321,7 +321,7 @@ export default class FileOrUrlInput extends Input {
     }
 
     /**
-     * Enable the field
+     * Enable the input
      *
      * @return {this}
      */
@@ -334,9 +334,9 @@ export default class FileOrUrlInput extends Input {
     }
 
     /**
-     * Toggle the field's readonly state
+     * Toggle the input's readonly state
      *
-     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @param {Boolean} [readonly] Whether the input should be readonly, the current state is toggled if not provided
      * @return {this}
      */
     readonly(readonly){

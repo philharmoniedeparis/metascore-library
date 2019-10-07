@@ -2,10 +2,10 @@ import Input from '../Input';
 import Button from '../Button';
 
 /**
- * A simple buttons field based on HTML button elements
+ * A simple buttons input based on HTML button elements
  *
  * @emits {valuechange} Fired when a value is selected though a button click
- * @param {Object} field The field instance
+ * @param {Object} input The input instance
  * @param {Mixed} value The clicked button's key
  */
 export default class ButtonsInput extends Input{
@@ -35,7 +35,7 @@ export default class ButtonsInput extends Input{
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -58,7 +58,7 @@ export default class ButtonsInput extends Input{
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @return {this}
      */

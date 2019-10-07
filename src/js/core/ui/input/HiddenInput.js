@@ -2,7 +2,7 @@
 import Input from '../Input';
 
 /**
- * A hidden field based on an HTML input[type=hidden] element
+ * A hidden input based on an HTML input[type=hidden] element
  */
 export default class HiddenInput extends Input {
 
@@ -20,7 +20,7 @@ export default class HiddenInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */

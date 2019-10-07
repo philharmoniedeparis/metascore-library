@@ -35,7 +35,7 @@ export default class BorderRadiusInput extends Input{
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -69,7 +69,7 @@ export default class BorderRadiusInput extends Input{
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing

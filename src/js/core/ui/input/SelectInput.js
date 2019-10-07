@@ -6,7 +6,7 @@ import arrow_icon from '../../../../img/core/ui/input/select/arrow.svg?sprite'
 import {className} from '../../../../css/core/ui/input/Select.scss';
 
 /**
- * A select list field based on an HTML select element
+ * A select list input based on an HTML select element
  */
 export default class SelectInput extends Input {
 
@@ -37,7 +37,7 @@ export default class SelectInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */

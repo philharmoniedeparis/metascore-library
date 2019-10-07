@@ -2,7 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 
 /**
- * A multi-line text field based on an HTML textarea element
+ * A multi-line text input based on an HTML textarea element
  */
 export default class TextareaInput extends Input {
 
@@ -31,7 +31,7 @@ export default class TextareaInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */

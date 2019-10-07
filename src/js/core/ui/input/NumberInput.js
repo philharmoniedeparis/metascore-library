@@ -11,10 +11,10 @@ import spinner_left_icon from '../../../../img/core/ui/input/number/spinner-left
 import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**
- * A number field based on an HTML input[type=number] element
+ * A number input based on an HTML input[type=number] element
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  */
 export default class NumberInput extends Input {
@@ -62,7 +62,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -295,7 +295,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Number} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -353,7 +353,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * Reset the field's configs
+     * Reset the input's configs
      *
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}

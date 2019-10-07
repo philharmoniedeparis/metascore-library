@@ -3,7 +3,7 @@ import Input from '../Input';
 
 
 /**
- * A single-line text field based on an HTML input[type=text] element
+ * A single-line text input based on an HTML input[type=text] element
  */
 export default class UrlInput extends Input {
 
@@ -32,7 +32,7 @@ export default class UrlInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */

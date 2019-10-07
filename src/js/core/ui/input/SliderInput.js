@@ -3,7 +3,7 @@ import Input from '../Input';
 import {className} from '../../../../css/core/ui/input/Slider.scss';
 
 /**
- * A slider field based on an HTML input[type=number] element
+ * A slider input based on an HTML input[type=number] element
  */
 export default class SliderInput extends Input {
 
@@ -47,7 +47,7 @@ export default class SliderInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -102,7 +102,7 @@ export default class SliderInput extends Input {
     }
 
     /**
-     * Reset the field's configs
+     * Reset the input's configs
      *
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}

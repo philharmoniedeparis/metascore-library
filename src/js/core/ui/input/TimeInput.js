@@ -64,10 +64,10 @@ const GLOBAL_REGEX = new RegExp(`^${PARTS.reduce((accumulator, value) => {
 }, "")}$`);
 
 /**
- * A time field for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
+ * A time input for entering time values in hours:minutes:seconds:centiseconds format with optional in/out buttons
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  * @emits {valuein} Fired when the in button is clicked
  * @emits {valueout} Fired when the out button is clicked
@@ -168,7 +168,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -198,7 +198,7 @@ export default class TimeInput extends Input {
                  */
                 this.in_button = new Button({'icon': in_icon})
                     .data('action', 'in')
-                    .attr('title', Locale.t('core.ui.input.TimeInput.in.tooltip', 'Set field value to current time'))
+                    .attr('title', Locale.t('core.ui.input.TimeInput.in.tooltip', 'Set value to current time'))
                     .addListener('click', this.onInClick.bind(this))
                     .appendTo(buttons);
             }
@@ -210,7 +210,7 @@ export default class TimeInput extends Input {
                  */
                 this.out_button = new Button({'icon': out_icon})
                     .data('action', 'out')
-                    .attr('title', Locale.t('core.ui.input.TimeInput.out.tooltip', 'Set current time to field value'))
+                    .attr('title', Locale.t('core.ui.input.TimeInput.out.tooltip', 'Set current time to this value'))
                     .addListener('click', this.onOutClick.bind(this))
                     .appendTo(buttons);
             }
@@ -481,7 +481,7 @@ export default class TimeInput extends Input {
      * @private
      */
     onInClick(){
-        this.triggerEvent('valuein', {'field': this});
+        this.triggerEvent('valuein', {'input': this});
     }
 
     /**
@@ -490,7 +490,7 @@ export default class TimeInput extends Input {
      * @private
      */
     onOutClick(){
-        this.triggerEvent('valueout', {'field': this, 'value': this.getValue()});
+        this.triggerEvent('valueout', {'input': this, 'value': this.getValue()});
     }
 
     /**
@@ -646,7 +646,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Number} value The new value in centiseconds
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -727,7 +727,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Disable the field
+     * Disable the input
      *
      * @return {this}
      */
@@ -749,7 +749,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Enable the field
+     * Enable the input
      *
      * @return {this}
      */
@@ -771,9 +771,9 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Toggle the field's readonly state
+     * Toggle the input's readonly state
      *
-     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @param {Boolean} [readonly] Whether the input should be readonly, the current state is toggled if not provided
      * @return {this}
      */
     readonly(readonly){
@@ -793,7 +793,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Reset the field's configs
+     * Reset the input's configs
      *
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}

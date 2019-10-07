@@ -6,10 +6,10 @@ import {uuid} from '../../utils/String';
 import {className} from '../../../../css/core/ui/input/Radios.scss';
 
 /**
- * A radio buttons field based on an HTML input[type=radio] element
+ * A radio buttons input based on an HTML input[type=radio] element
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  */
 export default class RadiosInput extends Input{
@@ -41,7 +41,7 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -90,7 +90,7 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Array} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
@@ -183,7 +183,7 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Disable the field
+     * Disable the input
      *
      * @return {this}
      */
@@ -196,7 +196,7 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Enable the field
+     * Enable the input
      *
      * @return {this}
      */
@@ -209,9 +209,9 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Toggle the readonly attribute of the field
+     * Toggle the readonly attribute of the input
      *
-     * @param {Boolean} [readonly] Whether the field should be readonly, the current state is toggled if not provided
+     * @param {Boolean} [readonly] Whether the input should be readonly, the current state is toggled if not provided
      * @return {this}
      */
     readonly(readonly){

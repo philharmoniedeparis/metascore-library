@@ -6,10 +6,10 @@ import '@simonwep/pickr/dist/themes/nano.min.css';
 import {className, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
 import Dom from '../../Dom';
 /**
- * A color selection field
+ * A color selection input
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  */
 export default class ColorInput extends Input {
@@ -40,7 +40,7 @@ export default class ColorInput extends Input {
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -100,7 +100,7 @@ export default class ColorInput extends Input {
     }
 
     /**
-     * Set the field'S value
+     * Set the input'S value
      *
      * @param {Mixed} value The new color's value (see {@link toRGBA} for valid values)
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing

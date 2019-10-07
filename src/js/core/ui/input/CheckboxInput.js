@@ -6,10 +6,10 @@ import check_icon from '../../../../img/core/ui/input/checkbox/check.svg?sprite'
 import {className} from '../../../../css/core/ui/input/Checkbox.scss';
 
 /**
- * A checkbox field based on an HTML input[type=checkbox] element
+ * A checkbox input based on an HTML input[type=checkbox] element
  *
- * @emits {valuechange} Fired when the field's value changes
- * @param {Object} field The field instance
+ * @emits {valuechange} Fired when the input's value changes
+ * @param {Object} input The input instance
  * @param {Mixed} value The new value
  */
 export default class CheckboxInput extends Input{
@@ -19,7 +19,7 @@ export default class CheckboxInput extends Input{
      *
      * @param {Object} configs Custom configs to override defaults
      * @property {String} [label] An optional label text
-     * @property {Boolean} [checked=false] Whether the field is checked by default
+     * @property {Boolean} [checked=false] Whether the input is checked by default
      * @property {Boolean} [checked_value=true] The value when checked
      * @property {Boolean} [unchecked_value=false] The value when unchecked
      */
@@ -48,7 +48,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * Setup the field's UI
+     * Setup the input's UI
      *
      * @private
      */
@@ -112,7 +112,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * Set the field's value
+     * Set the input's value
      *
      * @param {Mixed} value The new value
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
