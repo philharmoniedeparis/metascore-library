@@ -17,21 +17,24 @@
         right: 0;
         width: 2em;
         height: 100%;
-        flex-direction: column;
+        flex-direction: row;
         align-items: stretch;
 
-        .icon{
-            height: auto;
-            width: auto;
-            padding: 0.25em;
+        button{
+            flex: 1 1 auto;
+            padding: 0;
+            font-size: 0.5em;
             color: #fff;
             vertical-align: top;
-            box-sizing: border-box;
-            opacity: 0.5;
-            cursor: pointer;
 
-            &:hover{
-                opacity: 1;
+            .icon{
+                padding: 0.5em;
+            }
+
+            &[data-direction="down"]{
+                .icon{
+                    transform: rotate(180deg);
+                }
             }
         }
     }
@@ -43,9 +46,22 @@
         }
     }
 
-    &.horizontal{
+    &.vertical{
         .buttons{
-            flex-direction: row-reverse;
+            flex-direction: column;
+
+            button{
+                .icon{
+                    padding: 0em;
+                    transform: rotate(90deg);
+                }
+
+                &[data-direction="down"]{
+                    .icon{
+                        transform: rotate(270deg);
+                    }
+                }
+            }
         }
     }
 

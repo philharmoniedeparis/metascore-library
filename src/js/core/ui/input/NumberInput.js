@@ -1,13 +1,10 @@
 import Input from '../Input';
 import Dom from '../../Dom';
-import Icon from '../Icon';
+import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
 import {getDecimalPlaces} from '../../utils/Number';
 
-import spinner_up_icon from '../../../../img/core/ui/input/number/spinner-up.svg?sprite';
-import spinner_down_icon from '../../../../img/core/ui/input/number/spinner-down.svg?sprite';
-import spinner_right_icon from '../../../../img/core/ui/input/number/spinner-right.svg?sprite';
-import spinner_left_icon from '../../../../img/core/ui/input/number/spinner-left.svg?sprite';
+import spinner_arrow_icon from '../../../../img/core/ui/input/number/spinner-arrow.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**
@@ -85,24 +82,24 @@ export default class NumberInput extends Input {
             }
 
             /**
-             * The spin up button
+             * The spin down button
              * @type {Button}
              */
-            this.spinup_btn = new Icon({'symbol': this.configs.spinDirection === 'horizontal' ? spinner_right_icon : spinner_up_icon})
+            this.spindown_btn = new Button({'icon': spinner_arrow_icon})
                 .data('action', 'spin')
-                .data('direction', 'up')
+                .data('direction', 'down')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
                 .appendTo(buttons);
 
             /**
-             * The spin down button
+             * The spin up button
              * @type {Button}
              */
-            this.spindown_btn = new Icon({'symbol': this.configs.spinDirection === 'horizontal' ? spinner_left_icon : spinner_down_icon})
+            this.spinup_btn = new Button({'icon': spinner_arrow_icon})
                 .data('action', 'spin')
-                .data('direction', 'down')
+                .data('direction', 'up')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
                 .addListener('mouseup', this.onSpinBtnMouseUp.bind(this))
                 .addListener('mouseout', this.onSpinBtnMouseOut.bind(this))
