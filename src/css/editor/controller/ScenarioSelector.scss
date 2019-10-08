@@ -1,2 +1,40 @@
+@import "../../theme";
+
 :local(.className){
+    display: flex;
+    flex-direction: row;
+    background: $mediumgray;
+    padding: 0.25em;
+
+    .buttons{
+        flex: 0 0 auto;
+
+        button{
+            padding: 0;
+            font-size: 0.75em;
+            color: #fff;
+
+            &[data-action="previous"]{
+                .icon{
+                    transform: rotate(180deg);
+                }
+            }
+        }
+    }
+
+    .list{
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        flex: 1 1 auto;
+        margin: 0;
+        padding: 0;
+        font-size: 0.9em;
+        overflow: hidden;
+
+        li{
+            padding: 0 0.25em;
+            white-space: nowrap;
+        }
+    }
 }

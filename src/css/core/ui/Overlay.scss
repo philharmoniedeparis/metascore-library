@@ -1,3 +1,5 @@
+@import "../../theme";
+
 :local(.className){
     position: fixed;
     left: 0;
@@ -16,9 +18,8 @@
     }
 
     > .inner{
-        background: #fff;
+        background: $darkgray;
         position: relative;
-        border-radius: 0.25em;
 
         > .toolbar{
             padding: 10px 16px;

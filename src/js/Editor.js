@@ -1,6 +1,4 @@
 /* eslint-disable */
-import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
-import {className} from '../css/Editor.scss';
 
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
@@ -23,6 +21,9 @@ import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import Grid from './editor/Grid';
 import AssetBrowser from './editor/AssetBrowser';
+
+import {className} from '../css/Editor.scss';
+import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
 
 /**
  * Provides the main Editor class

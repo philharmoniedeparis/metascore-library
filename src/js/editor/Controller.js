@@ -85,11 +85,11 @@ export default class Controller extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        const sticky = new Dom('<div/>', {'class': 'sticky'})
+        const sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
             .appendTo(bottom);
 
         const left = new Dom('<div/>', {'class': 'left'})
-            .appendTo(sticky);
+            .appendTo(sticky_top);
 
         this.controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(left);
@@ -103,11 +103,8 @@ export default class Controller extends Dom {
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
             .appendTo(this.controls);
 
-        this.scenario_selector = new ScenarioSelector()
-            .appendTo(left);
-
         const right = new Dom('<div/>', {'class': 'right'})
-            .appendTo(sticky);
+            .appendTo(sticky_top);
 
         /**
          * The zoom waveform
@@ -119,15 +116,21 @@ export default class Controller extends Dom {
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(right);
 
-        this.waveform_zoom.getControls()
-            .appendTo(top);
-
         /**
          * The timeline
          * @type {Timeline}
          */
         this.timeline = new Timeline()
             .appendTo(bottom);
+
+        const sticky_bottom = new Dom('<div/>', {'class': 'sticky-bottom'})
+            .appendTo(bottom);
+
+        this.scenario_selector = new ScenarioSelector()
+            .appendTo(sticky_bottom);
+
+        this.waveform_zoom.getControls()
+            .appendTo(sticky_bottom);
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));

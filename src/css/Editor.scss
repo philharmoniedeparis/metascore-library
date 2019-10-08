@@ -2,71 +2,28 @@
 @import "../fonts/source-sans-pro/source-sans-variable.css";
 
 :local(.className){
-    /* General styles *******************/
-    *{
-        font-size: 14px;
-        font-family: 'Source Sans Variable', sans-serif;
+    font-size: 14px;
+    font-family: 'Source Sans Variable', sans-serif;
 
+    &, * {
+        ::-webkit-scrollbar{
+            -webkit-appearance: none;
+            background-color: $scrollbar-track-color;
+            width: $scrollbar-width;
+            height: $scrollbar-thumb-min-height;
+        }
+        ::-webkit-scrollbar-thumb{
+            border-radius: 0;
+            background-color: $scrollbar-thumb-color;
+
+            &:active,
+            &:hover{
+                background-color: $scrollbar-thumb-active-color;
+            }
+        }
         scrollbar-color: $scrollbar-track-color $scrollbar-thumb-color;
         scrollbar-width: thin;
     }
-
-    ::-webkit-scrollbar{
-        -webkit-appearance: none;
-        background-color: $scrollbar-track-color;
-        width: $scrollbar-width;
-        height: $scrollbar-thumb-min-height;
-    }
-    ::-webkit-scrollbar-thumb{
-        border-radius: 0;
-        background-color: $scrollbar-thumb-color;
-
-        &:active,
-        &:hover{
-            background-color: $scrollbar-thumb-active-color;
-        }
-    }
-
-    scrollbar-color: $scrollbar-track-color $scrollbar-thumb-color;
-    scrollbar-width: thin;
-
-    .clearfix::after{
-        visibility: hidden;
-        display: block;
-        font-size: 0;
-        content: " ";
-        clear: both;
-        height: 0;
-    }
-
-    div{
-        user-select: text;
-    }
-
-    table{
-        margin: 0;
-        border: none;
-        border-collapse: collapse;
-        border-spacing: 0;
-
-        td, th{
-            padding: 0;
-            border: 0;
-        }
-    }
-
-    figure{
-        margin: 0;
-    }
-
-    .overlay{
-        > .inner{
-            background: $darkgray;
-            border-radius: 0;
-        }
-    }
-
-    /* Specific styles *******************/
 
     display: grid;
     height: 100%;
@@ -127,10 +84,8 @@
                                     display: block;
                                 }
                             }
-                            .zoom-controls{
-                                display: none;
-                            }
                         }
+
                         > .bottom{
                             display: none;
                         }
@@ -240,23 +195,15 @@
                 }
 
                 .controller{
-                    .top{
+                    > .top{
                         .time.input{
                             button[data-action="play"]{
                                 display: block;
                             }
                         }
-
-                        .zoom-controls{
-                            display: none;
-                        }
                     }
 
-                    .middle{
-                        display: none;
-                    }
-
-                    .bottom{
+                    > .bottom{
                         display: none;
                     }
                 }
