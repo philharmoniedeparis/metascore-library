@@ -6,9 +6,9 @@ import {className} from '../../../css/editor/controller/Timeline.scss';
 
 /**
  * The editor's timeline
- * @emits {addtrack} Fired when a track is added
+ * @emits {trackadd} Fired when a track is added
  * @param {Track} track The track
- * @emits {removetrack} Fired when a track is removed
+ * @emits {trackremove} Fired when a track is removed
  * @param {Track} track The track
  * @emits {offsetupdate} Fired when the offset is updated
  * @param {Number} start The start time of the offset in centiseconds
@@ -243,7 +243,7 @@ export default class Timeline extends Dom {
         this.tracks[component.getId()] = track;
 
         if(supressEvent !== true){
-            this.triggerEvent('addtrack', {'track': track});
+            this.triggerEvent('trackadd', {'track': track});
         }
 
         component.getChildren().forEach((child_component) => {
@@ -271,7 +271,7 @@ export default class Timeline extends Dom {
      * Remove a track for a corresponding component
      *
      * @param {Component} component The component associated with the track
-     * @param {Boolean} [supressEvent=false] Whether to supress the removetrack event
+     * @param {Boolean} [supressEvent=false] Whether to supress the trackremove event
      * @return {this}
      */
     removeTrack(component, supressEvent){
@@ -285,7 +285,7 @@ export default class Timeline extends Dom {
             delete this.tracks[id];
 
             if(supressEvent !== true){
-                this.triggerEvent('removetrack', {'track': track});
+                this.triggerEvent('trackremove', {'track': track});
             }
         }
 

@@ -197,51 +197,6 @@ export default class Page extends Component {
         return element;
     }
 
-    /**
-     * Check if the page is active or not
-     *
-     * @return {Boolean} Whether the page is active or not
-     */
-    isActive(){
-        return this.hasClass('active');
-    }
-
-    /**
-     * Activate the page and its elements
-     *
-     * @param {Boolean} [supressEvent=false] Whether to supress the activate event
-     * @return {this}
-     */
-    activate(supressEvent){
-        if(!this.isActive()){
-            this.addClass('active');
-
-            if(supressEvent !== true){
-                this.triggerEvent('activate', {'page': this});
-            }
-        }
-
-        return this;
-    }
-
-    /**
-     * Deactivate the page and its elements
-     *
-     * @param {Boolean} [supressEvent=false] Whether to supress the deactivate event
-     * @return {this}
-     */
-    deactivate(supressEvent){
-        if(this.isActive()){
-            this.removeClass('active');
-
-            if(supressEvent !== true){
-                this.triggerEvent('deactivate', {'page': this});
-            }
-        }
-
-        return this;
-    }
-
     onPropChange(evt){
         const property = evt.detail.property;
 

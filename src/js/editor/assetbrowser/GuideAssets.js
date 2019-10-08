@@ -4,7 +4,7 @@ import Ajax from '../../core/Ajax';
 import Button from '../../core/ui/Button';
 import Icon from '../../core/ui/Icon';
 import LoadMask from '../../core/ui/overlay/LoadMask';
-import Alert from '../../core/ui/overlay/Alert';
+import Overlay from '../../core/ui/Overlay';
 import Confirm from '../../core/ui/overlay/Confirm';
 import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
@@ -247,7 +247,7 @@ export default class GuideAssets extends Dom {
             const file = files.item(i);
 
             if(this.configs.import.allowed_types && !isValidMimeType(file.type, this.configs.import.allowed_types)){
-                new Alert({
+                new Overlay({
                     'parent': this,
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_type.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
                     'buttons': {
@@ -259,7 +259,7 @@ export default class GuideAssets extends Dom {
             }
 
             if(this.configs.import.max_filesize && file.size > this.configs.import.max_filesize){
-                new Alert({
+                new Overlay({
                     'parent': this,
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_size.msg', '<em>@name</em> size (@filesize) exceeds the allowed size (@maxsize).', {'@name': file.name, '@filesize': file.size, '@maxsize': this.configs.import.max_filesize}),
                     'buttons': {
@@ -470,7 +470,7 @@ export default class GuideAssets extends Dom {
         const error = 'message' in response ? response.message : evt.target.getStatusText();
         const code = evt.target.getStatus();
 
-        new Alert({
+        new Overlay({
             'parent': this,
             'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {

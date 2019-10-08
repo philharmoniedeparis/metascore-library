@@ -14,6 +14,12 @@ import CuePoint from './CuePoint';
  * @param {Mixed} value The new value of the property
  * @param {Mixed} old The old value of the property
  *
+ * @emits {activate} Fired when the component is activated
+ * @param {Component} component The component instance
+ *
+ * @emits {deactivate} Fired when the component is deactivated
+ * @param {Component} component The component instance
+ *
  * @emits {cuepointset} Fired when a cue point is set
  * @param {Component} component The component instance
  * @param {CuePoint} cuepoint The cuepoint
@@ -307,6 +313,13 @@ export default class Component extends Dom {
             if(old_value !== value){
                 this.configs.properties[name].setter.call(this, value);
 
+                switch(name){
+                    case 'start-time':
+                    case 'end-time':
+                        this.setCuePoint();
+                        break;
+                }
+
                 if(supressEvent !== true){
                     this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
                 }
@@ -503,11 +516,10 @@ export default class Component extends Dom {
     /**
      * Set a cuepoint on the component
      *
-     * @param {Object} configs Custom configs to override defaults
      * @param {Boolean} [supressEvent=false] Whether to supress the cuepointset event
      * @return {this}
      */
-    setCuePoint(configs, supressEvent){
+    setCuePoint(supressEvent){
         const start_time = this.getPropertyValue('start-time');
         const end_time = this.getPropertyValue('end-time');
 
@@ -521,10 +533,18 @@ export default class Component extends Dom {
              * A cuepoint associated with the component
              * @type {CuePoint}
              */
-            this.cuepoint = new CuePoint(Object.assign({}, configs, {
-                'inTime': start_time,
-                'outTime': end_time
-            }));
+            this.cuepoint = new CuePoint({
+                    'inTime': start_time,
+                    'outTime': end_time
+                })
+                .addListener('start', this.onCuePointStart.bind(this))
+                .addListener('stop', this.onCuePointStop.bind(this));
+
+            this.removeClass('cuepointactive');
+
+            if(this.isActive()){
+                this.cuepoint.activate();
+            }
 
             if(supressEvent !== true){
                 this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
@@ -541,6 +561,92 @@ export default class Component extends Dom {
      */
     getCuePoint() {
         return this.cuepoint;
+    }
+
+    /**
+     * The cuepoint start event handler
+     *
+     * @private
+     */
+    onCuePointStart(){
+        this.addClass('cuepointactive');
+        this.triggerEvent('cuepointstart');
+    }
+
+    /**
+     * The cuepoint stop event handler
+     *
+     * @private
+     */
+    onCuePointStop(){
+        this.removeClass('cuepointactive');
+        this.triggerEvent('cuepointstop');
+    }
+
+    /**
+     * Check if the element is active or not
+     *
+     * @return {Boolean} Whether the element is active or not
+     */
+    isActive(){
+        return this.hasClass('active');
+    }
+
+    /**
+     * Activate the element
+     *
+     * @param {Boolean} [supressEvent=false] Whether to supress the activate event
+     * @return {this}
+     */
+    activate(supressEvent){
+        if(!this.isActive()){
+            this.addClass('active');
+
+            const cuepoint = this.getCuePoint();
+            if(cuepoint){
+                cuepoint.activate();
+            }
+            else{
+                this.setCuePoint();
+            }
+
+            this.getChildren().forEach((child) => {
+                child.activate();
+            });
+
+            if(supressEvent !== true){
+                this.triggerEvent('activate', {'component': this});
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Deactivate the element
+     *
+     * @param {Boolean} [supressEvent=false] Whether to supress the deactivate event
+     * @return {this}
+     */
+    deactivate(supressEvent){
+        if(this.isActive()){
+            this.removeClass('active');
+
+            const cuepoint = this.getCuePoint();
+            if(cuepoint){
+                cuepoint.deactivate();
+            }
+
+            this.getChildren().forEach((child) => {
+                child.deactivate();
+            });
+
+            if(supressEvent !== true){
+                this.triggerEvent('deactivate', {'component': this});
+            }
+        }
+
+        return this;
     }
 
 }

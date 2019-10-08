@@ -9,7 +9,7 @@ import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
 import ConfigsEditor from './editor/ConfigsEditor';
 import UndoRedo from './editor/UndoRedo';
-import Alert from './core/ui/overlay/Alert';
+import Overlay from './core/ui/Overlay';
 import Confirm from './core/ui/overlay/Confirm';
 import LoadMask from './core/ui/overlay/LoadMask';
 import Clipboard from './core/Clipboard';
@@ -230,6 +230,7 @@ export default class Editor extends Dom {
          */
         this.controller = new Controller()
             .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
+            .addListener('scenarioactivate', this.onControllerScenarioActivate.bind(this))
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
@@ -658,7 +659,7 @@ export default class Editor extends Dom {
     onXHRError(loadmask, evt){
         loadmask.hide();
 
-        new Alert({
+        new Overlay({
             'parent': this,
             'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
             'buttons': {
@@ -862,6 +863,15 @@ export default class Editor extends Dom {
     }
 
     /**
+     * Controller scenarioactivate event callback
+     *
+     * @private
+     */
+    onControllerScenarioActivate(evt){
+        this.getPlayer().setScenario(evt.detail.scenario);
+    }
+
+    /**
      * Controller controls button click event callback
      *
      * @private
@@ -1013,7 +1023,7 @@ export default class Editor extends Dom {
             .addOneTimeListener('mediaerror', (evt) => {
                 loadmask.hide();
 
-                new Alert({
+                new Overlay({
                     'parent': this,
                     'text': evt.detail.message,
                     'buttons': {
@@ -1049,11 +1059,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayerScenarioChange(evt){
-        const scenario = evt.detail.value;
-        /**
-         * @todo: implement
-         */
-        console.log(scenario);
+        const scenario = evt.detail.scenario;
+        this.controller.getScenarioSelector().setActiveScenario(scenario, true);
     }
 
     /**
@@ -1168,7 +1175,7 @@ export default class Editor extends Dom {
     onPlayerFrameLoadError(loadmask){
         loadmask.hide();
 
-        new Alert({
+        new Overlay({
             'parent': this,
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
@@ -1240,6 +1247,10 @@ export default class Editor extends Dom {
                 .addAssets(this.player.getData('assets'), true)
                 .addAssets(this.player.getData('shared_assets'), true);
 
+            this.controller.getScenarioSelector()
+                .addScenarios(this.player.getData('scenarios'), true)
+                .setActiveScenario(this.player.getScenario(), true);
+
             this
                 .setEditing(true)
                 .updateMainmenu();
@@ -1256,7 +1267,7 @@ export default class Editor extends Dom {
     onPlayerLoadError(loadmask){
         loadmask.hide();
 
-        new Alert({
+        new Overlay({
             'parent': this,
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
@@ -1825,7 +1836,7 @@ export default class Editor extends Dom {
 
                     // prevent adding the page if current time == 0 or >= media duration
                     if(current_time === 0 || current_time >= duration){
-                        new Alert({
+                        new Overlay({
                             'parent': this,
                             'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
                             'buttons': {

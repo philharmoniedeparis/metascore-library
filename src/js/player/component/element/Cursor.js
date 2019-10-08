@@ -201,6 +201,14 @@ export default class Cursor extends Element {
         }
 
         switch(evt.detail.property){
+            case 'direction':
+            case 'acceleration': {
+                    const cuepoint = this.getCuePoint();
+                    if(cuepoint){
+                        cuepoint.update();
+                    }
+                }
+                break;
             case 'width':
             case 'height':
             case 'border-width':

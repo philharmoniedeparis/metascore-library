@@ -305,4 +305,13 @@ export default class Controller extends Dom {
         return this.timeline;
     }
 
+    /**
+     * Get the scenario selector
+     *
+     * @return {ScenarioSelector} The selector
+     */
+    getScenarioSelector(){
+        return this.scenario_selector;
+    }
+
 }

@@ -1,11 +1,11 @@
-import Alert from './Alert';
-import Locale from '../../Locale'
-import {isFunction} from '../../utils/Var'
+import Overlay from '../Overlay';
+import Locale from '../../Locale';
+import {isFunction} from '../../utils/Var';
 
 /**
  * A confirm overlay to show a simple message with yes/no buttons
  */
-export default class Confirm extends Alert{
+export default class Confirm extends Overlay{
 
     /**
      * Instantiate
@@ -35,22 +35,33 @@ export default class Confirm extends Alert{
         });
     }
 
-    /**
-     * Setup the overlay's UI
-     * @private
-     */
     setupUI(){
-        // call parent method
         super.setupUI();
 
         this.addListener('buttonclick', (evt) => {
-            if(evt.detail.action === 'confirm' && isFunction(this.configs.onConfirm)){
-                this.configs.onConfirm(evt);
-            }
-            if(evt.detail.action === 'cancel' && isFunction(this.configs.onCancel)){
-                this.configs.onCancel(evt);
+            const action = evt.detail.action;
+
+            switch(action){
+                case 'confirm':
+                    this.onConfirmClick(evt);
+                    break;
+
+                case 'cancel':
+                    this.onCancelClick(evt);
+                    break;
             }
         });
+    }
 
+    onConfirmClick(){
+        if(isFunction(this.configs.onConfirm)){
+            this.configs.onConfirm();
+        }
+    }
+
+    onCancelClick(){
+        if(isFunction(this.configs.onCancel)){
+            this.configs.onCancel();
+        }
     }
 }

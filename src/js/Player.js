@@ -5,7 +5,7 @@ import MasterClock from './core/clock/MasterClock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
-import Alert from './core/ui/overlay/Alert';
+import Overlay from './core/ui/Overlay';
 import StyleSheet from './core/StyleSheet';
 import CuePoint from './player/CuePoint';
 import Media from './player/component/Media';
@@ -20,20 +20,26 @@ import {toCentiseconds, toSeconds} from './core/utils/Media';
  *
  * @emits {ready} Fired when the player finished initializing
  * @param {Object} player The player instance
+ *
  * @emits {load} Fired when the guide's loading finished successfully
  * @param {Object} player The player instance
  * @param {Object} data The json data loaded
+ *
  * @emits {loaderror} Fired when the guide's loading failed
  * @param {Object} player The player instance
+ *
  * @emits {idset} Fired when the id is set
  * @param {Object} player The player instance
  * @param {String} id The guide's id
+ *
  * @emits {revisionset} Fired when the vid is set
  * @param {Object} player The player instance
  * @param {Integer} vid The guide's vid
+ *
  * @emits {componentadd} Fired when a component is added
  * @param {Object} component The component instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
+ *
  * @emits {scenariochange} Fired when the scenario changes
  * @param {Object} player The player instance
  * @param {Object} value The scenario
@@ -445,7 +451,7 @@ export default class Player extends Dom {
 
         // Only show an alert if not in an editor, as an alert will otherwise be shown in the editor
         if(!this.in_editor){
-            new Alert({
+            new Overlay({
                 'parent': this,
                 'text': message,
                 'buttons': {
@@ -458,34 +464,6 @@ export default class Player extends Dom {
         this.triggerEvent('mediaerror', {'player': this, 'message': message});
 
         evt.stopPropagation();
-    }
-
-    /**
-     * Page activate event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPageActivate(evt){
-        const page = evt.detail.page;
-
-        page.getChildren().forEach((element) => {
-            element.activate();
-        });
-    }
-
-    /**
-     * Page deactivate event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onPageDeactivate(evt){
-        const page = evt.detail.page;
-
-        page.getChildren().forEach((element) => {
-            element.deactivate();
-        });
     }
 
     /**
@@ -582,20 +560,6 @@ export default class Player extends Dom {
         const component = evt.detail.component;
 
         switch(evt.detail.property){
-            case 'start-time':
-            case 'end-time':
-                component.setCuePoint();
-                break;
-
-            case 'direction':
-            case 'acceleration':{
-                const cuepoint = component.getCuePoint();
-                if(cuepoint){
-                    cuepoint.update();
-                }
-                break;
-            }
-
             case 'hidden':{
                 // Update all BlockTogglers to reflect the change in a component's hidden state.
                 this.find(`.block-toggler .button[data-component=${component.getId()}]`)
@@ -835,6 +799,23 @@ export default class Player extends Dom {
     }
 
     /**
+     * Get root components by CSS selector
+     *
+     * @param {String} selector The CSS selector
+     * @return {Dom} A Dom instance containing the selected components
+     * TODO: improve
+     */
+    getRootComponents(selector){
+        let components = this.children('.metaScore-component');
+
+        if(selector){
+            components = components.filter(selector);
+        }
+
+        return components.elements.map((dom) => dom._metaScore);
+    }
+
+    /**
      * Create and add a Media instance
      *
      * @param {Object} configs The configurations to send to the Media class
@@ -946,8 +927,6 @@ export default class Player extends Dom {
             block = new Block(block)
                 .addListener('activepageset', this.onBlockActivePageSet.bind(this))
                 .addListener('componentadd', this.onComponentAdd.bind(this))
-                .addDelegate('.page', 'activate', this.onPageActivate.bind(this))
-                .addDelegate('.page', 'deactivate', this.onPageDeactivate.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
@@ -1088,7 +1067,7 @@ export default class Player extends Dom {
      * @return {this}
      */
     setScenario(scenario, supressEvent){
-        if(scenario !== this.scenario && this.getScenarios().includes(scenario)){
+        if(scenario !== this.scenario){
             const scenarios = this.getScenarios();
 
             if(!scenarios.includes(scenario)){
@@ -1097,19 +1076,17 @@ export default class Player extends Dom {
             else{
                 this.scenario = scenario;
 
-                this.getComponents('.block').forEach((block) => {
-                    block.getActivePage().getChildren().forEach((element) => {
-                        if(element.getPropertyValue('scenario') === this.scenario){
-                            element.activate();
-                        }
-                        else{
-                            element.deactivate();
-                        }
-                    });
+                this.getRootComponents().forEach((component) => {
+                    if(component.getPropertyValue('scenario') === this.scenario){
+                        component.activate();
+                    }
+                    else{
+                        component.deactivate();
+                    }
                 });
 
                 if(supressEvent !== true){
-                    this.triggerEvent('scenariochange', {'player': this, 'value': this.scenario}, true, false);
+                    this.triggerEvent('scenariochange', {'player': this, 'scenario': this.scenario}, true, false);
                 }
             }
         }

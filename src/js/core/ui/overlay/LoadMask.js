@@ -23,19 +23,36 @@ export default class LoadMask extends Overlay{
 
         this.addClass(`loadmask ${className}`);
 
+        this.setProgress(0);
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return Object.assign({}, super.getDefaults(), {
+            'text': Locale.t('overlay.LoadMask.text', 'Loading...'),
+            'bar': false,
+            'barText': Locale.t('overlay.LoadMask.bar.text', '!percent%'),
+        });
+    }
+
+    /**
+     * Setup the overlay's UI
+     *
+     * @private
+     */
+    setupUI() {
+        super.setupUI();
+
         /**
          * The loading icon
          * @type {Icon}
          */
         this.icon = new Icon({'symbol': loading_icon})
-            .appendTo(this.getContents());
-
-        /**
-         * The text container
-         * @type {Dom}
-         */
-        this.text = new Dom('<div/>', {'class': 'text', 'text': this.configs.text})
-            .appendTo(this.getContents());
+            .insertAt(this.getContents(), 0);
 
         if(this.configs.bar){
             this.addClass('with-bar');
@@ -61,21 +78,6 @@ export default class LoadMask extends Overlay{
             this.bar_text = new Dom('<span/>', {'class': 'text'})
                 .appendTo(this.bar);
         }
-
-        this.setProgress(0);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'text': Locale.t('overlay.LoadMask.text', 'Loading...'),
-            'bar': false,
-            'barText': Locale.t('overlay.LoadMask.bar.text', '!percent%'),
-        });
     }
 
     /**

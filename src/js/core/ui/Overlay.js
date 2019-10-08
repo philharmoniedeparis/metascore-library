@@ -1,5 +1,6 @@
 import Dom from '../Dom';
 import Toolbar from './overlay/Toolbar';
+import Button from './Button';
 
 import {className} from '../../../css/core/ui/Overlay.scss';
 
@@ -10,6 +11,9 @@ import {className} from '../../../css/core/ui/Overlay.scss';
  * @param {Object} overlay The overlay instance
  * @emits {hide} Fired when the overlay is hidden
  * @param {Object} overlay The overlay instance
+ * @emits {buttonclick} Fired when a button is clicked
+ * @param {Object} overlay The overlay instance
+ * @param {String} action The buttons's action
  */
 export default class Overlay extends Dom {
 
@@ -22,6 +26,8 @@ export default class Overlay extends Dom {
      * @property {Boolean} [autoShow=true] Whether to show the overlay automatically
      * @property {Boolean} [toolbar=false] Whether to add a toolbar with title and close button
      * @property {String} [title=''] The overlay's title
+     * @property {String} [text=''] The overlay's text
+     * @property {Array} [buttons=''] The overlay's buttons
      */
     constructor(configs) {
         // call parent constructor
@@ -51,7 +57,9 @@ export default class Overlay extends Dom {
             'modal': true,
             'autoShow': false,
             'toolbar': false,
-            'title': ''
+            'title': '',
+            'text': '',
+            'buttons': {}
         };
     }
 
@@ -61,7 +69,6 @@ export default class Overlay extends Dom {
      * @private
      */
     setupUI() {
-
         this.toggleClass('modal', this.configs.modal);
 
         const inner = new Dom('<div/>', {'class': 'inner'})
@@ -86,6 +93,56 @@ export default class Overlay extends Dom {
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(inner);
 
+        /**
+         * The text container
+         * @type {Dom}
+         */
+        this.text = new Dom('<div/>', {'class': 'text'})
+            .appendTo(this.contents);
+
+        if(this.configs.text){
+            this.setText(this.configs.text);
+        }
+
+        /**
+         * The buttons container
+         * @type {Dom}
+         */
+        this.buttons = new Dom('<div/>', {'class': 'buttons'})
+            .appendTo(inner);
+
+        if(this.configs.buttons){
+            Object.entries(this.configs.buttons).forEach(([action, label]) => {
+                this.addButton(action, label);
+            });
+        }
+    }
+
+    /**
+     * Set the message's text
+     * @param {String} str The message's text
+     * @return {this}
+     */
+    setText(str){
+        this.text.text(str);
+
+        return this;
+    }
+
+    /**
+     * Add a button
+     * @param {String} action The button's associated action
+     * @param {String} label The button's text label
+     * @return {Button} The button object
+     */
+    addButton(action, label){
+        const button = new Button()
+            .setLabel(label)
+            .data('action', action)
+            .addListener('click', this.onButtonClick.bind(this))
+            .appendTo(this.buttons);
+
+        return button;
     }
 
     /**
@@ -130,6 +187,21 @@ export default class Overlay extends Dom {
      */
     getContents() {
         return this.contents;
+    }
+
+    /**
+     * The button click event handler
+     * @private
+     * @param {Event} evt The event object
+     */
+    onButtonClick(evt){
+        const action = new Dom(evt.target).data('action');
+
+        this.hide();
+
+        this.triggerEvent('buttonclick', {'overlay': this, 'action': action}, false);
+
+        evt.stopPropagation();
     }
 
     /**

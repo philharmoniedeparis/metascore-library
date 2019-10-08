@@ -3,8 +3,6 @@
 :local(.className){
     > .inner{
         > .contents{
-            padding: 1em;
-
             .icon{
                 display: inline-block;
                 width: 1.5em;
@@ -15,8 +13,6 @@
 
             .text{
                 display: inline-block;
-                color: #fff;
-                vertical-align: middle;
             }
         }
     }

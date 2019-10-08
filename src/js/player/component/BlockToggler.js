@@ -40,8 +40,7 @@ export default class BlockToggler extends Component{
                 },
                 'scenario': {
                     'getter': function(){
-                        const value = parseInt(this.data('scenario'), 10);
-                        return isNaN(value) || value === 0 ? null : value;
+                        return this.data('scenario');
                     },
                     'setter': function(value){
                         this.data('scenario', value);

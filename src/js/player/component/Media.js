@@ -45,6 +45,14 @@ export default class Media extends Component{
                         this.data('hidden', value ? "true" : null);
                     }
                 },
+                'scenario': {
+                    'getter': function(){
+                        return this.data('scenario');
+                    },
+                    'setter': function(value){
+                        this.data('scenario', value);
+                    }
+                },
                 'x': {
                     'getter': function(){
                         return parseInt(this.css('left'), 10);

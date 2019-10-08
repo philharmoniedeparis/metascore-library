@@ -21,6 +21,7 @@ body{
 
     .metaScore-component{
         position: absolute;
+        display: none;
         top: 0;
         left: 0;
 
@@ -330,10 +331,6 @@ body{
             overflow: hidden;
             background-repeat: no-repeat;
             background-position: left top;
-
-            &.active{
-                display: block;
-            }
         }
 
         &.element{
@@ -359,8 +356,6 @@ body{
             }
 
             &.active{
-                display: block;
-
                 &:not([data-start-time]):not([data-end-time]),
                 &.cuepointactive{
                     pointer-events: auto;
@@ -421,6 +416,13 @@ body{
                         height: 100%;
                     }
                 }
+            }
+        }
+
+        &.active{
+            &:not([data-start-time]):not([data-end-time]),
+            &.cuepointactive{
+                display: block;
             }
         }
 

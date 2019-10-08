@@ -1,6 +1,10 @@
 {
+	"core.Confirm.buttons.cancel": "Cancel",
+	"core.Confirm.buttons.confirm": "OK",
 	"core.Confirm.buttons.no": "No",
 	"core.Confirm.buttons.yes": "Yes",
+	"core.Prompt.buttons.cancel": "Cancel",
+	"core.Prompt.buttons.confirm": "OK",
 	"core.media.renderer.Dash.error": "An error occured while attempting to read the media stream",
 	"core.media.renderer.Dash.getDurationFromURI.error": "An error occured while attempting to load the media: !url",
 	"core.media.renderer.HLS.error": "An error occured while attempting to read the media stream",

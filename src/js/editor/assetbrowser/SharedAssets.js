@@ -4,7 +4,7 @@ import Ajax from '../../core/Ajax';
 import Button from '../../core/ui/Button';
 import Icon from '../../core/ui/Icon';
 import LoadMask from '../../core/ui/overlay/LoadMask';
-import Alert from '../../core/ui/overlay/Alert';
+import Overlay from '../../core/ui/Overlay';
 import TextInput from '../../core/ui/input/TextInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import Lottie from 'lottie-web';
@@ -260,7 +260,7 @@ export default class AssetBrowser extends Dom {
         const error = 'message' in response ? response.message : evt.target.getStatusText();
         const code = evt.target.getStatus();
 
-        new Alert({
+        new Overlay({
             'parent': this,
             'text': Locale.t('editor.assetbrowser.SharedAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {

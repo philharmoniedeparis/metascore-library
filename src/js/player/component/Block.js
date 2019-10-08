@@ -10,6 +10,7 @@ import {isString, isNumber} from '../../core/utils/Var';
  * @emits {componentadd} Fired when a page is added
  * @param {Component} component The page instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
+ *
  * @emits {activepageset} Fired when the active page is set
  * @param {Block} block The block instance
  * @param {Page} page The active page instance
@@ -17,10 +18,8 @@ import {isString, isNumber} from '../../core/utils/Var';
 export default class Block extends Component {
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
+     * @inheritdoc
+     */
     static getDefaults(){
         const defaults = super.getDefaults();
 
@@ -49,8 +48,7 @@ export default class Block extends Component {
                 },
                 'scenario': {
                     'getter': function(){
-                        const value = parseInt(this.data('scenario'), 10);
-                        return isNaN(value) || value === 0 ? null : value;
+                        return this.data('scenario');
                     },
                     'setter': function(value){
                         this.data('scenario', value);
@@ -173,9 +171,7 @@ export default class Block extends Component {
     }
 
     /**
-     * Setup the block's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent function
@@ -241,9 +237,7 @@ export default class Block extends Component {
     }
 
     /**
-     * Get the child components
-     *
-     * @return {Array} A list of child components
+     * @inheritdoc
      */
     getChildren(){
         const children = [];
@@ -256,19 +250,14 @@ export default class Block extends Component {
     }
 
     /**
-     * Get the count of children
-     *
-     * @return {Integer} The number of children
+     * @inheritdoc
      */
     getChildrenCount() {
         return this.page_wrapper.children('.metaScore-component').count();
     }
 
     /**
-     * Get a child component by index
-     *
-     * @param {Integer} index The child's index
-     * @return {Component} The component
+     * @inheritdoc
      */
     getChild(index){
         const child = this.page_wrapper.child(`.page:nth-child(${index+1})`).get(0);
@@ -277,12 +266,39 @@ export default class Block extends Component {
     }
 
     /**
-     * Remove all pages
-     *
-     * @return {this}
+     * @inheritdoc
      */
     removeAllChildren() {
         this.page_wrapper.children('.page').remove();
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    activate(supressEvent){
+        if(!this.isActive()){
+            this.addClass('active');
+
+            const cuepoint = this.getCuePoint();
+            if(cuepoint){
+                cuepoint.activate();
+            }
+
+            if(this.getPropertyValue('synched')){
+                this.getChildren().forEach((child) => {
+                    child.activate();
+                });
+            }
+            else{
+                this.setActivePage(0);
+            }
+
+            if(supressEvent !== true){
+                this.triggerEvent('activate', {'component': this});
+            }
+        }
 
         return this;
     }

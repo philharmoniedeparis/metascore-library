@@ -1,6 +1,10 @@
 {
+	"core.Confirm.buttons.cancel": "Cancel",
+	"core.Confirm.buttons.confirm": "OK",
 	"core.Confirm.buttons.no": "No",
 	"core.Confirm.buttons.yes": "Yes",
+	"core.Prompt.buttons.cancel": "Cancel",
+	"core.Prompt.buttons.confirm": "OK",
 	"core.media.renderer.Dash.error": "Une erreur s'est produite lors de la tentative de lecture du flux média",
 	"core.media.renderer.Dash.getDurationFromURI.error": "Une erreur s'est produite lors du chargement du média: !url",
 	"core.media.renderer.HLS.error": "Une erreur s'est produite lors de la tentative de lecture du flux média",
