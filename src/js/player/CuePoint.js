@@ -1,5 +1,5 @@
 import EventEmitter from '../core/EventEmitter';
-import MediaClock from '../core/clock/MediaClock';
+import MasterClock from '../core/clock/MasterClock';
 import {uuid} from '../core/utils/String';
 
 /**
@@ -84,8 +84,8 @@ export default class CuePoint extends EventEmitter{
      * @private
      */
     onMediaRendererSeeking(){
-        MediaClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
-        MediaClock.getRenderer().addListener('seeked', this.onMediaRendererSeeked);
+        MasterClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
+        MasterClock.getRenderer().addListener('seeked', this.onMediaRendererSeeked);
     }
 
     /**
@@ -94,10 +94,10 @@ export default class CuePoint extends EventEmitter{
      * @private
      */
     onMediaRendererSeeked(){
-        const time = MediaClock.getTime();
+        const time = MasterClock.getTime();
 
-        MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
-        MediaClock.getRenderer().removeListener('seeked', this.onMediaRendererSeeked);
+        MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
+        MasterClock.getRenderer().removeListener('seeked', this.onMediaRendererSeeked);
 
         if(this.configs.considerError){
             // reset the max_error and the previous_time to prevent an abnormaly large max_error
@@ -128,7 +128,7 @@ export default class CuePoint extends EventEmitter{
         if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
             this.active = true;
 
-            MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
+            MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
             this.update();
         }
 
@@ -143,7 +143,7 @@ export default class CuePoint extends EventEmitter{
     deactivate() {
         delete this.active;
 
-        MediaClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
+        MasterClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
 
         this.stop();
 
@@ -166,7 +166,7 @@ export default class CuePoint extends EventEmitter{
         }
 
         this.running = true;
-        MediaClock.getRenderer().addListener('seeking', this.onMediaRendererSeeking);
+        MasterClock.getRenderer().addListener('seeking', this.onMediaRendererSeeking);
 
         this.triggerEvent('update');
     }
@@ -182,7 +182,7 @@ export default class CuePoint extends EventEmitter{
             return;
         }
 
-        const time = MediaClock.getTime();
+        const time = MasterClock.getTime();
 
         if(!this.running){
             if(((this.configs.inTime === null) || (Math.floor(time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(time) < this.configs.outTime))){
@@ -219,7 +219,7 @@ export default class CuePoint extends EventEmitter{
             return;
         }
 
-        MediaClock.getRenderer().removeListener('seeking', this.onMediaRendererSeeking);
+        MasterClock.getRenderer().removeListener('seeking', this.onMediaRendererSeeking);
 
         if(supressEvent !== true){
             this.triggerEvent('stop');

@@ -1,5 +1,5 @@
 import Dom from '../../../core/Dom';
-import MediaClock from '../../../core/clock/MediaClock';
+import MasterClock from '../../../core/clock/MasterClock';
 import Button from '../../../core/ui/Button';
 import SliderInput from '../../../core/ui/input/SliderInput';
 import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
@@ -147,7 +147,7 @@ export default class Zoom extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
 
-        MediaClock
+        MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
@@ -391,7 +391,7 @@ export default class Zoom extends Dom {
         if(this.width > 0 && this.height > 0){
             const canvas = this.playhead_layer.get(0);
             const context = canvas.getContext('2d');
-            const x = this.getPositionAt(MediaClock.getTime()) + 0.5;
+            const x = this.getPositionAt(MasterClock.getTime()) + 0.5;
 
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
@@ -519,7 +519,7 @@ export default class Zoom extends Dom {
                 this.zoom_in_btn.toggleClass('disabled', clamped <= min);
                 this.zoom_slider.setValue(scale, true);
 
-                const offset = this.resampled_data.at_time(toSeconds(MediaClock.getTime())) - this.width/2;
+                const offset = this.resampled_data.at_time(toSeconds(MasterClock.getTime())) - this.width/2;
                 this.setOffset(offset, true);
             }
         }
@@ -647,7 +647,7 @@ export default class Zoom extends Dom {
      * @private
      */
     onMediaClockTimeUpdate(){
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(renderer || this.resampled_data){
             this.updatePlayhead(true);
@@ -740,7 +740,7 @@ export default class Zoom extends Dom {
             return toCentiseconds(this.resampled_data.time(x + this.offset));
         }
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
         if(renderer){
             return x * renderer.getDuration() / this.width;
         }
@@ -759,7 +759,7 @@ export default class Zoom extends Dom {
             return this.resampled_data.at_time(toSeconds(time)) - this.offset;
         }
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
         if(renderer){
             return Math.round(time / renderer.getDuration() * this.width);
         }

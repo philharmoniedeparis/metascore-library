@@ -4,7 +4,7 @@ import {className} from '../css/Editor.scss';
 
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
-import MediaClock from './core/clock/MediaClock';
+import MasterClock from './core/clock/MasterClock';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
@@ -228,17 +228,11 @@ export default class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller()
-            .addListener('timeset', this.onControllerTimeSet.bind(this))
+            .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
+            .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+            .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .appendTo(bottom_pane.getContents());
-
-        this.controller.getTimeInput()
-            .addListener('valuechange', this.onControllerTimeFieldChange.bind(this))
-
-        this.controller.getTimeline()
-            .addDelegate('.track', 'click', this.onTimelineTrackClick.bind(this))
-            .getHandlesContainer()
-                .addDelegate('.handle', 'click', this.onTimelineTrackClick.bind(this));
 
         /**
          * The undo/redo handler
@@ -858,6 +852,15 @@ export default class Editor extends Dom {
     }
 
     /**
+     * Controller timeset event callback
+     *
+     * @private
+     */
+    onControllerPlayheadClick(evt){
+        MasterClock.setTime(evt.detail.time);
+    }
+
+    /**
      * Controller controls button click event callback
      *
      * @private
@@ -870,6 +873,7 @@ export default class Editor extends Dom {
             case 'play':
                 this.getPlayer().togglePlay();
                 break;
+
             case 'rewind':
                 this.getPlayer().getMedia().reset();
                 break;
@@ -883,7 +887,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onControllerTimeFieldChange(evt){
-        MediaClock.setTime(evt.detail.value);
+        MasterClock.setTime(evt.detail.value);
     }
 
     /**
@@ -920,15 +924,7 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTimeInputValueOut(evt){
-        MediaClock.setTime(evt.detail.value);
-    }
-    /**
-     * Controller timeset event callback
-     *
-     * @private
-     */
-    onControllerTimeSet(evt){
-        MediaClock.setTime(evt.detail.time);
+        MasterClock.setTime(evt.detail.value);
     }
 
     /**
@@ -1010,7 +1006,7 @@ export default class Editor extends Dom {
 
         this.removeClass('metadata-loaded');
 
-        MediaClock.setRenderer(null);
+        MasterClock.setRenderer(null);
 
         this.getPlayer()
             .addOneTimeListener('mediaerror', (evt) => {
@@ -1040,7 +1036,7 @@ export default class Editor extends Dom {
 
         this.addClass('metadata-loaded');
 
-        MediaClock.setRenderer(evt.detail.renderer);
+        MasterClock.setRenderer(evt.detail.renderer);
 
         media.reset();
     }

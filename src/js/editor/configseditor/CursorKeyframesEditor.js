@@ -4,7 +4,7 @@ import {isEmpty} from '../../core/utils/Var';
 import {clamp} from '../../core/utils/Math';
 import ContextMenu from '../../core/ui/ContextMenu';
 import Locale from '../../core/Locale';
-import MediaClock from '../../core/clock/MediaClock';
+import MasterClock from '../../core/clock/MasterClock';
 
 /**
  * A helper class to manage a cursor component's keyframes
@@ -149,7 +149,7 @@ export default class CursorKeyframesEditor extends Dom {
                 'callback': (context) => {
                     const mouse_position = this.getRelativeMousePosition(context.x, context.y);
                     const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
-                    const time = MediaClock.getTime();
+                    const time = MasterClock.getTime();
 
                     this.addKeyframe(position, time);
                 },
@@ -221,7 +221,7 @@ export default class CursorKeyframesEditor extends Dom {
         this.mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
 
         this.addListener('mousemove', this.onMousemove);
-        MediaClock.addListener('timeupdate', this.onMediaClockTimeupdate);
+        MasterClock.addListener('timeupdate', this.onMediaClockTimeupdate);
 
         if(!this.dragging){
             this.updateState();
@@ -295,7 +295,7 @@ export default class CursorKeyframesEditor extends Dom {
      */
     onMouseout(){
         this.removeListener('mousemove', this.onMousemove);
-        MediaClock.removeListener('timeupdate', this.onMediaClockTimeupdate);
+        MasterClock.removeListener('timeupdate', this.onMediaClockTimeupdate);
 
         delete this.mouse_position;
 
@@ -313,7 +313,7 @@ export default class CursorKeyframesEditor extends Dom {
             case 'add': {
                     const mouse_position = this.getRelativeMousePosition(evt.clientX, evt.clientY);
                     const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
-                    const time = MediaClock.getTime();
+                    const time = MasterClock.getTime();
 
                     this.addKeyframe(position, time);
                 }
@@ -324,7 +324,7 @@ export default class CursorKeyframesEditor extends Dom {
                         return keyframe.over;
                     });
                     if(found){
-                        MediaClock.setTime(found.time);
+                        MasterClock.setTime(found.time);
                     }
                 }
                 break;
@@ -566,7 +566,7 @@ export default class CursorKeyframesEditor extends Dom {
 
         // If we are neither over a keyframe nor over a label, check if a keyframe can be added.
         if(!over_keyframe){
-            const time = MediaClock.getTime();
+            const time = MasterClock.getTime();
 
             // Check if a cursor can be added at that position and time.
             const invalid = this.keyframes.some((keyframe) => {

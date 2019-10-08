@@ -1,7 +1,7 @@
 import {className} from '../css/Player.scss';
 
 import Dom from './core/Dom';
-import MediaClock from './core/clock/MediaClock';
+import MasterClock from './core/clock/MasterClock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
@@ -138,7 +138,7 @@ export default class Player extends Dom {
             .appendTo(this.configs.container)
             .triggerEvent('ready', {'player': this}, false, false);
 
-        MediaClock.addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
+        MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
 
         if(this.configs.autoload !== false){
             this.load();
@@ -334,7 +334,7 @@ export default class Player extends Dom {
      * @private
      */
     onMediaSourceSet(evt){
-        MediaClock.setRenderer(evt.detail.renderer);
+        MasterClock.setRenderer(evt.detail.renderer);
     }
 
     /**
@@ -410,7 +410,7 @@ export default class Player extends Dom {
      */
     onMediaClockTimeUpdate(){
         if(this.controller){
-            this.controller.updateTime(MediaClock.getTime());
+            this.controller.updateTime(MasterClock.getTime());
         }
     }
 

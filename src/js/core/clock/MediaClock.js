@@ -3,25 +3,39 @@ import Clock from '../Clock';
 /**
  * A synchronization clock class based on a media's time
  */
-export default class MediaClock extends Clock {
+export default class MasterClock extends Clock {
 
-    /**
-     * @type {Dom}
-     */
-    static renderer = null;
+    constructor(){
+        super();
 
-    /**
-     * @type {Boolean}
-     */
-    static ticking = false;
+        // fix event handlers scope
+        this.onRendererPlay = this.onRendererPlay.bind(this);
+        this.onRendererPause = this.onRendererPause.bind(this);
+        this.onRendererStop = this.onRendererStop.bind(this);
+        this.onRendererSeeking = this.onRendererSeeking.bind(this);
+        this.triggerTimeUpdate = this.triggerTimeUpdate.bind(this);
+
+        /**
+         * @type {Dom}
+         */
+        this.renderer = null;
+
+        /**
+         * @type {Boolean}
+         */
+        this.ticking = false;
+
+    }
 
     /**
      * The play event handler
      *
      * @private
      */
-    static onRendererPlay() {
+    onRendererPlay() {
         this.ticking = true;
+
+        this.renderer.removeListener('seeking', this.onRendererSeeking);
 
         this.triggerEvent('play');
 
@@ -33,8 +47,10 @@ export default class MediaClock extends Clock {
      *
      * @private
      */
-    static onRendererPause() {
+    onRendererPause() {
         this.ticking = false;
+
+        this.renderer.addListener('seeking', this.onRendererSeeking);
 
         this.triggerEvent('pause');
     }
@@ -44,11 +60,17 @@ export default class MediaClock extends Clock {
      *
      * @private
      */
-    static onRendererStop() {
+    onRendererStop() {
         this.ticking = false;
         this.time = 0;
 
+        this.renderer.addListener('seeking', this.onRendererSeeking);
+
         this.triggerEvent('stop');
+    }
+
+    onRendererSeeking(){
+        this.triggerTimeUpdate(false);
     }
 
     /**
@@ -57,22 +79,13 @@ export default class MediaClock extends Clock {
      * @param {Mixed} renderer A media renderer
      * @param {Boolean} [supressEvent=false] Whether to supress the mediachange event
      */
-    static setRenderer(renderer, supressEvent) {
-        if(!this._scoped_methods){
-            // fix event handlers scope
-            this.onRendererPlay = this.onRendererPlay.bind(this);
-            this.onRendererPause = this.onRendererPause.bind(this);
-            this.onRendererStop = this.onRendererStop.bind(this);
-            this.triggerTimeUpdate = this.triggerTimeUpdate.bind(this);
-
-            this._scoped_methods = true;
-        }
-
+    setRenderer(renderer, supressEvent) {
         if(this.renderer){
             this.renderer
                 .removeListener('play', this.onRendererPlay)
                 .removeListener('pause', this.onRendererPause)
-                .removeListener('stop', this.onRendererStop);
+                .removeListener('stop', this.onRendererStop)
+                .removeListener('seeking', this.onRendererSeeking);
 
             delete this.renderer;
         }
@@ -82,6 +95,10 @@ export default class MediaClock extends Clock {
                 .addListener('play', this.onRendererPlay)
                 .addListener('pause', this.onRendererPause)
                 .addListener('stop', this.onRendererStop);
+
+            if(!this.renderer.isPlaying()){
+                this.renderer.addListener('seeking', this.onRendererSeeking);
+            }
         }
 
         if(supressEvent !== true){
@@ -94,7 +111,7 @@ export default class MediaClock extends Clock {
      *
      * @return {Dom} The media
      */
-    static getRenderer() {
+    getRenderer() {
         return this.renderer;
     }
 
@@ -104,7 +121,7 @@ export default class MediaClock extends Clock {
      * @param {Number} time The time in centiseconds
      * @param {Boolean} [supressEvent=false] Whether to supress the timeupdate event
      */
-    static setTime(time) {
+    setTime(time) {
         const renderer = this.getRenderer();
 
         if(renderer){
@@ -121,7 +138,7 @@ export default class MediaClock extends Clock {
      *
      * @return {Number} The time in centiseconds
      */
-    static getTime() {
+    getTime() {
         const renderer = this.getRenderer();
 
         if(renderer){
@@ -136,7 +153,7 @@ export default class MediaClock extends Clock {
      *
      * @return {Boolean} Whether the clock is ticking
      */
-    static isTicking() {
+    isTicking() {
         return this.ticking;
     }
 
@@ -147,7 +164,7 @@ export default class MediaClock extends Clock {
      * @param {Boolean} [loop=true] Whether to use requestAnimationFrame to trigger this method again
      * @return {this}
      */
-    static triggerTimeUpdate(loop) {
+    triggerTimeUpdate(loop) {
         if(loop !== false && this.isTicking()){
             window.requestAnimationFrame(this.triggerTimeUpdate);
         }

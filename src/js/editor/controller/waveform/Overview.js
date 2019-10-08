@@ -1,5 +1,5 @@
 import Dom from '../../../core/Dom';
-import MediaClock from '../../../core/clock/MediaClock';
+import MasterClock from '../../../core/clock/MasterClock';
 import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
 import {className} from '../../../../css/editor/controller/WaveformOverview.scss';
@@ -63,7 +63,7 @@ export default class Overview extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
 
-        MediaClock
+        MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
@@ -208,7 +208,7 @@ export default class Overview extends Dom {
     updatePlayhead(){
         const canvas = this.playhead_layer.get(0);
         const context = canvas.getContext('2d');
-        const x = Math.round(this.getPositionAt(MediaClock.getTime()))  + 0.5;
+        const x = Math.round(this.getPositionAt(MasterClock.getTime()))  + 0.5;
 
         context.clearRect(0, 0, this.width, this.height);
         context.beginPath();
@@ -251,7 +251,7 @@ export default class Overview extends Dom {
      * @private
      */
     onMousemove(evt){
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(!renderer && !this.resampled_data){
             return;
@@ -304,7 +304,7 @@ export default class Overview extends Dom {
      * @private
      */
     onMediaClockTimeUpdate(){
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(renderer || this.resampled_data){
             this.updatePlayhead();
@@ -362,7 +362,7 @@ export default class Overview extends Dom {
             return toCentiseconds(this.resampled_data.time(x));
         }
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
         if(renderer){
             return renderer.getDuration() * x / this.width;
         }
@@ -381,7 +381,7 @@ export default class Overview extends Dom {
             return this.resampled_data.at_time(toSeconds(time));
         }
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
         if(renderer){
             return time * this.width / renderer.getDuration();
         }

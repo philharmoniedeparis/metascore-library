@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import MediaClock from '../../core/clock/MediaClock';
+import MasterClock from '../../core/clock/MasterClock';
 import Track from './timeline/Track';
 
 import {className} from '../../../css/editor/controller/Timeline.scss';
@@ -35,7 +35,7 @@ export default class Timeline extends Dom {
 
         this.setupUI();
 
-        MediaClock.addListener('rendererchange', this.onMediaClockRendererChange.bind(this));
+        MasterClock.addListener('rendererchange', this.onMediaClockRendererChange.bind(this));
     }
 
     /**
@@ -209,7 +209,7 @@ export default class Timeline extends Dom {
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
         const parent_track = parent_component ? this.getTrack(parent_component.getId()) : null;
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(parent_component && !parent_track){
             return this;
@@ -301,7 +301,7 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     setOffset(start, end, supressEvent){
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(renderer){
             const duration = renderer.getDuration();

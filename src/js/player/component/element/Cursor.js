@@ -1,6 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import MediaClock from '../../../core/clock/MediaClock';
+import MasterClock from '../../../core/clock/MasterClock';
 import {map, radians} from '../../../core/utils/Math';
 
 /**
@@ -336,7 +336,7 @@ export default class Cursor extends Element {
         const direction = this.getPropertyValue('direction');
         const cursor_width = this.getPropertyValue('cursor-width');
         const cursor_color = this.getPropertyValue('cursor-color');
-        const current_time = MediaClock.getTime();
+        const current_time = MasterClock.getTime();
 
         const pos = this.getLinearPositionFromTime(current_time);
         const vertical = direction === 'bottom' || direction === 'top';
@@ -539,7 +539,7 @@ export default class Cursor extends Element {
     drawCircularCursor(){
         const width = this.canvas.width;
         const height = this.canvas.height;
-        const current_time = MediaClock.getTime();
+        const current_time = MasterClock.getTime();
 
         const border_width = this.getPropertyValue('border-width');
         const cursor_width = this.getPropertyValue('cursor-width');
@@ -627,7 +627,7 @@ export default class Cursor extends Element {
         const end_time = this.getPropertyValue('end-time');
         const start_angle = radians(this.getPropertyValue('start-angle'));
         const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
-        const current_time = MediaClock.getTime();
+        const current_time = MasterClock.getTime();
 
         let angle = a;
         angle -= Math.PI / 2; // Adjust the angle so that 0 start at top

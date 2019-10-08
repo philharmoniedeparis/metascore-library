@@ -1,6 +1,6 @@
 import Element from '../Element';
 import {toSeconds, toCentiseconds} from '../../../core/utils/Media';
-import MediaClock from '../../../core/clock/MediaClock';
+import MasterClock from '../../../core/clock/MasterClock';
 import Lottie from 'lottie-web';
 
 /**
@@ -163,7 +163,7 @@ export default class Animation extends Element{
             const start_time = this.getPropertyValue('start-time');
             const start_frame = this.getPropertyValue('start-frame');
             const loop_duration = this.getPropertyValue('loop-duration');
-            const current_time = MediaClock.getTime();
+            const current_time = MasterClock.getTime();
 
             const time = toSeconds(current_time - start_time);
             const total_frames = animation.getDuration(true);

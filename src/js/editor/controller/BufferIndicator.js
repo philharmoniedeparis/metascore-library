@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import MediaClock from '../../core/clock/MediaClock';
+import MasterClock from '../../core/clock/MasterClock';
 
 import {className} from '../../../css/editor/controller/BufferIndicator.scss';
 
@@ -50,7 +50,7 @@ export default class BufferIndicator extends Dom {
             .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('click', this.onClick.bind(this));
 
-        MediaClock
+        MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
@@ -115,7 +115,7 @@ export default class BufferIndicator extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(renderer){
             const ranges = renderer.getBuffered();
@@ -141,9 +141,9 @@ export default class BufferIndicator extends Dom {
 
         context.clearRect(0, 0, this.width, this.height);
 
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
         if(renderer){
-            const time = MediaClock.getTime();
+            const time = MasterClock.getTime();
 
             context.fillStyle = this.configs.playbackColor;
             context.fillRect(0, 0, (time * canvas.width / renderer.getDuration()) + 1, canvas.height);
@@ -248,7 +248,7 @@ export default class BufferIndicator extends Dom {
      * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x){
-        const renderer = MediaClock.getRenderer();
+        const renderer = MasterClock.getRenderer();
 
         if(renderer){
             return renderer.getDuration() * x / this.width;

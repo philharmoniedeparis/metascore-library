@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import MediaClock from '../core/clock/MediaClock';
+import MasterClock from '../core/clock/MasterClock';
 import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
@@ -37,7 +37,7 @@ export default class Controller extends Dom {
 
         this.setupUI();
 
-        MediaClock
+        MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
@@ -152,13 +152,9 @@ export default class Controller extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayheadClick(evt){
-        const time = evt.detail.time;
-
         if(!Dom.is(evt.currentTarget, '.waveform-zoom')){
-            this.getWaveformZoom().centerToTime(time);
+            this.getWaveformZoom().centerToTime(evt.detail.time);
         }
-
-        this.triggerEvent('timeset', {'time': time});
     }
 
     /**
@@ -207,7 +203,7 @@ export default class Controller extends Dom {
     }
 
     /**
-     * MediaClock timeupdate event callback
+     * MasterClock timeupdate event callback
      *
      * @private
      */
