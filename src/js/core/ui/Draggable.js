@@ -43,8 +43,6 @@ export default class Draggable {
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onClick = this.onClick.bind(this);
 
-        this.configs.handle.addListener('mousedown', this.onMouseDown);
-
         this.enable();
     }
 
@@ -344,13 +342,9 @@ export default class Draggable {
     enable(){
         this.configs.target.addClass(`draggable ${className}`);
 
-        this.configs.handle.addClass('drag-handle');
-
-        /**
-         * Whether the behavior is enabled
-         * @type {Boolean}
-         */
-        this.enabled = true;
+        this.configs.handle
+            .addClass('drag-handle')
+            .addListener('mousedown', this.onMouseDown);
 
         return this;
     }
@@ -363,9 +357,9 @@ export default class Draggable {
     disable(){
         this.configs.target.removeClass(`draggable ${className}`);
 
-        this.configs.handle.removeClass('drag-handle');
-
-        delete this.enabled;
+        this.configs.handle
+            .removeClass('drag-handle')
+            .removeListener('mousedown', this.onMouseDown);
 
         return this;
     }

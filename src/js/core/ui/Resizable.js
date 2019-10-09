@@ -50,7 +50,6 @@ export default class Resizable {
         this.configs.directions.forEach((direction) => {
             this.handles[direction] = new Dom('<div/>', {'class': 'resize-handle'})
                 .data('direction', direction)
-                .addListener('mousedown', this.onMouseDown)
                 .appendTo(this.configs.target);
         });
 
@@ -88,10 +87,6 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseDown(evt){
-        if(!this.enabled){
-            return;
-        }
-
         if(!this.configs.target.triggerEvent('beforeresize', {'behavior': this}, true, true)){
             return;
         }
@@ -417,11 +412,11 @@ export default class Resizable {
     enable() {
         this.configs.target.addClass(`resizable ${className}`);
 
-        /**
-         * Whether the behavior is enabled
-         * @type {Boolean}
-         */
-        this.enabled = true;
+        if(this.handles){
+            Object.values(this.handles).forEach((handle) => {
+                handle.addListener('mousedown', this.onMouseDown);
+            });
+        }
 
         return this;
     }
@@ -434,7 +429,11 @@ export default class Resizable {
     disable() {
         this.configs.target.removeClass(`resizable ${className}`);
 
-        this.enabled = false;
+        if(this.handles){
+            Object.values(this.handles).forEach((handle) => {
+                handle.removeListener('mousedown', this.onMouseDown);
+            });
+        }
 
         return this;
     }
@@ -450,7 +449,7 @@ export default class Resizable {
             .disable();
 
         if(this.handles){
-            Object.entries(this.handles).forEach(([, handle]) => {
+            Object.values(this.handles).forEach((handle) => {
                 handle.remove();
             });
         }
