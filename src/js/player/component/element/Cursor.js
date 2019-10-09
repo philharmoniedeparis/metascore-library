@@ -1,6 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import MasterClock from '../../../core/clock/MasterClock';
+import {MasterClock} from '../../../core/clock/MediaClock';
 import {map, radians} from '../../../core/utils/Math';
 
 /**

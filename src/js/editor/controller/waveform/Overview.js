@@ -1,5 +1,5 @@
 import Dom from '../../../core/Dom';
-import MasterClock from '../../../core/clock/MasterClock';
+import {MasterClock} from '../../../core/clock/MediaClock';
 import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
 import {className} from '../../../../css/editor/controller/WaveformOverview.scss';

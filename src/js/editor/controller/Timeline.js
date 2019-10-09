@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import MasterClock from '../../core/clock/MasterClock';
+import {MasterClock} from '../../core/clock/MediaClock';
 import Track from './timeline/Track';
 
 import {className} from '../../../css/editor/controller/Timeline.scss';

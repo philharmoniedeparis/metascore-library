@@ -3,7 +3,7 @@ import Clock from '../Clock';
 /**
  * A synchronization clock class based on a media's time
  */
-export default class MasterClock extends Clock {
+export default class MediaClock extends Clock {
 
     constructor(){
         super();
@@ -172,3 +172,5 @@ export default class MasterClock extends Clock {
         super.triggerTimeUpdate();
     }
 }
+
+export const MasterClock = new MediaClock();
