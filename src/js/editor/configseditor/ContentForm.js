@@ -156,11 +156,14 @@ export default class ContentForm extends ElementForm {
 
         this.contents_toggle.setValue(true, true);
 
-        if(component._draggable){
-            component._draggable.disable();
+        const draggable = component.getDraggable();
+        if(draggable){
+            draggable.disable();
         }
-        if(component._resizable){
-            component._resizable.disable();
+
+        const resizable = component.getResizable();
+        if(resizable){
+            resizable.disable();
         }
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
@@ -204,11 +207,14 @@ export default class ContentForm extends ElementForm {
             .removeListener('keypress', this.onComponentContentsKey)
             .removeListener('keyup', this.onComponentContentsKey);
 
-        if(component._draggable){
-            component._draggable.enable();
+        const draggable = component.getDraggable();
+        if(draggable){
+            draggable.enable();
         }
-        if(component._resizable){
-            component._resizable.enable();
+
+        const resizable = component.getResizable();
+        if(resizable){
+            resizable.enable();
         }
 
         if(supressEvent !== true){
