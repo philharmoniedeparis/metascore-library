@@ -6,52 +6,64 @@
 :local(.className){
     .resize-handle{
         position: absolute;
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
 
         &[data-direction="top"]{
-            top: 0px;
+            top: 0;
             left: 50%;
-            margin-left: -5px;
+            margin-left: -4px;
+            margin-top: -4px;
             cursor: n-resize;
         }
         &[data-direction="right"]{
-            right: 0px;
+            right: 0;
             top: 50%;
-            margin-top: -5px;
+            margin-right: -4px;
+            margin-top: -4px;
             cursor: e-resize;
         }
         &[data-direction="bottom"]{
-            bottom: 0px;
+            bottom: 0;
             left: 50%;
-            margin-left: -5px;
+            margin-left: -4px;
+            margin-bottom: -4px;
             cursor: s-resize;
         }
         &[data-direction="left"]{
-            left: 0px;
+            left: 0;
             top: 50%;
-            margin-top: -5px;
+            margin-top: -4px;
+            margin-left: -4px;
             cursor: w-resize;
         }
 
         &[data-direction="top-right"]{
-            top: 0px;
-            right: 0px;
+            top: 0;
+            right: 0;
+            margin-top: -4px;
+            margin-right: -4px;
             cursor: ne-resize;
         }
         &[data-direction="top-left"]{
-            top: 0px;
-            left: 0px;
+            top: 0;
+            left: 0;
+            margin-top: -4px;
+            margin-left: -4px;
             cursor: nw-resize;
         }
         &[data-direction="bottom-left"]{
-            bottom: 0px;
-            left: 0px;
+            bottom: 0;
+            left: -0;
+            margin-bottom: -4px;
+            margin-left: -4px;
             cursor: sw-resize;
         }
         &[data-direction="bottom-right"]{
-            bottom: 0px;
-            right: 0px;
+            bottom: 0;
+            right: 0;
+            margin-bottom: -4px;
+            margin-right: -4px;
             cursor: se-resize;
         }
     }

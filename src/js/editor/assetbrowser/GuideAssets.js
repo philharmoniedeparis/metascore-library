@@ -232,6 +232,8 @@ export default class GuideAssets extends Dom {
         const files = this.getDraggedFiles(evt.dataTransfer);
         this.importAssets(files);
 
+        this.removeClass('droppable');
+
         evt.preventDefault();
         evt.stopPropagation();
     }
@@ -348,8 +350,12 @@ export default class GuideAssets extends Dom {
         const figure = new Dom('<figure/>')
             .appendTo(item);
 
-        if(/^image\/.*/.test(asset.mimetype)){
-            new Dom('<img/>', {'src': asset.url})
+        let file = asset;
+        if('shared' in asset && asset.shared){
+            file = asset.file;
+        }
+        if(/^image\/.*/.test(file.mimetype)){
+            new Dom('<img/>', {'src': file.url})
                 .appendTo(figure);
         }
         else{
@@ -420,8 +426,16 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.effectAllowed = 'copy';
 
         evt.dataTransfer.setData('metascore/asset', JSON.stringify(asset));
-        evt.dataTransfer.setData("text/uri-list", asset.url);
-        evt.dataTransfer.setData("text/plain", asset.url);
+        evt.dataTransfer.setData('text/uri-list', asset.url);
+        evt.dataTransfer.setData('text/plain', asset.url);
+
+        let file = asset;
+        if('shared' in asset && asset.shared){
+            file = asset.file;
+        }
+        if(/^image\/.*/.test(file.mimetype)){
+            evt.dataTransfer.setData('text/html', `<img src="${asset.url}" />`);
+        }
 
         this._drag_img = new Dom(item.child('figure').get(0).cloneNode(true))
             .addClass(dragImgClassName)

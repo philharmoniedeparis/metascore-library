@@ -147,6 +147,12 @@ export default class ConfigsEditor extends Dom {
         return this;
     }
 
+    updateAssetsList(assets){
+        Object.values(this.forms).forEach((form) => {
+            form.updateAssetsList(assets);
+        });
+    }
+
     /**
      * Get all set components
      *

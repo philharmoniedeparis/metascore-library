@@ -1,6 +1,7 @@
 import Component from '../Component';
+import {MasterClock} from '../../core/clock/MediaClock';
 import Dom from '../../core/Dom';
-import Pager from '../Pager';
+import Pager from './block/Pager';
 import Page from './Page';
 import {isString, isNumber} from '../../core/utils/Var';
 
@@ -10,10 +11,6 @@ import {isString, isNumber} from '../../core/utils/Var';
  * @emits {componentadd} Fired when a page is added
  * @param {Component} component The page instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
- *
- * @emits {activepageset} Fired when the active page is set
- * @param {Block} block The block instance
- * @param {Page} page The active page instance
  */
 export default class Block extends Component {
 
@@ -194,6 +191,10 @@ export default class Block extends Component {
             .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
 
+        this
+            .addDelegate('.metaScore-component.page', 'activate', this.onPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this));
+
         return this;
     }
 
@@ -223,6 +224,24 @@ export default class Block extends Component {
         }
 
         evt.stopPropagation();
+    }
+
+    /**
+     * Page activate event handler
+     *
+     * @private
+     */
+    onPageActivate(){
+        this.updatePager();
+    }
+
+    /**
+     * Page deactivate event handler
+     *
+     * @private
+     */
+    onPageDeactivate(){
+        this.updatePager();
     }
 
     /**
@@ -317,8 +336,6 @@ export default class Block extends Component {
             this.triggerEvent('componentadd', {'component': page, 'new': !existing});
         }
 
-        this.setActivePage(page);
-
         return page;
     }
 
@@ -344,10 +361,9 @@ export default class Block extends Component {
      * Set the active page
      *
      * @param {Mixed} page The page to activate or its index
-     * @param {Boolean} [supressEvent=false] Whether to supress the page activate/deactivate events
      * @return {this}
      */
-    setActivePage(page, supressEvent){
+    setActivePage(page){
         if(this.isActive()){
             const previous = this.getActivePage();
             let _page = page;
@@ -357,16 +373,16 @@ export default class Block extends Component {
             }
 
             if(_page instanceof Page && _page !== previous){
-                if(previous){
-                    previous.deactivate();
+                const start_time = _page.getPropertyValue('start-time');
+                if(start_time !== null){
+                    MasterClock.setTime(start_time);
                 }
+                else{
+                    if(previous){
+                        previous.deactivate();
+                    }
 
-                _page.activate();
-
-                this.updatePager();
-
-                if(supressEvent !== true){
-                    this.triggerEvent('activepageset', {'block': this, 'current': _page, 'previous': previous});
+                    _page.activate();
                 }
             }
         }

@@ -368,7 +368,7 @@ export default class ComponentForm extends Dom {
                 this.fields[name] = new Field(
                     new TextInput(),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.name.label', 'Name')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.name.label', 'Name')
                     })
                     .data('property', name)
                     .appendTo(this.fields_wrapper);
@@ -380,7 +380,7 @@ export default class ComponentForm extends Dom {
                         'checked': false
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.hidden.label', 'Hidden on start')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.hidden.label', 'Hidden on start')
                     })
                     .data('property', name)
                     .appendTo(this.fields_wrapper);
@@ -390,7 +390,7 @@ export default class ComponentForm extends Dom {
                 this.fields[name] = new Field(
                     new SelectInput(),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.scenario.label', 'Scenario')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.scenario.label', 'Scenario')
                     })
                     .data('property', name)
                     .appendTo(this.fields_wrapper);
@@ -400,7 +400,7 @@ export default class ComponentForm extends Dom {
                 this.fields['background-image'] = new Field(
                     new SelectInput(),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.background-image.label', 'Background image')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background image')
                     })
                     .data('property', 'background-image')
                     .appendTo(this.fields_wrapper);
@@ -408,7 +408,7 @@ export default class ComponentForm extends Dom {
                 this.fields['background-color'] = new Field(
                     new ColorInput(),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.background-color.label', 'Background color')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color')
                     })
                     .data('property', 'background-color')
                     .appendTo(this.fields_wrapper);
@@ -418,13 +418,13 @@ export default class ComponentForm extends Dom {
                     const border_fields_wrapper = new Dom('<div/>', {'class': 'border-fields'})
                         .appendTo(this.fields_wrapper);
 
-                    const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ElementForm.fields.border-fields.label', 'Border')})
+                    const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border')})
                         .appendTo(border_fields_wrapper);
 
                     this.fields['border-color'] = new Field(
                         new ColorInput(),
                         {
-                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-color.label', 'Border color')
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
                         })
                         .data('property', 'border-color')
                         .appendTo(border_fields_wrapper);
@@ -437,7 +437,7 @@ export default class ComponentForm extends Dom {
                             'spinButtons': true
                         }),
                         {
-                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-width.label', 'Border width')
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width')
                         })
                         .data('property', 'border-width')
                         .appendTo(border_fields_wrapper);
@@ -445,7 +445,7 @@ export default class ComponentForm extends Dom {
                     this.fields['border-radius'] = new Field(
                         new BorderRadiusInput(),
                         {
-                            'label': Locale.t('editor.configseditor.ElementForm.fields.border-radius.label', 'Border radius')
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Border radius')
                         })
                         .data('property', 'border-radius')
                         .appendTo(this.fields_wrapper);
@@ -460,7 +460,7 @@ export default class ComponentForm extends Dom {
                         'clearButton': true
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.start-time.label', 'Start')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start')
                     })
                     .data('property', 'start-time')
                     .appendTo(this.fields_wrapper);
@@ -472,7 +472,7 @@ export default class ComponentForm extends Dom {
                         'clearButton': true
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.end-time.label', 'End')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End')
                     })
                     .data('property', 'end-time')
                     .appendTo(this.fields_wrapper);
@@ -486,7 +486,7 @@ export default class ComponentForm extends Dom {
                         'spinDirection': 'horizontal'
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.x.label', 'X')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X')
                     })
                     .data('property', 'x')
                     .appendTo(this.fields_wrapper);
@@ -499,7 +499,7 @@ export default class ComponentForm extends Dom {
                         'flipSpinButtons': true
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.y.label', 'Y')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y')
                     })
                     .data('property', 'y')
                     .appendTo(this.fields_wrapper);
@@ -513,7 +513,7 @@ export default class ComponentForm extends Dom {
                         'spinDirection': 'horizontal'
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.width.label', 'Width')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width')
                     })
                     .data('property', 'width')
                     .appendTo(this.fields_wrapper);
@@ -524,7 +524,7 @@ export default class ComponentForm extends Dom {
                         'spinButtons': true
                     }),
                     {
-                        'label': Locale.t('editor.configseditor.ElementForm.fields.height.label', 'Height')
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height')
                     })
                     .data('property', 'height')
                     .appendTo(this.fields_wrapper);
@@ -587,6 +587,27 @@ export default class ComponentForm extends Dom {
         }
 
         return this;
+    }
+
+    updateAssetsList(assets){
+        const background_image_field = this.getField('background-image');
+        if(background_image_field){
+            const input = background_image_field.getInput();
+            input.clear();
+
+            input.addOption('', Locale.t('editor.configseditor.ComponentForm.fields.background-image.empty', ''));
+
+            Object.values(assets).forEach((asset) => {
+                let file = asset;
+                if('shared' in asset && asset.shared){
+                    file = asset.file;
+                }
+
+                if(/^image\/.*/.test(file.mimetype)){
+                    input.addOption(file.url, asset.name);
+                }
+            });
+        }
     }
 
     /**

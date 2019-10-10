@@ -43,11 +43,11 @@ export default class Confirm extends Overlay{
 
             switch(action){
                 case 'confirm':
-                    this.onConfirmClick(evt);
+                    this.onConfirmClick();
                     break;
 
                 case 'cancel':
-                    this.onCancelClick(evt);
+                    this.onCancelClick();
                     break;
             }
         });

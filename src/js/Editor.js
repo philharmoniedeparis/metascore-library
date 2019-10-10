@@ -211,7 +211,8 @@ export default class Editor extends Dom {
          */
         this.configs_editor = new ConfigsEditor()
             .addListener('componentset', this.onConfigsEditorComponentSet.bind(this))
-            .addListener('beforecursoradvancededitmodeunlock', this.onConfigsEditorBeforeCursorAdvancedEditModeUnlock.bind(this))
+            .addListener('contentsunlock', this.onConfigsEditorContentsUnlock.bind(this))
+            .addListener('contentslock', this.onConfigsEditorContentsLock.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -784,10 +785,14 @@ export default class Editor extends Dom {
 
     onAssetBrowserAssetAdd(){
         this.setDirty(true);
+
+        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
     }
 
     onAssetBrowserAssetRemove(){
         this.setDirty(true);
+
+        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
     }
 
     onAssetBrowserComponentLinkClick(evt){
@@ -1009,14 +1014,12 @@ export default class Editor extends Dom {
         }*/
     }
 
-    /**
-     * ConfigsEditor beforecursoradvancededitmodeunlock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onConfigsEditorBeforeCursorAdvancedEditModeUnlock(evt){
-        evt.detail.media = this.getPlayer().getMedia();
+    onConfigsEditorContentsUnlock(){
+        this.getPlayer().addClass('contents-unlocked');
+    }
+
+    onConfigsEditorContentsLock(){
+        this.getPlayer().removeClass('contents-unlocked');
     }
 
     /**
@@ -1099,18 +1102,19 @@ export default class Editor extends Dom {
             this.getPlayer().updateBlockTogglers();
         }
         else if(component.instanceOf('Element')){
+            /**
+             * @todo: mode to the Cursor element
+             */
             const page = component.getParent();
 
             if(evt.detail.new && component.instanceOf('Cursor')){
-                const media = this.getPlayer().getMedia();
-
                 if(!isNumber(component.getPropertyValue('start-time'))){
-                    component.setPropertyValue('start-time', media.getTime());
+                    component.setPropertyValue('start-time', MasterClock.getTime());
                 }
 
                 if(!isNumber(component.getPropertyValue('end-time'))){
                     const block = page.getParent();
-                    component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : media.getDuration());
+                    component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : MasterClock.getRenderer().getDuration());
                 }
             }
         }
@@ -1259,6 +1263,8 @@ export default class Editor extends Dom {
                 .addAssets(this.player.getData('assets'), true)
                 .addAssets(this.player.getData('shared_assets'), true);
 
+            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+
             this.controller.getScenarioSelector()
                 .addScenarios(this.player.getData('scenarios'), true)
                 .setActiveScenario(this.player.getActiveScenario(), true);
@@ -1294,12 +1300,20 @@ export default class Editor extends Dom {
          * @todo: handle page before, page after
          **/
 
+        if(this.getPlayer().hasClass('contents-unlocked')){
+            return;
+        }
+
         if(evt.dataTransfer.types.includes('metascore/component') || evt.dataTransfer.types.includes('metascore/asset')){
             evt.preventDefault();
         }
     }
 
     onPlayerDrop(evt){
+        if(this.getPlayer().hasClass('contents-unlocked')){
+            return;
+        }
+
         try{
             if(evt.dataTransfer.types.includes('metascore/component')){
                 this.onPlayerDropComponent(evt);
@@ -1885,7 +1899,6 @@ export default class Editor extends Dom {
                             adjacent_page.setPropertyValue(prop, current_time);
                         }
                         block.addPage(component, before ? index : index + 1);
-                        block.setActivePage(index);
                     }
                 });
                 break;

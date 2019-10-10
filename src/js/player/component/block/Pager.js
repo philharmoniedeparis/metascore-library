@@ -1,5 +1,5 @@
-import Dom from '../core/Dom';
-import Locale from '../core/Locale';
+import Dom from '../../../core/Dom';
+import Locale from '../../../core/Locale';
 
 /**
  * A pager for block components
@@ -48,7 +48,7 @@ export default class Pager extends Dom{
      * @return {this}
      */
     updateCount(index, count){
-        this.count.text(Locale.t('player.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
+        this.count.text(Locale.t('player.block.Pager.count', 'page !current/!count', {'!current': (index + 1), '!count': count}));
 
         this.buttons.first.toggleClass('inactive', index < 1);
         this.buttons.previous.toggleClass('inactive', index < 1);

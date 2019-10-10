@@ -6,6 +6,9 @@ $selected-shadow: 0 0 0.5em 0;
     .resizable{
         .resize-handle{
             display: none;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
         }
     }
 
@@ -46,7 +49,16 @@ $selected-shadow: 0 0 0.5em 0;
 
             &.page{
                 &.selected{
-                    box-shadow: $page-color $selected-shadow inset;
+                    &::after{
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        box-shadow: $page-color $selected-shadow inset;
+                        pointer-events: none;
+                    }
                 }
             }
 
@@ -70,8 +82,20 @@ $selected-shadow: 0 0 0.5em 0;
                 &.selected{
                     display: block;
 
+                    &::after{
+                        content: "";
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        pointer-events: none;
+                    }
+
                     &.Cursor{
-                        box-shadow: $cursor-element-color $selected-shadow inset;
+                        &::after{
+                            box-shadow: $cursor-element-color $selected-shadow inset;
+                        }
 
                         &.resizing{
                             canvas{
@@ -81,7 +105,9 @@ $selected-shadow: 0 0 0.5em 0;
                     }
 
                     &.Content{
-                        box-shadow: $content-element-color $selected-shadow inset;
+                        &::after{
+                            box-shadow: $content-element-color $selected-shadow inset;
+                        }
 
                         .contents{
                             &[contenteditable]{
@@ -93,7 +119,9 @@ $selected-shadow: 0 0 0.5em 0;
                     }
 
                     &.Animation{
-                        box-shadow: $animation-element-color $selected-shadow inset;
+                        &::after{
+                            box-shadow: $animation-element-color $selected-shadow inset;
+                        }
                     }
                 }
 

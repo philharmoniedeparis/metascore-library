@@ -473,21 +473,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Block activepageset event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onBlockActivePageSet(evt){
-        const block = evt.detail.block;
-        const page = evt.detail.current;
-
-        if(block.getPropertyValue('synched')){
-            this.getMedia().setTime(page.getPropertyValue('start-time'));
-        }
-    }
-
-    /**
      * Element of type Cursor time event callback
      *
      * @private
@@ -877,7 +862,6 @@ export default class Player extends Dom {
         }
         else{
             block = new Block(block)
-                .addListener('activepageset', this.onBlockActivePageSet.bind(this))
                 .addListener('componentadd', this.onComponentAdd.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))

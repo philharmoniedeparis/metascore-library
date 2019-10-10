@@ -82,10 +82,9 @@ export default class CursorKeyframesEditor extends Dom {
      * Instantiate
      *
      * @param {Component} component The cursor component
-     * @param {Media} media The player's media
      * @param {Object} configs Custom configs to override defaults
      */
-    constructor(component, media, configs) {
+    constructor(component, configs) {
         super('<canvas/>', {'class': 'keyframes-editor'});
 
         /**

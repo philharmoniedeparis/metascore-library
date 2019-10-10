@@ -99,9 +99,16 @@ export default class Timeline extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTrackSelect(){
-        // Scroll the track into view
-        // TODO
+    onTrackSelect(evt){
+        // Scroll track into view
+        const offsetTop = evt.target.offsetTop;
+        const scrollTop = this.get(0).scrollTop;
+        const height = this.get(0).clientHeight;
+        if(offsetTop < scrollTop || offsetTop > scrollTop + height){
+            window.requestAnimationFrame(() => {
+                this.get(0).scrollTop = offsetTop;
+            });
+        }
     }
 
     /**

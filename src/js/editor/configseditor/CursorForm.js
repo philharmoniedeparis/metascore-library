@@ -270,14 +270,8 @@ export default class CursorForm extends ElementForm {
      * @return {this}
      */
     enterKeyframesEditMode(){
-        const data = {};
-
-        this.triggerEvent('beforecursoradvancededitmodeunlock', data, false);
-
-        if('media' in data){
-            const component = this.getMasterComponent();
-            component._keyframes_editor = new CursorKeyframesEditor(component, data.media);
-        }
+        const component = this.getMasterComponent();
+        component._keyframes_editor = new CursorKeyframesEditor(component);
 
         return this;
     }
