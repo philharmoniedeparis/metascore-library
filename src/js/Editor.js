@@ -231,6 +231,7 @@ export default class Editor extends Dom {
         this.controller = new Controller()
             .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
             .addListener('scenarioactivate', this.onControllerScenarioActivate.bind(this))
+            .addListener('scenarioadd', this.onControllerScenarioAdd.bind(this))
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
@@ -664,8 +665,7 @@ export default class Editor extends Dom {
             'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
             'buttons': {
                 'ok': Locale.t('editor.onXHRError.ok', 'OK'),
-            },
-            'autoShow': true
+            }
         });
     }
 
@@ -868,7 +868,22 @@ export default class Editor extends Dom {
      * @private
      */
     onControllerScenarioActivate(evt){
-        this.getPlayer().setScenario(evt.detail.scenario);
+        this.getPlayer().setActiveScenario(evt.detail.scenario);
+    }
+
+    /**
+     * Controller scenarioadd event callback
+     *
+     * @private
+     */
+    onControllerScenarioAdd(evt){
+        const scenario = evt.detail.scenario;
+
+        this.getPlayer()
+            .addScenario(scenario)
+            .setActiveScenario(scenario);
+
+        this.setDirty(true);
     }
 
     /**
@@ -1011,8 +1026,7 @@ export default class Editor extends Dom {
      */
     onPlayerSourceSet(){
         const loadmask = new LoadMask({
-            'parent': this,
-            'autoShow': true
+            'parent': this
         });
 
         this.removeClass('metadata-loaded');
@@ -1028,8 +1042,7 @@ export default class Editor extends Dom {
                     'text': evt.detail.message,
                     'buttons': {
                         'ok': Locale.t('editor.onMediaError.ok', 'OK'),
-                    },
-                    'autoShow': true
+                    }
                 });
             })
             .addOneTimeListener('loadedmetadata', (evt) => {
@@ -1180,8 +1193,7 @@ export default class Editor extends Dom {
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            },
-            'autoShow': true
+            }
         });
     }
 
@@ -1249,7 +1261,7 @@ export default class Editor extends Dom {
 
             this.controller.getScenarioSelector()
                 .addScenarios(this.player.getData('scenarios'), true)
-                .setActiveScenario(this.player.getScenario(), true);
+                .setActiveScenario(this.player.getActiveScenario(), true);
 
             this
                 .setEditing(true)
@@ -1272,8 +1284,7 @@ export default class Editor extends Dom {
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            },
-            'autoShow': true
+            }
         });
     }
 
@@ -1728,8 +1739,7 @@ export default class Editor extends Dom {
      */
     loadPlayer(){
         const loadmask = new LoadMask({
-            'parent': this,
-            'autoShow': true
+            'parent': this
         });
 
         this.unloadPlayer();
@@ -1789,7 +1799,7 @@ export default class Editor extends Dom {
      * @return {this}
      */
     addPlayerComponents(type, config, parent){
-        const scenario = this.getPlayer().getScenario();
+        const scenario = this.getPlayer().getActiveScenario();
 
         switch(type){
             case 'element': {
@@ -1841,8 +1851,7 @@ export default class Editor extends Dom {
                             'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
                             'buttons': {
                                 'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
-                            },
-                            'autoShow': true
+                            }
                         });
 
                         break;
@@ -1980,7 +1989,6 @@ export default class Editor extends Dom {
             new Confirm({
                 'parent': this,
                 'text': alert_msg,
-                'autoShow': true,
                 'onConfirm': () => {
                     this.deletePlayerComponents(type, components, false);
                 }
@@ -2186,10 +2194,15 @@ export default class Editor extends Dom {
      */
     saveGuide(){
         const player = this.getPlayer();
-        const components = player.getComponents('.media, .controller, .block, .block-toggler');
         const data = new FormData();
 
+        // Add scenarios
+        player.getScenarios().forEach((scenario) => {
+            data.append('scenarios[]', scenario);
+        });
+
         // Add blocks
+        const components = player.getRootComponents();
         components.forEach((component) => {
             data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
         });
@@ -2203,8 +2216,7 @@ export default class Editor extends Dom {
         const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
-            'bar': true,
-            'autoShow': true,
+            'bar': true
         });
 
         // prepare the Ajax options object
@@ -2245,7 +2257,6 @@ export default class Editor extends Dom {
         new Confirm({
             'parent': this,
             'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-            'autoShow': true,
             'onConfirm': () => {
                 this.loadPlayer();
             }

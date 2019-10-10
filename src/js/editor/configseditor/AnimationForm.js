@@ -107,4 +107,19 @@ export default class AnimationForm extends ElementForm {
 
         return this;
     }
+
+    /**
+     * @inheritdoc
+     */
+    setComponents(components){
+        super.setComponents(components);
+
+        const frames = [];
+        this.components.forEach((component) => {
+            frames.push(component.getTotalFrames());
+        });
+        this.getField('start-frame').getInput().setMax(Math.min(...frames) - 1);
+
+        return this;
+    }
 }

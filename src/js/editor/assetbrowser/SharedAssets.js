@@ -99,8 +99,7 @@ export default class AssetBrowser extends Dom {
             // add a loading mask
             const loadmask = new LoadMask({
                 'parent': this.assets_container,
-                'text': Locale.t('editor.assetbrowser.SharedAssets.loadAssets.loadmask.text', 'Loading...'),
-                'autoShow': true,
+                'text': Locale.t('editor.assetbrowser.SharedAssets.loadAssets.loadmask.text', 'Loading...')
             });
 
             // prepare the Ajax options object
@@ -265,8 +264,7 @@ export default class AssetBrowser extends Dom {
             'text': Locale.t('editor.assetbrowser.SharedAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {
                 'ok': Locale.t('editor.assetbrowser.SharedAssets.onXHRError.ok', 'OK'),
-            },
-            'autoShow': true
+            }
         });
     }
 

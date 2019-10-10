@@ -88,25 +88,23 @@ export default class CursorForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    onComponentPropChange(evt){
-        if(evt.target === evt.currentTarget){
-            const component = evt.detail.component;
+    onComponentOwnPropChange(evt){
+        const component = evt.detail.component;
 
-            const form = component.getPropertyValue('form');
-            const advanced = component.getPropertyValue('keyframes') ? true : false;
+        const form = component.getPropertyValue('form');
+        const advanced = component.getPropertyValue('keyframes') ? true : false;
 
-            if(form === 'linear' && advanced){
-                const property = evt.detail.property;
-                const direction = component.getPropertyValue('direction');
-                const vertical = direction === 'top' || direction === 'bottom';
+        if(form === 'linear' && advanced){
+            const property = evt.detail.property;
+            const direction = component.getPropertyValue('direction');
+            const vertical = direction === 'top' || direction === 'bottom';
 
-                if((property === 'width' && !vertical) || (property === 'height' && vertical)){
-                    this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
-                }
+            if((property === 'width' && !vertical) || (property === 'height' && vertical)){
+                this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
             }
         }
 
-        super.onComponentPropChange(evt);
+        super.onComponentOwnPropChange(evt);
     }
 
     /**

@@ -125,11 +125,13 @@ export default class CuePoint extends EventEmitter{
      * @return {this}
      */
     activate() {
-        if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-            this.active = true;
+        if(!this.isActive()){
+            if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
+                this.active = true;
 
-            MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
-            this.update();
+                MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
+                this.update();
+            }
         }
 
         return this;
@@ -141,13 +143,24 @@ export default class CuePoint extends EventEmitter{
      * @return {this}
      */
     deactivate() {
-        delete this.active;
+        if(this.isActive()){
+            delete this.active;
 
-        MasterClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
+            MasterClock.removeListener('timeupdate', this.onMediaClockTimeUpdate);
 
-        this.stop();
+            this.stop();
+        }
 
         return this;
+    }
+
+    /**
+     * Check if the cuepoint is active or not
+     *
+     * @return {Boolean} Whether the cuepoint is active or not
+     */
+    isActive(){
+        return this.active;
     }
 
     /**

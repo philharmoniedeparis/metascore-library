@@ -104,8 +104,6 @@ export default class RadiosInput extends Input{
         this.find('input').forEach((radio_el) => {
             const radio = new Dom(radio_el);
 
-            console.log(radio.attr('value'), value);
-
             if(radio.attr('value') === value){
                 radio_el.checked = true;
 

@@ -184,7 +184,6 @@ export default class Block extends Component {
          * @type {Dom}
          */
         this.page_wrapper = new Dom('<div/>', {'class': 'pages'})
-            .addDelegate('.page', 'cuepointstart', this.onPageCuePointStart.bind(this))
             .appendTo(this);
 
         /**
@@ -196,16 +195,6 @@ export default class Block extends Component {
             .appendTo(this);
 
         return this;
-    }
-
-    /**
-     * Page cuepointstart event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onPageCuePointStart(evt){
-        this.setActivePage(evt.target._metaScore, true);
     }
 
     /**
@@ -277,27 +266,21 @@ export default class Block extends Component {
     /**
      * @inheritdoc
      */
-    activate(supressEvent){
-        if(!this.isActive()){
-            this.addClass('active');
+    doActivate(supressEvent){
+        this.active = true;
+        this.addClass('active');
 
-            const cuepoint = this.getCuePoint();
-            if(cuepoint){
-                cuepoint.activate();
-            }
+        if(this.getPropertyValue('synched')){
+            this.getChildren().forEach((child) => {
+                child.activate();
+            });
+        }
+        else{
+            this.setActivePage(0);
+        }
 
-            if(this.getPropertyValue('synched')){
-                this.getChildren().forEach((child) => {
-                    child.activate();
-                });
-            }
-            else{
-                this.setActivePage(0);
-            }
-
-            if(supressEvent !== true){
-                this.triggerEvent('activate', {'component': this});
-            }
+        if(supressEvent !== true){
+            this.triggerEvent('activate', {'component': this});
         }
 
         return this;
@@ -365,24 +348,26 @@ export default class Block extends Component {
      * @return {this}
      */
     setActivePage(page, supressEvent){
-        const previous = this.getActivePage();
-        let _page = page;
+        if(this.isActive()){
+            const previous = this.getActivePage();
+            let _page = page;
 
-        if(isNumber(page)){
-            _page = this.getChild(page);
-        }
-
-        if(_page instanceof Page && _page !== previous){
-            if(previous){
-                previous.deactivate();
+            if(isNumber(page)){
+                _page = this.getChild(page);
             }
 
-            _page.activate();
+            if(_page instanceof Page && _page !== previous){
+                if(previous){
+                    previous.deactivate();
+                }
 
-            this.updatePager();
+                _page.activate();
 
-            if(supressEvent !== true){
-                this.triggerEvent('activepageset', {'block': this, 'current': _page, 'previous': previous});
+                this.updatePager();
+
+                if(supressEvent !== true){
+                    this.triggerEvent('activepageset', {'block': this, 'current': _page, 'previous': previous});
+                }
             }
         }
 

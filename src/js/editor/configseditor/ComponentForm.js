@@ -170,6 +170,10 @@ export default class ComponentForm extends Dom {
             return;
         }
 
+        this.onComponentOwnPropChange(evt);
+    }
+
+    onComponentOwnPropChange(evt){
         const component = evt.detail.component;
         const property = evt.detail.property;
         const value = evt.detail.value;
@@ -187,7 +191,6 @@ export default class ComponentForm extends Dom {
         if(component === this.master_component){
             this.updateFieldValue(property, true);
         }
-
     }
 
     /**
@@ -492,7 +495,8 @@ export default class ComponentForm extends Dom {
                 this.fields.y = new Field(
                     new NumberInput({
                         'min': 0,
-                        'spinButtons': true
+                        'spinButtons': true,
+                        'flipSpinButtons': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.ElementForm.fields.y.label', 'Y')

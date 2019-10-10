@@ -23,27 +23,8 @@ const ELEMENT_TYPES = {
  * @emits {componentadd} Fired when an element is added
  * @param {Object} component The element instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
- * @emits {activate} Fired when the page is activated
- * @param {Object} page The page instance
- * @emits {deactivate} Fired when the page is deactivated
- * @param {Object} page The page instance
- * @emits {cuepointstart} Fired when a cuepoint started
- * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Page extends Component {
-
-    /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
-     * @property {Object} [properties={...}] A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs){
-        // call parent constructor
-        super(configs);
-
-        this.addListener('propchange', this.onPropChange.bind(this));
-    }
 
     /**
     * Get the default config values
@@ -130,9 +111,7 @@ export default class Page extends Component {
         // call parent function
         super.setupUI();
 
-        this
-            .addClass('page')
-            .addListener('cuepointset', this.onCuePointSet.bind(this));
+        this.addClass('page');
 
         return this;
     }
@@ -197,9 +176,10 @@ export default class Page extends Component {
         return element;
     }
 
-    onPropChange(evt){
-        const property = evt.detail.property;
+    onOwnPropChange(evt){
+        super.onOwnPropChange(evt);
 
+        const property = evt.detail.property;
         if((property === 'start-time') || (property === 'end-time')){
             const page = evt.detail.component;
             const block = page.getParent();
@@ -213,41 +193,6 @@ export default class Page extends Component {
                 }
             }
         }
-    }
-
-    /**
-     * The cuepoint set event handler
-     *
-     * @param {Event} evt The event object
-     * @private
-     */
-    onCuePointSet(evt){
-        const cuepoint = evt.detail.cuepoint;
-
-        cuepoint
-            .addListener('start', this.onCuePointStart.bind(this))
-            .addListener('stop', this.onCuePointStop.bind(this))
-            .activate();
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * The cuepoint start event handler
-     *
-     * @private
-     */
-    onCuePointStart(){
-        this.triggerEvent('cuepointstart');
-    }
-
-    /**
-     * The cuepoint stop event handler
-     *
-     * @private
-     */
-    onCuePointStop(){
-        this.triggerEvent('cuepointstop');
     }
 
 }

@@ -135,7 +135,7 @@ export default class Dom {
     static selectElements(selector, parent) {
         let elements = [];
 
-        if(typeof selector !== "undefined"){
+        if(selector){
             let _parent = parent || document;
 
             if(_parent instanceof Dom){

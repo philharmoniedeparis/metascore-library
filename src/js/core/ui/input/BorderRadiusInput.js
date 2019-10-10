@@ -63,7 +63,8 @@ export default class BorderRadiusInput extends Input{
          * @type {BorderRadiusOverlay}
          */
         this.overlay = new BorderRadiusOverlay({
-                'format': this.configs.format
+                'format': this.configs.format,
+                'autoShow': false
             })
             .addListener('submit', this.onOverlaySubmit.bind(this));
     }

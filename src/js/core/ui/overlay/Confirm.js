@@ -55,13 +55,13 @@ export default class Confirm extends Overlay{
 
     onConfirmClick(){
         if(isFunction(this.configs.onConfirm)){
-            this.configs.onConfirm();
+            this.configs.onConfirm(this);
         }
     }
 
     onCancelClick(){
         if(isFunction(this.configs.onCancel)){
-            this.configs.onCancel();
+            this.configs.onCancel(this);
         }
     }
 }

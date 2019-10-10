@@ -1,7 +1,11 @@
 import Dom from '../../core/Dom';
+import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
+import Overlay from '../../core/ui/Overlay';
+import Prompt from '../../core/ui/overlay/Prompt';
 
 import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?sprite';
+import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?sprite';
 import {className} from '../../../css/editor/controller/ScenarioSelector.scss';
 
 /**
@@ -24,20 +28,31 @@ export default class ScenarioSelector extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
+        // fix event handlers scope
+        this.onAddConfirm = this.onAddConfirm.bind(this);
+
+        const nav_buttons = new Dom('<div/>', {'class': 'nav-buttons'})
             .appendTo(this);
 
         new Button({'icon': arrow_icon})
             .data('action', 'previous')
-            .appendTo(buttons);
+            .appendTo(nav_buttons);
 
         new Button({'icon': arrow_icon})
             .data('action', 'next')
-            .appendTo(buttons);
+            .appendTo(nav_buttons);
 
         this.list = new Dom('<ul/>', {'class': 'list'})
-            .addDelegate('li', 'click', this.onScenarioClick.bind(this))
             .appendTo(this);
+
+        new Button({'icon': add_icon})
+            .attr('title', Locale.t('editor.controller.ScenarioSelector.add-button.title', 'Add a new scenario'))
+            .data('action', 'add')
+            .appendTo(this);
+
+        this
+            .addDelegate('button', 'click', this.onButtonClick.bind(this))
+            .addDelegate('.list li', 'click', this.onScenarioClick.bind(this));
     }
 
     /**
@@ -48,6 +63,52 @@ export default class ScenarioSelector extends Dom {
     static getDefaults(){
         return {
         };
+    }
+
+    onButtonClick(evt){
+        const action = new Dom(evt.target).data('action');
+
+        switch(action){
+            case 'previous':
+                break;
+
+            case 'next':
+                break;
+
+            case 'add':
+                new Prompt({
+                    'text': Locale.t('editor.controller.ScenarioSelector.add-prompt.text', "Enter the scenario's name"),
+                    'onConfirm': this.onAddConfirm,
+                    'onCancel': this.onAddCancel,
+                    'autoHide': false,
+                    'parent': this.closest('.metaScore-editor')
+                });
+                break;
+        }
+    }
+
+    onAddConfirm(scenario, overlay){
+        if(scenario){
+            const item = this.getScenarioItem(scenario);
+
+            if(item){
+                new Overlay({
+                    'text': Locale.t('editor.controller.ScenarioSelector.exists.msg', 'A scenario with that name already exists.'),
+                    'buttons': {
+                        'ok': Locale.t('editor.controller.ScenarioSelector.exists.ok', 'OK'),
+                    },
+                    'parent': this.closest('.metaScore-editor')
+                });
+            }
+            else{
+                this.addScenario(scenario);
+                overlay.hide();
+            }
+        }
+    }
+
+    onAddCancel(overlay){
+        overlay.hide();
     }
 
     onScenarioClick(evt){
@@ -73,7 +134,8 @@ export default class ScenarioSelector extends Dom {
     }
 
     getScenarioItem(scenario){
-        return this.list.child(`[data-scenario="${scenario}"]`);
+        const item = this.list.child(`[data-scenario="${scenario}"]`);
+        return item.count() > 0 ? item : null;
     }
 
     /**

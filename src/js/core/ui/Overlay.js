@@ -24,6 +24,7 @@ export default class Overlay extends Dom {
      * @property {String} [parent='body'] The parent element in which the overlay will be appended
      * @property {Boolean} [modal=true] Whether to create a mask underneath that covers its parent and does not allow the user to interact with any other Components until this is dismissed
      * @property {Boolean} [autoShow=true] Whether to show the overlay automatically
+     * @property {Boolean} [autHide=true] Whether to hide the overlay when one of its buttons is clicked
      * @property {Boolean} [toolbar=false] Whether to add a toolbar with title and close button
      * @property {String} [title=''] The overlay's title
      * @property {String} [text=''] The overlay's text
@@ -55,7 +56,8 @@ export default class Overlay extends Dom {
         return {
             'parent': 'body',
             'modal': true,
-            'autoShow': false,
+            'autoShow': true,
+            'autoHide': true,
             'toolbar': false,
             'title': '',
             'text': '',
@@ -197,7 +199,9 @@ export default class Overlay extends Dom {
     onButtonClick(evt){
         const action = new Dom(evt.target).data('action');
 
-        this.hide();
+        if(this.configs.autoHide){
+            this.hide();
+        }
 
         this.triggerEvent('buttonclick', {'overlay': this, 'action': action}, false);
 

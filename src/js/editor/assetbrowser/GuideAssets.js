@@ -252,8 +252,7 @@ export default class GuideAssets extends Dom {
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_type.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
                     'buttons': {
                         'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
-                    },
-                    'autoShow': true
+                    }
                 });
                 return;
             }
@@ -264,8 +263,7 @@ export default class GuideAssets extends Dom {
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_size.msg', '<em>@name</em> size (@filesize) exceeds the allowed size (@maxsize).', {'@name': file.name, '@filesize': file.size, '@maxsize': this.configs.import.max_filesize}),
                     'buttons': {
                         'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
-                    },
-                    'autoShow': true
+                    }
                 });
                 return;
             }
@@ -277,8 +275,7 @@ export default class GuideAssets extends Dom {
         const loadmask = new LoadMask({
             'parent': this,
             'text': Locale.t('editor.assetbrowser.GuideAssets.importAssets.loadmask.text', 'Uploading...'),
-            'bar': true,
-            'autoShow': true
+            'bar': true
         });
 
         // prepare the Ajax options object
@@ -454,7 +451,6 @@ export default class GuideAssets extends Dom {
                 new Confirm({
                     'parent': this,
                     'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.msg', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
-                    'autoShow': true,
                     'onConfirm': () => {
                         this.removeAsset(asset);
                     }
@@ -475,8 +471,7 @@ export default class GuideAssets extends Dom {
             'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {
                 'ok': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.ok', 'OK'),
-            },
-            'autoShow': true
+            }
         });
     }
 

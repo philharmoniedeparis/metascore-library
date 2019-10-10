@@ -48,17 +48,17 @@
 
     &.vertical{
         .buttons{
-            flex-direction: column;
+            flex-direction: column-reverse;
 
             button{
                 .icon{
                     padding: 0em;
-                    transform: rotate(90deg);
+                    transform: rotate(270deg);
                 }
 
                 &[data-direction="down"]{
                     .icon{
-                        transform: rotate(270deg);
+                        transform: rotate(90deg);
                     }
                 }
             }

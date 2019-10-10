@@ -53,10 +53,18 @@ export default class Prompt extends Confirm{
             .appendTo(this.getContents());
     }
 
+    show(){
+        super.show();
+
+        this.input.focus();
+
+        return this;
+    }
+
     onConfirmClick(){
         if(isFunction(this.configs.onConfirm)){
             const value = this.input.getValue();
-            this.configs.onConfirm(value);
+            this.configs.onConfirm(value, this);
         }
     }
 

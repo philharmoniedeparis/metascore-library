@@ -1,6 +1,4 @@
 {
-	"core.Confirm.buttons.cancel": "Cancel",
-	"core.Confirm.buttons.confirm": "OK",
 	"core.Confirm.buttons.no": "No",
 	"core.Confirm.buttons.yes": "Yes",
 	"core.Prompt.buttons.cancel": "Cancel",
@@ -143,6 +141,10 @@
 	"editor.contextmenu.select-elements": "Select all elements",
 	"editor.contextmenu.unlock-block": "Unlock block",
 	"editor.contextmenu.unlock-element": "Unlock element",
+	"editor.controller.ScenarioSelector.add-button.title": "Add a new scenario",
+	"editor.controller.ScenarioSelector.add-prompt.text": "Enter the scenario's name",
+	"editor.controller.ScenarioSelector.exists.msg": "A scenario with that name already exists.",
+	"editor.controller.ScenarioSelector.exists.ok": "OK",
 	"editor.defaultBlockName": "untitled",
 	"editor.defaultBlockTogglerName": "untitled",
 	"editor.deletePlayerComponents.block.msg": "Are you sure you want to delete the block \"<em>@name</em>\"?",

@@ -28,14 +28,6 @@ import {toCentiseconds, toSeconds} from './core/utils/Media';
  * @emits {loaderror} Fired when the guide's loading failed
  * @param {Object} player The player instance
  *
- * @emits {idset} Fired when the id is set
- * @param {Object} player The player instance
- * @param {String} id The guide's id
- *
- * @emits {revisionset} Fired when the vid is set
- * @param {Object} player The player instance
- * @param {Integer} vid The guide's vid
- *
  * @emits {componentadd} Fired when a component is added
  * @param {Object} component The component instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
@@ -250,7 +242,7 @@ export default class Player extends Dom {
             }
 
             case 'scenario':
-                this.setScenario(params.value);
+                this.setActiveScenario(params.value);
                 break;
 
             case 'playing':
@@ -456,8 +448,7 @@ export default class Player extends Dom {
                 'text': message,
                 'buttons': {
                     'ok': Locale.t('player.onMediaError.ok', 'OK'),
-                },
-                'autoShow': true
+                }
             });
         }
 
@@ -474,12 +465,10 @@ export default class Player extends Dom {
      */
     onComponentAdd(evt){
         const component = evt.detail.component;
+        const parent = component.getParent();
 
-        if(component.instanceOf('Element')){
-            const page = component.getParent();
-            if(page.isActive()){
-                component.activate();
-            }
+        if(parent && parent.isActive()){
+            component.activate();
         }
     }
 
@@ -580,31 +569,27 @@ export default class Player extends Dom {
          * The guide's JSON data
          * @type {Object}
          */
-        this.json = evt.target.getResponse();
-
-        this.setId(this.json.id)
-            .setRevision(this.json.vid)
-            .setScenario(this.json.scenarios[0]);
+        this.data = evt.target.getResponse();
 
         /**
          * A stylesheet containing the guide's custom css
          * @type {StyleSheet}
          */
         this.css = new StyleSheet()
-            .setInternalValue(this.json.css)
+            .setInternalValue(this.data.css)
             .appendTo(document.head);
 
         this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
 
-        this.json.blocks.forEach((block) => {
+        this.data.blocks.forEach((block) => {
             switch(block.type){
                 case 'Media':
                     /**
                      * The media block
                      * @type {Media}
                      */
-                    this.media = this.addMedia(Object.assign({}, block, {'type': this.json.media.type}))
-                        .setSource(this.json.media);
+                    this.media = this.addMedia(Object.assign({}, block, {'type': this.data.media.type}))
+                        .setSource(this.data.media);
                     break;
 
                 case 'Controller':
@@ -624,17 +609,18 @@ export default class Player extends Dom {
             }
         });
 
-        this.updateBlockTogglers();
-
         if(this.configs.keyboard){
             this.addListener('keydown', this.onKeydown.bind(this));
         }
 
-        this.removeClass('loading');
+        this
+            .setActiveScenario(this.data.scenarios[0])
+            .updateBlockTogglers()
+            .removeClass('loading');
 
         this.loaded = true;
 
-        this.triggerEvent('load', {'player': this, 'data': this.json}, true, false);
+        this.triggerEvent('load', {'player': this, 'data': this.data}, true, false);
     }
 
     /**
@@ -668,29 +654,26 @@ export default class Player extends Dom {
     }
 
     /**
+     * Get the loaded JSON data
+     *
+     * @param {String} [key] An optional data key
+     * @return {Object} The value corresponding to the key, or the entire JSON data
+     */
+    getData(key){
+        if(key){
+            return this.data[key];
+        }
+
+        return this.data;
+    }
+
+    /**
      * Get the id of the loaded guide
      *
      * @return {String} The id
      */
     getId() {
-        return this.data('id');
-    }
-
-    /**
-     * Set the id of the loaded guide in a data attribute
-     *
-     * @param {String} id The id
-     * @param {Boolean} [supressEvent=false] Whether to supress the idset event
-     * @return {this}
-     */
-    setId(id, supressEvent){
-        this.data('id', id);
-
-        if(supressEvent !== true){
-            this.triggerEvent('idset', {'player': this, 'id': id}, true, false);
-        }
-
-        return this;
+        return this.getData('id');
     }
 
     /**
@@ -699,38 +682,7 @@ export default class Player extends Dom {
      * @return {String} The revision id
      */
     getRevision() {
-        return this.data('vid');
-    }
-
-    /**
-     * Set the revision id of the loaded guide in a data attribute
-     *
-     * @param {String} vid The revision id
-     * @param {Boolean} [supressEvent=false] Whether to supress the revisionset event
-     * @return {this}
-     */
-    setRevision(vid, supressEvent){
-        this.data('vid', vid);
-
-        if(supressEvent !== true){
-            this.triggerEvent('revisionset', {'player': this, 'vid': vid}, true, false);
-        }
-
-        return this;
-    }
-
-    /**
-     * Get the loaded JSON data
-     *
-     * @param {String} [key] An optional data key
-     * @return {Object} The value corresponding to the key, or the entire JSON data
-     */
-    getData(key){
-        if(key){
-            return this.json[key];
-        }
-
-        return this.json;
+        return this.getData('vid');
     }
 
     /**
@@ -750,7 +702,7 @@ export default class Player extends Dom {
      * @return {this}
      */
     updateData(data, skipInternalUpdates){
-        Object.assign(this.json, data);
+        Object.assign(this.data, data);
 
         if(skipInternalUpdates !== true){
             if('css' in data){
@@ -1023,13 +975,13 @@ export default class Player extends Dom {
             });
 
             if(scenario){
-                const previous_scenario = this.getScenario();
+                const previous_scenario = this.getActiveScenario();
                 this.cuepoint
                     .addListener('start', () => {
-                        this.setScenario(scenario);
+                        this.setActiveScenario(scenario);
                     })
                     .addListener('seekout', () => {
-                        this.setScenario(previous_scenario);
+                        this.setActiveScenario(previous_scenario);
                     });
             }
 
@@ -1042,15 +994,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Get the current scenario
-     *
-     * @return {String} The scenario
-     */
-    getScenario(){
-        return this.scenario;
-    }
-
-    /**
      * Get the list of scenarios
      *
      * @return {Array} The scenarios
@@ -1060,13 +1003,35 @@ export default class Player extends Dom {
     }
 
     /**
+     * Add a new scenario
+     *
+     * @param {String} scenario The scenario
+     * @return {this}
+     */
+    addScenario(scenario){
+        const scenarios = this.getScenarios();
+        scenarios.push(scenario);
+
+        return this;
+    }
+
+    /**
+     * Get the current scenario
+     *
+     * @return {String} The scenario
+     */
+    getActiveScenario(){
+        return this.scenario;
+    }
+
+    /**
      * Set the current scenario
      *
      * @param {String} scenario The scenario
      * @param {Boolean} [supressEvent=false] Whether to supress the scenariochange event or not
      * @return {this}
      */
-    setScenario(scenario, supressEvent){
+    setActiveScenario(scenario, supressEvent){
         if(scenario !== this.scenario){
             const scenarios = this.getScenarios();
 

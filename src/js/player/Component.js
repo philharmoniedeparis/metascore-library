@@ -57,7 +57,9 @@ export default class Component extends Dom {
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
-        this.setupUI();
+        this
+            .setupUI()
+            .addListener('propchange', this.onPropChange.bind(this));
     }
 
     /**
@@ -313,13 +315,6 @@ export default class Component extends Dom {
             if(old_value !== value){
                 this.configs.properties[name].setter.call(this, value);
 
-                switch(name){
-                    case 'start-time':
-                    case 'end-time':
-                        this.setCuePoint();
-                        break;
-                }
-
                 if(supressEvent !== true){
                     this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
                 }
@@ -342,6 +337,22 @@ export default class Component extends Dom {
         });
 
         return this;
+    }
+
+    onPropChange(evt){
+        if(evt.target !== evt.currentTarget){
+            // Caught a bubbled event, skip
+            return;
+        }
+
+        this.onOwnPropChange(evt);
+    }
+
+    onOwnPropChange(evt){
+        const property = evt.detail.property;
+        if((property === 'start-time') || (property === 'end-time')){
+            this.setCuePoint();
+        }
     }
 
     /**
@@ -520,6 +531,7 @@ export default class Component extends Dom {
      * @return {this}
      */
     setCuePoint(supressEvent){
+        const active = this.isActive();
         const start_time = this.getPropertyValue('start-time');
         const end_time = this.getPropertyValue('end-time');
 
@@ -538,16 +550,15 @@ export default class Component extends Dom {
                     'outTime': end_time
                 })
                 .addListener('start', this.onCuePointStart.bind(this))
+                .addListener('update', this.onCuePointUpdate.bind(this))
                 .addListener('stop', this.onCuePointStop.bind(this));
-
-            this.removeClass('cuepointactive');
-
-            if(this.isActive()){
-                this.cuepoint.activate();
-            }
 
             if(supressEvent !== true){
                 this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
+            }
+
+            if(active){
+                this.activate();
             }
         }
 
@@ -569,8 +580,16 @@ export default class Component extends Dom {
      * @private
      */
     onCuePointStart(){
-        this.addClass('cuepointactive');
-        this.triggerEvent('cuepointstart');
+        this.doActivate();
+    }
+
+    /**
+     * The cuepoint update event handler
+     *
+     * @private
+     */
+    onCuePointUpdate(){
+
     }
 
     /**
@@ -579,17 +598,7 @@ export default class Component extends Dom {
      * @private
      */
     onCuePointStop(){
-        this.removeClass('cuepointactive');
-        this.triggerEvent('cuepointstop');
-    }
-
-    /**
-     * Check if the element is active or not
-     *
-     * @return {Boolean} Whether the element is active or not
-     */
-    isActive(){
-        return this.hasClass('active');
+        this.doDeactivate();
     }
 
     /**
@@ -600,26 +609,29 @@ export default class Component extends Dom {
      */
     activate(supressEvent){
         if(!this.isActive()){
-            this.addClass('active');
-
             const cuepoint = this.getCuePoint();
             if(cuepoint){
                 cuepoint.activate();
             }
             else{
-                this.setCuePoint();
-            }
-
-            this.getChildren().forEach((child) => {
-                child.activate();
-            });
-
-            if(supressEvent !== true){
-                this.triggerEvent('activate', {'component': this});
+                this.doActivate(supressEvent);
             }
         }
 
         return this;
+    }
+
+    doActivate(supressEvent){
+        this.active = true;
+        this.addClass('active');
+
+        this.getChildren().forEach((child) => {
+            child.activate();
+        });
+
+        if(supressEvent !== true){
+            this.triggerEvent('activate', {'component': this});
+        }
     }
 
     /**
@@ -630,23 +642,43 @@ export default class Component extends Dom {
      */
     deactivate(supressEvent){
         if(this.isActive()){
-            this.removeClass('active');
-
             const cuepoint = this.getCuePoint();
             if(cuepoint){
                 cuepoint.deactivate();
             }
-
-            this.getChildren().forEach((child) => {
-                child.deactivate();
-            });
-
-            if(supressEvent !== true){
-                this.triggerEvent('deactivate', {'component': this});
+            else{
+                this.doDeactivate(supressEvent);
             }
         }
 
         return this;
+    }
+
+    doDeactivate(supressEvent){
+        delete this.active;
+        this.removeClass('active');
+
+        this.getChildren().forEach((child) => {
+            child.deactivate();
+        });
+
+        if(supressEvent !== true){
+            this.triggerEvent('deactivate', {'component': this});
+        }
+    }
+
+    /**
+     * Check if the component is active or not
+     *
+     * @return {Boolean} Whether the component is active or not
+     */
+    isActive(){
+        if(this.active){
+            return true;
+        }
+
+        const cuepoint = this.getCuePoint();
+        return cuepoint && cuepoint.isActive();
     }
 
 }

@@ -236,6 +236,14 @@ export default class Input extends Dom{
         return this;
     }
 
+    focus(){
+        if(this.native_input){
+            this.native_input.focus();
+        }
+
+        return this;
+    }
+
     /**
      * Reset the input's configs
      *

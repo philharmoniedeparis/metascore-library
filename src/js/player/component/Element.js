@@ -4,9 +4,6 @@ import {isString} from '../../core/utils/Var';
 
 /**
  * An element component
- *
- * @emits {cuepointstart} Fired when a cuepoint started
- * @emits {cuepointstop} Fired when a cuepoint stops
  */
 export default class Element extends Component{
 

@@ -172,7 +172,7 @@ export default class Cursor extends Element {
         this.context = this.canvas.getContext('2d');
 
         this
-            .addListener('propchange', this.onPropChange.bind(this))
+            .addListener('activate', this.onActivate.bind(this))
             .addListener('resizeend', this.onResizeEnd.bind(this))
             .addListener('click', this.onClick.bind(this));
 
@@ -180,12 +180,13 @@ export default class Cursor extends Element {
     }
 
     /**
-     * @inheritdoc
+     * The activate event handler
+     *
+     * @private
      */
-    activate(supressEvent){
-        super.activate(supressEvent);
-
+    onActivate(){
         this.resizeCanvas();
+        this.draw();
     }
 
     /**
@@ -194,11 +195,8 @@ export default class Cursor extends Element {
      * @private
      * @param {Event} evt The event object
      */
-    onPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
+    onOwnPropChange(evt){
+        super.onOwnPropChange(evt);
 
         switch(evt.detail.property){
             case 'direction':
@@ -255,48 +253,12 @@ export default class Cursor extends Element {
     }
 
     /**
-     * The cuepoint set event handler
-     *
-     * @param {Event} evt The event object
-     * @private
+     * @inheritdoc
      */
-    onCuePointSet(evt){
-        const cuepoint = evt.detail.cuepoint;
-        cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
+    onCuePointUpdate(evt){
+        super.onCuePointUpdate(evt);
 
-        super.onCuePointSet(evt);
-    }
-
-    /**
-     * The cuepoint update event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onCuePointStart(evt){
-        super.onCuePointStart(evt);
-
-        this.resizeCanvas();
-    }
-
-    /**
-     * The cuepoint update event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onCuePointUpdate(){
         this.draw();
-    }
-
-    /**
-     * The cuepoint stop event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onCuePointStop(evt){
-        super.onCuePointStop(evt);
     }
 
     /**
@@ -318,18 +280,20 @@ export default class Cursor extends Element {
      * @return {this}
      */
     draw(){
-        // Clear the canvas.
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        if(this.isActive()){
+            // Clear the canvas.
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        const form = this.getPropertyValue('form');
-        switch(form){
-            case 'circular':
-                this.drawCircularCursor();
-                break;
+            const form = this.getPropertyValue('form');
+            switch(form){
+                case 'circular':
+                    this.drawCircularCursor();
+                    break;
 
-            default:
-                this.drawLinearCursor();
-                break;
+                default:
+                    this.drawLinearCursor();
+                    break;
+            }
         }
 
         return this;

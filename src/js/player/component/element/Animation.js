@@ -90,7 +90,6 @@ export default class Animation extends Element{
         super.setupUI();
 
         this
-            .addListener('propchange', this.onPropChange.bind(this))
             .addListener('activate', this.onActivate.bind(this))
             .addListener('deactivate', this.onDeactivate.bind(this));
 
@@ -103,10 +102,16 @@ export default class Animation extends Element{
      * @private
      * @param {Event} evt The event object
      */
-    onPropChange(evt){
+    onOwnPropChange(evt){
+        super.onOwnPropChange(evt);
+
         switch(evt.detail.property){
             case 'src':
                 this.updateSrc();
+                break;
+
+            case 'start-frame':
+                this.draw();
                 break;
 
             case 'loop-duration':
@@ -123,6 +128,11 @@ export default class Animation extends Element{
         }
     }
 
+    /**
+     * The activate event handler
+     *
+     * @private
+     */
     onActivate(){
         if(!this.getCuePoint()){
             this.play();
@@ -130,48 +140,43 @@ export default class Animation extends Element{
     }
 
     /**
-     * The cuepoint set event handler
-     *
-     * @param {Event} evt The event object
-     * @private
-     */
-    onCuePointSet(evt){
-        const cuepoint = evt.detail.cuepoint;
-        cuepoint.addListener('update', this.onCuePointUpdate.bind(this));
-
-        super.onCuePointSet(evt);
-    }
-
-    /**
-     * The cuepoint update event handler
+     * The deactivate event handler
      *
      * @private
-     * @param {Event} evt The event object
      */
-    onCuePointUpdate(){
-        this.draw();
-    }
-
     onDeactivate(){
         this.stop();
     }
 
+    /**
+     * @inheritdoc
+     */
+    onCuePointUpdate(evt){
+        super.onCuePointUpdate(evt);
+
+        this.draw();
+    }
+
     draw(){
-        const animation = this.getAnimation();
+        if(this.isActive()){
+            const animation = this.getAnimation();
 
-        if(animation && this._loaded){
-            const start_time = this.getPropertyValue('start-time');
-            const start_frame = this.getPropertyValue('start-frame');
-            const loop_duration = this.getPropertyValue('loop-duration');
-            const current_time = MasterClock.getTime();
+            if(animation && this._loaded){
+                const start_time = this.getPropertyValue('start-time');
+                const start_frame = this.getPropertyValue('start-frame');
+                const loop_duration = this.getPropertyValue('loop-duration');
+                const current_time = MasterClock.getTime();
 
-            const time = toSeconds(current_time - start_time);
-            const total_frames = animation.getDuration(true);
-            const fps = total_frames / toSeconds(loop_duration);
-            const frame = (time * fps + start_frame) % total_frames;
+                const time = toSeconds(current_time - start_time);
+                const total_frames = this.getTotalFrames();
+                const fps = total_frames / toSeconds(loop_duration);
+                const frame = (time * fps + start_frame) % total_frames;
 
-            animation.goToAndStop(frame, true);
+                animation.goToAndStop(frame, true);
+            }
         }
+
+        return this;
     }
 
     onAnimationLoaded(){
@@ -203,6 +208,16 @@ export default class Animation extends Element{
         }
 
         return duration;
+    }
+
+    getTotalFrames(){
+        const animation = this.getAnimation();
+
+        if(animation){
+            return animation.getDuration(true);
+        }
+
+        return 0;
     }
 
     play(){

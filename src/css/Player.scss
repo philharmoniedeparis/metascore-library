@@ -356,14 +356,11 @@ body{
             }
 
             &.active{
-                &:not([data-start-time]):not([data-end-time]),
-                &.cuepointactive{
-                    pointer-events: auto;
+                pointer-events: auto;
 
-                    .contents{
-                        visibility: visible;
-                        pointer-events: auto;
-                    }
+                .contents{
+                    visibility: visible;
+                    pointer-events: auto;
                 }
             }
 
@@ -420,10 +417,7 @@ body{
         }
 
         &.active{
-            &:not([data-start-time]):not([data-end-time]),
-            &.cuepointactive{
-                display: block;
-            }
+            display: block;
         }
 
         &:focus{
