@@ -50,8 +50,6 @@ export default class Track extends Dom {
 
         this.handle = new Handle()
             .data('component', id)
-            .addListener('dragstart', this.onHandleDragStart.bind(this))
-            .addListener('dragend', this.onHandleDragEnd.bind(this))
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
             .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
             .setLabel(name);
@@ -314,24 +312,6 @@ export default class Track extends Dom {
         }
 
         this.toggleClass('has-descendents', this.descendents.is(':empty'));
-    }
-
-    /**
-     * Handle dragstart event callback
-     *
-     * @private
-     */
-    onHandleDragStart(){
-        this.addClass('handle-dragging');
-    }
-
-    /**
-     * Handle dragend event callback
-     *
-     * @private
-     */
-    onHandleDragEnd(){
-        this.removeClass('handle-dragging');
     }
 
     /**

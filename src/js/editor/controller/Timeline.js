@@ -1,8 +1,9 @@
 import Dom from '../../core/Dom';
 import {MasterClock} from '../../core/clock/MediaClock';
 import Track from './timeline/Track';
+import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../../css/editor/controller/Timeline.scss';
+import {className, handleDragGhostClassName} from '../../../css/editor/controller/Timeline.scss';
 
 /**
  * The editor's timeline
@@ -35,6 +36,9 @@ export default class Timeline extends Dom {
 
         this.setupUI();
 
+        const resize_observer = new ResizeObserver(this.onResize.bind(this));
+        resize_observer.observe(this.get(0));
+
         MasterClock.addListener('rendererchange', this.onMediaClockRendererChange.bind(this));
     }
 
@@ -61,6 +65,11 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.handles_container = new Dom('<div/>', {'class': 'handles-container'})
+            .addDelegate('.handle', 'dragstart', this.onHandleDragStart.bind(this), true)
+            .addDelegate('.handle', 'dragover', this.onHandleDragOver.bind(this), true)
+            .addDelegate('.handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
+            .addDelegate('.handle', 'drop', this.onHandleDrop.bind(this), true)
+            .addDelegate('.handle', 'dragend', this.onHandleDragEnd.bind(this), true)
             .appendTo(this);
 
         const tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
@@ -91,6 +100,165 @@ export default class Timeline extends Dom {
             .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
             .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
             .appendTo(this.tracks_container_outer);
+    }
+
+    /**
+     * ResizeObserver callback
+     *
+     * @private
+     */
+    onResize() {
+        this.updateSize();
+    }
+
+    /**
+     * Handle dragstart event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onHandleDragStart(evt){
+        const component_id = Dom.data(evt.target, 'component');
+        const track = this.getTrack(component_id);
+        const handle = track.getHandle();
+
+        this._handle_drag_ghost = new Dom(evt.target.cloneNode(true))
+            .addClass(handleDragGhostClassName)
+            .appendTo(this.handles_container);
+
+        evt.dataTransfer.effectAllowed = 'move';
+        evt.dataTransfer.setData('metascore/timeline', component_id);
+        evt.dataTransfer.setDragImage(this._handle_drag_ghost.get(0), 0, 0);
+
+        track.addClass('dragging');
+        handle.addClass('dragging');
+
+        evt.stopPropagation();
+    }
+
+    /**
+     * Handle dragover event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onHandleDragOver(evt) {
+        if(evt.dataTransfer.types.includes('metascore/timeline')){
+            const component_id = Dom.data(evt.target, 'component');
+            const track = this.getTrack(component_id);
+            const handle = track.getHandle();
+
+            const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
+            const dragging_track = this.getTrack(dragging_component_id);
+            const dragging_handle = dragging_track.getHandle();
+
+            if(handle.parents().get(0) === dragging_handle.parents().get(0)){
+                const handle_rect = handle.get(0).getBoundingClientRect();
+                const y = evt.clientY - handle_rect.top;
+                const above = y < handle_rect.height/2;
+
+                track
+                    .addClass('dragover', above)
+                    .toggleClass('drag-above', above)
+                    .toggleClass('drag-under', !above);
+
+                handle
+                    .addClass('dragover', above)
+                    .toggleClass('drag-above', above)
+                    .toggleClass('drag-under', !above);
+
+                evt.preventDefault();
+            }
+        }
+    }
+
+    /**
+     * Handle dragleave event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onHandleDragLeave(evt) {
+        if(evt.dataTransfer.types.includes('metascore/timeline')){
+            const component_id = Dom.data(evt.target, 'component');
+            const track = this.getTrack(component_id);
+            const handle = track.getHandle();
+
+            track
+                .removeClass('dragover')
+                .removeClass('drag-under')
+                .removeClass('drag-above');
+
+            handle
+                .removeClass('dragover')
+                .removeClass('drag-under')
+                .removeClass('drag-above');
+
+            evt.preventDefault();
+        }
+    }
+
+    /**
+     * Handle drop event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onHandleDrop(evt){
+        if(evt.dataTransfer.types.includes('metascore/timeline')){
+            const component_id = Dom.data(evt.target, 'component');
+            const track = this.getTrack(component_id);
+            const handle = track.getHandle();
+
+            const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
+            const dragging_track = this.getTrack(dragging_component_id);
+            const dragging_handle = dragging_track.getHandle();
+
+            const track_parent = track.parents();
+            const handle_parent = handle.parents();
+            const above = track.hasClass('drag-above');
+
+            const index = handle_parent.children('.handle').index('.dragover');
+
+            if(above){
+                dragging_track.insertAt(track_parent, index);
+                dragging_handle.insertAt(handle_parent, index);
+            }
+            else{
+                dragging_track.insertAt(track_parent, index + 1);
+                dragging_handle.insertAt(handle_parent, index + 1);
+            }
+
+            track
+                .removeClass('dragover')
+                .removeClass('drag-under')
+                .removeClass('drag-above');
+
+            handle
+                .removeClass('dragover')
+                .removeClass('drag-under')
+                .removeClass('drag-above');
+        }
+
+        evt.preventDefault();
+    }
+
+    /**
+     * Handle dragend event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onHandleDragEnd(evt){
+        const component_id = Dom.data(evt.target, 'component');
+        const track = this.getTrack(component_id);
+        const handle = track.getHandle();
+
+        this._handle_drag_ghost.remove();
+        delete this._handle_drag_ghost;
+
+        track.removeClass('dragging');
+        handle.removeClass('dragging');
     }
 
     /**

@@ -18,7 +18,7 @@ import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets
 import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?sprite';
 import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?sprite';
 import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?sprite';
-import {className, dragImgClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
+import {className, componentLinkDragGhostClassName, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
  * A guide assets browser class
@@ -164,11 +164,11 @@ export default class GuideAssets extends Dom {
             evt.dataTransfer.effectAllowed = 'copy';
             evt.dataTransfer.setData('metascore/component', JSON.stringify(data));
 
-            this._drag_img = new Dom(link.child('.icon').get(0).cloneNode(true))
-                .addClass(dragImgClassName)
+            this._component_link_drag_ghost = new Dom(link.child('.icon').get(0).cloneNode(true))
+                .addClass(componentLinkDragGhostClassName)
                 .appendTo('body');
 
-            evt.dataTransfer.setDragImage(this._drag_img.get(0), 0, 0);
+            evt.dataTransfer.setDragImage(this._component_link_drag_ghost.get(0), 0, 0);
         }
     }
 
@@ -176,8 +176,8 @@ export default class GuideAssets extends Dom {
         const link = new Dom(evt.target);
         link.removeClass('dragging');
 
-        this._drag_img.remove();
-        delete this._drag_img;
+        this._component_link_drag_ghost.remove();
+        delete this._component_link_drag_ghost;
     }
 
     getComponentDataForLink(link){
@@ -437,19 +437,19 @@ export default class GuideAssets extends Dom {
             evt.dataTransfer.setData('text/html', `<img src="${asset.url}" />`);
         }
 
-        this._drag_img = new Dom(item.child('figure').get(0).cloneNode(true))
-            .addClass(dragImgClassName)
+        this._asset_drag_ghost = new Dom(item.child('figure').get(0).cloneNode(true))
+            .addClass(assetDragGhostClassName)
             .appendTo('body');
 
-        evt.dataTransfer.setDragImage(this._drag_img.get(0), 0, 0);
+        evt.dataTransfer.setDragImage(this._asset_drag_ghost.get(0), 0, 0);
     }
 
     onAssetDragEnd(evt){
         const item = new Dom(evt.target);
         item.removeClass('dragging');
 
-        this._drag_img.remove();
-        delete this._drag_img;
+        this._asset_drag_ghost.remove();
+        delete this._asset_drag_ghost;
     }
 
     onAssetButtonClick(evt){

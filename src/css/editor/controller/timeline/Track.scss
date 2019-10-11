@@ -1,12 +1,13 @@
 @import "../../../theme";
 
 :local(.className){
+    border-top: 1px solid $darkgray;
+    border-bottom: 1px solid $darkgray;
     cursor: pointer;
 
     > .inner{
         position: relative;
         height: 2em;
-        border-bottom: 2px solid $darkgray;
         pointer-events: none;
 
         .info{
@@ -80,7 +81,14 @@
         }
     }
 
-    &.handle-dragging{
-        opacity: 0.25;
+    &.dragging{
+        opacity: 0.1;
+    }
+
+    &.drag-above{
+        border-top: 2px solid purple;
+    }
+    &.drag-under{
+        border-bottom: 2px solid purple;
     }
 }

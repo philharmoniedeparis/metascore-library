@@ -44,9 +44,12 @@
 
         &.tools-pane{
             grid-area: left;
-            width: 20em;
-            min-width: min-content;
-            max-width: 25vw;
+
+            &:not(.collapsed){
+                width: 20em;
+                min-width: min-content;
+                max-width: 25vw;
+            }
         }
 
         &.center-pane{
@@ -61,16 +64,22 @@
 
         &.configs-pane{
             grid-area: right;
-            width: 20em;
-            min-width: min-content;
-            max-width: 25vw;
+
+            &:not(.collapsed){
+                width: 20em;
+                min-width: min-content;
+                max-width: 25vw;
+            }
         }
 
         &.bottom-pane{
             grid-area: bottom;
-            height: 300px;
-            min-height: 150px;
-            max-height: 50vh;
+
+            &:not(.collapsed){
+                height: 300px;
+                min-height: 150px;
+                max-height: 50vh;
+            }
 
             &.collapsed{
                 height: auto;

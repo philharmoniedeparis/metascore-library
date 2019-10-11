@@ -4,6 +4,8 @@
     $top-height: 2.5em;
     $left-width: 12em;
     $left-min-width: 8em;
+    $bottom-sticky-top-height: 8em;
+    $bottom-sticky-bottom-height: 1.5em;
 
     height: 100%;
     display: flex;
@@ -68,107 +70,121 @@
     > .bottom {
         flex: 1 1 auto;
         overflow-y: scroll;
+        position: relative;
 
-        > .sticky-top{
-            position: sticky;
+        > .inner{
+            position: absolute;
             top: 0;
-            height: 8em;
-            display: flex;
-            flex-direction: row;
-            background: $lightgray;
-            border-bottom: 2px solid $darkgray;
-            z-index: 1;
+            left: 0;
+            width: 100%;
+            height: 100%;
 
-            > .left{
+            > .sticky-top{
+                position: fixed;
+                width: 100%;
+                height: $bottom-sticky-top-height;
                 display: flex;
-                flex-direction: column;
-                flex-wrap: nowrap;
-                width: $left-width;
-                flex: 0 0 auto;
-                box-sizing: border-box;
-                border-right: 2px solid $darkgray;
+                flex-direction: row;
+                background: $lightgray;
+                border-bottom: 2px solid $darkgray;
+                z-index: 1;
 
-                .controls {
+                > .left{
                     display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    flex: 1 1 auto;
+                    flex-direction: column;
+                    flex-wrap: nowrap;
+                    width: $left-width;
+                    flex: 0 0 auto;
+                    box-sizing: border-box;
+                    border-right: 2px solid $darkgray;
 
-                    button{
-                        border: none;
-                        outline: none;
-                        background-color: transparent;
-                        background-repeat: no-repeat;
+                    .controls {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        align-items: center;
+                        flex: 1 1 auto;
 
-                        &[data-action="rewind"]{
-                            flex: 0 0 2em;
-                            margin-right: 0.5em;
+                        button{
+                            border: none;
+                            outline: none;
+                            background-color: transparent;
+                            background-repeat: no-repeat;
 
-                            .icon{
-                                color: #fff;
-                                filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75))
+                            &[data-action="rewind"]{
+                                flex: 0 0 2em;
+                                margin-right: 0.5em;
+
+                                .icon{
+                                    color: #fff;
+                                    filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75))
+                                }
                             }
-                        }
 
-                        &[data-action="play"]{
-                            flex: 0 0 4em;
-                            height: 4em;
-                            background: #fff;
-                            border-radius: 50%;
-                            box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
-                            margin-right: 2.5em;
+                            &[data-action="play"]{
+                                flex: 0 0 4em;
+                                height: 4em;
+                                background: #fff;
+                                border-radius: 50%;
+                                box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
+                                margin-right: 2.5em;
 
-                            .icon{
-                                height: 100%;
-                                color: $darkgray;
+                                .icon{
+                                    height: 100%;
+                                    color: $darkgray;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            > .right{
-                flex: 1 1 auto;
+                > .right{
+                    flex: 1 1 auto;
 
-                .waveform-zoom{
-                    height: 100%;
-                }
-            }
-        }
-
-        .timeline{
-            z-index: 0;
-
-            .handles-container{
-                width: $left-width;
-                flex: 0 0 auto;
-
-                > .handle{
-                    border-right: 2px solid $darkgray;
+                    .waveform-zoom{
+                        height: 100%;
+                    }
                 }
             }
 
-            .tracks-container {
-                flex: 1 1 auto;
+            .timeline{
+                margin-top: $bottom-sticky-top-height;
+                margin-bottom: $bottom-sticky-bottom-height;
+                z-index: 0;
+
+                .handles-container{
+                    width: $left-width;
+                    flex: 0 0 auto;
+
+                    > .handle{
+                        border-right: 2px solid $darkgray;
+                    }
+                }
+
+                .tracks-container {
+                    flex: 1 1 auto;
+                }
             }
-        }
 
-        > .sticky-bottom{
-            position: sticky;
-            bottom: 0;
-            display: flex;
-            flex-direction: row;
-            background: $mediumgray;
-            border-top: 1px solid $darkgray;
-            z-index: 1;
+            > .sticky-bottom{
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: $bottom-sticky-bottom-height;
+                display: flex;
+                flex-direction: row;
+                background: $mediumgray;
+                border-top: 1px solid $darkgray;
+                z-index: 1;
 
-            .scenario-selector{
-                flex: 1 1 auto;
-            }
+                .scenario-selector{
+                    flex: 1 1 auto;
+                }
 
-            .zoom-controls{
-                background: $darkgray;
+                .zoom-controls{
+                    background: $darkgray;
+                }
             }
         }
     }

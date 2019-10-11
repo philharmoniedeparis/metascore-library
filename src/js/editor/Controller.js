@@ -85,8 +85,11 @@ export default class Controller extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        const sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
+        const bottom_inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(bottom);
+
+        const sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
+            .appendTo(bottom_inner);
 
         const left = new Dom('<div/>', {'class': 'left'})
             .appendTo(sticky_top);
@@ -121,10 +124,10 @@ export default class Controller extends Dom {
          * @type {Timeline}
          */
         this.timeline = new Timeline()
-            .appendTo(bottom);
+            .appendTo(bottom_inner);
 
         const sticky_bottom = new Dom('<div/>', {'class': 'sticky-bottom'})
-            .appendTo(bottom);
+            .appendTo(bottom_inner);
 
         this.scenario_selector = new ScenarioSelector()
             .appendTo(sticky_bottom);
@@ -137,7 +140,7 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Progress bar's resize event callback
+     * ResizeObserver callback
      *
      * @private
      */

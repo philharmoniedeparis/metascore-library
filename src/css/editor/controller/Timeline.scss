@@ -1,10 +1,17 @@
+@import "../../theme";
+
 :local(.className){
     display: flex;
     flex-direction: row;
-    background: #606060;
+    background: $mediumgray;
+
+    .handles-container{
+        padding: 1px 0;
+    }
 
     .tracks-container {
         position: relative;
+        padding: 1px 0;
 
         .tracks-container-outer{
             position: absolute;
@@ -22,4 +29,11 @@
             }
         }
     }
+}
+
+:local(.handleDragGhostClassName){
+    position: absolute;
+    top: 0;
+    right: 100%;
+    background: $mediumgray;
 }
