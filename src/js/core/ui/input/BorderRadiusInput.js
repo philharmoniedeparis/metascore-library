@@ -3,6 +3,7 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
+import clear_icon from '../../../../img/core/ui/input/borderradius/clear.svg?sprite';
 import {className} from '../../../../css/core/ui/input/BorderRadius.scss';
 
 /**
@@ -53,7 +54,7 @@ export default class BorderRadiusInput extends Input{
          * The clear button
          * @type {Dom}
          */
-        this.clear = new Button({'icon': 'close'})
+        this.clear = new Button({'icon': clear_icon})
             .data('action', 'clear')
             .addListener('click', this.onClearClick.bind(this))
             .appendTo(buttons);

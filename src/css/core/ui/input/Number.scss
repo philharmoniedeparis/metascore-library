@@ -19,22 +19,15 @@
         height: 100%;
         flex-direction: row;
         align-items: stretch;
+        justify-content: center;
 
         button{
-            flex: 1 1 auto;
-            padding: 0;
-            font-size: 0.5em;
             color: #fff;
-            vertical-align: top;
+            padding: 0;
 
             .icon{
-                padding: 0.5em;
-            }
-
-            &[data-direction="down"]{
-                .icon{
-                    transform: rotate(180deg);
-                }
+                display: block;
+                margin: auto;
             }
         }
     }
@@ -48,20 +41,8 @@
 
     &.vertical{
         .buttons{
+            width: 1em;
             flex-direction: column-reverse;
-
-            button{
-                .icon{
-                    padding: 0em;
-                    transform: rotate(270deg);
-                }
-
-                &[data-direction="down"]{
-                    .icon{
-                        transform: rotate(90deg);
-                    }
-                }
-            }
         }
     }
 

@@ -4,7 +4,10 @@ import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
 import {getDecimalPlaces} from '../../utils/Number';
 
-import spinner_arrow_icon from '../../../../img/core/ui/input/number/spinner-arrow.svg?sprite';
+import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down.svg?sprite';
+import chevron_left_icon from '../../../../img/core/ui/input/number/chevron-left.svg?sprite';
+import chevron_right_icon from '../../../../img/core/ui/input/number/chevron-right.svg?sprite';
+import chevron_up_icon from '../../../../img/core/ui/input/number/chevron-up.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**
@@ -85,7 +88,7 @@ export default class NumberInput extends Input {
              * The spin down button
              * @type {Button}
              */
-            this.spindown_btn = new Button({'icon': spinner_arrow_icon})
+            this.spindown_btn = new Button({'icon': this.configs.spinDirection === 'vertical' ? chevron_down_icon : chevron_left_icon})
                 .data('action', 'spin')
                 .data('direction', 'down')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
@@ -97,7 +100,7 @@ export default class NumberInput extends Input {
              * The spin up button
              * @type {Button}
              */
-            this.spinup_btn = new Button({'icon': spinner_arrow_icon})
+            this.spinup_btn = new Button({'icon': this.configs.spinDirection === 'vertical' ? chevron_up_icon : chevron_right_icon})
                 .data('action', 'spin')
                 .data('direction', 'up')
                 .addListener('mousedown', this.onSpinBtnMouseDown.bind(this))
