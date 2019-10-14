@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import {MasterClock} from '../core/clock/MediaClock';
+import {MasterClock} from '../core/media/Clock';
 import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';

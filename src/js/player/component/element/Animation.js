@@ -1,6 +1,6 @@
 import Element from '../Element';
 import {toSeconds, toCentiseconds} from '../../../core/utils/Media';
-import {MasterClock} from '../../../core/clock/MediaClock';
+import {MasterClock} from '../../../core/media/Clock';
 import Lottie from 'lottie-web';
 
 /**

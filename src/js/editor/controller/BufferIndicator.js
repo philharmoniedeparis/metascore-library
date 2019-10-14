@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import {MasterClock} from '../../core/clock/MediaClock';
+import {MasterClock} from '../../core/media/Clock';
 
 import {className} from '../../../css/editor/controller/BufferIndicator.scss';
 

@@ -2,7 +2,7 @@
 
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
-import {MasterClock} from './core/clock/MediaClock';
+import {MasterClock} from './core/media/Clock';
 import {isArray, isNumber} from './core/utils/Var';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';

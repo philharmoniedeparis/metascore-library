@@ -1,7 +1,7 @@
 import {className} from '../css/Player.scss';
 
 import Dom from './core/Dom';
-import {MasterClock} from './core/clock/MediaClock';
+import {MasterClock} from './core/media/Clock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';

@@ -4,7 +4,7 @@ import {isEmpty} from '../../core/utils/Var';
 import {clamp} from '../../core/utils/Math';
 import ContextMenu from '../../core/ui/ContextMenu';
 import Locale from '../../core/Locale';
-import {MasterClock} from '../../core/clock/MediaClock';
+import {MasterClock} from '../../core/media/Clock';
 
 /**
  * A helper class to manage a cursor component's keyframes

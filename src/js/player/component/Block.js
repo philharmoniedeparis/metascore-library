@@ -1,5 +1,5 @@
 import Component from '../Component';
-import {MasterClock} from '../../core/clock/MediaClock';
+import {MasterClock} from '../../core/media/Clock';
 import Dom from '../../core/Dom';
 import Pager from './block/Pager';
 import Page from './Page';
