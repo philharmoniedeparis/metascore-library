@@ -32,6 +32,9 @@ import {toCentiseconds, toSeconds} from './core/utils/Media';
  * @param {Object} component The component instance
  * @param {Boolean} new Whether the component was an already existing one, or a newly created one from configs
  *
+ * @emits {componentremove} Fired when a component is removed
+ * @param {Object} component The component instance
+ *
  * @emits {scenariochange} Fired when the scenario changes
  * @param {Object} player The player instance
  * @param {Object} value The scenario
@@ -135,6 +138,7 @@ export default class Player extends Dom {
             .appendTo(this);
 
         this
+            .addListener('childremove', this.onChildRemove.bind(this))
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .appendTo(this.configs.container);
 
@@ -459,6 +463,20 @@ export default class Player extends Dom {
         this.triggerEvent('mediaerror', {'player': this, 'message': message});
 
         evt.stopPropagation();
+    }
+
+    /**
+     * childremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onChildRemove(evt){
+        const component = evt.detail.child._metaScore;
+
+        if(component){
+            this.triggerEvent('componentremove', {'component': component}, true, false);
+        }
     }
 
     /**

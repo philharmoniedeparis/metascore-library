@@ -1125,7 +1125,7 @@ export default class Editor extends Dom {
     onPlayerComponentAdd(evt){
         const component = evt.detail.component;
 
-        this.controller.timeline.addTrack(component);
+        this.controller.getTimeline().addTrack(component);
 
         if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
             this.getPlayer().updateBlockTogglers();
@@ -1135,22 +1135,20 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Player childremove event callback
+     * Player componentremove event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPlayerChildRemove(evt){
-        const component = evt.detail.child._metaScore;
+    onPlayerComponentRemove(evt){
+        const component = evt.detail.component;
 
-        if(component){
-            this.configs_editor.unsetComponent(component, true);
+        this.configs_editor.unsetComponent(component, true);
 
-            this.controller.timeline.removeTrack(component);
+        this.controller.getTimeline().removeTrack(component);
 
-            if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
-                this.getPlayer().updateBlockTogglers();
-            }
+        if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
+            this.getPlayer().updateBlockTogglers();
         }
     }
 
@@ -1222,14 +1220,14 @@ export default class Editor extends Dom {
             .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
             .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
-            .addListener('childremove', this.onPlayerChildRemove.bind(this))
+            .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
+            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
             .addListener('mousedown', this.onPlayerMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
-            .addListener('pause', this.onPlayerPause.bind(this))
-            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this));
+            .addListener('pause', this.onPlayerPause.bind(this));
 
             this.player
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
