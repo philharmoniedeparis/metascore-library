@@ -126,6 +126,10 @@ export default class ComponentForm extends Dom {
         return this.master_component;
     }
 
+    getComponents(){
+        return this.components;
+    }
+
     /**
      * The fields' valuechange event handler
      *

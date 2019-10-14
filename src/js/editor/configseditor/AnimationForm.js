@@ -22,6 +22,9 @@ export default class AnimationForm extends ElementForm {
         // call parent constructor
         super(configs);
 
+        // fix event handlers scope
+        this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
+
         this.addClass(`animation-form ${className}`);
     }
 
@@ -57,7 +60,7 @@ export default class AnimationForm extends ElementForm {
             case 'start-frame':
                 this.fields[name] = new Field(
                     new NumberInput({
-                        'min': 0
+                        'min': 1
                     }),
                     {
                         'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame')
@@ -69,6 +72,7 @@ export default class AnimationForm extends ElementForm {
             case 'loop-duration':
                 this.fields[name] = new Field(
                     new TimeInput({
+                        'min': 10,
                         'clearButton': true
                     }),
                     {
@@ -114,12 +118,25 @@ export default class AnimationForm extends ElementForm {
     setComponents(components){
         super.setComponents(components);
 
+        this.updateInputs();
+
+        this.getComponents().forEach((component) => {
+            component.getAnimation().addEventListener('DOMLoaded', this.onAnimationLoaded);
+        });
+
+        return this;
+    }
+
+    onAnimationLoaded(){
+        this.updateInputs();
+    }
+
+    updateInputs(){
         const frames = [];
         this.components.forEach((component) => {
             frames.push(component.getTotalFrames());
         });
-        this.getField('start-frame').getInput().setMax(Math.min(...frames) - 1);
-
-        return this;
+        const min_frames = Math.min(...frames);
+        this.getField('start-frame').getInput().setMax(Math.max(min_frames, 0));
     }
 }

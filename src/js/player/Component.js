@@ -553,13 +553,13 @@ export default class Component extends Dom {
                 .addListener('update', this.onCuePointUpdate.bind(this))
                 .addListener('stop', this.onCuePointStop.bind(this));
 
-            if(supressEvent !== true){
-                this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
-            }
-
             if(active){
                 this.activate();
             }
+        }
+
+        if(supressEvent !== true){
+            this.triggerEvent('cuepointset', {'component': this, 'cuepoint': this.cuepoint});
         }
 
         return this;

@@ -9,6 +9,18 @@ import Lottie from 'lottie-web';
 export default class Animation extends Element{
 
     /**
+     *Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
+    }
+
+    /**
     * Get the component's type
     *
     * @return {String} The component's type
@@ -74,12 +86,6 @@ export default class Animation extends Element{
         });
     }
 
-    constructor(configs) {
-        super(configs);
-
-        this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
-    }
-
     /**
      * Setup the cursor's UI
      *
@@ -90,6 +96,7 @@ export default class Animation extends Element{
         super.setupUI();
 
         this
+            .addListener('cuepointset', this.onCuePointSet.bind(this))
             .addListener('activate', this.onActivate.bind(this))
             .addListener('deactivate', this.onDeactivate.bind(this));
 
@@ -111,7 +118,7 @@ export default class Animation extends Element{
                 break;
 
             case 'start-frame':
-                this.draw();
+                this.updateStartFrame();
                 break;
 
             case 'loop-duration':
@@ -125,6 +132,21 @@ export default class Animation extends Element{
             case 'colors':
                 this.updateColors();
                 break;
+        }
+    }
+
+    /**
+     * The cuepointset event handler
+     *
+     * @param {CustomEvent} evt The event object
+     * @private
+     */
+    onCuePointSet(evt){
+        if(evt.detail.cuepoint){
+            this.draw();
+        }
+        else{
+            this.play();
         }
     }
 
@@ -165,12 +187,17 @@ export default class Animation extends Element{
                 const start_time = this.getPropertyValue('start-time');
                 const start_frame = this.getPropertyValue('start-frame');
                 const loop_duration = this.getPropertyValue('loop-duration');
+                const reversed = this.getPropertyValue('reversed');
                 const current_time = MasterClock.getTime();
 
                 const time = toSeconds(current_time - start_time);
                 const total_frames = this.getTotalFrames();
                 const fps = total_frames / toSeconds(loop_duration);
-                const frame = (time * fps + start_frame) % total_frames;
+                let frame = (time * fps + (start_frame-1)) % total_frames;
+
+                if(reversed){
+                    frame = total_frames - frame;
+                }
 
                 animation.goToAndStop(frame, true);
             }
@@ -181,6 +208,13 @@ export default class Animation extends Element{
 
     onAnimationLoaded(){
         this._loaded = true;
+
+        if(!this.getPropertyValue('loop-duration')){
+            const animation = this.getAnimation();
+            if(animation){
+                this.setPropertyValue('loop-duration', toCentiseconds(animation.getDuration()));
+            }
+        }
 
         this
             .updateFPS()
@@ -196,18 +230,8 @@ export default class Animation extends Element{
         return this.animation;
     }
 
-    getLoopDuration(){
-        let duration = this.getPropertyValue('loop-duration');
-
-        if(!duration){
-            const animation = this.getAnimation();
-
-            if(animation){
-                duration = toCentiseconds(animation.getDuration());
-            }
-        }
-
-        return duration;
+    isLoaded(){
+        return this._loaded;
     }
 
     getTotalFrames(){
@@ -261,16 +285,24 @@ export default class Animation extends Element{
         return this;
     }
 
+    updateStartFrame(){
+        if(!this._playing){
+            this.draw();
+        }
+    }
+
     updateFPS(){
         const animation = this.getAnimation();
 
         if(animation && this._loaded){
             const duration = toCentiseconds(animation.getDuration());
-            const loop_duration = this.getLoopDuration();
+            const loop_duration = this.getPropertyValue('loop-duration');
 
             animation.setSpeed(duration/loop_duration);
 
-            this.draw();
+            if(!this._playing){
+                this.draw();
+            }
         }
 
         return this;
@@ -283,7 +315,9 @@ export default class Animation extends Element{
             const direction = this.getPropertyValue('reversed') ? -1 : 1;
             animation.setDirection(direction);
 
-            this.draw();
+            if(!this._playing){
+                this.draw();
+            }
         }
 
         return this;
