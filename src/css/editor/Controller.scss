@@ -60,11 +60,6 @@
             }
 
         }
-
-        .zoom-controls{
-            background: $darkgray;
-        }
-
     }
 
     > .bottom {
@@ -183,6 +178,7 @@
                 }
 
                 .zoom-controls{
+                    flex: 0 0 auto;
                     background: $darkgray;
                 }
             }

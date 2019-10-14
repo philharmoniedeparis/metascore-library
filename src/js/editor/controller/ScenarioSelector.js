@@ -3,6 +3,7 @@ import Locale from '../../core/Locale';
 import Button from '../../core/ui/Button';
 import Overlay from '../../core/ui/Overlay';
 import Prompt from '../../core/ui/overlay/Prompt';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?sprite';
 import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?sprite';
@@ -34,12 +35,12 @@ export default class ScenarioSelector extends Dom {
         const nav_buttons = new Dom('<div/>', {'class': 'nav-buttons'})
             .appendTo(this);
 
-        new Button({'icon': arrow_icon})
-            .data('action', 'previous')
+        this.scroll_left_btn = new Button({'icon': arrow_icon})
+            .data('action', 'scroll-left')
             .appendTo(nav_buttons);
 
-        new Button({'icon': arrow_icon})
-            .data('action', 'next')
+        this.scroll_right_btn = new Button({'icon': arrow_icon})
+            .data('action', 'scroll-right')
             .appendTo(nav_buttons);
 
         this.list = new Dom('<ul/>', {'class': 'list'})
@@ -52,7 +53,10 @@ export default class ScenarioSelector extends Dom {
 
         this
             .addDelegate('button', 'click', this.onButtonClick.bind(this))
-            .addDelegate('.list li', 'click', this.onScenarioClick.bind(this));
+            .addDelegate('.list .item', 'click', this.onScenarioClick.bind(this));
+
+        const resize_observer = new ResizeObserver(this.onResize.bind(this));
+        resize_observer.observe(this.get(0));
     }
 
     /**
@@ -65,14 +69,40 @@ export default class ScenarioSelector extends Dom {
         };
     }
 
+    /**
+     * ResizeObserver callback
+     *
+     * @private
+     */
+    onResize() {
+        this.updateScrollButtons();
+    }
+
+    /**
+     * Button click event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onButtonClick(evt){
         const action = new Dom(evt.target).data('action');
 
         switch(action){
-            case 'previous':
-                break;
-
-            case 'next':
+            case 'scroll-left':
+            case 'scroll-right':
+                {
+                    const list_el = this.list.get(0);
+                    const visible_item = this.list.children('.item').get().find((item) => {
+                        return item.offsetLeft >= list_el.scrollLeft;
+                    });
+                    if(visible_item){
+                        const sibling_item = action === 'scroll-left' ? visible_item.previousSibling : visible_item.nextSibling;
+                        if(sibling_item){
+                            list_el.scrollLeft = sibling_item.offsetLeft - list_el.offsetLeft;
+                            this.updateScrollButtons();
+                        }
+                    }
+                }
                 break;
 
             case 'add':
@@ -87,6 +117,13 @@ export default class ScenarioSelector extends Dom {
         }
     }
 
+    /**
+     * Add prompt onConfirm callback
+     *
+     * @private
+     * @param {String} scenario The scenario's name
+     * @param {Overlay} overlay The overlay
+     */
     onAddConfirm(scenario, overlay){
         if(scenario){
             const item = this.getScenarioItem(scenario);
@@ -107,15 +144,33 @@ export default class ScenarioSelector extends Dom {
         }
     }
 
+    /**
+     * Add prompt onCancel callback
+     *
+     * @private
+     * @param {Overlay} overlay The overlay
+     */
     onAddCancel(overlay){
         overlay.hide();
     }
 
+    /**
+     * List item click event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onScenarioClick(evt){
         const scenario = Dom.data(evt.target, 'scenario');
         this.setActiveScenario(scenario);
     }
 
+    /**
+     * Set the active scenario item
+     *
+     * @param {String} scenario The scenario's name
+     * @param {Boolean} supressEvent Whether to prevent the custom scenarioactivate event from firing
+     */
     setActiveScenario(scenario, supressEvent){
         const item = this.getScenarioItem(scenario);
 
@@ -133,6 +188,13 @@ export default class ScenarioSelector extends Dom {
         }
     }
 
+    /**
+     * Get a scenario's corresponding item
+     *
+     * @private
+     * @param {String} scenario The scenario's name
+     * @return {Dom} The item or null if not found
+     */
     getScenarioItem(scenario){
         const item = this.list.child(`[data-scenario="${scenario}"]`);
         return item.count() > 0 ? item : null;
@@ -146,9 +208,11 @@ export default class ScenarioSelector extends Dom {
      * @return {this}
      */
     addScenario(scenario, supressEvent){
-        new Dom('<li/>', {'text': scenario})
+        new Dom('<li/>', {'class': 'item', 'text': scenario})
             .data('scenario', scenario)
             .appendTo(this.list);
+
+        this.updateScrollButtons();
 
         if(supressEvent !== true){
             this.triggerEvent('scenarioadd', {'scenario': scenario});
@@ -204,6 +268,32 @@ export default class ScenarioSelector extends Dom {
         scenarios.forEach((scenario) => {
             this.removeScenario(scenario, supressEvent);
         });
+
+        return this;
+    }
+
+    /**
+     * Activate/deactivate the scroll buttons
+     *
+     * @private
+     * @return {this}
+     */
+    updateScrollButtons(){
+        const list_el = this.list.get(0);
+
+        if(list_el.scrollLeft > 0){
+            this.scroll_left_btn.enable();
+        }
+        else{
+            this.scroll_left_btn.disable();
+        }
+
+        if(list_el.clientWidth + list_el.scrollLeft < list_el.scrollWidth){
+            this.scroll_right_btn.enable();
+        }
+        else{
+            this.scroll_right_btn.disable();
+        }
 
         return this;
     }

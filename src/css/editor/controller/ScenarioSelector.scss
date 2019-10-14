@@ -3,26 +3,37 @@
 :local(.className){
     display: flex;
     flex-direction: row;
+    align-items: center;
     background: $mediumgray;
-    padding: 0.25em;
+    padding: 0 0.25em;
     font-size: 0.75em;
+    overflow: hidden;
 
     button{
         padding: 0;
         color: #fff;
 
-        &[data-action="previous"]{
+        &[data-action="scroll-left"]{
             .icon{
                 transform: rotate(180deg);
             }
         }
 
         &[data-action="add"]{
+            width: 1.5em;
+            height: 1.5em;
             margin-left: 0.5em;
+            border-radius: 0.25em;
+
+            &:hover{
+                background: $darkgray;
+            }
         }
     }
 
     .nav-buttons{
+        flex: 0 0 auto;
+
         button{
             font-size: 0.75em;
         }
@@ -32,13 +43,14 @@
         list-style: none;
         display: flex;
         flex-direction: row;
+        flex: 1 1 auto;
         margin: 0;
         padding: 0;
         overflow: hidden;
+        scroll-behavior: smooth;
 
-        li{
-            margin: 0 0.25em;
-            padding: 0 0.25em;
+        .item{
+            padding: 0 0.5em;
             opacity: 0.5;
             border-bottom: 1px solid transparent;
             white-space: nowrap;

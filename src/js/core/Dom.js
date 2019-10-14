@@ -763,12 +763,16 @@ export default class Dom {
     }
 
     /**
-     * Get an element by index from the set of elements managed by the Dom object
+     * Get an element by index or all elements managed by the Dom object
      *
-     * @param {Integer} index The index of the elements to retreive
+     * @param {Integer} [index] The index of the elements to retreive
      * @return {Element} The element
      */
     get(index){
+        if(typeof index === 'undefined'){
+            return this.elements;
+        }
+
         return this.elements[index];
     }
 

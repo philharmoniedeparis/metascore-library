@@ -1233,6 +1233,10 @@ export default class Editor extends Dom {
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
                 .addListener('drop', this.onPlayerDrop.bind(this));
 
+            this
+                .setEditing(true)
+                .updateMainmenu();
+
             this.player.contextmenu.disable();
 
             const player_document = this.player_frame.get(0).contentWindow.document;
@@ -1274,10 +1278,6 @@ export default class Editor extends Dom {
             revisions_select
                 .setValue(current_vid)
                 .getOption(current_vid).attr('disabled', 'true');
-
-            this
-                .setEditing(true)
-                .updateMainmenu();
 
             loadmask.hide();
     }
