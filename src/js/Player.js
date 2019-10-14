@@ -588,13 +588,14 @@ export default class Player extends Dom {
         }
 
         this
-            .setActiveScenario(this.data.scenarios[0])
             .updateBlockTogglers()
             .removeClass('loading');
 
         this.loaded = true;
 
         this.triggerEvent('load', {'player': this, 'data': this.data}, true, false);
+
+        this.setActiveScenario(this.data.scenarios[0]);
     }
 
     /**

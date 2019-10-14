@@ -1089,10 +1089,12 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayerScenarioChange(evt){
-        // Update the scenario selector
         const scenario = evt.detail.scenario;
+
+        // Update scenario selector
         this.controller.getScenarioSelector().setActiveScenario(scenario, true);
 
+        // Update timeline
         const timeline = this.controller.getTimeline();
         this.getPlayer().getRootComponents().forEach((component) => {
             const track = timeline.getTrack(component.getId());
@@ -1250,15 +1252,14 @@ export default class Editor extends Dom {
 
             this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
 
-            // Update the timeline
+            // Update timeline
+            const timeline = this.controller.getTimeline();
             this.player.getRootComponents().forEach((component) => {
-                this.controller.timeline.addTrack(component);
+                timeline.addTrack(component);
             });
 
-            // Update the scenario list and set active scenario
-            this.controller.getScenarioSelector()
-                .addScenarios(this.player.getData('scenarios'), true)
-                .setActiveScenario(this.player.getActiveScenario(), true);
+            // Update the scenario list
+            this.controller.getScenarioSelector().addScenarios(this.player.getScenarios(), true);
 
             // Update the revision selector
             const revisions_select = this.mainmenu.getItem('revisions');
