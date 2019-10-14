@@ -66,6 +66,9 @@ export default class Player extends Dom {
          */
         this.loaded = false;
 
+        this.components_container = new Dom('<div/>', {'class': 'components-container'})
+            .appendTo(this);
+
         if(this.configs.api){
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
         }
@@ -133,10 +136,11 @@ export default class Player extends Dom {
 
         this
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
-            .appendTo(this.configs.container)
-            .triggerEvent('ready', {'player': this}, false, false);
+            .appendTo(this.configs.container);
 
         MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
+
+        this.triggerEvent('ready', {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
             this.load();
@@ -167,13 +171,13 @@ export default class Player extends Dom {
                 break;
 
             case "ArrowLeft":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
+                this.components_container.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
                 evt.preventDefault();
                 evt.stopPropagation();
                 break;
 
             case "ArrowRight":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
+                this.components_container.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
                 evt.preventDefault();
                 evt.stopPropagation();
                 break;
@@ -458,21 +462,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * componentadd event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onComponentAdd(evt){
-        const component = evt.detail.component;
-        const parent = component.getParent();
-
-        if(parent && parent.isActive()){
-            component.activate();
-        }
-    }
-
-    /**
      * Element of type Cursor time event callback
      *
      * @private
@@ -536,7 +525,7 @@ export default class Player extends Dom {
         switch(evt.detail.property){
             case 'hidden':{
                 // Update all BlockTogglers to reflect the change in a component's hidden state.
-                this.find(`.block-toggler .button[data-component=${component.getId()}]`)
+                this.components_container.find(`.block-toggler .button[data-component=${component.getId()}]`)
                     .toggleClass('active', component.getPropertyValue('hidden'));
                 break;
             }
@@ -726,7 +715,7 @@ export default class Player extends Dom {
      * TODO: improve
      */
     getComponents(selector){
-        let components = this.find('.metaScore-component');
+        let components = this.components_container.find('.metaScore-component');
 
         if(selector){
             components = components.filter(selector);
@@ -743,7 +732,7 @@ export default class Player extends Dom {
      * TODO: improve
      */
     getRootComponents(selector){
-        let components = this.children('.metaScore-component');
+        let components = this.components_container.children('.metaScore-component');
 
         if(selector){
             components = components.filter(selector);
@@ -764,7 +753,7 @@ export default class Player extends Dom {
         const existing = media instanceof Media;
 
         if(existing){
-            media.appendTo(this);
+            media.appendTo(this.components_container);
         }
         else{
             media = new Media(media)
@@ -778,8 +767,15 @@ export default class Player extends Dom {
                 .addListener('suspend', this.onMediaSuspend.bind(this))
                 .addListener('stalled', this.onMediaStalled.bind(this))
                 .addListener('error', this.onMediaError.bind(this))
-                .appendTo(this)
+                .appendTo(this.components_container)
                 .init();
+        }
+
+        if(media.getPropertyValue('scenario') === this.getActiveScenario()){
+            media.activate();
+        }
+        else{
+            media.deactivate();
         }
 
         if(supressEvent !== true){
@@ -801,13 +797,20 @@ export default class Player extends Dom {
         const existing = controller instanceof Controller;
 
         if(existing){
-            controller.appendTo(this);
+            controller.appendTo(this.components_container);
         }
         else{
             controller = new Controller(controller)
                 .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
-                .appendTo(this)
+                .appendTo(this.components_container)
                 .init();
+        }
+
+        if(controller.getPropertyValue('scenario') === this.getActiveScenario()){
+            controller.activate();
+        }
+        else{
+            controller.deactivate();
         }
 
         if(supressEvent !== true){
@@ -829,15 +832,22 @@ export default class Player extends Dom {
         const existing = block_toggler instanceof BlockToggler;
 
         if(existing){
-            block_toggler.appendTo(this);
+            block_toggler.appendTo(this.components_container);
         }
         else{
             block_toggler = new BlockToggler(block_toggler)
-                .appendTo(this)
+                .appendTo(this.components_container)
                 .init();
         }
 
         this.updateBlockToggler(block_toggler);
+
+        if(block_toggler.getPropertyValue('scenario') === this.getActiveScenario()){
+            block_toggler.activate();
+        }
+        else{
+            block_toggler.deactivate();
+        }
 
         if(supressEvent !== true){
             this.triggerEvent('componentadd', {'component': block_toggler, 'new': !existing}, true, false);
@@ -858,16 +868,15 @@ export default class Player extends Dom {
         const existing = block instanceof Block;
 
         if(existing){
-            block.appendTo(this);
+            block.appendTo(this.components_container);
         }
         else{
             block = new Block(block)
-                .addListener('componentadd', this.onComponentAdd.bind(this))
                 .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
                 .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
                 .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
                 .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
-                .appendTo(this)
+                .appendTo(this.components_container)
                 .init();
         }
 
@@ -879,6 +888,13 @@ export default class Player extends Dom {
                 page_configs['end-time'] = this.getMedia().getDuration();
             }
             block.addPage(page_configs);
+        }
+
+        if(block.getPropertyValue('scenario') === this.getActiveScenario()){
+            block.activate();
+        }
+        else{
+            block.deactivate();
         }
 
         if(supressEvent !== true){

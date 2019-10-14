@@ -236,6 +236,7 @@ export default class Editor extends Dom {
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
+            .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
 
         /**
@@ -936,6 +937,19 @@ export default class Editor extends Dom {
     }
 
     /**
+     * Timeline trackdrop event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineTrackDrop(evt){
+        const component = evt.detail.component;
+        const position = evt.detail.position;
+
+        component.insertAt(component.parents(), position);
+    }
+
+    /**
      * Time input valuein event callback
      *
      * @private
@@ -1075,8 +1089,21 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayerScenarioChange(evt){
+        // Update the scenario selector
         const scenario = evt.detail.scenario;
         this.controller.getScenarioSelector().setActiveScenario(scenario, true);
+
+        const timeline = this.controller.getTimeline();
+        this.getPlayer().getRootComponents().forEach((component) => {
+            const track = timeline.getTrack(component.getId());
+
+            if(component.getPropertyValue('scenario') === scenario){
+                track.show();
+            }
+            else{
+                track.hide();
+            }
+        });
     }
 
     /**
@@ -1098,37 +1125,11 @@ export default class Editor extends Dom {
 
         this.controller.timeline.addTrack(component);
 
-        if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block')){
+        if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
             this.getPlayer().updateBlockTogglers();
         }
-        else if(component.instanceOf('Element')){
-            /**
-             * @todo: mode to the Cursor element
-             */
-            const page = component.getParent();
 
-            if(evt.detail.new && component.instanceOf('Cursor')){
-                if(!isNumber(component.getPropertyValue('start-time'))){
-                    component.setPropertyValue('start-time', MasterClock.getTime());
-                }
-
-                if(!isNumber(component.getPropertyValue('end-time'))){
-                    const block = page.getParent();
-                    component.setPropertyValue('end-time', block.getPropertyValue('synched') ? page.getPropertyValue('end-time') : MasterClock.getRenderer().getDuration());
-                }
-            }
-        }
-    }
-
-    /**
-    * Player component beforeremove event callback
-    *
-    * @private
-    * @param {CustomEvent} evt The event object
-    */
-    onComponentBeforeRemove(evt){
-        const component = evt.target._metaScore;
-        this.configs_editor.unsetComponent(component, true);
+        this.selectPlayerComponent(component);
     }
 
     /**
@@ -1138,10 +1139,11 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayerChildRemove(evt){
-        const child = evt.detail.child;
-        const component = child._metaScore;
+        const component = evt.detail.child._metaScore;
 
         if(component){
+            this.configs_editor.unsetComponent(component, true);
+
             this.controller.timeline.removeTrack(component);
 
             if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
@@ -1174,8 +1176,7 @@ export default class Editor extends Dom {
                 .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
                 .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
                 .addListener('sourceset', this.onPlayerSourceSet.bind(this))
-                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this))
-                .addListener('componentadd', this.onPlayerComponentAdd.bind(this));
+                .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this));
 
             this.player.load();
 
@@ -1217,16 +1218,16 @@ export default class Editor extends Dom {
             .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
             .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
             .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
-            .addDelegate('.metaScore-component', 'beforeremove', this.onComponentBeforeRemove.bind(this))
             .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
-            .addListener('mousedown', this.onPlayerMousedown.bind(this))
+            .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
             .addListener('childremove', this.onPlayerChildRemove.bind(this))
+            .addListener('mousedown', this.onPlayerMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
             .addListener('click', this.onPlayerClick.bind(this))
             .addListener('play', this.onPlayerPlay.bind(this))
-            .addListener('pause', this.onPlayerPause.bind(this));
+            .addListener('pause', this.onPlayerPause.bind(this))
+            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this));
 
             this.player
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
@@ -1243,6 +1244,22 @@ export default class Editor extends Dom {
                 .setTarget(player_document.body)
                 .enable();
 
+            this.asset_browser.getGuideAssets()
+                .addAssets(this.player.getData('assets'), true)
+                .addAssets(this.player.getData('shared_assets'), true);
+
+            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+
+            // Update the timeline
+            this.player.getRootComponents().forEach((component) => {
+                this.controller.timeline.addTrack(component);
+            });
+
+            // Update the scenario list and set active scenario
+            this.controller.getScenarioSelector()
+                .addScenarios(this.player.getData('scenarios'), true)
+                .setActiveScenario(this.player.getActiveScenario(), true);
+
             // Update the revision selector
             const revisions_select = this.mainmenu.getItem('revisions');
             const current_vid = this.player.getData('vid');
@@ -1258,16 +1275,6 @@ export default class Editor extends Dom {
             revisions_select
                 .setValue(current_vid)
                 .getOption(current_vid).attr('disabled', 'true');
-
-            this.asset_browser.getGuideAssets()
-                .addAssets(this.player.getData('assets'), true)
-                .addAssets(this.player.getData('shared_assets'), true);
-
-            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
-
-            this.controller.getScenarioSelector()
-                .addScenarios(this.player.getData('scenarios'), true)
-                .setActiveScenario(this.player.getActiveScenario(), true);
 
             this
                 .setEditing(true)
@@ -1821,23 +1828,20 @@ export default class Editor extends Dom {
                 const page = parent;
                 const components = [];
 
-                configs.forEach((element_config, index) => {
+                configs.forEach((element_config) => {
                     const component = page.addElement(element_config);
-                    this.configs_editor.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
                     'undo': () => {
-                        this.configs_editor.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         })
                     },
                     'redo': () => {
-                        components.forEach((component, index) => {
+                        components.forEach((component) => {
                             page.addElement(component);
-                            this.configs_editor.setComponent(component, index > 0);
                         });
                     }
                 });
@@ -1883,7 +1887,6 @@ export default class Editor extends Dom {
 
                 this.history.add({
                     'undo': () => {
-                        this.configs_editor.unsetComponents();
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(before ? index + 1 : index);
                             const prop = before ? 'start-time' : 'end-time';
@@ -1909,7 +1912,7 @@ export default class Editor extends Dom {
                 const player = parent || this.player;
                 const components = [];
 
-                configs.forEach((block_config, index) => {
+                configs.forEach((block_config) => {
                     let component = null;
 
                     switch(block_config.type){
@@ -1928,21 +1931,18 @@ export default class Editor extends Dom {
                         }
                     }
 
-                    this.configs_editor.setComponent(component, index > 0);
                     components.push(component);
                 });
 
                 this.history.add({
                     'undo': () => {
-                        this.configs_editor.unsetComponents();
                         components.forEach((component) => {
                             component.remove();
                         });
                     },
                     'redo': () => {
-                        components.forEach((component, index) => {
+                        components.forEach((component) => {
                             parent[`add${component.getPropertyValue('type')}`](component);
-                            this.configs_editor.setComponent(component, index > 0);
                         });
                     }
                 });

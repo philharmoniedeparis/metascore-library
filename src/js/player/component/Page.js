@@ -1,4 +1,5 @@
 import Component from '../Component';
+import {MasterClock} from '../../core/media/Clock';
 import Element from './Element';
 import Locale from '../../core/Locale';
 import {isString} from '../../core/utils/Var';
@@ -146,27 +147,36 @@ export default class Page extends Component {
             }
 
             const el_index = this.children(`.element.${type}`).count() + 1;
-            let name = '';
+            const defaults = {};
 
             switch(type){
-                case 'Cursor':
-                    name = `cur ${el_index}`;
+                case 'Cursor': {
+                        defaults.name = `cur ${el_index}`;
+
+                        const start_time = this.getPropertyValue('start-time');
+                        defaults['start-time'] = start_time !== null ? start_time : MasterClock.getTime();
+
+                        const end_time = this.getPropertyValue('end-time');
+                        defaults['end-time'] = end_time !== null ? end_time : MasterClock.getRenderer().getDuration();
+                    }
                     break;
 
                 case 'Content':
-                    name = `content ${el_index}`;
+                    defaults.name = `content ${el_index}`;
                     break;
 
                 case 'Animation':
-                    name = `anim ${el_index}`;
+                    defaults.name = `anim ${el_index}`;
                     break;
             }
 
-            element = new ELEMENT_TYPES[type](Object.assign({
-                    'name': name,
-                }, element))
+            element = new ELEMENT_TYPES[type](Object.assign(defaults, element))
                 .appendTo(this)
                 .init();
+        }
+
+        if(this.isActive()){
+            element.activate();
         }
 
         if(supressEvent !== true){

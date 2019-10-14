@@ -160,12 +160,12 @@ export default class Timeline extends Dom {
                 track
                     .addClass('dragover', above)
                     .toggleClass('drag-above', above)
-                    .toggleClass('drag-under', !above);
+                    .toggleClass('drag-below', !above);
 
                 handle
                     .addClass('dragover', above)
                     .toggleClass('drag-above', above)
-                    .toggleClass('drag-under', !above);
+                    .toggleClass('drag-below', !above);
 
                 evt.preventDefault();
             }
@@ -186,12 +186,12 @@ export default class Timeline extends Dom {
 
             track
                 .removeClass('dragover')
-                .removeClass('drag-under')
+                .removeClass('drag-below')
                 .removeClass('drag-above');
 
             handle
                 .removeClass('dragover')
-                .removeClass('drag-under')
+                .removeClass('drag-below')
                 .removeClass('drag-above');
 
             evt.preventDefault();
@@ -209,34 +209,29 @@ export default class Timeline extends Dom {
             const component_id = Dom.data(evt.target, 'component');
             const track = this.getTrack(component_id);
             const handle = track.getHandle();
+            const handle_parent = handle.parents();
 
             const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
             const dragging_track = this.getTrack(dragging_component_id);
             const dragging_handle = dragging_track.getHandle();
 
-            const track_parent = track.parents();
-            const handle_parent = handle.parents();
-            const above = track.hasClass('drag-above');
-
             const index = handle_parent.children('.handle').index('.dragover');
+            const above = track.hasClass('drag-above');
+            const position = above ? index : index + 1;
 
-            if(above){
-                dragging_track.insertAt(track_parent, index);
-                dragging_handle.insertAt(handle_parent, index);
-            }
-            else{
-                dragging_track.insertAt(track_parent, index + 1);
-                dragging_handle.insertAt(handle_parent, index + 1);
-            }
+            dragging_track.insertAt(dragging_track.parents(), position);
+            dragging_handle.insertAt(dragging_handle.parents(), position);
+
+            this.triggerEvent('trackdrop', {'component': dragging_track.getComponent(), 'position': position});
 
             track
                 .removeClass('dragover')
-                .removeClass('drag-under')
+                .removeClass('drag-below')
                 .removeClass('drag-above');
 
             handle
                 .removeClass('dragover')
-                .removeClass('drag-under')
+                .removeClass('drag-below')
                 .removeClass('drag-above');
         }
 
@@ -411,8 +406,9 @@ export default class Timeline extends Dom {
             parent_track.getHandle().addDescendent(handle, index);
         }
         else{
-            track.appendTo(this.tracks_container_inner);
-            handle.appendTo(this.handles_container);
+            const index = component.parents().children().index(`#${component.getId()}`);
+            track.insertAt(this.tracks_container_inner, index);
+            handle.insertAt(this.handles_container, index);
         }
 
         this.tracks[component.getId()] = track;

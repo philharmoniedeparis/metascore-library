@@ -546,6 +546,22 @@ export default class Track extends Dom {
     /**
      * @inheritdoc
      */
+    show(){
+        this.getHandle().show();
+        super.show();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    hide(){
+        this.getHandle().hide();
+        super.hide();
+    }
+
+    /**
+     * @inheritdoc
+     */
     remove(){
         this.getHandle().remove();
         return super.remove();

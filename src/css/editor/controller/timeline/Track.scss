@@ -85,10 +85,16 @@
         opacity: 0.1;
     }
 
-    &.drag-above{
-        border-top: 2px solid purple;
-    }
-    &.drag-under{
-        border-bottom: 2px solid purple;
+    &.dragover{
+        * {
+            pointer-events: none;
+        }
+
+        &.drag-above{
+            border-top: 1px solid #FF00A6;
+        }
+        &.drag-below{
+            border-bottom: 1px solid #FF00A6;
+        }
     }
 }

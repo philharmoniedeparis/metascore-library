@@ -332,6 +332,10 @@ export default class Block extends Component {
             page.init();
         }
 
+        if(this.isActive()){
+            page.activate();
+        }
+
         if(supressEvent !== true){
             this.triggerEvent('componentadd', {'component': page, 'new': !existing});
         }
