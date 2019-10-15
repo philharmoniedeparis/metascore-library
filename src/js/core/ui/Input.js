@@ -191,7 +191,7 @@ export default class Input extends Dom{
         this.addClass('disabled');
 
         if(this.native_input){
-            this.native_input.attr('disabled', 'disabled');
+            this.native_input.attr('disabled', 'true');
         }
 
         return this;

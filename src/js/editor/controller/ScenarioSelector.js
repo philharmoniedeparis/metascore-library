@@ -47,7 +47,7 @@ export default class ScenarioSelector extends Dom {
             .appendTo(this);
 
         new Button({'icon': add_icon})
-            .attr('title', Locale.t('editor.controller.ScenarioSelector.add-button.title', 'Add a new scenario'))
+            .attr('title', Locale.t('editor.controller.ScenarioSelector.add.title', 'Add a new scenario'))
             .data('action', 'add')
             .appendTo(this);
 
@@ -55,8 +55,8 @@ export default class ScenarioSelector extends Dom {
             .addDelegate('button', 'click', this.onButtonClick.bind(this))
             .addDelegate('.list .item', 'click', this.onScenarioClick.bind(this));
 
-        const resize_observer = new ResizeObserver(this.onResize.bind(this));
-        resize_observer.observe(this.get(0));
+        const resize_observer = new ResizeObserver(this.onListResize.bind(this));
+        resize_observer.observe(this.list.get(0));
     }
 
     /**
@@ -67,15 +67,6 @@ export default class ScenarioSelector extends Dom {
     static getDefaults(){
         return {
         };
-    }
-
-    /**
-     * ResizeObserver callback
-     *
-     * @private
-     */
-    onResize() {
-        this.updateScrollButtons();
     }
 
     /**
@@ -107,7 +98,8 @@ export default class ScenarioSelector extends Dom {
 
             case 'add':
                 new Prompt({
-                    'text': Locale.t('editor.controller.ScenarioSelector.add-prompt.text', "Enter the scenario's name"),
+                    'text': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.text', "Enter the scenario's name"),
+                    'confirmLabel': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.confirmLabel', "Add"),
                     'onConfirm': this.onAddConfirm,
                     'onCancel': this.onAddCancel,
                     'autoHide': false,
@@ -163,6 +155,15 @@ export default class ScenarioSelector extends Dom {
     onScenarioClick(evt){
         const scenario = Dom.data(evt.target, 'scenario');
         this.setActiveScenario(scenario);
+    }
+
+    /**
+     * ResizeObserver callback
+     *
+     * @private
+     */
+    onListResize() {
+        this.updateScrollButtons();
     }
 
     /**
@@ -258,16 +259,13 @@ export default class ScenarioSelector extends Dom {
     }
 
     /**
-     * Remove multiple scenarios
+     * Clear the list of scenarios
      *
-     * @param {Array} scenarios A list of scenarios
-     * @param {Boolean} supressEvent Whether to prevent the scenarioremove event from firing
      * @return {this}
      */
-    removeScenarios(scenarios, supressEvent){
-        scenarios.forEach((scenario) => {
-            this.removeScenario(scenario, supressEvent);
-        });
+    clear(){
+        this.list.empty();
+        this.updateScrollButtons();
 
         return this;
     }

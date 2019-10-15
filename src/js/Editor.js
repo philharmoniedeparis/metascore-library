@@ -3,7 +3,7 @@
 import Dom from './core/Dom';
 import {getMediaFileDuration} from './core/utils/Media';
 import {MasterClock} from './core/media/Clock';
-import {isArray, isNumber} from './core/utils/Var';
+import {isArray} from './core/utils/Var';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -56,6 +56,12 @@ export default class Editor extends Dom {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        /**
+         * The dirty data keys
+         * @type {Object}
+         */
+        this.dirty = {};
 
         if(this.configs.container){
             this.appendTo(this.configs.container);
@@ -125,7 +131,9 @@ export default class Editor extends Dom {
          */
         this.mainmenu = new MainMenu()
             .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.checkbox.input[data-action="preview-toggle"]', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
+            .addDelegate('.input.title', 'valuechange', this.onMainmenuTitleChange.bind(this))
+            .addDelegate('.input[data-action="preview-toggle"]', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
+            .addDelegate('.input.revisions', 'valuechange', this.onMainmenuRevisionsChange.bind(this))
             .appendTo(top_pane.getContents());
 
         // Tools pane ////////////////////////
@@ -261,7 +269,7 @@ export default class Editor extends Dom {
             .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
-            .setDirty(false)
+            .setClean()
             .setEditing(false)
             .updateMainmenu()
             .setupContextMenus()
@@ -666,18 +674,28 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Guide saving success callback
+     * Save success callback
      *
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
-     * @param {Event} evt The event object
      */
-    onGuideSaveSuccess(loadmask){
+    onSaveSuccess(loadmask){
         loadmask.hide();
 
-        this
-            .setDirty(false)
-            .updateMainmenu();
+        this.setClean();
+        this.updateMainmenu();
+    }
+
+    /**
+     * Restore success callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     */
+    onRestoreSuccess(loadmask){
+        loadmask.hide();
+
+        this.loadPlayer();
     }
 
     /**
@@ -779,13 +797,13 @@ export default class Editor extends Dom {
     }
 
     onAssetBrowserAssetAdd(){
-        this.setDirty(true);
+        this.setDirty('assets');
 
         this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
     }
 
     onAssetBrowserAssetRemove(){
-        this.setDirty(true);
+        this.setDirty('assets');
 
         this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
     }
@@ -821,11 +839,18 @@ export default class Editor extends Dom {
     onMainmenuClick(evt){
         switch(Dom.data(evt.target, 'action')){
             case 'save':
-                this.saveGuide();
+                this.save();
                 break;
 
             case 'revert':
-                this.showRevertDialog();
+                new Confirm({
+                    'text': Locale.t('editor.onMainmenuClick.revert.text', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+                    'confirmLabel': Locale.t('editor.onMainmenuClick.revert.confirmLabel', 'Revert'),
+                    'onConfirm': () => {
+                        this.loadPlayer();
+                    },
+                    'parent': this
+                });
                 break;
 
             case 'undo':
@@ -836,9 +861,34 @@ export default class Editor extends Dom {
                 this.history.redo();
                 break;
 
-            case 'settings':
+            case 'restore':
+                {
+                    const player = this.getPlayer();
+                    const text = Locale.t('editor.onMainmenuClick.restore.text', 'Are you sure you want to revert to revision @id from @date?', {
+                        '@id': player.getRevision(),
+                        '@date': new Date(player.getData('changed') * 1000).toLocaleDateString(),
+                    });
+
+                    new Confirm({
+                        'text': text,
+                        'confirmLabel': Locale.t('editor.onMainmenuClick.restore.confirmLabel', 'Restore'),
+                        'onConfirm': () => {
+                            this.save();
+                        },
+                        'parent': this
+                    });
+                }
                 break;
         }
+    }
+
+    /**
+     * Mainmenu title input valuechange event callback
+     *
+     * @private
+     */
+    onMainmenuTitleChange(){
+        this.setDirty('title');
     }
 
     /**
@@ -851,6 +901,29 @@ export default class Editor extends Dom {
         const value = evt.detail.value;
 
         this.setEditing(!value);
+    }
+
+    /**
+     * Mainmenu revisions input valuechange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMainmenuRevisionsChange(evt){
+        const vid = evt.detail.value;
+
+        if(this.isDirty()){
+            new Confirm({
+                'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
+                'onConfirm': () => {
+                    this.loadPlayer(vid);
+                },
+                'parent': this
+            });
+        }
+        else{
+            this.loadPlayer(vid);
+        }
     }
 
     /**
@@ -883,7 +956,7 @@ export default class Editor extends Dom {
             .addScenario(scenario)
             .setActiveScenario(scenario);
 
-        this.setDirty(true);
+        this.setDirty('scenarios');
     }
 
     /**
@@ -1203,82 +1276,86 @@ export default class Editor extends Dom {
      * @param {LoadMask} loadmask the loadmask to hide
      */
     onPlayerLoadSuccess(loadmask){
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(this.player.get(0))
-            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
-            .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
-            .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
-            .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
-            .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
-            .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
-            .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
-            .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
-            .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
-            .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
-            .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
-            .addListener('mousedown', this.onPlayerMousedown.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keyup', this.onKeyup.bind(this))
-            .addListener('click', this.onPlayerClick.bind(this))
+        this.player
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
 
+        // Update the title field
+        this.mainmenu.getItem('title').setValue(this.player.getData('title'), true);
+
+        // Update the revision selector
+        const revisions_select = this.mainmenu.getItem('revisions');
+        const current_vid = this.player.getData('vid');
+        this.player.getData('revisions').forEach((revision) => {
+            const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date by @author', {
+                '@id': revision.vid,
+                '@date': new Date(revision.created * 1000).toLocaleDateString(),
+                '@author': revision.author
+            });
+            revisions_select.addOption(revision.vid, text);
+        });
+        revisions_select
+            .setValue(current_vid, true)
+            .getOption(current_vid).attr('disabled', 'true');
+
+        // Update the asset browser
+        this.asset_browser.getGuideAssets()
+            .addAssets(this.player.getData('assets'), true)
+            .addAssets(this.player.getData('shared_assets'), true);
+
+        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+
+        // Update the timeline
+        const timeline = this.controller.getTimeline();
+        this.player.getRootComponents().forEach((component) => {
+            timeline.addTrack(component);
+        });
+
+        // Update the scenario list
+        this.controller.getScenarioSelector()
+            .clear()
+            .addScenarios(this.player.getScenarios(), true);
+
+        this.updateMainmenu();
+
+        if(this.player.getData('default_revision')){
             this.player
+                .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
+                .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+                .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
+                .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
+                .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
+                .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
+                .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
+                .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
+                .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
+                .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
+                .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
+                .addListener('mousedown', this.onPlayerMousedown.bind(this))
+                .addListener('keydown', this.onKeydown.bind(this))
+                .addListener('keyup', this.onKeyup.bind(this))
+                .addListener('click', this.onPlayerClick.bind(this))
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
                 .addListener('drop', this.onPlayerDrop.bind(this));
 
-            this
-                .setEditing(true)
-                .updateMainmenu();
-
-            this.player.contextmenu.disable();
-
+            // Add the editor's specific stylesheet
             const player_document = this.player_frame.get(0).contentWindow.document;
-
             new StyleSheet(player_css)
                 .appendTo(player_document.head);
 
+            // Replace the player context menu with the editor's one
+            this.player.contextmenu.disable();
             this.player_contextmenu
                 .setTarget(player_document.body)
                 .enable();
 
-            // Update the title field
-            this.mainmenu.getItem('title')
-                .setValue(this.player.getData('title'), true);
+            this.setEditing(true);
+        }
+        else{
+            this.setEditing(false);
+        }
 
-            // Update the revision selector
-            const revisions_select = this.mainmenu.getItem('revisions');
-            const current_vid = this.player.getData('vid');
-            this.player.getData('revisions').forEach((revision) => {
-                const date = new Date(revision.created * 1000);
-                const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date by @author', {
-                    '@id': revision.vid,
-                    '@date': date.toLocaleDateString(),
-                    '@author': revision.author
-                });
-                revisions_select.addOption(revision.vid, text);
-            });
-            revisions_select
-                .setValue(current_vid)
-                .getOption(current_vid).attr('disabled', 'true');
-
-            // Update the asset browser
-            this.asset_browser.getGuideAssets()
-                .addAssets(this.player.getData('assets'), true)
-                .addAssets(this.player.getData('shared_assets'), true);
-
-            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
-
-            // Update the timeline
-            const timeline = this.controller.getTimeline();
-            this.player.getRootComponents().forEach((component) => {
-                timeline.addTrack(component);
-            });
-
-            // Update the scenario list
-            this.controller.getScenarioSelector().addScenarios(this.player.getScenarios(), true);
-
-            loadmask.hide();
+        loadmask.hide();
     }
 
     /**
@@ -1637,8 +1714,8 @@ export default class Editor extends Dom {
      * @private
      */
     onHistoryAdd(){
-        this.setDirty(true)
-            .updateMainmenu();
+        this.setDirty('components');
+        this.updateMainmenu();
     }
 
     /**
@@ -1705,41 +1782,62 @@ export default class Editor extends Dom {
      */
     updateMainmenu() {
         const player = this.getPlayer();
-        const hasPlayer = player ? true : false;
+        const default_revision = player && player.getData('default_revision');
 
         this.mainmenu
-            .toggleItem('save', hasPlayer)
-            .toggleItem('preview-toggle', hasPlayer)
+            .toggleItem('save', default_revision)
+            .toggleItem('title', default_revision)
+            .toggleItem('preview-toggle', default_revision)
             .toggleItem('undo', this.history.hasUndo())
             .toggleItem('redo', this.history.hasRedo())
-            .toggleItem('revert', this.isDirty());
+            .toggleItem('revert', this.isDirty())
+            .toggleItem('restore', !default_revision);
 
         return this;
     }
 
     /**
-     * Set whether the guide is dirty
+     * Set data as dirty/modified
      *
-     * @param {Boolean} dirty Whether the guide is dirty
+     * @param {String} key The key corresponding to the dirty data
      * @return {this}
      */
-    setDirty(dirty){
-        /**
-         * Whether the guide has unsaved data
-         * @type {Boolean}
-         */
-        this.dirty = dirty;
+    setDirty(key){
+        this.dirty[key] = true;
 
         return this;
     }
 
     /**
-     * Check whether the guide is dirty
+     * Set data as clean/not modified
      *
-     * @return {Boolean} Whether the guide is dirty
+     * @param {String} key The key corresponding to the data; if undefined, all data will be set as clean
+     * @return {this}
      */
-    isDirty() {
-        return this.dirty;
+    setClean(key){
+        if(typeof key !== 'undefined'){
+            delete this.dirty[key];
+        }
+        else{
+            this.dirty = {};
+        }
+
+        return this;
+    }
+
+    /**
+     * Check whether there are unsaved data
+     *
+     * @param {String} key The key corresponding to the data; if undefined, checks whether any data is dirty
+     * @return {Boolean} Whether unsaved data exists
+     */
+    isDirty(key) {
+        if(typeof key !== 'undefined'){
+            return key in this.dirty && this.dirty[key];
+        }
+        else{
+            return Object.keys(this.dirty).length > 0;
+        }
     }
 
     /**
@@ -1754,20 +1852,27 @@ export default class Editor extends Dom {
     /**
      * Loads the player
      *
+     * @param {Number} [vid] The revision id to load; if undefined, the current revision will be loaded
      * @return {this}
      */
-    loadPlayer(){
+    loadPlayer(vid){
         const loadmask = new LoadMask({
             'parent': this
         });
 
         this.unloadPlayer();
 
+        const url = new URL(this.configs.player.url);
+        if(typeof vid !== 'undefined'){
+            const params = url.searchParams;
+            params.set('vid', vid);
+        }
+
         /**
          * The player's iframe
          * @type {Dom}
          */
-        this.player_frame = new Dom('<iframe/>', {'src': this.configs.player.url, 'class': 'player-frame'}).appendTo(this.workspace)
+        this.player_frame = new Dom('<iframe/>', {'src': url.toString(), 'class': 'player-frame'}).appendTo(this.workspace)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
 
@@ -1796,7 +1901,7 @@ export default class Editor extends Dom {
 
         this.history.clear();
 
-        this.setDirty(false)
+        this.setClean()
             .setEditing(false)
             .updateMainmenu();
 
@@ -1998,11 +2103,11 @@ export default class Editor extends Dom {
             }
 
             new Confirm({
-                'parent': this,
                 'text': alert_msg,
                 'onConfirm': () => {
                     this.deletePlayerComponents(type, components, false);
-                }
+                },
+                'parent': this
             })
             .addClass('delete-player-component');
         }
@@ -2203,49 +2308,65 @@ export default class Editor extends Dom {
      *
      * @return {this}
      */
-    saveGuide(){
+    save(){
         if(this.mainmenu.getItem('title').reportValidity()){
             const player = this.getPlayer();
             const data = new FormData();
+            const url = new URL(this.configs.player.update_url);
 
-            // Add title
-            data.append('title', this.mainmenu.getItem('title').getValue());
-
-            // Add scenarios
-            player.getScenarios().forEach((scenario) => {
-                data.append('scenarios[]', scenario);
-            });
-
-            // Add components
-            const components = player.getRootComponents();
-            components.forEach((component) => {
-                data.append('components[]', JSON.stringify(component.getPropertyValues()));
-            });
-
-            // Add assets
-            Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
-                data.append('assets[]', JSON.stringify(asset));
-            });
-
-            // add a loading mask
             const loadmask = new LoadMask({
                 'parent': this,
-                'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
+                'text': Locale.t('editor.save.LoadMask.text', 'Saving...'),
                 'bar': true
             });
 
-            // prepare the Ajax options object
             const options = Object.assign({}, this.configs.xhr, {
                 'data': data,
                 'responseType': 'json',
-                'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
                 'onError': this.onXHRError.bind(this, loadmask),
                 'autoSend': false
             });
 
-            const hundred = 100;
+            if(!player.getData('default_revision')){
+                // This is a restore operation
+                const params = url.searchParams;
+                params.set('vid', this.getPlayer().getRevision());
 
-            Ajax.PATCH(this.configs.player.update_url, options)
+                options.onSuccess = this.onRestoreSuccess.bind(this, loadmask);
+            }
+            else{
+                options.onSuccess = this.onSaveSuccess.bind(this, loadmask);
+
+                // Add title
+                if(this.isDirty('title')){
+                    data.append('title', this.mainmenu.getItem('title').getValue());
+                }
+
+                // Add scenarios
+                if(this.isDirty('scenarios')){
+                    player.getScenarios().forEach((scenario) => {
+                        data.append('scenarios[]', scenario);
+                    });
+                }
+
+                // Add components
+                if(this.isDirty('components')){
+                    const components = player.getRootComponents();
+                    components.forEach((component) => {
+                        data.append('components[]', JSON.stringify(component.getPropertyValues()));
+                    });
+                }
+
+                // Add assets
+                if(this.isDirty('assets')){
+                    Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
+                        data.append('assets[]', JSON.stringify(asset));
+                    });
+                }
+            }
+
+            const hundred = 100;
+            Ajax.PATCH(url.toString(), options)
                 .addUploadListener('loadstart', () => {
                     loadmask.setProgress(0);
                 })
@@ -2262,20 +2383,5 @@ export default class Editor extends Dom {
         }
 
         return this;
-    }
-
-    /**
-     * Show a confirm dialog to revert the guide to its last saved version
-     *
-     * @return {this}
-     */
-    showRevertDialog(){
-        new Confirm({
-            'parent': this,
-            'text': Locale.t('editor.onMainmenuClick.revert.msg', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-            'onConfirm': () => {
-                this.loadPlayer();
-            }
-        });
     }
 }

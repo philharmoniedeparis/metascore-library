@@ -1,0 +1,17 @@
+@import "../../../theme";
+
+:local(.className){
+    > .inner{
+        > .buttons{
+            button{
+                &[data-action="confirm"]{
+                    background: #fff;
+                }
+
+                &[data-action="cancel"]{
+                    background: $mediumgray;
+                }
+            }
+        }
+    }
+}

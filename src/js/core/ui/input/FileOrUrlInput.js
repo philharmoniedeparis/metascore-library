@@ -293,7 +293,7 @@ export default class FileOrUrlInput extends Input {
         const inputs = this.inputs.children('.input');
 
         inputs.hide()
-            .children('input').attr('disabled', 'disabled');
+            .children('input').attr('disabled', 'true');
 
         inputs.filter(`[data-source="${source}"`).show()
             .children('input').attr('disabled', null);
@@ -315,7 +315,7 @@ export default class FileOrUrlInput extends Input {
     disable() {
         super.disable();
 
-        this.inputs.children('input').attr('disabled', 'disabled');
+        this.inputs.children('input').attr('disabled', 'true');
 
         return this;
     }

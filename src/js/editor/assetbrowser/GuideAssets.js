@@ -464,7 +464,8 @@ export default class GuideAssets extends Dom {
             case 'delete':
                 new Confirm({
                     'parent': this,
-                    'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.msg', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
+                    'confirmLabel': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.confirmLabel', 'Delete'),
                     'onConfirm': () => {
                         this.removeAsset(asset);
                     }

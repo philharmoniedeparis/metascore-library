@@ -30,10 +30,8 @@ export default class Prompt extends Confirm{
         return Object.assign({}, super.getDefaults(), {
             'default': '',
             'placeholder': '',
-            'buttons': {
-                'confirm': Locale.t('core.Prompt.buttons.confirm', 'OK'),
-                'cancel': Locale.t('core.Prompt.buttons.cancel', 'Cancel')
-            },
+            'confirmLabel': Locale.t('core.Prompt.confirmLabel', 'OK'),
+            'cancelLabel': Locale.t('core.Prompt.cancelLabel', 'Cancel'),
         });
     }
 

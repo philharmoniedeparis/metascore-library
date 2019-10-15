@@ -735,14 +735,14 @@ export default class TimeInput extends Input {
         super.disable();
 
         if(this.clear_button){
-            this.clear_button.attr('disabled', 'disabled');
+            this.clear_button.attr('disabled', 'true');
         }
 
         if(this.in_button){
-            this.in_button.attr('disabled', 'disabled');
+            this.in_button.attr('disabled', 'true');
         }
         if(this.out_button){
-            this.out_button.attr('disabled', 'disabled');
+            this.out_button.attr('disabled', 'true');
         }
 
         return this;

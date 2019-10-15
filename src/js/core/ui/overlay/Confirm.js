@@ -2,6 +2,8 @@ import Overlay from '../Overlay';
 import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
 
+import {className} from '../../../../css/core/ui/overlay/Confirm.scss';
+
 /**
  * A confirm overlay to show a simple message with yes/no buttons
  */
@@ -11,12 +13,16 @@ export default class Confirm extends Overlay{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [text=''] The message's text
+     * @property {String} [confirmLabel='Yes'] The confirm button's label
+     * @property {String} [cancelLabel='No'] The cancel button's label
      */
     constructor(configs){
         super(configs);
 
-        this.addClass(`confirm`);
+        this.addButton('confirm', this.configs.confirmLabel);
+        this.addButton('cancel', this.configs.cancelLabel);
+
+        this.addClass(`confirm ${className}`);
     }
 
     /**
@@ -26,10 +32,8 @@ export default class Confirm extends Overlay{
     */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'buttons': {
-                'confirm': Locale.t('core.Confirm.buttons.yes', 'Yes'),
-                'cancel': Locale.t('core.Confirm.buttons.no', 'No')
-            },
+            'confirmLabel': Locale.t('core.Confirm.confirmLabel', 'Yes'),
+            'cancelLabel': Locale.t('core.Confirm.cancelLabel', 'No'),
             'onConfirm': null,
             'onCancel': null
         });

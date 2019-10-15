@@ -93,7 +93,7 @@ export default class Button extends Dom {
      * @return {this}
      */
     disable() {
-        this.attr('disabled', '');
+        this.attr('disabled', 'true');
 
         return this;
     }
