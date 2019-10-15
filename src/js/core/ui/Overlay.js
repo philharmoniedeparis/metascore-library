@@ -118,6 +118,8 @@ export default class Overlay extends Dom {
                 this.addButton(action, label);
             });
         }
+
+        this.addListener('keyup', this.onKeyup.bind(this));
     }
 
     /**
@@ -215,6 +217,20 @@ export default class Overlay extends Dom {
      */
     onCloseClick(){
         this.hide();
+    }
+
+    /**
+     * The keyup event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onKeyup(evt){
+        if(evt.key === "Escape") {
+            this.hide();
+
+            evt.stopPropagation();
+        }
     }
 
 }

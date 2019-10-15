@@ -77,7 +77,12 @@ export default class Prompt extends Confirm{
     onInputKeypress(evt){
         if(evt.key === "Enter") {
             this.onConfirmClick();
-            this.hide();
+
+            if(this.configs.autoHide){
+                this.hide();
+            }
+
+            evt.stopPropagation();
         }
     }
 
