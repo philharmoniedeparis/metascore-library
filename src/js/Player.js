@@ -573,14 +573,14 @@ export default class Player extends Dom {
 
         this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
 
-        this.data.blocks.forEach((block) => {
-            switch(block.type){
+        this.data.components.forEach((component) => {
+            switch(component.type){
                 case 'Media':
                     /**
                      * The media block
                      * @type {Media}
                      */
-                    this.media = this.addMedia(Object.assign({}, block, {'type': this.data.media.type}))
+                    this.media = this.addMedia(Object.assign({}, component, {'type': this.data.media.type}))
                         .setSource(this.data.media);
                     break;
 
@@ -589,15 +589,15 @@ export default class Player extends Dom {
                      * The controller block
                      * @type {Controller}
                      */
-                    this.controller = this.addController(block);
+                    this.controller = this.addController(component);
                     break;
 
                 case 'BlockToggler':
-                    this.addBlockToggler(block);
+                    this.addBlockToggler(component);
                     break;
 
                 default:
-                    this.addBlock(block);
+                    this.addBlock(component);
             }
         });
 

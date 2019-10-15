@@ -2216,10 +2216,10 @@ export default class Editor extends Dom {
                 data.append('scenarios[]', scenario);
             });
 
-            // Add blocks
+            // Add components
             const components = player.getRootComponents();
             components.forEach((component) => {
-                data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
+                data.append('components[]', JSON.stringify(component.getPropertyValues()));
             });
 
             // Add assets
