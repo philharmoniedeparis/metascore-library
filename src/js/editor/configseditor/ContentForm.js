@@ -22,6 +22,7 @@ export default class ContentForm extends ElementForm {
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
         this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
+        this.onComponentDragOver = this.onComponentDragOver.bind(this);
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
         this.addClass(`content-form ${className}`);
@@ -132,6 +133,16 @@ export default class ContentForm extends ElementForm {
     }
 
     /**
+     * The component's dragover event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentDragOver(evt){
+        evt.currentTarget.focus();
+    }
+
+    /**
      * The component's contents key event handler
      *
      * @private
@@ -179,6 +190,7 @@ export default class ContentForm extends ElementForm {
         new Dom(component.contents.get(0))
             .attr('contenteditable', 'true')
             .addListener('click', this.onComponentContentsClick)
+            .addListener('dragover', this.onComponentDragOver)
             .addListener('keydown', this.onComponentContentsKey)
             .addListener('keypress', this.onComponentContentsKey)
             .addListener('keyup', this.onComponentContentsKey);
@@ -221,6 +233,7 @@ export default class ContentForm extends ElementForm {
         new Dom(component.contents.get(0))
             .attr('contenteditable', null)
             .removeListener('click', this.onComponentContentsClick)
+            .removeListener('dragover', this.onComponentDragOver)
             .removeListener('keydown', this.onComponentContentsKey)
             .removeListener('keypress', this.onComponentContentsKey)
             .removeListener('keyup', this.onComponentContentsKey);
