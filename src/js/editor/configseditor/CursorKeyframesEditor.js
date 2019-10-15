@@ -144,7 +144,7 @@ export default class CursorKeyframesEditor extends Dom {
          */
         this.contextmenu = new ContextMenu({'target': component_dom, 'items': {
             'add-cursor-keyframe': {
-                'text': Locale.t('editor.contextmenu.add-cursor-keyframe', 'Add keyframe'),
+                'text': Locale.t('editor.contextmenu.add-cursor-keyframe', 'Add a position'),
                 'callback': (context) => {
                     const mouse_position = this.getRelativeMousePosition(context.x, context.y);
                     const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
@@ -157,7 +157,7 @@ export default class CursorKeyframesEditor extends Dom {
                 }
             },
             'delete-cursor-keyframe': {
-                'text': Locale.t('editor.contextmenu.delete-cursor-keyframe', 'Delete keyframe'),
+                'text': Locale.t('editor.contextmenu.delete-cursor-keyframe', 'Delete position'),
                 'callback': () => {
                     // Check if there is a keyframe at that position.
                     const found = this.keyframes.findIndex((keyframe) => {

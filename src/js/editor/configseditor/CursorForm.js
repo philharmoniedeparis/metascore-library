@@ -180,7 +180,7 @@ export default class CursorForm extends ElementForm {
 
             case 'keyframes':
                 this.keyframes_toggle = new CheckboxInput({
-                        'label': Locale.t('editor.configseditor.CursorForm.keyframes-toggle.label', 'Record cursor positions')
+                        'label': Locale.t('editor.configseditor.CursorForm.keyframes-toggle.label', 'Record positions')
                     })
                     .addClass('toggle-button')
                     .addClass('keyframes-toggle')
