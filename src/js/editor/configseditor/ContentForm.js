@@ -85,6 +85,15 @@ export default class ContentForm extends ElementForm {
                     .addClass('contents-toggle')
                     .addListener('valuechange', this.onContentsToggleValueChange.bind(this))
                     .appendTo(this.fields_wrapper);
+
+                this.wysiwyg_container = new Dom('<div/>', {'class': 'wysiwyg-container'})
+                    .appendTo(this.fields_wrapper);
+
+                new Dom('<div/>', {'id': 'wysiwyg-top'})
+                    .appendTo(this.wysiwyg_container);
+
+                new Dom('<div/>', {'id': 'wysiwyg-bottom'})
+                    .appendTo(this.wysiwyg_container);
                 break;
 
             default:
@@ -177,6 +186,8 @@ export default class ContentForm extends ElementForm {
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(component.get(0)).addClass('contents-unlocked');
 
+        this.addClass('contents-unlocked');
+
         if(supressEvent !== true){
             this.triggerEvent('contentsunlock', {'component': component});
         }
@@ -196,17 +207,6 @@ export default class ContentForm extends ElementForm {
 
         this.contents_toggle.setValue(false, true);
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.get(0)).removeClass('contents-unlocked');
-
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.contents.get(0))
-            .attr('contenteditable', null)
-            .removeListener('click', this.onComponentContentsClick)
-            .removeListener('keydown', this.onComponentContentsKey)
-            .removeListener('keypress', this.onComponentContentsKey)
-            .removeListener('keyup', this.onComponentContentsKey);
-
         const draggable = component.getDraggable();
         if(draggable){
             draggable.enable();
@@ -216,6 +216,19 @@ export default class ContentForm extends ElementForm {
         if(resizable){
             resizable.enable();
         }
+
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.contents.get(0))
+            .attr('contenteditable', null)
+            .removeListener('click', this.onComponentContentsClick)
+            .removeListener('keydown', this.onComponentContentsKey)
+            .removeListener('keypress', this.onComponentContentsKey)
+            .removeListener('keyup', this.onComponentContentsKey);
+
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0)).removeClass('contents-unlocked');
+
+        this.removeClass('contents-unlocked');
 
         if(supressEvent !== true){
             this.triggerEvent('contentslock', {'component': component});

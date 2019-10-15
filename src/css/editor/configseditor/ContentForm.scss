@@ -20,4 +20,18 @@
             }
         }
     }
+
+    &.contents-unlocked{
+        .fields{
+            > .field,
+            > .field-group{
+                display: none;
+            }
+
+            .contents-toggle,
+            .wysiwyg-container{
+                display: block;
+            }
+        }
+    }
 }

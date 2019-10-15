@@ -419,7 +419,7 @@ export default class ComponentForm extends Dom {
                 break;
 
             case 'border': {
-                    const border_fields_wrapper = new Dom('<div/>', {'class': 'border-fields'})
+                    const border_fields_wrapper = new Dom('<div/>', {'class': 'field-group border'})
                         .appendTo(this.fields_wrapper);
 
                     const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border')})

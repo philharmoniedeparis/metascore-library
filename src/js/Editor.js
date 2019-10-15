@@ -152,9 +152,6 @@ export default class Editor extends Dom {
             .addClass('center-pane')
             .appendTo(this);
 
-        new Dom('<div/>', {'id': 'wysiwyg-top'})
-            .appendTo(center_pane.getContents());
-
         /**
          * The workspace
          * @type {Dom}
@@ -191,9 +188,6 @@ export default class Editor extends Dom {
         this.grid = new Grid()
             .appendTo(this.workspace)
             .init();
-
-        new Dom('<div/>', {'id': 'wysiwyg-bottom'})
-            .appendTo(center_pane.getContents());
 
         // Config pane ////////////////////////
         const config_pane = new Pane({

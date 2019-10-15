@@ -1,7 +1,12 @@
 @import "../../theme";
 
 :local(.className){
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+
     h2{
+        flex: 0 0 auto;
         margin: 0;
         padding: 0.5em;
         font-size: 1em;
@@ -11,11 +16,13 @@
 
     .fields{
         display: flex;
+        overflow: auto;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
         padding: 0.5em;
         background: $lightgray;
+
 
         .input{
             &.text,
@@ -92,7 +99,7 @@
             }
         }
 
-        .border-fields{
+        .field-group{
             > label{
                 margin-right: 0.5em;
             }
@@ -101,10 +108,14 @@
                 label{
                     display: none;
                 }
+            }
 
-                &[data-property="border-width"]{
-                    width: 4em;
-                    margin-left: 0.5em;
+            &.border{
+                .field{
+                    &[data-property="border-width"]{
+                        width: 4em;
+                        margin-left: 0.5em;
+                    }
                 }
             }
         }
