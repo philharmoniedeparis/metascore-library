@@ -1248,20 +1248,9 @@ export default class Editor extends Dom {
                 .setTarget(player_document.body)
                 .enable();
 
-            this.asset_browser.getGuideAssets()
-                .addAssets(this.player.getData('assets'), true)
-                .addAssets(this.player.getData('shared_assets'), true);
-
-            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
-
-            // Update timeline
-            const timeline = this.controller.getTimeline();
-            this.player.getRootComponents().forEach((component) => {
-                timeline.addTrack(component);
-            });
-
-            // Update the scenario list
-            this.controller.getScenarioSelector().addScenarios(this.player.getScenarios(), true);
+            // Update the title field
+            this.mainmenu.getItem('title')
+                .setValue(this.player.getData('title'), true);
 
             // Update the revision selector
             const revisions_select = this.mainmenu.getItem('revisions');
@@ -1278,6 +1267,22 @@ export default class Editor extends Dom {
             revisions_select
                 .setValue(current_vid)
                 .getOption(current_vid).attr('disabled', 'true');
+
+            // Update the asset browser
+            this.asset_browser.getGuideAssets()
+                .addAssets(this.player.getData('assets'), true)
+                .addAssets(this.player.getData('shared_assets'), true);
+
+            this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+
+            // Update the timeline
+            const timeline = this.controller.getTimeline();
+            this.player.getRootComponents().forEach((component) => {
+                timeline.addTrack(component);
+            });
+
+            // Update the scenario list
+            this.controller.getScenarioSelector().addScenarios(this.player.getScenarios(), true);
 
             loadmask.hide();
     }
@@ -2205,57 +2210,62 @@ export default class Editor extends Dom {
      * @return {this}
      */
     saveGuide(){
-        const player = this.getPlayer();
-        const data = new FormData();
+        if(this.mainmenu.getItem('title').reportValidity()){
+            const player = this.getPlayer();
+            const data = new FormData();
 
-        // Add scenarios
-        player.getScenarios().forEach((scenario) => {
-            data.append('scenarios[]', scenario);
-        });
+            // Add title
+            data.append('title', this.mainmenu.getItem('title').getValue());
 
-        // Add blocks
-        const components = player.getRootComponents();
-        components.forEach((component) => {
-            data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
-        });
+            // Add scenarios
+            player.getScenarios().forEach((scenario) => {
+                data.append('scenarios[]', scenario);
+            });
 
-        // Add assets
-        Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
-            data.append('assets[]', JSON.stringify(asset));
-        });
+            // Add blocks
+            const components = player.getRootComponents();
+            components.forEach((component) => {
+                data.append('blocks[]', JSON.stringify(component.getPropertyValues()));
+            });
 
-        // add a loading mask
-        const loadmask = new LoadMask({
-            'parent': this,
-            'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
-            'bar': true
-        });
+            // Add assets
+            Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
+                data.append('assets[]', JSON.stringify(asset));
+            });
 
-        // prepare the Ajax options object
-        const options = Object.assign({}, this.configs.xhr, {
-            'data': data,
-            'responseType': 'json',
-            'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
-            'onError': this.onXHRError.bind(this, loadmask),
-            'autoSend': false
-        });
+            // add a loading mask
+            const loadmask = new LoadMask({
+                'parent': this,
+                'text': Locale.t('editor.saveGuide.LoadMask.text', 'Saving... (!percent%)'),
+                'bar': true
+            });
 
-        const hundred = 100;
+            // prepare the Ajax options object
+            const options = Object.assign({}, this.configs.xhr, {
+                'data': data,
+                'responseType': 'json',
+                'onSuccess': this.onGuideSaveSuccess.bind(this, loadmask),
+                'onError': this.onXHRError.bind(this, loadmask),
+                'autoSend': false
+            });
 
-        Ajax.PATCH(this.configs.player.update_url, options)
-            .addUploadListener('loadstart', () => {
-                loadmask.setProgress(0);
-            })
-            .addUploadListener('progress', (evt) => {
-                if (evt.lengthComputable) {
-                    const percent = Math.floor((evt.loaded / evt.total) * hundred);
-                    loadmask.setProgress(percent);
-                }
-            })
-            .addUploadListener('loadend', () => {
-                loadmask.setProgress(hundred);
-            })
-            .send();
+            const hundred = 100;
+
+            Ajax.PATCH(this.configs.player.update_url, options)
+                .addUploadListener('loadstart', () => {
+                    loadmask.setProgress(0);
+                })
+                .addUploadListener('progress', (evt) => {
+                    if (evt.lengthComputable) {
+                        const percent = Math.floor((evt.loaded / evt.total) * hundred);
+                        loadmask.setProgress(percent);
+                    }
+                })
+                .addUploadListener('loadend', () => {
+                    loadmask.setProgress(hundred);
+                })
+                .send();
+        }
 
         return this;
     }

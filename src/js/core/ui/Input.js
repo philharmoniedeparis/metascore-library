@@ -269,4 +269,12 @@ export default class Input extends Dom{
         return this;
     }
 
+    reportValidity(){
+        if(this.native_input){
+            return this.native_input.get(0).reportValidity();
+        }
+
+        return null;
+    }
+
 }

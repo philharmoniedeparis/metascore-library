@@ -2,6 +2,7 @@ import Dom from '../core/Dom';
 import Button from '../core/ui/Button';
 import Icon from '../core/ui/Icon';
 import Locale from '../core/Locale';
+import TextInput from '../core/ui/input/TextInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
 import SelectInput from '../core/ui/input/SelectInput';
 
@@ -46,7 +47,7 @@ export default class MainMenu extends Dom {
                 'icon': save_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.save', 'Save')
+                'title': Locale.t('editor.MainMenu.save.title', 'Save')
             })
             .data('action', 'save')
             .appendTo(this);
@@ -55,7 +56,7 @@ export default class MainMenu extends Dom {
                 'icon': revert_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.revert', 'Revert')
+                'title': Locale.t('editor.MainMenu.revert.title', 'Revert')
             })
             .data('action', 'revert')
             .appendTo(this);
@@ -64,7 +65,7 @@ export default class MainMenu extends Dom {
                 'icon': undo_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.undo', 'Undo')
+                'title': Locale.t('editor.MainMenu.undo.title', 'Undo')
             })
             .data('action', 'undo')
             .appendTo(this);
@@ -73,26 +74,37 @@ export default class MainMenu extends Dom {
                 'icon': redo_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.redo', 'Redo')
+                'title': Locale.t('editor.MainMenu.redo.title', 'Redo')
             })
             .data('action', 'redo')
             .appendTo(this);
 
-        this._items['preview-toggle'] = new CheckboxInput({
-                'icon': preview_toggle_icon
+        this._items.title = new TextInput({
+                'name': 'title',
+                'placeholder': Locale.t('editor.MainMenu.title.placeholder', 'Title'),
+                'required': true
             })
-            .attr({
-                'title': Locale.t('editor.MainMenu.preview-toggle', 'Toggle preview mode')
-            })
-            .data('action', 'preview-toggle')
+            .addClass('title')
             .appendTo(this);
 
-        this._items.revisions = new SelectInput()
-            .data('action', 'revisions')
+        this._items['preview-toggle'] = new CheckboxInput({
+                'icon': preview_toggle_icon,
+                'name': 'preview-toggle'
+            })
+            .attr({
+                'title': Locale.t('editor.MainMenu.preview-toggle.title', 'Toggle preview mode')
+            })
+            .addClass('preview-toggle')
+            .appendTo(this);
+
+        this._items.revisions = new SelectInput({
+                'name': 'revisions'
+            })
+            .addClass('revisions')
             .appendTo(this);
 
         this._items.restore = new Button({
-                'label': Locale.t('editor.MainMenu.restore', 'Restore')
+                'label': Locale.t('editor.MainMenu.restore.label', 'Restore')
             })
             .data('action', 'restore')
             .appendTo(this);
