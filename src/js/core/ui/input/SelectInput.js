@@ -1,6 +1,7 @@
 import Input from '../Input';
 import Icon from '../../ui/Icon';
 import Dom from '../../Dom';
+import Locale from '../../Locale';
 
 import arrow_icon from '../../../../img/core/ui/input/select/arrow.svg?sprite'
 import {className} from '../../../../css/core/ui/input/Select.scss';
@@ -32,7 +33,8 @@ export default class SelectInput extends Input {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'options': {},
-            'multiple': false
+            'multiple': false,
+            'emptyLabel': Locale.t('core.input.SelectInput.emptyLabel', '')
         });
     }
 
@@ -57,6 +59,10 @@ export default class SelectInput extends Input {
 
         if(this.configs.multiple){
             this.native_input.attr('multiple', '');
+        }
+
+        if(!this.configs.required){
+            this.addOption('', this.configs.emptyLabel);
         }
 
         Object.entries(this.configs.options).forEach(([value, text]) => {
@@ -145,6 +151,10 @@ export default class SelectInput extends Input {
      */
     clear() {
         this.native_input.empty();
+
+        if(!this.configs.required){
+            this.addOption('', this.configs.emptyLabel);
+        }
 
         return this;
     }

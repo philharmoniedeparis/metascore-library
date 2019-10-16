@@ -393,7 +393,9 @@ export default class ComponentForm extends Dom {
 
             case 'scenario':
                 this.fields[name] = new Field(
-                    new SelectInput(),
+                    new SelectInput({
+                        'required': true
+                    }),
                     {
                         'label': Locale.t('editor.configseditor.ComponentForm.fields.scenario.label', 'Scenario')
                     })

@@ -1,5 +1,4 @@
 import Dom from '../core/Dom';
-import Locale from '../core/Locale';
 import {isArray} from '../core/utils/Var';
 import ComponentForm from './configseditor/ComponentForm';
 import MediaForm from './configseditor/MediaForm';
@@ -203,8 +202,6 @@ export default class ConfigsEditor extends Dom {
                 const input = form.getField('background-image').getInput();
 
                 input.clear();
-
-                input.addOption('', Locale.t('editor.ConfigsEditor.image-fields.empty', ''));
 
                 Object.entries(options).forEach(([key, value]) => {
                     input.addOption(key, value);
