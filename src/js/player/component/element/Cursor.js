@@ -35,7 +35,10 @@ export default class Cursor extends Element {
                 },
                 'form': {
                     'type': 'string',
-                    'default': 'linear'
+                    'default': 'linear',
+                    'setter': function(value){
+                        this.data('form', value);
+                    }
                 },
                 'keyframes': {
                     'type': 'array',
