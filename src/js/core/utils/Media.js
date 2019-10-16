@@ -160,28 +160,6 @@ export function isValidMimeType(mimetype, accepted_mimetypes){
 }
 
 /**
- * Converts a given time from seconds to centiseconds
- *
- * @param {Number} time The time in seconds
- * @return {Number} The time in centiseconds
- */
-export function toCentiseconds(time){
-    const multiplier = 100;
-    return Math.round(parseFloat(time) * multiplier);
-}
-
-/**
- * Converts a given time from centiseconds to seconds
- *
- * @param {Number} time The time in centiseconds
- * @return {Number} The time in seconds
- */
-export function toSeconds(time){
-    const multiplier = 0.01;
-    return parseFloat(time) * multiplier;
-}
-
-/**
  * Formats a time to a string represetation
  *
  * @param {Number} time The time in centiseconds

@@ -13,7 +13,6 @@ import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
 import {isEmpty} from './core/utils/Var';
-import {toCentiseconds, toSeconds} from './core/utils/Media';
 
 /**
  * Provides the main Player class
@@ -223,7 +222,7 @@ export default class Player extends Dom {
                 break;
 
             case 'seek':
-                this.getMedia().setTime(toCentiseconds(params.seconds));
+                this.getMedia().setTime(params.seconds);
                 break;
 
             case 'page':
@@ -263,7 +262,7 @@ export default class Player extends Dom {
             case 'time':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
-                    'params': toSeconds(this.getMedia().getTime())
+                    'params': this.getMedia().getTime()
                 }), origin);
                 break;
 
@@ -288,7 +287,7 @@ export default class Player extends Dom {
                         this.addListener(params.type, (event) => {
                             source.postMessage(JSON.stringify({
                                 'callback': params.callback,
-                                'params': toSeconds(event.detail.media.getTime())
+                                'params': event.detail.media.getTime()
                             }), origin);
                         });
                         break;

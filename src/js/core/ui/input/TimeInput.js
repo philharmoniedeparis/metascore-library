@@ -18,7 +18,7 @@ const PARTS = [
     {
         "name": "hours",
         "regex": "[–0-9]{1,2}",
-        "multiplier": 360000,
+        "multiplier": 3600,
         "prefix": "",
         "suffix": "",
         "max_value": 99
@@ -26,7 +26,7 @@ const PARTS = [
     {
         "name": "minutes",
         "regex": "[–0-5]?[–0-9]",
-        "multiplier": 6000,
+        "multiplier": 60,
         "prefix": ":",
         "suffix": "",
         "max_value": 59
@@ -34,7 +34,7 @@ const PARTS = [
     {
         "name": "seconds",
         "regex": "[–0-5]?[–0-9]",
-        "multiplier": 100,
+        "multiplier": 1,
         "prefix": ":",
         "suffix": "",
         "max_value": 59
@@ -42,7 +42,7 @@ const PARTS = [
     {
         "name": "centiseconds",
         "regex": "[–0-9]{1,2}",
-        "multiplier": 1,
+        "multiplier": 1/100,
         "prefix": ".",
         "suffix": "",
         "max_value": 99
@@ -656,7 +656,7 @@ export default class TimeInput extends Input {
         let _value = value;
 
         if(_value !== null){
-            _value = parseInt(_value, 10);
+            _value = parseFloat(_value);
 
             if(this.min !== null){
                 _value = Math.max(_value, this.min);

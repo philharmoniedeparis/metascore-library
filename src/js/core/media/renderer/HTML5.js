@@ -1,7 +1,6 @@
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
-import {toCentiseconds, toSeconds} from '../../utils/Media';
 import Ajax from '../../Ajax';
 import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
@@ -417,7 +416,7 @@ export default class HTML5 extends Dom {
      * @return {this}
      */
     setTime(time) {
-        this.dom.currentTime = toSeconds(time);
+        this.dom.currentTime = time;
 
         return this;
     }
@@ -428,7 +427,7 @@ export default class HTML5 extends Dom {
      * @return {Number} The time in centiseconds
      */
     getTime() {
-        return toCentiseconds(this.dom.currentTime);
+        return this.dom.currentTime;
     }
 
     /**
@@ -437,7 +436,7 @@ export default class HTML5 extends Dom {
      * @return {Number} The duration in centiseconds
      */
     getDuration() {
-        return toCentiseconds(this.dom.duration);
+        return this.dom.duration;
     }
 
     /**
@@ -449,8 +448,8 @@ export default class HTML5 extends Dom {
         const buffered = [];
 
         for(let i = 0; i < this.dom.buffered.length; i++){
-            const start_x = toCentiseconds(this.dom.buffered.start(i));
-            const end_x = toCentiseconds(this.dom.buffered.end(i));
+            const start_x = this.dom.buffered.start(i);
+            const end_x = this.dom.buffered.end(i);
 
             buffered.push([start_x, end_x]);
         }

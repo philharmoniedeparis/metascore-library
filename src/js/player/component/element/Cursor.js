@@ -34,24 +34,6 @@ export default class Cursor extends Element {
                         return this.getPropertyValue('form') !== 'circular';
                     }
                 },
-                'start-time': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('start-time'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('start-time', isNaN(value) ? null : value);
-                    }
-                },
-                'end-time': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('end-time'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('end-time', isNaN(value) ? null : value);
-                    }
-                },
                 'form': {
                     'getter': function(){
                         const value = this.data('form');

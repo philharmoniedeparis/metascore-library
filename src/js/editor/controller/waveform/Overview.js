@@ -1,6 +1,5 @@
 import Dom from '../../../core/Dom';
 import {MasterClock} from '../../../core/media/Clock';
-import {toCentiseconds, toSeconds} from '../../../core/utils/Media';
 
 import {className} from '../../../../css/editor/controller/WaveformOverview.scss';
 
@@ -359,7 +358,7 @@ export default class Overview extends Dom {
      */
     getTimeAt(x){
         if(this.resampled_data){
-            return toCentiseconds(this.resampled_data.time(x));
+            return this.resampled_data.time(x);
         }
 
         const renderer = MasterClock.getRenderer();
@@ -378,7 +377,7 @@ export default class Overview extends Dom {
      */
     getPositionAt(time){
         if(this.resampled_data){
-            return this.resampled_data.at_time(toSeconds(time));
+            return this.resampled_data.at_time(time);
         }
 
         const renderer = MasterClock.getRenderer();

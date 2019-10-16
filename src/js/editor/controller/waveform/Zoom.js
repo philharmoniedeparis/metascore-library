@@ -2,7 +2,7 @@ import Dom from '../../../core/Dom';
 import {MasterClock} from '../../../core/media/Clock';
 import Button from '../../../core/ui/Button';
 import SliderInput from '../../../core/ui/input/SliderInput';
-import {toCentiseconds, toSeconds, formatTime} from '../../../core/utils/Media';
+import {formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
 import zoom_icon from '../../../../img/editor/controller/waveform/zoom.svg?sprite';
@@ -449,7 +449,7 @@ export default class Zoom extends Dom {
         let step = base;
 
         for (;;) {
-            step = toCentiseconds(base * steps[index]);
+            step = base * steps[index];
             const pixels = this.timeToPixels(step);
 
             if(pixels === null){
@@ -519,7 +519,7 @@ export default class Zoom extends Dom {
                 this.zoom_in_btn.toggleClass('disabled', clamped <= min);
                 this.zoom_slider.setValue(scale, true);
 
-                const offset = this.resampled_data.at_time(toSeconds(MasterClock.getTime())) - this.width/2;
+                const offset = this.resampled_data.at_time(MasterClock.getTime()) - this.width/2;
                 this.setOffset(offset, true);
             }
         }
@@ -722,7 +722,7 @@ export default class Zoom extends Dom {
      */
     centerToTime(time, supressEvent){
         if(this.resampled_data && this.width > 0){
-            const offset = this.resampled_data.at_time(toSeconds(time)) - this.width/2;
+            const offset = this.resampled_data.at_time(time) - this.width/2;
             this.setOffset(offset, false, supressEvent);
         }
 
@@ -737,7 +737,7 @@ export default class Zoom extends Dom {
      */
     getTimeAt(x){
         if(this.resampled_data){
-            return toCentiseconds(this.resampled_data.time(x + this.offset));
+            return this.resampled_data.time(x + this.offset);
         }
 
         const renderer = MasterClock.getRenderer();
@@ -756,7 +756,7 @@ export default class Zoom extends Dom {
      */
     getPositionAt(time){
         if(this.resampled_data){
-            return this.resampled_data.at_time(toSeconds(time)) - this.offset;
+            return this.resampled_data.at_time(time) - this.offset;
         }
 
         const renderer = MasterClock.getRenderer();
@@ -776,7 +776,7 @@ export default class Zoom extends Dom {
     timeToPixels(time){
         if(this.resampled_data){
             const adapter = this.resampled_data.adapter;
-            return Math.floor(toSeconds(time) * adapter.sample_rate / adapter.scale);
+            return Math.floor(time * adapter.sample_rate / adapter.scale);
         }
         else if(this.media){
             return Math.round(time / this.media.getDuration() * this.width);

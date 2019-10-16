@@ -1,5 +1,4 @@
 import Element from '../Element';
-import {toSeconds, toCentiseconds} from '../../../core/utils/Media';
 import {MasterClock} from '../../../core/media/Clock';
 import Lottie from 'lottie-web';
 
@@ -190,9 +189,9 @@ export default class Animation extends Element{
                 const reversed = this.getPropertyValue('reversed');
                 const current_time = MasterClock.getTime();
 
-                const time = toSeconds(current_time - start_time);
+                const time = current_time - start_time;
                 const total_frames = this.getTotalFrames();
-                const fps = total_frames / toSeconds(loop_duration);
+                const fps = total_frames / loop_duration;
                 let frame = (time * fps + (start_frame-1)) % total_frames;
 
                 if(reversed){
@@ -212,7 +211,7 @@ export default class Animation extends Element{
         if(!this.getPropertyValue('loop-duration')){
             const animation = this.getAnimation();
             if(animation){
-                this.setPropertyValue('loop-duration', toCentiseconds(animation.getDuration()));
+                this.setPropertyValue('loop-duration', animation.getDuration());
             }
         }
 
@@ -295,7 +294,7 @@ export default class Animation extends Element{
         const animation = this.getAnimation();
 
         if(animation && this._loaded){
-            const duration = toCentiseconds(animation.getDuration());
+            const duration = animation.getDuration();
             const loop_duration = this.getPropertyValue('loop-duration');
 
             animation.setSpeed(duration/loop_duration);
