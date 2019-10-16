@@ -23,132 +23,89 @@ export default class Block extends Component {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'getter': function(){
-                        return this.constructor.getType();
-                    }
+                    'type': 'string'
                 },
                 'name': {
-                    'getter': function(){
-                        return this.data('name');
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.data('name', value);
                     }
                 },
                 'hidden': {
-                    'getter': function(){
-                        return this.data('hidden') === "true";
-                    },
+                    'type': 'boolean',
                     'setter': function(value){
-                        this.data('hidden', value ? "true" : null);
+                        this.toggleClass('hidden', value);
                     }
                 },
                 'scenario': {
-                    'getter': function(){
-                        return this.data('scenario');
-                    },
-                    'setter': function(value){
-                        this.data('scenario', value);
-                    }
+                    'type': 'string'
                 },
                 'x': {
-                    'getter': function(){
-                        return parseInt(this.css('left'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('left', `${value}px`);
                     }
                 },
                 'y': {
-                    'getter': function(){
-                        return parseInt(this.css('top'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('top', `${value}px`);
                     },
                 },
                 'width': {
-                    'getter': function(){
-                        return parseInt(this.css('width'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('width', `${value}px`);
                     }
                 },
                 'height': {
-                    'getter': function(){
-                        return parseInt(this.css('height'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('height', `${value}px`);
                     }
                 },
                 'background-color': {
-                    'getter': function(skipDefault){
-                        return this.css('background-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('background-color', value);
                     }
                 },
                 'background-image': {
-                    'getter': function(skipDefault){
-                        let value = this.css('background-image', void 0, skipDefault);
-
-                        if(value === 'none' || !isString(value)){
-                            return null;
-                        }
-
-                        value = value.replace(/^url\(["']?/, '');
-                        value = value.replace(/["']?\)$/, '');
-                        value = value.replace(document.baseURI, '');
-
-                        return value;
-                    },
+                    'type': 'image',
                     'setter': function(value){
                         const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
                         this.css('background-image', css_value);
                     }
                 },
                 'border-width': {
-                    'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
-                        return isNaN(value) ? null : value;
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('border-width', `${value}px`);
                     }
                 },
                 'border-color': {
-                    'getter': function(skipDefault){
-                        return this.css('border-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('border-color', value);
                     }
                 },
                 'border-radius': {
-                    'getter': function(skipDefault){
-                        return this.css('border-radius', void 0, skipDefault);
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.css('border-radius', value);
                     }
                 },
                 'synched': {
-                    'getter': function(){
-                        return this.data('synched') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('synched', value);
-                    }
+                    'type': 'boolean',
+                    'default': false
                 },
                 'pages': {
-                    'getter': function(skipDefault, skipID){
+                    'type': 'array',
+                    'getter': function(skipID){
                         const pages = [];
 
                         this.getChildren().forEach((page) => {
-                            pages.push(page.getPropertyValues(skipDefault, skipID));
+                            pages.push(page.getPropertyValues(skipID));
                         });
 
                         return pages;

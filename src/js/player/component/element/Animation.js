@@ -39,47 +39,21 @@ export default class Animation extends Element{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'src': {
-                    'getter': function(){
-                        return this.data('src');
-                    },
-                    'setter': function(value){
-                        this.data('src', value);
-                    }
+                    'type': 'string'
                 },
                 'start-frame': {
-                    'getter': function(){
-                        const value = parseInt(this.data('start-frame'), 10);
-                        return isNaN(value) ? 0 : value;
-                    },
-                    'setter': function(value){
-                        this.data('start-frame', value);
-                    }
+                    'type': 'number',
+                    'default': 1
                 },
                 'loop-duration': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('loop-duration'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('loop-duration', isNaN(value) ? null : value);
-                    }
+                    'type': 'time'
                 },
                 'reversed': {
-                    'getter': function(){
-                        return this.data('reversed') === "true";
-                    },
-                    'setter': function(value){
-                        this.data('reversed', value ? "true" : null);
-                    }
+                    'type': 'boolean',
+                    'default': false
                 },
                 'colors': {
-                    'getter': function(){
-                        const value = this.data('colors');
-                        return value ? value : null;
-                    },
-                    'setter': function(value){
-                        this.data('colors', value);
-                    }
+                    'type': 'array'
                 }
             })
         });

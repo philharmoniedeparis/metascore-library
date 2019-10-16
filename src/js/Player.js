@@ -579,7 +579,7 @@ export default class Player extends Dom {
                      * The media block
                      * @type {Media}
                      */
-                    this.media = this.addMedia(Object.assign({}, component, {'type': this.data.media.type}))
+                    this.media = this.addMedia(Object.assign({}, component, {'tag': this.data.media.type}))
                         .setSource(this.data.media);
                     break;
 

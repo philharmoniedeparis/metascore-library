@@ -382,8 +382,8 @@ body{
             outline: none;
         }
 
-        &[data-hidden="true"]{
-            display: none !important;
+        &.hidden{
+            display: none;
         }
     }
 

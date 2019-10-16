@@ -60,7 +60,7 @@ export default class HTML5 extends Dom {
     */
     static getDefaults(){
         return {
-            'type': 'audio'
+            'tag': 'audio'
         };
     }
 
@@ -121,7 +121,7 @@ export default class HTML5 extends Dom {
          * The <video> or <audio> element
          * @type {Dom}
          */
-        this.el = new Dom(`<${this.configs.type}></${this.configs.type}/>`, {'preload': 'auto'})
+        this.el = new Dom(`<${this.configs.tag}></${this.configs.tag}/>`, {'preload': 'auto'})
             .addListener('error', this.onError.bind(this), true)
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
             .addListener('play', this.onPlay.bind(this))

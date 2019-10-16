@@ -54,6 +54,12 @@ export default class Component extends Dom {
          */
         this.configs = Object.assign({}, defaults, configs);
 
+        /**
+         * The property values store
+         * @type {Object}
+         */
+        this.property_values = {};
+
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
 
@@ -69,13 +75,12 @@ export default class Component extends Dom {
     */
     static getDefaults(){
         return {
-            'id': `component-${uuid(10)}`,
-            'index': null,
             'draggable': true,
             'resizable': true,
             'properties': {
                 'id': {
                     'type': 'string',
+                    'default': `component-${uuid(10)}`,
                     'getter': function(){
                         return this.attr('id');
                     },
@@ -229,26 +234,27 @@ export default class Component extends Dom {
      * Get the value of a given property
      *
      * @param {String} name The name of the property
+     * @param {Boolean} [skipID=false] Whether to skip the 'id' property, see getPropertyValues
      * @return {Mixed} The value of the property
      */
-    getPropertyValue(name){
-        if(this.hasProperty(name)){
-            const prop = this.getProperty(name);
-
-            if('getter' in prop){
-                const selected = this.hasClass('selected');
-
-                if(selected){
-                    this.removeClass('selected');
+    getPropertyValue(name, skipID){
+        const prop = this.getProperty(name);
+        if(prop){
+            if(!('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(this)){
+                // Return the value retreived from the property's getter.
+                if('getter' in prop){
+                    return prop.getter.call(this, skipID);
                 }
 
-                const value = prop.getter.call(this);
-
-                if(selected){
-                    this.addClass('selected');
+                // Return the stored value
+                if(name in this.property_values){
+                    return this.property_values[name];
                 }
 
-                return value;
+                // Return the default value
+                if('default' in prop){
+                    return prop.default;
+                }
             }
         }
 
@@ -258,43 +264,23 @@ export default class Component extends Dom {
     /**
      * Get the values of all properties
      *
-     * @param {Boolean} [skipDefaults=true] Whether to skip properties that have the default value
      * @param {Boolean} [skipID=false] Whether to skip the 'id' property, usefull when cloning
      * @return {Object} The values of the properties as name/value pairs
      */
-    getPropertyValues(skipDefaults, skipID){
+    getPropertyValues(skipID){
         const values = {};
-        const _skipDefaults = (typeof skipDefaults === "undefined") ? true : skipDefaults;
-        const selected = this.hasClass('selected');
 
-        if(selected){
-            this.removeClass('selected');
-        }
-
-		Object.entries(this.getProperties()).forEach(([name, prop]) => {
+		Object.keys(this.getProperties()).forEach((name) => {
             // Skip if this is an id property and the skipID argument is true.
             if(skipID === true && name === 'id'){
                 return;
             }
 
-            // Skip if this property does not apply.
-            if('applies' in prop && isFunction(prop.applies) && !prop.applies.call(this)){
-                return;
-            }
-
-            // Return the value retreived from the property's getter.
-            if('getter' in prop){
-                const value = prop.getter.call(this, _skipDefaults, skipID);
-
-                if(value !== null){
-                    values[name] = value;
-                }
+            const value = this.getPropertyValue(name, skipID);
+            if(value !== null){
+                values[name] = value;
             }
         });
-
-        if(selected){
-            this.addClass('selected');
-        }
 
         return values;
     }
@@ -308,12 +294,21 @@ export default class Component extends Dom {
      * @return {this}
      */
     setPropertyValue(name, value, supressEvent){
-        if(name in this.configs.properties && 'setter' in this.configs.properties[name]){
+        const prop = this.getProperty(name);
+        if(prop){
             const old_value = this.getPropertyValue(name);
 
-            // Only update if the value has changed
             if(old_value !== value){
-                this.configs.properties[name].setter.call(this, value);
+                if(value === null){
+                    delete this.property_values[name];
+                }
+                else{
+                    this.property_values[name] = value;
+                }
+
+                if('setter' in prop && isFunction(prop.setter)){
+                    prop.setter.call(this, value);
+                }
 
                 if(supressEvent !== true){
                     this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});

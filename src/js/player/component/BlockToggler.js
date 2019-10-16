@@ -1,6 +1,5 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import {isArray, isString, isEmpty} from '../../core/utils/Var';
 
 /**
  * A block toggler component
@@ -18,111 +17,70 @@ export default class BlockToggler extends Component{
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'getter': function(){
-                        return this.constructor.getType();
-                    }
+                    'type': 'string'
                 },
                 'name': {
-                    'getter': function(){
-                        return this.data('name');
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.data('name', value);
                     }
                 },
                 'hidden': {
-                    'getter': function(){
-                        return this.data('hidden') === "true";
-                    },
+                    'type': 'boolean',
                     'setter': function(value){
-                        this.data('hidden', value ? "true" : null);
+                        this.toggleClass('hidden', value);
                     }
                 },
                 'scenario': {
-                    'getter': function(){
-                        return this.data('scenario');
-                    },
-                    'setter': function(value){
-                        this.data('scenario', value);
-                    }
+                    'type': 'string'
                 },
                 'blocks': {
-                    'getter': function(){
-                        const value = this.data('blocks');
-                        if(isString(value)){
-                            return value.split(',').filter((el) => {
-                                return !isEmpty(el);
-                            });
-                        }
-                        // Return null if the data-blocks attribute doesn't exist for backwards compatibility.
-                        // See Player.updateBlockToggler
-                        return null;
-                    },
-                    'setter': function(value){
-                        this.data('blocks', isArray(value) ? value.join(',') : null);
-                    }
+                    'type': 'array'
                 },
                 'x': {
-                    'getter': function(){
-                        return parseInt(this.css('left'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('left', `${value}px`);
                     }
                 },
                 'y': {
-                    'getter': function(){
-                        return parseInt(this.css('top'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('top', `${value}px`);
-                    }
+                    },
                 },
                 'width': {
-                    'getter': function(){
-                        return parseInt(this.css('width'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('width', `${value}px`);
                     }
                 },
                 'height': {
-                    'getter': function(){
-                        return parseInt(this.css('height'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('height', `${value}px`);
                     }
                 },
                 'background-color': {
-                    'getter': function(skipDefault){
-                        return this.css('background-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('background-color', value);
                     }
                 },
                 'border-width': {
-                    'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
-                        return isNaN(value) ? null : value;
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('border-width', `${value}px`);
                     }
                 },
                 'border-color': {
-                    'getter': function(skipDefault){
-                        return this.css('border-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('border-color', value);
                     }
                 },
                 'border-radius': {
-                    'getter': function(skipDefault){
-                        return this.css('border-radius', void 0, skipDefault);
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.css('border-radius', value);
                     }

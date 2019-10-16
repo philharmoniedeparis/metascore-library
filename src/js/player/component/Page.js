@@ -1,5 +1,4 @@
 import Component from '../Component';
-import {MasterClock} from '../../core/media/Clock';
 import Element from './Element';
 import Locale from '../../core/Locale';
 import {isString} from '../../core/utils/Var';
@@ -40,55 +39,31 @@ export default class Page extends Component {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
-                    'getter': function(skipDefault){
-                        return this.css('background-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('background-color', value);
                     }
                 },
                 'background-image': {
-                    'getter': function(skipDefault){
-                        let value = this.css('background-image', void 0, skipDefault);
-
-                        if(value === 'none' || !isString(value)){
-                            return null;
-                        }
-
-                        value = value.replace(/^url\(["']?/, '');
-                        value = value.replace(/["']?\)$/, '');
-
-                        return value;
-                    },
+                    'type': 'image',
                     'setter': function(value){
                         const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
                         this.css('background-image', css_value);
                     }
                 },
                 'start-time': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('start-time'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('start-time', isNaN(value) ? null : value);
-                    }
+                    'type': 'time'
                 },
                 'end-time': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('end-time'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('end-time', isNaN(value) ? null : value);
-                    }
+                    'type': 'time'
                 },
                 'elements': {
-                    'getter': function(skipDefault, skipID){
+                    'type': 'array',
+                    'getter': function(skipID){
                         const elements = [];
 
                         this.getChildren().forEach((element) => {
-                            elements.push(element.getPropertyValues(skipDefault, skipID));
+                            elements.push(element.getPropertyValues(skipID));
                         });
 
                         return elements;
@@ -146,31 +121,7 @@ export default class Page extends Component {
                 return null;
             }
 
-            const el_index = this.children(`.element.${type}`).count() + 1;
-            const defaults = {};
-
-            switch(type){
-                case 'Cursor': {
-                        defaults.name = `cur ${el_index}`;
-
-                        const start_time = this.getPropertyValue('start-time');
-                        defaults['start-time'] = start_time !== null ? start_time : MasterClock.getTime();
-
-                        const end_time = this.getPropertyValue('end-time');
-                        defaults['end-time'] = end_time !== null ? end_time : MasterClock.getRenderer().getDuration();
-                    }
-                    break;
-
-                case 'Content':
-                    defaults.name = `content ${el_index}`;
-                    break;
-
-                case 'Animation':
-                    defaults.name = `anim ${el_index}`;
-                    break;
-            }
-
-            element = new ELEMENT_TYPES[type](Object.assign(defaults, element))
+            element = new ELEMENT_TYPES[type](element)
                 .appendTo(this)
                 .init();
         }

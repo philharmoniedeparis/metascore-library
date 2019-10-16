@@ -353,7 +353,7 @@ export default class Editor extends Dom {
                     'callback': (context) => {
                         const configs = [];
                         context.data.elements.forEach((element) => {
-                            const config = element.getPropertyValues(void 0, true);
+                            const config = element.getPropertyValues(true);
                             // Slightly move the copy by 5 pixels right and 5 pixels down.
                             config.x += 5;
                             config.y += 5;
@@ -556,7 +556,7 @@ export default class Editor extends Dom {
                     'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
                     'callback': (context) => {
                         const component = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
-                        const config = component.getPropertyValues(void 0, true);
+                        const config = component.getPropertyValues(true);
 
                         // Slightly move the copy by 5 pixels right and 5 pixels down.
                         config.x += 5;
@@ -1932,7 +1932,36 @@ export default class Editor extends Dom {
                 const components = [];
 
                 configs.forEach((element_config) => {
-                    const component = page.addElement(element_config);
+                    const type = element_config.type;
+                    const el_index = page.children(`.element.${type}`).count() + 1;
+                    const defaults = {};
+
+                    switch(type){
+                        case 'Cursor': {
+                                defaults.name = `cur ${el_index}`;
+
+                                defaults.start_time = page.getPropertyValue('start-time');
+                                if(defaults.start_time === null){
+                                    defaults.start_time = MasterClock.getTime();
+                                }
+
+                                defaults.end_time = page.getPropertyValue('end-time');
+                                if(defaults.end_time === null){
+                                    defaults.end_time = MasterClock.getRenderer().getDuration();
+                                }
+                            }
+                            break;
+
+                        case 'Content':
+                            defaults.name = `content ${el_index}`;
+                            break;
+
+                        case 'Animation':
+                            defaults.name = `anim ${el_index}`;
+                            break;
+                    }
+
+                    const component = page.addElement(Object.assign(defaults, element_config));
                     components.push(component);
                 });
 

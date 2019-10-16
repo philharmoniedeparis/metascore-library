@@ -2,6 +2,7 @@ import Element from '../Element';
 import Dom from '../../../core/Dom';
 import {MasterClock} from '../../../core/media/Clock';
 import {map, radians} from '../../../core/utils/Math';
+import {isEmpty} from '../../../core/utils/Var';
 
 /**
  * A cursor element
@@ -24,9 +25,7 @@ export default class Cursor extends Element {
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
                 'border-radius': {
-                    'getter': function(skipDefault){
-                        return this.contents.css('border-radius', void 0, skipDefault);
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.contents.css('border-radius', value);
                     },
@@ -35,100 +34,46 @@ export default class Cursor extends Element {
                     }
                 },
                 'form': {
-                    'getter': function(){
-                        const value = this.data('form');
-                        return value ? value : 'linear';
-                    },
-                    'setter': function(value){
-                        this.data('form', value);
-                    }
+                    'type': 'string',
+                    'default': 'linear'
                 },
-                'mode': {
-                    'getter': function(){
-                        const value = this.data('mode');
-                        return value ? value : 'simple';
-                    },
-                    'setter': function(value){
-                        this.data('mode', value);
-                    },
+                'keyframes': {
+                    'type': 'array',
                     'applies': function(){
                         return this.getPropertyValue('form') === 'linear';
                     }
                 },
-                'keyframes': {
-                    'getter': function(){
-                        return this.data('keyframes');
-                    },
-                    'setter': function(value){
-                        this.data('keyframes', value);
-                    },
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'advanced';
-                    }
-                },
                 'direction': {
-                    'getter': function(){
-                        const value = this.data('direction');
-                        const form = this.data('form');
-                        return value ? value : (form === 'circular' ? 'cw' : 'right');
-                    },
-                    'setter': function(value){
-                        this.data('direction', value);
-                    }
+                    'type': 'string',
+                    'default': 'right'
                 },
                 'start-angle': {
-                    'getter': function(){
-                        const value = parseInt(this.data('start-angle'), 10);
-                        return isNaN(value) ? 0 : value;
-                    },
-                    'setter': function(value){
-                        this.data('start-angle', value);
-                    },
+                    'type': 'number',
+                    'default': 0,
                     'applies': function(){
                         return this.getPropertyValue('form') === 'circular';
                     }
                 },
                 'loop-duration': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('loop-duration'));
-                        return isNaN(value) ? null : value;
-                    },
-                    'setter': function(value){
-                        this.data('loop-duration', isNaN(value) ? null : value);
-                    },
+                    'type': 'time',
                     'applies': function(){
                         return this.getPropertyValue('form') === 'circular';
                     }
                 },
                 'acceleration': {
-                    'getter': function(){
-                        const value = parseFloat(this.data('accel'));
-                        return isNaN(value) ? 1 : value;
-                    },
-                    'setter': function(value){
-                        this.data('accel', value);
-                    },
+                    'type': 'number',
+                    'default': 1,
                     'applies': function(){
-                        return this.getPropertyValue('form') === 'linear' && this.getPropertyValue('mode') === 'simple';
+                        return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
                     }
                 },
                 'cursor-width': {
-                    'getter': function(){
-                        const value = parseInt(this.data('cursor-width'), 10);
-                        return isNaN(value) ? 1 : value;
-                    },
-                    'setter': function(value){
-                        this.data('cursor-width', value);
-                    }
+                    'type': 'number',
+                    'default': 1
                 },
                 'cursor-color': {
-                    'getter': function(){
-                        const value = this.data('cursor-color');
-                        return value ? value : '#000';
-                    },
-                    'setter': function(value){
-                        this.data('cursor-color', value);
-                    }
+                    'type': 'color',
+                    'default': '#000000'
                 }
             })
         });
@@ -189,6 +134,7 @@ export default class Cursor extends Element {
                     }
                 }
                 break;
+
             case 'width':
             case 'height':
             case 'border-width':
@@ -345,7 +291,6 @@ export default class Cursor extends Element {
     getLinearPositionFromTime(time){
         const direction = this.getPropertyValue('direction');
         const reversed = direction === 'left' || direction === 'top';
-        const mode = this.getPropertyValue('mode');
         let start_time = this.getPropertyValue('start-time');
         let end_time = this.getPropertyValue('end-time');
 
@@ -359,42 +304,36 @@ export default class Cursor extends Element {
             end_position = 0;
         }
 
-        // Calculate position from keyframes
-        if(mode === 'advanced'){
-            const keyframes = this.getPropertyValue('keyframes');
-
-            if(keyframes){
-                keyframes.split(',').forEach((keyframe) => {
-                    let [keyframe_position, keyframe_time] = keyframe.split('|');
-                    keyframe_position = parseInt(keyframe_position, 10);
-                    keyframe_time = parseInt(keyframe_time, 10);
-
-                    if(reversed){
-                        if(keyframe_time <= time && keyframe_position <= start_position){
-                            start_position = keyframe_position;
-                            start_time = keyframe_time;
-                        }
-
-                        if(keyframe_time >= time && keyframe_position >= end_position){
-                            end_position = keyframe_position;
-                            end_time = keyframe_time;
-                        }
+        const keyframes = this.getPropertyValue('keyframes');
+        if(keyframes){
+            // Calculate position from keyframes
+            keyframes.forEach((keyframe) => {
+                if(reversed){
+                    if(keyframe.time <= time && keyframe.position <= start_position){
+                        start_position = keyframe.position;
+                        start_time = keyframe.time;
                     }
-                    else{
-                        if(keyframe_time <= time && keyframe_position >= start_position){
-                            start_position = keyframe_position;
-                            start_time = keyframe_time;
-                        }
 
-                        if(keyframe_time >= time && keyframe_position <= end_position){
-                            end_position = keyframe_position;
-                            end_time = keyframe_time;
-                        }
+                    if(keyframe.time >= time && keyframe.position >= end_position){
+                        end_position = keyframe.position;
+                        end_time = keyframe.time;
                     }
-                });
-            }
+                }
+                else{
+                    if(keyframe.time <= time && keyframe.position >= start_position){
+                        start_position = keyframe.position;
+                        start_time = keyframe.time;
+                    }
+
+                    if(keyframe.time >= time && keyframe.position <= end_position){
+                        end_position = keyframe.position;
+                        end_time = keyframe.time;
+                    }
+                }
+            });
         }
         else{
+            // Calculate position from acceleration
             acceleration = this.getPropertyValue('acceleration');
         }
 
@@ -429,7 +368,6 @@ export default class Cursor extends Element {
         const direction = this.getPropertyValue('direction');
         const axis = direction === 'top' || direction === 'bottom' ? 'y' : 'x';
         const reversed = direction === 'left' || direction === 'top';
-        const mode = this.getPropertyValue('mode');
         let start_time = this.getPropertyValue('start-time');
         let end_time = this.getPropertyValue('end-time');
 
@@ -442,42 +380,36 @@ export default class Cursor extends Element {
             end_position = 0;
         }
 
-        // Calculate position from keyframes
-        if(mode === 'advanced'){
-            const keyframes = this.getPropertyValue('keyframes');
-
-            if(keyframes){
-                keyframes.split(',').forEach((keyframe) => {
-                    let [keyframe_position, keyframe_time] = keyframe.split('|');
-                    keyframe_position = parseInt(keyframe_position, 10);
-                    keyframe_time = parseInt(keyframe_time, 10);
-
-                    if(reversed){
-                        if(keyframe_position <= pos && keyframe_time <= start_time){
-                            start_position = keyframe_position;
-                            start_time = keyframe_time;
-                        }
-
-                        if(keyframe_position >= pos && keyframe_time >= end_time){
-                            end_position = keyframe_position;
-                            end_time = keyframe_time;
-                        }
+        const keyframes = this.getPropertyValue('keyframes');
+        if(keyframes){
+            // Calculate position from keyframes
+            keyframes.forEach((keyframe) => {
+                if(reversed){
+                    if(keyframe.position <= pos && keyframe.time <= start_time){
+                        start_position = keyframe.position;
+                        start_time = keyframe.time;
                     }
-                    else{
-                        if(keyframe_position <= pos && keyframe_time >= start_time){
-                            start_position = keyframe_position;
-                            start_time = keyframe_time;
-                        }
 
-                        if(keyframe_position >= pos && keyframe_time <= end_time){
-                            end_position = keyframe_position;
-                            end_time = keyframe_time;
-                        }
+                    if(keyframe.position >= pos && keyframe.time >= end_time){
+                        end_position = keyframe.position;
+                        end_time = keyframe.time;
                     }
-                });
-            }
+                }
+                else{
+                    if(keyframe.position <= pos && keyframe.time >= start_time){
+                        start_position = keyframe.position;
+                        start_time = keyframe.time;
+                    }
+
+                    if(keyframe.position >= pos && keyframe.time <= end_time){
+                        end_position = keyframe.position;
+                        end_time = keyframe.time;
+                    }
+                }
+            });
         }
         else{
+            // Calculate position from acceleration
             const acceleration = this.getPropertyValue('acceleration');
             pos = Math.pow(pos, 1/acceleration);
         }

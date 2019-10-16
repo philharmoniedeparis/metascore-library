@@ -301,23 +301,14 @@ export default class CursorForm extends ElementForm {
      * @return {this}
      */
     repositionCursorKeyframes(component, multiplier){
-        if(component._keyframes_editor){
-            component._keyframes_editor.keyframes.forEach((keyframe) => {
-                keyframe.position *= multiplier;
-            });
+        const keyframes = component.getPropertyValue('keyframes');
 
-            component._keyframes_editor
-                .updateComponentKeyframes()
-                .draw();
-        }
-        else{
-            const keyframes = CursorKeyframesEditor.parseComponentKeyframes(component);
-
+        if(keyframes){
             keyframes.forEach((keyframe) => {
                 keyframe.position *= multiplier;
             });
 
-            CursorKeyframesEditor.updateComponentKeyframes(component, keyframes);
+            component.setPropertyValue('keyframes', keyframes);
         }
 
         return this;

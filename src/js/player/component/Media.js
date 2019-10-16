@@ -18,7 +18,7 @@ export default class Media extends Component{
 
         this
             .addClass('media')
-            .addClass(this.configs.type);
+            .addClass(this.configs.tag);
     }
 
     /**
@@ -30,94 +30,68 @@ export default class Media extends Component{
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
-            'type': 'audio',
+            'tag': 'audio',
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
-                    'getter': function(){
-                        return this.constructor.getType();
-                    }
+                    'type': 'string'
                 },
                 'hidden': {
-                    'getter': function(){
-                        return this.data('hidden') === "true";
-                    },
+                    'type': 'boolean',
                     'setter': function(value){
-                        this.data('hidden', value ? "true" : null);
+                        this.toggleClass('hidden', value);
                     }
                 },
                 'scenario': {
-                    'getter': function(){
-                        return this.data('scenario');
-                    },
-                    'setter': function(value){
-                        this.data('scenario', value);
-                    }
+                    'type': 'string'
                 },
                 'x': {
-                    'getter': function(){
-                        return parseInt(this.css('left'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('left', `${value}px`);
                     }
                 },
                 'y': {
-                    'getter': function(){
-                        return parseInt(this.css('top'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('top', `${value}px`);
                     },
                 },
                 'width': {
-                    'getter': function(){
-                        return parseInt(this.css('width'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('width', `${value}px`);
                     }
                 },
                 'height': {
-                    'getter': function(){
-                        return parseInt(this.css('height'), 10);
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('height', `${value}px`);
                     }
                 },
                 'background-color': {
-                    'getter': function(skipDefault){
-                        return this.css('background-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('background-color', value);
                     }
                 },
                 'border-width': {
-                    'getter': function(skipDefault){
-                        const value = parseInt(this.css('border-width', void 0, skipDefault), 10);
-                        return isNaN(value) ? null : value;
-                    },
+                    'type': 'number',
                     'setter': function(value){
                         this.css('border-width', `${value}px`);
                     }
                 },
                 'border-color': {
-                    'getter': function(skipDefault){
-                        return this.css('border-color', void 0, skipDefault);
-                    },
+                    'type': 'color',
                     'setter': function(value){
                         this.css('border-color', value);
                     }
                 },
                 'border-radius': {
-                    'getter': function(skipDefault){
-                        return this.css('border-radius', void 0, skipDefault);
-                    },
+                    'type': 'string',
                     'setter': function(value){
                         this.css('border-radius', value);
                     }
-                }
+                },
             })
         });
     }
@@ -149,7 +123,7 @@ export default class Media extends Component{
              * The renderer
              * @type {Dom}
              */
-            this.renderer = new renderer({'type': this.configs.type})
+            this.renderer = new renderer({'tag': this.configs.tag})
                 .addListener('ready', (evt) => {
                     evt.detail.renderer.setSource(source, supressEvent);
                 })

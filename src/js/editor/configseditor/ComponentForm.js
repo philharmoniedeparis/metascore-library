@@ -635,27 +635,6 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Update a component's properties
-     *
-     * @param {player.Component} component The component to update
-     * @param {Object} values A list of values with the property names as keys
-     * @return {this}
-     */
-    setPropertyValues(component, values){
-		Object.entries(values).forEach(([name, value]) => {
-            if(!this.getField(name).disabled){
-                component.setPropertyValue(name, value);
-            }
-        });
-
-        Object.keys(values).forEach((name) => {
-            this.updateFieldValue(name, true);
-        });
-
-        return this;
-    }
-
-    /**
      * Toggle the enabled state of some fields
      *
      * @param {Array} names The list of field names to toggle
