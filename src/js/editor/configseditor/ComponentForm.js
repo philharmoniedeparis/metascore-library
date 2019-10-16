@@ -118,6 +118,7 @@ export default class ComponentForm extends Dom {
         }
 
         delete this.components;
+        delete this.master_component;
 
         return this;
     }
@@ -593,31 +594,20 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
-    updateAssetsList(assets){
-        const background_image_field = this.getField('background-image');
-        if(background_image_field){
-            const input = background_image_field.getInput();
-            input.clear();
-
-            input.addOption('', Locale.t('editor.configseditor.ComponentForm.fields.background-image.empty', ''));
-
-            Object.values(assets).forEach((asset) => {
-                let file = asset;
-                if('shared' in asset && asset.shared){
-                    file = asset.file;
-                }
-
-                if(/^image\/.*/.test(file.mimetype)){
-                    input.addOption(file.url, asset.name);
-                }
-            });
-        }
+    /**
+     * Check if a field exists
+     *
+     * @param {String} name The name of the field
+     * @return {Boolean} Whether the field exists or not
+     */
+    hasField(name){
+        return name in this.fields;
     }
 
     /**
      * Get a field by name
      *
-     * @param {String} name The name of the field to get
+     * @param {String} name The name of the field
      * @return {Field} The field
      */
     getField(name){
@@ -625,10 +615,9 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Get a field by name
+     * Get all fields
      *
-     * @param {String} name The name of the field to get
-     * @return {Field} The field
+     * @return {Object} The fields
      */
     getFields(){
         return this.fields;

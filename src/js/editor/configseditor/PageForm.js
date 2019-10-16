@@ -37,4 +37,72 @@ export default class PageForm extends ComponentForm {
             ]
         });
     }
+
+    setComponents(components){
+        super.setComponents(components);
+
+        if(this.hasField('start-time')){
+            const input = this.getField('start-time').getInput();
+            input.readonly(false).setMin(null).enable();
+
+            components.forEach((page) => {
+                const block = page.getParent();
+
+                if(block.getPropertyValue('synched')){
+                    const index = block.getChildIndex(page);
+                    const previous_page = block.getChild(index-1);
+
+                    if(previous_page){
+                        let min = previous_page.getPropertyValue('end-time');
+                        if(input.getMin() !== null){
+                            min = Math.max(input.getMin(), min);
+                        }
+                        input.setMin(min);
+                    }
+                    else{
+                        input.readonly(true);
+                    }
+                }
+                else{
+                    input.disable();
+                }
+            });
+        }
+
+        if(this.hasField('end-time')){
+            const input = this.getField('end-time').getInput();
+            input.readonly(false).setMax(null).enable();
+
+            components.forEach((page) => {
+                const block = page.getParent();
+
+                if(block.getPropertyValue('synched')){
+                    const index = block.getChildIndex(page);
+                    const next_page = block.getChild(index+1);
+
+                    if(next_page){
+                        let max = next_page.getPropertyValue('end-time');
+                        if(input.getMax() !== null){
+                            max = Math.min(input.getMax(), max);
+                        }
+                        input.setMax(max);
+                    }
+                    else{
+                        input.readonly(true);
+                    }
+                }
+                else{
+                    input.disable();
+                }
+            });
+        }
+
+        return this;
+    }
+
+    unsetComponents(){
+        super.unsetComponents();
+
+        return this;
+    }
 }

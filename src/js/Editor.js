@@ -212,7 +212,6 @@ export default class Editor extends Dom {
          * @type {ConfigsEditor}
          */
         this.configs_editor = new ConfigsEditor()
-            .addListener('componentset', this.onConfigsEditorComponentSet.bind(this))
             .addListener('contentsunlock', this.onConfigsEditorContentsUnlock.bind(this))
             .addListener('contentslock', this.onConfigsEditorContentsLock.bind(this))
             .appendTo(config_pane.getContents());
@@ -799,13 +798,13 @@ export default class Editor extends Dom {
     onAssetBrowserAssetAdd(){
         this.setDirty('assets');
 
-        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+        this.configs_editor.updateImageFields(this.asset_browser.getGuideAssets().getAssets());
     }
 
     onAssetBrowserAssetRemove(){
         this.setDirty('assets');
 
-        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+        this.configs_editor.updateImageFields(this.asset_browser.getGuideAssets().getAssets());
     }
 
     onAssetBrowserComponentLinkClick(evt){
@@ -956,6 +955,8 @@ export default class Editor extends Dom {
             .addScenario(scenario)
             .setActiveScenario(scenario);
 
+        this.configs_editor.updateScenarioFields(this.player.getScenarios());
+
         this.setDirty('scenarios');
     }
 
@@ -1039,62 +1040,6 @@ export default class Editor extends Dom {
         MasterClock.setTime(evt.detail.value);
     }
 
-    /**
-     * ConfigsEditor componentset event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onConfigsEditorComponentSet(evt){
-        /**
-         * @todo
-         */
-        /*const component = evt.detail.component;
-
-        if(component.instanceOf('BlockToggler')){
-            // Update the 'blocks' field options and value
-            const field = this.configs_editor.getField('blocks');
-
-            this.getPlayer().getComponents('.media.video, .controller, .block').forEach((component) => {
-                field.addOption(component.getId(), component.getName());
-            });
-
-            field.setValue(block.getPropertyValue('blocks'));
-        }
-        else if(component.instanceOf('Page')){
-            const page = evt.detail.component;
-            const block = page.getParent();
-            const start_time_field = this.configs_editor.getField('start-time');
-            const end_time_field = this.configs_editor.getField('end-time');
-
-            if(block.getPropertyValue('synched')){
-                const index = block.getChildIndex(page);
-                const previous_page = block.getChild(index-1);
-                const next_page = block.getChild(index+1);
-
-                if(previous_page){
-                    start_time_field.readonly(false).enable().setMin(previous_page.getPropertyValue('start-time'));
-                }
-                else{
-                    start_time_field.readonly(true).enable();
-                }
-
-                if(next_page){
-                    end_time_field.readonly(false).enable().setMax(next_page.getPropertyValue('end-time'));
-                }
-                else{
-                    end_time_field.readonly(true).enable();
-                }
-            }
-            else{
-                start_time_field.disable();
-                end_time_field.disable();
-            }
-
-            evt.stopPropagation();
-        }*/
-    }
-
     onConfigsEditorContentsUnlock(){
         this.getPlayer().addClass('contents-unlocked');
     }
@@ -1157,6 +1102,9 @@ export default class Editor extends Dom {
      */
     onPlayerScenarioChange(evt){
         const scenario = evt.detail.scenario;
+
+        // Deselect all components
+        this.configs_editor.unsetComponents();
 
         // Update scenario selector
         this.controller.getScenarioSelector().setActiveScenario(scenario, true);
@@ -1303,7 +1251,9 @@ export default class Editor extends Dom {
             .addAssets(this.player.getData('assets'), true)
             .addAssets(this.player.getData('shared_assets'), true);
 
-        this.configs_editor.updateAssetsList(this.asset_browser.getGuideAssets().getAssets());
+        this.configs_editor
+            .updateScenarioFields(this.player.getScenarios())
+            .updateImageFields(this.asset_browser.getGuideAssets().getAssets());
 
         // Update the timeline
         const timeline = this.controller.getTimeline();
@@ -1940,14 +1890,14 @@ export default class Editor extends Dom {
                         case 'Cursor': {
                                 defaults.name = `cur ${el_index}`;
 
-                                defaults.start_time = page.getPropertyValue('start-time');
-                                if(defaults.start_time === null){
-                                    defaults.start_time = MasterClock.getTime();
+                                defaults['start-time'] = page.getPropertyValue('start-time');
+                                if(defaults['start-time'] === null){
+                                    defaults['start-time'] = MasterClock.getTime();
                                 }
 
-                                defaults.end_time = page.getPropertyValue('end-time');
-                                if(defaults.end_time === null){
-                                    defaults.end_time = MasterClock.getRenderer().getDuration();
+                                defaults['end-time'] = page.getPropertyValue('end-time');
+                                if(defaults['end-time'] === null){
+                                    defaults['end-time'] = MasterClock.getRenderer().getDuration();
                                 }
                             }
                             break;

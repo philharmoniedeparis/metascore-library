@@ -683,6 +683,15 @@ export default class TimeInput extends Input {
     }
 
     /**
+     * Get the minimum allowed value
+     *
+     * @return {Number} The minimum allowed value
+     */
+    getMin(){
+        return this.min;
+    }
+
+    /**
      * Set the minimum allowed value
      *
      * @param {Number} min The minimum allowed value
@@ -702,6 +711,15 @@ export default class TimeInput extends Input {
         }
 
         return this;
+    }
+
+    /**
+     * Get the maximum allowed value
+     *
+     * @return {Number} The maximum allowed value
+     */
+    getMax(){
+        return this.max;
     }
 
     /**

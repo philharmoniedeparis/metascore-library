@@ -27,6 +27,7 @@
 	"editor.AssetBrowser.tabs.guide-assets.title": "Library",
 	"editor.AssetBrowser.tabs.shared-assets.title": "Shared Library",
 	"editor.ComponentForm.multivalWarning": "The value corresponds to that of the first selected component",
+	"editor.ConfigsEditor.image-fields.empty": "",
 	"editor.Controller.zoom.loading": "Loading waveform...",
 	"editor.Controller.zoom.noWaveform": "No waveform data available",
 	"editor.MainMenu.preview-toggle.title": "Toggle preview mode",

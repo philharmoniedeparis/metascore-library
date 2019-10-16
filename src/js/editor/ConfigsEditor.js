@@ -1,4 +1,5 @@
 import Dom from '../core/Dom';
+import Locale from '../core/Locale';
 import {isArray} from '../core/utils/Var';
 import ComponentForm from './configseditor/ComponentForm';
 import MediaForm from './configseditor/MediaForm';
@@ -16,10 +17,17 @@ import {className} from '../../css/editor/ConfigsEditor.scss';
 /**
  * A component form class
  *
- * @emits {componentset} Fired when multuiple components are set
- * @param {Component} component The component instance
+ * @emits {componentset} Fired when a component is set
+ * @param {Component} component The component
+ *
  * @emits {componentunset} Fired when a component is unset
- * @param {Component} component The component instance
+ * @param {Component} component The component
+ *
+ * @emits {formset} Fired when the form is set
+ * @param {ComponentForm} form The form
+ *
+ * @emits {formunset} Fired when the form is removed
+ * @param {ComponentForm} form The form
  *
  * @todo: implement old editor.panel.Element methods
  */
@@ -107,6 +115,10 @@ export default class ConfigsEditor extends Dom {
         return this.form;
     }
 
+    getForms(){
+        return this.forms;
+    }
+
     /**
      * Update the panel's UI
      *
@@ -132,14 +144,19 @@ export default class ConfigsEditor extends Dom {
         // Remove the old form if not the same one
         if(this.form && form !== this.form){
             this.form.remove();
+
+            this.triggerEvent('formunset', {'form': this.form});
+
             delete this.form;
         }
 
         if(form){
             // Add the new form
-            this.form = form
-                .setComponents(components)
-                .appendTo(this);
+            this.form = form.appendTo(this);
+
+            this.triggerEvent('formset', {'form': form});
+
+            this.form.setComponents(components);
         }
 
         this.toggleClass('has-component', components.length > 0);
@@ -147,10 +164,59 @@ export default class ConfigsEditor extends Dom {
         return this;
     }
 
-    updateAssetsList(assets){
+    updateScenarioFields(scenarios){
         Object.values(this.forms).forEach((form) => {
-            form.updateAssetsList(assets);
+            if(form.hasField('scenario')){
+                const input = form.getField('scenario').getInput();
+
+                input.clear();
+
+                scenarios.forEach((scenario) => {
+                    input.addOption(scenario, scenario);
+                });
+
+                if(form === this.form){
+                    form.updateFieldValue('scenario', true);
+                }
+            }
         });
+
+        return this;
+    }
+
+    updateImageFields(assets){
+        const options = {};
+
+        Object.values(assets).forEach((asset) => {
+            let file = asset;
+            if('shared' in asset && asset.shared){
+                file = asset.file;
+            }
+
+            if(/^image\/.*/.test(file.mimetype)){
+                options[file.url] = asset.name;
+            }
+        });
+
+        Object.values(this.forms).forEach((form) => {
+            if(form.hasField('background-image')){
+                const input = form.getField('background-image').getInput();
+
+                input.clear();
+
+                input.addOption('', Locale.t('editor.ConfigsEditor.image-fields.empty', ''));
+
+                Object.entries(options).forEach(([key, value]) => {
+                    input.addOption(key, value);
+                });
+
+                if(form === this.form){
+                    form.updateFieldValue('background-image', true);
+                }
+            }
+        });
+
+        return this;
     }
 
     /**

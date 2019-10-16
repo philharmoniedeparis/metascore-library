@@ -66,6 +66,15 @@ export default class SliderInput extends Input {
     }
 
     /**
+     * Get the minimum allowed value
+     *
+     * @return {Number} The minimum allowed value
+     */
+    getMin(){
+        return this.native_input.attr('min');
+    }
+
+    /**
      * Set the minimum allowed value
      *
      * @param {Number} value The minimum allowed value
@@ -75,6 +84,15 @@ export default class SliderInput extends Input {
         this.native_input.attr('min', value);
 
         return this;
+    }
+
+    /**
+     * Get the maximum allowed value
+     *
+     * @return {Number} The maximum allowed value
+     */
+    getMax(){
+        return this.native_input.attr('max');
     }
 
     /**
