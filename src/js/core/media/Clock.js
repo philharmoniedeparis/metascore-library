@@ -12,7 +12,7 @@ export default class MediaClock extends Clock {
         this.onRendererPlay = this.onRendererPlay.bind(this);
         this.onRendererPause = this.onRendererPause.bind(this);
         this.onRendererStop = this.onRendererStop.bind(this);
-        this.onRendererSeeking = this.onRendererSeeking.bind(this);
+        this.onRendererSeeked = this.onRendererSeeked.bind(this);
         this.triggerTimeUpdate = this.triggerTimeUpdate.bind(this);
 
         /**
@@ -35,7 +35,7 @@ export default class MediaClock extends Clock {
     onRendererPlay() {
         this.ticking = true;
 
-        this.renderer.removeListener('seeking', this.onRendererSeeking);
+        this.renderer.removeListener('seeked', this.onRendererSeeked);
 
         this.triggerEvent('play');
 
@@ -50,7 +50,7 @@ export default class MediaClock extends Clock {
     onRendererPause() {
         this.ticking = false;
 
-        this.renderer.addListener('seeking', this.onRendererSeeking);
+        this.renderer.addListener('seeked', this.onRendererSeeked);
 
         this.triggerEvent('pause');
     }
@@ -64,12 +64,12 @@ export default class MediaClock extends Clock {
         this.ticking = false;
         this.time = 0;
 
-        this.renderer.addListener('seeking', this.onRendererSeeking);
+        this.renderer.addListener('seeked', this.onRendererSeeked);
 
         this.triggerEvent('stop');
     }
 
-    onRendererSeeking(){
+    onRendererSeeked(){
         this.triggerTimeUpdate(false);
     }
 
@@ -85,7 +85,7 @@ export default class MediaClock extends Clock {
                 .removeListener('play', this.onRendererPlay)
                 .removeListener('pause', this.onRendererPause)
                 .removeListener('stop', this.onRendererStop)
-                .removeListener('seeking', this.onRendererSeeking);
+                .removeListener('seeked', this.onRendererSeeked);
 
             delete this.renderer;
         }
@@ -97,7 +97,7 @@ export default class MediaClock extends Clock {
                 .addListener('stop', this.onRendererStop);
 
             if(!this.renderer.isPlaying()){
-                this.renderer.addListener('seeking', this.onRendererSeeking);
+                this.renderer.addListener('seeked', this.onRendererSeeked);
             }
         }
 
