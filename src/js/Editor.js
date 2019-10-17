@@ -332,16 +332,20 @@ export default class Editor extends Dom {
                 'select-elements': {
                     'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
                     'callback': (context) => {
-                        const page = context.el.closest('.metaScore-component.page')._metaScore;
-
                         this.configs_editor.unsetComponents();
-
-                        page.getChildren().forEach((element, index) => {
+                        context.data.page.getChildren().forEach((element, index) => {
                             this.configs_editor.setComponent(element, index > 0);
                         });
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.page') ? true : false);
+                        if(this.editing){
+                            const dom = context.el.closest('.metaScore-component.page');
+                            if(dom){
+                                context.data.page = dom._metaScore;
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                 },
                 'copy-elements': {
@@ -364,19 +368,18 @@ export default class Editor extends Dom {
                         this.clipboard.setData('element', configs);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
-                        }
-                        const components = this.configs_editor.getComponents('Element');
-                        if(components.length > 0){
-                            context.data.selected = true;
-                            context.data.elements = components;
-                            return true;
-                        }
-                        const component = context.el.closest('.metaScore-component.element');
-                        if(component){
-                            context.data.elements = [component];
-                            return true;
+                        if(this.editing){
+                            const elements = this.configs_editor.getComponents('Element');
+                            if(elements.length > 0){
+                                context.data.selected = true;
+                                context.data.elements = elements;
+                                return true;
+                            }
+                            const dom = context.el.closest('.metaScore-component.element');
+                            if(dom){
+                                context.data.elements = [dom._metaScore];
+                                return true;
+                            }
                         }
                         return false;
                     }
@@ -387,81 +390,89 @@ export default class Editor extends Dom {
                         this.addPlayerComponents('element', context.data.element, context.data.page);
                     },
                     'toggler': (context) => {
-                        if((this.editing !== true) || (this.clipboard.getDataType() !== 'element')){
-                            return false;
-                        }
-                        const dom = context.el.closest('.metaScore-component.page');
-                        if(dom){
-                            context.data.element = this.clipboard.getData();
-                            context.data.page = dom._metaScore;
-                            return true;
+                        if(this.editing){
+                            if(this.clipboard.getDataType() === 'element'){
+                                const dom = context.el.closest('.metaScore-component.page');
+                                if(dom){
+                                    context.data.element = this.clipboard.getData();
+                                    context.data.page = dom._metaScore;
+                                    return true;
+                                }
+                            }
                         }
                         return false;
                     }
                 },
                 'delete-elements': {
-                    'text': () => {
-                        if(this.panels.element.getComponents().length > 0){
+                    'text': (context) => {
+                        if(context.data.selected){
                             return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
                         }
                         return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                     },
                     'callback': (context) => {
-                        let elements = this.panels.element.getComponents();
-                        if(elements.length === 0){
-                            elements = [context.el.closest('.metaScore-component.element')._metaScore];
-                        }
-                        this.deletePlayerComponents('element', elements);
+                        this.deletePlayerComponents('element', context.data.elements);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const elements = this.configs_editor.getComponents('Element');
+                            if(elements.length > 0){
+                                context.data.selected = true;
+                                context.data.elements = elements;
+                                return true;
+                            }
+                            const dom = context.el.closest('.metaScore-component.element');
+                            if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                context.data.elements = [dom._metaScore];
+                                return true;
+                            }
                         }
-                        if(this.panels.element.getComponents().length > 0){
-                            return true;
-                        }
-                        const dom = context.el.closest('.metaScore-component.element');
-                        return dom && !dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'lock-element': {
                     'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
                     'callback': (context) => {
-                        context.el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', true);
+                        context.data.element.setPropertyValue('locked', true);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const dom = context.el.closest('.metaScore-component.element');
+                            if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                context.data.element = dom._metaScore;
+                                return true;
+                            }
                         }
-
-                        const dom = context.el.closest('.metaScore-component.element');
-                        return dom && !dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'unlock-element': {
                     'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
                     'callback': (context) => {
-                        context.el.closest('.metaScore-component.element')._metaScore.setPropertyValue('locked', false);
+                        context.data.element.setPropertyValue('locked', false);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const dom = context.el.closest('.metaScore-component.element');
+                            if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                context.data.element = dom._metaScore;
+                                return true;
+                            }
                         }
-
-                        const dom = context.el.closest('.metaScore-component.element');
-                        return dom && dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'element-separator': {
                     'class': 'separator',
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const elements = this.configs_editor.getComponents('Element');
+                            if(elements.length > 0){
+                                return true;
+                            }
+                            return (context.el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
                         }
-                        if(this.panels.element.getComponents().length > 0){
-                            return true;
-                        }
-                        return (context.el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
+                        return false;
                     }
                 },
                 'add-page-before': {
@@ -470,7 +481,7 @@ export default class Editor extends Dom {
                         this.addPlayerComponents('page', {'position': 'before'}, context.el.closest('.metaScore-component.block')._metaScore);
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.block') ? true : false);
+                        return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                     }
                 },
                 'add-page-after': {
@@ -479,37 +490,40 @@ export default class Editor extends Dom {
                         this.addPlayerComponents('page', {'position': 'after'}, context.el.closest('.metaScore-component.block')._metaScore);
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.block') ? true : false);
+                        return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                     }
                 },
                 'delete-page': {
-                    'text': () => {
-                        if(this.panels.page.getComponents().length > 0){
+                    'text': (context) => {
+                        if(context.data.selected){
                             return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
                         }
                         return Locale.t('editor.contextmenu.delete-page', 'Delete page');
                     },
                     'callback': (context) => {
-                        let pages = this.panels.page.getComponents();
-                        if(pages.length === 0){
-                            pages = [context.el.closest('.metaScore-component.page')._metaScore];
-                        }
-                        this.deletePlayerComponents('page', pages);
+                        this.deletePlayerComponents('page', context.data.pages);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const pages = this.configs_editor.getComponents('Page');
+                            if(pages.length > 0){
+                                context.data.selected = true;
+                                context.data.pages = pages;
+                                return true;
+                            }
+                            const dom = context.el.closest('.metaScore-component.page');
+                            if(dom){
+                                context.data.pages = [dom._metaScore];
+                                return true;
+                            }
                         }
-                        if(this.panels.page.getComponents().length > 0){
-                            return true;
-                        }
-                        return context.el.closest('.metaScore-component.page') ? true : false;
+                        return false;
                     }
                 },
                 'page-separator': {
                     'class': 'separator',
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.block, .metaScore-component.page') ? true : false);
+                        return this.editing && (context.el.closest('.metaScore-component.block, .metaScore-component.page') ? true : false);
                     }
                 },
                 'add-block': {
@@ -538,7 +552,7 @@ export default class Editor extends Dom {
                         }
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.is('.metaScore-player'));
+                        return this.editing && (context.el.is('.metaScore-player'));
                     }
                 },
                 'select-blocks': {
@@ -546,7 +560,7 @@ export default class Editor extends Dom {
                     'callback': () => {
                         const components = this.getPlayer().getComponents('.block, .block-toggler, .media.video, .controller');
                         components.forEach((component, index) => {
-                            this.panels.block.setComponent(component, index > 0);
+                            this.configs_editor.setComponent(component, index > 0);
                         });
                     },
                     'toggler': () => {
@@ -566,7 +580,7 @@ export default class Editor extends Dom {
                         this.clipboard.setData('block', config);
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
+                        return this.editing && (context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
                     }
                 },
                 'paste-block': {
@@ -575,66 +589,72 @@ export default class Editor extends Dom {
                         this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
                     },
                     'toggler': (context) => {
-                        return (this.editing === true) && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
+                        return this.editing && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
                     }
                 },
                 'delete-blocks': {
-                    'text': () => {
-                        if(this.panels.block.getComponents().length > 0){
+                    'text': (context) => {
+                        if(context.data.selected){
                             return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
                         }
                         return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                     },
                     'callback': (context) => {
-                        let blocks = this.panels.block.getComponents().filter((block) => block.instanceOf('Block') || block.instanceOf('BlockToggler'));
-                        if(blocks.length === 0){
-                            blocks = [context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore];
-                        }
-                        this.deletePlayerComponents('block', blocks);
+                        this.deletePlayerComponents('block', context.data.blocks);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const blocks = this.configs_editor.getComponents('Block');
+                            if(blocks.length > 0){
+                                context.data.selected = true;
+                                context.data.blocks = blocks;
+                                return true;
+                            }
+                            const dom = context.el.closest('.metaScore-component.block');
+                            if(dom){
+                                context.data.blocks = [dom._metaScore];
+                                return true;
+                            }
                         }
-                        if(this.panels.block.getComponents().length > 0){
-                            return true;
-                        }
-                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'lock-block': {
                     'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
                     'callback': (context) => {
-                        context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', true);
+                        context.data.block.setPropertyValue('locked', true);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const dom = context.el.closest('.metaScore-component.block');
+                            if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                context.data.block = dom._metaScore;
+                                return true;
+                            }
                         }
-
-                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && !dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'unlock-block': {
                     'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
                     'callback': (context) => {
-                        context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore.setPropertyValue('locked', false);
+                        context.data.block.setPropertyValue('locked', false);
                     },
                     'toggler': (context) => {
-                        if(this.editing !== true){
-                            return false;
+                        if(this.editing){
+                            const dom = context.el.closest('.metaScore-component.block');
+                            if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                context.data.block = dom._metaScore;
+                                return true;
+                            }
                         }
-
-                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler');
-                        return dom && dom._metaScore.getPropertyValue('locked');
+                        return false;
                     }
                 },
                 'block-separator': {
                     'class': 'separator',
                     'toggler': () => {
-                        return (this.editing === true);
+                        return this.editing === true;
                     }
                 },
                 'about': {

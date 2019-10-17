@@ -3,30 +3,35 @@
 :local(.className){
     position: absolute;
     z-index: 999;
+    box-shadow: 0.25em 0.25em 0.5em 0 rgba(0,0,0,0.5);
 
     ul{
         min-width: 150px;
         margin: 0;
         padding: 0.25em 0;
         list-style: none;
-        background: #fff;
+        background: $darkgray;
         border: 1px solid rgba(0, 0, 0, 0.1);
-        box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.2);
 
         li{
             position: relative;
-            padding: 0.25em 1em;
+            padding: 0.2em 0.5em;
             white-space: nowrap;
-            color: #000;
+            color: #fff;
             cursor: pointer;
 
             &:hover{
-                color: #fff;
-                background: $metascore-color;
+                background: $mediumgray;
+            }
+
+            &:active{
+                color: #000;
+                background: $lightgray;
             }
 
             &.no-callback{
                 cursor: default;
+                pointer-events: none;
             }
 
             &.disabled{
@@ -35,26 +40,28 @@
 
             &.separator{
                 height: 1px;
-                margin: 0.5em 0;
+                margin: 0.25em;
                 padding: 0;
-                background: rgba(0, 0, 0, 0.1);
+                background: rgba(0, 0, 0, 0.25);
                 pointer-events: none;
             }
 
             &.has-subitems{
+                pointer-events: all;
+
                 &::after {
+                    content: "";
                     position: absolute;
                     top: 50%;
                     right: 1em;
                     width: 0;
                     height: 0;
                     margin-top: -0.1em;
-                    content: '';
-                    border-color: transparent transparent transparent #2f2f2f;
-                    border-style: solid;
                     border-width: 0.4em 0 0.4em 0.4em;
+                    border-style: solid;
+                    border-color: transparent transparent transparent #fff;
                     transform: translateY(-50%);
-                    z-index: 0;
+                    opacity: 0.75;
                 }
 
                 ul{
@@ -67,7 +74,7 @@
 
                 &:hover{
                     &::after {
-                        border-color: transparent transparent transparent #fff;
+                        opacity: 1;
                     }
 
                     > ul{
