@@ -29,7 +29,6 @@ export default class Media extends Component{
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
-            'tag': 'audio',
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
                     'type': 'string'
@@ -156,7 +155,7 @@ export default class Media extends Component{
     }
 
     /**
-     * Update the <canvas> size
+     * Update the <canvas>
      *
      * @return {this}
      */
@@ -164,10 +163,15 @@ export default class Media extends Component{
         if(this.isActive()){
             const video = MasterClock.getRenderer().getDom();
 
-            this.canvas.width = video.videoWidth;
-            this.canvas.height = video.videoHeight;
+            try{
+                this.canvas.width = video.videoWidth;
+                this.canvas.height = video.videoHeight;
 
-            this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
+                this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
+            }
+            catch(e){
+                console.error(e);
+            }
         }
 
         return this;
