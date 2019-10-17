@@ -198,7 +198,6 @@ body{
             border: 1px solid rgb(204, 204, 204);
             font: normal 11px/normal Verdana, Arial, Helvetica, sans-serif;
             border-radius: 10px;
-            isolation: isolate;
 
             button{
                 padding: 0;
@@ -213,7 +212,6 @@ body{
                 height: 20px;
                 background-color: rgba(214, 214, 214, 0.6);
                 text-align: right;
-                z-index: 2147483647;
                 user-select: none;
 
                 .count{
