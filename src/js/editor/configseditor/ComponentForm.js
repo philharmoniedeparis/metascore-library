@@ -243,12 +243,10 @@ export default class ComponentForm extends Dom {
         });
 
         this.components.forEach((component) => {
-            const left = parseInt(component.css('left'), 10) + offsetX;
-            const top = parseInt(component.css('top'), 10) + offsetY;
+            const x = parseInt(component.css('left'), 10) + offsetX;
+            const y = parseInt(component.css('top'), 10) + offsetY;
 
-            component
-                .css('left', `${left}px`)
-                .css('top', `${top}px`);
+            component.setPropertyValues({'x': x, 'y': y}, true);
         });
 
         const fields = ['x', 'y'];
@@ -316,7 +314,20 @@ export default class ComponentForm extends Dom {
         const state = evt.detail.behavior.getState();
 
         Object.entries(state.new_values).forEach(([key, value]) => {
-            component.css(key, `${value}px`);
+            switch(key){
+                case 'left':
+                    component.setPropertyValue('x', value, true);
+                    break;
+
+                case 'top':
+                    component.setPropertyValue('y', value, true);
+                    break;
+
+                case 'width':
+                case 'height':
+                    component.setPropertyValue(key, value, true);
+                    break;
+            }
         });
 
         const fields = ['x', 'y', 'width', 'height'];
