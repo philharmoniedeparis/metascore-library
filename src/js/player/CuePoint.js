@@ -109,7 +109,7 @@ export default class CuePoint extends EventEmitter{
             this.previous_time = time;
         }
 
-        if((Math.ceil(time) < this.configs.inTime) || (Math.floor(time) > this.configs.outTime)){
+        if((time < this.configs.inTime) || (time > this.configs.outTime)){
             this.triggerEvent('seekout');
             this.stop();
         }
@@ -197,7 +197,7 @@ export default class CuePoint extends EventEmitter{
         const time = MasterClock.getTime();
 
         if(!this.running){
-            if(((this.configs.inTime === null) || (Math.floor(time) >= this.configs.inTime)) && ((this.configs.outTime === null) || (Math.ceil(time) < this.configs.outTime))){
+            if(((this.configs.inTime === null) || (time >= this.configs.inTime)) && ((this.configs.outTime === null) || (time < this.configs.outTime))){
                 this.start();
             }
         }
@@ -214,7 +214,7 @@ export default class CuePoint extends EventEmitter{
                 this.triggerEvent('update');
             }
 
-            if((this.configs.outTime !== null) && (Math.floor(time + this.max_error) >= this.configs.outTime)){
+            if((this.configs.outTime !== null) && (time + this.max_error >= this.configs.outTime)){
                 this.stop();
             }
         }
