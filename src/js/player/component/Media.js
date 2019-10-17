@@ -1,5 +1,6 @@
 import Component from '../Component';
-import {getRendererForMime} from '../../core/utils/Media';
+import Dom from '../../core/Dom';
+import {MasterClock} from '../../core/media/Clock';
 
 /**
  * A media component
@@ -16,9 +17,7 @@ export default class Media extends Component{
         // call parent constructor
         super(configs);
 
-        this
-            .addClass('media')
-            .addClass(this.configs.tag);
+        this.addClass('media');
     }
 
     /**
@@ -34,6 +33,12 @@ export default class Media extends Component{
             'properties': Object.assign({}, defaults.properties, {
                 'type': {
                     'type': 'string'
+                },
+                'name': {
+                    'type': 'string',
+                    'setter': function(value){
+                        this.data('name', value);
+                    }
                 },
                 'hidden': {
                     'type': 'boolean',
@@ -97,148 +102,74 @@ export default class Media extends Component{
     }
 
     /**
-     * Get the renderer
-     *
-     * @return {Dom} The renderer
+     * @inheritdoc
      */
-    getRenderer(){
-        return this.renderer;
-    }
+    setupUI(){
+        // call parent function
+        super.setupUI();
 
-    /**
-     * Set the media source
-     *
-     * @param {Object} source The source as objects with 'url' and 'mime' keys
-     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
-     * @return {this}
-     */
-    setSource(source, supressEvent){
-        if(this.renderer){
-            this.renderer.remove();
-        }
+        /**
+         * The cursor's line
+         * @type {Dom}
+         */
+        const canvas = new Dom('<canvas/>')
+            .appendTo(this);
 
-        const renderer = getRendererForMime(source.mime);
-        if(renderer){
-            /**
-             * The renderer
-             * @type {Dom}
-             */
-            this.renderer = new renderer({'tag': this.configs.tag})
-                .addListener('ready', (evt) => {
-                    evt.detail.renderer.setSource(source, supressEvent);
-                })
-                .appendTo(this)
-                .init();
-        }
+        this.canvas = canvas.get(0);
+        this.context = this.canvas.getContext('2d');
 
-        return this;
+        this.addListener('activate', this.onActivate.bind(this));
 
-    }
-
-    /**
-     * Get the value of the media's name property
-     *
-     * @return {String} The name
-     */
-    getName() {
-        return '[media]';
-    }
-
-    /**
-     * Check whether the media is playing
-     *
-     * @return {Boolean} Whether the media is playing
-     */
-    isPlaying() {
-        return this.getRenderer().isPlaying();
-    }
-
-    /**
-     * Reset the media time
-     *
-     * @return {this}
-     */
-    reset() {
-        this.setTime(0);
+        MasterClock.addListener('timeupdate', this.onMediaClockTimeupdate.bind(this));
 
         return this;
     }
 
     /**
-     * Play the media
+     * The activate event handler
+     *
+     * @private
+     */
+    onActivate(){
+        this.draw();
+    }
+
+    /**
+     * The media clock timeupdate event handler
+     *
+     * @private
+     */
+    onMediaClockTimeupdate(){
+        this.draw();
+    }
+
+    /**
+     * The propchange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onOwnPropChange(evt){
+        super.onOwnPropChange(evt);
+
+        this.draw();
+    }
+
+    /**
+     * Update the <canvas> size
      *
      * @return {this}
      */
-    play() {
-        this.getRenderer().play();
+    draw(){
+        if(this.isActive()){
+            const video = MasterClock.getRenderer().getDom();
+
+            this.canvas.width = video.videoWidth;
+            this.canvas.height = video.videoHeight;
+
+            this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
+        }
 
         return this;
     }
-
-    /**
-     * Pause the media
-     *
-     * @return {this}
-     */
-    pause() {
-        this.getRenderer().pause();
-
-        return this;
-    }
-
-    /**
-     * Set the media time
-     *
-     * @param {Number} time The time in centiseconds
-     * @return {this}
-     */
-    setTime(time) {
-        this.getRenderer().setTime(time);
-
-        return this;
-    }
-
-    /**
-     * Get the current media time
-     *
-     * @return {Number} The time in centiseconds
-     */
-    getTime() {
-        const renderer = this.getRenderer();
-
-        if(renderer){
-            return renderer.getTime();
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the media's duration
-     *
-     * @return {Number} The duration in centiseconds
-     */
-    getDuration() {
-        const renderer = this.getRenderer();
-
-        if(renderer){
-            return renderer.getDuration();
-        }
-
-        return null;
-    }
-
-    /**
-     * Remove from dom
-     *
-     * @return {this}
-     */
-    remove() {
-        if(this.renderer){
-            this.renderer.remove();
-        }
-
-        return super.remove();
-    }
-
 }

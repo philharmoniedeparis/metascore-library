@@ -16,7 +16,6 @@ export default class CuePoint extends EventEmitter{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Media} media The media component to which the cuepoint is attached
      * @property {Number} [inTime] The time at which the cuepoint starts
      * @property {Number} [outTime] The time at which the cuepoint stops
      * @property {Boolean} [considerError] Whether to estimate and use the error margin in timed events

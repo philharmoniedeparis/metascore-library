@@ -178,5 +178,5 @@
 	"player.block.Pager.count": "page !current/!count",
 	"player.component.Page.name": "page !index",
 	"player.contextmenu.about": "metaScore v.!version",
-	"player.onMediaError.ok": "OK"
+	"player.onRendererError.ok": "OK"
 }

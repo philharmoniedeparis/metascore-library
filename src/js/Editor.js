@@ -1,7 +1,4 @@
-/* eslint-disable */
-
 import Dom from './core/Dom';
-import {getMediaFileDuration} from './core/utils/Media';
 import {MasterClock} from './core/media/Clock';
 import {isArray} from './core/utils/Var';
 import Locale from './core/Locale';
@@ -997,7 +994,7 @@ export default class Editor extends Dom {
                 break;
 
             case 'rewind':
-                this.getPlayer().getMedia().reset();
+                MasterClock.setTime(0);
                 break;
         }
     }
@@ -1047,7 +1044,7 @@ export default class Editor extends Dom {
      */
     onTimeInputValueIn(evt){
         const input = evt.detail.input;
-        const time = this.getPlayer().getMedia().getTime();
+        const time = MasterClock.getTime();
 
         input.setValue(time);
     }
@@ -1140,7 +1137,7 @@ export default class Editor extends Dom {
                     }
                 });
             })
-            .addOneTimeListener('loadedmetadata', (evt) => {
+            .addOneTimeListener('loadedmetadata', () => {
                 loadmask.hide();
             });
     }
@@ -1151,13 +1148,10 @@ export default class Editor extends Dom {
      * @private
      */
     onPlayerLoadedMetadata(evt){
-        const media = this.getPlayer().getMedia();
-
         this.addClass('metadata-loaded');
 
         MasterClock.setRenderer(evt.detail.renderer);
-
-        media.reset();
+        MasterClock.setTime(0);
     }
 
     /**
@@ -1851,9 +1845,7 @@ export default class Editor extends Dom {
         if(typeof key !== 'undefined'){
             return key in this.dirty && this.dirty[key];
         }
-        else{
-            return Object.keys(this.dirty).length > 0;
-        }
+        return Object.keys(this.dirty).length > 0;
     }
 
     /**
@@ -1948,24 +1940,22 @@ export default class Editor extends Dom {
                 const components = [];
 
                 configs.forEach((element_config) => {
-                    const type = element_config.type;
-                    const el_index = page.children(`.element.${type}`).count() + 1;
+                    const el_index = page.children(`.element.${element_config.type}`).count() + 1;
                     const defaults = {};
 
-                    switch(type){
-                        case 'Cursor': {
-                                defaults.name = `cur ${el_index}`;
+                    switch(element_config.type){
+                        case 'Cursor':
+                            defaults.name = `cur ${el_index}`;
 
-                                defaults['start-time'] = page.getPropertyValue('start-time');
-                                if(defaults['start-time'] === null){
-                                    defaults['start-time'] = MasterClock.getTime();
-                                }
-
-                                defaults['end-time'] = page.getPropertyValue('end-time');
-                                if(defaults['end-time'] === null){
-                                    defaults['end-time'] = MasterClock.getRenderer().getDuration();
-                                }
+                            defaults['start-time'] = page.getPropertyValue('start-time');
+                            if(defaults['start-time'] === null){
+                                defaults['start-time'] = MasterClock.getTime();
                             }
+
+                            defaults['end-time'] = page.getPropertyValue('end-time');
+                            if(defaults['end-time'] === null){
+                                defaults['end-time'] = MasterClock.getRenderer().getDuration();
+                                }
                             break;
 
                         case 'Content':
@@ -2000,15 +1990,12 @@ export default class Editor extends Dom {
                 const block = parent;
                 const before = 'position' in config  && config.position === 'before';
                 const index = block.getActivePageIndex();
-                let current_time = null;
+                const current_time = MasterClock.getTime();
 
                 delete config.position;
 
                 if(block.getPropertyValue('synched')){
-                    const media = this.getPlayer().getMedia();
-                    const duration = media.getDuration();
-
-                    current_time = media.getTime();
+                    const duration = MasterClock.getRenderer().getDuration();
 
                     // prevent adding the page if current time == 0 or >= media duration
                     if(current_time === 0 || current_time >= duration){
@@ -2043,7 +2030,7 @@ export default class Editor extends Dom {
                         component.remove();
                         block.setActivePage(index);
                     },
-                    'redo': ()=> {
+                    'redo': () => {
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(index);
                             const prop = before ? 'start-time' : 'end-time';
@@ -2182,7 +2169,6 @@ export default class Editor extends Dom {
                 }
 
                 case 'page': {
-                    const player = this.getPlayer();
                     const contexts = {};
 
                     components.forEach((component) => {
@@ -2244,7 +2230,7 @@ export default class Editor extends Dom {
 
                                 if(context.block.getPropertyValue('synched')){
                                     configs['start-time'] = 0;
-                                    configs['end-time'] = player.getMedia().getDuration();
+                                    configs['end-time'] = MasterClock.getRenderer().getDuration();
                                 }
 
                                 context.auto_page = context.block.addPage(configs);

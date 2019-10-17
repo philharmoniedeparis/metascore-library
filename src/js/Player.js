@@ -13,6 +13,7 @@ import Controller from './player/component/Controller';
 import BlockToggler from './player/component/BlockToggler';
 import Block from './player/component/Block';
 import {isEmpty} from './core/utils/Var';
+import {getRendererForMime} from './core/utils/Media';
 
 /**
  * Provides the main Player class
@@ -141,7 +142,7 @@ export default class Player extends Dom {
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .appendTo(this.configs.container);
 
-        MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
+        MasterClock.addListener('timeupdate', this.onMasterClockTimeUpdate.bind(this));
 
         this.triggerEvent('ready', {'player': this}, false, false);
 
@@ -218,11 +219,11 @@ export default class Player extends Dom {
                 break;
 
             case 'pause':
-                this.getMedia().pause();
+                this.getRenderer().pause();
                 break;
 
             case 'seek':
-                this.getMedia().setTime(params.seconds);
+                this.getRenderer().setTime(params.seconds);
                 break;
 
             case 'page':
@@ -255,14 +256,14 @@ export default class Player extends Dom {
             case 'playing':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
-                    'params': this.getMedia().isPlaying()
+                    'params': this.getRenderer().isPlaying()
                 }), origin);
                 break;
 
             case 'time':
                 source.postMessage(JSON.stringify({
                     'callback': params.callback,
-                    'params': this.getMedia().getTime()
+                    'params': this.getRenderer().getTime()
                 }), origin);
                 break;
 
@@ -322,7 +323,7 @@ export default class Player extends Dom {
 
         switch(action){
             case 'rewind':
-                this.getMedia().reset();
+                this.getRenderer().setTime(0);
                 break;
 
             case 'play':
@@ -338,7 +339,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaSourceSet(evt){
+    onRendererSourceSet(evt){
         MasterClock.setRenderer(evt.detail.renderer);
     }
 
@@ -347,7 +348,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaWaiting(){
+    onRendererWaiting(){
         this.addClass('media-waiting');
     }
 
@@ -356,7 +357,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaSeeking(){
+    onRendererSeeking(){
         this.addClass('media-waiting');
     }
 
@@ -365,7 +366,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaSeeked(){
+    onRendererSeeked(){
         this.removeClass('media-waiting');
     }
 
@@ -374,7 +375,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaPlaying(){
+    onRendererPlaying(){
         this.removeClass('media-waiting');
 
         if(this.controller){
@@ -387,7 +388,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaPlay(){
+    onRendererPlay(){
         this.removeClass('media-waiting');
 
         if(this.controller){
@@ -400,7 +401,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaPause(){
+    onRendererPause(){
         this.removeClass('media-waiting');
 
         if(this.controller){
@@ -409,22 +410,11 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media timeupdate event callback
-     *
-     * @private
-     */
-    onMediaClockTimeUpdate(){
-        if(this.controller){
-            this.controller.updateTime(MasterClock.getTime());
-        }
-    }
-
-    /**
      * Media suspend event callback
      *
      * @private
      */
-    onMediaSuspend(){
+    onRendererSuspend(){
         this.removeClass('media-waiting');
     }
 
@@ -433,7 +423,7 @@ export default class Player extends Dom {
      *
      * @private
      */
-    onMediaStalled(){
+    onRendererStalled(){
         this.removeClass('media-waiting');
     }
 
@@ -443,7 +433,7 @@ export default class Player extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onMediaError(evt){
+    onRendererError(evt){
         const message = evt.detail.message;
 
         this.removeClass('media-waiting');
@@ -454,7 +444,7 @@ export default class Player extends Dom {
                 'parent': this,
                 'text': message,
                 'buttons': {
-                    'ok': Locale.t('player.onMediaError.ok', 'OK'),
+                    'ok': Locale.t('player.onRendererError.ok', 'OK'),
                 }
             });
         }
@@ -462,6 +452,17 @@ export default class Player extends Dom {
         this.triggerEvent('mediaerror', {'player': this, 'message': message});
 
         evt.stopPropagation();
+    }
+
+    /**
+     * Media timeupdate event callback
+     *
+     * @private
+     */
+    onMasterClockTimeUpdate(){
+        if(this.controller){
+            this.controller.updateTime(MasterClock.getTime());
+        }
     }
 
     /**
@@ -486,7 +487,7 @@ export default class Player extends Dom {
      */
     onCursorElementTime(evt){
         if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
-            this.getMedia().setTime(evt.detail.time);
+            this.getRenderer().setTime(evt.detail.time);
         }
     }
 
@@ -579,8 +580,7 @@ export default class Player extends Dom {
                      * The media block
                      * @type {Media}
                      */
-                    this.media = this.addMedia(Object.assign({}, component, {'tag': this.data.media.type}))
-                        .setSource(this.data.media);
+                    this.media = this.addMedia(component);
                     break;
 
                 case 'Controller':
@@ -605,6 +605,7 @@ export default class Player extends Dom {
         }
 
         this
+            .setSource(this.data.media)
             .updateBlockTogglers()
             .removeClass('loading');
 
@@ -678,12 +679,51 @@ export default class Player extends Dom {
     }
 
     /**
-     * Get the media instance
+     * Get the renderer
      *
-     * @return {Media} The media instance
+     * @return {Dom} The renderer
      */
-    getMedia() {
-        return this.media;
+    getRenderer(){
+        return this.renderer;
+    }
+
+    /**
+     * Set the media source
+     *
+     * @param {Object} source The source as objects with 'url' and 'mime' keys
+     * @param {Boolean} [supressEvent=false] Whether to supress the sourcesset event
+     * @return {this}
+     */
+    setSource(source, supressEvent){
+        if(this.renderer){
+            this.renderer.remove();
+        }
+
+        const renderer = getRendererForMime(source.mime);
+        if(renderer){
+            /**
+             * The renderer
+             * @type {Dom}
+             */
+            this.renderer = new renderer({'tag': this.data.media.type})
+                .addListener('ready', (evt) => {
+                    evt.detail.renderer.setSource(source, supressEvent);
+                })
+                .addListener('sourceset', this.onRendererSourceSet.bind(this))
+                .addListener('waiting', this.onRendererWaiting.bind(this))
+                .addListener('seeking', this.onRendererSeeking.bind(this))
+                .addListener('seeked', this.onRendererSeeked.bind(this))
+                .addListener('playing', this.onRendererPlaying.bind(this))
+                .addListener('play', this.onRendererPlay.bind(this))
+                .addListener('pause', this.onRendererPause.bind(this))
+                .addListener('suspend', this.onRendererSuspend.bind(this))
+                .addListener('stalled', this.onRendererStalled.bind(this))
+                .addListener('error', this.onRendererError.bind(this))
+                .appendTo(this)
+                .init();
+        }
+
+        return this;
     }
 
     /**
@@ -702,7 +742,7 @@ export default class Player extends Dom {
             }
 
             if('media' in data){
-                this.getMedia().setSource(data.media);
+                this.setSource(data.media);
             }
 
             if('vid' in data){
@@ -775,16 +815,6 @@ export default class Player extends Dom {
         }
         else{
             media = new Media(media)
-                .addListener('sourceset', this.onMediaSourceSet.bind(this))
-                .addListener('waiting', this.onMediaWaiting.bind(this))
-                .addListener('seeking', this.onMediaSeeking.bind(this))
-                .addListener('seeked', this.onMediaSeeked.bind(this))
-                .addListener('playing', this.onMediaPlaying.bind(this))
-                .addListener('play', this.onMediaPlay.bind(this))
-                .addListener('pause', this.onMediaPause.bind(this))
-                .addListener('suspend', this.onMediaSuspend.bind(this))
-                .addListener('stalled', this.onMediaStalled.bind(this))
-                .addListener('error', this.onMediaError.bind(this))
                 .appendTo(this.components_container)
                 .init();
         }
@@ -903,7 +933,7 @@ export default class Player extends Dom {
             const page_configs = {};
             if(block.getPropertyValue('synched')){
                 page_configs['start-time'] = 0;
-                page_configs['end-time'] = this.getMedia().getDuration();
+                page_configs['end-time'] = this.getRenderer().getDuration();
             }
             block.addPage(page_configs);
         }
@@ -940,13 +970,13 @@ export default class Player extends Dom {
      * @return {this}
      */
     togglePlay() {
-        const media = this.getMedia();
+        const renderer = this.getRenderer();
 
-        if(media.isPlaying()){
-            media.pause();
+        if(renderer.isPlaying()){
+            renderer.pause();
         }
         else{
-            media.play();
+            renderer.play();
         }
 
         return this;
@@ -961,8 +991,6 @@ export default class Player extends Dom {
      * @return {this}
      */
     play(inTime, outTime, scenario){
-        const media = this.getMedia();
-
         if(this.cuepoint){
             this.cuepoint.deactivate();
         }
@@ -971,7 +999,7 @@ export default class Player extends Dom {
         const _outTime = parseFloat(outTime);
 
         if(isNaN(_inTime)){
-            media.play();
+            this.getRenderer().play();
         }
         else{
             /**
@@ -979,7 +1007,6 @@ export default class Player extends Dom {
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint({
-                'media': media,
                 'inTime': _inTime,
                 'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
@@ -989,7 +1016,7 @@ export default class Player extends Dom {
                 delete this.cuepoint;
             })
             .addListener('stop', (evt) => {
-                evt.target.getMedia().pause();
+                evt.target.getRenderer().pause();
             });
 
             if(scenario){
@@ -1005,7 +1032,7 @@ export default class Player extends Dom {
 
             this.cuepoint.activate();
 
-            media.setTime(_inTime).play();
+            this.getRenderer().setTime(_inTime).play();
         }
 
         return this;

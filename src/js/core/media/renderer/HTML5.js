@@ -140,6 +140,10 @@ export default class HTML5 extends Dom {
         return this;
     }
 
+    getDom(){
+        return this.dom;
+    }
+
     /**
     * Set the media source
     *

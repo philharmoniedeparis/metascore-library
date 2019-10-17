@@ -32,7 +32,11 @@ export default class MediaForm extends ComponentForm {
             'title': Locale.t('editor.configseditor.MediaForm.title.single', 'Attributes of media'),
             'title_plural': Locale.t('editor.configseditor.MediaForm.title.plural', 'Attributes of @count media'),
             'fields': [
+                'name',
                 'hidden',
+                'scenario',
+                'background',
+                'border',
                 'position',
                 'dimension'
             ]
