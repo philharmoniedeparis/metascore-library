@@ -1947,15 +1947,12 @@ export default class Editor extends Dom {
                         case 'Cursor':
                             defaults.name = `cur ${el_index}`;
 
-                            defaults['start-time'] = page.getPropertyValue('start-time');
-                            if(defaults['start-time'] === null){
-                                defaults['start-time'] = MasterClock.getTime();
-                            }
-
+                            defaults['start-time'] = MasterClock.getTime();
                             defaults['end-time'] = page.getPropertyValue('end-time');
+
                             if(defaults['end-time'] === null){
                                 defaults['end-time'] = MasterClock.getRenderer().getDuration();
-                                }
+                            }
                             break;
 
                         case 'Content':
