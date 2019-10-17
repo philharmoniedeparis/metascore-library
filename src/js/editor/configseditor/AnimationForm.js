@@ -50,7 +50,7 @@ export default class AnimationForm extends ElementForm {
                 'border',
                 'time',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

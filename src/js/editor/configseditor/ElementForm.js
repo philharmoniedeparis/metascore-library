@@ -38,7 +38,7 @@ export default class ElementForm extends ComponentForm {
                 'border',
                 'time',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

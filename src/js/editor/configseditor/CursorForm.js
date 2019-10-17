@@ -51,7 +51,7 @@ export default class CursorForm extends ElementForm {
                 'cursor-color',
                 'time',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

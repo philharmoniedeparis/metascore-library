@@ -38,7 +38,7 @@ export default class BlockForm extends ComponentForm {
                 'background',
                 'border',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

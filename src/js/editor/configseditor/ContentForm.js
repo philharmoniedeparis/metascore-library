@@ -47,7 +47,7 @@ export default class ContentForm extends ElementForm {
                 'border',
                 'time',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

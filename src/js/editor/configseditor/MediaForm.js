@@ -34,7 +34,7 @@ export default class MediaForm extends ComponentForm {
             'fields': [
                 'hidden',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }

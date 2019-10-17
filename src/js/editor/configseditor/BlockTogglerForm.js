@@ -38,7 +38,7 @@ export default class BlockTogglerForm extends BlockForm {
                 'background',
                 'border',
                 'position',
-                'dimention'
+                'dimension'
             ]
         });
     }
