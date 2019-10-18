@@ -1,4 +1,5 @@
 import ElementForm from './ElementForm';
+import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Field from '../Field';
 import SelectInput from '../../core/ui/input/SelectInput';
@@ -271,6 +272,9 @@ export default class CursorForm extends ElementForm {
         const component = this.getMasterComponent();
         this.keyframes_editor = new CursorKeyframesEditor(component);
 
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0)).addClass('keyframes-editing');
+
         if(supressEvent !== true){
             this.triggerEvent('keyframeseditingstart', {'component': component, 'editor': this.keyframes_editor});
         }
@@ -286,12 +290,16 @@ export default class CursorForm extends ElementForm {
      * @return {this}
      */
     exitKeyframesEditMode(supressEvent){
+        const component = this.getMasterComponent();
+
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+        new Dom(component.get(0)).removeClass('keyframes-editing');
+
         if(this.keyframes_editor){
             this.keyframes_editor.remove();
             delete this.keyframes_editor;
 
             if(supressEvent !== true){
-                const component = this.getMasterComponent();
                 this.triggerEvent('keyframeseditingstop', {'component': component, 'editor': this.keyframes_editor});
             }
         }

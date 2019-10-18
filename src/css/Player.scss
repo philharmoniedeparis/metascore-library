@@ -285,8 +285,6 @@ body{
             pointer-events: none;
 
             .contents{
-                visibility: hidden;
-                pointer-events: none;
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -302,11 +300,6 @@ body{
 
             &.active{
                 pointer-events: auto;
-
-                .contents{
-                    visibility: visible;
-                    pointer-events: auto;
-                }
             }
 
             &.Cursor{
