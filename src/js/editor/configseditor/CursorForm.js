@@ -76,9 +76,7 @@ export default class CursorForm extends ElementForm {
      * @inheritdoc
      */
     unsetComponents(){
-        if(this.components.length === 1){
-            this.exitKeyframesEditMode();
-        }
+        this.keyframes_toggle.setValue(false);
 
         super.unsetComponents();
 
@@ -271,10 +269,10 @@ export default class CursorForm extends ElementForm {
      */
     enterKeyframesEditMode(supressEvent){
         const component = this.getMasterComponent();
-        component._keyframes_editor = new CursorKeyframesEditor(component);
+        this.keyframes_editor = new CursorKeyframesEditor(component);
 
         if(supressEvent !== true){
-            this.triggerEvent('keyframeseditingstart', {'component': component});
+            this.triggerEvent('keyframeseditingstart', {'component': component, 'editor': this.keyframes_editor});
         }
 
         return this;
@@ -288,13 +286,13 @@ export default class CursorForm extends ElementForm {
      * @return {this}
      */
     exitKeyframesEditMode(supressEvent){
-        const component = this.getMasterComponent();
-        if(component._keyframes_editor){
-            component._keyframes_editor.remove();
-            delete component._keyframes_editor;
+        if(this.keyframes_editor){
+            this.keyframes_editor.remove();
+            delete this.keyframes_editor;
 
             if(supressEvent !== true){
-                this.triggerEvent('keyframeseditingstop', {'component': component});
+                const component = this.getMasterComponent();
+                this.triggerEvent('keyframeseditingstop', {'component': component, 'editor': this.keyframes_editor});
             }
         }
 

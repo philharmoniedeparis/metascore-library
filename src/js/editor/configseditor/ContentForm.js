@@ -57,7 +57,9 @@ export default class ContentForm extends ElementForm {
 
         if(this.components.length === 1){
             this.contents_toggle.show();
-            this.setupContentsEditMode();
+
+            const component = this.getMasterComponent();
+            new Dom(component.get(0)).addListener('dblclick', this.onComponentDblClick);
         }
         else{
             this.contents_toggle.hide();
@@ -67,9 +69,10 @@ export default class ContentForm extends ElementForm {
     }
 
     unsetComponents(){
-        if(this.components.length === 1){
-            this.destroyContentsEditMode();
-        }
+        this.contents_toggle.setValue(false);
+
+        const component = this.getMasterComponent();
+        new Dom(component.get(0)).removeListener('dblclick', this.onComponentDblClick);
 
         super.unsetComponents();
 
@@ -150,18 +153,6 @@ export default class ContentForm extends ElementForm {
      */
     onComponentContentsKey(evt){
         evt.stopPropagation();
-    }
-
-    setupContentsEditMode(){
-        const component = this.getMasterComponent();
-        new Dom(component.get(0)).addListener('dblclick', this.onComponentDblClick);
-    }
-
-    destroyContentsEditMode(){
-        this.exitContentsEditMode();
-
-        const component = this.getMasterComponent();
-        new Dom(component.get(0)).removeListener('dblclick', this.onComponentDblClick);
     }
 
     /**

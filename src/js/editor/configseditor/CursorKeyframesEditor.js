@@ -25,7 +25,8 @@ export default class CursorKeyframesEditor extends Dom {
             'labelFontFamily': 'Arial',
             'labelColor': '#FFF',
             'labelPadding': 2,
-            'mouseoverDistance': 1
+            'mouseoverDistance': 1,
+            'contextmenuContainer': '.metaScore-editor .workspace'
         };
     }
 
@@ -97,38 +98,38 @@ export default class CursorKeyframesEditor extends Dom {
          * @type {ContextMenu}
          */
         this.contextmenu = new ContextMenu({'target': component_dom, 'items': {
-            'add-cursor-keyframe': {
-                'text': Locale.t('editor.contextmenu.add-cursor-keyframe', 'Add a position'),
-                'callback': (context) => {
-                    const mouse_position = this.getRelativeMousePosition(context.x, context.y);
-                    const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
-                    const time = MasterClock.getTime();
+                'add': {
+                    'text': Locale.t('editor.configseditor.CursorKeyframesEditor.contextmenu.add', 'Add a position'),
+                    'callback': (context) => {
+                        const mouse_position = this.getRelativeMousePosition(context.x, context.y);
+                        const position = this.getKeyframePositionFromMouse(mouse_position.x, mouse_position.y);
+                        const time = MasterClock.getTime();
 
-                    this.addKeyframe(position, time);
-                },
-                'toggler': (context) => {
-                    return context.el.data('state') === 'add';
-                }
-            },
-            'delete-cursor-keyframe': {
-                'text': Locale.t('editor.contextmenu.delete-cursor-keyframe', 'Delete position'),
-                'callback': () => {
-                    // Check if there is a keyframe at that position.
-                    const found = this.keyframes.findIndex((keyframe) => {
-                        return keyframe === this.over_keyframe;
-                    });
-
-                    if(found > -1){
-                        this.removeKeyframe(found);
+                        this.addKeyframe(position, time);
+                    },
+                    'toggler': (context) => {
+                        return context.el.data('state') === 'add';
                     }
                 },
-                'toggler': (context) => {
-                    const state = context.el.data('state');
-                    return state === 'over' || state === 'overlabel';
+                'delete': {
+                    'text': Locale.t('editor.configseditor.CursorKeyframesEditor.contextmenu.delete', 'Delete position'),
+                    'callback': () => {
+                        // Check if there is a keyframe at that position.
+                        const found = this.keyframes.findIndex((keyframe) => {
+                            return keyframe === this.over_keyframe;
+                        });
+
+                        if(found > -1){
+                            this.removeKeyframe(found);
+                        }
+                    },
+                    'toggler': (context) => {
+                        const state = context.el.data('state');
+                        return state === 'over' || state === 'overlabel';
+                    }
                 }
-            }
-        }})
-        .appendTo(component_dom.closest('.metaScore-player'));
+            }})
+            .appendTo(this.configs.contextmenuContainer);
     }
 
     /**
