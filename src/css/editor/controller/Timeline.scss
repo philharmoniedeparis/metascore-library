@@ -5,13 +5,8 @@
     flex-direction: row;
     background: $mediumgray;
 
-    .handles-container{
-        padding: 1px 0;
-    }
-
     .tracks-container {
         position: relative;
-        padding: 1px 0;
 
         .tracks-container-outer{
             position: absolute;
