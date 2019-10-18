@@ -54,6 +54,9 @@ export default class Editor extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        // Set the banner for ContextMenus
+        ContextMenu.setBannerText(Locale.t('Editor.contextmenuBanner', 'metaScore Editor v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
+
         /**
          * The dirty data keys
          * @type {Object}
@@ -262,7 +265,6 @@ export default class Editor extends Dom {
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
 
         this
-            .addListener('mousedown', this.onMousedown.bind(this))
             .addListener('keydown', this.onKeydown.bind(this))
             .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
@@ -283,17 +285,11 @@ export default class Editor extends Dom {
      * @return {this}
      */
     setupContextMenus(){
-
         /**
          * The editor's context menu
          * @type {ContextMenu}
          */
-        this.contextmenu = new ContextMenu({'target': this, 'items': {
-            'about': {
-                'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
-            }
-        }})
-        .appendTo(this);
+        this.contextmenu = new ContextMenu({'target': this}).appendTo(this);
 
         /**
          * The player's context menu
@@ -653,9 +649,6 @@ export default class Editor extends Dom {
                     'toggler': () => {
                         return this.editing === true;
                     }
-                },
-                'about': {
-                    'text': Locale.t('editor.contextmenu.about', 'metaScore v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()})
                 }
             }})
             .appendTo(this.workspace);
@@ -796,17 +789,6 @@ export default class Editor extends Dom {
                     evt.preventDefault();
                 }
                 break;
-        }
-    }
-
-    /**
-     * Mousedown event callback
-     *
-     * @private
-     */
-    onMousedown(){
-        if(this.player_contextmenu){
-            this.player_contextmenu.hide();
         }
     }
 
@@ -1184,15 +1166,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Player mousedown event callback
-     *
-     * @private
-      */
-    onPlayerMousedown(){
-        this.contextmenu.hide();
-    }
-
-    /**
      * Player componentadd event callback
      *
      * @private
@@ -1341,7 +1314,6 @@ export default class Editor extends Dom {
                 .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
                 .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
                 .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
-                .addListener('mousedown', this.onPlayerMousedown.bind(this))
                 .addListener('keydown', this.onKeydown.bind(this))
                 .addListener('keyup', this.onKeyup.bind(this))
                 .addListener('click', this.onPlayerClick.bind(this))

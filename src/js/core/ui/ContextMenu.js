@@ -3,6 +3,8 @@ import Dom from '../Dom';
 
 import {className} from '../../../css/core/ui/ContextMenu.scss';
 
+let banner_text = '';
+
 /**
  * A class for creating context menus
  *
@@ -13,6 +15,15 @@ import {className} from '../../../css/core/ui/ContextMenu.scss';
  * @param {Object} context The task's context
  */
 export default class ContextMenu extends Dom {
+
+    /**
+     * Set the bottom banner text
+     *
+     * @param {String} text The banner text
+     */
+    static setBannerText(text){
+        banner_text = text;
+    }
 
     /**
      * Instantiate
@@ -40,6 +51,8 @@ export default class ContextMenu extends Dom {
         // fix event handlers scope
         this.onTargetContextmenu = this.onTargetContextmenu.bind(this);
         this.onTargetMousedown = this.onTargetMousedown.bind(this);
+        this.onWindowMousedown = this.onWindowMousedown.bind(this);
+        this.onWindowBlur = this.onWindowBlur.bind(this);
         this.onWindowKeyup = this.onWindowKeyup.bind(this);
         this.onTaskClick = this.onTaskClick.bind(this);
 
@@ -50,6 +63,11 @@ export default class ContextMenu extends Dom {
             Object.entries(this.configs.items).forEach(([key, task]) => {
                 this.addTask(key, task, list);
             });
+        }
+
+        if(banner_text){
+            new Dom('<div/>', {'class': 'banner', 'text': banner_text})
+                .appendTo(this);
         }
 
         if(this.configs.target){
@@ -161,6 +179,24 @@ export default class ContextMenu extends Dom {
      * @private
      */
     onTargetMousedown(){
+        this.hide();
+    }
+
+    /**
+     * Window's mousedown event handler
+     *
+     * @private
+     */
+    onWindowMousedown(){
+        this.hide();
+    }
+
+    /**
+     * Window's blur event handler
+     *
+     * @private
+     */
+    onWindowBlur(){
         this.hide();
     }
 
@@ -323,23 +359,26 @@ export default class ContextMenu extends Dom {
         // call parent function
         super.show();
 
-        Dom.addListener(Dom.getElementWindow(this.target.get(0)), 'keyup', this.onWindowKeyup);
+        const win = Dom.getElementWindow(this.get(0));
+        Dom.addListener(win, 'mousedown', this.onWindowMousedown);
+        Dom.addListener(win, 'blur', this.onWindowBlur);
+        Dom.addListener(win, 'keyup', this.onWindowKeyup);
 
         const menu_el = this.get(0);
-        const window = Dom.getElementWindow(evt.target);
-        const window_width = window.innerWidth;
-        const window_height = window.innerHeight;
+        const target_win = Dom.getElementWindow(evt.target);
+        const target_win_width = target_win.innerWidth;
+        const target_win_height = target_win.innerHeight;
         const menu_width = menu_el.offsetWidth;
         const menu_height = menu_el.offsetHeight;
 
         let _x = x;
-        if((menu_width + _x) > window_width){
-            _x = window_width - menu_width;
+        if((menu_width + _x) > target_win_width){
+            _x = target_win_width - menu_width;
         }
 
         let _y = y;
-        if((menu_height + _y) > window_height){
-            _y = window_height - menu_height;
+        if((menu_height + _y) > target_win_height){
+            _y = target_win_height - menu_height;
         }
 
         this

@@ -63,6 +63,9 @@ export default class Player extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        // Set the banner for ContextMenus
+        ContextMenu.setBannerText(Locale.t('Player.contextmenuBanner', 'metaScore Player v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
+
         /**
          * Whether the player has finished loading
          * @type {Boolean}
@@ -128,9 +131,6 @@ export default class Player extends Dom {
          * @type {ContextMenu}
          */
         this.contextmenu = new ContextMenu({'target': this, 'items': {
-                'about': {
-                    'text': Locale.t('player.contextmenu.about', 'metaScore v.!version', {'!version': this.constructor.getVersion()})
-                },
                 'logo': {
                     'class': 'logo'
                 }

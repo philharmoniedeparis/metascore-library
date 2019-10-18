@@ -1,4 +1,6 @@
 {
+	"Editor.contextmenuBanner": "metaScore Editor v.!version r.!revision",
+	"Player.contextmenuBanner": "metaScore Player v.!version r.!revision",
 	"core.Confirm.cancelLabel": "No",
 	"core.Confirm.confirmLabel": "Yes",
 	"core.Prompt.cancelLabel": "Cancel",
@@ -114,7 +116,6 @@
 	"editor.configseditor.MediaForm.title.single": "Attributes of media",
 	"editor.configseditor.PageForm.title.plural": "Attributes of @count pages",
 	"editor.configseditor.PageForm.title.single": "Attributes of page",
-	"editor.contextmenu.about": "metaScore v.!version r.!revision",
 	"editor.contextmenu.add-block": "Add a block",
 	"editor.contextmenu.add-block-non-synched": "Non-synchronized",
 	"editor.contextmenu.add-block-synched": "Synchronized",
@@ -177,6 +178,5 @@
 	"overlay.LoadMask.text": "Loading...",
 	"player.block.Pager.count": "page !current/!count",
 	"player.component.Page.name": "page !index",
-	"player.contextmenu.about": "metaScore v.!version",
 	"player.onRendererError.ok": "OK"
 }
