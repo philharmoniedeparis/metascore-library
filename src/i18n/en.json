@@ -67,6 +67,7 @@
 	"editor.configseditor.AnimationForm.title.single": "Attributes of animation",
 	"editor.configseditor.BlockForm.title.plural": "Attributes of @count blocks",
 	"editor.configseditor.BlockForm.title.single": "Attributes of block",
+	"editor.configseditor.BlockTogglerForm.fields.blocks.label": "Blocks",
 	"editor.configseditor.BlockTogglerForm.title.plural": "Attributes of @count block togglers",
 	"editor.configseditor.BlockTogglerForm.title.single": "Attributes of block toggler",
 	"editor.configseditor.ComponentForm.fields.background-color.label": "Background color",

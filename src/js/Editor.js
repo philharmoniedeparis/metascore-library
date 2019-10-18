@@ -795,22 +795,42 @@ export default class Editor extends Dom {
         }
     }
 
+    /**
+     * AssetBrowser tabchange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onAssetBrowserTabChange(evt){
         this.toggleClass('assetbrowser-expanded', evt.detail.tab === 'shared-assets');
     }
 
+    /**
+     * AssetBrowser assetadd event callback
+     *
+     * @private
+     */
     onAssetBrowserAssetAdd(){
         this.setDirty('assets');
-
-        this.configs_editor.updateImageFields(this.asset_browser.getGuideAssets().getAssets());
+        this.updateConfigEditorImageFields();
     }
 
+    /**
+     * AssetBrowser assetremove event callback
+     *
+     * @private
+     */
     onAssetBrowserAssetRemove(){
         this.setDirty('assets');
-
-        this.configs_editor.updateImageFields(this.asset_browser.getGuideAssets().getAssets());
+        this.updateConfigEditorImageFields();
     }
 
+    /**
+     * AssetBrowser componentlinkclick event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onAssetBrowserComponentLinkClick(evt){
         const component = evt.detail.component;
         const type = component.type;
@@ -959,7 +979,7 @@ export default class Editor extends Dom {
         player.getScenarios().push(scenario);
         player.setActiveScenario(scenario);
 
-        this.configs_editor.updateScenarioFields(this.player.getScenarios());
+        this.updateConfigEditorScenarioFields();
 
         this.setDirty('scenarios');
     }
@@ -1230,6 +1250,9 @@ export default class Editor extends Dom {
         // Update scenario selector
         this.controller.getScenarioSelector().setActiveScenario(scenario, true);
 
+        // Update ConfigEditor component fields
+        this.updateConfigEditorComponentFields();
+
         // Update timeline
         const timeline = this.controller.getTimeline();
         this.getPlayer().getRootComponents().forEach((component) => {
@@ -1259,6 +1282,8 @@ export default class Editor extends Dom {
         }
 
         this.selectPlayerComponent(component);
+
+        this.updateConfigEditorComponentFields();
     }
 
     /**
@@ -1277,6 +1302,8 @@ export default class Editor extends Dom {
         if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
             this.getPlayer().updateBlockTogglers();
         }
+
+        this.updateConfigEditorComponentFields();
     }
 
     /**
@@ -1363,10 +1390,6 @@ export default class Editor extends Dom {
             .addAssets(this.player.getData('assets'), true)
             .addAssets(this.player.getData('shared_assets'), true);
 
-        this.configs_editor
-            .updateScenarioFields(this.player.getScenarios())
-            .updateImageFields(this.asset_browser.getGuideAssets().getAssets());
-
         // Update the timeline
         const timeline = this.controller.getTimeline();
         this.player.getRootComponents().forEach((component) => {
@@ -1378,7 +1401,11 @@ export default class Editor extends Dom {
             .clear()
             .addScenarios(this.player.getScenarios(), true);
 
-        this.updateMainmenu();
+        this
+            .updateMainmenu()
+            .updateConfigEditorScenarioFields()
+            .updateConfigEditorImageFields()
+            .updateConfigEditorComponentFields();
 
         if(this.player.getData('default_revision')){
             this.player
@@ -1423,7 +1450,7 @@ export default class Editor extends Dom {
      * Player error event callback
      *
      * @private
-     * @param {LoadMask} loadmask the loadmask to hide
+     * @param {LoadMask} loadmask The loadmask to hide
      */
     onPlayerLoadError(loadmask){
         loadmask.hide();
@@ -1437,6 +1464,12 @@ export default class Editor extends Dom {
         });
     }
 
+    /**
+     * Player dragover event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onPlayerDragOver(evt){
         /**
          * @todo: highlight drop zone
@@ -1452,6 +1485,12 @@ export default class Editor extends Dom {
         }
     }
 
+    /**
+     * Player drop event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onPlayerDrop(evt){
         if(this.getPlayer().hasClass('contents-unlocked')){
             return;
@@ -1459,10 +1498,10 @@ export default class Editor extends Dom {
 
         try{
             if(evt.dataTransfer.types.includes('metascore/component')){
-                this.onPlayerDropComponent(evt);
+                this.handlePlayerComponentDrop(evt);
             }
             else if(evt.dataTransfer.types.includes('metascore/asset')){
-                this.onPlayerDropAsset(evt);
+                this.handlePlayerAssetDrop(evt);
             }
         }
         catch(e){
@@ -1472,7 +1511,13 @@ export default class Editor extends Dom {
         evt.preventDefault();
     }
 
-    onPlayerDropComponent(evt){
+    /**
+     * Handle metascore/component drop on player
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    handlePlayerComponentDrop(evt){
         const data = JSON.parse(evt.dataTransfer.getData('metascore/component'));
 
         switch(data.type){
@@ -1502,10 +1547,15 @@ export default class Editor extends Dom {
                 }
                 break;
         }
-
     }
 
-    onPlayerDropAsset(evt){
+    /**
+     * Handle metascore/asset drop on player
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    handlePlayerAssetDrop(evt){
         const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
 
         if('shared' in asset && asset.shared){
@@ -1590,6 +1640,9 @@ export default class Editor extends Dom {
         if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
             if(['x', 'y', 'width', 'height', 'blocks'].includes(property)){
                 this.getPlayer().updateBlockTogglers();
+            }
+            else if(property === 'name'){
+                this.updateConfigEditorComponentFields();
             }
         }
 
@@ -1853,6 +1906,76 @@ export default class Editor extends Dom {
             .toggleItem('redo', this.history.hasRedo())
             .toggleItem('revert', this.isDirty())
             .toggleItem('restore', !default_revision);
+
+        return this;
+    }
+
+    /**
+     * Updates ConfigEditor scenario fields options
+     *
+     * @private
+     * @return {this}
+     */
+    updateConfigEditorScenarioFields(){
+        const scenarios = this.getPlayer().getScenarios();
+
+        Object.values(this.configs_editor.getForms()).forEach((form) => {
+            if('updateScenarioFields' in form){
+                form.updateScenarioFields(scenarios);
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * Updates ConfigEditor image fields options
+     *
+     * @private
+     * @return {this}
+     */
+    updateConfigEditorImageFields(){
+        const assets = this.asset_browser.getGuideAssets().getAssets();
+        const images = {};
+
+        Object.values(assets).forEach((asset) => {
+            let file = asset;
+            if('shared' in asset && asset.shared){
+                file = asset.file;
+            }
+
+            if(/^image\/.*/.test(file.mimetype)){
+                images[file.url] = asset.name;
+            }
+        });
+
+        Object.values(this.configs_editor.getForms()).forEach((form) => {
+            if('updateImageFields' in form){
+                form.updateImageFields(images);
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * Updates ConfigEditor component fields options
+     *
+     * @private
+     * @return {this}
+     */
+    updateConfigEditorComponentFields(){
+        const player = this.getPlayer();
+        const scenario = player.getActiveScenario();
+        const components = player.getRootComponents().filter((component) => {
+            return component.getPropertyValue('scenario') === scenario;
+        });
+
+        Object.values(this.configs_editor.getForms()).forEach((form) => {
+            if('updateComponentFields' in form){
+                form.updateComponentFields(components);
+            }
+        });
 
         return this;
     }

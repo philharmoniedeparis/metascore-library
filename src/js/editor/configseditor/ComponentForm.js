@@ -559,9 +559,11 @@ export default class ComponentForm extends Dom {
      * @return {this}
      */
     updateFieldValues(supressEvent){
-        Object.keys(this.getFields()).forEach((name) => {
-            this.updateFieldValue(name, supressEvent);
-        });
+        if(this.components){
+            Object.keys(this.getFields()).forEach((name) => {
+                this.updateFieldValue(name, supressEvent);
+            });
+        }
 
         return this;
     }
@@ -574,34 +576,36 @@ export default class ComponentForm extends Dom {
      * @return {this}
      */
     updateFieldValue(name, supressEvent){
-        const value = this.master_component.getPropertyValue(name);
-        const field = this.getField(name);
+        if(this.components){
+            const value = this.master_component.getPropertyValue(name);
+            const field = this.getField(name);
 
-        if(field && field instanceof Field){
-            const multival = this.components.length > 1 && this.components.some((component) => {
-                return component.getPropertyValue(name) !== value;
-            });
+            if(field && field instanceof Field){
+                const multival = this.components.length > 1 && this.components.some((component) => {
+                    return component.getPropertyValue(name) !== value;
+                });
 
-            field.getInput().setValue(value, supressEvent);
+                field.getInput().setValue(value, supressEvent);
 
-            this.toggleMultival(field, multival);
-        }
+                this.toggleMultival(field, multival);
+            }
 
-        switch(name){
-            case 'locked':
-                this
-                    .toggleClass('locked', value)
-                    .toggleFields(['x', 'y'], !value)
-                    .toggleFields(['width', 'height'], !value);
-                break;
+            switch(name){
+                case 'locked':
+                    this
+                        .toggleClass('locked', value)
+                        .toggleFields(['x', 'y'], !value)
+                        .toggleFields(['width', 'height'], !value);
+                    break;
 
-            case 'start-time':
-                this.getField('end-time').getInput().setMin(value);
-                break;
+                case 'start-time':
+                    this.getField('end-time').getInput().setMin(value);
+                    break;
 
-            case 'end-time':
-                this.getField('start-time').getInput().setMax(value);
-                break;
+                case 'end-time':
+                    this.getField('start-time').getInput().setMax(value);
+                    break;
+            }
         }
 
         return this;
@@ -670,6 +674,38 @@ export default class ComponentForm extends Dom {
     toggleMultival(field, toggle){
         field.toggleClass('warning', toggle);
         field.getLabel().attr('title', toggle ? Locale.t('editor.ComponentForm.multivalWarning', 'The value corresponds to that of the first selected component') : null);
+
+        return this;
+    }
+
+    updateScenarioFields(scenarios){
+        if(this.hasField('scenario')){
+            const input = this.getField('scenario').getInput();
+
+            input.clear();
+
+            scenarios.forEach((scenario) => {
+                input.addOption(scenario, scenario);
+            });
+
+            this.updateFieldValue('scenario', true);
+        }
+
+        return this;
+    }
+
+    updateImageFields(images){
+        if(this.hasField('background-image')){
+            const input = this.getField('background-image').getInput();
+
+            input.clear();
+
+            Object.entries(images).forEach(([key, value]) => {
+                input.addOption(key, value);
+            });
+
+            this.updateFieldValue('background-image', true);
+        }
 
         return this;
     }

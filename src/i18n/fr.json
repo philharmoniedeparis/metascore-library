@@ -67,6 +67,7 @@
 	"editor.configseditor.AnimationForm.title.single": "Attributs de l'Animation",
 	"editor.configseditor.BlockForm.title.plural": "Attributs de @count Curseur",
 	"editor.configseditor.BlockForm.title.single": "Attributs du Curseur",
+	"editor.configseditor.BlockTogglerForm.fields.blocks.label": "Blocs",
 	"editor.configseditor.BlockTogglerForm.title.plural": "Attributs de @count Boutons Afficher/Masquer",
 	"editor.configseditor.BlockTogglerForm.title.single": "Attributs des Boutons Afficher/Masquer",
 	"editor.configseditor.ComponentForm.fields.background-color.label": "Couleur de fond",

@@ -163,59 +163,6 @@ export default class ConfigsEditor extends Dom {
         return this;
     }
 
-    updateScenarioFields(scenarios){
-        Object.values(this.forms).forEach((form) => {
-            if(form.hasField('scenario')){
-                const input = form.getField('scenario').getInput();
-
-                input.clear();
-
-                scenarios.forEach((scenario) => {
-                    input.addOption(scenario, scenario);
-                });
-
-                if(form === this.form){
-                    form.updateFieldValue('scenario', true);
-                }
-            }
-        });
-
-        return this;
-    }
-
-    updateImageFields(assets){
-        const options = {};
-
-        Object.values(assets).forEach((asset) => {
-            let file = asset;
-            if('shared' in asset && asset.shared){
-                file = asset.file;
-            }
-
-            if(/^image\/.*/.test(file.mimetype)){
-                options[file.url] = asset.name;
-            }
-        });
-
-        Object.values(this.forms).forEach((form) => {
-            if(form.hasField('background-image')){
-                const input = form.getField('background-image').getInput();
-
-                input.clear();
-
-                Object.entries(options).forEach(([key, value]) => {
-                    input.addOption(key, value);
-                });
-
-                if(form === this.form){
-                    form.updateFieldValue('background-image', true);
-                }
-            }
-        });
-
-        return this;
-    }
-
     /**
      * Get all set components
      *

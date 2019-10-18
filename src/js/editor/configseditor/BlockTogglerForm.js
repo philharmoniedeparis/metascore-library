@@ -1,5 +1,7 @@
 import BlockForm from './BlockForm';
 import Locale from '../../core/Locale';
+import Field from '../Field';
+import SelectInput from '../../core/ui/input/SelectInput';
 
 import {className} from '../../../css/editor/configseditor/BlockTogglerForm.scss';
 
@@ -35,11 +37,47 @@ export default class BlockTogglerForm extends BlockForm {
                 'name',
                 'hidden',
                 'scenario',
+                'blocks',
                 'background',
                 'border',
                 'position',
                 'dimension'
             ]
         });
+    }
+
+    addField(name){
+        switch(name){
+            case 'blocks':
+                this.fields[name] = new Field(
+                    new SelectInput({
+                        'multiple': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.BlockTogglerForm.fields.blocks.label', 'Blocks')
+                    })
+                    .data('property', name)
+                    .appendTo(this.fields_wrapper);
+                break;
+
+            default:
+                super.addField(name);
+        }
+
+        return this;
+    }
+
+    updateComponentFields(components){
+        const input = this.getField('blocks').getInput();
+
+        input.clear();
+
+        components.forEach((component) => {
+            input.addOption(component.getId(), component.getName());
+        });
+
+        this.updateFieldValue('blocks', true);
+
+        return this;
     }
 }
