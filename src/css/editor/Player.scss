@@ -144,6 +144,10 @@ $selected-shadow: 0 0 0.5em 0;
                     }
                 }
             }
+
+            &.selected{
+                z-index: 999;
+            }
         }
 
         &.show-contents{

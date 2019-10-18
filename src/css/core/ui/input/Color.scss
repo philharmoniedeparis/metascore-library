@@ -1,6 +1,8 @@
 @import "../../../theme";
 
 :local(.className){
+    position: relative;
+
     input{
         position: absolute;
         width: 0;
@@ -8,7 +10,6 @@
         opacity: 0;
         pointer-events: none;
     }
-
     .pickr{
         .pcr-button{
             width: 1em;
@@ -18,6 +19,11 @@
             box-shadow: 0.1em 0.1em 0.25em 0 rgba(0,0,0,0.75);
         }
     }
+}
+
+:local(.pickerClassName){
+    position: absolute;
+    z-index: 999;
 }
 
 :local(.pickrClassName){

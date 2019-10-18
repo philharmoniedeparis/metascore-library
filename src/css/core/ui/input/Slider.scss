@@ -17,8 +17,21 @@
             outline: none;
         }
 
-        &::-moz-range-thumb,
+        &::-moz-range-thumb{
+            appearance: none;
+            width: 1em;
+            height: 1em;
+            background: #fff;
+            border: 0;
+        }
         &::-webkit-slider-thumb{
+            appearance: none;
+            width: 1em;
+            height: 1em;
+            background: #fff;
+            border: 0;
+        }
+        &::-ms-thumb {
             appearance: none;
             width: 1em;
             height: 1em;

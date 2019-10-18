@@ -1,10 +1,17 @@
 import Input from '../Input';
+import Dom from '../../Dom';
 import Locale from '../../Locale';
 import Pickr from '@simonwep/pickr';
+import Picker from './color/Picker';
 
 import '@simonwep/pickr/dist/themes/nano.min.css';
-import {className, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
-import Dom from '../../Dom';
+import {className, pickerClassName, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
+
+const picker = new Picker()
+    .addClass(pickerClassName)
+    .hide()
+    .appendTo('body');
+
 /**
  * A color selection input
  *
@@ -83,6 +90,8 @@ export default class ColorInput extends Input {
 
     onInputFocus(){
         this.pickr.show();
+
+        picker.show();
     }
 
     onPickrShow(){

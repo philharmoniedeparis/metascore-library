@@ -1,0 +1,62 @@
+@import "../../../../theme";
+
+:local(.className){
+    padding: 0.5em;
+    background: $darkgray;
+
+    .inner{
+        display: flex;
+        flex-direction: column;
+
+        .thumb{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 0.8em;
+            height: 0.8em;
+            margin-top: -0.4em;
+            margin-left: -0.4em;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .palette{
+            position: relative;
+            flex: 0 0 100px;
+        }
+
+        .input.slider{
+            position: relative;
+            flex: 0 0 auto;
+            height: 0.5em;
+            margin: 0.5em 0;
+            border-radius: 0.5em;
+
+            input{
+                &::-moz-range-thumb{
+                    visibility: hidden;
+                }
+                &::-webkit-slider-thumb{
+                    visibility: hidden;
+                }
+                &::-ms-thumb {
+                    visibility: hidden;
+                }
+            }
+
+            &::before{
+                display: none;
+            }
+
+            &[data-action="hue"]{
+                background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+            }
+
+            &[data-action="opacity"]{
+                background: linear-gradient(90deg, transparent, #000), url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
+            }
+        }
+    }
+}
