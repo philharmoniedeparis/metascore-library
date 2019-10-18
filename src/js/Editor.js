@@ -236,6 +236,9 @@ export default class Editor extends Dom {
             .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
             .addListener('scenarioactivate', this.onControllerScenarioActivate.bind(this))
             .addListener('scenarioadd', this.onControllerScenarioAdd.bind(this))
+            .addListener('scenariorename', this.onControllerScenarioRename.bind(this))
+            .addListener('scenarioclone', this.onControllerScenarioClone.bind(this))
+            .addListener('scenarioremove', this.onControllerScenarioRemove.bind(this))
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
@@ -951,14 +954,90 @@ export default class Editor extends Dom {
      */
     onControllerScenarioAdd(evt){
         const scenario = evt.detail.scenario;
+        const player = this.getPlayer();
 
-        this.getPlayer()
-            .addScenario(scenario)
-            .setActiveScenario(scenario);
+        player.getScenarios().push(scenario);
+        player.setActiveScenario(scenario);
 
         this.configs_editor.updateScenarioFields(this.player.getScenarios());
 
         this.setDirty('scenarios');
+    }
+
+    /**
+     * Controller scenariorename event callback
+     *
+     * @private
+     */
+    onControllerScenarioRename(evt){
+        const old_scenario = evt.detail.old;
+        const new_scenario = evt.detail.new;
+        const player = this.getPlayer();
+        const scenarios = player.getScenarios();
+
+        const index = scenarios.indexOf(old_scenario);
+        if(index > -1){
+            player.getRootComponents().forEach((component) => {
+                if(component.getPropertyValue('scenario') === old_scenario){
+                    component.setPropertyValue('scenario', new_scenario);
+                }
+            });
+
+            scenarios[index] = new_scenario;
+
+            this.setDirty('scenarios');
+        }
+    }
+
+    /**
+     * Controller scenarioclone event callback
+     *
+     * @private
+     */
+    onControllerScenarioClone(evt){
+        const scenario = evt.detail.scenario;
+        const clone = evt.detail.clone;
+        const player = this.getPlayer();
+        const scenarios = player.getScenarios();
+
+        scenarios.push(clone);
+
+        this.setDirty('scenarios');
+
+        player.setActiveScenario(clone);
+
+        player.getRootComponents().forEach((component) => {
+            if(component.getPropertyValue('scenario') === scenario){
+                const configs = Object.assign({}, component.getPropertyValues(true), {'scenario': clone});
+                this.addPlayerComponents('block', configs, player);
+            }
+        });
+    }
+
+    /**
+     * Controller scenarioremove event callback
+     *
+     * @private
+     */
+    onControllerScenarioRemove(evt){
+        const scenario = evt.detail.scenario;
+        const player = this.getPlayer();
+        const scenarios = player.getScenarios();
+        const active_scenario = player.getActiveScenario();
+
+        scenarios.splice(scenarios.indexOf(scenario), 1);
+
+        this.setDirty('scenarios');
+
+        if(scenario === active_scenario){
+            player.setActiveScenario(scenarios[0]);
+        }
+
+        player.getRootComponents().forEach((component) => {
+            if(component.getPropertyValue('scenario') === scenario){
+                this.deletePlayerComponents('block', component, false);
+            }
+        });
     }
 
     /**
@@ -1903,8 +1982,6 @@ export default class Editor extends Dom {
      * @return {this}
      */
     addPlayerComponents(type, config, parent){
-        const scenario = this.getPlayer().getActiveScenario();
-
         switch(type){
             case 'element': {
                 const configs = isArray(config) ? config : [config];
@@ -2012,6 +2089,7 @@ export default class Editor extends Dom {
             }
 
             case 'block': {
+                const scenario = this.getPlayer().getActiveScenario();
                 const configs = isArray(config) ? config : [config];
                 const player = parent || this.player;
                 const components = [];
@@ -2053,6 +2131,8 @@ export default class Editor extends Dom {
                 break;
             }
         }
+
+        this.setDirty('components');
 
         this.player_frame.focus();
 
@@ -2277,6 +2357,8 @@ export default class Editor extends Dom {
                     break;
                 }
             }
+
+            this.setDirty('components');
 
             this.player_frame.focus();
         }

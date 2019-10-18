@@ -1048,19 +1048,6 @@ export default class Player extends Dom {
     }
 
     /**
-     * Add a new scenario
-     *
-     * @param {String} scenario The scenario
-     * @return {this}
-     */
-    addScenario(scenario){
-        const scenarios = this.getScenarios();
-        scenarios.push(scenario);
-
-        return this;
-    }
-
-    /**
      * Get the current scenario
      *
      * @return {String} The scenario
