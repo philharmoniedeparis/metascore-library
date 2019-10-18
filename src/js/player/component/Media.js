@@ -163,14 +163,16 @@ export default class Media extends Component{
         if(this.isActive()){
             const video = MasterClock.getRenderer().getDom();
 
-            try{
-                this.canvas.width = video.videoWidth;
-                this.canvas.height = video.videoHeight;
+            if(video instanceof HTMLVideoElement){
+                try{
+                    this.canvas.width = video.videoWidth;
+                    this.canvas.height = video.videoHeight;
 
-                this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
-            }
-            catch(e){
-                console.error(e);
+                    this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
+                }
+                catch(e){
+                    console.error(e);
+                }
             }
         }
 
