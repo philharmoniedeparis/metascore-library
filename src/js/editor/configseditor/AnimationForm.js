@@ -127,6 +127,21 @@ export default class AnimationForm extends ElementForm {
         return this;
     }
 
+    /**
+     * @inheritdoc
+     */
+    unsetComponents(supressEvent){
+        if(this.components){
+            this.components.forEach((component) => {
+                component.getAnimation().removeEventListener('DOMLoaded', this.onAnimationLoaded);
+            });
+        }
+
+        super.unsetComponents(supressEvent);
+
+        return this;
+    }
+
     onAnimationLoaded(){
         this.updateInputs();
     }
