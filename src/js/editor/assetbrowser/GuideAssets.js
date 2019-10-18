@@ -18,7 +18,7 @@ import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets
 import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?sprite';
 import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?sprite';
 import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?sprite';
-import {className, componentLinkDragGhostClassName, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
+import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
  * A guide assets browser class
@@ -162,22 +162,13 @@ export default class GuideAssets extends Dom {
         if(data){
             link.addClass('dragging');
             evt.dataTransfer.effectAllowed = 'copy';
-            evt.dataTransfer.setData('metascore/component', JSON.stringify(data));
-
-            this._component_link_drag_ghost = new Dom(link.child('.icon').get(0).cloneNode(true))
-                .addClass(componentLinkDragGhostClassName)
-                .appendTo('body');
-
-            evt.dataTransfer.setDragImage(this._component_link_drag_ghost.get(0), 0, 0);
+            evt.dataTransfer.setData(`metascore/${data.type}`, JSON.stringify(data.configs));
         }
     }
 
     onComponentLinkDragEnd(evt){
         const link = new Dom(evt.target);
         link.removeClass('dragging');
-
-        this._component_link_drag_ghost.remove();
-        delete this._component_link_drag_ghost;
     }
 
     getComponentDataForLink(link){

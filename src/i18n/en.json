@@ -162,6 +162,8 @@
 	"editor.controller.ScenarioSelector.rename.prompt.text": "Enter the scenario's new name",
 	"editor.defaultBlockName": "untitled",
 	"editor.defaultBlockTogglerName": "untitled",
+	"editor.defaultControllerName": "untitled",
+	"editor.defaultMediaName": "untitled",
 	"editor.deletePlayerComponents.block.msg": "Are you sure you want to delete the block \"<em>@name</em>\"?",
 	"editor.deletePlayerComponents.blocks.msg": "Are you sure you want to delete those @count blocks?",
 	"editor.deletePlayerComponents.element.msg": "Are you sure you want to delete the element \"<em>@name</em>\"?",

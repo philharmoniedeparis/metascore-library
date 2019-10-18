@@ -128,8 +128,7 @@
     }
 }
 
-:local(.assetDragGhostClassName),
-:local(.componentLinkDragGhostClassName){
+:local(.assetDragGhostClassName){
     position: absolute;
     top: 0;
     right: 100%;

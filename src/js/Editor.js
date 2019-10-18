@@ -1480,7 +1480,22 @@ export default class Editor extends Dom {
             return;
         }
 
-        if(evt.dataTransfer.types.includes('metascore/component') || evt.dataTransfer.types.includes('metascore/asset')){
+        if(evt.dataTransfer.types.includes('metascore/block')){
+            evt.preventDefault();
+        }
+        else if(evt.dataTransfer.types.includes('metascore/page')){
+            const block_dom = evt.target.closest('.metaScore-component.block');
+            if(block_dom){
+                evt.preventDefault();
+            }
+        }
+        else if(evt.dataTransfer.types.includes('metascore/element')){
+            const page_dom = evt.target.closest('.metaScore-component.page');
+            if(page_dom){
+                evt.preventDefault();
+            }
+        }
+        else if(evt.dataTransfer.types.includes('metascore/asset')){
             evt.preventDefault();
         }
     }
@@ -1496,100 +1511,90 @@ export default class Editor extends Dom {
             return;
         }
 
-        try{
-            if(evt.dataTransfer.types.includes('metascore/component')){
-                this.handlePlayerComponentDrop(evt);
-            }
-            else if(evt.dataTransfer.types.includes('metascore/asset')){
-                this.handlePlayerAssetDrop(evt);
-            }
+        // Handle block drop ////////////////////////
+        if(evt.dataTransfer.types.includes('metascore/block')){
+            const configs = JSON.parse(evt.dataTransfer.getData('metascore/block'));
+            this.addPlayerComponents('block', Object.assign({
+                'x': evt.clientX,
+                'y': evt.clientY
+            }, configs), this.getPlayer());
+
+            evt.preventDefault();
+
+            return;
         }
-        catch(e){
-            console.error(e);
-        }
 
-        evt.preventDefault();
-    }
-
-    /**
-     * Handle metascore/component drop on player
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    handlePlayerComponentDrop(evt){
-        const data = JSON.parse(evt.dataTransfer.getData('metascore/component'));
-
-        switch(data.type){
-            case 'element': {
-                    const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                    const parent_rect = parent.get(0).getBoundingClientRect();
-                    const configs = Object.assign({
-                        'x': evt.clientX - parent_rect.left,
-                        'y': evt.clientY - parent_rect.top
-                    }, data.configs);
-                    this.addPlayerComponents(data.type, configs, parent);
-                }
-                break;
-
-            case 'page': {
-                    const parent = evt.target.closest('.metaScore-component.block')._metaScore;
-                    this.addPlayerComponents(data.type, data.configs, parent);
-                }
-                break;
-
-            case 'block': {
-                    const configs = Object.assign({
-                        'x': evt.clientX,
-                        'y': evt.clientY
-                    }, data.configs);
-                    this.addPlayerComponents(data.type, configs, this.getPlayer());
-                }
-                break;
-        }
-    }
-
-    /**
-     * Handle metascore/asset drop on player
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    handlePlayerAssetDrop(evt){
-        const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
-
-        if('shared' in asset && asset.shared){
-            switch(asset.type){
-                case 'image': {
-                        const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                        const parent_rect = parent.get(0).getBoundingClientRect();
-
-                        const configs = {
-                            'type': 'Content',
-                            'background-image': asset.file.url,
-                            'x': evt.clientX - parent_rect.left,
-                            'y': evt.clientY - parent_rect.top,
-                        };
-
-                        this.addPlayerComponents('element', configs, parent);
-                    }
-                    break;
-
-                case 'lottie_animation': {
-                        const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                        const parent_rect = parent.get(0).getBoundingClientRect();
-
-                        const configs = {
-                            'type': 'Animation',
-                            'src': asset.file.url,
-                            'x': evt.clientX - parent_rect.left,
-                            'y': evt.clientY - parent_rect.top,
-                        };
-
-                        this.addPlayerComponents('element', configs, parent);
-                    }
-                    break;
+        // Handle page drop ////////////////////////
+        if(evt.dataTransfer.types.includes('metascore/page')){
+            const block_dom = evt.target.closest('.metaScore-component.block');
+            if(block_dom){
+                const configs = JSON.parse(evt.dataTransfer.getData('metascore/page'));
+                const block = block_dom._metaScore;
+                this.addPlayerComponents('page', configs, block);
             }
+
+            evt.preventDefault();
+
+            return;
+        }
+
+        // Handle element drop ////////////////////////
+        if(evt.dataTransfer.types.includes('metascore/element')){
+            const page_dom = evt.target.closest('.metaScore-component.page');
+            if(page_dom){
+                const configs = JSON.parse(evt.dataTransfer.getData('metascore/element'));
+                const page = page_dom._metaScore;
+                const page_rect = page_dom.getBoundingClientRect();
+
+                this.addPlayerComponents('element', Object.assign({
+                    'x': evt.clientX - page_rect.left,
+                    'y': evt.clientY - page_rect.top
+                }, configs), page);
+            }
+
+            evt.preventDefault();
+
+            return;
+        }
+
+        // Handle asset drop ////////////////////////
+        if(evt.dataTransfer.types.includes('metascore/asset')){
+            const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
+            if('shared' in asset && asset.shared){
+                switch(asset.type){
+                    case 'image': {
+                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                            const parent_rect = parent.get(0).getBoundingClientRect();
+
+                            const configs = {
+                                'type': 'Content',
+                                'background-image': asset.file.url,
+                                'x': evt.clientX - parent_rect.left,
+                                'y': evt.clientY - parent_rect.top,
+                            };
+
+                            this.addPlayerComponents('element', configs, parent);
+                        }
+                        break;
+
+                    case 'lottie_animation': {
+                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                            const parent_rect = parent.get(0).getBoundingClientRect();
+
+                            const configs = {
+                                'type': 'Animation',
+                                'src': asset.file.url,
+                                'x': evt.clientX - parent_rect.left,
+                                'y': evt.clientY - parent_rect.top,
+                            };
+
+                            this.addPlayerComponents('element', configs, parent);
+                        }
+                        break;
+                }
+            }
+
+            evt.preventDefault();
         }
     }
 
@@ -2221,6 +2226,20 @@ export default class Editor extends Dom {
                     let component = null;
 
                     switch(block_config.type){
+                        case 'Media':
+                            component = player.addMedia(Object.assign({
+                                'scenario': scenario,
+                                'name': Locale.t('editor.defaultMediaName', 'untitled')
+                            }, block_config));
+                            break;
+
+                        case 'Controller':
+                            component = player.addController(Object.assign({
+                                'scenario': scenario,
+                                'name': Locale.t('editor.defaultControllerName', 'untitled')
+                            }, block_config));
+                            break;
+
                         case 'BlockToggler':
                             component = player.addBlockToggler(Object.assign({
                                 'scenario': scenario,
