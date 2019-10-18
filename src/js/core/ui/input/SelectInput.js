@@ -60,8 +60,7 @@ export default class SelectInput extends Input {
         if(this.configs.multiple){
             this.native_input.attr('multiple', '');
         }
-
-        if(!this.configs.required){
+        else if(!this.configs.required){
             this.addOption('', this.configs.emptyLabel);
         }
 
@@ -152,7 +151,7 @@ export default class SelectInput extends Input {
     clear() {
         this.native_input.empty();
 
-        if(!this.configs.required){
+        if(!this.configs.required && !this.configs.multiple){
             this.addOption('', this.configs.emptyLabel);
         }
 

@@ -21,6 +21,14 @@
             background: $mediumgray;
         }
 
+        &[multiple]{
+            padding-right: 0;
+
+            + .icon{
+                display: none;
+            }
+        }
+
         &::-ms-expand {
             display: none;
         }
