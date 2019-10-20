@@ -6,6 +6,7 @@ import {className} from '../../../../../css/core/ui/input/color/Picker.scss';
 
 /**
  * A color picker
+ * Highly inspired by https://github.com/Simonwep/pickr
  */
 export default class Picker extends Dom {
 
@@ -103,17 +104,45 @@ export default class Picker extends Dom {
     }
 
     setValue(color){
-        const rgba = toRGBA(color);
+        if(color === null){
+            this.rgb = {'r': 0, 'g': 0, 'b': 0};
+            this.opacity = 1;
+        }
+        else{
+            const rgba = toRGBA(color);
 
-        this.rgb.r = rgba.r;
-        this.rgb.g = rgba.g;
-        this.rgb.b = rgba.b;
+            this.rgb.r = rgba.r;
+            this.rgb.g = rgba.g;
+            this.rgb.b = rgba.b;
 
-        this.hsv = rgb2hsv(rgba.r, rgba.g, rgba.b);
+            this.opacity = rgba.a;
+        }
 
-        this.opacity = rgba.a;
+        this.hsv = rgb2hsv(this.rgb.r, this.rgb.g, this.rgb.b);
 
         this.updateUI();
+
+        return this;
+    }
+
+    getRGB(){
+        return Object.assign({}, this.rgb);
+    }
+
+    getRGBA(){
+        return Object.assign(this.getRGB(), {'a': this.opacity});
+    }
+
+    getHSV(){
+        return Object.assign({}, this.hsv);
+    }
+
+    getHSVA(){
+        return Object.assign(this.getHSV(), {'a': this.opacity});
+    }
+
+    getOpacity(){
+        return this.opacity;
     }
 
     /**
@@ -251,15 +280,15 @@ export default class Picker extends Dom {
     }
 
     onSaveClick(){
-
+        this.triggerEvent('save');
     }
 
     onResetClick(){
-
+        this.triggerEvent('reset');
     }
 
     onCancelClick(){
-
+        this.triggerEvent('cancel');
     }
 
     updateUI(){

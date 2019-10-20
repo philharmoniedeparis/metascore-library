@@ -10,40 +10,32 @@
         opacity: 0;
         pointer-events: none;
     }
-    .pickr{
-        .pcr-button{
-            width: 1em;
-            height: 1em;
-            vertical-align: middle;
-            border-radius: 0.2em;
-            box-shadow: 0.1em 0.1em 0.25em 0 rgba(0,0,0,0.75);
-        }
+
+    > button{
+        background: $darkgray;
+        width: 1em;
+        height: 1em;
+        vertical-align: middle;
+        border-radius: 0.2em;
+        box-shadow: 0.1em 0.1em 0.25em 0 rgba(0,0,0,0.75);
     }
-}
 
-:local(.pickerClassName){
-    position: fixed;
-    z-index: 999;
-}
+    .picker{
+        position: fixed;
+        z-index: 999;
+        box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
 
-:local(.pickrClassName){
-    box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
-
-    .pcr-interaction{
-        .pcr-result{
-            flex: 100%;
-        }
-
-        .pcr-save{
-            margin-right: auto;
-            background: $darkgray;
+        button{
             border-radius: 0.25em;
-        }
 
-        .pcr-cancel,
-        .pcr-clear{
-            background: $lightgray;
-            border-radius: 0.25em;
+            &[data-action="save"]{
+                background: $darkgray;
+            }
+
+            &[data-action="reset"],
+            &[data-action="cancel"]{
+                background: $lightgray;
+            }
         }
     }
 }

@@ -1,12 +1,9 @@
 import Input from '../Input';
 import Dom from '../../Dom';
-import Locale from '../../Locale';
-import Pickr from '@simonwep/pickr';
 import Picker from './color/Picker';
 import Button from '../Button';
 
-import '@simonwep/pickr/dist/themes/nano.min.css';
-import {className, pickerClassName, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
+import {className} from '../../../../css/core/ui/input/Color.scss';
 
 /**
  * A color selection input
@@ -32,7 +29,6 @@ export default class ColorInput extends Input {
         this.onWindowScroll = this.onWindowScroll.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
         this.repositionPicker = this.repositionPicker.bind(this);
-        this.onPickrSave = this.onPickrSave.bind(this);
 
         this.addClass(`color ${className}`);
     }
@@ -56,45 +52,15 @@ export default class ColorInput extends Input {
 
         this.native_input.addListener('focus', this.onInputFocus.bind(this));
 
-        this.picker = new Picker()
-            .addClass(pickerClassName)
-            .hide()
-            .appendTo(this);
-
         this.button = new Button()
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
 
-        const pickr_el = new Dom('<div/>')
+        this.picker = new Picker()
+            .hide()
+            //.addListener('save', this.onPickerSave.bind(this))
+            //.addListener('cancel', this.onPickerCancel.bind(this))
             .appendTo(this);
-
-        this.pickr = Pickr.create({
-            'el': pickr_el.get(0),
-            'theme': 'nano',
-            'appClass': pickrClassName,
-            'defaultRepresentation': 'HEX',
-            'components': {
-                'palette': true,
-                'preview': true,
-                'opacity': true,
-                'hue': true,
-                'interaction': {
-                    'input': true,
-                    'clear': true,
-                    'cancel': true,
-                    'save': true
-                }
-            },
-            'strings': {
-                'save': Locale.t('core.ui.input.ColorInput.pickr.save', 'Save'),
-                'clear': Locale.t('core.ui.input.ColorInput.pickr.reset', 'Reset'),
-                'cancel': Locale.t('core.ui.input.ColorInput.pickr.cancel', 'Cancel')
-             }
-        });
-
-        this.pickr
-            .on('show', this.onPickrShow.bind(this))
-            .on('cancel', this.onPickrCancel.bind(this));
     }
 
     onButtonClick(){
@@ -102,7 +68,9 @@ export default class ColorInput extends Input {
     }
 
     showPicker(){
-        this.picker.show();
+        this.picker
+            .setValue(this.value)
+            .show();
 
         this.repositionPicker();
 
@@ -120,6 +88,15 @@ export default class ColorInput extends Input {
         Dom.addListener(window, 'resize', this.onWindowResize);
 
         return this;
+    }
+
+    hidePicker(){
+        this.picker.hide();
+
+        this.doc.removeListener('mousedown', this.onDocMouseDown, true);
+
+        Dom.removeListener(window, 'scroll', this.onWindowScroll, true);
+        Dom.removeListener(window, 'resize', this.onWindowResize);
     }
 
     repositionPicker(timeout){
@@ -142,15 +119,6 @@ export default class ColorInput extends Input {
         return this;
     }
 
-    hidePicker(){
-        this.picker.hide();
-
-        this.doc.removeListener('mousedown', this.onDocMouseDown, true);
-
-        Dom.removeListener(window, 'scroll', this.onWindowScroll, true);
-        Dom.removeListener(window, 'resize', this.onWindowResize);
-    }
-
     onDocMouseDown(evt){
         if(!this.get(0).contains(evt.target)){
             this.hidePicker();
@@ -166,70 +134,15 @@ export default class ColorInput extends Input {
     }
 
     onInputFocus(){
-        this.pickr.show();
-
         this.showPicker();
     }
 
-    onPickrShow(){
-        this.pickr.on('save', this.onPickrSave);
+    onPickerCancel(){
+        this.picker.hide();
     }
 
-    onPickrCancel(){
-        this.pickr.hide();
-    }
-
-    onPickrSave(color){
-        this.pickr.off('save', this.onPickrSave);
-
+    onPickerSave(color){
         this.setValue(color ? color.toHEXA().toString(3) : null, false, false);
-    }
-
-    /**
-     * Set the input'S value
-     *
-     * @param {Mixed} value The new color's value (see {@link toRGBA} for valid values)
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @return {this}
-     */
-    setValue(value, supressEvent, updatePickr){
-        if(updatePickr !== false){
-            this.pickr.setColor(value);
-            this.pickr.setColorRepresentation('HEX');
-        }
-
-        this.native_input.val(value);
-        this.value = value;
-
-        if(supressEvent !== true){
-            this.native_input.triggerEvent('change');
-        }
-
-        return this;
-    }
-
-    /**
-     * Disable the input
-     *
-     * @return {this}
-     */
-    disable() {
-        this.pickr.disable();
-        return super.disable();
-    }
-
-    /**
-     * Enable the input
-     *
-     * @return {this}
-     */
-    enable() {
-        this.pickr.enable();
-        return super.enable();
-    }
-
-    destroy(){
-        this.pickr.destroyAndRemove();
     }
 
 }

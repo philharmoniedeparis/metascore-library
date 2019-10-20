@@ -59,7 +59,6 @@
     "webpack-cli": "^3.3.8"
   },
   "dependencies": {
-    "@simonwep/pickr": "^1.4.2",
     "classlist-polyfill": "^1.2.0",
     "fuse.js": "^3.4.5",
     "lottie-web": "^5.5.9",
