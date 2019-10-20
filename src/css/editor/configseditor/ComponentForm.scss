@@ -15,11 +15,13 @@
     }
 
     .fields{
+        flex: 1 1 auto;
         display: flex;
         overflow: auto;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
+        align-content: flex-start;
         padding: 0.5em;
         background: $lightgray;
 

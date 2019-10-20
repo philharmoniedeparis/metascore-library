@@ -209,7 +209,7 @@ export default class ColorSelector extends Overlay {
         }
 
         if(updatePositions !== false){
-            const hsv = rgb2hsv(this.value);
+            const hsv = rgb2hsv(this.value.r, this.value.g, this.value.b);
 
             this.gradient.position.css('left', `${(1 - hsv.h) * range}px`);
             this.gradient.position.css('top', `${(hsv.s * (range / 2)) + ((1 - (hsv.v/range)) * (range/2))}px`);

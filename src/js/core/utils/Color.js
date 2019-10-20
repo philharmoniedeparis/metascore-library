@@ -160,14 +160,12 @@ const COLOR_NAMES = {
 /**
  * Convert an RGB value to HSV
  *
- * @param {Object} rgb The rgb value as an object with 'r', 'g', and 'b' keys with values contained in the set [0, 255]
+ * @param {Number} r The red contained in the set [0, 255]
+ * @param {Number} g The green contained in the set [0, 255]
+ * @param {Number} b The blue contained in the set [0, 255]
  * @return {Object} The hsv value as an object with 'h', 's', and 'v' keys with values contained in the set [0, 1]
  */
-export function rgb2hsv(rgb){
-    const r = rgb.r;
-    const g = rgb.g;
-    const b = rgb.b;
-
+export function rgb2hsv(r, g, b){
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const d = max - min;
@@ -199,6 +197,49 @@ export function rgb2hsv(rgb){
         's': s,
         'v': v
     }
+}
+
+/**
+ * Convert an HSV value to RGB
+ *
+ * @param {Number} h The hue contained in the set [0, 1]
+ * @param {Number} s The saturation contained in the set [0, 1]
+ * @param {Number} v The value contained in the set [0, 1]
+ * @return {Object} The rgb value as an object with 'r', 'g', and 'b' keys with values contained in the set [0, 255]
+ */
+export function hsv2rgb(h, s, v){
+    const i = Math.floor(h * 6);
+    const f = h * 6 - i;
+    const p = v * (1 - s);
+    const q = v * (1 - f * s);
+    const t = v * (1 - (1 - f) * s);
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    switch (i % 6) {
+        case 0:
+            r = v; g = t; b = p;
+            break;
+        case 1:
+            r = q; g = v; b = p;
+            break;
+        case 2: r = p; g = v; b = t;
+            break;
+        case 3: r = p; g = q; b = v;
+            break;
+        case 4: r = t; g = p; b = v;
+            break;
+        case 5: r = v; g = p; b = q;
+            break;
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
 }
 
 /**

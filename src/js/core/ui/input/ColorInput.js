@@ -3,14 +3,10 @@ import Dom from '../../Dom';
 import Locale from '../../Locale';
 import Pickr from '@simonwep/pickr';
 import Picker from './color/Picker';
+import Button from '../Button';
 
 import '@simonwep/pickr/dist/themes/nano.min.css';
 import {className, pickerClassName, pickrClassName} from '../../../../css/core/ui/input/Color.scss';
-
-const picker = new Picker()
-    .addClass(pickerClassName)
-    .hide()
-    .appendTo('body');
 
 /**
  * A color selection input
@@ -32,6 +28,10 @@ export default class ColorInput extends Input {
         super(configs);
 
         // fix event handlers scope
+        this.onDocMouseDown = this.onDocMouseDown.bind(this);
+        this.onWindowScroll = this.onWindowScroll.bind(this);
+        this.onWindowResize = this.onWindowResize.bind(this);
+        this.repositionPicker = this.repositionPicker.bind(this);
         this.onPickrSave = this.onPickrSave.bind(this);
 
         this.addClass(`color ${className}`);
@@ -55,6 +55,15 @@ export default class ColorInput extends Input {
         super.setupUI();
 
         this.native_input.addListener('focus', this.onInputFocus.bind(this));
+
+        this.picker = new Picker()
+            .addClass(pickerClassName)
+            .hide()
+            .appendTo(this);
+
+        this.button = new Button()
+            .addListener('click', this.onButtonClick.bind(this))
+            .appendTo(this);
 
         const pickr_el = new Dom('<div/>')
             .appendTo(this);
@@ -88,10 +97,78 @@ export default class ColorInput extends Input {
             .on('cancel', this.onPickrCancel.bind(this));
     }
 
+    onButtonClick(){
+        this.showPicker();
+    }
+
+    showPicker(){
+        this.picker.show();
+
+        this.repositionPicker();
+
+        if(!this.doc){
+            /**
+             * The target's owner document
+             * @type {Dom}
+             */
+            this.doc = new Dom(Dom.getElementDocument(this.get(0)));
+        }
+
+        this.doc.addListener('mousedown', this.onDocMouseDown, true);
+
+        Dom.addListener(window, 'scroll', this.onWindowScroll, true);
+        Dom.addListener(window, 'resize', this.onWindowResize);
+
+        return this;
+    }
+
+    repositionPicker(timeout){
+        if(this.scroll_timeout){
+            clearTimeout(this.scroll_timeout);
+        }
+
+        if(timeout === true){
+            this.scroll_timeout = setTimeout(this.repositionPicker, 20);
+        }
+        else{
+            const rect = this.button.get(0).getBoundingClientRect();
+            const picker_rect = this.picker.get(0).getBoundingClientRect();
+
+            this.picker
+                .css('top', `${rect.bottom + 10}px`)
+                .css('left', `${rect.left + (rect.width - picker_rect.width) / 2}px`);
+        }
+
+        return this;
+    }
+
+    hidePicker(){
+        this.picker.hide();
+
+        this.doc.removeListener('mousedown', this.onDocMouseDown, true);
+
+        Dom.removeListener(window, 'scroll', this.onWindowScroll, true);
+        Dom.removeListener(window, 'resize', this.onWindowResize);
+    }
+
+    onDocMouseDown(evt){
+        if(!this.get(0).contains(evt.target)){
+            this.hidePicker();
+        }
+    }
+
+    onWindowScroll(){
+        this.repositionPicker(true);
+    }
+
+    onWindowResize(){
+        this.repositionPicker(true);
+    }
+
     onInputFocus(){
         this.pickr.show();
 
-        picker.show();
+        this.showPicker();
     }
 
     onPickrShow(){
