@@ -2,7 +2,10 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import Picker from './color/Picker';
 import Button from '../Button';
+import {toRGBA} from '../../utils/Color';
+import {isEmpty} from '../../utils/Var';
 
+import clear_icon from '../../../../img/core/ui/input/color/clear.svg?sprite';
 import {className} from '../../../../css/core/ui/input/Color.scss';
 
 /**
@@ -28,6 +31,7 @@ export default class ColorInput extends Input {
         this.onDocMouseDown = this.onDocMouseDown.bind(this);
         this.onWindowScroll = this.onWindowScroll.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
+        this.onWindowKeyDown = this.onWindowKeyDown.bind(this);
         this.repositionPicker = this.repositionPicker.bind(this);
 
         this.addClass(`color ${className}`);
@@ -52,24 +56,43 @@ export default class ColorInput extends Input {
 
         this.native_input.addListener('focus', this.onInputFocus.bind(this));
 
-        this.button = new Button()
+        this.button = new Button({'icon': clear_icon})
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
 
         this.picker = new Picker()
-            .hide()
-            //.addListener('save', this.onPickerSave.bind(this))
-            //.addListener('cancel', this.onPickerCancel.bind(this))
-            .appendTo(this);
+            .addListener('buttonclick', this.onPickerButtonClick.bind(this))
+            .hide().appendTo(this);
     }
 
     onButtonClick(){
         this.showPicker();
     }
 
+    onPickerButtonClick(evt){
+        switch(evt.detail.button){
+            case 'save':
+                {
+                    const hex = this.picker.getHEX();
+                    this.setValue(hex);
+                    this.picker.hide();
+                }
+                break;
+
+            case 'reset':
+                this.setValue(null);
+                this.picker.hide();
+                break;
+
+            case 'cancel':
+                this.picker.hide();
+                break;
+        }
+    }
+
     showPicker(){
         this.picker
-            .setValue(this.value)
+            .setValue(this.getValue())
             .show();
 
         this.repositionPicker();
@@ -86,6 +109,7 @@ export default class ColorInput extends Input {
 
         Dom.addListener(window, 'scroll', this.onWindowScroll, true);
         Dom.addListener(window, 'resize', this.onWindowResize);
+        Dom.addListener(window, 'keydown', this.onWindowKeyDown, true);
 
         return this;
     }
@@ -97,6 +121,7 @@ export default class ColorInput extends Input {
 
         Dom.removeListener(window, 'scroll', this.onWindowScroll, true);
         Dom.removeListener(window, 'resize', this.onWindowResize);
+        Dom.removeListener(window, 'keydown', this.onWindowKeyDown, true);
     }
 
     repositionPicker(timeout){
@@ -133,16 +158,46 @@ export default class ColorInput extends Input {
         this.repositionPicker(true);
     }
 
+    /**
+     * window keyup event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onWindowKeyDown(evt){
+        switch(evt.key){
+            case 'Escape':
+                this.hidePicker();
+                break;
+
+            case 'Enter':
+                {
+                    const hex = this.picker.getHEX();
+                    this.setValue(hex);
+                    this.picker.hide();
+                }
+                break;
+        }
+
+        evt.stopPropagation();
+    }
+
     onInputFocus(){
         this.showPicker();
     }
 
-    onPickerCancel(){
-        this.picker.hide();
-    }
+    setValue(value, supressEvent){
+        super.setValue(value, supressEvent);
 
-    onPickerSave(color){
-        this.setValue(color ? color.toHEXA().toString(3) : null, false, false);
+        if(isEmpty(value)){
+            this.button.css('color', null);
+            this.addClass('empty');
+        }
+        else{
+            const rgba = toRGBA(value);
+            this.button.css('color', `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`);
+            this.removeClass('empty');
+        }
     }
 
 }

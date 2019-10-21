@@ -1,6 +1,8 @@
 import Dom from '../../../Dom';
+import Locale from '../../../Locale';
 import Button from '../../Button';
-import {toRGBA, rgb2hsv, hsv2rgb} from '../../../utils/Color';
+import {toRGBA, rgb2hsv, hsv2rgb, rgba2hex} from '../../../utils/Color';
+import {isEmpty} from '../../../utils/Var';
 
 import {className} from '../../../../../css/core/ui/input/color/Picker.scss';
 
@@ -60,51 +62,59 @@ export default class Picker extends Dom {
      * @private
      */
     setupUI() {
-        const inner = new Dom('<div/>', {'class': 'inner'})
+        const top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
 
         this.palette_input = new Dom('<div/>', {'class': 'draggable-input palette'})
             .addListener('mousedown', this.onPaletteInputMouseDown.bind(this))
-            .appendTo(inner);
+            .appendTo(top);
 
         this.palette_thumb = new Dom('<div/>', {'class': 'thumb'})
             .appendTo(this.palette_input);
 
+        const middle = new Dom('<div/>', {'class': 'middle'})
+            .appendTo(this);
+
+        this.preview = new Dom('<div/>', {'class': 'preview'})
+            .appendTo(middle);
+
+        const sliders = new Dom('<div/>', {'class': 'sliders'})
+            .appendTo(middle);
+
         this.hue_input = new Dom('<div/>', {'class': 'draggable-input hue'})
             .addListener('mousedown', this.onHueInputMouseDown.bind(this))
-            .appendTo(inner);
+            .appendTo(sliders);
 
         this.hue_thumb = new Dom('<div/>', {'class': 'thumb'})
             .appendTo(this.hue_input);
 
         this.opacity_input = new Dom('<div/>', {'class': 'draggable-input opacity'})
             .addListener('mousedown', this.onOpacityInputMouseDown.bind(this))
-            .appendTo(inner);
+            .appendTo(sliders);
 
         this.opacity_thumb = new Dom('<div/>', {'class': 'thumb'})
             .appendTo(this.opacity_input);
 
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
-            .appendTo(inner);
+        const bottom = new Dom('<div/>', {'class': 'bottom'})
+            .appendTo(this);
 
-        new Button({'label': 'Save'})
+        new Button({'label': Locale.t('core.ui.input.color.Picker.save.label', 'Save')})
             .data('action', 'save')
-            .addListener('click', this.onSaveClick.bind(this))
-            .appendTo(buttons);
+            .appendTo(bottom);
 
-        new Button({'label': 'Reset'})
+        new Button({'label': Locale.t('core.ui.input.color.Picker.reset.label', 'Reset')})
             .data('action', 'reset')
-            .addListener('click', this.onResetClick.bind(this))
-            .appendTo(buttons);
+            .appendTo(bottom);
 
-        new Button({'label': 'Cancel'})
+        new Button({'label': Locale.t('core.ui.input.color.Picker.cancel.label', 'Cancel')})
             .data('action', 'cancel')
-            .addListener('click', this.onCancelClick.bind(this))
-            .appendTo(buttons);
+            .appendTo(bottom);
+
+        this.addDelegate('button', 'click', this.onButtonClick.bind(this));
     }
 
     setValue(color){
-        if(color === null){
+        if(isEmpty(color)){
             this.rgb = {'r': 0, 'g': 0, 'b': 0};
             this.opacity = 1;
         }
@@ -135,6 +145,10 @@ export default class Picker extends Dom {
 
     getHSV(){
         return Object.assign({}, this.hsv);
+    }
+
+    getHEX(){
+        return rgba2hex(this.rgb.r, this.rgb.g, this.rgb.b, this.opacity);
     }
 
     getHSVA(){
@@ -183,7 +197,9 @@ export default class Picker extends Dom {
         this.hsv.v = value;
         this.rgb = hsv2rgb(this.hsv.h, this.hsv.s, this.hsv.v);
 
-        this.updatePaletteThumb();
+        this
+            .updatePaletteThumb()
+            .updatePreview();
     }
 
     onPaletteInputMouseUp(evt){
@@ -227,7 +243,8 @@ export default class Picker extends Dom {
         this
             .updateHueThumb()
             .updatePaletteColor()
-            .updatePaletteThumb();
+            .updatePaletteThumb()
+            .updatePreview();
     }
 
     onHueInputMouseUp(evt){
@@ -265,7 +282,9 @@ export default class Picker extends Dom {
         this.opacity = x / this._opacity_rect.width;
         this.opacity = Math.max(0, Math.min(1, this.opacity));
 
-        this.updateOpcaityThumb();
+        this
+            .updateOpcaityThumb()
+            .updatePreview();
     }
 
     onOpacityInputMouseUp(evt){
@@ -279,16 +298,9 @@ export default class Picker extends Dom {
         evt.preventDefault();
     }
 
-    onSaveClick(){
-        this.triggerEvent('save');
-    }
-
-    onResetClick(){
-        this.triggerEvent('reset');
-    }
-
-    onCancelClick(){
-        this.triggerEvent('cancel');
+    onButtonClick(evt){
+        const action = new Dom(evt.target).data('action');
+        this.triggerEvent('buttonclick', {'picker': this, 'button': action});
     }
 
     updateUI(){
@@ -296,7 +308,8 @@ export default class Picker extends Dom {
             .updatePaletteThumb()
             .updateHueThumb()
             .updateOpcaityThumb()
-            .updatePaletteColor();
+            .updatePaletteColor()
+            .updatePreview();
     }
 
     updatePaletteThumb(){
@@ -334,6 +347,12 @@ export default class Picker extends Dom {
         this.opacity_thumb
             .css('background-color', `rgba(0, 0, 0, ${this.opacity})`)
             .css('left', `${this.opacity * 100}%`);
+
+        return this;
+    }
+
+    updatePreview(){
+        this.preview.css('background-color', `rgba(${this.rgb.r}, ${this.rgb.g}, ${this.rgb.b}, ${this.opacity})`);
 
         return this;
     }

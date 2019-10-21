@@ -3,7 +3,7 @@
 :local(.className){
     position: relative;
 
-    input{
+    > input{
         position: absolute;
         width: 0;
         overflow: hidden;
@@ -12,29 +12,60 @@
     }
 
     > button{
-        background: $darkgray;
-        width: 1em;
-        height: 1em;
+        width: 1.5em;
+        height: 1.5em;
+        padding: 0;
         vertical-align: middle;
         border-radius: 0.2em;
-        box-shadow: 0.1em 0.1em 0.25em 0 rgba(0,0,0,0.75);
+        box-shadow: 0.1em 0.1em 0.25em 0 rgba(0,0,0,0.5);
+
+        .icon{
+            display: block;
+            visibility: hidden;
+            width: 100%;
+            height: 100%;
+            color: $lightgray;
+            background: $darkgray;
+        }
+
+        &::before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
+            background-size: auto;
+            background-size: .5em;
+        }
+
+        &::after{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: currentColor;
+        }
     }
 
     .picker{
         position: fixed;
         z-index: 999;
         box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+    }
 
-        button{
-            border-radius: 0.25em;
-
-            &[data-action="save"]{
-                background: $darkgray;
+    &.empty{
+        > button{
+            .icon{
+                visibility: visible;
             }
 
-            &[data-action="reset"],
-            &[data-action="cancel"]{
-                background: $lightgray;
+            &::before,
+            &::after{
+                display: none;
             }
         }
     }

@@ -172,7 +172,7 @@ export function rgb2hsv(r, g, b){
 
     let h = 0;
     const s = max === 0 ? 0 : d / max;
-    const v = max;
+    const v = max / 255;
 
     if(max !== min) {// chromatic
         switch(max) {
@@ -243,6 +243,53 @@ export function hsv2rgb(h, s, v){
 }
 
 /**
+ * Convert an RGB value to HEX
+ *
+ * @param {Number} r The red contained in the set [0, 255]
+ * @param {Number} g The green contained in the set [0, 255]
+ * @param {Number} b The blue contained in the set [0, 255]
+ * @return {String} The hex value
+ */
+export function rgb2hex(r, g, b) {
+    let _r = r.toString(16);
+    let _g = g.toString(16);
+    let _b = b.toString(16);
+
+    if (_r.length === 1){
+        _r = "0" + _r;
+    }
+    if (_g.length === 1){
+        _g = "0" + _g;
+    }
+    if (_b.length === 1){
+        _b = "0" + _b;
+    }
+
+    return "#" + _r + _g + _b;
+}
+
+/**
+ * Convert an RGB value to HEX
+ *
+ * @param {Number} r The red contained in the set [0, 255]
+ * @param {Number} g The green contained in the set [0, 255]
+ * @param {Number} b The blue contained in the set [0, 255]
+ * @param {Number} a The alpha contained in the set [0, 1]
+ * @return {String} The hex value
+ */
+export function rgba2hex(r, g, b, a) {
+    let hex = rgb2hex(r, g, b);
+
+    let _a = Math.round(a * 255).toString(16);
+
+    if (_a.length === 1){
+        _a = "0" + _a;
+    }
+
+    return hex + _a;
+}
+
+/**
  * Parse a CSS color value into an object with 'r', 'g', 'b', and 'a' keys
  *
  * @param {Mixed} color The CSS value to parse
@@ -270,8 +317,19 @@ export function toRGBA(color){
 
         const _color = color.replace(/\s\s*/g,''); // Remove all spaces
 
+        // Checks for 8 digit hex and converts string to integer
+        let matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(_color);
+        if(matches){
+            return {
+                "r": parseInt(matches[1], 16),
+                "g": parseInt(matches[2], 16),
+                "b": parseInt(matches[3], 16),
+                "a": parseInt(matches[4], 16) / 255,
+            };
+        }
+
         // Checks for 6 digit hex and converts string to integer
-        let matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(_color);
+        matches = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})/.exec(_color);
         if(matches){
             return {
                 "r": parseInt(matches[1], 16),
@@ -320,15 +378,4 @@ export function toRGBA(color){
     }
 
     return null;
-}
-
-/**
- * Parse a CSS color value into an rgba CSS string
- *
- * @param {Mixed} color The CSS value to parse
- * @return {Object} The color object with 'r', 'g', 'b', and 'a' keys
- */
-export function toCSS(color){
-    const rgba = toRGBA(color);
-    return rgba ? `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})` : null;
 }

@@ -1,64 +1,115 @@
 @import "../../../../theme";
 
 :local(.className){
-    background: $lightgray;
+    display: flex;
+    flex-direction: column;
+    background: #eee;
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.75);
 
-    .inner{
-        display: flex;
-        flex-direction: column;
+    .draggable-input{
+        position: relative;
+        border-radius: 0.5em;
+        cursor: pointer;
 
-        .draggable-input{
-            position: relative;
-            border-radius: 0.5em;
+        .thumb{
+            position: absolute;
+            width: 1em;
+            height: 1em;
+            transform: translateX(-50%) translateY(-50%);
+            box-sizing: border-box;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.5);
+            cursor: grab;
+        }
+    }
+
+    .top{
+        .palette{
+            width: 220px;
+            height: 130px;
+            margin-bottom: 0.5em;
+            border-radius: 0;
 
             .thumb{
+                transform: translateX(-50%) translateY(50%);
+            }
+        }
+    }
+
+    .middle{
+        display: flex;
+        flex-direction: row;
+        padding: 0.5em 1em;
+
+        .preview{
+            position: relative;
+            width: 2em;
+            height: 2em;
+            margin-right: 1em;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
+
+            &::before{
+                content: "";
                 position: absolute;
-                width: 1em;
-                height: 1em;
-                transform: translateX(-50%) translateY(-50%);
-                box-sizing: border-box;
-                border: 2px solid #fff;
-                border-radius: 50%;
-                box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.5);
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
+                background-size: auto;
+                background-size: .5em;
+                z-index: -1;
             }
+        }
 
-            &.palette{
-                width: 200px;
-                height: 125px;
-                margin-bottom: 0.5em;
-                border-radius: 0;
+        .sliders{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1 1 auto;
 
-                .thumb{
-                    transform: translateX(-50%) translateY(50%);
-                }
-            }
-
-            &.hue{
+            .draggable-input{
                 height: 0.5em;
-                margin: 0.5em 1em;
                 background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
 
                 .thumb{
                     top: 50%;
                     transform: translateX(-50%) translateY(-50%);
                 }
-            }
 
-            &.opacity{
-                height: 0.5em;
-                margin: 0.5em 1em;
-                background: linear-gradient(90deg, transparent, #000), url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
+                &.hue{
+                    background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+                }
 
-                .thumb{
-                    top: 50%;
-                    transform: translateX(-50%) translateY(-50%);
+                &.opacity{
+                    background: linear-gradient(90deg, transparent, #000), url('data:image/svg+xml;utf8, <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><path fill="white" d="M1,0H2V1H1V0ZM0,1H1V2H0V1Z"/><path fill="gray" d="M0,0H1V1H0V0ZM1,1H2V2H1V1Z"/></svg>');
                 }
             }
         }
+    }
 
-        .buttons{
-            margin: 1em;
+    .bottom{
+        display: flex;
+        flex-direction: row;
+        padding: 0.5em 0.75em;
+
+        button{
+            margin: 0 0.25em;
+            padding: 0.25em 0.5em;
+            color: #fff;
+
+            &[data-action="save"]{
+                margin-right: auto;
+                background: $darkgray;
+            }
+
+            &[data-action="reset"],
+            &[data-action="cancel"]{
+                background: $lightgray;
+            }
         }
     }
 }

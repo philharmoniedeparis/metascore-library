@@ -41,6 +41,7 @@
 
         .field{
             margin: 0.25em 0;
+            vertical-align: middle;
 
             > label{
                 margin-right: 0.5em;
@@ -104,6 +105,7 @@
         .field-group{
             > label{
                 margin-right: 0.5em;
+                vertical-align: middle;
             }
 
             .field{
