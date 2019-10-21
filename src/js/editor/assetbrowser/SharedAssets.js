@@ -151,6 +151,7 @@ export default class AssetBrowser extends Dom {
     createAssetItem(asset){
         const item = new Dom('<div/>', {'class': `asset ${asset.type}`})
             .data('id', asset.id)
+            .data('type', asset.type)
             .addDelegate('button', 'click', this.onAssetButtonClick);
 
         const figure = new Dom('<figure/>')
@@ -158,7 +159,9 @@ export default class AssetBrowser extends Dom {
 
         switch(asset.type){
             case 'image':
-                new Dom('<img/>', {'src': asset.file.url}).appendTo(figure);
+            case 'svg':
+                new Dom('<img/>', {'src': asset.file.url})
+                    .appendTo(figure);
                 break;
 
             case 'lottie_animation':{

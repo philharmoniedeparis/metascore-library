@@ -5,6 +5,7 @@ import {isString} from '../../core/utils/Var';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
+import SVGElement from './element/SVG';
 import AnimationElement from './element/Animation';
 
 /**
@@ -14,6 +15,7 @@ import AnimationElement from './element/Animation';
 const ELEMENT_TYPES = {
     'Cursor': CursorElement,
     'Content': ContentElement,
+    'SVG': SVGElement,
     'Animation': AnimationElement,
 };
 

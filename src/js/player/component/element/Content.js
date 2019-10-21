@@ -8,11 +8,13 @@ import Dom from '../../../core/Dom';
  * @param {Object} element The element instance
  * @param {String} block The block's name
  * @param {Integer} index The page index
+ *
  * @emits {play} Fired when a play link is clicked
  * @param {Object} element The element instance
  * @param {Number} inTime The start time
  * @param {Number} outTime The end time
  * @param {String} scenario The scenario
+ *
  * @emits {block_visibility} Fired when a block visibility link is clicked
  * @param {Object} element The element instance
  * @param {String} block The block's name

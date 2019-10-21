@@ -9,6 +9,7 @@ import PageForm from './configseditor/PageForm';
 import ElementForm from './configseditor/ElementForm';
 import CursorForm from './configseditor/CursorForm';
 import ContentForm from './configseditor/ContentForm';
+import SVGForm from './configseditor/SVGForm';
 import AnimationForm from './configseditor/AnimationForm';
 
 import {className} from '../../css/editor/ConfigsEditor.scss';
@@ -62,6 +63,7 @@ export default class ConfigsEditor extends Dom {
             'Element': new ElementForm(),
             'Cursor': new CursorForm(),
             'Content': new ContentForm(),
+            'SVG': new SVGForm(),
             'Animation': new AnimationForm()
         };
 

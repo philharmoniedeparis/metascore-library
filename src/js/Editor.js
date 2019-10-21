@@ -1560,6 +1560,7 @@ export default class Editor extends Dom {
         // Handle asset drop ////////////////////////
         if(evt.dataTransfer.types.includes('metascore/asset')){
             const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
+
             if('shared' in asset && asset.shared){
                 switch(asset.type){
                     case 'image': {
@@ -1569,6 +1570,21 @@ export default class Editor extends Dom {
                             const configs = {
                                 'type': 'Content',
                                 'background-image': asset.file.url,
+                                'x': evt.clientX - parent_rect.left,
+                                'y': evt.clientY - parent_rect.top,
+                            };
+
+                            this.addPlayerComponents('element', configs, parent);
+                        }
+                        break;
+
+                    case 'svg': {
+                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+                            const parent_rect = parent.get(0).getBoundingClientRect();
+
+                            const configs = {
+                                'type': 'SVG',
+                                'src': asset.file.url,
                                 'x': evt.clientX - parent_rect.left,
                                 'y': evt.clientY - parent_rect.top,
                             };

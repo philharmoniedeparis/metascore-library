@@ -301,6 +301,15 @@ export default class Ajax extends EventEmitter {
     }
 
     /**
+    * Get the XMLHttpRequest responseXML
+    *
+    * @return {*} The response's body content
+    */
+    getXMLResponse(){
+        return this.xhr.responseXML;
+    }
+
+    /**
     * Add an upload listener
     *
     * @param {String} type The event type to listen to
