@@ -21,71 +21,37 @@ export default class Element extends Component{
                     'type': 'string'
                 },
                 'name': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.data('name', value);
-                    }
+                    'type': 'string'
                 },
                 'x': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('left', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'y': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('top', `${value}px`);
-                    },
+                    'type': 'number'
                 },
                 'width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'height': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('height', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'background-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.contents.css('background-color', value);
-                    }
+                    'type': 'color'
                 },
                 'background-image': {
-                    'type': 'image',
-                    'setter': function(value){
-                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.contents.css('background-image', css_value);
-                    }
+                    'type': 'image'
                 },
                 'border-width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.contents.css('border-width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'border-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.contents.css('border-color', value);
-                    }
+                    'type': 'color'
                 },
                 'border-radius': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.contents.css('border-radius', value);
-                    }
+                    'type': 'string'
                 },
                 'opacity': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.contents.css('opacity', value);
-                    }
+                    'type': 'number'
                 },
                 'start-time': {
                     'type': 'time'
@@ -98,17 +64,26 @@ export default class Element extends Component{
     }
 
     /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        const type = this.constructor.getType();
+        this.addClass(`element ${type}`);
+
+        this.setupUI();
+    }
+
+    /**
      * Setup the element's UI
      *
      * @private
      */
     setupUI() {
-        // call parent function
-        super.setupUI();
-
-        const type = this.constructor.getType();
-        this.addClass(`element ${type}`);
-
         /**
          * The contents container
          * @type {Dom}
@@ -117,6 +92,35 @@ export default class Element extends Component{
             .appendTo(this);
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'background-color':
+            case 'border-color':
+            case 'border-radius':
+            case 'opacity':
+                this.contents.css(property, value);
+                break;
+
+            case 'border-width':
+                this.contents.css(property, `${value}px`);
+                break;
+
+            case 'background-image':
+                {
+                    const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                    this.contents.css(property, css_value);
+                }
+                break;
+
+
+            default:
+                super.updatePropertyValue(property, value);
+        }
     }
 
 }

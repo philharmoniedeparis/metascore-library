@@ -8,18 +8,6 @@ import Lottie from 'lottie-web';
 export default class Animation extends Element{
 
     /**
-     *Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-
-        this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
-    }
-
-    /**
     * Get the component's type
     *
     * @return {String} The component's type
@@ -60,32 +48,27 @@ export default class Animation extends Element{
     }
 
     /**
-     * Setup the cursor's UI
+     *Instantiate
      *
-     * @private
+     * @param {Object} configs Custom configs to override defaults
      */
-    setupUI(){
-        // call parent function
-        super.setupUI();
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.onAnimationLoad = this.onAnimationLoad.bind(this);
 
         this
             .addListener('cuepointset', this.onCuePointSet.bind(this))
             .addListener('activate', this.onActivate.bind(this))
             .addListener('deactivate', this.onDeactivate.bind(this));
-
-        return this;
     }
 
     /**
-     * The propchange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
-    onOwnPropChange(evt){
-        super.onOwnPropChange(evt);
-
-        switch(evt.detail.property){
+    updatePropertyValue(property, value){
+        switch(property){
             case 'src':
                 this.updateSrc();
                 break;
@@ -105,6 +88,9 @@ export default class Animation extends Element{
             case 'colors':
                 this.updateColors();
                 break;
+
+            default:
+                super.updatePropertyValue(property, value);
         }
     }
 
@@ -154,9 +140,7 @@ export default class Animation extends Element{
 
     draw(){
         if(this.isActive()){
-            const animation = this.getAnimation();
-
-            if(animation && this._loaded){
+            if(this.animation && this._loaded){
                 const start_time = this.getPropertyValue('start-time');
                 const start_frame = this.getPropertyValue('start-frame');
                 const loop_duration = this.getPropertyValue('loop-duration');
@@ -172,20 +156,19 @@ export default class Animation extends Element{
                     frame = total_frames - frame;
                 }
 
-                animation.goToAndStop(frame, true);
+                this.animation.goToAndStop(frame, true);
             }
         }
 
         return this;
     }
 
-    onAnimationLoaded(){
+    onAnimationLoad(){
         this._loaded = true;
 
         if(!this.getPropertyValue('loop-duration')){
-            const animation = this.getAnimation();
-            if(animation){
-                this.setPropertyValue('loop-duration', animation.getDuration());
+            if(this.animation){
+                this.setPropertyValue('loop-duration', this.animation.getDuration());
             }
         }
 
@@ -197,6 +180,8 @@ export default class Animation extends Element{
         if(this._playing){
             this.play();
         }
+
+        this.triggerEvent('contentload', {'component': this});
     }
 
     getAnimation(){
@@ -208,10 +193,8 @@ export default class Animation extends Element{
     }
 
     getTotalFrames(){
-        const animation = this.getAnimation();
-
-        if(animation){
-            return animation.getDuration(true);
+        if(this.animation){
+            return this.animation.getDuration(true);
         }
 
         return 0;
@@ -219,7 +202,7 @@ export default class Animation extends Element{
 
     play(){
         if(this._loaded){
-            this.getAnimation().play();
+            this.animation.play();
         }
 
         this._playing = true;
@@ -229,7 +212,7 @@ export default class Animation extends Element{
 
     stop(){
         if(this._loaded){
-            this.getAnimation().stop();
+            this.animation.stop();
         }
 
         delete this._playing;
@@ -252,7 +235,7 @@ export default class Animation extends Element{
                 autoplay: false,
             });
 
-            this.animation.addEventListener('DOMLoaded', this.onAnimationLoaded);
+            this.animation.addEventListener('DOMLoaded', this.onAnimationLoad);
         }
 
         return this;
@@ -265,13 +248,11 @@ export default class Animation extends Element{
     }
 
     updateFPS(){
-        const animation = this.getAnimation();
-
-        if(animation && this._loaded){
-            const duration = animation.getDuration();
+        if(this.animation && this._loaded){
+            const duration = this.animation.getDuration();
             const loop_duration = this.getPropertyValue('loop-duration');
 
-            animation.setSpeed(duration/loop_duration);
+            this.animation.setSpeed(duration/loop_duration);
 
             if(!this._playing){
                 this.draw();
@@ -282,11 +263,9 @@ export default class Animation extends Element{
     }
 
     updateDirection(){
-        const animation = this.getAnimation();
-
-        if(animation && this._loaded){
+        if(this.animation && this._loaded){
             const direction = this.getPropertyValue('reversed') ? -1 : 1;
-            animation.setDirection(direction);
+            this.animation.setDirection(direction);
 
             if(!this._playing){
                 this.draw();
@@ -297,9 +276,7 @@ export default class Animation extends Element{
     }
 
     updateColors(){
-        const animation = this.getAnimation();
-
-        if(animation && this._loaded){
+        if(this.animation && this._loaded){
             let colors = this.getPropertyValue('colors');
 
             if(!colors){
@@ -329,7 +306,7 @@ export default class Animation extends Element{
         this.stop();
 
         if(this.animation){
-            this.animation.removeEventListener('DOMLoaded', this.onAnimationLoaded);
+            this.animation.removeEventListener('DOMLoaded', this.onAnimationLoad);
             this.animation.destroy();
         }
 

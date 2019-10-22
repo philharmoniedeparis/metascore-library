@@ -3,7 +3,7 @@ import {MasterClock} from '../../core/media/Clock';
 import Dom from '../../core/Dom';
 import Pager from './block/Pager';
 import Page from './Page';
-import {isString, isNumber} from '../../core/utils/Var';
+import {isNumber} from '../../core/utils/Var';
 
 /**
  * A block component
@@ -26,74 +26,40 @@ export default class Block extends Component {
                     'type': 'string'
                 },
                 'name': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.data('name', value);
-                    }
+                    'type': 'string'
                 },
                 'hidden': {
-                    'type': 'boolean',
-                    'setter': function(value){
-                        this.toggleClass('hidden', value);
-                    }
+                    'type': 'boolean'
                 },
                 'scenario': {
                     'type': 'string'
                 },
                 'x': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('left', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'y': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('top', `${value}px`);
-                    },
+                    'type': 'number'
                 },
                 'width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'height': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('height', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'background-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.css('background-color', value);
-                    }
+                    'type': 'color'
                 },
                 'background-image': {
-                    'type': 'image',
-                    'setter': function(value){
-                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', css_value);
-                    }
+                    'type': 'image'
                 },
                 'border-width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('border-width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'border-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.css('border-color', value);
-                    }
+                    'type': 'color'
                 },
                 'border-radius': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.css('border-radius', value);
-                    }
+                    'type': 'string'
                 },
                 'synched': {
                     'type': 'boolean',
@@ -109,15 +75,6 @@ export default class Block extends Component {
                         });
 
                         return pages;
-                    },
-                    'setter': function(value){
-                        this.removeAllChildren();
-
-                        value.forEach((configs) => {
-                            this.addPage(configs);
-                        });
-
-                        this.setActivePage(0);
                     }
                 }
             })
@@ -125,14 +82,23 @@ export default class Block extends Component {
     }
 
     /**
-     * @inheritdoc
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
      */
-    setupUI() {
-        // call parent function
-        super.setupUI();
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
 
         this.addClass('block');
 
+        this.setupUI();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setupUI() {
         /**
          * The pages container
          * @type {Dom}
@@ -153,6 +119,24 @@ export default class Block extends Component {
             .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this));
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'pages':
+                this.removeAllChildren();
+                value.forEach((configs) => {
+                    this.addPage(configs);
+                });
+                this.setActivePage(0);
+                break;
+
+            default:
+                super.updatePropertyValue(property, value);
+        }
     }
 
     /**

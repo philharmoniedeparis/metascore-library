@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import Draggable from '../core/ui/Draggable';
 import Resizable from '../core/ui/Resizable';
-import {isFunction} from '../core/utils/Var';
+import {isFunction, isString} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
@@ -62,10 +62,6 @@ export default class Component extends Dom {
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
-
-        this
-            .setupUI()
-            .addListener('propchange', this.onPropChange.bind(this));
     }
 
     /**
@@ -83,9 +79,6 @@ export default class Component extends Dom {
                     'default': `component-${uuid(10)}`,
                     'getter': function(){
                         return this.attr('id');
-                    },
-                    'setter': function(value){
-                        this.attr('id', value);
                     }
                 }
             }
@@ -134,15 +127,6 @@ export default class Component extends Dom {
         }
 
         return false;
-    }
-
-    /**
-     * Setup the component's UI
-     *
-     * @private
-     */
-    setupUI() {
-        return this;
     }
 
     /**
@@ -306,9 +290,7 @@ export default class Component extends Dom {
                     this.property_values[name] = value;
                 }
 
-                if('setter' in prop && isFunction(prop.setter)){
-                    prop.setter.call(this, value);
-                }
+                this.updatePropertyValue(name, value);
 
                 if(supressEvent !== true){
                     this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
@@ -334,19 +316,59 @@ export default class Component extends Dom {
         return this;
     }
 
-    onPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
+    /**
+     * Update a property value
+     *
+     * @private
+     * @param {String} name The name of the property
+     * @param {Mixed} value The value to set
+     * @return {this}
+     */
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'id':
+                this.attr('id', value);
+                break;
 
-        this.onOwnPropChange(evt);
-    }
+            case 'name':
+                this.data(property, value);
+                break;
 
-    onOwnPropChange(evt){
-        const property = evt.detail.property;
-        if((property === 'start-time') || (property === 'end-time')){
-            this.setCuePoint();
+            case 'hidden':
+                this.toggleClass(property, value);
+                break;
+
+            case 'x':
+                this.css('left', `${value}px`);
+                break;
+
+            case 'y':
+                this.css('top', `${value}px`);
+                break;
+
+            case 'width':
+            case 'height':
+            case 'border-width':
+                this.css(property, `${value}px`);
+                break;
+
+            case 'background-color':
+            case 'border-color':
+            case 'border-radius':
+                this.css(property, value);
+                break;
+
+            case 'background-image':
+                {
+                    const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
+                    this.css('background-image', css_value);
+                }
+                break;
+
+            case 'start-time':
+            case 'end-time':
+                this.setCuePoint();
+                break;
         }
     }
 

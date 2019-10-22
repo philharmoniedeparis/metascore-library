@@ -8,19 +8,6 @@ import {MasterClock} from '../../core/media/Clock';
 export default class Media extends Component{
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
-     * @property {Object} [properties={...}] A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs){
-        // call parent constructor
-        super(configs);
-
-        this.addClass('media');
-    }
-
-    /**
     * Get the default config values
     *
     * @return {Object} The default values
@@ -34,79 +21,60 @@ export default class Media extends Component{
                     'type': 'string'
                 },
                 'name': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.data('name', value);
-                    }
+                    'type': 'string'
                 },
                 'hidden': {
-                    'type': 'boolean',
-                    'setter': function(value){
-                        this.toggleClass('hidden', value);
-                    }
+                    'type': 'boolean'
                 },
                 'scenario': {
                     'type': 'string'
                 },
                 'x': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('left', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'y': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('top', `${value}px`);
-                    },
+                    'type': 'number'
                 },
                 'width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'height': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('height', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'background-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.css('background-color', value);
-                    }
+                    'type': 'color'
                 },
                 'border-width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('border-width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'border-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.css('border-color', value);
-                    }
+                    'type': 'color'
                 },
                 'border-radius': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.css('border-radius', value);
-                    }
+                    'type': 'string'
                 },
             })
         });
     }
 
     /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.addClass('media');
+
+        this.setupUI();
+    }
+
+    /**
      * @inheritdoc
      */
     setupUI(){
-        // call parent function
-        super.setupUI();
-
         /**
          * The cursor's line
          * @type {Dom}
@@ -143,13 +111,10 @@ export default class Media extends Component{
     }
 
     /**
-     * The propchange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
-    onOwnPropChange(evt){
-        super.onOwnPropChange(evt);
+    updatePropertyValue(property, value){
+        super.updatePropertyValue(property, value);
 
         this.draw();
     }

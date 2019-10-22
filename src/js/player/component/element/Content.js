@@ -48,13 +48,24 @@ export default class Content extends Element {
                     'type': 'string',
                     'getter': function(){
                         return this.contents.text();
-                    },
-                    'setter': function(value){
-                        this.contents.text(value);
                     }
                 }
             })
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'text':
+                this.contents.text(value);
+                break;
+
+            default:
+                super.updatePropertyValue(property, value);
+        }
     }
 
     /**

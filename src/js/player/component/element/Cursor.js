@@ -26,19 +26,13 @@ export default class Cursor extends Element {
             'properties': Object.assign({}, defaults.properties, {
                 'border-radius': {
                     'type': 'string',
-                    'setter': function(value){
-                        this.contents.css('border-radius', value);
-                    },
                     'applies': function(){
                         return this.getPropertyValue('form') !== 'circular';
                     }
                 },
                 'form': {
                     'type': 'string',
-                    'default': 'linear',
-                    'setter': function(value){
-                        this.data('form', value);
-                    }
+                    'default': 'linear'
                 },
                 'keyframes': {
                     'type': 'array',
@@ -83,6 +77,21 @@ export default class Cursor extends Element {
     }
 
     /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this
+            .addListener('activate', this.onActivate.bind(this))
+            .addListener('resizeend', this.onResizeEnd.bind(this))
+            .addListener('click', this.onClick.bind(this));
+    }
+
+    /**
      * Setup the cursor's UI
      *
      * @private
@@ -101,34 +110,18 @@ export default class Cursor extends Element {
         this.canvas = this.cursor.get(0);
         this.context = this.canvas.getContext('2d');
 
-        this
-            .addListener('activate', this.onActivate.bind(this))
-            .addListener('resizeend', this.onResizeEnd.bind(this))
-            .addListener('click', this.onClick.bind(this));
-
         return this;
     }
 
     /**
-     * The activate event handler
-     *
-     * @private
+     * @inheritdoc
      */
-    onActivate(){
-        this.resizeCanvas();
-        this.draw();
-    }
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'form':
+                this.data('form', value);
+                break;
 
-    /**
-     * The propchange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onOwnPropChange(evt){
-        super.onOwnPropChange(evt);
-
-        switch(evt.detail.property){
             case 'direction':
             case 'acceleration': {
                     const cuepoint = this.getCuePoint();
@@ -141,10 +134,24 @@ export default class Cursor extends Element {
             case 'width':
             case 'height':
             case 'border-width':
+                super.updatePropertyValue(property, value);
                 this.resizeCanvas();
                 break;
+
+            default:
+                super.updatePropertyValue(property, value);
         }
 
+        this.draw();
+    }
+
+    /**
+     * The activate event handler
+     *
+     * @private
+     */
+    onActivate(){
+        this.resizeCanvas();
         this.draw();
     }
 

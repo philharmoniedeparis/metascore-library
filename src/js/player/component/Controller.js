@@ -23,46 +23,42 @@ export default class Controller extends Component{
                     'type': 'string'
                 },
                 'hidden': {
-                    'type': 'boolean',
-                    'setter': function(value){
-                        this.toggleClass('hidden', value);
-                    }
+                    'type': 'boolean'
                 },
                 'scenario': {
                     'type': 'string'
                 },
                 'x': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('left', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'y': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('top', `${value}px`);
-                    },
+                    'type': 'number'
                 },
                 'width': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('width', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'height': {
-                    'type': 'number',
-                    'setter': function(value){
-                        this.css('height', `${value}px`);
-                    }
+                    'type': 'number'
                 },
                 'border-radius': {
-                    'type': 'string',
-                    'setter': function(value){
-                        this.css('border-radius', value);
-                    }
+                    'type': 'string'
                 }
             })
         });
+    }
+
+    /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.addClass('controller');
+
+        this.setupUI();
     }
 
     /**
@@ -71,10 +67,6 @@ export default class Controller extends Component{
      * @private
      */
     setupUI() {
-        // call parent function
-        super.setupUI();
-
-        this.addClass('controller');
 
         /**
          * The timer container

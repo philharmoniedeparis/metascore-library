@@ -23,7 +23,7 @@ export default class AnimationForm extends ElementForm {
         super(configs);
 
         // fix event handlers scope
-        this.onAnimationLoaded = this.onAnimationLoaded.bind(this);
+        this.onComponentLoad = this.onComponentLoad.bind(this);
 
         this.addClass(`animation-form ${className}`);
     }
@@ -121,7 +121,9 @@ export default class AnimationForm extends ElementForm {
         this.updateInputs();
 
         this.getComponents().forEach((component) => {
-            component.getAnimation().addEventListener('DOMLoaded', this.onAnimationLoaded);
+            if(!component.isLoaded()){
+                component.addListener('contentload', this.onComponentLoad);
+            }
         });
 
         return this;
@@ -133,7 +135,7 @@ export default class AnimationForm extends ElementForm {
     unsetComponents(supressEvent){
         if(this.components){
             this.components.forEach((component) => {
-                component.getAnimation().removeEventListener('DOMLoaded', this.onAnimationLoaded);
+                component.removeListener('contentload', this.onComponentLoad);
             });
         }
 
@@ -142,7 +144,7 @@ export default class AnimationForm extends ElementForm {
         return this;
     }
 
-    onAnimationLoaded(){
+    onComponentLoad(){
         this.updateInputs();
     }
 

@@ -1,7 +1,6 @@
 import Component from '../Component';
 import Element from './Element';
 import Locale from '../../core/Locale';
-import {isString} from '../../core/utils/Var';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
@@ -41,17 +40,10 @@ export default class Page extends Component {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
                 'background-color': {
-                    'type': 'color',
-                    'setter': function(value){
-                        this.css('background-color', value);
-                    }
+                    'type': 'color'
                 },
                 'background-image': {
-                    'type': 'image',
-                    'setter': function(value){
-                        const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                        this.css('background-image', css_value);
-                    }
+                    'type': 'image'
                 },
                 'start-time': {
                     'type': 'time'
@@ -69,11 +61,6 @@ export default class Page extends Component {
                         });
 
                         return elements;
-                    },
-                    'setter': function(value){
-                        value.forEach((configs) => {
-                            this.addElement(configs);
-                        });
                     }
                 }
             })
@@ -81,17 +68,49 @@ export default class Page extends Component {
     }
 
     /**
-     * Setup the page's UI
+     * Instantiate
      *
-     * @private
+     * @param {Object} configs Custom configs to override defaults
      */
-    setupUI() {
-        // call parent function
-        super.setupUI();
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
 
         this.addClass('page');
+    }
 
-        return this;
+    /**
+     * @inheritdoc
+     */
+    updatePropertyValue(property, value){
+        switch(property){
+            case 'start-time':
+            case 'end-time':
+                super.updatePropertyValue(property, value);
+
+                {
+                    const block = this.getParent();
+
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getChildIndex(this);
+                        const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
+
+                        if(sibling_page){
+                            sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', value);
+                        }
+                    }
+                }
+                break;
+
+            case 'elements':
+                value.forEach((configs) => {
+                    this.addElement(configs);
+                });
+                break;
+
+            default:
+                super.updatePropertyValue(property, value);
+        }
     }
 
     getName(){
@@ -137,25 +156,6 @@ export default class Page extends Component {
         }
 
         return element;
-    }
-
-    onOwnPropChange(evt){
-        super.onOwnPropChange(evt);
-
-        const property = evt.detail.property;
-        if((property === 'start-time') || (property === 'end-time')){
-            const page = evt.detail.component;
-            const block = page.getParent();
-
-            if(block.getPropertyValue('synched')){
-                const index = block.getChildIndex(page);
-                const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
-
-                if(sibling_page){
-                    sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', evt.detail.value);
-                }
-            }
-        }
     }
 
 }
