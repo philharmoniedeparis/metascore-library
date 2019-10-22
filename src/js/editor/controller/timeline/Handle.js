@@ -2,8 +2,8 @@ import Dom from '../../../core/Dom';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 import Button from '../../../core/ui/Button';
 
-import expander_icon from '../../../../img/editor/controller/timeline/handle/expander.svg?sprite';
-import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?sprite';
+import expander_icon from '../../../../img/editor/controller/timeline/handle/expander.svg?svg-sprite';
+import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
 import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
 /**

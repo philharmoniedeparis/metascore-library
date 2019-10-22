@@ -9,9 +9,9 @@ import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import play_icon from '../../img/editor/controller/play.svg?sprite';
-import pause_icon from '../../img/editor/controller/pause.svg?sprite';
-import rewind_icon from '../../img/editor/controller/rewind.svg?sprite';
+import play_icon from '../../img/editor/controller/play.svg?svg-sprite';
+import pause_icon from '../../img/editor/controller/pause.svg?svg-sprite';
+import rewind_icon from '../../img/editor/controller/rewind.svg?svg-sprite';
 
 import {className} from '../../css/editor/Controller.scss';
 

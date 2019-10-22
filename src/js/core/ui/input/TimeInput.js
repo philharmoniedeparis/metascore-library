@@ -5,9 +5,9 @@ import Locale from '../../Locale';
 import {pad} from '../../utils/String';
 import {isNumeric} from '../../utils/Var';
 
-import in_icon from '../../../../img/core/ui/input/time/time-in.svg?sprite';
-import out_icon from '../../../../img/core/ui/input/time/time-out.svg?sprite';
-import clear_icon from '../../../../img/core/ui/input/time/clear.svg?sprite';
+import in_icon from '../../../../img/core/ui/input/time/time-in.svg?svg-sprite';
+import out_icon from '../../../../img/core/ui/input/time/time-out.svg?svg-sprite';
+import clear_icon from '../../../../img/core/ui/input/time/clear.svg?svg-sprite';
 import {className} from '../../../../css/core/ui/input/Time.scss';
 
 /**

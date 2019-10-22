@@ -10,14 +10,14 @@ import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
 import {isValidMimeType} from '../../core/utils/Media';
 
-import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?sprite';
-import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?sprite';
-import asset_icon from '../../../img/editor/assetbrowser/guideassets/asset.svg?sprite';
-import synched_block_icon from '../../../img/editor/assetbrowser/guideassets/synched-block.svg?sprite';
-import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets/non-synched-block.svg?sprite';
-import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?sprite';
-import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?sprite';
-import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?sprite';
+import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
+import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
+import asset_icon from '../../../img/editor/assetbrowser/guideassets/asset.svg?svg-sprite';
+import synched_block_icon from '../../../img/editor/assetbrowser/guideassets/synched-block.svg?svg-sprite';
+import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets/non-synched-block.svg?svg-sprite';
+import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?svg-sprite';
+import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?svg-sprite';
+import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?svg-sprite';
 import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**

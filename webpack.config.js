@@ -93,7 +93,7 @@ module.exports = (env, argv) => {
           oneOf: [
             {
               // Pack SVG sprites.
-              resourceQuery: /sprite/, // foo.svg?sprite
+              resourceQuery: /svg-sprite/, // foo.svg?svg-sprite
               use: [
                 {
                   loader: 'svg-sprite-loader',
@@ -110,6 +110,14 @@ module.exports = (env, argv) => {
                 {
                   loader: 'svgo-loader'
                 }
+              ]
+            },
+            {
+              // Pack inline SVG.
+              resourceQuery: /svg-inline/, // foo.svg?svg-inline
+              use: [
+                'svg-inline-loader',
+                'svgo-loader'
               ]
             },
             {

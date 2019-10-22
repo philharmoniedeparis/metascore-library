@@ -3,7 +3,7 @@ import Dom from '../../Dom';
 import Button from '../Button';
 import BorderRadiusOverlay from '../overlay/BorderRadius';
 
-import clear_icon from '../../../../img/core/ui/input/borderradius/clear.svg?sprite';
+import clear_icon from '../../../../img/core/ui/input/borderradius/clear.svg?svg-sprite';
 import {className} from '../../../../css/core/ui/input/BorderRadius.scss';
 
 /**

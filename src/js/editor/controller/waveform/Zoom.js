@@ -5,7 +5,7 @@ import SliderInput from '../../../core/ui/input/SliderInput';
 import {formatTime} from '../../../core/utils/Media';
 import Locale from '../../../core/Locale';
 
-import zoom_icon from '../../../../img/editor/controller/waveform/zoom.svg?sprite';
+import zoom_icon from '../../../../img/editor/controller/waveform/zoom.svg?svg-sprite';
 import {className, controlsClassName} from '../../../../css/editor/controller/WaveformZoom.scss';
 
 /**

@@ -4,10 +4,10 @@ import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
 import {getDecimalPlaces} from '../../utils/Number';
 
-import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down.svg?sprite';
-import chevron_left_icon from '../../../../img/core/ui/input/number/chevron-left.svg?sprite';
-import chevron_right_icon from '../../../../img/core/ui/input/number/chevron-right.svg?sprite';
-import chevron_up_icon from '../../../../img/core/ui/input/number/chevron-up.svg?sprite';
+import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down.svg?svg-sprite';
+import chevron_left_icon from '../../../../img/core/ui/input/number/chevron-left.svg?svg-sprite';
+import chevron_right_icon from '../../../../img/core/ui/input/number/chevron-right.svg?svg-sprite';
+import chevron_up_icon from '../../../../img/core/ui/input/number/chevron-up.svg?svg-sprite';
 import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**

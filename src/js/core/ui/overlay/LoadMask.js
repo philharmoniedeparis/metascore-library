@@ -3,7 +3,7 @@ import Dom from '../../Dom';
 import Icon from '../Icon';
 import Locale from '../../Locale';
 
-import loading_icon from '../../../../img/core/loading.svg?sprite';
+import loading_icon from '../../../../img/core/loading.svg?svg-sprite';
 import {className} from '../../../../css/core/ui/overlay/LoadMask.scss';
 
 /**

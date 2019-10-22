@@ -7,8 +7,8 @@ import Confirm from '../../core/ui/overlay/Confirm';
 import ContextMenu from '../../core/ui/ContextMenu';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?sprite';
-import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?sprite';
+import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?svg-sprite';
+import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?svg-sprite';
 import {className} from '../../../css/editor/controller/ScenarioSelector.scss';
 
 /**

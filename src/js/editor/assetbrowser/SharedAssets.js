@@ -10,8 +10,8 @@ import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import Lottie from 'lottie-web';
 import Fuse from 'fuse.js';
 
-import search_icon from '../../../img/editor/assetbrowser/sharedassets/search.svg?sprite';
-import close_icon from '../../../img/editor/assetbrowser/sharedassets/close.svg?sprite';
+import search_icon from '../../../img/editor/assetbrowser/sharedassets/search.svg?svg-sprite';
+import close_icon from '../../../img/editor/assetbrowser/sharedassets/close.svg?svg-sprite';
 import {className, toolbarClassName} from '../../../css/editor/assetbrowser/SharedAssets.scss';
 
 /**
