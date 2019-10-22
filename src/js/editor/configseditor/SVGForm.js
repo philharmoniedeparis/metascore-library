@@ -42,6 +42,8 @@ export default class SVGForm extends ElementForm {
                 'stroke-width',
                 'stroke-dasharray',
                 'fill',
+                'marker-start',
+                'marker-end',
                 'background',
                 'border',
                 'time',
@@ -91,20 +93,98 @@ export default class SVGForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
                     break;
 
-                case 'fill':
-                    this.fields[name] = new Field(
-                        new ColorInput(),
-                        {
-                            'label': Locale.t('editor.configseditor.SVGForm.fields.fill.label', 'Fill color')
-                        })
-                        .data('property', name)
-                        .appendTo(this.fields_wrapper);
-                        break;
+            case 'fill':
+                this.fields[name] = new Field(
+                    new ColorInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.SVGForm.fields.fill.label', 'Fill color')
+                    })
+                    .data('property', name)
+                    .appendTo(this.fields_wrapper);
+                    break;
+
+            case 'marker-start':
+                this.fields[name] = new Field(
+                    new SelectInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.SVGForm.fields.marker-start.label', 'Marker start')
+                    })
+                    .data('property', name)
+                    .appendTo(this.fields_wrapper);
+                    break;
+
+            case 'marker-mid':
+                this.fields[name] = new Field(
+                    new SelectInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.SVGForm.fields.marker-start.mid', 'Marker mid')
+                    })
+                    .data('property', name)
+                    .appendTo(this.fields_wrapper);
+                    break;
+
+            case 'marker-end':
+                this.fields[name] = new Field(
+                    new SelectInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.SVGForm.fields.marker-end.label', 'Marker end')
+                    })
+                    .data('property', name)
+                    .appendTo(this.fields_wrapper);
+                    break;
 
             default:
                 super.addField(name);
         }
 
         return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setComponents(components){
+        super.setComponents(components);
+
+        this.updateInputs();
+
+        this.getComponents().forEach((component) => {
+            if(!component.isLoaded()){
+                component.addListener('contentload', this.onComponentLoad);
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    unsetComponents(supressEvent){
+        if(this.components){
+            this.components.forEach((component) => {
+                component.removeListener('contentload', this.onComponentLoad);
+            });
+        }
+
+        super.unsetComponents(supressEvent);
+
+        return this;
+    }
+
+    onComponentLoad(){
+        this.updateInputs();
+    }
+
+    updateInputs(){
+        const markers = Object.keys(this.master_component.getSVGMarkers());
+
+        const marker_start_input = this.getField('marker-start').getInput().clear();
+        const marker_end_input = this.getField('marker-end').getInput().clear();
+
+        markers.forEach((marker) => {
+            marker_start_input.addOption(marker, marker);
+            marker_end_input.addOption(marker, marker);
+        });
     }
 }
