@@ -120,6 +120,12 @@ export default class Timeline extends Dom {
     onHandleDragStart(evt){
         const component_id = Dom.data(evt.target, 'component');
         const track = this.getTrack(component_id);
+
+        if(track.getComponent().instanceOf('Page')){
+            evt.preventDefault();
+            return;
+        }
+
         const handle = track.getHandle();
 
         this._handle_drag_ghost = new Dom(evt.target.cloneNode(true))
