@@ -58,6 +58,11 @@
             background: $animation-element-color;
         }
     }
+    &[data-type="SVG"]{
+        & > .inner .info{
+            background: $svg-element-color;
+        }
+    }
 
     .descendents{
         display: none;

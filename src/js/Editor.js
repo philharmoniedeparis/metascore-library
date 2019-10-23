@@ -130,9 +130,9 @@ export default class Editor extends Dom {
          * @type {MainMenu}
          */
         this.mainmenu = new MainMenu()
-            .addDelegate('button[data-action]', 'click', this.onMainmenuClick.bind(this))
+            .addDelegate('button', 'click', this.onMainmenuClick.bind(this))
             .addDelegate('.input.title', 'valuechange', this.onMainmenuTitleChange.bind(this))
-            .addDelegate('.input[data-action="preview-toggle"]', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
+            .addDelegate('.input.preview-toggle', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
             .addDelegate('.input.revisions', 'valuechange', this.onMainmenuRevisionsChange.bind(this))
             .appendTo(top_pane.getContents());
 
@@ -1560,55 +1560,31 @@ export default class Editor extends Dom {
         // Handle asset drop ////////////////////////
         if(evt.dataTransfer.types.includes('metascore/asset')){
             const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
+            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
+            const parent_rect = parent.get(0).getBoundingClientRect();
+
+            const configs = {
+                'name': asset.name,
+                'x': evt.clientX - parent_rect.left,
+                'y': evt.clientY - parent_rect.top,
+            };
 
             if('shared' in asset && asset.shared){
                 switch(asset.type){
-                    case 'image': {
-                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                            const parent_rect = parent.get(0).getBoundingClientRect();
-
-                            const configs = {
-                                'type': 'Content',
-                                'background-image': asset.file.url,
-                                'x': evt.clientX - parent_rect.left,
-                                'y': evt.clientY - parent_rect.top,
-                            };
-
-                            this.addPlayerComponents('element', configs, parent);
-                        }
+                    case 'image':
+                        configs.type = 'Content';
+                        configs['background-image'] = asset.file.url;
                         break;
 
-                    case 'svg': {
-                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                            const parent_rect = parent.get(0).getBoundingClientRect();
-
-                            const configs = {
-                                'type': 'SVG',
-                                'src': asset.file.url,
-                                'x': evt.clientX - parent_rect.left,
-                                'y': evt.clientY - parent_rect.top,
-                            };
-
-                            this.addPlayerComponents('element', configs, parent);
-                        }
-                        break;
-
-                    case 'lottie_animation': {
-                            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-                            const parent_rect = parent.get(0).getBoundingClientRect();
-
-                            const configs = {
-                                'type': 'Animation',
-                                'src': asset.file.url,
-                                'x': evt.clientX - parent_rect.left,
-                                'y': evt.clientY - parent_rect.top,
-                            };
-
-                            this.addPlayerComponents('element', configs, parent);
-                        }
+                    case 'lottie_animation':
+                    case 'svg':
+                        configs.type = asset.type === 'svg' ? 'SVG' : 'Animation';
+                        configs.src = asset.file.url;
                         break;
                 }
             }
+
+            this.addPlayerComponents('element', configs, parent);
 
             evt.preventDefault();
         }
@@ -2134,26 +2110,18 @@ export default class Editor extends Dom {
 
                 configs.forEach((element_config) => {
                     const el_index = page.children(`.element.${element_config.type}`).count() + 1;
-                    const defaults = {};
+                    const defaults = {
+                        'name': `${element_config.type} ${el_index}`
+                    };
 
                     switch(element_config.type){
                         case 'Cursor':
-                            defaults.name = `cur ${el_index}`;
-
                             defaults['start-time'] = MasterClock.getTime();
                             defaults['end-time'] = page.getPropertyValue('end-time');
 
                             if(defaults['end-time'] === null){
                                 defaults['end-time'] = MasterClock.getRenderer().getDuration();
                             }
-                            break;
-
-                        case 'Content':
-                            defaults.name = `content ${el_index}`;
-                            break;
-
-                        case 'Animation':
-                            defaults.name = `anim ${el_index}`;
                             break;
                     }
 
