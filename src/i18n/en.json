@@ -129,6 +129,8 @@
 	"editor.configseditor.SVGForm.fields.stroke-dasharray.options.none": "Solid",
 	"editor.configseditor.SVGForm.fields.stroke-width.label": "Stroke width",
 	"editor.configseditor.SVGForm.fields.stroke.label": "Stroke color",
+	"editor.configseditor.SVGForm.title.plural": "Attributes of @count vector graphics",
+	"editor.configseditor.SVGForm.title.single": "Attributes of vector graphic",
 	"editor.contextmenu.add-block": "Add a block",
 	"editor.contextmenu.add-block-non-synched": "Non-synchronized",
 	"editor.contextmenu.add-block-synched": "Synchronized",

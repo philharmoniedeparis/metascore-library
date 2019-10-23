@@ -129,6 +129,8 @@
 	"editor.configseditor.SVGForm.fields.stroke-dasharray.options.none": "Continue",
 	"editor.configseditor.SVGForm.fields.stroke-width.label": "Largeur du trait",
 	"editor.configseditor.SVGForm.fields.stroke.label": "Couleur du trait",
+	"editor.configseditor.SVGForm.title.plural": "Attributs de @count images vectorielles",
+	"editor.configseditor.SVGForm.title.single": "Attributs de l'image vectorielle",
 	"editor.contextmenu.add-block": "Ajouter un bloc",
 	"editor.contextmenu.add-block-non-synched": "Non-synchronisé",
 	"editor.contextmenu.add-block-synched": "Synchronisé",

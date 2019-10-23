@@ -21,6 +21,9 @@ export default class SVGForm extends ElementForm {
         // call parent constructor
         super(configs);
 
+        // fix event handlers scope
+        this.onComponentLoad = this.onComponentLoad.bind(this);
+
         this.addClass(`svg-form ${className}`);
     }
 
@@ -33,8 +36,8 @@ export default class SVGForm extends ElementForm {
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
-            'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
+            'title': Locale.t('editor.configseditor.SVGForm.title.single', 'Attributes of vector graphic'),
+            'title_plural': Locale.t('editor.configseditor.SVGForm.title.plural', 'Attributes of @count vector graphics'),
             'fields': [
                 'name',
                 'hidden',

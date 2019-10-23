@@ -111,7 +111,8 @@ export default class SVG extends Element {
 
         this.svg_dom = new Dom(evt.target.contentDocument).child('svg');
 
-        new Dom(markers_svg).child('defs')
+        const markers_dom = new DOMParser().parseFromString(markers_svg, 'image/svg+xml');
+        new Dom(markers_dom).find('defs')
             .insertAt(this.svg_dom, 0);
 
         this.updateSVGProperties();
