@@ -569,10 +569,10 @@ export default class Component extends Dom {
                 .addListener('start', this.onCuePointStart.bind(this))
                 .addListener('update', this.onCuePointUpdate.bind(this))
                 .addListener('stop', this.onCuePointStop.bind(this));
+        }
 
-            if(active){
-                this.activate();
-            }
+        if(active){
+            this.activate(false ,true);
         }
 
         if(supressEvent !== true){
@@ -624,8 +624,8 @@ export default class Component extends Dom {
      * @param {Boolean} [supressEvent=false] Whether to supress the activate event
      * @return {this}
      */
-    activate(supressEvent){
-        if(!this.isActive()){
+    activate(supressEvent, force){
+        if(!this.isActive() || force === true){
             const cuepoint = this.getCuePoint();
             if(cuepoint){
                 cuepoint.activate();
