@@ -419,7 +419,12 @@ export default class Dom {
 
                 default:
                     if(value === null){
-                        element.removeAttribute(name);
+                        if(typeof namespace !== "undefined"){
+                            element.removeAttributeNS(namespace, name);
+                        }
+                        else{
+                            element.removeAttribute(name, value);
+                        }
                     }
                     else{
                         if(typeof value !== "undefined"){
