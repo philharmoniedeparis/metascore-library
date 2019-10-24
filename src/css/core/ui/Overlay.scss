@@ -15,35 +15,17 @@
     > .inner{
         background: $darkgray;
         position: relative;
-        padding: 1em;
 
         > .toolbar{
-            padding: 10px 16px;
-            border-bottom: 2px solid #b2b2b2;
-            background-color: #dadada;
-            background-image: linear-gradient(to bottom, #dadada 0%, #c8c8c8 100%);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0.5em;
+            color: #fff;
+            background-color: $mediumgray;
 
-            .title{
-                float: left;
-                font-weight: bold;
-                color: #5d5d5d;
-            }
-
-            .buttons{
-                margin-left: 16px;
-                float: right;
-
-                button{
-                    width: 16px;
-                    height: 16px;
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    vertical-align: middle;
-
-                    &[data-action="close"]{
-                        background-image: url('../../../img/core/ui/overlay/close.png');
-                    }
-                }
+            button{
+                color: #fff;
             }
         }
 
@@ -51,6 +33,7 @@
             max-height: 75vh;
             overflow: auto;
             text-align: center;
+            padding: 1em;
 
             .text{
                 max-width: 50vw;
@@ -66,8 +49,8 @@
         }
 
         > .buttons{
-            margin-top: 1em;
             text-align: center;
+            padding: 1em;
 
             button{
                 min-width: 60px;

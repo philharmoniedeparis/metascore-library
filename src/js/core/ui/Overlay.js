@@ -1,7 +1,7 @@
 import Dom from '../Dom';
-import Toolbar from './overlay/Toolbar';
 import Button from './Button';
 
+import close_icon from '../../../img/core/ui/overlay/close.svg?svg-sprite';
 import {className} from '../../../css/core/ui/Overlay.scss';
 
 /**
@@ -9,8 +9,10 @@ import {className} from '../../../css/core/ui/Overlay.scss';
  *
  * @emits {show} Fired when the overlay is shown
  * @param {Object} overlay The overlay instance
+ *
  * @emits {hide} Fired when the overlay is hidden
  * @param {Object} overlay The overlay instance
+ *
  * @emits {buttonclick} Fired when a button is clicked
  * @param {Object} overlay The overlay instance
  * @param {String} action The buttons's action
@@ -78,14 +80,30 @@ export default class Overlay extends Dom {
 
         if(this.configs.toolbar){
             /**
-             * The eventual top toolbar
-             * @type {Toolbar}
+             * The toolbar
+             * @type {Dom}
              */
-            this.toolbar = new Toolbar({'title': this.configs.title})
+            this.toolbar = new Dom('<div/>', {'class': 'toolbar'})
+                .addDelegate('button', 'click', this.onToolbarButtonClick.bind(this))
                 .appendTo(inner);
 
-            this.toolbar.addButton('close')
-                .addListener('click', this.onCloseClick.bind(this));
+            /**
+             * The title container
+             * @type {Dom}
+             */
+            this.title = new Dom('<div/>', {'class': 'title', 'text': this.configs.title})
+                .appendTo(this.toolbar);
+
+            /**
+             * The buttons container
+             * @type {Dom}
+             */
+            const toolbar_buttons = new Dom('<div/>', {'class': 'buttons'})
+                .appendTo(this.toolbar);
+
+            new Button({'icon': close_icon})
+                .data('action', 'close')
+                .appendTo(toolbar_buttons);
         }
 
         /**
@@ -195,6 +213,7 @@ export default class Overlay extends Dom {
 
     /**
      * The button click event handler
+     *
      * @private
      * @param {Event} evt The event object
      */
@@ -211,12 +230,19 @@ export default class Overlay extends Dom {
     }
 
     /**
-     * The close button's click handler
+     * Toolbar button click handler
      *
      * @private
+     * @param {Event} evt The event object
      */
-    onCloseClick(){
-        this.hide();
+    onToolbarButtonClick(evt){
+        const action = new Dom(evt.target).data('action');
+
+        switch(action){
+            case 'close':
+                this.hide();
+                break;
+        }
     }
 
     /**
