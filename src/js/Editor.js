@@ -299,358 +299,334 @@ export default class Editor extends Dom {
          * @type {ContextMenu}
          */
         this.player_contextmenu = new ContextMenu({'target': null, 'items': {
-                'add-element': {
-                    'text': Locale.t('editor.contextmenu.add-element', 'Add an element'),
+                'element': {
+                    'text': Locale.t('editor.contextmenu.element', 'Element'),
                     'items': {
-                        'add-element-cursor': {
-                            'text': Locale.t('editor.contextmenu.add-element-cursor', 'Cursor'),
+                        'select-elements': {
+                            'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
                             'callback': (context) => {
-                                this.addPlayerComponents('element', {'type': 'Cursor'}, context.el.closest('.metaScore-component.page')._metaScore);
-                            }
-                        },
-                        'add-element-content': {
-                            'text': Locale.t('editor.contextmenu.add-element-content', 'Content'),
-                            'callback': (context) => {
-                                this.addPlayerComponents('element', {'type': 'Content'}, context.el.closest('.metaScore-component.page')._metaScore);
-                            }
-                        },
-                        'add-element-animation': {
-                            'text': Locale.t('editor.contextmenu.add-element-animation', 'Animation'),
-                            'callback': (context) => {
-                                this.addPlayerComponents('element', {'type': 'Animation'}, context.el.closest('.metaScore-component.page')._metaScore);
-                            }
-                        }
-                    },
-                    'toggler': (context) => {
-                        return (this.editing === true) && (context.el.closest('.metaScore-component.page') ? true : false);
-                    }
-                },
-                'select-elements': {
-                    'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
-                    'callback': (context) => {
-                        this.configs_editor.unsetComponents();
-                        context.data.page.getChildren().forEach((element, index) => {
-                            this.configs_editor.setComponent(element, index > 0);
-                        });
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const dom = context.el.closest('.metaScore-component.page');
-                            if(dom){
-                                context.data.page = dom._metaScore;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'copy-elements': {
-                    'text': (context) => {
-                        if(context.data.selected){
-                            return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
-                        }
-                        return Locale.t('editor.contextmenu.copy-element', 'Copy element');
-                    },
-                    'callback': (context) => {
-                        const configs = [];
-                        context.data.elements.forEach((element) => {
-                            const config = element.getPropertyValues(true);
-                            // Slightly move the copy by 5 pixels right and 5 pixels down.
-                            config.x += 5;
-                            config.y += 5;
-
-                            configs.push(config);
-                        });
-                        this.clipboard.setData('element', configs);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const elements = this.configs_editor.getComponents('Element');
-                            if(elements.length > 0){
-                                context.data.selected = true;
-                                context.data.elements = elements;
-                                return true;
-                            }
-                            const dom = context.el.closest('.metaScore-component.element');
-                            if(dom){
-                                context.data.elements = [dom._metaScore];
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'paste-elements': {
-                    'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
-                    'callback': (context) => {
-                        this.addPlayerComponents('element', context.data.element, context.data.page);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            if(this.clipboard.getDataType() === 'element'){
-                                const dom = context.el.closest('.metaScore-component.page');
-                                if(dom){
-                                    context.data.element = this.clipboard.getData();
-                                    context.data.page = dom._metaScore;
-                                    return true;
+                                this.configs_editor.unsetComponents();
+                                context.data.page.getChildren().forEach((element, index) => {
+                                    this.configs_editor.setComponent(element, index > 0);
+                                });
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.page');
+                                    if(dom){
+                                        context.data.page = dom._metaScore;
+                                        return true;
+                                    }
                                 }
+                                return false;
+                            }
+                        },
+                        'copy-elements': {
+                            'text': (context) => {
+                                if(context.data.selected){
+                                    return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
+                                }
+                                return Locale.t('editor.contextmenu.copy-element', 'Copy element');
+                            },
+                            'callback': (context) => {
+                                const configs = [];
+                                context.data.elements.forEach((element) => {
+                                    const config = element.getPropertyValues(true);
+                                    // Slightly move the copy by 5 pixels right and 5 pixels down.
+                                    config.x += 5;
+                                    config.y += 5;
+
+                                    configs.push(config);
+                                });
+                                this.clipboard.setData('element', configs);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const elements = this.configs_editor.getComponents('Element');
+                                    if(elements.length > 0){
+                                        context.data.selected = true;
+                                        context.data.elements = elements;
+                                        return true;
+                                    }
+                                    const dom = context.el.closest('.metaScore-component.element');
+                                    if(dom){
+                                        context.data.elements = [dom._metaScore];
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'paste-elements': {
+                            'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
+                            'callback': (context) => {
+                                this.addPlayerComponents('element', context.data.element, context.data.page);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    if(this.clipboard.getDataType() === 'element'){
+                                        const dom = context.el.closest('.metaScore-component.page');
+                                        if(dom){
+                                            context.data.element = this.clipboard.getData();
+                                            context.data.page = dom._metaScore;
+                                            return true;
+                                        }
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'delete-elements': {
+                            'text': (context) => {
+                                if(context.data.selected){
+                                    return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
+                                }
+                                return Locale.t('editor.contextmenu.delete-element', 'Delete element');
+                            },
+                            'callback': (context) => {
+                                this.deletePlayerComponents('element', context.data.elements);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const elements = this.configs_editor.getComponents('Element');
+                                    if(elements.length > 0){
+                                        context.data.selected = true;
+                                        context.data.elements = elements;
+                                        return true;
+                                    }
+                                    const dom = context.el.closest('.metaScore-component.element');
+                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                        context.data.elements = [dom._metaScore];
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'lock-element': {
+                            'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
+                            'callback': (context) => {
+                                context.data.element.setPropertyValue('locked', true);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.element');
+                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                        context.data.element = dom._metaScore;
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'unlock-element': {
+                            'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
+                            'callback': (context) => {
+                                context.data.element.setPropertyValue('locked', false);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.element');
+                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                        context.data.element = dom._metaScore;
+                                        return true;
+                                    }
+                                }
+                                return false;
                             }
                         }
-                        return false;
-                    }
-                },
-                'delete-elements': {
-                    'text': (context) => {
-                        if(context.data.selected){
-                            return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
-                        }
-                        return Locale.t('editor.contextmenu.delete-element', 'Delete element');
-                    },
-                    'callback': (context) => {
-                        this.deletePlayerComponents('element', context.data.elements);
                     },
                     'toggler': (context) => {
                         if(this.editing){
-                            const elements = this.configs_editor.getComponents('Element');
-                            if(elements.length > 0){
-                                context.data.selected = true;
-                                context.data.elements = elements;
-                                return true;
-                            }
-                            const dom = context.el.closest('.metaScore-component.element');
-                            if(dom && !dom._metaScore.getPropertyValue('locked')){
-                                context.data.elements = [dom._metaScore];
-                                return true;
-                            }
+                            return context.el.closest('.metaScore-component.page') ? true : false
                         }
                         return false;
                     }
                 },
-                'lock-element': {
-                    'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
-                    'callback': (context) => {
-                        context.data.element.setPropertyValue('locked', true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const dom = context.el.closest('.metaScore-component.element');
-                            if(dom && !dom._metaScore.getPropertyValue('locked')){
-                                context.data.element = dom._metaScore;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'unlock-element': {
-                    'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
-                    'callback': (context) => {
-                        context.data.element.setPropertyValue('locked', false);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const dom = context.el.closest('.metaScore-component.element');
-                            if(dom && !dom._metaScore.getPropertyValue('locked')){
-                                context.data.element = dom._metaScore;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'element-separator': {
-                    'class': 'separator',
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const elements = this.configs_editor.getComponents('Element');
-                            if(elements.length > 0){
-                                return true;
-                            }
-                            return (context.el.closest('.metaScore-component.page, .metaScore-component.element') ? true : false);
-                        }
-                        return false;
-                    }
-                },
-                'add-page-before': {
-                    'text': Locale.t('editor.contextmenu.add-page-before', 'Add a page before'),
-                    'callback': (context) => {
-                        this.addPlayerComponents('page', {'position': 'before'}, context.el.closest('.metaScore-component.block')._metaScore);
-                    },
-                    'toggler': (context) => {
-                        return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
-                    }
-                },
-                'add-page-after': {
-                    'text': Locale.t('editor.contextmenu.add-page-after', 'Add a page after'),
-                    'callback': (context) => {
-                        this.addPlayerComponents('page', {'position': 'after'}, context.el.closest('.metaScore-component.block')._metaScore);
-                    },
-                    'toggler': (context) => {
-                        return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
-                    }
-                },
-                'delete-page': {
-                    'text': (context) => {
-                        if(context.data.selected){
-                            return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
-                        }
-                        return Locale.t('editor.contextmenu.delete-page', 'Delete page');
-                    },
-                    'callback': (context) => {
-                        this.deletePlayerComponents('page', context.data.pages);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const pages = this.configs_editor.getComponents('Page');
-                            if(pages.length > 0){
-                                context.data.selected = true;
-                                context.data.pages = pages;
-                                return true;
-                            }
-                            const dom = context.el.closest('.metaScore-component.page');
-                            if(dom){
-                                context.data.pages = [dom._metaScore];
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'page-separator': {
-                    'class': 'separator',
-                    'toggler': (context) => {
-                        return this.editing && (context.el.closest('.metaScore-component.block, .metaScore-component.page') ? true : false);
-                    }
-                },
-                'add-block': {
-                    'text': Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                'page': {
+                    'text': Locale.t('editor.contextmenu.page', 'Page'),
                     'items': {
-                        'add-block-synched': {
-                            'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
-                            'callback': () => {
-                                this.addPlayerComponents('block', {'type': 'Block', 'synched': true}, this.getPlayer());
+                        'add-page-before': {
+                            'text': Locale.t('editor.contextmenu.add-page-before', 'Add a page before'),
+                            'callback': (context) => {
+                                this.addPlayerComponents('page', {'position': 'before'}, context.el.closest('.metaScore-component.block')._metaScore);
+                            },
+                            'toggler': (context) => {
+                                return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                             }
                         },
-                        'add-block-non-synched': {
-                            'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
-                            'callback': () => {
-                                this.addPlayerComponents('block', {'type': 'Block', 'synched': false}, this.getPlayer());
+                        'add-page-after': {
+                            'text': Locale.t('editor.contextmenu.add-page-after', 'Add a page after'),
+                            'callback': (context) => {
+                                this.addPlayerComponents('page', {'position': 'after'}, context.el.closest('.metaScore-component.block')._metaScore);
+                            },
+                            'toggler': (context) => {
+                                return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                             }
                         },
-                        'separator': {
-                            'class': 'separator'
-                        },
-                        'add-block-toggler': {
-                            'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
-                            'callback': () => {
-                                this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
+                        'delete-page': {
+                            'text': (context) => {
+                                if(context.data.selected){
+                                    return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
+                                }
+                                return Locale.t('editor.contextmenu.delete-page', 'Delete page');
+                            },
+                            'callback': (context) => {
+                                this.deletePlayerComponents('page', context.data.pages);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const pages = this.configs_editor.getComponents('Page');
+                                    if(pages.length > 0){
+                                        context.data.selected = true;
+                                        context.data.pages = pages;
+                                        return true;
+                                    }
+                                    const dom = context.el.closest('.metaScore-component.page');
+                                    if(dom){
+                                        context.data.pages = [dom._metaScore];
+                                        return true;
+                                    }
+                                }
+                                return false;
                             }
                         }
                     },
                     'toggler': (context) => {
-                        return this.editing && (context.el.is('.metaScore-player'));
+                        if(this.editing){
+                            return context.el.closest('.metaScore-component.block') ? true : false
+                        }
+                        return false;
                     }
                 },
-                'select-blocks': {
-                    'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
-                    'callback': () => {
-                        const components = this.getPlayer().getComponents('.block, .block-toggler, .media.video, .controller');
-                        components.forEach((component, index) => {
-                            this.configs_editor.setComponent(component, index > 0);
-                        });
-                    },
-                    'toggler': () => {
-                        return this.editing === true;
-                    }
-                },
-                'copy-block': {
-                    'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
-                    'callback': (context) => {
-                        const component = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
-                        const config = component.getPropertyValues(true);
+                'block': {
+                    'text': Locale.t('editor.contextmenu.block', 'Block'),
+                    'items': {
+                        'add-block': {
+                            'text': Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                            'items': {
+                                'add-block-synched': {
+                                    'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
+                                    'callback': () => {
+                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': true}, this.getPlayer());
+                                    }
+                                },
+                                'add-block-non-synched': {
+                                    'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
+                                    'callback': () => {
+                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': false}, this.getPlayer());
+                                    }
+                                },
+                                'separator': {
+                                    'class': 'separator'
+                                },
+                                'add-block-toggler': {
+                                    'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
+                                    'callback': () => {
+                                        this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
+                                    }
+                                }
+                            },
+                            'toggler': (context) => {
+                                return this.editing && (context.el.is('.metaScore-player'));
+                            }
+                        },
+                        'select-blocks': {
+                            'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
+                            'callback': () => {
+                                const components = this.getPlayer().getComponents('.block, .block-toggler, .media.video, .controller');
+                                components.forEach((component, index) => {
+                                    this.configs_editor.setComponent(component, index > 0);
+                                });
+                            },
+                            'toggler': () => {
+                                return this.editing === true;
+                            }
+                        },
+                        'copy-block': {
+                            'text': Locale.t('editor.contextmenu.copy-block', 'Copy block'),
+                            'callback': (context) => {
+                                const component = context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler')._metaScore;
+                                const config = component.getPropertyValues(true);
 
-                        // Slightly move the copy by 5 pixels right and 5 pixels down.
-                        config.x += 5;
-                        config.y += 5;
+                                // Slightly move the copy by 5 pixels right and 5 pixels down.
+                                config.x += 5;
+                                config.y += 5;
 
-                        this.clipboard.setData('block', config);
-                    },
-                    'toggler': (context) => {
-                        return this.editing && (context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
-                    }
-                },
-                'paste-block': {
-                    'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
-                    'callback': () => {
-                        this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
-                    },
-                    'toggler': (context) => {
-                        return this.editing && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
-                    }
-                },
-                'delete-blocks': {
-                    'text': (context) => {
-                        if(context.data.selected){
-                            return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
-                        }
-                        return Locale.t('editor.contextmenu.delete-block', 'Delete block');
-                    },
-                    'callback': (context) => {
-                        this.deletePlayerComponents('block', context.data.blocks);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const blocks = this.configs_editor.getComponents('Block');
-                            if(blocks.length > 0){
-                                context.data.selected = true;
-                                context.data.blocks = blocks;
-                                return true;
+                                this.clipboard.setData('block', config);
+                            },
+                            'toggler': (context) => {
+                                return this.editing && (context.el.closest('.metaScore-component.block, .metaScore-component.block-toggler') ? true : false);
                             }
-                            const dom = context.el.closest('.metaScore-component.block');
-                            if(dom){
-                                context.data.blocks = [dom._metaScore];
-                                return true;
+                        },
+                        'paste-block': {
+                            'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
+                            'callback': () => {
+                                this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
+                            },
+                            'toggler': (context) => {
+                                return this.editing && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
+                            }
+                        },
+                        'delete-blocks': {
+                            'text': (context) => {
+                                if(context.data.selected){
+                                    return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
+                                }
+                                return Locale.t('editor.contextmenu.delete-block', 'Delete block');
+                            },
+                            'callback': (context) => {
+                                this.deletePlayerComponents('block', context.data.blocks);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const blocks = this.configs_editor.getComponents('Block');
+                                    if(blocks.length > 0){
+                                        context.data.selected = true;
+                                        context.data.blocks = blocks;
+                                        return true;
+                                    }
+                                    const dom = context.el.closest('.metaScore-component.block');
+                                    if(dom){
+                                        context.data.blocks = [dom._metaScore];
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'lock-block': {
+                            'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
+                            'callback': (context) => {
+                                context.data.block.setPropertyValue('locked', true);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.block');
+                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                        context.data.block = dom._metaScore;
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'unlock-block': {
+                            'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
+                            'callback': (context) => {
+                                context.data.block.setPropertyValue('locked', false);
+                            },
+                            'toggler': (context) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.block');
+                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                        context.data.block = dom._metaScore;
+                                        return true;
+                                    }
+                                }
+                                return false;
                             }
                         }
-                        return false;
-                    }
-                },
-                'lock-block': {
-                    'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
-                    'callback': (context) => {
-                        context.data.block.setPropertyValue('locked', true);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const dom = context.el.closest('.metaScore-component.block');
-                            if(dom && !dom._metaScore.getPropertyValue('locked')){
-                                context.data.block = dom._metaScore;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'unlock-block': {
-                    'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
-                    'callback': (context) => {
-                        context.data.block.setPropertyValue('locked', false);
-                    },
-                    'toggler': (context) => {
-                        if(this.editing){
-                            const dom = context.el.closest('.metaScore-component.block');
-                            if(dom && !dom._metaScore.getPropertyValue('locked')){
-                                context.data.block = dom._metaScore;
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                },
-                'block-separator': {
-                    'class': 'separator',
-                    'toggler': () => {
-                        return this.editing === true;
                     }
                 }
             }})
