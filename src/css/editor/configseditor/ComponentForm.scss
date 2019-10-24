@@ -85,18 +85,10 @@
 
             &.warning{
                 label{
-                    position: relative;
-
                     &::after{
-                        content: "";
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        bottom: 0;
-                        right: 0.25em;
-                        pointer-events: none;
-                        background: url('../../../img/editor/field/warning.svg') no-repeat right center;
-                        background-size: 1em;
+                        content: "⚠";
+                        margin-left: 0.5em;
+                        color: #ffbf00;
                     }
                 }
             }
