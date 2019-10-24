@@ -1,13 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 	<defs>
 		<!-- arrowhead -->
-		<marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+		<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse" markerUnits="strokeWidth">
 			<path d="M 0 0 L 10 5 L 0 10 z" />
 		</marker>
 
 		<!-- dot -->
-		<marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+		<marker id="dot" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" markerUnits="strokeWidth">
 			<circle cx="5" cy="5" r="5" />
+		</marker>
+
+		<!-- square -->
+		<marker id="square" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" markerUnits="strokeWidth">
+    		<rect x="0" y="0" width="10" height="10" />
 		</marker>
 	</defs>
 </svg>
