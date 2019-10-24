@@ -461,7 +461,11 @@ export default class ComponentForm extends Dom {
                         .appendTo(border_fields_wrapper);
 
                     this.fields['border-radius'] = new Field(
-                        new BorderRadiusInput(),
+                        new BorderRadiusInput({
+                            'overlay': {
+                                'parent': '.metaScore-editor'
+                            }
+                        }),
                         {
                             'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Border radius')
                         })

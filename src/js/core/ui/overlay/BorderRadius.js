@@ -1,6 +1,5 @@
 import Overlay from '../Overlay';
 import Dom from '../../Dom';
-import Button from '../Button';
 import Locale from '../../Locale';
 import NumberInput from '../input/NumberInput';
 
@@ -38,7 +37,6 @@ export default class BorderRadius extends Overlay {
     */
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
-            'parent': '.metaScore-editor',
             'toolbar': true,
             'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius'),
             'format': 'css'
@@ -109,22 +107,8 @@ export default class BorderRadius extends Overlay {
             .addClass('blh')
             .appendTo(this.preview);
 
-        /**
-         * The list of buttons
-         * @type {Object}
-         */
-        this.buttons = {};
-
-        this.buttons.apply = new Button({'label': 'Apply'})
-            .addClass('submit')
-            .addListener('click', this.onApplyClick.bind(this))
-            .appendTo(contents);
-
-        this.buttons.cancel = new Button({'label': 'Cancel'})
-            .addClass('cancel')
-            .addListener('click', this.onCloseClick.bind(this))
-            .appendTo(contents);
-
+        this.addButton('apply', 'Apply');
+        this.addButton('cancel', 'Cancel');
     }
 
     /**
@@ -240,13 +224,18 @@ export default class BorderRadius extends Overlay {
     }
 
     /**
-     * The apply button's click event handler
-     *
-     * @private
+     * @inheritdoc
      */
-    onApplyClick(){
-        this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
-        this.hide();
+    onButtonClick(evt){
+        const action = new Dom(evt.target).data('action');
+
+        switch(action){
+            case 'apply':
+                this.triggerEvent('submit', {'overlay': this, 'value': this.getValue()}, true, false);
+                break;
+        }
+
+        super.onButtonClick(evt);
     }
 
 }
