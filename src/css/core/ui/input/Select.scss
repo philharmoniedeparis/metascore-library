@@ -10,11 +10,11 @@
         margin: 0;
         padding-right: 2.5em;
         color: #fff;
-        border: 1px solid #fff;
+        border: 0;
         box-sizing: border-box;
         border-radius: .25em;
         appearance: none;
-        background-color: transparent;
+        background-color: $mediumgray;
 
         option {
             font-weight: normal;
@@ -32,11 +32,8 @@
         &::-ms-expand {
             display: none;
         }
-        &:hover {
-            border-color: $mediumgray;
-        }
         &:focus {
-            box-shadow: 0 0 1px 3px rgba(255, 255, 255, .5);
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
             outline: none;
         }
     }

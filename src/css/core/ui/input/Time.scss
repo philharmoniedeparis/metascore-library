@@ -11,6 +11,11 @@
         background: $mediumgray;
         border-radius: 0.25em;
         box-sizing: border-box;
+
+        &:focus {
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+            outline: none;
+        }
     }
 
     .buttons{
