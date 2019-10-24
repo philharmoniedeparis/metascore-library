@@ -62,8 +62,6 @@ export default class ColorInput extends Input {
     setupUI() {
         super.setupUI();
 
-        this.native_input.addListener('focus', this.onInputFocus.bind(this));
-
         this.button = new Button({'icon': clear_icon})
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
@@ -212,10 +210,6 @@ export default class ColorInput extends Input {
         }
 
         evt.stopPropagation();
-    }
-
-    onInputFocus(){
-        this.showPicker();
     }
 
     setValue(value, supressEvent){
