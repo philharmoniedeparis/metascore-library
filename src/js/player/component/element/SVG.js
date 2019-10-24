@@ -1,5 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
+import {isFunction} from '../../../core/utils/Var';
 
 import markers_svg from '../../../../img/player/svg-markers.svg?svg-inline';
 
@@ -109,7 +110,8 @@ export default class SVG extends Element {
     onSVGLoad(evt){
         this._loaded = true;
 
-        this.svg_dom = new Dom(evt.target.contentDocument).child('svg');
+        this.svg_doc = evt.target.contentDocument;
+        this.svg_dom = new Dom(this.svg_doc).child('svg');
 
         const markers_dom = new DOMParser().parseFromString(markers_svg, 'image/svg+xml');
         new Dom(markers_dom).find('defs')
@@ -142,7 +144,7 @@ export default class SVG extends Element {
         return this._loaded;
     }
 
-    updateSVGProperty(property, value){
+    updateSVGProperty(property, value, executeInnerUpdate){
         if(this._loaded){
             this.svg_dom.children(svg_elements.join(',')).forEach((el) => {
                 if(value !== null && property.indexOf('marker-') === 0){
@@ -159,14 +161,28 @@ export default class SVG extends Element {
                     Dom.css(marker, 'fill', value);
                 });
             }
+
+            if(executeInnerUpdate !== false){
+                this.executeInnerUpdate();
+            }
         }
     }
 
     updateSVGProperties(){
-        if(this.svg){
+        if(this._loaded){
             svg_properties.forEach((property) => {
-                this.updateSVGProperty(property, this.getPropertyValue(property));
+                this.updateSVGProperty(property, this.getPropertyValue(property), false);
             });
+
+            this.executeInnerUpdate();
+        }
+    }
+
+    executeInnerUpdate(){
+        if(this._loaded){
+            if(isFunction(this.svg_doc.metascore_update)) {
+                this.svg_doc.metascore_update();
+            }
         }
     }
 

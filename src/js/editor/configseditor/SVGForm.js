@@ -83,10 +83,12 @@ export default class SVGForm extends ElementForm {
             case 'stroke-dasharray':
                 this.fields[name] = new Field(
                     new SelectInput({
+                        'emptyLabel': '—',
                         'options': {
-                            'none': Locale.t('editor.configseditor.SVGForm.fields.stroke-dasharray.options.none', 'Solid'),
-                            '5,5': Locale.t('editor.configseditor.SVGForm.fields.stroke-dasharray.options.5,5', 'Dotted'),
-                            '20,10': Locale.t('editor.configseditor.SVGForm.fields.stroke-dasharray.options.20,10', 'Dashed')
+                            '2,2': '···',
+                            '5,5': '- -',
+                            '5,2,2,2': '-·-',
+                            '5,2,2,2,2,2': '-··-'
                         }
                     }),
                     {
