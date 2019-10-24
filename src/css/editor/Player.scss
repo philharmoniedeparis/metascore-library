@@ -32,7 +32,9 @@ $selected-shadow: 0 0 0.5em 0;
                 &.selected{
                     box-shadow: $block-color $selected-shadow;
                 }
+            }
 
+            &.block{
                 &:hover,
                 &.dragging{
                     .pager{
@@ -75,8 +77,6 @@ $selected-shadow: 0 0 0.5em 0;
                 }
 
                 &.selected{
-                    display: block;
-
                     &.Cursor{
                         box-shadow: $cursor-element-color $selected-shadow;
 
@@ -125,6 +125,11 @@ $selected-shadow: 0 0 0.5em 0;
                         }
                     }
                 }
+            }
+
+            &.dragging,
+            &.resizing{
+                z-index: 999;
             }
         }
 
