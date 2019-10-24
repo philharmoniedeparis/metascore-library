@@ -76,6 +76,18 @@ export default class SVG extends Element {
         });
     }
 
+    /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.addListener('activate', this.onActivate.bind(this));
+    }
+
     setupUI(){
         super.setupUI();
 
@@ -83,6 +95,15 @@ export default class SVG extends Element {
             .attr('type', 'image/svg+xml')
             .addListener('load', this.onSVGLoad.bind(this))
             .appendTo(this.contents);
+    }
+
+    /**
+     * The activate event handler
+     *
+     * @private
+     */
+    onActivate(){
+        this.executeInnerUpdate();
     }
 
     /**
