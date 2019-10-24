@@ -36,13 +36,8 @@ export default class ColorInput extends Input {
 
         // throttle the repositionPicker
         this.repositionPicker = throttle(this.repositionPicker.bind(this), 100);
-        this.testThrottle = throttle(this.testThrottle.bind(this), 100);
 
         this.addClass(`color ${className}`);
-    }
-
-    testThrottle(){
-        console.log('testThrottle', this.getId());
     }
 
     /**
@@ -136,7 +131,6 @@ export default class ColorInput extends Input {
      * @private
      */
     repositionPicker(){
-        console.log('repositionPicker');
         const rect = this.button.get(0).getBoundingClientRect();
         const picker_rect = this.picker.get(0).getBoundingClientRect();
 
