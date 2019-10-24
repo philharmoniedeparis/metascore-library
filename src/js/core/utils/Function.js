@@ -7,26 +7,17 @@
 * @param {Object} scope The scope in which the original function will be called
 * @return {Function} The throttled function
 */
-export function throttle(fn, threshhold, scope){
-	let lastFn = null;
-	let lastRan = null;
+export function throttle(fn, threshhold, scope = null)
+{
+    let inThrottle;
 
-	return (...args) => {
-		if (!lastRan) {
-			fn.apply(scope, args);
-			lastRan = Date.now();
-		}
-		else {
-			clearTimeout(lastFn);
+    return function() {
+        const args = arguments;
 
-			lastFn = setTimeout(
-				() => {
-					if((Date.now() - lastRan) >= threshhold){
-						fn.apply(scope, args);
-						lastRan = Date.now();
-					}
-				},
-				threshhold - (Date.now() - lastRan));
-		}
-	};
+        if(!inThrottle){
+            fn.apply(scope, args);
+            inThrottle = true;
+            setTimeout(() => {inThrottle = false}, threshhold);
+        }
+    }
 }

@@ -4,6 +4,7 @@ import Picker from './color/Picker';
 import Button from '../Button';
 import {toRGBA} from '../../utils/Color';
 import {isEmpty} from '../../utils/Var';
+import {throttle} from '../../utils/Function';
 
 import clear_icon from '../../../../img/core/ui/input/color/clear.svg?svg-sprite';
 import {className} from '../../../../css/core/ui/input/Color.scss';
@@ -32,9 +33,16 @@ export default class ColorInput extends Input {
         this.onWindowScroll = this.onWindowScroll.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onWindowKeyDown = this.onWindowKeyDown.bind(this);
-        this.repositionPicker = this.repositionPicker.bind(this);
+
+        // throttle the repositionPicker
+        this.repositionPicker = throttle(this.repositionPicker.bind(this), 100);
+        this.testThrottle = throttle(this.testThrottle.bind(this), 100);
 
         this.addClass(`color ${className}`);
+    }
+
+    testThrottle(){
+        console.log('testThrottle', this.getId());
     }
 
     /**
@@ -124,36 +132,60 @@ export default class ColorInput extends Input {
         Dom.removeListener(window, 'keydown', this.onWindowKeyDown, true);
     }
 
-    repositionPicker(timeout){
-        if(this.scroll_timeout){
-            clearTimeout(this.scroll_timeout);
+    /**
+     * Reposition the picker relative to the button's position
+     *
+     * @private
+     */
+    repositionPicker(){
+        console.log('repositionPicker');
+        const rect = this.button.get(0).getBoundingClientRect();
+        const picker_rect = this.picker.get(0).getBoundingClientRect();
+
+        let x = Math.max(0, rect.left + (rect.width - picker_rect.width) / 2);
+        let y = Math.max(0, rect.bottom + 10);
+
+        if((x + picker_rect.width) > window.innerWidth){
+            x = window.innerWidth - picker_rect.width;
         }
 
-        if(timeout === true){
-            this.scroll_timeout = setTimeout(this.repositionPicker, 20);
+        if((y + picker_rect.height) > window.innerHeight){
+            y = window.innerHeight - picker_rect.height;
         }
-        else{
-            const rect = this.button.get(0).getBoundingClientRect();
-            const picker_rect = this.picker.get(0).getBoundingClientRect();
 
-            this.picker
-                .css('top', `${rect.bottom + 10}px`)
-                .css('left', `${rect.left + (rect.width - picker_rect.width) / 2}px`);
-        }
+        this.picker
+            .css('left', `${x}px`)
+            .css('top', `${y}px`);
 
         return this;
     }
 
+    /**
+     * document mousedown event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onDocMouseDown(evt){
         if(!this.get(0).contains(evt.target)){
             this.hidePicker();
         }
     }
 
+    /**
+     * window scroll event handler
+     *
+     * @private
+     */
     onWindowScroll(){
         this.repositionPicker(true);
     }
 
+    /**
+     * window resize event handler
+     *
+     * @private
+     */
     onWindowResize(){
         this.repositionPicker(true);
     }
