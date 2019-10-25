@@ -1484,7 +1484,10 @@ export default class Editor extends Dom {
             }
         }
         else if(evt.dataTransfer.types.includes('metascore/asset')){
-            evt.preventDefault();
+            const page_dom = evt.target.closest('.metaScore-component.page');
+            if(page_dom){
+                evt.preventDefault();
+            }
         }
     }
 
@@ -1547,50 +1550,53 @@ export default class Editor extends Dom {
 
         // Handle asset drop ////////////////////////
         if(evt.dataTransfer.types.includes('metascore/asset')){
-            const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
-            const parent = evt.target.closest('.metaScore-component.page')._metaScore;
-            const parent_rect = parent.get(0).getBoundingClientRect();
+            const page_dom = evt.target.closest('.metaScore-component.page');
+            if(page_dom){
+                const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
+                const page = page_dom._metaScore;
+                const page_rect = page.get(0).getBoundingClientRect();
 
-            const configs = {
-                'name': asset.name,
-                'x': evt.clientX - parent_rect.left,
-                'y': evt.clientY - parent_rect.top,
-            };
+                const configs = {
+                    'name': asset.name,
+                    'x': evt.clientX - page_rect.left,
+                    'y': evt.clientY - page_rect.top,
+                };
 
-            if('shared' in asset && asset.shared){
-                switch(asset.type){
-                    case 'image':
-                        configs.type = 'Content';
-                        configs['background-image'] = asset.file.url;
-                        if(asset.file.width){
-                            configs.width = asset.file.width;
-                        }
-                        if(asset.file.height){
-                            configs.height = asset.file.height;
-                        }
-                        break;
+                if('shared' in asset && asset.shared){
+                    switch(asset.type){
+                        case 'image':
+                            configs.type = 'Content';
+                            configs['background-image'] = asset.file.url;
+                            if(asset.file.width){
+                                configs.width = asset.file.width;
+                            }
+                            if(asset.file.height){
+                                configs.height = asset.file.height;
+                            }
+                            break;
 
-                    case 'lottie_animation':
-                    case 'svg':
-                        configs.type = asset.type === 'svg' ? 'SVG' : 'Animation';
-                        configs.src = asset.file.url;
-                        break;
+                        case 'lottie_animation':
+                        case 'svg':
+                            configs.type = asset.type === 'svg' ? 'SVG' : 'Animation';
+                            configs.src = asset.file.url;
+                            break;
+                    }
                 }
+                else{
+                    configs.type = 'Content';
+                    configs['background-image'] = asset.url;
+                    if(asset.width){
+                        configs.width = asset.width;
+                    }
+                    if(asset.height){
+                        configs.height = asset.height;
+                    }
+                }
+
+                this.addPlayerComponents('element', configs, page);
+
+                evt.preventDefault();
             }
-            else{
-                configs.type = 'Content';
-                configs['background-image'] = asset.url;
-                if(asset.width){
-                    configs.width = asset.width;
-                }
-                if(asset.height){
-                    configs.height = asset.height;
-                }
-            }
-
-            this.addPlayerComponents('element', configs, parent);
-
-            evt.preventDefault();
         }
     }
 
