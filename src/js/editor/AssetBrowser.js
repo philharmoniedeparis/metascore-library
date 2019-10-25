@@ -1,6 +1,7 @@
 import Dom from '../core/Dom';
 import Locale from '../core/Locale';
 import Button from '../core/ui/Button';
+import ComponentLinks from './assetbrowser/ComponentLinks';
 import GuideAssets from './assetbrowser/GuideAssets';
 import SharedAssets from './assetbrowser/SharedAssets';
 
@@ -35,6 +36,11 @@ export default class AssetBrowser extends Dom {
         this.tabs = new Dom('<div/>', {'class': 'tabs'})
             .appendTo(this.top);
 
+        new Button({'label': Locale.t('editor.AssetBrowser.tabs.component-links.title', 'Components')})
+            .data('for', 'component-links')
+            .addListener('click', this.showComponentLinks.bind(this))
+            .appendTo(this.tabs);
+
         new Button({'label': Locale.t('editor.AssetBrowser.tabs.guide-assets.title', 'Library')})
             .data('for', 'guide-assets')
             .addListener('click', this.showGuideAssets.bind(this))
@@ -44,6 +50,9 @@ export default class AssetBrowser extends Dom {
             .data('for', 'shared-assets')
             .addListener('click', this.showSharedAssets.bind(this))
             .appendTo(this.tabs);
+
+        this.component_links = new ComponentLinks()
+            .appendTo(this);
 
         this.guide_assets = new GuideAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.guide_assets))
             .appendTo(this);
@@ -56,7 +65,7 @@ export default class AssetBrowser extends Dom {
             .addDelegate('button', 'click', this.onSharedAssetToolbarButtonClick.bind(this))
             .appendTo(this.top);
 
-        this.showGuideAssets();
+        this.showComponentLinks();
     }
 
     /**
@@ -71,12 +80,32 @@ export default class AssetBrowser extends Dom {
         };
     }
 
+    getComponentLinks(){
+        return this.component_links;
+    }
+
     getGuideAssets(){
         return this.guide_assets;
     }
 
     getSharedAssets(){
         return this.shared_assets;
+    }
+
+    showComponentLinks(){
+        this.tabs.css('width', null);
+
+        this.tabs.children('button').forEach((el) => {
+            const button = new Dom(el);
+            button.toggleClass('active', button.data('for') === 'component-links');
+        });
+
+        this.getComponentLinks().show();
+        this.getGuideAssets().hide();
+        this.getSharedAssets().hide();
+        this.getSharedAssets().getToolbar().hide();
+
+        this.triggerEvent('tabchange', {'tab': 'component-links'});
     }
 
     showGuideAssets(){
@@ -87,6 +116,7 @@ export default class AssetBrowser extends Dom {
             button.toggleClass('active', button.data('for') === 'guide-assets');
         });
 
+        this.getComponentLinks().hide();
         this.getGuideAssets().show();
         this.getSharedAssets().hide();
         this.getSharedAssets().getToolbar().hide();
@@ -103,6 +133,7 @@ export default class AssetBrowser extends Dom {
             button.toggleClass('active', button.data('for') === 'shared-assets');
         });
 
+        this.getComponentLinks().hide();
         this.getGuideAssets().hide();
         this.getSharedAssets().show();
         this.getSharedAssets().getToolbar().show();

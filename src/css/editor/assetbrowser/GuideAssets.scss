@@ -86,36 +86,6 @@
         }
     }
 
-    a.component-link{
-        position: relative;
-        display: block;
-        padding: 0.25em 0.5em 0.25em 3em;
-        line-height: 2em;
-        color: #fff;
-        background: $lightgray;
-        margin-top: 0.25em;
-        user-select: none;
-        white-space: nowrap;
-        cursor: pointer;
-
-        .icon{
-            position: absolute;
-            top: 0;
-            left: 0.5em;
-            width: 2em;
-            height: 100%;
-            margin-right: 0.5em;
-        }
-
-        &[data-action="create-synced-block"],
-        &[data-action="create-non-synced-block"],
-        &[data-action="create-page"]{
-            .icon{
-                filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
-            }
-        }
-    }
-
     &.droppable{
         &::after{
             content: "";

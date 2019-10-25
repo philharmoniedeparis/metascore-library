@@ -27,6 +27,7 @@
 	"editor.AssetBrowser.create-non-synced-block.text": "Create a non-synched block",
 	"editor.AssetBrowser.create-page.text": "Create a page",
 	"editor.AssetBrowser.create-synced-block.text": "Create a synched block",
+	"editor.AssetBrowser.tabs.component-links.title": "Components",
 	"editor.AssetBrowser.tabs.guide-assets.title": "Library",
 	"editor.AssetBrowser.tabs.shared-assets.title": "Shared Library",
 	"editor.ComponentForm.multivalWarning": "The value corresponds to that of the first selected component",

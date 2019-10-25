@@ -808,9 +808,8 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onAssetBrowserComponentLinkClick(evt){
-        const component = evt.detail.component;
-        const type = component.type;
-        const configs = component.configs;
+        const type = evt.detail.type;
+        const configs = evt.detail.configs;
 
         switch(type){
             case 'element':
