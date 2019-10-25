@@ -9,14 +9,14 @@
     a{
         position: relative;
         display: block;
-        margin-bottom: 0.25em;
+        border-bottom: 2px solid $mediumgray;
         padding: 0.25em 0.5em 0.25em 3em;
         line-height: 2em;
         color: #fff;
         background: $lightgray;
         user-select: none;
         white-space: nowrap;
-        cursor: pointer;
+        cursor: grab;
 
         .icon{
             position: absolute;
@@ -27,6 +27,10 @@
             margin-right: 0.5em;
 
             filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
+        }
+
+        &:hover{
+            background: $mediumgray;
         }
     }
 }

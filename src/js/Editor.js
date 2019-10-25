@@ -1374,7 +1374,7 @@ export default class Editor extends Dom {
             .getOption(current_vid).attr('disabled', 'true');
 
         // Update the asset browser
-        this.asset_browser.getGuideAssets()
+        this.asset_browser.getTabContent('guide-assets')
             .addAssets(this.player.getData('assets'), true)
             .addAssets(this.player.getData('shared_assets'), true);
 
@@ -1936,7 +1936,7 @@ export default class Editor extends Dom {
      * @return {this}
      */
     updateConfigEditorImageFields(){
-        const assets = this.asset_browser.getGuideAssets().getAssets();
+        const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
         const images = {};
 
         Object.values(assets).forEach((asset) => {
@@ -2080,7 +2080,7 @@ export default class Editor extends Dom {
 
         this.mainmenu.getItem('revisions').clear();
 
-        this.asset_browser.getGuideAssets().clearAssets();
+        this.asset_browser.getTabContent('guide-assets').clearAssets();
 
         this.history.clear();
 
@@ -2571,7 +2571,7 @@ export default class Editor extends Dom {
 
                 // Add assets
                 if(this.isDirty('assets')){
-                    Object.values(this.asset_browser.getGuideAssets().getAssets()).forEach((asset) => {
+                    Object.values(this.asset_browser.getTabContent('guide-assets').getAssets()).forEach((asset) => {
                         data.append('assets[]', JSON.stringify(asset));
                     });
                 }

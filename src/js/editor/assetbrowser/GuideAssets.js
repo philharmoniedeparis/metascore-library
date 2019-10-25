@@ -50,6 +50,9 @@ export default class GuideAssets extends Dom {
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
 
+        this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
+            .appendTo(this);
+
         const import_field = new Field(
             new FileInput({
                 'multiple': true,
@@ -64,9 +67,6 @@ export default class GuideAssets extends Dom {
 
         new Icon({'symbol': import_icon})
             .appendTo(import_field.getLabel());
-
-        this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
-            .appendTo(this);
 
         this
             .addListener('dragover', this.onDragOver.bind(this))

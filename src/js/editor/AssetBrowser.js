@@ -33,39 +33,46 @@ export default class AssetBrowser extends Dom {
         this.top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
 
-        this.tabs = new Dom('<div/>', {'class': 'tabs'})
+        this.tabs_wrapper = new Dom('<div/>', {'class': 'tabs'})
             .appendTo(this.top);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.tabs.component-links.title', 'Components')})
+        this.tabs = {};
+        this.contents = {};
+
+        // Component links
+        this.tabs['component-links'] = new Button({'label': Locale.t('editor.AssetBrowser.tabs.component-links.title', 'Components')})
             .data('for', 'component-links')
-            .addListener('click', this.showComponentLinks.bind(this))
-            .appendTo(this.tabs);
+            .addListener('click', this.onTabClick.bind(this))
+            .appendTo(this.tabs_wrapper);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.tabs.guide-assets.title', 'Library')})
+        this.contents['component-links'] = new ComponentLinks(this.configs.component_links)
+            .appendTo(this);
+
+        // Guide assets
+        this.tabs['guide-assets'] = new Button({'label': Locale.t('editor.AssetBrowser.tabs.guide-assets.title', 'Library')})
             .data('for', 'guide-assets')
-            .addListener('click', this.showGuideAssets.bind(this))
-            .appendTo(this.tabs);
+            .addListener('click', this.onTabClick.bind(this))
+            .appendTo(this.tabs_wrapper);
 
-        new Button({'label': Locale.t('editor.AssetBrowser.tabs.shared-assets.title', 'Shared Library')})
+        this.contents['guide-assets'] = new GuideAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.guide_assets))
+            .appendTo(this);
+
+        // Shared assets
+        this.tabs['shared-assets'] = new Button({'label': Locale.t('editor.AssetBrowser.tabs.shared-assets.title', 'Shared Library')})
             .data('for', 'shared-assets')
-            .addListener('click', this.showSharedAssets.bind(this))
-            .appendTo(this.tabs);
+            .addListener('click', this.onTabClick.bind(this))
+            .appendTo(this.tabs_wrapper);
 
-        this.component_links = new ComponentLinks()
-            .appendTo(this);
-
-        this.guide_assets = new GuideAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.guide_assets))
-            .appendTo(this);
-
-        this.shared_assets = new SharedAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.shared_assets))
+        this.contents['shared-assets'] = new SharedAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.shared_assets))
             .addListener('assetimport', this.onSharedAssetImport.bind(this))
             .appendTo(this);
 
-        this.shared_assets.getToolbar()
+        this.contents['shared-assets'].getToolbar()
             .addDelegate('button', 'click', this.onSharedAssetToolbarButtonClick.bind(this))
             .appendTo(this.top);
 
-        this.showComponentLinks();
+
+        this.switchTab('component-links');
     }
 
     /**
@@ -75,77 +82,59 @@ export default class AssetBrowser extends Dom {
     */
     static getDefaults() {
         return {
+            'component_links': {},
             'guide_assets': {},
-            'shared_assets': {}
+            'shared_assets': {},
+            'xhr': {}
         };
     }
 
-    getComponentLinks(){
-        return this.component_links;
-    }
+    switchTab(id){
+        if(id === 'shared-assets'){
+            const {width} = this.tabs_wrapper.get(0).getBoundingClientRect();
+            this.tabs_wrapper.css('width', `${width}px`);
+            this.getTabContent('shared-assets').getToolbar().show();
+        }
+        else{
+            this.tabs_wrapper.css('width', null);
+            this.getTabContent('shared-assets').getToolbar().hide();
+        }
 
-    getGuideAssets(){
-        return this.guide_assets;
-    }
+        Object.keys(this.tabs).forEach((key) => {
+            const tab = this.getTab(key);
+            const content = this.getTabContent(key);
 
-    getSharedAssets(){
-        return this.shared_assets;
-    }
-
-    showComponentLinks(){
-        this.tabs.css('width', null);
-
-        this.tabs.children('button').forEach((el) => {
-            const button = new Dom(el);
-            button.toggleClass('active', button.data('for') === 'component-links');
+            if(key === id){
+                tab.addClass('active');
+                content.show();
+            }
+            else{
+                tab.removeClass('active');
+                content.hide();
+            }
         });
 
-        this.getComponentLinks().show();
-        this.getGuideAssets().hide();
-        this.getSharedAssets().hide();
-        this.getSharedAssets().getToolbar().hide();
-
-        this.triggerEvent('tabchange', {'tab': 'component-links'});
+        this.triggerEvent('tabchange', {'tab': id});
     }
 
-    showGuideAssets(){
-        this.tabs.css('width', null);
-
-        this.tabs.children('button').forEach((el) => {
-            const button = new Dom(el);
-            button.toggleClass('active', button.data('for') === 'guide-assets');
-        });
-
-        this.getComponentLinks().hide();
-        this.getGuideAssets().show();
-        this.getSharedAssets().hide();
-        this.getSharedAssets().getToolbar().hide();
-
-        this.triggerEvent('tabchange', {'tab': 'guide-assets'});
+    getTab(id){
+        return this.tabs[id];
     }
 
-    showSharedAssets(){
-        const {width} = this.tabs.get(0).getBoundingClientRect();
-        this.tabs.css('width', `${width}px`);
+    getTabContent(id){
+        return this.contents[id];
+    }
 
-        this.tabs.children('button').forEach((el) => {
-            const button = new Dom(el);
-            button.toggleClass('active', button.data('for') === 'shared-assets');
-        });
-
-        this.getComponentLinks().hide();
-        this.getGuideAssets().hide();
-        this.getSharedAssets().show();
-        this.getSharedAssets().getToolbar().show();
-
-        this.triggerEvent('tabchange', {'tab': 'shared-assets'});
+    onTabClick(evt){
+        const id = Dom.data(evt.target, 'for');
+        this.switchTab(id);
     }
 
     onSharedAssetImport(evt){
         const asset = Object.assign({}, evt.detail.asset);
-        this.getGuideAssets().addAsset(asset);
+        this.getTabContent('guide-assets').addAsset(asset);
 
-        this.showGuideAssets();
+        this.switchTab('guide-assets');
     }
 
     onSharedAssetToolbarButtonClick(evt){
@@ -153,7 +142,7 @@ export default class AssetBrowser extends Dom {
 
         switch(action){
             case 'close':
-                this.showGuideAssets();
+                this.switchTab('guide-assets');
                 break;
         }
     }

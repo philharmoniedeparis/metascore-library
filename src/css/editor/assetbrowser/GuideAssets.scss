@@ -6,29 +6,6 @@
     position: relative;
     overflow: hidden;
 
-    .import-assets{
-        display: block;
-
-        label{
-            display: block;
-            padding: 0.5em;
-            background: $lightgray;
-            margin-bottom: 0.25em;
-            user-select: none;
-            cursor: pointer;
-
-            .icon{
-                float: left;
-                font-size: 1.5em;
-                margin-right: 0.5em;
-            }
-        }
-
-        .input{
-            display: none;
-        }
-    }
-
     .assets-container{
         flex: 1 1 auto;
         overflow-y: auto;
@@ -46,6 +23,7 @@
                 height: 2em;
                 margin: 0;
                 pointer-events: none;
+                background: $lightgray;
 
                 img{
                     display: block;
@@ -83,6 +61,38 @@
                     color: #fff;
                 }
             }
+
+            &:hover{
+                background: $mediumgray;
+            }
+        }
+    }
+
+    .import-assets{
+        display: block;
+        border-top: 2px solid $mediumgray;
+        background: $lightgray;
+
+        label{
+            display: block;
+            padding: 0.5em;
+            margin-bottom: 0.25em;
+            user-select: none;
+            cursor: pointer;
+
+            .icon{
+                float: left;
+                font-size: 1.5em;
+                margin-right: 0.5em;
+            }
+        }
+
+        .input{
+            display: none;
+        }
+
+        &:hover{
+            background: $mediumgray;
         }
     }
 
