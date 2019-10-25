@@ -1,9 +1,11 @@
 import Dom from '../../../core/Dom';
-import CheckboxInput from '../../../core/ui/input/CheckboxInput';
+import Icon from '../../../core/ui/Icon';
 import Button from '../../../core/ui/Button';
+import CheckboxInput from '../../../core/ui/input/CheckboxInput';
 
 import expander_icon from '../../../../img/editor/controller/timeline/handle/expander.svg?svg-sprite';
 import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
+
 import {className} from '../../../../css/editor/controller/timeline/Handle.scss';
 
 /**
@@ -27,6 +29,11 @@ export default class Handle extends Dom {
         const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
 
+        if(this.configs.icon){
+            new Icon({'symbol': this.configs.icon})
+                .appendTo(inner);
+        }
+
         new Button({'icon': expander_icon})
             .data('action', 'expander')
             .appendTo(inner);
@@ -43,8 +50,6 @@ export default class Handle extends Dom {
             .data('action', 'lock')
             .attr('title', 'Toggle lock')
             .appendTo(togglers);
-
-        this.attr('draggable', 'true');
     }
 
     /**
@@ -53,7 +58,9 @@ export default class Handle extends Dom {
     * @return {Object} The default values
     */
     static getDefaults(){
-        return {};
+        return {
+            'icon': null
+        };
     }
 
     /**

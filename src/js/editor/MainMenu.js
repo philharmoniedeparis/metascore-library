@@ -12,6 +12,7 @@ import revert_icon from '../../img/editor/mainmenu/revert.svg?svg-sprite';
 import undo_icon from '../../img/editor/mainmenu/undo.svg?svg-sprite';
 import redo_icon from '../../img/editor/mainmenu/redo.svg?svg-sprite';
 import preview_toggle_icon from '../../img/editor/mainmenu/preview-toggle.svg?svg-sprite';
+
 import {className} from '../../css/editor/MainMenu.scss';
 
 /**

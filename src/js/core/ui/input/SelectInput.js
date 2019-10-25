@@ -4,6 +4,7 @@ import Dom from '../../Dom';
 import Locale from '../../Locale';
 
 import arrow_icon from '../../../../img/core/ui/input/select/arrow.svg?svg-sprite'
+
 import {className} from '../../../../css/core/ui/input/Select.scss';
 
 /**

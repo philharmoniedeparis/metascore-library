@@ -2,6 +2,7 @@ import Dom from '../Dom';
 import Button from './Button';
 
 import close_icon from '../../../img/core/ui/overlay/close.svg?svg-sprite';
+
 import {className} from '../../../css/core/ui/Overlay.scss';
 
 /**

@@ -8,6 +8,7 @@ import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down
 import chevron_left_icon from '../../../../img/core/ui/input/number/chevron-left.svg?svg-sprite';
 import chevron_right_icon from '../../../../img/core/ui/input/number/chevron-right.svg?svg-sprite';
 import chevron_up_icon from '../../../../img/core/ui/input/number/chevron-up.svg?svg-sprite';
+
 import {className} from '../../../../css/core/ui/input/Number.scss';
 
 /**

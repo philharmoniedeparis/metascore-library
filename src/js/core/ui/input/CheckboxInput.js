@@ -3,6 +3,7 @@ import Icon from '../Icon';
 import Dom from '../../Dom';
 
 import check_icon from '../../../../img/core/ui/input/checkbox/check.svg?svg-sprite';
+
 import {className} from '../../../../css/core/ui/input/Checkbox.scss';
 
 /**

@@ -12,12 +12,13 @@ import {isValidMimeType} from '../../core/utils/Media';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
-import asset_icon from '../../../img/editor/assetbrowser/guideassets/asset.svg?svg-sprite';
-import synched_block_icon from '../../../img/editor/assetbrowser/guideassets/synched-block.svg?svg-sprite';
-import non_synched_block_icon from '../../../img/editor/assetbrowser/guideassets/non-synched-block.svg?svg-sprite';
-import page_icon from '../../../img/editor/assetbrowser/guideassets/page.svg?svg-sprite';
-import content_element_icon from '../../../img/editor/assetbrowser/guideassets/content-element.svg?svg-sprite';
-import cursor_element_icon from '../../../img/editor/assetbrowser/guideassets/cursor-element.svg?svg-sprite';
+import image_icon from '../../../img/editor/component-icons/image.svg?svg-sprite';
+import block__synched_icon from '../../../img/editor/component-icons/block--synched.svg?svg-sprite';
+import block__non_synched_icon from '../../../img/editor/component-icons/block--non-synched.svg?svg-sprite';
+import page_icon from '../../../img/editor/component-icons/page.svg?svg-sprite';
+import content_icon from '../../../img/editor/component-icons/content.svg?svg-sprite';
+import cursor_icon from '../../../img/editor/component-icons/cursor.svg?svg-sprite';
+
 import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
@@ -78,7 +79,7 @@ export default class GuideAssets extends Dom {
             .data('action', 'create-synced-block')
             .appendTo(this);
 
-        new Icon({'symbol': synched_block_icon})
+        new Icon({'symbol': block__synched_icon})
             .appendTo(synched_block_link);
 
         const non_synched_block_link = new Dom('<a/>', {'class': 'component-link'})
@@ -87,7 +88,7 @@ export default class GuideAssets extends Dom {
             .data('action', 'create-non-synced-block')
             .appendTo(this);
 
-        new Icon({'symbol': non_synched_block_icon})
+        new Icon({'symbol': block__non_synched_icon})
             .appendTo(non_synched_block_link);
 
         const page_link = new Dom('<a/>', {'class': 'component-link'})
@@ -105,7 +106,7 @@ export default class GuideAssets extends Dom {
             .data('action', 'create-cursor-element')
             .appendTo(this);
 
-        new Icon({'symbol': cursor_element_icon})
+        new Icon({'symbol': cursor_icon})
             .appendTo(cursor_element_link);
 
         const content_element_link = new Dom('<a/>', {'class': 'component-link'})
@@ -114,7 +115,7 @@ export default class GuideAssets extends Dom {
             .data('action', 'create-content-element')
             .appendTo(this);
 
-        new Icon({'symbol': content_element_icon})
+        new Icon({'symbol': content_icon})
             .appendTo(content_element_link);
 
         this
@@ -350,7 +351,7 @@ export default class GuideAssets extends Dom {
                 .appendTo(figure);
         }
         else{
-            new Icon({'symbol': asset_icon})
+            new Icon({'symbol': image_icon})
                 .appendTo(figure);
         }
 

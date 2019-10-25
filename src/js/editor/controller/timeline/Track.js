@@ -3,6 +3,13 @@ import Handle from './Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 
+import block__synched_icon from '../../../../img/editor/component-icons/block--synched.svg?svg-sprite';
+import block__non_synched_icon from '../../../../img/editor/component-icons/block--non-synched.svg?svg-sprite';
+import page_icon from '../../../../img/editor/component-icons/page.svg?svg-sprite';
+import content_icon from '../../../../img/editor/component-icons/content.svg?svg-sprite';
+import cursor_icon from '../../../../img/editor/component-icons/cursor.svg?svg-sprite';
+import svg_icon from '../../../../img/editor/component-icons/svg.svg?svg-sprite';
+
 import {className} from '../../../../css/editor/controller/timeline/Track.scss';
 
 /**
@@ -25,9 +32,9 @@ export default class Track extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        const id = component.getId();
-        const type = component.getType();
-        const name = component.getName();
+        const component_id = component.getId();
+        const component_type = component.getType();
+        const component_name = component.getName();
 
         this.duration = 0;
 
@@ -48,20 +55,55 @@ export default class Track extends Dom {
             .addListener('resizeend', this.onInfoResizeEnd.bind(this))
             .appendTo(inner);
 
-        this.handle = new Handle()
-            .data('component', id)
+        let icon = null;
+        switch(component_type){
+            case 'Block':
+                if(component.getPropertyValue('synched')){
+                    icon = block__synched_icon;
+                }
+                else{
+                    icon = block__non_synched_icon;
+                }
+                break;
+
+            case 'Page':
+                icon = page_icon;
+                break;
+
+            case 'Content':
+                icon = content_icon;
+                break;
+
+            case 'Cursor':
+                icon = cursor_icon;
+                break;
+
+            case 'SVG':
+                icon = svg_icon;
+                break;
+        }
+
+        this.handle = new Handle({
+                'icon': icon
+            })
+            .data('component', component_id)
+            .data('type', component_type)
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
             .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
-            .setLabel(name);
+            .setLabel(component_name);
+
+        if(component_type !== 'Page'){
+            this.handle.attr('draggable', 'true');
+        }
 
         if(component.getPropertyValue('locked')){
             this.handle.addClass('locked');
         }
 
         this
-            .data('component', id)
-            .data('type', type)
-            .attr('title', name)
+            .data('component', component_id)
+            .data('type', component_type)
+            .attr('title', component_name)
             .updateSize();
     }
 

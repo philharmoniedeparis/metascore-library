@@ -7,6 +7,7 @@ import {isEmpty} from '../../utils/Var';
 import {throttle} from '../../utils/Function';
 
 import clear_icon from '../../../../img/core/ui/input/color/clear.svg?svg-sprite';
+
 import {className} from '../../../../css/core/ui/input/Color.scss';
 
 /**
