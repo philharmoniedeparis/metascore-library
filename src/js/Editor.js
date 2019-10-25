@@ -1295,6 +1295,8 @@ export default class Editor extends Dom {
         Dom.bubbleIframeMouseEvent(iframe, 'mousemove');
 
         if(player){
+            this.addClass('has-player');
+
             /**
              * The player instance
              * @type {Player}
@@ -1309,8 +1311,11 @@ export default class Editor extends Dom {
                 .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this));
 
             this.player.load();
-
-            this.addClass('has-player');
+        }
+        else{
+            // Assume an error occured
+            this.unloadPlayer();
+            this.onPlayerFrameLoadError(loadmask);
         }
     }
 

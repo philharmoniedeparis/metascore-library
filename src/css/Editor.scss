@@ -135,6 +135,7 @@
         display: flex;
         position: relative;
         flex: 1 1 auto;
+        background: #ccc;
         overflow: hidden;
         padding: $ruler-width 0 0 $ruler-width;
 
@@ -168,6 +169,12 @@
             padding: 0;
             border: none;
             background-color: #FFF;
+        }
+    }
+
+    &:not(.has-player){
+        .player-frame{
+            display: none;
         }
     }
 
