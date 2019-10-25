@@ -1357,11 +1357,15 @@ export default class Editor extends Dom {
         // Update the revision selector
         const revisions_select = this.mainmenu.getItem('revisions');
         const current_vid = this.player.getData('vid');
+        const date_formatter = new Intl.DateTimeFormat(undefined, {
+            'year': 'numeric', 'month': 'numeric', 'day': 'numeric',
+            'hour': 'numeric', 'minute': 'numeric', 'second': 'numeric',
+            'hour12': false,
+        });
         this.player.getData('revisions').forEach((revision) => {
-            const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date by @author', {
+            const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date', {
                 '@id': revision.vid,
-                '@date': new Date(revision.created * 1000).toLocaleDateString(),
-                '@author': revision.author
+                '@date': date_formatter.format(new Date(revision.created * 1000))
             });
             revisions_select.addOption(revision.vid, text);
         });
