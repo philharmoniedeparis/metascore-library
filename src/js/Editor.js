@@ -1124,9 +1124,10 @@ export default class Editor extends Dom {
      */
     onContentFormContentsUnlock(evt){
         const component = evt.detail.component;
+        component.addClass('isolate');
 
         this.getPlayer().addClass('isolating');
-        component.addClass('isolate');
+        this.addClass('contents-unlocked');
     }
 
     /**
@@ -1137,9 +1138,10 @@ export default class Editor extends Dom {
      */
     onContentFormContentsLock(evt){
         const component = evt.detail.component;
+        component.removeClass('isolate');
 
         this.getPlayer().removeClass('isolating');
-        component.removeClass('isolate');
+        this.removeClass('contents-unlocked');
     }
 
     /**
@@ -1150,9 +1152,10 @@ export default class Editor extends Dom {
      */
     onCursorFormKeyframesEditingStart(evt){
         const component = evt.detail.component;
+        component.addClass('isolate');
 
         this.getPlayer().addClass('isolating');
-        component.addClass('isolate');
+        this.addClass('cursor-keyframes-editing');
     }
 
     /**
@@ -1163,9 +1166,10 @@ export default class Editor extends Dom {
      */
     onCursorFormKeyframesEditingStop(evt){
         const component = evt.detail.component;
+        component.removeClass('isolate');
 
         this.getPlayer().removeClass('isolating');
-        component.removeClass('isolate');
+        this.removeClass('cursor-keyframes-editing');
     }
 
     /**
@@ -1457,7 +1461,7 @@ export default class Editor extends Dom {
          * @todo: handle page before, page after
          **/
 
-        if(this.getPlayer().hasClass('contents-unlocked')){
+        if(this.hasClass('contents-unlocked')){
             return;
         }
 
@@ -1488,7 +1492,7 @@ export default class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onPlayerDrop(evt){
-        if(this.getPlayer().hasClass('contents-unlocked')){
+        if(this.hasClass('contents-unlocked')){
             return;
         }
 
@@ -1555,6 +1559,12 @@ export default class Editor extends Dom {
                     case 'image':
                         configs.type = 'Content';
                         configs['background-image'] = asset.file.url;
+                        if(asset.file.width){
+                            configs.width = asset.file.width;
+                        }
+                        if(asset.file.height){
+                            configs.height = asset.file.height;
+                        }
                         break;
 
                     case 'lottie_animation':
@@ -1562,6 +1572,16 @@ export default class Editor extends Dom {
                         configs.type = asset.type === 'svg' ? 'SVG' : 'Animation';
                         configs.src = asset.file.url;
                         break;
+                }
+            }
+            else{
+                configs.type = 'Content';
+                configs['background-image'] = asset.url;
+                if(asset.width){
+                    configs.width = asset.width;
+                }
+                if(asset.height){
+                    configs.height = asset.height;
                 }
             }
 
