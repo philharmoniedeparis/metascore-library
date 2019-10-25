@@ -5,7 +5,6 @@
     box-sizing: border-box;
     background: $mediumgray;
     border-top: 1px solid $darkgray;
-    border-bottom: 1px solid $darkgray;
     user-select: none;
     cursor: pointer;
 
@@ -19,7 +18,12 @@
         pointer-events: none;
         user-select: none;
 
-        button{
+        > .icon{
+            font-size: 1.5em;
+            margin-left: 0.5em;
+        }
+
+        > button{
             padding: 0;
             color: #fff;
             align-self: stretch;
@@ -40,14 +44,14 @@
             }
         }
 
-        .label{
+        > .label{
             flex: 1 1 auto;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .togglers{
+        > .togglers{
             display: flex;
             flex-direction: row;
             flex-wrap: nowrap;
@@ -99,7 +103,7 @@
     &.user-expanded,
     &.auto-expanded{
         > .inner{
-            button{
+            > button{
                 &[data-action="expander"]{
                     .icon{
                         transform: rotate(90deg);
@@ -115,7 +119,7 @@
 
     &:not(.has-descendents){
         > .inner{
-            button{
+            > button{
                 &[data-action="expander"]{
                     opacity: 0;
                 }

@@ -23,6 +23,18 @@
             .snap-guide{
                 margin-top: 0;
             }
+
+            .tracks-container-inner{
+                padding-bottom: 2px;
+            }
+        }
+    }
+
+    .handles-container{
+        padding-bottom: 2px;
+
+        > .handle{
+            border-right: 2px solid $darkgray;
         }
     }
 }
@@ -32,4 +44,11 @@
     top: 0;
     right: 100%;
     background: $mediumgray;
+    z-index: 99;
+
+    > .inner{
+        > .togglers{
+            display: none;
+        }
+    }
 }

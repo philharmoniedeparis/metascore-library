@@ -125,11 +125,15 @@ export default class Timeline extends Dom {
 
         this._handle_drag_ghost = new Dom(evt.target.cloneNode(true))
             .addClass(handleDragGhostClassName)
+            .css('width', handle.css('width'))
             .appendTo(this.handles_container);
 
         evt.dataTransfer.effectAllowed = 'move';
         evt.dataTransfer.setData('metascore/timeline', component_id);
         evt.dataTransfer.setDragImage(this._handle_drag_ghost.get(0), 0, 0);
+
+        // dragover does not have access to dataTransfer data
+        this._dragging_handle = handle;
 
         track.addClass('dragging');
         handle.addClass('dragging');
@@ -149,11 +153,7 @@ export default class Timeline extends Dom {
             const track = this.getTrack(component_id);
             const handle = track.getHandle();
 
-            const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
-            const dragging_track = this.getTrack(dragging_component_id);
-            const dragging_handle = dragging_track.getHandle();
-
-            if(handle.parents().get(0) === dragging_handle.parents().get(0)){
+            if(handle.parents().get(0) === this._dragging_handle.parents().get(0)){
                 const handle_rect = handle.get(0).getBoundingClientRect();
                 const y = evt.clientY - handle_rect.top;
                 const above = y < handle_rect.height/2;
@@ -252,6 +252,8 @@ export default class Timeline extends Dom {
 
         this._handle_drag_ghost.remove();
         delete this._handle_drag_ghost;
+
+        delete this._dragging_handle;
 
         track.removeClass('dragging');
         handle.removeClass('dragging');

@@ -145,16 +145,10 @@
             .handles-container{
                 width: $left-width;
                 flex: 0 0 auto;
-                padding-bottom: 1px;
-
-                > .handle{
-                    border-right: 2px solid $darkgray;
-                }
             }
 
             .tracks-container {
                 flex: 1 1 auto;
-                padding-bottom: 1px;
             }
         }
     }
