@@ -141,18 +141,19 @@
 
         .ruler{
             position: absolute;
+            left: 0;
+            top: 0;
+            box-sizing: border-box;
             z-index: 2;
 
             &[data-axis="x"]{
-                left: $ruler-width;
-                right: 0;
-                top: 0;
+                width: 100%;
+                padding-left: $ruler-width;
             }
 
             &[data-axis="y"]{
-                left: 0;
-                top: $ruler-width;
-                bottom: 0;
+                height: 100%;
+                padding-top: $ruler-width;
             }
         }
 

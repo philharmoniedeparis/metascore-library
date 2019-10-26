@@ -1,4 +1,8 @@
+@import "../theme";
+
 :local(.className){
+    background: $mediumgray;
+
     .tracker{
         position: absolute;
         top: 0;
