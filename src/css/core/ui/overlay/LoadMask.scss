@@ -2,6 +2,8 @@
 
 :local(.className){
     > .inner{
+        background: $darkgray;
+
         > .contents{
             .icon{
                 display: inline-block;

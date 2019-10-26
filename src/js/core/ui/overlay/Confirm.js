@@ -19,9 +19,6 @@ export default class Confirm extends Overlay{
     constructor(configs){
         super(configs);
 
-        this.addButton('confirm', this.configs.confirmLabel);
-        this.addButton('cancel', this.configs.cancelLabel);
-
         this.addClass(`confirm ${className}`);
     }
 
@@ -41,6 +38,9 @@ export default class Confirm extends Overlay{
 
     setupUI(){
         super.setupUI();
+
+        this.addButton('confirm', this.configs.confirmLabel);
+        this.addButton('cancel', this.configs.cancelLabel);
 
         this.addListener('buttonclick', (evt) => {
             const action = evt.detail.action;

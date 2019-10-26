@@ -35,7 +35,7 @@ export default class Overlay extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `overlay ${className}`});
+        super('<div/>', {'class': `overlay ${className}`, 'tabindex': -1, 'role': 'dialog'});
 
         /**
          * The configuration values
@@ -43,7 +43,15 @@ export default class Overlay extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        // fix event handlers scope
+        this.onDocumentFocus = this.onDocumentFocus.bind(this);
+
+        this.addListener('keydown', this.onKeyDown.bind(this));
+
         this.setupUI();
+
+        const focusables = this.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+        this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this;
 
         if(this.configs.autoShow){
             this.show();
@@ -137,8 +145,6 @@ export default class Overlay extends Dom {
                 this.addButton(action, label);
             });
         }
-
-        this.addListener('keyup', this.onKeyup.bind(this));
     }
 
     /**
@@ -178,6 +184,10 @@ export default class Overlay extends Dom {
 
         this.triggerEvent('show', {'overlay': this}, true, false);
 
+        Dom.addListener(document, 'focus', this.onDocumentFocus, true);
+
+        this.focus_anchor.focus();
+
         return this;
     }
 
@@ -190,6 +200,8 @@ export default class Overlay extends Dom {
         this.remove();
 
         this.triggerEvent('hide', {'overlay': this}, true, false);
+
+        Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
 
         return this;
     }
@@ -247,17 +259,25 @@ export default class Overlay extends Dom {
     }
 
     /**
-     * The keyup event handler
+     * keydown event handler
      *
      * @private
      * @param {Event} evt The event object
      */
-    onKeyup(evt){
-        if(evt.key === "Escape") {
-            this.hide();
-
-            evt.stopPropagation();
+    onKeyDown(evt){
+        switch(evt.key) {
+            case 'Escape':
+                this.hide();
+                break;
         }
+
+        evt.stopPropagation();
     }
 
+    onDocumentFocus(evt){
+        if(!this.get(0).contains(evt.target)){
+            evt.preventDefault();
+            this.focus_anchor.focus();
+        }
+    }
 }
