@@ -25,6 +25,8 @@ export default class Button extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
+        this.attr('type', this.configs.type);
+
         if(this.configs.label){
             this.setLabel(this.configs.label);
         }
@@ -40,6 +42,7 @@ export default class Button extends Dom {
     */
     static getDefaults(){
         return {
+            'type': 'button',
             'label': null,
             'icon': null
         };
