@@ -30,57 +30,59 @@
             }
         }
 
-        > .contents{
-            max-height: 75vh;
-            overflow: auto;
-            text-align: center;
-            padding: 1em;
+        > .body{
+            > .contents{
+                max-height: 75vh;
+                overflow: auto;
+                text-align: center;
+                padding: 1em;
 
-            .text{
-                max-width: 50vw;
-                max-height: 50vh;
-                color: #fff;
-                vertical-align: middle;
-                overflow-y: auto;
-            }
-
-            &:empty{
-                display: none;
-            }
-        }
-
-        > .buttons{
-            text-align: center;
-            padding: 0.5em 1em 1em 1em;
-
-            button{
-                min-width: 60px;
-                margin: 0 0.5em;
-                padding: 0.5em;
-                background: #fff;
-                border: none;
-                opacity: 1;
-                cursor: pointer;
-
-                &:hover{
-                    opacity: 0.75;
+                .text{
+                    max-width: 50vw;
+                    max-height: 50vh;
+                    color: #fff;
+                    vertical-align: middle;
+                    overflow-y: auto;
                 }
 
-                &:active{
-                    opacity: 0.5;
-                }
-
-                &[data-action="cancel"]{
-                    background: #aaa;
-                }
-
-                .label{
-                    pointer-events: none;
+                &:empty{
+                    display: none;
                 }
             }
 
-            &:empty{
-                display: none;
+            > .buttons{
+                text-align: center;
+                padding: 0.5em 1em 1em 1em;
+
+                button{
+                    min-width: 60px;
+                    margin: 0 0.5em;
+                    padding: 0.5em;
+                    background: #fff;
+                    border: none;
+                    opacity: 1;
+                    cursor: pointer;
+
+                    &:hover{
+                        opacity: 0.75;
+                    }
+
+                    &:active{
+                        opacity: 0.5;
+                    }
+
+                    &[data-action="cancel"]{
+                        background: #aaa;
+                    }
+
+                    .label{
+                        pointer-events: none;
+                    }
+                }
+
+                &:empty{
+                    display: none;
+                }
             }
         }
     }

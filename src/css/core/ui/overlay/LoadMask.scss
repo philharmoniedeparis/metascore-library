@@ -4,49 +4,53 @@
     > .inner{
         background: $darkgray;
 
-        > .contents{
-            .icon{
-                display: inline-block;
-                width: 1.5em;
-                height: 1.5em;
-                margin-right: 1em;
-                vertical-align: middle;
-            }
+        > .body{
+            > .contents{
+                .icon{
+                    display: inline-block;
+                    width: 1.5em;
+                    height: 1.5em;
+                    margin-right: 1em;
+                    vertical-align: middle;
+                }
 
-            .text{
-                display: inline-block;
+                .text{
+                    display: inline-block;
+                }
             }
         }
     }
 
     &.with-bar{
         > .inner{
-            > .contents{
-                min-width: 10em;
-                background-image: none;
+            > .body{
+                > .contents{
+                    min-width: 10em;
+                    background-image: none;
 
-                .icon{
-                    display: none;
-                }
-
-                .bar{
-                    position: relative;
-                    margin-top: 0.25em;
-                    padding: 0.1em 0.5em;
-                    background: $lightgray;
-
-                    .progress{
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        height: 100%;
-                        background: $mediumgray;
-                        transition: width 0.25s ease-in-out;
+                    .icon{
+                        display: none;
                     }
 
-                    .text{
+                    .bar{
                         position: relative;
-                        font-size: 0.9em;
+                        margin-top: 0.25em;
+                        padding: 0.1em 0.5em;
+                        background: $lightgray;
+
+                        .progress{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            height: 100%;
+                            background: $mediumgray;
+                            transition: width 0.25s ease-in-out;
+                        }
+
+                        .text{
+                            position: relative;
+                            font-size: 0.9em;
+                        }
                     }
                 }
             }

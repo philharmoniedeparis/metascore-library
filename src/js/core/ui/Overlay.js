@@ -50,7 +50,7 @@ export default class Overlay extends Dom {
 
         this.setupUI();
 
-        const focusables = this.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+        const focusables = this.body.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
         this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this;
 
         if(this.configs.autoShow){
@@ -115,12 +115,15 @@ export default class Overlay extends Dom {
                 .appendTo(toolbar_buttons);
         }
 
+        this.body = new Dom('<div/>', {'class': 'body'})
+            .appendTo(inner);
+
         /**
          * The contents container
          * @type {Dom}
          */
         this.contents = new Dom('<div/>', {'class': 'contents'})
-            .appendTo(inner);
+            .appendTo(this.body);
 
         /**
          * The text container
@@ -138,7 +141,7 @@ export default class Overlay extends Dom {
          * @type {Dom}
          */
         this.buttons = new Dom('<div/>', {'class': 'buttons'})
-            .appendTo(inner);
+            .appendTo(this.body);
 
         if(this.configs.buttons){
             Object.entries(this.configs.buttons).forEach(([action, label]) => {
