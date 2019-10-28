@@ -151,6 +151,7 @@ export default class Editor extends Dom {
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
             .addListener('assetremove', this.onAssetBrowserAssetRemove.bind(this))
             .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
+            .addListener('spectrogramformopen', this.onAssetBrowserSpectrogramFormOpen.bind(this))
             .appendTo(tools_pane.getContents());
 
         // Center pane ////////////////////////
@@ -825,6 +826,27 @@ export default class Editor extends Dom {
             case 'block':
                 this.addPlayerComponents(type, configs, this.getPlayer());
                 break;
+        }
+    }
+
+    onAssetBrowserSpectrogramFormOpen(evt){
+        const form = evt.detail.form;
+        const configs_form = this.configs_editor.getForm();
+
+        if(configs_form){
+            const component = configs_form.getMasterComponent();
+            const defaults = {
+                'width': component.getPropertyValue('width'),
+                'height': component.getPropertyValue('height'),
+                'start_time': component.getPropertyValue('start-time'),
+                'end_time': component.getPropertyValue('end-time'),
+            };
+
+            Object.entries(defaults).forEach(([key, value]) => {
+                if(value !== null){
+                    form.getField(key).getInput().setValue(value, true);
+                }
+            });
         }
     }
 

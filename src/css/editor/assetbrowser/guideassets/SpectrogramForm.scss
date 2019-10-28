@@ -1,0 +1,55 @@
+@import "../../../theme";
+
+:local(.className){
+    > .inner{
+        background: $lightgray;
+
+        > .body{
+            > .contents{
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                form {
+                    fieldset{
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-gap: 0.5em 1em;
+                        margin-bottom: 0.5em;
+                        border: 1px solid $darkgray;
+
+                        > legend{
+                            padding: 0 0.5em;
+                            color:#fff;
+                            background: $lightgray;
+                        }
+
+                        .field{
+                            label{
+                                margin-right: 0.5em;
+                                color: #fff;
+                            }
+
+                            .input{
+                                &.number{
+                                    input{
+                                        width: 2em;
+                                    }
+                                }
+                            }
+
+                            &[data-opt="width"],
+                            &[data-opt="height"]{
+                                .input{
+                                    input{
+                                        width: 4em;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

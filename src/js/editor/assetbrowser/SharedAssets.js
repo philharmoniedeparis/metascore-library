@@ -260,7 +260,7 @@ export default class AssetBrowser extends Dom {
         loadmask.hide();
 
         const response = evt.target.getResponse();
-        const error = 'message' in response ? response.message : evt.target.getStatusText();
+        const error = response && 'message' in response ? response.message : evt.target.getStatusText();
         const code = evt.target.getStatus();
 
         new Overlay({

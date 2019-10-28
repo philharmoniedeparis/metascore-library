@@ -6,12 +6,13 @@
     position: relative;
     overflow: hidden;
 
-    .assets-container{
+    > .assets-container{
         flex: 1 1 auto;
         overflow-y: auto;
 
         .asset{
             display: flex;
+            height: 2em;
             flex-direction: row;
             align-items: center;
             margin-bottom: 0.5em;
@@ -20,10 +21,8 @@
 
             figure{
                 flex: 0 0 2em;
-                height: 2em;
                 margin: 0;
                 pointer-events: none;
-                background: $lightgray;
 
                 img{
                     display: block;
@@ -31,11 +30,6 @@
                     height: 100%;
                     object-fit: contain;
                     box-sizing: border-box;
-                    box-shadow: 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
-
-                    &[src$=".svg"]{
-                        padding: 0.25em;
-                    }
                 }
 
                 .icon{
@@ -68,7 +62,7 @@
         }
     }
 
-    .import-assets{
+    > .import-assets{
         display: block;
         border-top: 2px solid $mediumgray;
         background: $lightgray;
@@ -89,6 +83,32 @@
 
         .input{
             display: none;
+        }
+
+        &:hover{
+            background: $mediumgray;
+        }
+    }
+
+    > button{
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        justify-content: flex-end;
+        line-height: 2em;
+        padding: 0.5em;
+        border-top: 2px solid $mediumgray;
+        color: #fff;
+        background: $lightgray;
+        user-select: none;
+        white-space: nowrap;
+        opacity: 1;
+
+        .label + .icon{
+            font-size: 2em;
+            margin-left: 0;
+            margin-right: 0.5em;
+            filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
         }
 
         &:hover{

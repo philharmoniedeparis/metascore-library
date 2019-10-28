@@ -8,10 +8,12 @@ import Overlay from '../../core/ui/Overlay';
 import Confirm from '../../core/ui/overlay/Confirm';
 import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
+import SpectrogramForm from './guideassets/SpectrogramForm';
 import {isValidMimeType} from '../../core/utils/Media';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
+import spectrogram_icon from '../../../img/editor/assetbrowser/guideassets/spectrogram.svg?svg-sprite';
 import image_icon from '../../../img/editor/component-icons/image.svg?svg-sprite';
 
 import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
@@ -68,6 +70,14 @@ export default class GuideAssets extends Dom {
         new Icon({'symbol': import_icon})
             .appendTo(import_field.getLabel());
 
+        new Button({
+                'icon': spectrogram_icon,
+                'label': Locale.t('editor.assetbrowser.GuideAssets.spectrogram-button.label', 'Create spectrogram image')
+            })
+            .data('action', 'spectrogram')
+            .addListener('click', this.onButtonClick.bind(this))
+            .appendTo(this);
+
         this
             .addListener('dragover', this.onDragOver.bind(this))
             .addListener('dragleave', this.onDragLeave.bind(this))
@@ -85,6 +95,9 @@ export default class GuideAssets extends Dom {
                 'url': null,
                 'max_filesize': null,
                 'allowed_types': null,
+            },
+            'spectrogram_form': {
+                'url': null
             },
             'xhr': {}
         };
@@ -172,7 +185,7 @@ export default class GuideAssets extends Dom {
 
         // add a loading mask
         const loadmask = new LoadMask({
-            'parent': this,
+            'parent': '.metaScore-editor',
             'text': Locale.t('editor.assetbrowser.GuideAssets.importAssets.loadmask.text', 'Uploading...'),
             'bar': true
         });
@@ -375,7 +388,7 @@ export default class GuideAssets extends Dom {
         loadmask.hide();
 
         const response = evt.target.getResponse();
-        const error = 'message' in response ? response.message : evt.target.getStatusText();
+        const error = response && 'message' in response ? response.message : evt.target.getStatusText();
         const code = evt.target.getStatus();
 
         new Overlay({
@@ -387,4 +400,30 @@ export default class GuideAssets extends Dom {
         });
     }
 
+    onButtonClick(evt){
+        const action = Dom.data(evt.target, 'action');
+
+        switch(action){
+            case 'spectrogram':
+                {
+                    const form = new SpectrogramForm(Object.assign({
+                            'parent': '.metaScore-editor',
+                            'xhr': this.configs.xhr
+                        }, this.configs.spectrogram_form));
+
+                    form.addListener('generate', this.onSpectrogramFormGenerate.bind(this));
+
+                    this.triggerEvent('spectrogramformopen', {'form': form});
+                }
+                break;
+        }
+    }
+
+    onSpectrogramFormGenerate(evt){
+        const asset = evt.detail.asset;
+        this.addAsset(asset);
+
+        const form = evt.detail.form;
+        form.hide();
+    }
 }
