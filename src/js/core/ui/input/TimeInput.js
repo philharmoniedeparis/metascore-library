@@ -98,6 +98,11 @@ export default class TimeInput extends Input {
         if(this.configs.max !== null){
             this.setMax(this.configs.max);
         }
+
+        if(this.configs.name){
+            this.native_input.attr('name', null);
+            this.named_input.attr('name', this.configs.name);
+        }
     }
 
     /**
@@ -187,6 +192,10 @@ export default class TimeInput extends Input {
             .addListener('cut', this.onCut.bind(this))
             .addListener('paste', this.onPaste.bind(this))
             .addListener('keydown', this.onKeydown.bind(this));
+
+        this.named_input = new Dom('<input/>', {'type': 'number'})
+            .hide()
+            .appendTo(this);
 
         if(this.configs.clearButton || this.configs.inButton || this.configs.outButton){
             const buttons = new Dom('<div/>', {'class': 'buttons'})
@@ -675,6 +684,8 @@ export default class TimeInput extends Input {
          * @type {String}
          */
         this.value = _value;
+
+        this.named_input.val(this.value);
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');
