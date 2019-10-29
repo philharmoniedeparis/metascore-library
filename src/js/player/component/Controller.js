@@ -2,6 +2,7 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {formatTime} from '../../core/utils/Media';
+import {MasterClock} from '../../core/media/Clock';
 
 /**
  * A controller component
@@ -59,6 +60,18 @@ export default class Controller extends Component{
         this.addClass('controller');
 
         this.setupUI();
+
+        MasterClock
+            .addListener('play', this.onMasterClockPlay.bind(this))
+            .addListener('pause', this.onMasterClockPause.bind(this))
+            .addListener('stop', this.onMasterClockStop.bind(this))
+            .addListener('timeupdate', this.onMasterClockTimeUpdate.bind(this));
+
+        if(MasterClock.isTicking()){
+            this.addClass('playing');
+        }
+
+        this.updateTime(MasterClock.getTime());
     }
 
     /**
@@ -128,6 +141,22 @@ export default class Controller extends Component{
         return Object.assign(super.getDraggableConfigs(), {
             'handle': this.child('.timer')
         });
+    }
+
+    onMasterClockPlay(){
+        this.addClass('playing');
+    }
+
+    onMasterClockPause(){
+        this.removeClass('playing');
+    }
+
+    onMasterClockStop(){
+        this.removeClass('playing');
+    }
+
+    onMasterClockTimeUpdate(){
+        this.updateTime(MasterClock.getTime());
     }
 
     /**

@@ -2,6 +2,8 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Icon from '../../core/ui/Icon';
 
+import media_icon from '../../../img/editor/component-icons/media.svg?svg-sprite';
+import controller_icon from '../../../img/editor/component-icons/controller.svg?svg-sprite';
 import block__synched_icon from '../../../img/editor/component-icons/block--synched.svg?svg-sprite';
 import block__non_synched_icon from '../../../img/editor/component-icons/block--non-synched.svg?svg-sprite';
 import page_icon from '../../../img/editor/component-icons/page.svg?svg-sprite';
@@ -32,6 +34,26 @@ export default class ComponentLinks extends Dom {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+
+        const media_link = new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-media.text', 'Create a video renderer'))
+            .attr('draggable', 'true')
+            .data('type', 'block')
+            .data('configs', JSON.stringify({'type': 'Media'}))
+            .appendTo(this);
+
+        new Icon({'symbol': media_icon})
+            .appendTo(media_link);
+
+        const controller_link = new Dom('<a/>')
+            .text(Locale.t('editor.AssetBrowser.create-controller.text', 'Create a controller'))
+            .attr('draggable', 'true')
+            .data('type', 'block')
+            .data('configs', JSON.stringify({'type': 'Controller'}))
+            .appendTo(this);
+
+        new Icon({'symbol': controller_icon})
+            .appendTo(controller_link);
 
         const synched_block_link = new Dom('<a/>')
             .text(Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a synched block'))

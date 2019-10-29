@@ -142,8 +142,6 @@ export default class Player extends Dom {
             .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
             .appendTo(this.configs.container);
 
-        MasterClock.addListener('timeupdate', this.onMasterClockTimeUpdate.bind(this));
-
         this.triggerEvent('ready', {'player': this}, false, false);
 
         if(this.configs.autoload !== false){
@@ -376,11 +374,7 @@ export default class Player extends Dom {
      * @private
      */
     onRendererPlaying(){
-        this.removeClass('media-waiting');
-
-        if(this.controller){
-            this.controller.addClass('playing');
-        }
+        this.addClass('playing').removeClass('media-waiting');
     }
 
     /**
@@ -389,11 +383,7 @@ export default class Player extends Dom {
      * @private
      */
     onRendererPlay(){
-        this.removeClass('media-waiting');
-
-        if(this.controller){
-            this.controller.addClass('playing');
-        }
+        this.addClass('playing').removeClass('media-waiting');
     }
 
     /**
@@ -402,11 +392,7 @@ export default class Player extends Dom {
      * @private
      */
     onRendererPause(){
-        this.removeClass('media-waiting');
-
-        if(this.controller){
-            this.controller.removeClass('playing');
-        }
+        this.removeClass('playing').removeClass('media-waiting');
     }
 
     /**
@@ -452,17 +438,6 @@ export default class Player extends Dom {
         this.triggerEvent('mediaerror', {'player': this, 'message': message});
 
         evt.stopPropagation();
-    }
-
-    /**
-     * Media timeupdate event callback
-     *
-     * @private
-     */
-    onMasterClockTimeUpdate(){
-        if(this.controller){
-            this.controller.updateTime(MasterClock.getTime());
-        }
     }
 
     /**
@@ -576,19 +551,11 @@ export default class Player extends Dom {
         this.data.components.forEach((component) => {
             switch(component.type){
                 case 'Media':
-                    /**
-                     * The media block
-                     * @type {Media}
-                     */
-                    this.media = this.addMedia(component);
+                    this.addMedia(component);
                     break;
 
                 case 'Controller':
-                    /**
-                     * The controller block
-                     * @type {Controller}
-                     */
-                    this.controller = this.addController(component);
+                    this.addController(component);
                     break;
 
                 case 'BlockToggler':
