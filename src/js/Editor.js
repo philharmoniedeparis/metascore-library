@@ -2579,29 +2579,46 @@ export default class Editor extends Dom {
 
                 // Add title
                 if(this.isDirty('title')){
-                    data.append('title', this.mainmenu.getItem('title').getValue());
+                    data.set('title', this.mainmenu.getItem('title').getValue());
                 }
 
                 // Add scenarios
                 if(this.isDirty('scenarios')){
-                    player.getScenarios().forEach((scenario) => {
-                        data.append('scenarios[]', scenario);
-                    });
+                    const scenarios = player.getScenarios();
+                    if(scenarios.length > 0){
+                        scenarios.forEach((scenario) => {
+                            data.append('scenarios[]', scenario);
+                        });
+                    }
+                    else{
+                        data.set('scenarios', []);
+                    }
                 }
 
                 // Add components
                 if(this.isDirty('components')){
                     const components = player.getRootComponents();
-                    components.forEach((component) => {
-                        data.append('components[]', JSON.stringify(component.getPropertyValues()));
-                    });
+                    if(components.length > 0){
+                        components.forEach((component) => {
+                            data.append('components[]', JSON.stringify(component.getPropertyValues()));
+                        });
+                    }
+                    else{
+                        data.set('components', []);
+                    }
                 }
 
                 // Add assets
                 if(this.isDirty('assets')){
-                    Object.values(this.asset_browser.getTabContent('guide-assets').getAssets()).forEach((asset) => {
-                        data.append('assets[]', JSON.stringify(asset));
-                    });
+                    const assets = Object.values(this.asset_browser.getTabContent('guide-assets').getAssets());
+                    if(assets.length > 0){
+                        Object.values(this.asset_browser.getTabContent('guide-assets').getAssets()).forEach((asset) => {
+                            data.append('assets[]', JSON.stringify(asset));
+                        });
+                    }
+                    else{
+                        data.set('assets', []);
+                    }
                 }
             }
 
