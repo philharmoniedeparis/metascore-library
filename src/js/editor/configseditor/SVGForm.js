@@ -182,14 +182,14 @@ export default class SVGForm extends ElementForm {
     }
 
     updateInputs(){
-        const markers = Object.keys(this.master_component.getSVGMarkers());
+        const markers = Object.keys(this.master_component.getMarkers());
 
         const marker_start_input = this.getField('marker-start').getInput().clear();
         const marker_end_input = this.getField('marker-end').getInput().clear();
 
         markers.forEach((marker) => {
-            marker_start_input.addOption(marker, marker);
-            marker_end_input.addOption(marker, marker);
+            marker_start_input.addOption(`url("#${marker})`, marker);
+            marker_end_input.addOption(`url("#${marker})`, marker);
         });
     }
 }

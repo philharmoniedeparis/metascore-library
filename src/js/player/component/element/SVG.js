@@ -2,8 +2,6 @@ import Element from '../Element';
 import Dom from '../../../core/Dom';
 import {isFunction} from '../../../core/utils/Var';
 
-import markers_svg from '../../../../img/player/svg-markers.svg?svg-inline';
-
 const svg_properties = [
     'stroke',
     'stroke-width',
@@ -85,6 +83,8 @@ export default class SVG extends Element {
         // call parent constructor
         super(configs);
 
+        this.markers = {};
+
         this.addListener('activate', this.onActivate.bind(this));
     }
 
@@ -131,12 +131,13 @@ export default class SVG extends Element {
     onSVGLoad(evt){
         this._loaded = true;
 
-        this.svg_doc = evt.target.contentDocument;
-        this.svg_dom = new Dom(this.svg_doc).child('svg');
+        this.svg_dom = new Dom(evt.target.contentDocument).child('svg');
 
-        const markers_dom = new DOMParser().parseFromString(markers_svg, 'image/svg+xml');
-        new Dom(markers_dom).find('defs')
-            .insertAt(this.svg_dom, 0);
+        const markers = this.svg_dom.find('defs marker');
+        markers.forEach((marker) => {
+            const id =  Dom.attr(marker, 'id');
+            this.markers[id] = marker;
+        });
 
         this.updateSVGProperties();
 
@@ -147,18 +148,8 @@ export default class SVG extends Element {
         return this.svg;
     }
 
-    getSVGMarkers(){
-        const markers = {};
-
-        if(this._loaded){
-            const def_markers = this.svg_dom.find('defs marker');
-            def_markers.forEach((marker) => {
-                const id =  Dom.attr(marker, 'id');
-                markers[id] = marker;
-            });
-        }
-
-        return markers;
+    getMarkers(){
+        return this.markers;
     }
 
     isLoaded(){
@@ -168,16 +159,11 @@ export default class SVG extends Element {
     updateSVGProperty(property, value, executeInnerUpdate){
         if(this._loaded){
             this.svg_dom.children(svg_elements.join(',')).forEach((el) => {
-                if(value !== null && property.indexOf('marker-') === 0){
-                    Dom.css(el, property, `url(#${value}`);
-                }
-                else{
-                    Dom.css(el, property, value);
-                }
+                Dom.css(el, property, value);
             });
 
             if(property === 'stroke'){
-                Object.values(this.getSVGMarkers()).forEach((marker) => {
+                Object.values(this.markers).forEach((marker) => {
                     Dom.css(marker, 'stroke', value);
                     Dom.css(marker, 'fill', value);
                 });
@@ -201,8 +187,8 @@ export default class SVG extends Element {
 
     executeInnerUpdate(){
         if(this._loaded){
-            if(isFunction(this.svg_doc.metascore_update)) {
-                this.svg_doc.metascore_update();
+            if(isFunction(this.svg_dom.update)) {
+                this.svg_dom.update();
             }
         }
     }
