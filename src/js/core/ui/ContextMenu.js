@@ -297,7 +297,7 @@ export default class ContextMenu extends Dom {
                 .appendTo(task);
 
 			Object.entries(configs.items).forEach(([subkey, subtask]) => {
-                this.addTask(subkey, subtask, subtasks);
+                this.addTask(`${action}|${subkey}`, subtask, subtasks);
             });
         }
 
