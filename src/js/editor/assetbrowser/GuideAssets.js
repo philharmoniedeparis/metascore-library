@@ -14,7 +14,7 @@ import {isValidMimeType} from '../../core/utils/Media';
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
 import spectrogram_icon from '../../../img/editor/assetbrowser/guideassets/spectrogram.svg?svg-sprite';
-import image_icon from '../../../img/editor/component-icons/image.svg?svg-sprite';
+import image_icon from '../../../img/editor/assetbrowser/guideassets/image.svg?svg-sprite';
 
 import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 

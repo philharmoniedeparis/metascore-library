@@ -1,14 +1,7 @@
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Icon from '../../core/ui/Icon';
-
-import media_icon from '../../../img/editor/component-icons/media.svg?svg-sprite';
-import controller_icon from '../../../img/editor/component-icons/controller.svg?svg-sprite';
-import block__synched_icon from '../../../img/editor/component-icons/block--synched.svg?svg-sprite';
-import block__non_synched_icon from '../../../img/editor/component-icons/block--non-synched.svg?svg-sprite';
-import page_icon from '../../../img/editor/component-icons/page.svg?svg-sprite';
-import content_icon from '../../../img/editor/component-icons/content.svg?svg-sprite';
-import cursor_icon from '../../../img/editor/component-icons/cursor.svg?svg-sprite';
+import * as icons from '../ComponentIcons';
 
 import {className} from '../../../css/editor/assetbrowser/ComponentLinks.scss';
 
@@ -42,7 +35,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Media'}))
             .appendTo(this);
 
-        new Icon({'symbol': media_icon})
+        new Icon({'symbol': icons.media})
             .appendTo(media_link);
 
         const controller_link = new Dom('<a/>')
@@ -52,7 +45,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Controller'}))
             .appendTo(this);
 
-        new Icon({'symbol': controller_icon})
+        new Icon({'symbol': icons.controller})
             .appendTo(controller_link);
 
         const synched_block_link = new Dom('<a/>')
@@ -62,7 +55,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Block', 'synched': true}))
             .appendTo(this);
 
-        new Icon({'symbol': block__synched_icon})
+        new Icon({'symbol': icons.block.synched})
             .appendTo(synched_block_link);
 
         const non_synched_block_link = new Dom('<a/>')
@@ -72,7 +65,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Block', 'synched': false}))
             .appendTo(this);
 
-        new Icon({'symbol': block__non_synched_icon})
+        new Icon({'symbol': icons.block.non_synched})
             .appendTo(non_synched_block_link);
 
         const page_link = new Dom('<a/>')
@@ -82,7 +75,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'position': 'before'}))
             .appendTo(this);
 
-        new Icon({'symbol': page_icon})
+        new Icon({'symbol': icons.page})
             .appendTo(page_link);
 
         const cursor_element_link = new Dom('<a/>')
@@ -92,7 +85,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Cursor'}))
             .appendTo(this);
 
-        new Icon({'symbol': cursor_icon})
+        new Icon({'symbol': icons.cursor})
             .appendTo(cursor_element_link);
 
         const content_element_link = new Dom('<a/>')
@@ -102,7 +95,7 @@ export default class ComponentLinks extends Dom {
             .data('configs', JSON.stringify({'type': 'Content'}))
             .appendTo(this);
 
-        new Icon({'symbol': content_icon})
+        new Icon({'symbol': icons.content})
             .appendTo(content_element_link);
 
         this

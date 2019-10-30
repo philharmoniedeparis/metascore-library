@@ -2,13 +2,7 @@ import Dom from '../../../core/Dom';
 import Handle from './Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
-
-import block__synched_icon from '../../../../img/editor/component-icons/block--synched.svg?svg-sprite';
-import block__non_synched_icon from '../../../../img/editor/component-icons/block--non-synched.svg?svg-sprite';
-import page_icon from '../../../../img/editor/component-icons/page.svg?svg-sprite';
-import content_icon from '../../../../img/editor/component-icons/content.svg?svg-sprite';
-import cursor_icon from '../../../../img/editor/component-icons/cursor.svg?svg-sprite';
-import svg_icon from '../../../../img/editor/component-icons/svg.svg?svg-sprite';
+import * as icons from '../../ComponentIcons';
 
 import {className} from '../../../../css/editor/controller/timeline/Track.scss';
 
@@ -59,27 +53,15 @@ export default class Track extends Dom {
         switch(component_type){
             case 'Block':
                 if(component.getPropertyValue('synched')){
-                    icon = block__synched_icon;
+                    icon = icons.block.synched;
                 }
                 else{
-                    icon = block__non_synched_icon;
+                    icon = icons.block.non_synched;
                 }
                 break;
 
-            case 'Page':
-                icon = page_icon;
-                break;
-
-            case 'Content':
-                icon = content_icon;
-                break;
-
-            case 'Cursor':
-                icon = cursor_icon;
-                break;
-
-            case 'SVG':
-                icon = svg_icon;
+            default:
+                icon = icons[component_type.toLowerCase()];
                 break;
         }
 
