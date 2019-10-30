@@ -4,6 +4,7 @@ import Field from '../Field';
 import SelectInput from '../../core/ui/input/SelectInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import ColorInput from '../../core/ui/input/ColorInput';
+import Dom from '../../core/Dom';
 
 import {className} from '../../../css/editor/configseditor/SVGForm.scss';
 
@@ -182,14 +183,36 @@ export default class SVGForm extends ElementForm {
     }
 
     updateInputs(){
-        const markers = Object.keys(this.master_component.getMarkers());
+        const marker_start_input = this.getField('marker-start').getInput().clear().disable();
+        const marker_end_input = this.getField('marker-end').getInput().clear().disable();
 
-        const marker_start_input = this.getField('marker-start').getInput().clear();
-        const marker_end_input = this.getField('marker-end').getInput().clear();
+        const components = this.getComponents();
+        if(components){
+            const master_component = this.getMasterComponent();
+            let same_src = true;
 
-        markers.forEach((marker) => {
-            marker_start_input.addOption(`url("#${marker})`, marker);
-            marker_end_input.addOption(`url("#${marker})`, marker);
-        });
+            if(components.length > 1){
+                const src = master_component.getPropertyValue('src');
+                same_src = components.every((component) => {
+                    return component.getPropertyValue('src') === src;
+                });
+            }
+
+            if(same_src){
+                const markers = Object.entries(master_component.getMarkers());
+                if(markers.length > 0){
+                    markers.forEach(([id, marker]) => {
+                        const name = Dom.data(marker, 'name');
+
+                        marker_start_input.addOption(id, name ? name : id);
+                        marker_end_input.addOption(id, name ? name : id);
+                    });
+
+                    marker_start_input.enable();
+                    marker_end_input.enable();
+                }
+            }
+
+        }
     }
 }

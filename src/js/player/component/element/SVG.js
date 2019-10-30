@@ -1,6 +1,6 @@
 import Element from '../Element';
 import Dom from '../../../core/Dom';
-import {isFunction} from '../../../core/utils/Var';
+import {isFunction, isEmpty} from '../../../core/utils/Var';
 
 const svg_properties = [
     'stroke',
@@ -110,6 +110,8 @@ export default class SVG extends Element {
      * @inheritdoc
      */
     updatePropertyValue(property, value){
+        super.updatePropertyValue(property, value);
+
         switch(property){
             case 'src':
                 delete this._loaded;
@@ -120,11 +122,10 @@ export default class SVG extends Element {
 
             default:
                 if(svg_properties.includes(property)){
-                    this.updateSVGProperty(property, value);
+                    this.updateSVGProperty(property, value, false);
                 }
-                else{
-                    super.updatePropertyValue(property, value);
-                }
+
+                this.executeInnerUpdate();
         }
     }
 
@@ -159,7 +160,12 @@ export default class SVG extends Element {
     updateSVGProperty(property, value, executeInnerUpdate){
         if(this._loaded){
             this.svg_dom.children(svg_elements.join(',')).forEach((el) => {
-                Dom.css(el, property, value);
+                if(property.indexOf('marker-') === 0){
+                    Dom.css(el, property, !isEmpty(value) ? `url("#${value}")` : null);
+                }
+                else{
+                    Dom.css(el, property, value);
+                }
             });
 
             if(property === 'stroke'){
@@ -187,8 +193,10 @@ export default class SVG extends Element {
 
     executeInnerUpdate(){
         if(this._loaded){
-            if(isFunction(this.svg_dom.update)) {
-                this.svg_dom.update();
+            const svg = this.svg_dom.get(0);
+
+            if(isFunction(svg.update)) {
+                svg.update();
             }
         }
     }

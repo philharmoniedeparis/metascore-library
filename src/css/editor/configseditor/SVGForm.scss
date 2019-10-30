@@ -1,4 +1,15 @@
 @import "../../theme";
 
 :local(.className){
+    .fields{
+        .field{
+            &[data-property*="marker-"]{
+                .input{
+                    select{
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
 }

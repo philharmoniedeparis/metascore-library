@@ -91,8 +91,13 @@ export default class SelectInput extends Input {
      * @return {Dom} The new option
      */
     addOption(value, text, group){
-        return new Dom('<option/>', {'text': text, 'value': value})
+        const option = new Dom('<option/>', {'text': text, 'value': value})
             .appendTo(group ? group : this.native_input);
+
+        // Refresh value
+        this.setValue(this.getValue(), true);
+
+        return option;
     }
 
     /**
