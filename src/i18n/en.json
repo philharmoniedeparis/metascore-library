@@ -178,8 +178,6 @@
 	"editor.contextmenu.add-page-after": "Add a page after",
 	"editor.contextmenu.add-page-before": "Add a page before",
 	"editor.contextmenu.arrange": "Arrange",
-	"editor.contextmenu.arrange-block": "Arrange",
-	"editor.contextmenu.arrange-block.bring-to-front": "Bring to front",
 	"editor.contextmenu.arrange.bring-forward": "Bring forward",
 	"editor.contextmenu.arrange.bring-to-front": "Bring to front",
 	"editor.contextmenu.arrange.send-backward": "Send backward",
