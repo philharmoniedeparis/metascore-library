@@ -129,7 +129,7 @@ export default class Overlay extends Dom {
          * The text container
          * @type {Dom}
          */
-        this.text = new Dom('<div/>', {'class': 'text'})
+        this.text = new Dom('<div/>', {'class': 'text-wrapper'})
             .appendTo(this.contents);
 
         if(this.configs.text){

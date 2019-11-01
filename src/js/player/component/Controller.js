@@ -26,9 +26,6 @@ export default class Controller extends Component{
                 'hidden': {
                     'type': 'boolean'
                 },
-                'scenario': {
-                    'type': 'string'
-                },
                 'x': {
                     'type': 'number'
                 },

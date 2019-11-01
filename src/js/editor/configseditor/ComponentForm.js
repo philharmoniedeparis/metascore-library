@@ -402,18 +402,6 @@ export default class ComponentForm extends Dom {
                     .appendTo(this.fields_wrapper);
                 break;
 
-            case 'scenario':
-                this.fields[name] = new Field(
-                    new SelectInput({
-                        'required': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.scenario.label', 'Scenario')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
             case 'background':
                 this.fields['background-image'] = new Field(
                     new SelectInput(),
@@ -678,22 +666,6 @@ export default class ComponentForm extends Dom {
     toggleMultival(field, toggle){
         field.toggleClass('warning', toggle);
         field.getLabel().attr('title', toggle ? Locale.t('editor.ComponentForm.multivalWarning', 'The value corresponds to that of the first selected component') : null);
-
-        return this;
-    }
-
-    updateScenarioFields(scenarios){
-        if(this.hasField('scenario')){
-            const input = this.getField('scenario').getInput();
-
-            input.clear();
-
-            scenarios.forEach((scenario) => {
-                input.addOption(scenario, scenario);
-            });
-
-            this.updateFieldValue('scenario', true);
-        }
 
         return this;
     }

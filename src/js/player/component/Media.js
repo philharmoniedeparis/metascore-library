@@ -26,9 +26,6 @@ export default class Media extends Component{
                 'hidden': {
                     'type': 'boolean'
                 },
-                'scenario': {
-                    'type': 'string'
-                },
                 'x': {
                     'type': 'number'
                 },
@@ -126,14 +123,14 @@ export default class Media extends Component{
      */
     draw(){
         if(this.isActive()){
-            const video = MasterClock.getRenderer().getDom();
+            const renderer_dom = MasterClock.getRenderer().getDom();
 
-            if(video instanceof HTMLVideoElement){
+            if(renderer_dom instanceof HTMLVideoElement){
                 try{
-                    this.canvas.width = video.videoWidth;
-                    this.canvas.height = video.videoHeight;
+                    this.canvas.width = renderer_dom.videoWidth;
+                    this.canvas.height = renderer_dom.videoHeight;
 
-                    this.context.drawImage(MasterClock.getRenderer().getDom(), 0, 0);
+                    this.context.drawImage(renderer_dom, 0, 0);
                 }
                 catch(e){
                     console.error(e);

@@ -368,21 +368,6 @@ export default class ScenarioSelector extends Dom {
     }
 
     /**
-     * Add multiple scenarios
-     *
-     * @param {Array} scenarios A list of scenarios
-     * @param {Boolean} supressEvent Whether to prevent the scenarioadd event from firing
-     * @return {this}
-     */
-    addScenarios(scenarios, supressEvent){
-        scenarios.forEach((scenario) => {
-            this.addScenario(scenario, supressEvent);
-        });
-
-        return this;
-    }
-
-    /**
      * Rename a scenario
      *
      * @param {String} old_scenario The scenario current name
@@ -411,11 +396,11 @@ export default class ScenarioSelector extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the scenariorename event from firing
      * @return {this}
      */
-    cloneScenario(scenario, clone, supressEvent){
+    cloneScenario(original, clone, supressEvent){
         this.addScenario(clone, true);
 
         if(supressEvent !== true){
-            this.triggerEvent('scenarioclone', {'scenario': scenario, 'clone': clone});
+            this.triggerEvent('scenarioclone', {'original': original, 'clone': clone});
         }
 
         return this;

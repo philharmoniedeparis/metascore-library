@@ -25,9 +25,6 @@ export default class BlockToggler extends Component{
                 'hidden': {
                     'type': 'boolean'
                 },
-                'scenario': {
-                    'type': 'string'
-                },
                 'blocks': {
                     'type': 'array'
                 },

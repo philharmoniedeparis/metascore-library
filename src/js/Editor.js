@@ -509,13 +509,13 @@ export default class Editor extends Dom {
                                 'add-block-synched': {
                                     'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': true}, this.getPlayer());
+                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': true});
                                     }
                                 },
                                 'add-block-non-synched': {
                                     'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': false}, this.getPlayer());
+                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': false});
                                     }
                                 },
                                 'separator': {
@@ -524,19 +524,19 @@ export default class Editor extends Dom {
                                 'add-media': {
                                     'text': Locale.t('editor.contextmenu.add-media', 'Video renderer'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Media'}, this.getPlayer());
+                                        this.addPlayerComponents('block', {'type': 'Media'});
                                     }
                                 },
                                 'add-controller': {
                                     'text': Locale.t('editor.contextmenu.add-controller', 'Controller'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Controller'}, this.getPlayer());
+                                        this.addPlayerComponents('block', {'type': 'Controller'});
                                     }
                                 },
                                 'add-block-toggler': {
                                     'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'BlockToggler'}, this.getPlayer());
+                                        this.addPlayerComponents('block', {'type': 'BlockToggler'});
                                     }
                                 }
                             },
@@ -547,10 +547,12 @@ export default class Editor extends Dom {
                         'select': {
                             'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
                             'callback': () => {
-                                const components = this.getPlayer().getComponents('.block, .media, .controller, .block-toggler');
-                                components.forEach((component, index) => {
-                                    this.configs_editor.setComponent(component, index > 0);
-                                });
+                                const scenario = this.getPlayer().getActiveScenario();
+                                if(scenario){
+                                    scenario.getChildren().forEach((component, index) => {
+                                        this.configs_editor.setComponent(component, index > 0);
+                                    });
+                                }
                             },
                             'toggler': () => {
                                 return this.editing === true;
@@ -595,7 +597,7 @@ export default class Editor extends Dom {
                         'paste': {
                             'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
                             'callback': () => {
-                                this.addPlayerComponents('block', this.clipboard.getData(), this.getPlayer());
+                                this.addPlayerComponents('block', this.clipboard.getData());
                             },
                             'toggler': (context) => {
                                 return this.editing && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
@@ -1097,12 +1099,10 @@ export default class Editor extends Dom {
         const scenario = evt.detail.scenario;
         const player = this.getPlayer();
 
-        player.getScenarios().push(scenario);
+        player.addScenario({'name': scenario});
         player.setActiveScenario(scenario);
 
-        this.updateConfigEditorScenarioFields();
-
-        this.setDirty('scenarios');
+        this.setDirty('components');
     }
 
     /**
@@ -1111,22 +1111,13 @@ export default class Editor extends Dom {
      * @private
      */
     onControllerScenarioRename(evt){
-        const old_scenario = evt.detail.old;
-        const new_scenario = evt.detail.new;
-        const player = this.getPlayer();
-        const scenarios = player.getScenarios();
+        const old_name = evt.detail.old;
+        const new_name = evt.detail.new;
+        const scenario = this.getPlayer().getScenario(old_name);
 
-        const index = scenarios.indexOf(old_scenario);
-        if(index > -1){
-            player.getRootComponents().forEach((component) => {
-                if(component.getPropertyValue('scenario') === old_scenario){
-                    component.setPropertyValue('scenario', new_scenario);
-                }
-            });
-
-            scenarios[index] = new_scenario;
-
-            this.setDirty('scenarios');
+        if(scenario){
+            scenario.setPropertyValue('name', new_name);
+            this.setDirty('components');
         }
     }
 
@@ -1136,23 +1127,20 @@ export default class Editor extends Dom {
      * @private
      */
     onControllerScenarioClone(evt){
-        const scenario = evt.detail.scenario;
+        const original = evt.detail.original;
         const clone = evt.detail.clone;
         const player = this.getPlayer();
-        const scenarios = player.getScenarios();
+        const scenario = player.getScenario(original);
 
-        scenarios.push(clone);
+        if(scenario){
+            const configs = Object.assign(scenario.getPropertyValues(true), {
+                'name': clone
+            });
+            player.addScenario(configs);
+            player.setActiveScenario(clone);
 
-        this.setDirty('scenarios');
-
-        player.setActiveScenario(clone);
-
-        player.getRootComponents().forEach((component) => {
-            if(component.getPropertyValue('scenario') === scenario){
-                const configs = Object.assign({}, component.getPropertyValues(true), {'scenario': clone});
-                this.addPlayerComponents('block', configs, player);
-            }
-        });
+            this.setDirty('components');
+        }
     }
 
     /**
@@ -1161,24 +1149,24 @@ export default class Editor extends Dom {
      * @private
      */
     onControllerScenarioRemove(evt){
-        const scenario = evt.detail.scenario;
+        const name = evt.detail.scenario;
         const player = this.getPlayer();
-        const scenarios = player.getScenarios();
-        const active_scenario = player.getActiveScenario();
+        const scenario = player.getScenario(name);
 
-        scenarios.splice(scenarios.indexOf(scenario), 1);
+        if(scenario){
+            scenario.remove();
 
-        this.setDirty('scenarios');
+            this.history.add({
+                'undo': () => {
+                    player.addScenario(scenario);
+                },
+                'redo': () => {
+                    scenario.remove();
+                }
+            });
 
-        if(scenario === active_scenario){
-            player.setActiveScenario(scenarios[0]);
+            this.setDirty('components');
         }
-
-        player.getRootComponents().forEach((component) => {
-            if(component.getPropertyValue('scenario') === scenario){
-                this.deletePlayerComponents('block', component, false);
-            }
-        });
     }
 
     /**
@@ -1354,10 +1342,20 @@ export default class Editor extends Dom {
      * @private
      */
     onPlayerLoadedMetadata(evt){
-        this.addClass('metadata-loaded');
+        const renderer = evt.detail.renderer;
+        const renderer_dom = renderer.getDom();
 
-        MasterClock.setRenderer(evt.detail.renderer);
+        if(Dom.is(renderer_dom, 'video')){
+            this.asset_browser.getTabContent('component-links').getLink('media').show();
+        }
+        else{
+            this.asset_browser.getTabContent('component-links').getLink('media').hide();
+        }
+
+        MasterClock.setRenderer(renderer);
         MasterClock.setTime(0);
+
+        this.addClass('metadata-loaded');
     }
 
     /**
@@ -1368,28 +1366,24 @@ export default class Editor extends Dom {
      */
     onPlayerScenarioChange(evt){
         const scenario = evt.detail.scenario;
+        const previous = evt.detail.previous;
 
         // Deselect all components
         this.configs_editor.unsetComponents();
 
-        // Update scenario selector
-        this.controller.getScenarioSelector().setActiveScenario(scenario, true);
+        if(previous){
+            // Hide previous scenario in Tinmeline
+            this.controller.getTimeline().getTrack(previous.getId()).hide();
+        }
+        if(scenario){
+            // Show scenario in Tinmeline
+            this.controller.getTimeline().getTrack(scenario.getId()).show();
+            // Update ScenarioSelector
+            this.controller.getScenarioSelector().setActiveScenario(scenario.getName(), true);
+        }
 
         // Update ConfigEditor component fields
         this.updateConfigEditorComponentFields();
-
-        // Update timeline
-        const timeline = this.controller.getTimeline();
-        this.getPlayer().getRootComponents().forEach((component) => {
-            const track = timeline.getTrack(component.getId());
-
-            if(component.getPropertyValue('scenario') === scenario){
-                track.show();
-            }
-            else{
-                track.hide();
-            }
-        });
     }
 
     /**
@@ -1526,18 +1520,18 @@ export default class Editor extends Dom {
 
         // Update the timeline
         const timeline = this.controller.getTimeline();
-        this.player.getRootComponents().forEach((component) => {
+        this.player.getScenarios().forEach((component) => {
             timeline.addTrack(component);
         });
 
         // Update the scenario list
-        this.controller.getScenarioSelector()
-            .clear()
-            .addScenarios(this.player.getScenarios(), true);
+        const scenarioselector = this.controller.getScenarioSelector().clear();
+        this.player.getScenarios().forEach((scenario) => {
+            scenarioselector.addScenario(scenario.getName(), true);
+        });
 
         this
             .updateMainmenu()
-            .updateConfigEditorScenarioFields()
             .updateConfigEditorImageFields()
             .updateConfigEditorComponentFields();
 
@@ -1654,7 +1648,7 @@ export default class Editor extends Dom {
             this.addPlayerComponents('block', Object.assign({
                 'x': evt.clientX,
                 'y': evt.clientY
-            }, configs), this.getPlayer());
+            }, configs));
 
             evt.preventDefault();
 
@@ -2064,24 +2058,6 @@ export default class Editor extends Dom {
     }
 
     /**
-     * Updates ConfigEditor scenario fields options
-     *
-     * @private
-     * @return {this}
-     */
-    updateConfigEditorScenarioFields(){
-        const scenarios = this.getPlayer().getScenarios();
-
-        Object.values(this.configs_editor.getForms()).forEach((form) => {
-            if('updateScenarioFields' in form){
-                form.updateScenarioFields(scenarios);
-            }
-        });
-
-        return this;
-    }
-
-    /**
      * Updates ConfigEditor image fields options
      *
      * @private
@@ -2120,9 +2096,7 @@ export default class Editor extends Dom {
     updateConfigEditorComponentFields(){
         const player = this.getPlayer();
         const scenario = player.getActiveScenario();
-        const components = player.getRootComponents().filter((component) => {
-            return component.getPropertyValue('scenario') === scenario;
-        });
+        const components = scenario ? scenario.getChildren() : [];
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
             if('updateComponentFields' in form){
@@ -2254,7 +2228,7 @@ export default class Editor extends Dom {
      * @private
      * @param {String} type The components' type
      * @param {Mixed} config A config or an array of configs to use when creating the component(s)
-     * @param {Mixed} parent The components' parent
+     * @param {Mixed} [parent] The components' parent
      * @return {this}
      */
     addPlayerComponents(type, config, parent){
@@ -2359,41 +2333,12 @@ export default class Editor extends Dom {
             case 'block': {
                 const scenario = this.getPlayer().getActiveScenario();
                 const configs = isArray(config) ? config : [config];
-                const player = parent || this.player;
                 const components = [];
 
                 configs.forEach((block_config) => {
-                    let component = null;
-
-                    switch(block_config.type){
-                        case 'Media':
-                            component = player.addMedia(Object.assign({
-                                'scenario': scenario,
-                                'name': Locale.t('editor.defaultMediaName', 'untitled')
-                            }, block_config));
-                            break;
-
-                        case 'Controller':
-                            component = player.addController(Object.assign({
-                                'scenario': scenario,
-                                'name': Locale.t('editor.defaultControllerName', 'untitled')
-                            }, block_config));
-                            break;
-
-                        case 'BlockToggler':
-                            component = player.addBlockToggler(Object.assign({
-                                'scenario': scenario,
-                                'name': Locale.t('editor.defaultBlockTogglerName', 'untitled')
-                            }, block_config));
-                            break;
-
-                        default: {
-                            component = player.addBlock(Object.assign({
-                                'scenario': scenario,
-                                'name': Locale.t('editor.defaultBlockName', 'untitled')
-                            }, block_config));
-                        }
-                    }
+                    const component = scenario.addComponent(Object.assign({
+                        'name': Locale.t('editor.addPlayerComponents.block.name', 'untitled')
+                    }, block_config));
 
                     components.push(component);
                 });
@@ -2406,7 +2351,7 @@ export default class Editor extends Dom {
                     },
                     'redo': () => {
                         components.forEach((component) => {
-                            parent[`add${component.getPropertyValue('type')}`](component);
+                            scenario.addComponent(component);
                         });
                     }
                 });
@@ -2706,22 +2651,9 @@ export default class Editor extends Dom {
                     data.set('title', this.mainmenu.getItem('title').getValue());
                 }
 
-                // Add scenarios
-                if(this.isDirty('scenarios')){
-                    const scenarios = player.getScenarios();
-                    if(scenarios.length > 0){
-                        scenarios.forEach((scenario) => {
-                            data.append('scenarios[]', scenario);
-                        });
-                    }
-                    else{
-                        data.set('scenarios', []);
-                    }
-                }
-
                 // Add components
                 if(this.isDirty('components')){
-                    const components = player.getRootComponents();
+                    const components = player.getScenarios();
                     if(components.length > 0){
                         components.forEach((component) => {
                             data.append('components[]', JSON.stringify(component.getPropertyValues()));

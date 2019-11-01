@@ -34,36 +34,7 @@
         }
     }
 
-    &[data-type="Controller"],
-    &[data-type="Media"],
-    &[data-type="BlockToggler"],
-    &[data-type="Block"]{
-        & > .inner .info{
-            background: $block-color;
-        }
-    }
-    &[data-type="Cursor"]{
-        & > .inner .info{
-            background: $cursor-element-color;
-        }
-    }
-    &[data-type="Content"]{
-        & > .inner .info{
-            background: $content-element-color;
-        }
-    }
-    &[data-type="Animation"]{
-        & > .inner .info{
-            background: $animation-element-color;
-        }
-    }
-    &[data-type="SVG"]{
-        & > .inner .info{
-            background: $svg-element-color;
-        }
-    }
-
-    .descendents{
+    > .descendents{
         display: none;
     }
 
@@ -120,6 +91,46 @@
                 top: 100%;
                 margin-top: 1px;
             }
+        }
+    }
+
+    &[data-type="Scenario"]{
+        border-top: 0;
+
+        > .inner{
+            display: none;
+        }
+
+        > .descendents{
+            display: block;
+        }
+    }
+    &[data-type="Controller"],
+    &[data-type="Media"],
+    &[data-type="BlockToggler"],
+    &[data-type="Block"]{
+        & > .inner .info{
+            background: $block-color;
+        }
+    }
+    &[data-type="Cursor"]{
+        & > .inner .info{
+            background: $cursor-element-color;
+        }
+    }
+    &[data-type="Content"]{
+        & > .inner .info{
+            background: $content-element-color;
+        }
+    }
+    &[data-type="Animation"]{
+        & > .inner .info{
+            background: $animation-element-color;
+        }
+    }
+    &[data-type="SVG"]{
+        & > .inner .info{
+            background: $svg-element-color;
         }
     }
 }

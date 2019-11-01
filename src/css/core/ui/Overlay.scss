@@ -14,7 +14,7 @@
 
     > .inner{
         position: relative;
-        background: $mediumgray;
+        background: $lightgray;
 
         > .toolbar{
             display: flex;
@@ -37,7 +37,7 @@
                 text-align: center;
                 padding: 1em;
 
-                .text{
+                .text-wrapper{
                     max-width: 50vw;
                     max-height: 50vh;
                     color: #fff;

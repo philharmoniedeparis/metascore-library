@@ -34,7 +34,6 @@ export default class MediaForm extends ComponentForm {
             'fields': [
                 'name',
                 'hidden',
-                'scenario',
                 'background',
                 'border',
                 'position',

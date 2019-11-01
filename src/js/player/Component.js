@@ -27,44 +27,6 @@ import CuePoint from './CuePoint';
 export default class Component extends Dom {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
-     * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
-     * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
-     * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
-     */
-    constructor(configs) {
-        // call parent constructor
-        super('<div/>', {'class': 'metaScore-component'});
-
-        // Get default configs.
-        const defaults = this.constructor.getDefaults();
-
-        // Add default property values.
-        Object.entries(defaults.properties).forEach(([name, property]) => {
-            if('default' in property){
-                defaults[name] = property.default;
-            }
-        });
-
-        /**
-         * The configuration values
-         * @type {Object}
-         */
-        this.configs = Object.assign({}, defaults, configs);
-
-        /**
-         * The property values store
-         * @type {Object}
-         */
-        this.property_values = {};
-
-        // keep a reference to this class instance in the DOM node
-        this.get(0)._metaScore = this;
-    }
-
-    /**
     * Get the default config values
     *
     * @return {Object} The default values
@@ -127,6 +89,44 @@ export default class Component extends Dom {
         }
 
         return false;
+    }
+
+    /**
+     * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
+     * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
+     * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
+     */
+    constructor(configs) {
+        // call parent constructor
+        super('<div/>', {'class': 'metaScore-component'});
+
+        // Get default configs.
+        const defaults = this.constructor.getDefaults();
+
+        // Add default property values.
+        Object.entries(defaults.properties).forEach(([name, property]) => {
+            if('default' in property){
+                defaults[name] = property.default;
+            }
+        });
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, defaults, configs);
+
+        /**
+         * The property values store
+         * @type {Object}
+         */
+        this.property_values = {};
+
+        // keep a reference to this class instance in the DOM node
+        this.get(0)._metaScore = this;
     }
 
     /**

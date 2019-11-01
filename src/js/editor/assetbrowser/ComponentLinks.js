@@ -11,6 +11,77 @@ import {className} from '../../../css/editor/assetbrowser/ComponentLinks.scss';
 export default class ComponentLinks extends Dom {
 
     /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults() {
+        return {
+            'links': {
+                'media': {
+                    'text': Locale.t('editor.AssetBrowser.create-media.text', 'Create a video renderer'),
+                    'type': 'block',
+                    'configs': {
+                        'type':
+                        'Media'
+                    },
+                    'icon': icons.media
+                },
+                'controller': {
+                    'text': Locale.t('editor.AssetBrowser.create-controller.text', 'Create a controller'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'Controller'
+                    },
+                    'icon': icons.controller
+                },
+                'synced-block': {
+                    'text': Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a synched block'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'Block',
+                        'synched': true
+                    },
+                    'icon': icons.block.synched
+                },
+                'non-synced-block': {
+                    'text': Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a non-synched block'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'Block',
+                        'synched': false
+                    },
+                    'icon': icons.block.non_synched
+                },
+                'page': {
+                    'text': Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'),
+                    'type': 'page',
+                    'configs': {
+                        'position': 'before'
+                    },
+                    'icon': icons.page
+                },
+                'cursor': {
+                    'text': Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'),
+                    'type': 'element',
+                    'configs': {
+                        'type': 'Cursor'
+                    },
+                    'icon': icons.cursor
+                },
+                'content': {
+                    'text': Locale.t('editor.AssetBrowser.create-content-element.text', 'Create a content element'),
+                    'type': 'element',
+                    'configs': {
+                        'type': 'Content'
+                    },
+                    'icon': icons.content
+                }
+            }
+        };
+    }
+
+    /**
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
@@ -28,75 +99,21 @@ export default class ComponentLinks extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        const media_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-media.text', 'Create a video renderer'))
-            .attr('draggable', 'true')
-            .data('type', 'block')
-            .data('configs', JSON.stringify({'type': 'Media'}))
-            .appendTo(this);
+        this.links = {};
 
-        new Icon({'symbol': icons.media})
-            .appendTo(media_link);
+        Object.entries(this.configs.links).forEach(([key, value]) => {
+            const link = new Dom('<a/>', {'class': key})
+                .text(value.text)
+                .attr('draggable', 'true')
+                .data('type', value.type)
+                .data('configs', JSON.stringify(value.configs))
+                .appendTo(this);
 
-        const controller_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-controller.text', 'Create a controller'))
-            .attr('draggable', 'true')
-            .data('type', 'block')
-            .data('configs', JSON.stringify({'type': 'Controller'}))
-            .appendTo(this);
+            new Icon({'symbol': value.icon})
+                .appendTo(link);
 
-        new Icon({'symbol': icons.controller})
-            .appendTo(controller_link);
-
-        const synched_block_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a synched block'))
-            .attr('draggable', 'true')
-            .data('type', 'block')
-            .data('configs', JSON.stringify({'type': 'Block', 'synched': true}))
-            .appendTo(this);
-
-        new Icon({'symbol': icons.block.synched})
-            .appendTo(synched_block_link);
-
-        const non_synched_block_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-non-synced-block.text', 'Create a non-synched block'))
-            .attr('draggable', 'true')
-            .data('type', 'block')
-            .data('configs', JSON.stringify({'type': 'Block', 'synched': false}))
-            .appendTo(this);
-
-        new Icon({'symbol': icons.block.non_synched})
-            .appendTo(non_synched_block_link);
-
-        const page_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'))
-            .attr('draggable', 'true')
-            .data('type', 'page')
-            .data('configs', JSON.stringify({'position': 'before'}))
-            .appendTo(this);
-
-        new Icon({'symbol': icons.page})
-            .appendTo(page_link);
-
-        const cursor_element_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'))
-            .attr('draggable', 'true')
-            .data('type', 'element')
-            .data('configs', JSON.stringify({'type': 'Cursor'}))
-            .appendTo(this);
-
-        new Icon({'symbol': icons.cursor})
-            .appendTo(cursor_element_link);
-
-        const content_element_link = new Dom('<a/>')
-            .text(Locale.t('editor.AssetBrowser.create-content-element.text', 'Create a content element'))
-            .attr('draggable', 'true')
-            .data('type', 'element')
-            .data('configs', JSON.stringify({'type': 'Content'}))
-            .appendTo(this);
-
-        new Icon({'symbol': icons.content})
-            .appendTo(content_element_link);
+            this.links[key] = link;
+        });
 
         this
             .addDelegate('a', 'click', this.onLinkClick.bind(this))
@@ -104,13 +121,8 @@ export default class ComponentLinks extends Dom {
             .addDelegate('a', 'dragend', this.onLinkDragEnd.bind(this));
     }
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {};
+    getLink(id){
+        return this.links[id];
     }
 
     onLinkClick(evt){

@@ -31,9 +31,6 @@ export default class Block extends Component {
                 'hidden': {
                     'type': 'boolean'
                 },
-                'scenario': {
-                    'type': 'string'
-                },
                 'x': {
                     'type': 'number'
                 },
@@ -93,6 +90,25 @@ export default class Block extends Component {
         this.addClass('block');
 
         this.setupUI();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    init(){
+        super.init();
+
+        if(this.getChildrenCount() === 0){
+            // add a page
+            const page_configs = {};
+            if(this.getPropertyValue('synched')){
+                page_configs['start-time'] = 0;
+                page_configs['end-time'] = MasterClock.getRenderer().getDuration();
+            }
+            this.addPage(page_configs);
+        }
+
+        return this;
     }
 
     /**

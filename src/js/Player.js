@@ -8,11 +8,8 @@ import ContextMenu from './core/ui/ContextMenu';
 import Overlay from './core/ui/Overlay';
 import StyleSheet from './core/StyleSheet';
 import CuePoint from './player/CuePoint';
-import Media from './player/component/Media';
-import Controller from './player/component/Controller';
-import BlockToggler from './player/component/BlockToggler';
-import Block from './player/component/Block';
-import {isEmpty} from './core/utils/Var';
+import Component from './player/Component';
+import Scenario from './player/component/Scenario';
 import {getRendererForMime} from './core/utils/Media';
 
 /**
@@ -71,9 +68,6 @@ export default class Player extends Dom {
          * @type {Boolean}
          */
         this.loaded = false;
-
-        this.components_container = new Dom('<div/>', {'class': 'components-container'})
-            .appendTo(this);
 
         if(this.configs.api){
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
@@ -139,7 +133,12 @@ export default class Player extends Dom {
 
         this
             .addListener('childremove', this.onChildRemove.bind(this))
-            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
+            .addListener('.componentadd', this.onComponentAdd.bind(this))
+            .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
+            .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
+            .addDelegate('.metaScore-component.element.Text', 'play', this.onTextElementPlay.bind(this))
+            .addDelegate('.metaScore-component.element.Text', 'page', this.onTextElementPage.bind(this))
+            .addDelegate('.metaScore-component.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
             .appendTo(this.configs.container);
 
         this.triggerEvent('ready', {'player': this}, false, false);
@@ -173,13 +172,13 @@ export default class Player extends Dom {
                 break;
 
             case "ArrowLeft":
-                this.components_container.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
+                this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
                 evt.preventDefault();
                 evt.stopPropagation();
                 break;
 
             case "ArrowRight":
-                this.components_container.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
+                this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
                 evt.preventDefault();
                 evt.stopPropagation();
                 break;
@@ -226,7 +225,7 @@ export default class Player extends Dom {
 
             case 'page':
                 {
-                    const block = this.getComponent(`.block[data-name="${params.block}"]`);
+                    const block = this.getBlockByName(params.block);
                     if(block){
                         block.setActivePage(params.index);
                     }
@@ -236,14 +235,13 @@ export default class Player extends Dom {
             case 'showBlock':
             case 'hideBlock':
             case 'toggleBlock':{
+                const block = this.getBlockByName(params.name);
+
+                if(block){
                 const state = method.replace('Block', '');
                 const show = state === 'toggle' ? void 0 : method !== 'hide';
-
-                this.getComponents('.media.video, .controller, .block').forEach((block) => {
-                    if(block.getName() === params.name){
-                        block.toggleVisibility(show);
-                    }
-                });
+                    block.toggleVisibility(show);
+                }
                 break;
             }
 
@@ -454,6 +452,14 @@ export default class Player extends Dom {
         }
     }
 
+    onComponentAdd(evt){
+        const component = evt.detail.component;
+
+        if(component.instanceOf('BlockToggler')){
+            this.updateBlockToggler(component);
+        }
+    }
+
     /**
      * Element of type Cursor time event callback
      *
@@ -483,7 +489,7 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementPage(evt){
-        const block = this.getComponent(`.block[data-name="${evt.detail.block}"]`);
+        const block = this.getBlockByName(evt.detail.block);
         if(block){
             block.setActivePage(evt.detail.index);
         }
@@ -496,14 +502,13 @@ export default class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTextElementBlockVisibility(evt){
-        const state = evt.detail.action;
-        const show = state === 'toggle' ? void 0 : state !== 'hide';
+        const block = this.getBlockByName(evt.detail.block);
 
-        this.getComponents('.media.video, .controller, .block').forEach((block) => {
-            if(block.getName() === evt.detail.block){
-                block.toggleVisibility(show);
-            }
-        });
+        if(block){
+            const state = evt.detail.action;
+            const show = state === 'toggle' ? void 0 : state !== 'hide';
+            block.toggleVisibility(show);
+        }
     }
 
     /**
@@ -518,7 +523,7 @@ export default class Player extends Dom {
         switch(evt.detail.property){
             case 'hidden':{
                 // Update all BlockTogglers to reflect the change in a component's hidden state.
-                this.components_container.find(`.block-toggler .button[data-component=${component.getId()}]`)
+                this.find(`.block-toggler .button[data-component=${component.getId()}]`)
                     .toggleClass('active', component.getPropertyValue('hidden'));
                 break;
             }
@@ -548,39 +553,43 @@ export default class Player extends Dom {
 
         this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
 
+        // Set media
+        this.setSource(this.data.media);
+
+        // Add components
         this.data.components.forEach((component) => {
             switch(component.type){
-                case 'Media':
-                    this.addMedia(component);
+                case 'Scenario':
+                    this.addScenario(component);
                     break;
-
-                case 'Controller':
-                    this.addController(component);
-                    break;
-
-                case 'BlockToggler':
-                    this.addBlockToggler(component);
-                    break;
-
-                default:
-                    this.addBlock(component);
             }
         });
 
+        // Add keyboard listener
         if(this.configs.keyboard){
             this.addListener('keydown', this.onKeydown.bind(this));
         }
 
-        this
-            .setSource(this.data.media)
-            .updateBlockTogglers()
-            .removeClass('loading');
+        // Set active scenario
+        let scenario = null;
+        const scenarios = this.getScenarios();
+        if(scenarios.length > 0){
+            scenario = scenarios[0];
+        }
+        else{
+            // Add a default scenario if none exist
+            const default_scenario_name = Locale.t('Player.defaultScenarioName', 'Scenario 1');
+            scenario = this.addScenario(default_scenario_name);
+        }
+        this.setActiveScenario(scenario.getName());
+
+        this.updateBlockTogglers();
+
+        this.removeClass('loading');
 
         this.loaded = true;
 
         this.triggerEvent('load', {'player': this, 'data': this.data}, true, false);
-
-        this.setActiveScenario(this.data.scenarios[0]);
     }
 
     /**
@@ -721,202 +730,98 @@ export default class Player extends Dom {
     }
 
     /**
-     * Get a component by CSS selector
-     *
-     * @param {String} selector The CSS selector
-     * @return {Component} The component
-     * TODO: improve
-     */
-    getComponent(selector){
-        const components = this.getComponents(selector);
-        return components[0];
-    }
-
-    /**
-     * Get components by CSS selector
-     *
-     * @param {String} selector The CSS selector
-     * @return {Dom} A Dom instance containing the selected components
-     * TODO: improve
-     */
-    getComponents(selector){
-        let components = this.components_container.find('.metaScore-component');
-
-        if(selector){
-            components = components.filter(selector);
-        }
-
-        return components.elements.map((dom) => dom._metaScore);
-    }
-
-    /**
-     * Get root components by CSS selector
-     *
-     * @param {String} selector The CSS selector
-     * @return {Dom} A Dom instance containing the selected components
-     * TODO: improve
-     */
-    getRootComponents(selector){
-        let components = this.components_container.children('.metaScore-component');
-
-        if(selector){
-            components = components.filter(selector);
-        }
-
-        return components.elements.map((dom) => dom._metaScore);
-    }
-
-    /**
      * Create and add a Media instance
      *
      * @param {Object} configs The configurations to send to the Media class
      * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
      * @return {Media} The Media instance
      */
-    addMedia(configs, supressEvent){
-        let media = configs;
-        const existing = media instanceof Media;
+    addScenario(configs, supressEvent){
+        let component = configs;
+        const existing = component instanceof Component;
 
         if(existing){
-            media.appendTo(this.components_container);
+            component.appendTo(this);
         }
         else{
-            media = new Media(media)
-                .appendTo(this.components_container)
+            component = new Scenario(component)
+                .appendTo(this)
                 .init();
-        }
-
-        if(media.getPropertyValue('scenario') === this.getActiveScenario()){
-            media.activate();
-        }
-        else{
-            media.deactivate();
         }
 
         if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': media, 'new': !existing}, true, false);
+            this.triggerEvent('componentadd', {'component': component, 'new': !existing}, true, false);
         }
 
-        return media;
+        return component;
     }
 
     /**
-     * Create and add a Controller instance
+     * Get the a scenario by name
      *
-     * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
-     * @return {Controller} The Controller instance
+     * @return {String} The scenario
      */
-    addController(configs, supressEvent){
-        let controller = configs;
-        const existing = controller instanceof Controller;
-
-        if(existing){
-            controller.appendTo(this.components_container);
-        }
-        else{
-            controller = new Controller(controller)
-                .addDelegate('.buttons button', 'click', this.onControllerButtonClick.bind(this))
-                .appendTo(this.components_container)
-                .init();
-        }
-
-        if(controller.getPropertyValue('scenario') === this.getActiveScenario()){
-            controller.activate();
-        }
-        else{
-            controller.deactivate();
-        }
-
-        if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': controller, 'new': !existing}, true, false);
-        }
-
-        return controller;
+    getScenario(name){
+        return this.getScenarios().find((scenario) => {
+            return scenario.getName() === name;
+        });
     }
 
     /**
-     * Create and add a Block Toggler instance
+     * Get the list of scenarios
      *
-     * @param {Object} configs The configurations to send to the Controller class
-     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
-     * @return {BlockToggler} The Block Toggler instance
+     * @return {Array} The scenarios
      */
-    addBlockToggler(configs, supressEvent){
-        let block_toggler = configs;
-        const existing = block_toggler instanceof BlockToggler;
+    getScenarios(){
+        const scenarios = [];
 
-        if(existing){
-            block_toggler.appendTo(this.components_container);
-        }
-        else{
-            block_toggler = new BlockToggler(block_toggler)
-                .appendTo(this.components_container)
-                .init();
-        }
+        this.children('.metaScore-component.scenario').forEach((dom) => {
+            scenarios.push(dom._metaScore);
+        });
 
-        this.updateBlockToggler(block_toggler);
-
-        if(block_toggler.getPropertyValue('scenario') === this.getActiveScenario()){
-            block_toggler.activate();
-        }
-        else{
-            block_toggler.deactivate();
-        }
-
-        if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': block_toggler, 'new': !existing}, true, false);
-        }
-
-        return block_toggler;
+        return scenarios;
     }
 
     /**
-     * Create and add a Block instance
+     * Get the active scenario
      *
-     * @param {Object} configs The configurations to send to the Block class
-     * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
-     * @return {Block} The Block instance
+     * @return {String} The scenario
      */
-    addBlock(configs, supressEvent){
-        let block = configs;
-        const existing = block instanceof Block;
+    getActiveScenario(){
+        const scenario = this.child('.scenario.active');
+        return scenario.count() > 0 ? scenario.get(0)._metaScore : null;
+    }
 
-        if(existing){
-            block.appendTo(this.components_container);
-        }
-        else{
-            block = new Block(block)
-                .addDelegate('.element.Cursor', 'time', this.onCursorElementTime.bind(this))
-                .addDelegate('.element.Text', 'play', this.onTextElementPlay.bind(this))
-                .addDelegate('.element.Text', 'page', this.onTextElementPage.bind(this))
-                .addDelegate('.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
-                .appendTo(this.components_container)
-                .init();
-        }
+    /**
+     * Set the current scenario
+     *
+     * @param {String} name The scenario's name
+     * @param {Boolean} [supressEvent=false] Whether to supress the scenariochange event or not
+     * @return {this}
+     */
+    setActiveScenario(name, supressEvent){
+        const scenario = this.getScenario(name);
 
-        if(block.getChildrenCount() === 0){
-            // add a page
-            const page_configs = {};
-            if(block.getPropertyValue('synched')){
-                page_configs['start-time'] = 0;
-                page_configs['end-time'] = this.getRenderer().getDuration();
+        if(scenario){
+            if(!scenario.isActive()){
+                const previous_scenario = this.getActiveScenario();
+
+                if(previous_scenario){
+                    previous_scenario.deactivate();
+                }
+
+                scenario.activate();
+
+                if(supressEvent !== true){
+                    this.triggerEvent('scenariochange', {'player': this, 'scenario': scenario, 'previous': previous_scenario}, true, false);
+                }
             }
-            block.addPage(page_configs);
-        }
-
-        if(block.getPropertyValue('scenario') === this.getActiveScenario()){
-            block.activate();
         }
         else{
-            block.deactivate();
+            console.error(`scenario "${name}" does not exist`);
         }
 
-        if(supressEvent !== true){
-            this.triggerEvent('componentadd', {'component': block, 'new': !existing}, true, false);
-        }
-
-        return block;
+        return this;
     }
 
     /**
@@ -1006,92 +911,58 @@ export default class Player extends Dom {
     }
 
     /**
-     * Get the list of scenarios
+     * Update a block toggler
      *
-     * @return {Array} The scenarios
-     */
-    getScenarios(){
-        return this.getData('scenarios');
-    }
-
-    /**
-     * Get the current scenario
-     *
-     * @return {String} The scenario
-     */
-    getActiveScenario(){
-        return this.scenario;
-    }
-
-    /**
-     * Set the current scenario
-     *
-     * @param {String} scenario The scenario
-     * @param {Boolean} [supressEvent=false] Whether to supress the scenariochange event or not
      * @return {this}
      */
-    setActiveScenario(scenario, supressEvent){
-        if(scenario !== this.scenario){
-            const scenarios = this.getScenarios();
-
-            if(!scenarios.includes(scenario)){
-                console.error(`scenario "${scenario}" does not exist`);
-            }
-            else{
-                this.scenario = scenario;
-
-                this.getRootComponents().forEach((component) => {
-                    if(component.getPropertyValue('scenario') === this.scenario){
-                        component.activate();
-                    }
-                    else{
-                        component.deactivate();
-                    }
-                });
-
-                if(supressEvent !== true){
-                    this.triggerEvent('scenariochange', {'player': this, 'scenario': this.scenario}, true, false);
-                }
-            }
-        }
-
-        return this;
-    }
-
-    /**
-    * Update a block toggler
-    *
-    * @return {this}
-    */
     updateBlockToggler(block_toggler) {
-        let blocks = [];
         const ids = block_toggler.getPropertyValue('blocks');
-
-        if(ids === null){
-            // If ids is not an array, return all blocks for backwards compatibility.
-            // See BlockToggler's blocks property
-            blocks = this.getComponents('.block, .controller, .media.video');
-        }
-        else if(!isEmpty(ids)){
-            blocks = this.getComponents(`#${ids.join(', #')}`);
-        }
-
-        block_toggler.update(blocks);
-
-        return this;
-    }
-
-    /**
-    * Update all block togglers
-    *
-    * @return {this}
-    */
-    updateBlockTogglers() {
-        this.getComponents('.block-toggler').forEach((block_toggler) => {
-            this.updateBlockToggler(block_toggler);
+        const scenario = block_toggler.getParent();
+        const components = scenario.getChildren().filter((component) => {
+            return ids.includes(component.getId());
         });
 
+        block_toggler.update(components);
+
         return this;
+    }
+
+    /**
+     * Update all block togglers
+     *
+     * @return {this}
+     */
+    updateBlockTogglers() {
+        const scenario = this.getActiveScenario();
+
+        if(scenario){
+            scenario.getChildren()
+                .filter((component) => {
+                    return component.instanceOf('BlockToggler');
+                }).forEach((block_toggler) => {
+                    this.updateBlockToggler(block_toggler);
+                });
+        }
+
+        return this;
+    }
+
+    /**
+     * Get a block by name
+     *
+     * @param {String} name The block's name
+     * @param {Scenario} [scenario] The scenario to which the block belongs
+     * @return {Component} The block, or null if not found
+     */
+    getBlockByName(name, scenario){
+        const _scenario = scenario ? scenario : this.getActiveScenario();
+        if(_scenario){
+            return _scenario.getChildren().find((child) => {
+                return child.getName() === name;
+            });
+        }
+
+        return null;
     }
 
 }
