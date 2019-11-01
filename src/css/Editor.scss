@@ -204,11 +204,11 @@
             }
 
             &.bottom-pane{
-                height: auto;
+                height: auto !important;
                 min-height: 0;
 
                 > .resize-handle{
-                    display: none;
+                    pointer-events: none;
                 }
 
                 .controller{

@@ -3,16 +3,28 @@
 :local(.className){
     display: flex;
     padding: 0 1em;
-    align-items: stretch;
+    justify-content: space-between;
+    align-items: center;
 
     *{
         color: #fff;
     }
 
+    > .left,
+    > .right{
+        flex: 1 1 50%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    > .right{
+        justify-content: flex-end;
+    }
+
     .logo{
-        width: 5em;
+        flex: 0 0 5em;
         height: 100%;
-        margin-right: 2em;
     }
 
     button{
@@ -24,7 +36,7 @@
         }
 
         &[data-action="save"]{
-            margin-right: 2em;
+            margin: 0 2em;
         }
 
         &[data-action="redo"]{
@@ -58,7 +70,6 @@
     }
 
     .input.title{
-        margin-right: auto;
         padding: 0.5em 0;
 
         input{
@@ -73,7 +84,7 @@
     }
 
     .input.preview-toggle{
-        margin-right: auto;
+        margin: 0 1em;
 
         .state{
             label{
