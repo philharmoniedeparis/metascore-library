@@ -99,7 +99,8 @@ export default class GuideAssets extends Dom {
                 'allowed_types': null,
             },
             'spectrogram_form': {
-                'url': null
+                'url': null,
+                'configs': {}
             },
             'xhr': {}
         };
@@ -421,10 +422,10 @@ export default class GuideAssets extends Dom {
         switch(action){
             case 'spectrogram':
                 {
-                    const form = new SpectrogramForm(Object.assign({
+                    const form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
                             'parent': '.metaScore-editor',
                             'xhr': this.configs.xhr
-                        }, this.configs.spectrogram_form));
+                        }, this.configs.spectrogram_form.configs));
 
                     form.addListener('generate', this.onSpectrogramFormGenerate.bind(this));
 

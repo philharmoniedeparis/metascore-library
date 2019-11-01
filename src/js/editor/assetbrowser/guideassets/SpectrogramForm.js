@@ -19,14 +19,16 @@ export default class SpectrogramForm extends Overlay {
     /**
      * Instantiate
      *
+     * @param {String} url The url of the rest endpoint
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
      * @property {String} [title='Generate a spectrogram image'] The overlay's title
      */
-    constructor(configs) {
+    constructor(url, configs) {
         // call parent constructor
         super(configs);
+
+        this.url = url;
 
         this.addClass(`spectrogram-form ${className}`);
     }
@@ -39,7 +41,7 @@ export default class SpectrogramForm extends Overlay {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'toolbar': true,
-            'title': Locale.t('editor.assetbrowser..guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
+            'title': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
             'url': null,
             'xhr': {}
         });
@@ -338,8 +340,8 @@ export default class SpectrogramForm extends Overlay {
             .data('opt', 'win_func')
             .appendTo(algorithm_fieldset);
 
-        this.addButton('apply', 'Generate');
-        this.addButton('cancel', 'Cancel');
+        this.addButton('apply', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.buttons.apply.label', 'Generate'));
+        this.addButton('cancel', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.buttons.cancel.label', 'Cancel'));
     }
 
     /**
@@ -387,7 +389,7 @@ export default class SpectrogramForm extends Overlay {
             'onError': this.onXHRError.bind(this, loadmask)
         });
 
-        Ajax.POST(this.configs.url, options);
+        Ajax.POST(this.url, options);
     }
 
     /**

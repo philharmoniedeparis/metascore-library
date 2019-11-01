@@ -15,19 +15,28 @@
 
         .tabs{
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            flex: 0 0 auto;
             width: 100%;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            flex: 0 0 auto;
 
             button{
                 flex: 1 1 auto;
-                padding: 0.25em;
+                padding: 0.25em 0.5em;
                 color: #fff;
                 background: $mediumgray;
                 line-height: 2em;
                 user-select: none;
+                overflow: hidden;
                 opacity: 1;
+
+                .label{
+                    width: 100%;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    user-select: none;
+                }
 
                 &[data-for="component-links"],
                 &[data-for="guide-assets"]{
