@@ -9,7 +9,7 @@ import TimeInput from '../../core/ui/input/TimeInput';
 import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
 
 /**
- * A media component form class
+ * An animation component form class
  */
 export default class AnimationForm extends ElementForm {
 

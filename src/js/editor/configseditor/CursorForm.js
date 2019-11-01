@@ -12,7 +12,7 @@ import CursorKeyframesEditor from './CursorKeyframesEditor';
 import {className} from '../../../css/editor/configseditor/CursorForm.scss';
 
 /**
- * A media component form class
+ * A cursor component form class
  */
 export default class CursorForm extends ElementForm {
 

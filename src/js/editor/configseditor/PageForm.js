@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {className} from '../../../css/editor/configseditor/PageForm.scss';
 
 /**
- * A media component form class
+ * A page component form class
  */
 export default class PageForm extends ComponentForm {
 

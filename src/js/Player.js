@@ -331,7 +331,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media sourceset event callback
+     * Renderer sourceset event callback
      *
      * @private
      */
@@ -340,7 +340,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media waiting event callback
+     * Renderer waiting event callback
      *
      * @private
      */
@@ -349,7 +349,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media seeking event callback
+     * Renderer seeking event callback
      *
      * @private
      */
@@ -358,7 +358,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media seeked event callback
+     * Renderer seeked event callback
      *
      * @private
      */
@@ -367,7 +367,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media playing event callback
+     * Renderer playing event callback
      *
      * @private
      */
@@ -376,7 +376,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media play event callback
+     * Renderer play event callback
      *
      * @private
      */
@@ -385,7 +385,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media pause event callback
+     * Renderer pause event callback
      *
      * @private
      */
@@ -394,7 +394,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media suspend event callback
+     * Renderer suspend event callback
      *
      * @private
      */
@@ -403,7 +403,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media suspend event callback
+     * Renderer suspend event callback
      *
      * @private
      */
@@ -412,7 +412,7 @@ export default class Player extends Dom {
     }
 
     /**
-     * Media error event callback
+     * Renderer error event callback
      *
      * @private
      * @param {Event} evt The event object
@@ -730,11 +730,11 @@ export default class Player extends Dom {
     }
 
     /**
-     * Create and add a Media instance
+     * Add a Scenario component
      *
-     * @param {Object} configs The configurations to send to the Media class
+     * @param {Object} configs The configurations to send to the Scenario class
      * @param {Boolean} [supressEvent=false] Whether to supress the componentadd event or not
-     * @return {Media} The Media instance
+     * @return {Scenario} The component
      */
     addScenario(configs, supressEvent){
         let component = configs;

@@ -9,7 +9,7 @@ import Dom from '../../core/Dom';
 import {className} from '../../../css/editor/configseditor/SVGForm.scss';
 
 /**
- * A media component form class
+ * An svg component form class
  */
 export default class SVGForm extends ElementForm {
 

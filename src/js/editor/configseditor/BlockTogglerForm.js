@@ -6,7 +6,7 @@ import SelectInput from '../../core/ui/input/SelectInput';
 import {className} from '../../../css/editor/configseditor/BlockTogglerForm.scss';
 
 /**
- * A media component form class
+ * A block toggler component form class
  */
 export default class BlockTogglerForm extends BlockForm {
 

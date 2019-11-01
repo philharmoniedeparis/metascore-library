@@ -4,7 +4,7 @@ import Locale from '../../core/Locale';
 import {className} from '../../../css/editor/configseditor/BlockForm.scss';
 
 /**
- * A media component form class
+ * A block component form class
  */
 export default class BlockForm extends ComponentForm {
 

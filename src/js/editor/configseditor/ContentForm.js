@@ -6,7 +6,7 @@ import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import {className} from '../../../css/editor/configseditor/ContentForm.scss';
 
 /**
- * A media component form class
+ * A content component form class
  */
 export default class ContentForm extends ElementForm {
 
