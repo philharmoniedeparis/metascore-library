@@ -4,6 +4,7 @@ import Locale from '../../core/Locale';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
+import MediaElement from './element/Media';
 import SVGElement from './element/SVG';
 import AnimationElement from './element/Animation';
 
@@ -14,8 +15,9 @@ import AnimationElement from './element/Animation';
 const ELEMENT_TYPES = {
     'Cursor': CursorElement,
     'Content': ContentElement,
+    'Media': MediaElement,
     'SVG': SVGElement,
-    'Animation': AnimationElement,
+    'Animation': AnimationElement
 };
 
 /**

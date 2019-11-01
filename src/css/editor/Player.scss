@@ -3,6 +3,13 @@
 $selected-shadow: 0 0 0.5em 0;
 
 .metaScore-player{
+    .draggable{
+        &.drag-handle,
+        .drag-handle{
+            cursor: default;
+        }
+    }
+
     .resizable{
         .resize-handle{
             display: none;
@@ -66,14 +73,37 @@ $selected-shadow: 0 0 0.5em 0;
 
                 &.Content{
                     outline-color: $content-element-color;
+
+                    .contents{
+                        user-select: none;
+
+                        a{
+                            pointer-events: none;
+                        }
+                    }
+
+                    &.text-unlocked{
+                        .contents{
+                            visibility: visible;
+                            pointer-events: auto;
+                            user-select: auto;
+                        }
+                    }
                 }
 
-                &.Animation{
-                    outline-color: $animation-element-color;
+                &.Media{
+                    audio,
+                    video{
+                        pointer-events: none;
+                    }
                 }
 
                 &.SVG{
                     outline-color: $svg-element-color;
+                }
+
+                &.Animation{
+                    outline-color: $animation-element-color;
                 }
 
                 &.selected{
@@ -99,30 +129,16 @@ $selected-shadow: 0 0 0.5em 0;
                         }
                     }
 
-                    &.Animation{
-                        box-shadow: $animation-element-color $selected-shadow;
+                    &.Media{
+                        box-shadow: $media-element-color $selected-shadow;
                     }
 
                     &.SVG{
                         box-shadow: $svg-element-color $selected-shadow;
                     }
-                }
 
-                &.Content{
-                    .contents{
-                        user-select: none;
-
-                        a{
-                            pointer-events: none;
-                        }
-                    }
-
-                    &.text-unlocked{
-                        .contents{
-                            visibility: visible;
-                            pointer-events: auto;
-                            user-select: auto;
-                        }
+                    &.Animation{
+                        box-shadow: $animation-element-color $selected-shadow;
                     }
                 }
             }

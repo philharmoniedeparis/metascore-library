@@ -1708,31 +1708,48 @@ export default class Editor extends Dom {
                 if('shared' in asset && asset.shared){
                     switch(asset.type){
                         case 'image':
-                            configs.type = 'Content';
-                            configs['background-image'] = asset.file.url;
-                            if(asset.file.width){
-                                configs.width = asset.file.width;
-                            }
-                            if(asset.file.height){
-                                configs.height = asset.file.height;
-                            }
+                            Object.assign(configs, {
+                                'type': 'Content',
+                                'background-image': asset.file.url,
+                                'width': asset.file.width,
+                                'height': asset.file.height
+                            });
                             break;
 
                         case 'lottie_animation':
                         case 'svg':
-                            configs.type = asset.type === 'svg' ? 'SVG' : 'Animation';
-                            configs.src = asset.file.url;
+                            Object.assign(configs, {
+                                'type': asset.type === 'svg' ? 'SVG' : 'Animation',
+                                'src': asset.file.url
+                            });
                             break;
                     }
                 }
                 else{
-                    configs.type = 'Content';
-                    configs['background-image'] = asset.url;
-                    if(asset.width){
-                        configs.width = asset.width;
+                    const matches = /^(image|audio|video)\/.*/.exec(asset.mimetype);
+                    if(matches){
+                        switch(matches[1]){
+                            case 'image':
+                                Object.assign(configs, {
+                                    'type': 'Content',
+                                    'background-image': asset.url,
+                                    'width': asset.width,
+                                    'height': asset.height
+                                });
+                                break;
+
+                            case 'audio':
+                            case 'video':
+                                Object.assign(configs, {
+                                    'type': 'Media',
+                                    'tag': matches[1],
+                                    'src': asset.url,
+                                    'width': asset.width,
+                                    'height': asset.height
+                                });
+                                console.log(configs);
+                                break;
                         }
-                    if(asset.height){
-                        configs.height = asset.height;
                     }
                 }
 
