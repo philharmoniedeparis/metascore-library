@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import {isArray} from '../core/utils/Var';
 import ComponentForm from './configseditor/ComponentForm';
-import MediaForm from './configseditor/MediaForm';
+import VideoRendererForm from './configseditor/VideoRendererForm';
 import ControllerForm from './configseditor/ControllerForm';
 import BlockForm from './configseditor/BlockForm';
 import BlockTogglerForm from './configseditor/BlockTogglerForm';
@@ -55,7 +55,7 @@ export default class ConfigsEditor extends Dom {
          */
         this.forms = {
             'Component': new ComponentForm(),
-            'Media': new MediaForm(),
+            'VideoRenderer': new VideoRendererForm(),
             'Controller': new ControllerForm(),
             'Block': new BlockForm(),
             'BlockToggler': new BlockTogglerForm(),

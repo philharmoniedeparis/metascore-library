@@ -1,12 +1,12 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
 
-import {className} from '../../../css/editor/configseditor/MediaForm.scss';
+import {className} from '../../../css/editor/configseditor/VideoRendererForm.scss';
 
 /**
- * A media component form class
+ * A video renderer component form class
  */
-export default class MediaForm extends ComponentForm {
+export default class VideoRendererForm extends ComponentForm {
 
     /**
      * Instantiate
@@ -17,7 +17,7 @@ export default class MediaForm extends ComponentForm {
         // call parent constructor
         super(configs);
 
-        this.addClass(`media-form ${className}`);
+        this.addClass(`video-renderer-form ${className}`);
     }
 
     /**
@@ -29,8 +29,8 @@ export default class MediaForm extends ComponentForm {
         const defaults = super.getDefaults();
 
         return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.MediaForm.title.single', 'Attributes of media'),
-            'title_plural': Locale.t('editor.configseditor.MediaForm.title.plural', 'Attributes of @count media'),
+            'title': Locale.t('editor.configseditor.VideoRendererForm.title.single', 'Attributes of video renderer'),
+            'title_plural': Locale.t('editor.configseditor.VideoRendererForm.title.plural', 'Attributes of @count video renderers'),
             'fields': [
                 'name',
                 'hidden',

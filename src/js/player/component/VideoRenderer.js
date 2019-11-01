@@ -3,9 +3,9 @@ import Dom from '../../core/Dom';
 import {MasterClock} from '../../core/media/Clock';
 
 /**
- * A media component
+ * A video renderer component
  */
-export default class Media extends Component{
+export default class VideoRenderer extends Component{
 
     /**
     * Get the default config values
@@ -63,7 +63,7 @@ export default class Media extends Component{
         // call parent constructor
         super(configs);
 
-        this.addClass('media');
+        this.addClass('video-renderer');
 
         this.setupUI();
     }

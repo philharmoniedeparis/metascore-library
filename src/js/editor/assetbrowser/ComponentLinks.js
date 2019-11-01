@@ -18,14 +18,14 @@ export default class ComponentLinks extends Dom {
     static getDefaults() {
         return {
             'links': {
-                'media': {
-                    'text': Locale.t('editor.AssetBrowser.create-media.text', 'Create a video renderer'),
+                'video-renderer': {
+                    'text': Locale.t('editor.AssetBrowser.create-video-renderer.text', 'Create a video renderer'),
                     'type': 'block',
                     'configs': {
                         'type':
-                        'Media'
+                        'VideoRenderer'
                     },
-                    'icon': icons.media
+                    'icon': icons.videorenderer
                 },
                 'controller': {
                     'text': Locale.t('editor.AssetBrowser.create-controller.text', 'Create a controller'),
@@ -45,7 +45,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.block.synched
                 },
                 'non-synced-block': {
-                    'text': Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a non-synched block'),
+                    'text': Locale.t('editor.AssetBrowser.create-non-synced-block.text', 'Create a non-synched block'),
                     'type': 'block',
                     'configs': {
                         'type': 'Block',

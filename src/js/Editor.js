@@ -521,10 +521,10 @@ export default class Editor extends Dom {
                                 'separator': {
                                     'class': 'separator'
                                 },
-                                'add-media': {
-                                    'text': Locale.t('editor.contextmenu.add-media', 'Video renderer'),
+                                'add-video-renderer': {
+                                    'text': Locale.t('editor.contextmenu.add-video-renderer', 'Video renderer'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Media'});
+                                        this.addPlayerComponents('block', {'type': 'VideoRenderer'});
                                     }
                                 },
                                 'add-controller': {
@@ -579,13 +579,13 @@ export default class Editor extends Dom {
                             },
                             'toggler': (context) => {
                                 if(this.editing){
-                                    const blocks = this.configs_editor.getComponents(['Block', 'Media', 'Controller', 'BlockToggler']);
+                                    const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
                                     if(blocks.length > 0){
                                         context.data.selected = true;
                                         context.data.blocks = blocks;
                                         return true;
                                     }
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom){
                                         context.data.blocks = [dom._metaScore];
                                         return true;
@@ -615,13 +615,13 @@ export default class Editor extends Dom {
                             },
                             'toggler': (context) => {
                                 if(this.editing){
-                                    const blocks = this.configs_editor.getComponents(['Block', 'Media', 'Controller', 'BlockToggler']);
+                                    const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
                                     if(blocks.length > 0){
                                         context.data.selected = true;
                                         context.data.blocks = blocks;
                                         return true;
                                     }
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom){
                                         context.data.blocks = [dom._metaScore];
                                         return true;
@@ -637,7 +637,7 @@ export default class Editor extends Dom {
                             },
                             'toggler': (context) => {
                                 if(this.editing){
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom && !dom._metaScore.getPropertyValue('locked')){
                                         context.data.block = dom._metaScore;
                                         return true;
@@ -653,7 +653,7 @@ export default class Editor extends Dom {
                             },
                             'toggler': (context) => {
                                 if(this.editing){
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom && !dom._metaScore.getPropertyValue('locked')){
                                         context.data.block = dom._metaScore;
                                         return true;
@@ -674,7 +674,7 @@ export default class Editor extends Dom {
                                     },
                                     'toggler': (context) => {
                                         if(this.editing){
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
                                                 context.data.block = dom._metaScore;
                                                 return true;
@@ -692,7 +692,7 @@ export default class Editor extends Dom {
                                     },
                                     'toggler': (context) => {
                                         if(this.editing){
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
                                                 context.data.block = dom._metaScore;
                                                 return true;
@@ -713,7 +713,7 @@ export default class Editor extends Dom {
                                     },
                                     'toggler': (context) => {
                                         if(this.editing){
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
                                                 context.data.block = dom._metaScore;
                                                 return true;
@@ -734,7 +734,7 @@ export default class Editor extends Dom {
                                     },
                                     'toggler': (context) => {
                                         if(this.editing){
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
                                                 context.data.block = dom._metaScore;
                                                 return true;
@@ -746,7 +746,7 @@ export default class Editor extends Dom {
                             },
                             'toggler': (context) => {
                                 if(this.editing){
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.media, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom){
                                         return true;
                                     }
@@ -1344,12 +1344,15 @@ export default class Editor extends Dom {
     onPlayerLoadedMetadata(evt){
         const renderer = evt.detail.renderer;
         const renderer_dom = renderer.getDom();
+        const link = this.asset_browser.getTabContent('component-links').getLink('video-renderer');
 
-        if(Dom.is(renderer_dom, 'video')){
-            this.asset_browser.getTabContent('component-links').getLink('media').show();
-        }
-        else{
-            this.asset_browser.getTabContent('component-links').getLink('media').hide();
+        if(link){
+            if(Dom.is(renderer_dom, 'video')){
+                link.show();
+            }
+            else{
+                link.hide();
+            }
         }
 
         MasterClock.setRenderer(renderer);
@@ -1396,7 +1399,7 @@ export default class Editor extends Dom {
 
         this.controller.getTimeline().addTrack(component);
 
-        if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
+        if(component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')){
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1418,7 +1421,7 @@ export default class Editor extends Dom {
 
         this.controller.getTimeline().removeTrack(component);
 
-        if(component.instanceOf('Block') || component.instanceOf('Media') || component.instanceOf('Controller')){
+        if(component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')){
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1727,7 +1730,7 @@ export default class Editor extends Dom {
                     configs['background-image'] = asset.url;
                     if(asset.width){
                         configs.width = asset.width;
-                    }
+                        }
                     if(asset.height){
                         configs.height = asset.height;
                     }
@@ -1784,7 +1787,7 @@ export default class Editor extends Dom {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        if(component.instanceOf('Media') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
+        if(component.instanceOf('VideoRenderer') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
             if(['x', 'y', 'width', 'height', 'blocks'].includes(property)){
                 this.getPlayer().updateBlockTogglers();
             }

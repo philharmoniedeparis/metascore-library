@@ -1,12 +1,12 @@
 import Component from '../Component';
-import Media from './Media';
+import VideoRenderer from './VideoRenderer';
 import Controller from './Controller';
 import Block from './Block';
 import BlockToggler from './BlockToggler';
 import {isNumber} from '../../core/utils/Var';
 
 const component_types = {
-    'Media': Media,
+    'VideoRenderer': VideoRenderer,
     'Controller': Controller,
     'Block': Block,
     'BlockToggler': BlockToggler
