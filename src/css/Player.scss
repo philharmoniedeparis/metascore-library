@@ -365,6 +365,16 @@ body{
                         object-fit: contain;
                     }
                 }
+
+                &[data-type="audio"]{
+                    width: 100px;
+                    height: 40px;
+                }
+
+                &[data-type="video"]{
+                    width: 320px;
+                    height: 180px;
+                }
             }
 
             &.SVG{

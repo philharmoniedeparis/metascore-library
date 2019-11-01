@@ -46,6 +46,8 @@ export default class Media extends Element{
                     this.media.remove();
                 }
 
+                this.data('type', value);
+
                 this.media = new Dom(`<${value}/>`)
                     .attr('controls', '')
                     .attr('src', this.getPropertyValue('src'))

@@ -1728,7 +1728,8 @@ export default class Editor extends Dom {
                 else{
                     const matches = /^(image|audio|video)\/.*/.exec(asset.mimetype);
                     if(matches){
-                        switch(matches[1]){
+                        const type = matches[1];
+                        switch(type){
                             case 'image':
                                 Object.assign(configs, {
                                     'type': 'Content',
@@ -1742,7 +1743,7 @@ export default class Editor extends Dom {
                             case 'video':
                                 Object.assign(configs, {
                                     'type': 'Media',
-                                    'tag': matches[1],
+                                    'tag': type,
                                     'src': asset.url,
                                     'width': asset.width,
                                     'height': asset.height

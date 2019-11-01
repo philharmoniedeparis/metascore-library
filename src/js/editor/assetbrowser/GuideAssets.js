@@ -15,6 +15,8 @@ import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
 import spectrogram_icon from '../../../img/editor/assetbrowser/guideassets/spectrogram.svg?svg-sprite';
 import image_icon from '../../../img/editor/assetbrowser/guideassets/image.svg?svg-sprite';
+import audio_icon from '../../../img/editor/assetbrowser/guideassets/audio.svg?svg-sprite';
+import video_icon from '../../../img/editor/assetbrowser/guideassets/video.svg?svg-sprite';
 
 import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
@@ -264,13 +266,26 @@ export default class GuideAssets extends Dom {
         if('shared' in asset && asset.shared){
             file = asset.file;
         }
-        if(/^image\/.*/.test(file.mimetype)){
-            new Dom('<img/>', {'src': file.url})
-                .appendTo(figure);
+
+        const matches = /^(audio|video)\/.*/.exec(file.mimetype);
+        if(matches){
+            const type = matches[1];
+            switch(type){
+                case 'image':
+                    new Dom('<img/>', {'src': file.url}).appendTo(figure);
+                    break;
+
+                case 'audio':
+                    new Icon({'symbol': audio_icon}).appendTo(figure);
+                    break;
+
+                case 'video':
+                    new Icon({'symbol': video_icon}).appendTo(figure);
+                    break;
+            }
         }
         else{
-            new Icon({'symbol': image_icon})
-                .appendTo(figure);
+            new Icon({'symbol': image_icon}).appendTo(figure);
         }
 
         new Dom('<div/>', {'class': 'label', 'text': asset.name, 'title': asset.name})

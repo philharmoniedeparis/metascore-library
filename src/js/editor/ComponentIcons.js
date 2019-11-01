@@ -7,6 +7,8 @@ import block__non_synched_icon from '../../img/editor/componenticons/block--non-
 import page_icon from '../../img/editor/componenticons/page.svg?svg-sprite';
 import content_icon from '../../img/editor/componenticons/content.svg?svg-sprite';
 import cursor_icon from '../../img/editor/componenticons/cursor.svg?svg-sprite';
+import media__audio_icon from '../../img/editor/componenticons/media--audio.svg?svg-sprite';
+import media__video_icon from '../../img/editor/componenticons/media--video.svg?svg-sprite';
 import svg_icon from '../../img/editor/componenticons/svg.svg?svg-sprite';
 
 export const videorenderer = videorenderer_icon;
@@ -25,5 +27,10 @@ export const page = page_icon;
 export const content = content_icon;
 
 export const cursor = cursor_icon;
+
+export const media = {
+    'audio': media__audio_icon,
+    'video': media__video_icon
+};
 
 export const svg = svg_icon;

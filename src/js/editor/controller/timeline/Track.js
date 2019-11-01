@@ -52,12 +52,11 @@ export default class Track extends Dom {
         let icon = null;
         switch(component_type){
             case 'Block':
-                if(component.getPropertyValue('synched')){
-                    icon = icons.block.synched;
-                }
-                else{
-                    icon = icons.block.non_synched;
-                }
+                icon = icons.block[component.getPropertyValue('synched') ? 'synched' : 'non_synched'];
+                break;
+
+            case 'Media':
+                icon = icons.media[component.getPropertyValue('tag')];
                 break;
 
             default:
