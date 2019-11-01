@@ -234,11 +234,6 @@ export default class Component extends Dom {
                 if(name in this.property_values){
                     return this.property_values[name];
                 }
-
-                // Return the default value
-                if('default' in prop){
-                    return prop.default;
-                }
             }
         }
 
