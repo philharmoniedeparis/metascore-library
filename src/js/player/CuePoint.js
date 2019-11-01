@@ -109,12 +109,12 @@ export default class CuePoint extends EventEmitter{
             this.previous_time = time;
         }
 
-        if((time < this.configs.inTime) || (time > this.configs.outTime)){
-            this.triggerEvent('seekout');
-            this.stop();
+        if(((this.configs.inTime === null) || (time >= this.configs.inTime)) && ((this.configs.outTime === null) || (time < this.configs.outTime))){
+            this.update();
         }
         else{
-            this.update();
+            this.triggerEvent('seekout');
+            this.stop();
         }
     }
 
