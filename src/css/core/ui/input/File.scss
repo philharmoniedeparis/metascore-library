@@ -1,0 +1,43 @@
+@import "../../../theme";
+
+:local(.className){
+    input{
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+
+        & + label {
+            padding: 0.25em 0.5em;
+            color: #fff;
+            background: $mediumgray;
+            border-radius: 0.25em;
+
+            &:focus {
+                box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+                outline: none;
+            }
+
+            padding: 0 0.5em;
+            color: white;
+            background-color: $mediumgray;
+            cursor: pointer;
+
+            * {
+                pointer-events: none;
+            }
+
+            &:hover{
+                background-color: $darkgray;
+            }
+        }
+
+        &:focus + label,
+        &.has-focus + label{
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+            outline: none;
+        }
+    }
+}

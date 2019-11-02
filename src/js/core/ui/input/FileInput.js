@@ -1,5 +1,8 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Locale from '../../Locale';
+
+import {className} from '../../../../css/core/ui/input/File.scss';
 
 /**
  * A file input based on an HTML input[type=file] element
@@ -16,7 +19,7 @@ export default class FileInput extends Input {
         // call parent constructor
         super(configs);
 
-        this.addClass('file');
+        this.addClass(`file ${className}`);
     }
 
     /**
@@ -27,7 +30,9 @@ export default class FileInput extends Input {
     static getDefaults(){
         return Object.assign({}, super.getDefaults(), {
             'multiple': false,
-            'accept': null
+            'accept': null,
+            'emptyLabel': Locale.t('core.input.FileInput.emptyLabel', 'Select a file...'),
+            'multipleLabel': Locale.t('core.input.FileInput.multipleLabel', '%count files selected'),
         });
     }
 
@@ -45,6 +50,11 @@ export default class FileInput extends Input {
             .attr('multiple', this.configs.multiple ? 'multiple' : null)
             .attr('accept', this.configs.accept ? this.configs.accept : null)
             .addListener('change', this.onChange.bind(this))
+            .addListener('focus', this.onFocus.bind(this))
+            .addListener('blur', this.onBlur.bind(this))
+            .appendTo(this);
+
+        this.label = new Dom('<label/>', {'for': id, 'text': this.configs.emptyLabel})
             .appendTo(this);
     }
 
@@ -64,7 +74,38 @@ export default class FileInput extends Input {
          */
         this.value = this.native_input.val();
 
+        // Update the label text
+        let label_text = this.configs.emptyLabel;
+        if(this.files && this.files.length > 0){
+            if(this.files.length > 1){
+                label_text = Locale.formatString(this.configs.multipleLabel, {'%count': this.files.length});
+            }
+            else{
+                label_text = this.files.item(0).name;
+            }
+        }
+        this.label.text(label_text);
+
         this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'files': this.files}, true, false);
+    }
+
+    /**
+     * The focus event handler
+     *
+     * @private
+     */
+    onFocus(){
+        // CSS input[type="file"]:focus doesn't work in some browsers (namely FireFox)
+        this.native_input.addClass('has-focus');
+    }
+
+    /**
+     * The blur event handler
+     *
+     * @private
+     */
+    onBlur(){
+        this.native_input.removeClass('has-focus');
     }
 
     /**
