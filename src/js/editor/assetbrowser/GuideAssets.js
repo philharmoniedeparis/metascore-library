@@ -217,8 +217,6 @@ export default class GuideAssets extends Dom {
                 loadmask.setProgress(hundred);
             })
             .send();
-
-        return this;
     }
 
     onAssetsImportSuccess(loadmask, evt){

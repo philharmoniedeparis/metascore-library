@@ -133,7 +133,7 @@ export default class Field extends Dom{
              * @type {Dom}
              */
             this.description = new Dom('<div/>', {'class': 'description'})
-                .appendTo(this.input_wrapper);
+                .appendTo(this);
         }
 
         this.description.text(text);

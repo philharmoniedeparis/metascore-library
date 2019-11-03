@@ -1,4 +1,5 @@
 import {isString, isObject} from './Var';
+import {pad} from './String';
 
 /**
  * A list of CSS color names and their corresponding rgba values
@@ -251,21 +252,11 @@ export function hsv2rgb(h, s, v){
  * @return {String} The hex value
  */
 export function rgb2hex(r, g, b) {
-    let _r = r.toString(16);
-    let _g = g.toString(16);
-    let _b = b.toString(16);
+    const _r = pad(r.toString(16), 2, '0', 'left');
+    const _g = pad(g.toString(16), 2, '0', 'left');
+    const _b = pad(b.toString(16), 2, '0', 'left');
 
-    if (_r.length === 1){
-        _r = "0" + _r;
-    }
-    if (_g.length === 1){
-        _g = "0" + _g;
-    }
-    if (_b.length === 1){
-        _b = "0" + _b;
-    }
-
-    return "#" + _r + _g + _b;
+    return `#${_r}${_g}${_b}`;
 }
 
 /**
@@ -278,13 +269,8 @@ export function rgb2hex(r, g, b) {
  * @return {String} The hex value
  */
 export function rgba2hex(r, g, b, a) {
-    let hex = rgb2hex(r, g, b);
-
-    let _a = Math.round(a * 255).toString(16);
-
-    if (_a.length === 1){
-        _a = "0" + _a;
-    }
+    const hex = rgb2hex(r, g, b);
+    const _a = pad(Math.round(a * 255).toString(16), 2, '0', 'left');
 
     return hex + _a;
 }

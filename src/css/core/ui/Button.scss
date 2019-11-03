@@ -34,7 +34,8 @@
         margin-left: 0.5em;
     }
 
-    &:hover{
+    &:hover,
+    &:focus{
         opacity: 1;
     }
 

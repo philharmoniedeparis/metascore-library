@@ -1,11 +1,23 @@
+@import "../../theme";
+
 :local(.className){
     display: flex;
 
     input{
         margin: 0;
-        padding: 0;
+        padding: 0.25em 0.5em;
         border: none;
         font-family: inherit;
+        color: #fff;
+        background: $mediumgray;
+        border-radius: 0.25em;
+        box-sizing: border-box;
+
+        &:focus{
+            background: $darkgray;
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+            outline: none;
+        }
     }
 
     &:focus{

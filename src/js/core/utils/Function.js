@@ -9,11 +9,9 @@
 */
 export function throttle(fn, threshhold, scope = null)
 {
-    let inThrottle;
+    let inThrottle = false;
 
-    return function() {
-        const args = arguments;
-
+    return function(...args) {
         if(!inThrottle){
             fn.apply(scope, args);
             inThrottle = true;

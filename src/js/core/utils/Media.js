@@ -1,6 +1,6 @@
 import {pad} from './String';
 import {isEmpty} from './Var';
-import {Locale} from '../Locale';
+import Locale from '../Locale';
 import HTML5 from '../media/renderer/HTML5';
 import HLS from '../media/renderer/HLS';
 import Dash from '../media/renderer/Dash';
@@ -37,14 +37,14 @@ export function getRendererForMime(mime){
  * Get a media file's duration in centiseconds
  *
  * @private
- * @param {Object} file The file's url
+ * @param {Object} file A file descriptor
  * @property {String} mime The file's mime type
  * @property {String} url The file's url
  * @param {Function} callback A callback function to call with an eventual error and the duration
  */
-export function getMediaFileDuration(file, callback){
+export function getFileDuration(file, callback){
     if(isEmpty(file.mime)){
-        const message = Locale.t('media.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
+        const message = Locale.t('media.getFileDuration.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
         callback(new Error(message));
     }
     else{
@@ -56,12 +56,11 @@ export function getMediaFileDuration(file, callback){
                     return;
                 }
 
-                const centiseconds_multiplier = 100;
-                callback(null, Math.round(parseFloat(duration) * centiseconds_multiplier));
+                callback(null, parseFloat(duration));
             });
         }
         else{
-            const message = Locale.t('media.no-renderer.error', 'No compatible renderer found for the mime type !mime', {'!mine': file.mine});
+            const message = Locale.t('media.getFileDuration.no-renderer.error', 'No compatible renderer found for the mime type !mime', {'!mine': file.mine});
             callback(new Error(message));
         }
     }

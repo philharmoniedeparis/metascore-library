@@ -31,7 +31,7 @@ export default class FileInput extends Input {
         return Object.assign({}, super.getDefaults(), {
             'multiple': false,
             'accept': null,
-            'emptyLabel': Locale.t('core.input.FileInput.emptyLabel', 'Select a file...'),
+            'emptyLabel': Locale.t('core.input.FileInput.emptyLabel', 'Browse...'),
             'multipleLabel': Locale.t('core.input.FileInput.multipleLabel', '%count files selected'),
         });
     }

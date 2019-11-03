@@ -3,13 +3,6 @@
 :local(.className){
     position: relative;
 
-    input{
-        padding: 0.25em 0.5em;
-        color: #fff;
-        background: $mediumgray;
-        border-radius: 0.25em;
-    }
-
     .buttons{
         display: none;
         position: absolute;

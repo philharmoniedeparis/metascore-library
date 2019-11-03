@@ -58,6 +58,9 @@ export default class ColorInput extends Input {
     setupUI() {
         super.setupUI();
 
+        // Ignore the hidden input on tab
+        this.native_input.attr('tabindex', -1);
+
         this.button = new Button({'icon': clear_icon})
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);

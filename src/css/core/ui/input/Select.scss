@@ -5,12 +5,14 @@
 
     select{
         display: inline-block;
+        font-family: inherit;
         width: auto;
         max-width: 100%;
         margin: 0;
         padding-right: 2.5em;
+        border: none;
+        font-family: inherit;
         color: #fff;
-        border: 0;
         box-sizing: border-box;
         border-radius: .25em;
         appearance: none;
@@ -32,7 +34,9 @@
         &::-ms-expand {
             display: none;
         }
+
         &:focus {
+            background: $darkgray;
             box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
             outline: none;
         }
@@ -44,6 +48,7 @@
         right: 0.5em;
         width: 1em;
         height: 100%;
+        color: #fff;
         pointer-events: none;
     }
 }
