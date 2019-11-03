@@ -629,15 +629,16 @@ export default class Zoom extends Dom {
      * @return {this}
      */
     onMediaClockRendererChange(evt){
-        const renderer = evt.detail.renderer;
+        this.clear();
 
+        const renderer = evt.detail.renderer;
         if(renderer){
             renderer.getWaveformData(this.onMediaWaveformData.bind(this));
-        }
 
-        this
-            .setMessage(Locale.t('editor.Controller.zoom.loading', 'Loading waveform...'))
-            .updateSize();
+            this
+                .setMessage(Locale.t('editor.controller.waveform.Zoom.loading', 'Loading waveform...'))
+                .updateSize();
+        }
 
         return this;
     }

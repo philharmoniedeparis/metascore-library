@@ -1,6 +1,7 @@
 import Dom from './core/Dom';
 import {MasterClock} from './core/media/Clock';
 import {isArray} from './core/utils/Var';
+import {getFileDuration, getMimeTypeFromURL} from './core/utils/Media';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -244,6 +245,7 @@ export default class Editor extends Dom {
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
+            .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
 
         /**
@@ -273,6 +275,7 @@ export default class Editor extends Dom {
             .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
+            .addDelegate('.media-source-selector', 'apply', this.onMediaSourceSelectorApply.bind(this))
             .setClean()
             .setEditing(false)
             .updateMainmenu()
@@ -1250,6 +1253,120 @@ export default class Editor extends Dom {
     }
 
     /**
+     * MediaSourceSelector apply event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onMediaSourceSelectorApply(evt){
+        const overlay = evt.detail.overlay;
+        const file = evt.detail.file;
+        const url = evt.detail.url;
+        const player = this.getPlayer();
+        let source = null;
+
+        if(file){
+            source = {
+                'name': file.name,
+                'size': file.size,
+                'url': URL.createObjectURL(file),
+                'mime': file.type,
+                'source': 'upload',
+                'object': file
+            };
+        }
+        else if(url){
+            source = {
+                'name': url,
+                'url': url,
+                'mime': getMimeTypeFromURL(url),
+                'source': 'url'
+            };
+        }
+        else{
+            new Overlay({
+                'text': Locale.t('editor.onMediaSourceSelectorApply.empty.msg', 'Please fill in either the file or the URL field.'),
+                'buttons': {
+                    'ok': Locale.t('editor.onMediaSourceSelectorApply.empty.ok', 'OK'),
+                },
+                'parent': overlay
+            });
+            return;
+        }
+
+        const old_duration = MasterClock.getRenderer().getDuration();
+        getFileDuration(source, (error, new_duration) => {
+            if(error){
+                new Overlay({
+                    'text': error,
+                    'buttons': {
+                        'ok': Locale.t('editor.onMediaSourceSelectorApply.error.ok', 'OK'),
+                    },
+                    'parent': overlay
+                });
+                return;
+            }
+
+            if(new_duration !== old_duration){
+                const formatted_old_duration = TimeInput.getTextualValue(old_duration);
+                const formatted_new_duration = TimeInput.getTextualValue(new_duration);
+                let msg = null;
+
+                if(new_duration < old_duration){
+                    const blocks = [];
+                    const scenarios = player.getScenarios();
+
+                    scenarios.forEach((scenario) => {
+                        scenario.getChildren().forEach((component) => {
+                            if(component.instanceOf('Block') && component.getPropertyValue('synched')){
+                                component.getChildren().some((page) => {
+                                    if(page.getPropertyValue('start-time') > new_duration){
+                                        blocks.push(component.getPropertyValue('name'));
+                                        return true;
+                                    }
+
+                                    return false;
+                                });
+                            }
+                        });
+                    });
+
+                    if(blocks.length > 0){
+                        new Overlay({
+                            'text': Locale.t('editor.onMediaSourceSelectorApply.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
+                            'buttons': {
+                                'ok': Locale.t('editor.onMediaSourceSelectorApply.empty.ok', 'OK'),
+                            },
+                            'parent': overlay
+                        });
+                        return;
+                    }
+
+                    msg = Locale.t('editor.onMediaSourceSelectorApply.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                }
+                else{
+                    msg = Locale.t('editor.onMediaSourceSelectorApply.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
+                }
+
+                new Confirm({
+                    'text': msg,
+                    'onConfirm': () => {
+                        player.setSource(source);
+                        overlay.hide();
+                        this.setDirty('media');
+                    },
+                    'parent': overlay
+                });
+            }
+            else{
+                player.setSource(source);
+                overlay.hide();
+                this.setDirty('media');
+            }
+        });
+    }
+
+    /**
      * ContentForm contentsunlock event callback
      *
      * @private
@@ -1500,7 +1617,7 @@ export default class Editor extends Dom {
         // Update the revision selector
         const revisions_select = this.mainmenu.getItem('revisions');
         const current_vid = this.player.getData('vid');
-        const date_formatter = new Intl.DateTimeFormat(undefined, {
+        const date_formatter = new Intl.DateTimeFormat(void 0, {
             'year': 'numeric', 'month': 'numeric', 'day': 'numeric',
             'hour': 'numeric', 'minute': 'numeric', 'second': 'numeric',
             'hour12': false,
@@ -2670,6 +2787,17 @@ export default class Editor extends Dom {
                 // Add title
                 if(this.isDirty('title')){
                     data.set('title', this.mainmenu.getItem('title').getValue());
+                }
+
+                // Add title
+                if(this.isDirty('media')){
+                    const source = Object.assign({}, player.getRenderer().getSource());
+                    if(source.source === 'upload'){
+                        data.set('files[media]', source.object);
+                        delete source.object;
+                    }
+
+                    data.set('media', JSON.stringify(source));
                 }
 
                 // Add components

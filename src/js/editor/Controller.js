@@ -7,6 +7,7 @@ import ScenarioSelector from './controller/ScenarioSelector';
 import WaveformOverview from './controller/waveform/Overview';
 import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
+import MediaSourceSelector from './controller/MediaSourceSelector';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import play_icon from '../../img/editor/controller/play.svg?svg-sprite';
@@ -25,11 +26,28 @@ import {className} from '../../css/editor/Controller.scss';
 export default class Controller extends Dom {
 
     /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults(){
+        return {
+            'mediaSourceSelector': {}
+        };
+    }
+
+    /**
      * Instantiate
      */
-    constructor() {
+    constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': `controller ${className}`});
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         // fix event handlers scope
         this.onMediaRendererPlay = this.onMediaRendererPlay.bind(this);
@@ -101,6 +119,11 @@ export default class Controller extends Dom {
         this.controls.play_btn = new Button({'icon': play_icon})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .appendTo(this.controls);
+
+        this.controls.file_btn = new Button()
+            .data('action', 'file')
+            .addListener('click', this.onFileBtnClick.bind(this))
             .appendTo(this.controls);
 
         const right = new Dom('<div/>', {'class': 'right'})
@@ -196,9 +219,12 @@ export default class Controller extends Dom {
 
             this.getTimeInput().setMax(renderer.getDuration());
 
+            this.controls.file_btn.setLabel(renderer.getSource().name);
+
             this.removeClass('disabled');
         }
         else{
+            this.controls.file_btn.setLabel(null);
             this.addClass('disabled');
         }
 
@@ -249,6 +275,19 @@ export default class Controller extends Dom {
         if(evt.key === " "){
             evt.stopPropagation();
         }
+    }
+
+    /**
+     * File button click event callback
+     *
+     * @private
+     */
+    onFileBtnClick(){
+        const configs = Object.assign({
+            'parent': '.metaScore-editor'
+        }, this.configs.mediaSourceSelector);
+
+        new MediaSourceSelector(configs);
     }
 
     /**

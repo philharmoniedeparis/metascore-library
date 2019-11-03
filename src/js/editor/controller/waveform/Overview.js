@@ -286,8 +286,9 @@ export default class Overview extends Dom {
     }
 
     onMediaClockRendererChange(evt){
-        const renderer = evt.detail.renderer;
+        this.clear();
 
+        const renderer = evt.detail.renderer;
         if(renderer){
             renderer.getWaveformData(this.onMediaWaveformData.bind(this));
 

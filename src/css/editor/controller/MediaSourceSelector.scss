@@ -1,0 +1,57 @@
+@import "../../theme";
+
+:local(.className){
+    form{
+        text-align: left;
+
+        .field{
+            display: block;
+            text-align: left;
+
+            > label{
+                margin-right: .5em;
+                color: #fff;
+            }
+
+            > .input{
+                &.text{
+                    input{
+                        width: 100%;
+                        box-sizing: border-box;
+                    }
+                }
+            }
+
+            > .description{
+                flex: 0 0 100%;
+                font-size: 0.9em;
+                color: $darkgray;
+                opacity: 1;
+            }
+        }
+
+        .separator{
+            position: relative;
+            margin: 0.5em;
+            text-align: center;
+
+            span{
+                position: relative;
+                padding: 0 .5em;
+                color: #fff;
+                background: $lightgray;
+                z-index: 1;
+            }
+
+            &::before{
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 0;
+                width: 100%;
+                height: 1px;
+                background: $mediumgray;
+            }
+        }
+    }
+}

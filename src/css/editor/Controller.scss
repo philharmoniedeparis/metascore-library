@@ -43,6 +43,7 @@
                 padding: 0;
                 text-align: center;
                 color: #fff;
+                border-radius: 0;
                 letter-spacing: .05em;
             }
         }
@@ -91,10 +92,13 @@
 
                 .controls {
                     display: flex;
+                    padding: 1em 0.5em 0 0.5em;
                     flex-direction: row;
                     justify-content: center;
+                    align-content: space-evenly;
                     align-items: center;
                     flex: 1 1 auto;
+                    flex-wrap: wrap;
 
                     button{
                         border: none;
@@ -123,6 +127,24 @@
                             .icon{
                                 height: 100%;
                                 color: $darkgray;
+                            }
+                        }
+
+                        &[data-action="file"]{
+                            width: 100%;
+                            margin-top: 1em;
+                            padding: 0 .5em;
+                            font-size: 0.8em;
+                            color:#fff;
+                            overflow: hidden;
+                            transition: none;
+
+                            .label{
+                                width: 100%;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                user-select: none;
                             }
                         }
                     }
