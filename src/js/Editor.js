@@ -2803,15 +2803,10 @@ export default class Editor extends Dom {
 
                 // Add components
                 if(this.isDirty('components')){
-                    const components = player.getScenarios();
-                    if(components.length > 0){
-                        components.forEach((component) => {
-                            data.append('components[]', JSON.stringify(component.getPropertyValues()));
-                        });
-                    }
-                    else{
-                        data.set('components', []);
-                    }
+                    const components = player.getScenarios().map((component) => {
+                        return component.getPropertyValues();
+                    });
+                    data.set('components', JSON.stringify(components));
                 }
 
                 // Add assets

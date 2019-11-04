@@ -557,17 +557,14 @@ export default class Player extends Dom {
         this.setSource(this.data.media);
 
         // Add components
-        this.data.components.forEach((component) => {
-            switch(component.type){
-                case 'Scenario':
-                    this.addScenario(component);
-                    break;
-            }
-        });
-
-        // Add keyboard listener
-        if(this.configs.keyboard){
-            this.addListener('keydown', this.onKeydown.bind(this));
+        if(this.data.components){
+            this.data.components.forEach((component) => {
+                switch(component.type){
+                    case 'Scenario':
+                        this.addScenario(component);
+                        break;
+                }
+            });
         }
 
         // Set active scenario
@@ -584,6 +581,11 @@ export default class Player extends Dom {
         this.setActiveScenario(scenario.getName());
 
         this.updateBlockTogglers();
+
+        // Add keyboard listener
+        if(this.configs.keyboard){
+            this.addListener('keydown', this.onKeydown.bind(this));
+        }
 
         this.removeClass('loading');
 
