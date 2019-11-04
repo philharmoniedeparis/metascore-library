@@ -184,7 +184,7 @@ export default class ComponentForm extends Dom {
         const value = evt.detail.value;
 
         switch(property){
-            case 'locked':
+            case 'editor.locked':
                 component
                     .setDraggable(!value)
                     .setResizable(!value);
@@ -583,7 +583,7 @@ export default class ComponentForm extends Dom {
             }
 
             switch(name){
-                case 'locked':
+                case 'editor.locked':
                     this
                         .toggleClass('locked', value)
                         .toggleFields(['x', 'y'], !value)
@@ -645,10 +645,10 @@ export default class ComponentForm extends Dom {
 
             if(field){
                 if(toggle){
-                    field.enable();
+                    field.getInput().enable();
                 }
                 else{
-                    field.disable();
+                    field.getInput().disable();
                 }
             }
         });

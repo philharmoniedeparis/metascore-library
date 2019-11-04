@@ -399,7 +399,7 @@ export default class Editor extends Dom {
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
                                         context.data.elements = [dom._metaScore];
                                         return true;
                                     }
@@ -410,12 +410,12 @@ export default class Editor extends Dom {
                         'lock': {
                             'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
                             'callback': (context) => {
-                                context.data.element.setPropertyValue('locked', true);
+                                context.data.element.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
                                         context.data.element = dom._metaScore;
                                         return true;
                                     }
@@ -426,12 +426,12 @@ export default class Editor extends Dom {
                         'unlock': {
                             'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
                             'callback': (context) => {
-                                context.data.element.setPropertyValue('locked', false);
+                                context.data.element.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
                                         context.data.element = dom._metaScore;
                                         return true;
                                     }
@@ -636,12 +636,12 @@ export default class Editor extends Dom {
                         'lock': {
                             'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
                             'callback': (context) => {
-                                context.data.block.setPropertyValue('locked', true);
+                                context.data.block.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
                                         context.data.block = dom._metaScore;
                                         return true;
                                     }
@@ -652,12 +652,12 @@ export default class Editor extends Dom {
                         'unlock': {
                             'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
                             'callback': (context) => {
-                                context.data.block.setPropertyValue('locked', false);
+                                context.data.block.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom && !dom._metaScore.getPropertyValue('locked')){
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
                                         context.data.block = dom._metaScore;
                                         return true;
                                     }
@@ -1931,6 +1931,8 @@ export default class Editor extends Dom {
             }
         }
 
+        this.setDirty('components');
+
         // If we are not in an undo or redo operation, group property changes via a timeout
         if(!this.history.isExecuting()){
             if(this._oncomponentpropchange_timeout){
@@ -2113,7 +2115,6 @@ export default class Editor extends Dom {
      * @private
      */
     onHistoryAdd(){
-        this.setDirty('components');
         this.updateMainmenu();
     }
 

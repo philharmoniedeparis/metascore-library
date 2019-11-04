@@ -44,7 +44,9 @@ export default class Handle extends Dom {
         const togglers = new Dom('<div/>', {'class': 'togglers'})
             .appendTo(inner);
 
-        new CheckboxInput({
+        this.togglers = {};
+
+        this.togglers.lock = new CheckboxInput({
                 'icon': locked_icon
             })
             .data('action', 'lock')
@@ -111,6 +113,10 @@ export default class Handle extends Dom {
         this.addClass('has-descendents');
 
         return this;
+    }
+
+    getToggler(key){
+        return this.togglers[key];
     }
 
 }

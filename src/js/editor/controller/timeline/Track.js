@@ -77,9 +77,7 @@ export default class Track extends Dom {
             this.handle.attr('draggable', 'true');
         }
 
-        if(component.getPropertyValue('locked')){
-            this.handle.addClass('locked');
-        }
+        this.handle.getToggler('lock').setValue(component.getPropertyValue('editor.locked'), true);
 
         this
             .data('component', component_id)
@@ -185,8 +183,8 @@ export default class Track extends Dom {
                 this.attr('title', value);
                 break;
 
-            case 'locked':
-                this.getHandle().toggleClass('locked', value);
+            case 'editor.locked':
+                this.getHandle().getToggler('lock').setValue(value, true);
                 break;
         }
     }
@@ -212,7 +210,7 @@ export default class Track extends Dom {
                 this.setDraggable(value !== null);
                 break;
 
-            case 'locked':
+            case 'editor.locked':
                 this.setDraggable(!value).setResizable(!value);
                 break;
         }
@@ -369,7 +367,7 @@ export default class Track extends Dom {
 
         switch(action){
             case 'lock':
-                this.getComponent().setPropertyValue('locked', value);
+                this.getComponent().setPropertyValue('editor.locked', value);
                 break;
         }
 
@@ -405,7 +403,7 @@ export default class Track extends Dom {
                 return this;
             }
 
-            if(component.getPropertyValue('locked')){
+            if(component.getPropertyValue('editor.locked')){
                 // Do not add draggable to a locked component
                 return this;
             }
@@ -459,7 +457,7 @@ export default class Track extends Dom {
         if(resizable){
             const component = this.getComponent();
 
-            if(component.getPropertyValue('locked')){
+            if(component.getPropertyValue('editor.locked')){
                 // Do not add resizable to a locked component
                 return this;
             }

@@ -42,6 +42,9 @@ export default class Component extends Dom {
                     'getter': function(){
                         return this.attr('id');
                     }
+                },
+                'editor.locked': {
+                    'type': 'boolean'
                 }
             }
         };
@@ -458,7 +461,7 @@ export default class Component extends Dom {
             return this;
         }
 
-        if(this.getPropertyValue('locked') && draggable){
+        if(this.getPropertyValue('editor.locked') && draggable){
             return this;
         }
 
@@ -505,7 +508,7 @@ export default class Component extends Dom {
             return this;
         }
 
-        if(this.getPropertyValue('locked') && resizable){
+        if(this.getPropertyValue('editor.locked') && resizable){
             return this;
         }
 

@@ -63,12 +63,12 @@ export default class CheckboxInput extends Input{
         const state = new Dom('<div/>', {'class': 'state'})
             .appendTo(this);
 
-        new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
+        const label = new Dom('<label/>', {'for': this.getId(), 'text': this.configs.label})
             .appendTo(state);
 
         if(this.configs.icon){
             this.icon = new Icon({'symbol': this.configs.icon})
-                .appendTo(state);
+                .appendTo(label);
         }
     }
 
