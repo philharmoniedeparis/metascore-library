@@ -94,7 +94,6 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
-            .addDelegate('.track', 'select', this.onTrackSelect.bind(this))
             .addDelegate('.track', 'dragstart', this.onTrackDragStart.bind(this), true)
             .addDelegate('.track', 'dragend', this.onTrackDragEnd.bind(this), true)
             .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
@@ -257,24 +256,6 @@ export default class Timeline extends Dom {
 
         track.removeClass('dragging');
         handle.removeClass('dragging');
-    }
-
-    /**
-     * Track select event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onTrackSelect(evt){
-        // Scroll track into view
-        const offsetTop = evt.target.offsetTop;
-        const scrollTop = this.get(0).scrollTop;
-        const height = this.get(0).clientHeight;
-        if(offsetTop < scrollTop || offsetTop > scrollTop + height){
-            window.requestAnimationFrame(() => {
-                this.get(0).scrollTop = offsetTop;
-            });
-        }
     }
 
     /**

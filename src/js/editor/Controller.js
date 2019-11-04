@@ -100,11 +100,11 @@ export default class Controller extends Dom {
             .addListener('playheadclick', this.onPlayheadClick.bind(this))
             .appendTo(overview);
 
-        const middle = new Dom('<div/>', {'class': 'middle'})
+        this.middle = new Dom('<div/>', {'class': 'middle'})
             .appendTo(this);
 
         const sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
-            .appendTo(middle);
+            .appendTo(this.middle);
 
         const left = new Dom('<div/>', {'class': 'left'})
             .appendTo(sticky_top);
@@ -144,7 +144,8 @@ export default class Controller extends Dom {
          * @type {Timeline}
          */
         this.timeline = new Timeline()
-            .appendTo(middle);
+            .addDelegate('.track', 'select', this.onTimelineTrackSelect.bind(this))
+            .appendTo(this.middle);
 
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
@@ -288,6 +289,25 @@ export default class Controller extends Dom {
         }, this.configs.mediaSourceSelector);
 
         new MediaSourceSelector(configs);
+    }
+
+    /**
+     * Timeline Track select event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTimelineTrackSelect(evt){
+        // Scroll track into view
+        const scroll_el = this.middle.get(0);
+        const scroll_el_rect = scroll_el.getBoundingClientRect();
+        const track_rect = evt.target.getBoundingClientRect();
+
+        if(track_rect.top < scroll_el_rect.top || track_rect.top > scroll_el_rect.top + scroll_el_rect.height){
+            window.requestAnimationFrame(() => {
+                scroll_el.scrollTop = track_rect.top - scroll_el_rect.top;
+            });
+        }
     }
 
     /**
