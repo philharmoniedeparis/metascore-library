@@ -266,7 +266,7 @@ export default class GuideAssets extends Dom {
             file = asset.file;
         }
 
-        const matches = /^(audio|video)\/.*/.exec(file.mimetype);
+        const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
         if(matches){
             const type = matches[1];
             switch(type){
