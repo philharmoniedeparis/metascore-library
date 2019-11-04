@@ -6,41 +6,29 @@
 
     input{
         position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: 0;
         visibility: hidden;
         z-index: -1;
 
         + .state{
             label{
-                display: inline-block;
-
-                &::before{
-                    content: "";
-                    display: block;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 1em;
-                    height: 1em;
-                    background: #fff;
-                }
-
-                padding-left: 1.5em;
-
-                &:empty{
-                    &::before{
-                        padding-left: 0;
-                    }
-                }
-            }
-
-            .icon{
-                display: none;
-                position: absolute;
-                top: -0.1em;
-                left: 0.2em;
+                display: block;
                 width: 1em;
-                color: #000;
-                pointer-events: none;
+                height: 1em;
+                background: #fff;
+
+                .icon{
+                    display: none;
+                    position: absolute;
+                    top: -0.1em;
+                    left: 0.2em;
+                    width: 1em;
+                    color: #000;
+                    pointer-events: none;
+                }
             }
         }
 
@@ -61,16 +49,13 @@
                     height: auto;
                     padding: 0.25em 0.5em;
                     color: #fff;
+                    background: none;
                     border: 1px solid #fff;
                     border-radius: 1.5em;
                     cursor: pointer;
                     user-select: none;
                     outline: 0;
                     transition: all .4s ease;
-
-                    &::before{
-                        content: none;
-                    }
                 }
 
                 .icon{

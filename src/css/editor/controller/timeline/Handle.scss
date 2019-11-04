@@ -63,22 +63,21 @@
 
                 input{
                     + .state{
-                        .icon{
-                            display: block;
-                            top: 0;
-                            left: 0;
-                            width: 0.8em;
-                            height: 0.8em;
-                            margin: 0.1em;
-                            color: #fff;
-                            opacity: 0.25;
-                        }
-
                         label{
+                            padding: 0.1em;
+                            background: $darkgray;
                             cursor: pointer;
 
-                            &::before{
-                                background: $darkgray;
+                            .icon{
+                                position: relative;
+                                display: block;
+                                top: 0;
+                                left: 0;
+                                width: 0.8em;
+                                height: 0.8em;
+                                margin: 0.1em;
+                                color: #fff;
+                                opacity: 0.25;
                             }
                         }
                     }
