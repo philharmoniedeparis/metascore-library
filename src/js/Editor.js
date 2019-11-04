@@ -1214,6 +1214,13 @@ export default class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
+
+        if(!evt.shiftKey && component.hasProperty('start-time')){
+            const start_time = component.getPropertyValue('start-time');
+            if(start_time !== null){
+                MasterClock.setTime(start_time);
+            }
+        }
     }
 
     /**
