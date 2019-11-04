@@ -92,16 +92,15 @@ export default class TimeInput extends Input {
 
         this.addClass(`time ${className}`);
 
+        if(this.configs.required){
+            this.formatted_input.attr('required', '');
+        }
+
         if(this.configs.min !== null){
             this.setMin(this.configs.min);
         }
         if(this.configs.max !== null){
             this.setMax(this.configs.max);
-        }
-
-        if(this.configs.name){
-            this.native_input.attr('name', null);
-            this.named_input.attr('name', this.configs.name);
         }
     }
 
@@ -182,6 +181,17 @@ export default class TimeInput extends Input {
         super.setupUI();
 
         this.native_input
+            .attr('id', null)
+            .attr('type', 'number')
+            .attr('step', 0.01)
+            .removeListener('input', this.onInput.bind(this))
+            .removeListener('change', this.onChange.bind(this))
+            .removeListener('keypress', this.onKeypress.bind(this))
+            .hide();
+
+        this.formatted_input = new Dom('<input/>', {'id': this.getId()})
+            .addListener('change', this.onChange.bind(this))
+            .addListener('keypress', this.onKeypress.bind(this))
             .addListener('mousedown', this.onMouseDown.bind(this))
             .addListener('mousewheel', this.onMouseWheel.bind(this))
             .addListener('click', this.onClick.bind(this))
@@ -191,10 +201,7 @@ export default class TimeInput extends Input {
             .addListener('drop', this.onDrop.bind(this))
             .addListener('cut', this.onCut.bind(this))
             .addListener('paste', this.onPaste.bind(this))
-            .addListener('keydown', this.onKeydown.bind(this));
-
-        this.named_input = new Dom('<input/>', {'type': 'number'})
-            .hide()
+            .addListener('keydown', this.onKeydown.bind(this))
             .appendTo(this);
 
         if(this.configs.clearButton || this.configs.inButton || this.configs.outButton){
@@ -250,7 +257,7 @@ export default class TimeInput extends Input {
 
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.native_input.val()), true);
+            this.setValue(this.constructor.getNumericalValue(this.formatted_input.val()), true);
         }
 
         this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
@@ -520,7 +527,7 @@ export default class TimeInput extends Input {
      * @return {Number} The caret position
      */
     getCaretPosition() {
-        const el = this.native_input.get(0);
+        const el = this.formatted_input.get(0);
         let caretPosition = 0;
 
         if(typeof el.selectionStart === 'number'){
@@ -547,7 +554,7 @@ export default class TimeInput extends Input {
      * @param {Number} segment The focus segment's index
      */
     setFocusedSegment(segment){
-        const el = this.native_input.get(0);
+        const el = this.formatted_input.get(0);
         const start = segment * 3;
         const end = start + 2;
 
@@ -569,7 +576,7 @@ export default class TimeInput extends Input {
      * @return {String} The segment's value
      */
     getSegmentValue(segment){
-        const textual_value = this.native_input.val();
+        const textual_value = this.formatted_input.val();
         const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
@@ -588,7 +595,7 @@ export default class TimeInput extends Input {
      * @param {String} value The segment's value
      */
     setSegmentValue(segment, value){
-        let textual_value = this.native_input.val();
+        let textual_value = this.formatted_input.val();
         const matches = textual_value.match(GLOBAL_REGEX);
 
         if(matches){
@@ -601,7 +608,7 @@ export default class TimeInput extends Input {
                 textual_value += PARTS[i].suffix;
             });
 
-            this.native_input.val(textual_value);
+            this.formatted_input.val(textual_value);
 
             /**
              * Whether an input occured but the current value has not yet been updated
@@ -677,15 +684,15 @@ export default class TimeInput extends Input {
             }
         }
 
-        this.native_input.val(this.constructor.getTextualValue(_value));
-
         /**
          * The current value
          * @type {String}
          */
         this.value = _value;
 
-        this.named_input.val(this.value);
+        this.native_input.val(this.value);
+
+        this.formatted_input.val(this.constructor.getTextualValue(_value));
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');
@@ -710,17 +717,13 @@ export default class TimeInput extends Input {
      * @return {this}
      */
     setMin(min){
-        const value = this.getValue();
-
         /**
          * The minimum allowed value
          * @type {Number}
          */
         this.min = min;
 
-        if(this.min !== null && value !== null && value < this.min){
-            this.setValue(this.min);
-        }
+        this.native_input.attr('min', this.min);
 
         return this;
     }
@@ -741,17 +744,13 @@ export default class TimeInput extends Input {
      * @return {this}
      */
     setMax(max){
-        const value = this.getValue();
-
         /**
          * The maximum allowed value
          * @type {Number}
          */
         this.max = max;
 
-        if(this.max !== null && value !== null && value > this.max){
-            this.setValue(this.max);
-        }
+        this.native_input.attr('max', this.max);
 
         return this;
     }
@@ -763,6 +762,8 @@ export default class TimeInput extends Input {
      */
     disable() {
         super.disable();
+
+        this.formatted_input.attr('disabled', 'true');
 
         if(this.clear_button){
             this.clear_button.attr('disabled', 'true');
@@ -785,6 +786,8 @@ export default class TimeInput extends Input {
      */
     enable() {
         super.enable();
+
+        this.formatted_input.attr('disabled', null);
 
         if(this.clear_button){
             this.clear_button.attr('disabled', null);
@@ -809,6 +812,8 @@ export default class TimeInput extends Input {
     readonly(readonly){
         super.readonly(readonly);
 
+        this.formatted_input.attr('readonly', this.is_readonly ? "readonly" : null);
+
         const readonly_attr = this.is_readonly ? "readonly" : null;
 
         if(this.clear_button){
@@ -818,6 +823,12 @@ export default class TimeInput extends Input {
         if(this.in_button){
             this.in_button.attr('readonly', readonly_attr);
         }
+
+        return this;
+    }
+
+    focus(){
+        this.formatted_input.focus();
 
         return this;
     }

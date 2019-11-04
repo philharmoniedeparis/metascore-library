@@ -555,6 +555,19 @@ export default class ComponentForm extends Dom {
             Object.keys(this.getFields()).forEach((name) => {
                 this.updateFieldValue(name, supressEvent);
             });
+
+            if(this.hasField('start-time') && this.hasField('end-time')){
+                const start_values = [];
+                const end_values = [];
+
+                this.components.forEach((component) => {
+                    start_values.push(component.getPropertyValue('start-time'));
+                    end_values.push(component.getPropertyValue('end-time'));
+                });
+
+                this.getField('start-time').getInput().setMax(Math.min(...end_values));
+                this.getField('end-time').getInput().setMin(Math.max(...start_values));
+            }
         }
 
         return this;
@@ -588,14 +601,6 @@ export default class ComponentForm extends Dom {
                         .toggleClass('locked', value)
                         .toggleFields(['x', 'y'], !value)
                         .toggleFields(['width', 'height'], !value);
-                    break;
-
-                case 'start-time':
-                    this.getField('end-time').getInput().setMin(value);
-                    break;
-
-                case 'end-time':
-                    this.getField('start-time').getInput().setMax(value);
                     break;
             }
         }
