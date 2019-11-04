@@ -12,9 +12,6 @@
 
                 form {
                     fieldset{
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        grid-gap: 0.5em 1em;
                         margin-bottom: 0.5em;
                         border: 1px solid $darkgray;
 
@@ -22,27 +19,34 @@
                             padding: 0 0.5em;
                             color:#fff;
                             background: $lightgray;
+                            text-align: left;
                         }
 
-                        .field{
-                            label{
-                                margin-right: 0.5em;
-                                color: #fff;
-                            }
+                        > .fields-wrapper{
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            grid-gap: 0.5em 1em;
 
-                            .input{
-                                &.number{
-                                    input{
-                                        width: 2em;
+                            .field{
+                                > label{
+                                    margin-right: 0.5em;
+                                    color: #fff;
+                                }
+
+                                .input{
+                                    &.number{
+                                        input{
+                                            width: 2em;
+                                        }
                                     }
                                 }
-                            }
 
-                            &[data-opt="width"],
-                            &[data-opt="height"]{
-                                .input{
-                                    input{
-                                        width: 4em;
+                                &[data-opt="width"],
+                                &[data-opt="height"]{
+                                    .input{
+                                        input{
+                                            width: 4em;
+                                        }
                                     }
                                 }
                             }

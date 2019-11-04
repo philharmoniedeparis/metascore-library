@@ -73,6 +73,9 @@ export default class SpectrogramForm extends Overlay {
         new Dom('<legend/>', {'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fieldsets.image.legend', 'Image')})
             .appendTo(image_fieldset);
 
+        const image_fields_wrapper = new Dom('<div/>', {'class': 'fields-wrapper'})
+            .appendTo(image_fieldset);
+
         this.fields.width = new Field(
             new NumberInput({
                 'name': 'width',
@@ -85,7 +88,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.width.title', 'The width of the output image'))
             .data('opt', 'width')
-            .appendTo(image_fieldset);
+            .appendTo(image_fields_wrapper);
 
         this.fields.height = new Field(
             new NumberInput({
@@ -99,7 +102,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.height.title', 'The height of the output image'))
             .data('opt', 'height')
-            .appendTo(image_fieldset);
+            .appendTo(image_fields_wrapper);
 
         this.fields.mode = new Field(
             new SelectInput({
@@ -116,7 +119,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.mode.title', 'The channels display mode'))
             .data('opt', 'mode')
-            .appendTo(image_fieldset);
+            .appendTo(image_fields_wrapper);
 
         this.fields.legend = new Field(
             new CheckboxInput({
@@ -128,12 +131,15 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.legend.title', 'Whether to draw time and frequency axes and legends.'))
             .data('opt', 'legend')
-            .appendTo(image_fieldset);
+            .appendTo(image_fields_wrapper);
 
         const time_fieldset = new Dom('<fieldset/>')
             .appendTo(this.form);
 
         new Dom('<legend/>', {'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fieldsets.time.legend', 'Time')})
+            .appendTo(time_fieldset);
+
+        const time_fields_wrapper = new Dom('<div/>', {'class': 'fields-wrapper'})
             .appendTo(time_fieldset);
 
         this.fields.start_time = new Field(
@@ -147,7 +153,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.start-time.title', 'The media time to start at'))
             .data('opt', 'start_time')
-            .appendTo(time_fieldset);
+            .appendTo(time_fields_wrapper);
 
         this.fields.end_time = new Field(
             new TimeInput({
@@ -160,12 +166,15 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.end-time.title', 'The media time to end at'))
             .data('opt', 'end_time')
-            .appendTo(time_fieldset);
+            .appendTo(time_fields_wrapper);
 
         const scale_fieldset = new Dom('<fieldset/>')
             .appendTo(this.form);
 
         new Dom('<legend/>', {'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fieldsets.scale.legend', 'Scale')})
+            .appendTo(scale_fieldset);
+
+        const scale_fields_wrapper = new Dom('<div/>', {'class': 'fields-wrapper'})
             .appendTo(scale_fieldset);
 
         this.fields.scale = new Field(
@@ -187,7 +196,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.title', 'The scale used for calculating intensity color values'))
             .data('opt', 'scale')
-            .appendTo(scale_fieldset);
+            .appendTo(scale_fields_wrapper);
 
         this.fields.start = new Field(
             new NumberInput({
@@ -201,7 +210,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.start.title', 'The min frequency from which to display spectrogram'))
             .data('opt', 'start')
-            .appendTo(scale_fieldset);
+            .appendTo(scale_fields_wrapper);
 
         this.fields.stop = new Field(
             new NumberInput({
@@ -215,12 +224,15 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.stop.title', 'The max frequency to which to display spectrogram'))
             .data('opt', 'stop')
-            .appendTo(scale_fieldset);
+            .appendTo(scale_fields_wrapper);
 
         const color_fieldset = new Dom('<fieldset/>')
             .appendTo(this.form);
 
         new Dom('<legend/>', {'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fieldsets.color.legend', 'Color')})
+            .appendTo(color_fieldset);
+
+        const color_fields_wrapper = new Dom('<div/>', {'class': 'fields-wrapper'})
             .appendTo(color_fieldset);
 
         this.fields.color = new Field(
@@ -251,7 +263,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.color.title', 'The display color mode'))
             .data('opt', 'color')
-            .appendTo(color_fieldset);
+            .appendTo(color_fields_wrapper);
 
         this.fields.gain = new Field(
             new NumberInput({
@@ -264,7 +276,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.gain.title', 'The scale gain for calculating intensity color values. Allows increasing/decreasing the brightness of the display.'))
             .data('opt', 'gain')
-            .appendTo(color_fieldset);
+            .appendTo(color_fields_wrapper);
 
         this.fields.saturation = new Field(
             new NumberInput({
@@ -280,7 +292,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.saturation.title', 'The saturation modifier for displayed colors'))
             .data('opt', 'saturation')
-            .appendTo(color_fieldset);
+            .appendTo(color_fields_wrapper);
 
         this.fields.rotation = new Field(
             new NumberInput({
@@ -296,12 +308,15 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.rotation.title', 'The color rotation'))
             .data('opt', 'rotation')
-            .appendTo(color_fieldset);
+            .appendTo(color_fields_wrapper);
 
         const algorithm_fieldset = new Dom('<fieldset/>')
             .appendTo(this.form);
 
         new Dom('<legend/>', {'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fieldsets.algorithm.legend', 'Algorithm')})
+            .appendTo(algorithm_fieldset);
+
+        const algorithm_fields_wrapper = new Dom('<div/>', {'class': 'fields-wrapper'})
             .appendTo(algorithm_fieldset);
 
         this.fields.win_func = new Field(
@@ -338,7 +353,7 @@ export default class SpectrogramForm extends Overlay {
             })
             .attr('title', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.win_func.title', 'The window function'))
             .data('opt', 'win_func')
-            .appendTo(algorithm_fieldset);
+            .appendTo(algorithm_fields_wrapper);
 
         this.addButton('apply', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.buttons.apply.label', 'Generate'));
         this.addButton('cancel', Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.buttons.cancel.label', 'Cancel'));
