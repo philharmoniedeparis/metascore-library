@@ -50,9 +50,6 @@ export default class Overlay extends Dom {
 
         this.setupUI();
 
-        const focusables = this.body.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
-        this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this;
-
         if(this.configs.autoShow){
             this.show();
         }
@@ -187,7 +184,14 @@ export default class Overlay extends Dom {
 
         this.triggerEvent('show', {'overlay': this}, true, false);
 
-        Dom.addListener(document, 'focus', this.onDocumentFocus, true);
+        if(this.configs.modal){
+            if(!this.focus_anchor){
+                const focusables = this.body.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+                this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this.body;
+            }
+
+            Dom.addListener(document, 'focus', this.onDocumentFocus, true);
+        }
 
         this.focus_anchor.focus();
 
