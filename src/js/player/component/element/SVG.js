@@ -122,10 +122,8 @@ export default class SVG extends Element {
 
             default:
                 if(svg_properties.includes(property)){
-                    this.updateSVGProperty(property, value, false);
+                    this.updateSVGProperty(property, value);
                 }
-
-                this.executeInnerUpdate();
         }
     }
 
@@ -167,13 +165,6 @@ export default class SVG extends Element {
                     Dom.css(el, property, value);
                 }
             });
-
-            if(property === 'stroke'){
-                Object.values(this.markers).forEach((marker) => {
-                    Dom.css(marker, 'stroke', value);
-                    Dom.css(marker, 'fill', value);
-                });
-            }
 
             if(executeInnerUpdate !== false){
                 this.executeInnerUpdate();
