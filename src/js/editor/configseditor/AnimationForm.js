@@ -72,7 +72,7 @@ export default class AnimationForm extends ElementForm {
             case 'loop-duration':
                 this.fields[name] = new Field(
                     new TimeInput({
-                        'min': 10,
+                        'min': 0.01,
                         'clearButton': true
                     }),
                     {
