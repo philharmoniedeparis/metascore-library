@@ -150,6 +150,7 @@ export default class Editor extends Dom {
         this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
+            .addListener('beforeassetremove', this.onAssetBrowserBeforeAssetRemove.bind(this))
             .addListener('assetremove', this.onAssetBrowserAssetRemove.bind(this))
             .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
             .addListener('spectrogramformopen', this.onAssetBrowserSpectrogramFormOpen.bind(this))
@@ -785,11 +786,11 @@ export default class Editor extends Dom {
         loadmask.hide();
 
         new Overlay({
-            'parent': this,
             'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
             'buttons': {
                 'ok': Locale.t('editor.onXHRError.ok', 'OK'),
-            }
+            },
+            'parent': this
         });
     }
 
@@ -919,6 +920,57 @@ export default class Editor extends Dom {
     onAssetBrowserAssetAdd(){
         this.setDirty('assets');
         this.updateConfigEditorImageFields();
+    }
+
+    /**
+     * AssetBrowser beforeassetremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onAssetBrowserBeforeAssetRemove(evt){
+        const asset = evt.detail.asset;
+        const file = 'shared' in asset && asset.shared ? asset.file : asset;
+
+        if(/^image\/.*/.test(file.mimetype)){
+            const components = this.findComponentsWithAsset(file.url);
+            if(components.length > 0){
+                const names = components.map((component) => {
+                    return component.getName();
+                });
+
+                new Overlay({
+                    'text': Locale.t('editor.onAssetBrowserBeforeAssetRemove.used.msg', '<em>!asset</em> cannot be deleted as it is being used in the following components: <em>!components</em>.', {'!asset': asset.name, '!components': names.join('</em>, <em>')}),
+                    'buttons': {
+                        'ok': Locale.t('editor.onAssetBrowserBeforeAssetRemove.used.ok', 'OK'),
+                    },
+                    'parent': this
+                });
+
+                evt.preventDefault();
+            }
+        }
+    }
+
+    findComponentsWithAsset(url, component){
+        let results = [];
+
+        if(typeof component === "undefined"){
+            this.getPlayer().getScenarios().forEach((scenario) => {
+                results = results.concat(this.findComponentsWithAsset(url, scenario));
+            });
+        }
+        else{
+            if(component.hasProperty('background-image') && component.getPropertyValue('background-image') === url){
+                results.push(component);
+            }
+
+            component.getChildren().forEach((child) => {
+                results = results.concat(this.findComponentsWithAsset(url, child));
+            });
+        }
+
+        return results;
     }
 
     /**
@@ -1454,11 +1506,11 @@ export default class Editor extends Dom {
                 loadmask.hide();
 
                 new Overlay({
-                    'parent': this,
                     'text': evt.detail.message,
                     'buttons': {
                         'ok': Locale.t('editor.onMediaError.ok', 'OK'),
-                    }
+                    },
+                    'parent': this
                 });
             })
             .addOneTimeListener('loadedmetadata', () => {
@@ -1605,11 +1657,11 @@ export default class Editor extends Dom {
         loadmask.hide();
 
         new Overlay({
-            'parent': this,
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            }
+            },
+            'parent': this
         });
     }
 
@@ -1717,11 +1769,11 @@ export default class Editor extends Dom {
         loadmask.hide();
 
         new Overlay({
-            'parent': this,
             'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
-            }
+            },
+            'parent': this
         });
     }
 
@@ -2220,10 +2272,7 @@ export default class Editor extends Dom {
         const images = {};
 
         Object.values(assets).forEach((asset) => {
-            let file = asset;
-            if('shared' in asset && asset.shared){
-                file = asset.file;
-            }
+            const file = 'shared' in asset && asset.shared ? asset.file : asset;
 
             if(/^image\/.*/.test(file.mimetype)){
                 images[file.url] = asset.name;
@@ -2440,11 +2489,11 @@ export default class Editor extends Dom {
                     // prevent adding the page if current time == 0 or >= media duration
                     if(current_time === 0 || current_time >= duration){
                         new Overlay({
-                            'parent': this,
                             'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
                             'buttons': {
                                 'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
-                            }
+                            },
+                            'parent': this
                         });
 
                         break;

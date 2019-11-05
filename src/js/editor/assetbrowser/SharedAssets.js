@@ -264,11 +264,11 @@ export default class AssetBrowser extends Dom {
         const code = evt.target.getStatus();
 
         new Overlay({
-            'parent': this,
             'text': Locale.t('editor.assetbrowser.SharedAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {
                 'ok': Locale.t('editor.assetbrowser.SharedAssets.onXHRError.ok', 'OK'),
-            }
+            },
+            'parent': this
         });
     }
 

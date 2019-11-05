@@ -425,11 +425,11 @@ export default class Player extends Dom {
         // Only show an alert if not in an editor, as an alert will otherwise be shown in the editor
         if(!this.in_editor){
             new Overlay({
-                'parent': this,
                 'text': message,
                 'buttons': {
                     'ok': Locale.t('player.onRendererError.ok', 'OK'),
-                }
+                },
+                'parent': this
             });
         }
 

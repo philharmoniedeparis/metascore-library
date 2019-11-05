@@ -426,11 +426,11 @@ export default class SpectrogramForm extends Overlay {
         const code = evt.target.getStatus();
 
         new Overlay({
-            'parent': this,
             'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
             'buttons': {
                 'ok': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.onXHRError.ok', 'OK'),
-            }
+            },
+            'parent': this
         });
     }
 }

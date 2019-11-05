@@ -237,6 +237,8 @@
 	"editor.deletePlayerComponents.page.msg": "Are you sure you want to delete page @index of \"<em>@block</em>\"?",
 	"editor.deletePlayerComponents.pages.msg": "Are you sure you want to delete those @count pages?",
 	"editor.mainmenu.revisions.option.text": "Revision @id from @date",
+	"editor.onAssetBrowserBeforeAssetRemove.used.msg": "<em>!asset</em> cannot be deleted as it is being used in the following components: <em>!components</em>.",
+	"editor.onAssetBrowserBeforeAssetRemove.used.ok": "OK",
 	"editor.onMainmenuClick.restore.confirmLabel": "Restore",
 	"editor.onMainmenuClick.restore.text": "Are you sure you want to revert to revision @id from @date?",
 	"editor.onMainmenuClick.revert.confirmLabel": "Revert",
