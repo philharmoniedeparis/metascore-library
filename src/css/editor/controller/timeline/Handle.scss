@@ -3,7 +3,7 @@
 :local(.className){
     position: relative;
     box-sizing: border-box;
-    background: $mediumgray;
+    background: rgba(0, 0, 0, 0.1);
     border-top: 1px solid $darkgray;
     user-select: none;
     cursor: pointer;
@@ -19,9 +19,8 @@
         user-select: none;
 
         > .icon{
+            margin: 0 0.25em;
             font-size: 1.5em;
-            margin-left: 0.5em;
-            margin-right: 0.25em;
         }
 
         > button{
@@ -97,7 +96,7 @@
 
     > .descendents{
         display: none;
-        background: rgba(0, 0, 0, 0.25);
+        padding-left: 0.5em;
     }
 
     &.user-expanded,
@@ -121,7 +120,7 @@
         > .inner{
             > button{
                 &[data-action="expander"]{
-                    opacity: 0;
+                    display: none;
                 }
             }
         }
@@ -189,6 +188,7 @@
     }
 
     &[data-type="Scenario"]{
+        background: none;
         border-top: 0;
 
         > .inner{
@@ -197,6 +197,7 @@
 
         > .descendents{
             display: block;
+            padding: 0;
         }
     }
 }
