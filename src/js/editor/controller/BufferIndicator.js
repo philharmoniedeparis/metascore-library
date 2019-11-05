@@ -62,7 +62,7 @@ export default class BufferIndicator extends Dom {
      */
     static getDefaults(){
         return {
-            'bufferedColor': '#777',
+            'bufferedColor': '#7070c5',
             'playbackColor': '#0000fe'
         };
     }
@@ -212,15 +212,16 @@ export default class BufferIndicator extends Dom {
     }
 
     onMediaClockRendererChange(evt){
-        const renderer = evt.detail.renderer;
+        this.clear();
 
+        const renderer = evt.detail.renderer;
         if(renderer){
             renderer.addListener('progress', this.onMediaRendererProgress);
-        }
 
-        this
-            .updateSize()
-            .update();
+            this
+                .updateSize()
+                .update();
+        }
     }
 
     /**
