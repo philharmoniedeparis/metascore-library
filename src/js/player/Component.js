@@ -367,6 +367,10 @@ export default class Component extends Dom {
             case 'end-time':
                 this.setCuePoint();
                 break;
+
+            case 'editor.locked':
+                this.toggleClass('editor-locked', value);
+                break;
         }
     }
 
