@@ -1301,8 +1301,14 @@ export default class Editor extends Dom {
             return;
         }
 
+        const loadmask = new LoadMask({
+            'parent': overlay
+        });
+
         const old_duration = MasterClock.getRenderer().getDuration();
         getFileDuration(source, (error, new_duration) => {
+            loadmask.hide();
+
             if(error){
                 new Overlay({
                     'text': error,
