@@ -7,36 +7,35 @@
         appearance: none;
         width: 100%;
         height: 100%;
+        padding: 0;
         vertical-align: middle;
         background: none;
         z-index: 0;
         cursor: pointer;
 
-        &:focus{
+        @mixin thumb() {
+            appearance: none;
+            width: 1em;
+            height: 1em;
+            background: #fff;
             border: 0;
-            outline: none;
-        }
+            border-radius: 50%;
+          }
 
         &::-moz-range-thumb{
-            appearance: none;
-            width: 1em;
-            height: 1em;
-            background: #fff;
-            border: 0;
+            @include thumb();
         }
         &::-webkit-slider-thumb{
-            appearance: none;
-            width: 1em;
-            height: 1em;
-            background: #fff;
-            border: 0;
+            @include thumb();
         }
         &::-ms-thumb {
-            appearance: none;
-            width: 1em;
-            height: 1em;
-            background: #fff;
+            @include thumb();
+        }
+
+        &:focus{
+            background: none;
             border: 0;
+            outline: none;
         }
     }
 
