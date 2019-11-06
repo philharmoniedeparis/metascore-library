@@ -1703,23 +1703,6 @@ export default class Editor extends Dom {
             .addAssets(this.player.getData('assets'), true)
             .addAssets(this.player.getData('shared_assets'), true);
 
-        // Update the timeline
-        const timeline = this.controller.getTimeline();
-        this.player.getScenarios().forEach((component) => {
-            timeline.addTrack(component);
-        });
-
-        // Update the scenario list
-        const scenarioselector = this.controller.getScenarioSelector().clear();
-        this.player.getScenarios().forEach((scenario) => {
-            scenarioselector.addScenario(scenario.getName(), true);
-        });
-
-        this
-            .updateMainmenu()
-            .updateConfigEditorImageFields()
-            .updateConfigEditorComponentFields();
-
         if(this.player.getData('default_revision')){
             this.player
                 .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
@@ -1739,6 +1722,18 @@ export default class Editor extends Dom {
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
                 .addListener('drop', this.onPlayerDrop.bind(this));
 
+            // Update the timeline and scenario list
+            const timeline = this.controller.getTimeline();
+            const scenarioselector = this.controller.getScenarioSelector().clear();
+            this.player.getScenarios().forEach((scenario) => {
+                timeline.addTrack(scenario);
+                scenarioselector.addScenario(scenario.getName(), true);
+            });
+            scenarioselector.setActiveScenario(this.player.getActiveScenario().getName(), true);
+
+            this.updateConfigEditorImageFields();
+            this.updateConfigEditorComponentFields();
+
             // Add the editor's specific stylesheet
             const player_document = this.player_frame.get(0).contentWindow.document;
             new StyleSheet(player_css)
@@ -1755,6 +1750,8 @@ export default class Editor extends Dom {
         else{
             this.setEditing(false);
         }
+
+        this.updateMainmenu();
 
         loadmask.hide();
     }
