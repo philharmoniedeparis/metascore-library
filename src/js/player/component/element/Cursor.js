@@ -15,9 +15,14 @@ import {isEmpty} from '../../../core/utils/Var';
 export default class Cursor extends Element {
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'Cursor';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

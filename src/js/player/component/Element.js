@@ -8,9 +8,14 @@ import {isString} from '../../core/utils/Var';
 export default class Element extends Component{
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'Element';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

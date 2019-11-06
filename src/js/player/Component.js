@@ -27,6 +27,15 @@ import CuePoint from './CuePoint';
 export default class Component extends Dom {
 
     /**
+    * Get the component's type
+    *
+    * @return {String} The component's type
+    */
+    static getType(){
+        return 'Component';
+    }
+
+    /**
     * Get the default config values
     *
     * @return {Object} The default values
@@ -48,15 +57,6 @@ export default class Component extends Dom {
                 }
             }
         };
-    }
-
-    /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
-    */
-    static getType(){
-        return this.name;
     }
 
     /**

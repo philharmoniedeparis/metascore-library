@@ -23,21 +23,14 @@ import Dom from '../../../core/Dom';
 export default class Content extends Element {
 
     /**
-     *Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
-     */
-    constructor(configs) {
-        // call parent constructor
-        super(configs);
-
-        this.addDelegate('a, a *', 'click', this.onLinkClick.bind(this));
+     * @inheritdoc
+    */
+    static getType(){
+        return 'Content';
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();
@@ -52,6 +45,18 @@ export default class Content extends Element {
                 }
             })
         });
+    }
+
+    /**
+     *Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     */
+    constructor(configs) {
+        // call parent constructor
+        super(configs);
+
+        this.addDelegate('a, a *', 'click', this.onLinkClick.bind(this));
     }
 
     /**

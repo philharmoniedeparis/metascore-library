@@ -30,9 +30,14 @@ const ELEMENT_TYPES = {
 export default class Page extends Component {
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'Page';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

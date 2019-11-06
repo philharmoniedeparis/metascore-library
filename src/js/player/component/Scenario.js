@@ -23,6 +23,13 @@ export default class Scenario extends Component {
 
     /**
      * @inheritdoc
+    */
+    static getType(){
+        return 'Scenario';
+    }
+
+    /**
+     * @inheritdoc
      */
     static getDefaults(){
         const defaults = super.getDefaults();

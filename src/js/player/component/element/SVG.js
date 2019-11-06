@@ -28,18 +28,14 @@ const svg_elements = [
 export default class SVG extends Element {
 
     /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
+     * @inheritdoc
     */
     static getType(){
         return 'SVG';
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

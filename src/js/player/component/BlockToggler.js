@@ -7,9 +7,14 @@ import Dom from '../../core/Dom';
 export default class BlockToggler extends Component{
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'BlockToggler';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

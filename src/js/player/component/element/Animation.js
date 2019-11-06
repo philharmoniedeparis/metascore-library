@@ -8,18 +8,14 @@ import Lottie from 'lottie-web';
 export default class Animation extends Element{
 
     /**
-    * Get the component's type
-    *
-    * @return {String} The component's type
+     * @inheritdoc
     */
     static getType(){
         return 'Animation';
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

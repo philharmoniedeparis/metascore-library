@@ -10,9 +10,14 @@ import {MasterClock} from '../../core/media/Clock';
 export default class Controller extends Component{
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'Controller';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

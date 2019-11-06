@@ -8,9 +8,14 @@ import {MasterClock} from '../../core/media/Clock';
 export default class VideoRenderer extends Component{
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
+     * @inheritdoc
+    */
+    static getType(){
+        return 'VideoRenderer';
+    }
+
+    /**
+     * @inheritdoc
     */
     static getDefaults(){
         const defaults = super.getDefaults();

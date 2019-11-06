@@ -16,6 +16,13 @@ export default class Block extends Component {
 
     /**
      * @inheritdoc
+    */
+    static getType(){
+        return 'Block';
+    }
+
+    /**
+     * @inheritdoc
      */
     static getDefaults(){
         const defaults = super.getDefaults();
