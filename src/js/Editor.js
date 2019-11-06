@@ -712,7 +712,6 @@ export default class Editor extends Dom {
                                         const parent = component.parents();
                                         const siblings = parent.children();
                                         const position = siblings.index(`#${component.getId()}`);
-                                        console.log(position, siblings.count());
                                         component.insertAt(parent, Math.min(siblings.count(), position + 1));
                                     },
                                     'toggler': (context) => {
@@ -733,7 +732,6 @@ export default class Editor extends Dom {
                                         const parent = component.parents();
                                         const siblings = parent.children();
                                         const position = siblings.index(`#${component.getId()}`);
-                                        console.log(position);
                                         component.insertAt(parent, Math.max(0, position - 1));
                                     },
                                     'toggler': (context) => {
@@ -1207,9 +1205,14 @@ export default class Editor extends Dom {
         const name = evt.detail.scenario;
         const player = this.getPlayer();
         const scenario = player.getScenario(name);
+        const active = scenario.isActive();
 
         if(scenario){
             scenario.remove();
+
+            if(active){
+                player.setActiveScenario(null);
+            }
 
             this.history.add({
                 'undo': () => {
@@ -1563,9 +1566,10 @@ export default class Editor extends Dom {
         if(scenario){
             // Show scenario in Tinmeline
             this.controller.getTimeline().getTrack(scenario.getId()).show();
-            // Update ScenarioSelector
-            this.controller.getScenarioSelector().setActiveScenario(scenario.getName(), true);
         }
+
+        // Update ScenarioSelector
+        this.controller.getScenarioSelector().setActiveScenario(scenario ? scenario.getName() : null, true);
 
         // Update ConfigEditor component fields
         this.updateConfigEditorComponentFields();
@@ -1927,7 +1931,6 @@ export default class Editor extends Dom {
                                     'width': asset.width,
                                     'height': asset.height
                                 });
-                                console.log(configs);
                                 break;
                         }
                     }

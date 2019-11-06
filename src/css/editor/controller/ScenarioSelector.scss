@@ -19,7 +19,8 @@
             }
         }
 
-        &[data-action="add"]{
+        &[data-action="add"],
+        &[data-action="clone"]{
             display: flex;
             padding: 0.25em;
 

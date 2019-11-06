@@ -9,6 +9,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?svg-sprite';
 import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?svg-sprite';
+import clone_icon from '../../../img/editor/controller/scenarioselector/clone.svg?svg-sprite';
 
 import {className} from '../../../css/editor/controller/ScenarioSelector.scss';
 
@@ -57,9 +58,14 @@ export default class ScenarioSelector extends Dom {
         this.list = new Dom('<ul/>', {'class': 'list'})
             .appendTo(this);
 
-        new Button({'icon': add_icon})
+        this.add_btn = new Button({'icon': add_icon})
             .attr('title', Locale.t('editor.controller.ScenarioSelector.add.title', 'Add a new scenario'))
             .data('action', 'add')
+            .appendTo(this);
+
+        this.clone_btn = new Button({'icon': clone_icon})
+            .attr('title', Locale.t('editor.controller.ScenarioSelector.clone.title', 'Clone active scenario'))
+            .data('action', 'clone')
             .appendTo(this);
 
         this
@@ -75,15 +81,7 @@ export default class ScenarioSelector extends Dom {
                     'text': Locale.t('editor.controller.ScenarioSelector.contextmenu.rename', 'Rename scenario'),
                     'callback': (context) => {
                         const scenario = context.el.data('scenario');
-                        new Prompt({
-                            'text': Locale.t('editor.controller.ScenarioSelector.rename.prompt.text', "Enter the scenario's new name"),
-                            'default': scenario,
-                            'confirmLabel': Locale.t('editor.controller.ScenarioSelector.rename.prompt.confirmLabel', 'Rename'),
-                            'onConfirm': this.onRenameConfirm.bind(this, scenario),
-                            'onCancel': this.onRenameCancel.bind(this),
-                            'autoHide': false,
-                            'parent': '.metaScore-editor'
-                        });
+                        this.showRenamePrompt(scenario);
                     },
                     'toggler': (context) => {
                         return context.el.is('.item');
@@ -93,14 +91,7 @@ export default class ScenarioSelector extends Dom {
                     'text': Locale.t('editor.controller.ScenarioSelector.contextmenu.clone', 'Clone scenario'),
                     'callback': (context) => {
                         const scenario = context.el.data('scenario');
-                        new Prompt({
-                            'text': Locale.t('editor.controller.ScenarioSelector.clone.prompt.text', "Enter the scenario's name"),
-                            'confirmLabel': Locale.t('editor.controller.ScenarioSelector.clone.prompt.confirmLabel', 'Clone'),
-                            'onConfirm': this.onCloneConfirm.bind(this, scenario),
-                            'onCancel': this.onCloneCancel.bind(this),
-                            'autoHide': false,
-                            'parent': '.metaScore-editor'
-                        });
+                        this.showClonePrompt(scenario);
                     },
                     'toggler': (context) => {
                         return context.el.is('.item');
@@ -110,12 +101,7 @@ export default class ScenarioSelector extends Dom {
                     'text': Locale.t('editor.controller.ScenarioSelector.contextmenu.delete', 'Delete scenario'),
                     'callback': (context) => {
                         const scenario = context.el.data('scenario');
-                        new Confirm({
-                            'text': Locale.t('editor.controller.ScenarioSelector.delete.confirm.text', 'Are you sure you want to delete the <em>@scenario</em> scenario?', {'@scenario': scenario}),
-                            'confirmLabel': Locale.t('editor.controller.ScenarioSelector.delete.confirm.confirmLabel', 'Delete'),
-                            'onConfirm': this.onDeleteConfirm.bind(this, scenario),
-                            'parent': '.metaScore-editor'
-                        });
+                        this.showDeleteConfirm(scenario);
                     },
                     'toggler': (context) => {
                         return context.el.is('.item') && this.list.children('.item').count() > 1;
@@ -156,14 +142,15 @@ export default class ScenarioSelector extends Dom {
                 break;
 
             case 'add':
-                new Prompt({
-                    'text': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.text', "Enter the scenario's name"),
-                    'confirmLabel': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.confirmLabel', "Add"),
-                    'onConfirm': this.onAddConfirm.bind(this),
-                    'onCancel': this.onAddCancel.bind(this),
-                    'autoHide': false,
-                    'parent': '.metaScore-editor'
-                });
+                this.showAddPrompt();
+                break;
+
+            case 'clone':
+                {
+                    const item = this.list.child('.active');
+                    const scenario = item.data('scenario');
+                    this.showClonePrompt(scenario);
+                }
                 break;
         }
     }
@@ -312,26 +299,115 @@ export default class ScenarioSelector extends Dom {
     }
 
     /**
+     * Prompt user for new scenario's name
+     *
+     * @return {this}
+     */
+    showAddPrompt(){
+        new Prompt({
+            'text': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.text', "Enter the scenario's name"),
+            'confirmLabel': Locale.t('editor.controller.ScenarioSelector.onButtonClick.add.confirmLabel', "Add"),
+            'onConfirm': this.onAddConfirm.bind(this),
+            'onCancel': this.onAddCancel.bind(this),
+            'autoHide': false,
+            'parent': '.metaScore-editor'
+        });
+
+        return this;
+    }
+
+    /**
+     * Prompt user for scenario's new name
+     *
+     * @param {String} scenario The scenario to rename
+     * @return {this}
+     */
+    showRenamePrompt(scenario){
+        if(scenario){
+            new Prompt({
+                'text': Locale.t('editor.controller.ScenarioSelector.rename.prompt.text', "Enter the scenario's new name"),
+                'default': scenario,
+                'confirmLabel': Locale.t('editor.controller.ScenarioSelector.rename.prompt.confirmLabel', 'Rename'),
+                'onConfirm': this.onRenameConfirm.bind(this, scenario),
+                'onCancel': this.onRenameCancel.bind(this),
+                'autoHide': false,
+                'parent': '.metaScore-editor'
+            });
+        }
+
+        return this;
+    }
+
+    /**
+     * Prompt user for scenario's clone name
+     *
+     * @param {String} scenario The scenario to clone
+     * @return {this}
+     */
+    showClonePrompt(scenario){
+        if(scenario){
+            new Prompt({
+                'text': Locale.t('editor.controller.ScenarioSelector.clone.prompt.text', "Enter the scenario's name"),
+                'confirmLabel': Locale.t('editor.controller.ScenarioSelector.clone.prompt.confirmLabel', 'Clone'),
+                'onConfirm': this.onCloneConfirm.bind(this, scenario),
+                'onCancel': this.onCloneCancel.bind(this),
+                'autoHide': false,
+                'parent': '.metaScore-editor'
+            });
+        }
+
+        return this;
+    }
+
+    /**
+     * Ask user for scenario delete confirmation
+     *
+     * @param {String} scenario The scenario to delete
+     * @return {this}
+     */
+    showDeleteConfirm(scenario){
+        if(scenario){
+            new Confirm({
+                'text': Locale.t('editor.controller.ScenarioSelector.delete.confirm.text', 'Are you sure you want to delete the <em>@scenario</em> scenario?', {'@scenario': scenario}),
+                'confirmLabel': Locale.t('editor.controller.ScenarioSelector.delete.confirm.confirmLabel', 'Delete'),
+                'onConfirm': this.onDeleteConfirm.bind(this, scenario),
+                'parent': '.metaScore-editor'
+            });
+        }
+
+        return this;
+    }
+
+    /**
      * Set the active scenario item
      *
      * @param {String} scenario The scenario's name
      * @param {Boolean} supressEvent Whether to prevent the custom scenarioactivate event from firing
      */
     setActiveScenario(scenario, supressEvent){
-        const item = this.getScenarioItem(scenario);
+        const previous_active_item = this.list.child('.active');
+        const previous_scenario = previous_active_item.count() > 0 ? previous_active_item.data('scenario') : null;
 
-        if(item){
-            const previous_active_item = this.list.child('.active');
-            if(previous_active_item){
+        if(scenario !== previous_scenario){
+            if(previous_scenario){
                 previous_active_item.removeClass('active');
             }
 
-            item.addClass('active');
+            const item = this.getScenarioItem(scenario);
+            if(item){
+                item.addClass('active');
+                this.clone_btn.enable();
 
-            if(supressEvent !== true){
-                this.triggerEvent('scenarioactivate', {'scenario': scenario});
+                if(supressEvent !== true){
+                    this.triggerEvent('scenarioactivate', {'scenario': scenario});
+                }
+            }
+            else{
+                this.clone_btn.disable();
             }
         }
+
+        return this;
     }
 
     /**
@@ -391,7 +467,7 @@ export default class ScenarioSelector extends Dom {
     /**
      * Clone a scenario
      *
-     * @param {String} scenario The scenario to clone
+     * @param {String} original The original scenario's name
      * @param {String} clone The new scenario's name
      * @param {Boolean} supressEvent Whether to prevent the scenariorename event from firing
      * @return {this}
@@ -416,11 +492,11 @@ export default class ScenarioSelector extends Dom {
     removeScenario(scenario, supressEvent){
         const item = this.getScenarioItem(scenario);
         if(item){
-            item.remove();
-
             if(supressEvent !== true){
                 this.triggerEvent('scenarioremove', {'scenario': scenario});
             }
+
+            item.remove();
         }
 
         return this;

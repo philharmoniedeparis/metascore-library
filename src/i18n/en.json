@@ -218,6 +218,7 @@
 	"editor.controller.ScenarioSelector.add.title": "Add a new scenario",
 	"editor.controller.ScenarioSelector.clone.prompt.confirmLabel": "Clone",
 	"editor.controller.ScenarioSelector.clone.prompt.text": "Enter the scenario's name",
+	"editor.controller.ScenarioSelector.clone.title": "Clone active scenario",
 	"editor.controller.ScenarioSelector.contextmenu.clone": "Clone scenario",
 	"editor.controller.ScenarioSelector.contextmenu.delete": "Delete scenario",
 	"editor.controller.ScenarioSelector.contextmenu.rename": "Rename scenario",

@@ -803,24 +803,20 @@ export default class Player extends Dom {
      */
     setActiveScenario(name, supressEvent){
         const scenario = this.getScenario(name);
+        const previous_scenario = this.getActiveScenario();
 
-        if(scenario){
-            if(!scenario.isActive()){
-                const previous_scenario = this.getActiveScenario();
-
-                if(previous_scenario){
-                    previous_scenario.deactivate();
-                }
-
-                scenario.activate();
-
-                if(supressEvent !== true){
-                    this.triggerEvent('scenariochange', {'player': this, 'scenario': scenario, 'previous': previous_scenario}, true, false);
-                }
+        if(scenario !== previous_scenario){
+            if(previous_scenario){
+                previous_scenario.deactivate();
             }
-        }
-        else{
-            console.error(`scenario "${name}" does not exist`);
+
+            if(scenario){
+                scenario.activate();
+            }
+
+            if(supressEvent !== true){
+                this.triggerEvent('scenariochange', {'player': this, 'scenario': scenario, 'previous': previous_scenario}, true, false);
+            }
         }
 
         return this;

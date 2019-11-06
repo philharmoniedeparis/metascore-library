@@ -218,6 +218,7 @@
 	"editor.controller.ScenarioSelector.add.title": "Ajouter un nouveau scénario",
 	"editor.controller.ScenarioSelector.clone.prompt.confirmLabel": "Clone",
 	"editor.controller.ScenarioSelector.clone.prompt.text": "Enter the scenario's name",
+	"editor.controller.ScenarioSelector.clone.title": "Dupliquer le scénario actif",
 	"editor.controller.ScenarioSelector.contextmenu.clone": "Dupliquer le scénario",
 	"editor.controller.ScenarioSelector.contextmenu.delete": "Supprimer le scénario",
 	"editor.controller.ScenarioSelector.contextmenu.rename": "Renommer le scénario",
