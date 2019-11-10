@@ -309,17 +309,17 @@ export default class Editor extends Dom {
                     'items': {
                         'select': {
                             'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
-                            'callback': (context) => {
+                            'callback': (context, data) => {
                                 this.configs_editor.unsetComponents();
-                                context.data.page.getChildren().forEach((element, index) => {
+                                data.parent.getChildren().forEach((element, index) => {
                                     this.configs_editor.setComponent(element, index > 0);
                                 });
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.page');
                                     if(dom){
-                                        context.data.page = dom._metaScore;
+                                        data.parent = dom._metaScore;
                                         return true;
                                     }
                                 }
@@ -327,15 +327,15 @@ export default class Editor extends Dom {
                             }
                         },
                         'copy': {
-                            'text': (context) => {
-                                if(context.data.selected){
+                            'text': (context, data) => {
+                                if(data.selected){
                                     return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
                                 }
                                 return Locale.t('editor.contextmenu.copy-element', 'Copy element');
                             },
-                            'callback': (context) => {
+                            'callback': (context, data) => {
                                 const configs = [];
-                                context.data.elements.forEach((element) => {
+                                data.components.forEach((element) => {
                                     const config = element.getPropertyValues(true);
                                     // Slightly move the copy by 5 pixels right and 5 pixels down.
                                     config.x += 5;
@@ -345,17 +345,17 @@ export default class Editor extends Dom {
                                 });
                                 this.clipboard.setData('element', configs);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const elements = this.configs_editor.getComponents('Element');
                                     if(elements.length > 0){
-                                        context.data.selected = true;
-                                        context.data.elements = elements;
+                                        data.selected = true;
+                                        data.components = elements;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.element');
                                     if(dom){
-                                        context.data.elements = [dom._metaScore];
+                                        data.components = [dom._metaScore];
                                         return true;
                                     }
                                 }
@@ -364,16 +364,16 @@ export default class Editor extends Dom {
                         },
                         'paste': {
                             'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
-                            'callback': (context) => {
-                                this.addPlayerComponents('element', context.data.element, context.data.page);
+                            'callback': (context, data) => {
+                                this.addPlayerComponents('element', data.component, data.parent);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     if(this.clipboard.getDataType() === 'element'){
                                         const dom = context.el.closest('.metaScore-component.page');
                                         if(dom){
-                                            context.data.element = this.clipboard.getData();
-                                            context.data.page = dom._metaScore;
+                                            data.component = this.clipboard.getData();
+                                            data.parent = dom._metaScore;
                                             return true;
                                         }
                                     }
@@ -382,26 +382,26 @@ export default class Editor extends Dom {
                             }
                         },
                         'delete': {
-                            'text': (context) => {
-                                if(context.data.selected){
+                            'text': (context, data) => {
+                                if(data.selected){
                                     return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
                                 }
                                 return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                             },
-                            'callback': (context) => {
-                                this.deletePlayerComponents('element', context.data.elements);
+                            'callback': (context, data) => {
+                                this.deletePlayerComponents('element', data.components);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const elements = this.configs_editor.getComponents('Element');
                                     if(elements.length > 0){
-                                        context.data.selected = true;
-                                        context.data.elements = elements;
+                                        data.selected = true;
+                                        data.components = elements;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.element');
                                     if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
-                                        context.data.elements = [dom._metaScore];
+                                        data.components = [dom._metaScore];
                                         return true;
                                     }
                                 }
@@ -410,14 +410,14 @@ export default class Editor extends Dom {
                         },
                         'lock': {
                             'text': Locale.t('editor.contextmenu.lock-element', 'Lock element'),
-                            'callback': (context) => {
-                                context.data.element.setPropertyValue('editor.locked', true);
+                            'callback': (context, data) => {
+                                data.component.setPropertyValue('editor.locked', true);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.element');
                                     if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
-                                        context.data.element = dom._metaScore;
+                                        data.component = dom._metaScore;
                                         return true;
                                     }
                                 }
@@ -426,14 +426,104 @@ export default class Editor extends Dom {
                         },
                         'unlock': {
                             'text': Locale.t('editor.contextmenu.unlock-element', 'Unlock element'),
-                            'callback': (context) => {
-                                context.data.element.setPropertyValue('editor.locked', false);
+                            'callback': (context, data) => {
+                                data.component.setPropertyValue('editor.locked', false);
+                            },
+                            'toggler': (context, data) => {
+                                if(this.editing){
+                                    const dom = context.el.closest('.metaScore-component.element');
+                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                        data.component = dom._metaScore;
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        },
+                        'arrange': {
+                            'text': Locale.t('editor.contextmenu.arrange', 'Arrange'),
+                            'items': {
+                                'bring-to-front': {
+                                    'text': Locale.t('editor.contextmenu.arrange.bring-to-front', 'Bring to front'),
+                                    'callback': (context, data) => {
+                                        const component = data.component;
+                                        const parent = component.parents();
+                                        component.appendTo(parent);
+                                    },
+                                    'toggler': (context, data) => {
+                                        if(this.editing){
+                                            const dom = context.el.closest('.metaScore-component.element');
+                                            if(dom){
+                                                data.component = dom._metaScore;
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                },
+                                'send-to-back': {
+                                    'text': Locale.t('editor.contextmenu.arrange.send-to-back', 'Send to back'),
+                                    'callback': (context, data) => {
+                                        const component = data.component;
+                                        const parent = component.parents();
+                                        component.insertAt(parent, 0);
+                                    },
+                                    'toggler': (context, data) => {
+                                        if(this.editing){
+                                            const dom = context.el.closest('.metaScore-component.element');
+                                            if(dom){
+                                                data.component = dom._metaScore;
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                },
+                                'bring-forward': {
+                                    'text': Locale.t('editor.contextmenu.arrange.bring-forward', 'Bring forward'),
+                                    'callback': (context, data) => {
+                                        const component = data.component;
+                                        const parent = component.parents();
+                                        const siblings = parent.children();
+                                        const position = siblings.index(`#${component.getId()}`);
+                                        component.insertAt(parent, Math.min(siblings.count(), position + 2));
+                                    },
+                                    'toggler': (context, data) => {
+                                        if(this.editing){
+                                            const dom = context.el.closest('.metaScore-component.element');
+                                            if(dom){
+                                                data.component = dom._metaScore;
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                },
+                                'send-backward': {
+                                    'text': Locale.t('editor.contextmenu.arrange.send-backward', 'Send backward'),
+                                    'callback': (context, data) => {
+                                        const component = data.component;
+                                        const parent = component.parents();
+                                        const siblings = parent.children();
+                                        const position = siblings.index(`#${component.getId()}`);
+                                        component.insertAt(parent, Math.max(0, position - 1));
+                                    },
+                                    'toggler': (context, data) => {
+                                        if(this.editing){
+                                            const dom = context.el.closest('.metaScore-component.element');
+                                            if(dom){
+                                                data.component = dom._metaScore;
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    }
+                                }
                             },
                             'toggler': (context) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
-                                        context.data.element = dom._metaScore;
+                                    if(dom){
                                         return true;
                                     }
                                 }
@@ -470,26 +560,26 @@ export default class Editor extends Dom {
                             }
                         },
                         'delete': {
-                            'text': (context) => {
-                                if(context.data.selected){
+                            'text': (context, data) => {
+                                if(data.selected){
                                     return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
                                 }
                                 return Locale.t('editor.contextmenu.delete-page', 'Delete page');
                             },
-                            'callback': (context) => {
-                                this.deletePlayerComponents('page', context.data.pages);
+                            'callback': (context, data) => {
+                                this.deletePlayerComponents('page', data.components);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const pages = this.configs_editor.getComponents('Page');
                                     if(pages.length > 0){
-                                        context.data.selected = true;
-                                        context.data.pages = pages;
+                                        data.selected = true;
+                                        data.components = pages;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.page');
                                     if(dom){
-                                        context.data.pages = [dom._metaScore];
+                                        data.components = [dom._metaScore];
                                         return true;
                                     }
                                 }
@@ -563,15 +653,15 @@ export default class Editor extends Dom {
                             }
                         },
                         'copy': {
-                            'text': (context) => {
-                                if(context.data.selected){
+                            'text': (context, data) => {
+                                if(data.selected){
                                     return Locale.t('editor.contextmenu.copy-selected-blocks', 'Copy selected blocks');
                                 }
                                 return Locale.t('editor.contextmenu.copy-block', 'Copy block');
                             },
-                            'callback': (context) => {
+                            'callback': (context, data) => {
                                 const configs = [];
-                                context.data.blocks.forEach((block) => {
+                                data.components.forEach((block) => {
                                     const config = block.getPropertyValues(true);
                                     // Slightly move the copy by 5 pixels right and 5 pixels down.
                                     config.x += 5;
@@ -581,17 +671,17 @@ export default class Editor extends Dom {
                                 });
                                 this.clipboard.setData('block', configs);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
                                     if(blocks.length > 0){
-                                        context.data.selected = true;
-                                        context.data.blocks = blocks;
+                                        data.selected = true;
+                                        data.components = blocks;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom){
-                                        context.data.blocks = [dom._metaScore];
+                                        data.components = [dom._metaScore];
                                         return true;
                                     }
                                 }
@@ -608,26 +698,26 @@ export default class Editor extends Dom {
                             }
                         },
                         'delete': {
-                            'text': (context) => {
-                                if(context.data.selected){
+                            'text': (context, data) => {
+                                if(data.selected){
                                     return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
                                 }
                                 return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                             },
-                            'callback': (context) => {
-                                this.deletePlayerComponents('block', context.data.blocks);
+                            'callback': (context, data) => {
+                                this.deletePlayerComponents('block', data.components);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
                                     if(blocks.length > 0){
-                                        context.data.selected = true;
-                                        context.data.blocks = blocks;
+                                        data.selected = true;
+                                        data.components = blocks;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom){
-                                        context.data.blocks = [dom._metaScore];
+                                        data.components = [dom._metaScore];
                                         return true;
                                     }
                                 }
@@ -636,14 +726,14 @@ export default class Editor extends Dom {
                         },
                         'lock': {
                             'text': Locale.t('editor.contextmenu.lock-block', 'Lock block'),
-                            'callback': (context) => {
-                                context.data.block.setPropertyValue('editor.locked', true);
+                            'callback': (context, data) => {
+                                data.component.setPropertyValue('editor.locked', true);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
-                                        context.data.block = dom._metaScore;
+                                        data.component = dom._metaScore;
                                         return true;
                                     }
                                 }
@@ -652,14 +742,14 @@ export default class Editor extends Dom {
                         },
                         'unlock': {
                             'text': Locale.t('editor.contextmenu.unlock-block', 'Unlock block'),
-                            'callback': (context) => {
-                                context.data.block.setPropertyValue('editor.locked', false);
+                            'callback': (context, data) => {
+                                data.component.setPropertyValue('editor.locked', false);
                             },
-                            'toggler': (context) => {
+                            'toggler': (context, data) => {
                                 if(this.editing){
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                     if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
-                                        context.data.block = dom._metaScore;
+                                        data.component = dom._metaScore;
                                         return true;
                                     }
                                 }
@@ -671,16 +761,16 @@ export default class Editor extends Dom {
                             'items': {
                                 'bring-to-front': {
                                     'text': Locale.t('editor.contextmenu.arrange.bring-to-front', 'Bring to front'),
-                                    'callback': (context) => {
-                                        const component = context.data.block;
+                                    'callback': (context, data) => {
+                                        const component = data.component;
                                         const parent = component.parents();
                                         component.appendTo(parent);
                                     },
-                                    'toggler': (context) => {
+                                    'toggler': (context, data) => {
                                         if(this.editing){
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
-                                                context.data.block = dom._metaScore;
+                                                data.component = dom._metaScore;
                                                 return true;
                                             }
                                         }
@@ -689,16 +779,16 @@ export default class Editor extends Dom {
                                 },
                                 'send-to-back': {
                                     'text': Locale.t('editor.contextmenu.arrange.send-to-back', 'Send to back'),
-                                    'callback': (context) => {
-                                        const component = context.data.block;
+                                    'callback': (context, data) => {
+                                        const component = data.component;
                                         const parent = component.parents();
                                         component.insertAt(parent, 0);
                                     },
-                                    'toggler': (context) => {
+                                    'toggler': (context, data) => {
                                         if(this.editing){
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
-                                                context.data.block = dom._metaScore;
+                                                data.component = dom._metaScore;
                                                 return true;
                                             }
                                         }
@@ -707,18 +797,18 @@ export default class Editor extends Dom {
                                 },
                                 'bring-forward': {
                                     'text': Locale.t('editor.contextmenu.arrange.bring-forward', 'Bring forward'),
-                                    'callback': (context) => {
-                                        const component = context.data.block;
+                                    'callback': (context, data) => {
+                                        const component = data.component;
                                         const parent = component.parents();
                                         const siblings = parent.children();
                                         const position = siblings.index(`#${component.getId()}`);
-                                        component.insertAt(parent, Math.min(siblings.count(), position + 1));
+                                        component.insertAt(parent, Math.min(siblings.count(), position + 2));
                                     },
-                                    'toggler': (context) => {
+                                    'toggler': (context, data) => {
                                         if(this.editing){
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
-                                                context.data.block = dom._metaScore;
+                                                data.component = dom._metaScore;
                                                 return true;
                                             }
                                         }
@@ -727,18 +817,18 @@ export default class Editor extends Dom {
                                 },
                                 'send-backward': {
                                     'text': Locale.t('editor.contextmenu.arrange.send-backward', 'Send backward'),
-                                    'callback': (context) => {
-                                        const component = context.data.block;
+                                    'callback': (context, data) => {
+                                        const component = data.component;
                                         const parent = component.parents();
                                         const siblings = parent.children();
                                         const position = siblings.index(`#${component.getId()}`);
                                         component.insertAt(parent, Math.max(0, position - 1));
                                     },
-                                    'toggler': (context) => {
+                                    'toggler': (context, data) => {
                                         if(this.editing){
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
                                             if(dom){
-                                                context.data.block = dom._metaScore;
+                                                data.component = dom._metaScore;
                                                 return true;
                                             }
                                         }
