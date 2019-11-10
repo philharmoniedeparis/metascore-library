@@ -246,7 +246,6 @@ export default class Editor extends Dom {
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
-            .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
 
         /**
@@ -447,8 +446,8 @@ export default class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.bring-to-front', 'Bring to front'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        const parent = component.parents();
-                                        component.appendTo(parent);
+                                        const position = component.parents().children().count();
+                                        this.arrangePlayerComponent(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -465,8 +464,7 @@ export default class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.send-to-back', 'Send to back'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        const parent = component.parents();
-                                        component.insertAt(parent, 0);
+                                        this.arrangePlayerComponent(component, 0);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -483,10 +481,12 @@ export default class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.bring-forward', 'Bring forward'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        const parent = component.parents();
-                                        const siblings = parent.children();
-                                        const position = siblings.index(`#${component.getId()}`);
-                                        component.insertAt(parent, Math.min(siblings.count(), position + 2));
+                                        const siblings = component.parents().children();
+
+                                        let position = siblings.index(`#${component.getId()}`);
+                                        position = Math.min(siblings.count(), position + 2);
+
+                                        this.arrangePlayerComponent(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -503,10 +503,12 @@ export default class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.send-backward', 'Send backward'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        const parent = component.parents();
-                                        const siblings = parent.children();
-                                        const position = siblings.index(`#${component.getId()}`);
-                                        component.insertAt(parent, Math.max(0, position - 1));
+                                        const siblings = component.parents().children();
+
+                                        let position = siblings.index(`#${component.getId()}`);
+                                        position = Math.max(0, position - 1);
+
+                                        this.arrangePlayerComponent(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -1378,7 +1380,7 @@ export default class Editor extends Dom {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
-        component.insertAt(component.parents(), position);
+        this.arrangePlayerComponent(component, position);
     }
 
     /**
@@ -2899,6 +2901,23 @@ export default class Editor extends Dom {
         else{
             this.configs_editor.setComponent(component, keep_existing);
         }
+
+        return this;
+    }
+
+    arrangePlayerComponent(component, position){
+        const component_id = component.getId();
+        const parent = component.parents();
+
+        const track = this.controller.getTimeline().getTrack(component_id);
+        const track_parent = track.parents();
+
+        const handle = track.getHandle();
+        const handle_parent = handle.parents();
+
+        component.insertAt(parent, position);
+        track.insertAt(track_parent, position);
+        handle.insertAt(handle_parent, position);
 
         return this;
     }

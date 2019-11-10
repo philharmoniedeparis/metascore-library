@@ -213,14 +213,10 @@ export default class Timeline extends Dom {
 
             const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
             const dragging_track = this.getTrack(dragging_component_id);
-            const dragging_handle = dragging_track.getHandle();
 
             const index = handle_parent.children('.handle').index('.dragover');
             const above = track.hasClass('drag-above');
             const position = above ? index : index + 1;
-
-            dragging_track.insertAt(dragging_track.parents(), position);
-            dragging_handle.insertAt(dragging_handle.parents(), position);
 
             this.triggerEvent('trackdrop', {'component': dragging_track.getComponent(), 'position': position});
 
