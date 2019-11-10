@@ -222,7 +222,7 @@ export default class ContextMenu extends Dom {
 
         if(action in this.tasks){
             if('callback' in this.tasks[action]){
-                this.tasks[action].callback(this.context);
+                this.tasks[action].callback(this.context, this.context.data[action]);
                 this.hide();
             }
 
@@ -261,45 +261,47 @@ export default class ContextMenu extends Dom {
      * @return {this}
      */
     addTask(action, configs, parent){
-        const task = new Dom('<li/>', {'data-action': action})
+        const el = new Dom('<li/>', {'data-action': action})
             .appendTo(parent);
 
-        this.tasks[action] = {
+        const task = {
             'toggler': 'toggler' in configs ? configs.toggler : true,
-            'el': task
+            'el': el
         };
 
         if('text' in configs){
             if(isFunction(configs.text)){
-                this.tasks[action].text = configs.text;
+                task.text = configs.text;
             }
             else{
-                task.text(configs.text);
+                el.text(configs.text);
             }
         }
 
         if('callback' in configs && isFunction(configs.callback)){
-            this.tasks[action].callback = configs.callback;
-            task.addListener('click', this.onTaskClick);
+            task.callback = configs.callback;
+            el.addListener('click', this.onTaskClick);
         }
         else{
-            task.addClass('no-callback');
+            el.addClass('no-callback');
         }
 
         if('class' in configs){
-            task.addClass(configs.class);
+            el.addClass(configs.class);
         }
 
         if('items' in configs){
-            task.addClass('has-subitems');
+            el.addClass('has-subitems');
 
             const subtasks = new Dom('<ul/>')
-                .appendTo(task);
+                .appendTo(el);
 
 			Object.entries(configs.items).forEach(([subkey, subtask]) => {
                 this.addTask(`${action}|${subkey}`, subtask, subtasks);
             });
         }
+
+        this.tasks[action] = task;
 
         return this;
     }
@@ -333,16 +335,18 @@ export default class ContextMenu extends Dom {
             'x': x,
             'y': y,
             'el': new Dom(evt.target),
-             // Allows adding arbitrary data to the context
             'data': {}
         };
 
         if(this.tasks){
-            Object.entries(this.tasks).forEach(([, task]) => {
-                const active = isFunction(task.toggler) ? task.toggler(this.context) !== false : task.toggler !== false;
+            Object.entries(this.tasks).forEach(([action, task]) => {
+                // An object to persist context data between toggler and callback
+                this.context.data[action] = {};
+
+                const active = isFunction(task.toggler) ? task.toggler(this.context, this.context.data[action]) !== false : task.toggler !== false;
 
                 if('text' in task && isFunction(task.text)){
-                    task.el.text(task.text(this.context));
+                    task.el.text(task.text(this.context, this.context.data[action]));
                 }
 
                 if(active){
