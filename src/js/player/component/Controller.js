@@ -25,9 +25,6 @@ export default class Controller extends Component{
         return Object.assign({}, defaults, {
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
-                'type': {
-                    'type': 'string'
-                },
                 'hidden': {
                     'type': 'boolean'
                 },

@@ -45,6 +45,12 @@ export default class Component extends Dom {
             'draggable': true,
             'resizable': true,
             'properties': {
+                'type': {
+                    'type': 'string',
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
                 'id': {
                     'type': 'string',
                     'default': `component-${uuid(10)}`,

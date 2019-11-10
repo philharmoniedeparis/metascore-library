@@ -22,9 +22,6 @@ export default class Element extends Component{
 
         return Object.assign({}, defaults, {
             'properties': Object.assign({}, defaults.properties, {
-                'type': {
-                    'type': 'string'
-                },
                 'name': {
                     'type': 'string'
                 },

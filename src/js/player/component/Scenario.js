@@ -38,9 +38,6 @@ export default class Scenario extends Component {
             'draggable': false,
             'resizable': false,
             'properties': Object.assign({}, defaults.properties, {
-                'type': {
-                    'type': 'string'
-                },
                 'name': {
                     'type': 'string'
                 },
