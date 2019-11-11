@@ -59,7 +59,9 @@ export default class SelectInput extends Input {
             .appendTo(this);
 
         if(this.configs.multiple){
-            this.native_input.attr('multiple', '');
+            this.native_input
+                .attr('multiple', '')
+                .addDelegate('option', 'mousedown', this.onOptionMouseDown.bind(this));
         }
         else if(!this.configs.required){
             this.addOption('', this.configs.emptyLabel);
@@ -68,6 +70,15 @@ export default class SelectInput extends Input {
         Object.entries(this.configs.options).forEach(([value, text]) => {
             this.addOption(value, text);
         });
+    }
+
+    onOptionMouseDown(evt){
+        const option = new Dom(evt.target);
+        option.prop('selected', !option.prop('selected'));
+
+        evt.preventDefault();
+
+        this.native_input.triggerEvent('change');
     }
 
     /**
