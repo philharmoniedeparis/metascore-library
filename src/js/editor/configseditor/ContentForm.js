@@ -22,6 +22,7 @@ export default class ContentForm extends ElementForm {
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
         this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
+        this.onComponentContentsInput = this.onComponentContentsInput.bind(this);
         this.onComponentDragOver = this.onComponentDragOver.bind(this);
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
@@ -136,6 +137,17 @@ export default class ContentForm extends ElementForm {
     }
 
     /**
+     * The component's contents input event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentContentsInput(evt){
+        const component = Dom.closest(evt.target, '.metaScore-component.Content')._metaScore;
+        this.triggerEvent('contentschange', {'component': component});
+    }
+
+    /**
      * The component's dragover event handler
      *
      * @private
@@ -181,6 +193,7 @@ export default class ContentForm extends ElementForm {
         new Dom(component.contents.get(0))
             .attr('contenteditable', 'true')
             .addListener('click', this.onComponentContentsClick)
+            .addListener('input', this.onComponentContentsInput)
             .addListener('dragover', this.onComponentDragOver)
             .addListener('keydown', this.onComponentContentsKey)
             .addListener('keypress', this.onComponentContentsKey)
@@ -224,6 +237,7 @@ export default class ContentForm extends ElementForm {
         new Dom(component.contents.get(0))
             .attr('contenteditable', null)
             .removeListener('click', this.onComponentContentsClick)
+            .removeListener('input', this.onComponentContentsInput)
             .removeListener('dragover', this.onComponentDragOver)
             .removeListener('keydown', this.onComponentContentsKey)
             .removeListener('keypress', this.onComponentContentsKey)

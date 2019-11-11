@@ -216,6 +216,7 @@ export default class Editor extends Dom {
          */
         this.configs_editor = new ConfigsEditor()
             .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
+            .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
             .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this))
             .addDelegate('.cursor-form', 'keyframeseditingstart', this.onCursorFormKeyframesEditingStart.bind(this))
             .addDelegate('.cursor-form', 'keyframeseditingstop', this.onCursorFormKeyframesEditingStop.bind(this))
@@ -1538,6 +1539,15 @@ export default class Editor extends Dom {
 
         this.getPlayer().addClass('isolating');
         this.addClass('contents-unlocked');
+    }
+
+    /**
+     * ContentForm contentschange event callback
+     *
+     * @private
+     */
+    onContentFormContentsChange(){
+        this.setDirty('components');
     }
 
     /**
