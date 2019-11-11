@@ -183,7 +183,7 @@ export default class TimeInput extends Input {
         this.native_input
             .attr('id', null)
             .attr('type', 'number')
-            .attr('step', 0.01)
+            .attr('step', 'any')
             .removeListener('input', this.onInput.bind(this))
             .removeListener('change', this.onChange.bind(this))
             .removeListener('keypress', this.onKeypress.bind(this))
@@ -673,7 +673,8 @@ export default class TimeInput extends Input {
         let _value = value;
 
         if(_value !== null){
-            _value = parseFloat(_value);
+            // work around floating-point arithmetic issues
+            _value = Math.round(parseFloat(_value) * 100) / 100;
 
             if(this.min !== null){
                 _value = Math.max(_value, this.min);
