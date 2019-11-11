@@ -55,6 +55,9 @@ export default class Controller extends Dom {
 
         this.setupUI();
 
+        const resize_observer = new ResizeObserver(this.onResize.bind(this));
+        resize_observer.observe(this.get(0));
+
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
@@ -155,9 +158,6 @@ export default class Controller extends Dom {
 
         this.waveform_zoom.getControls()
             .appendTo(bottom);
-
-        const resize_observer = new ResizeObserver(this.onResize.bind(this));
-        resize_observer.observe(this.get(0));
     }
 
     /**
