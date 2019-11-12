@@ -131,10 +131,10 @@ export default class AssetBrowser extends Dom {
     }
 
     onSharedAssetImport(evt){
+        this.switchTab('guide-assets');
+
         const asset = Object.assign({}, evt.detail.asset);
         this.getTabContent('guide-assets').addAsset(asset);
-
-        this.switchTab('guide-assets');
     }
 
     onSharedAssetToolbarButtonClick(evt){

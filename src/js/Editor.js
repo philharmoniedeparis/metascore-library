@@ -3001,9 +3001,9 @@ export default class Editor extends Dom {
 
                 // Add assets
                 if(this.isDirty('assets')){
-                    const assets = Object.values(this.asset_browser.getTabContent('guide-assets').getAssets());
+                    const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
                     if(assets.length > 0){
-                        Object.values(this.asset_browser.getTabContent('guide-assets').getAssets()).forEach((asset) => {
+                        assets.forEach((asset) => {
                             data.append('assets[]', JSON.stringify(asset));
                         });
                     }

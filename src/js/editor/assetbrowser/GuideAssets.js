@@ -47,7 +47,7 @@ export default class GuideAssets extends Dom {
          * The list of loaded assets
          * @type {Object}
          */
-        this.assets = {};
+        this.asset_items = {};
 
         // fix event handlers scope
         this.onAssetDragStart = this.onAssetDragStart.bind(this);
@@ -226,6 +226,23 @@ export default class GuideAssets extends Dom {
     }
 
     /**
+     * Add an asset
+     *
+     * @param {Object} asset The asset to add
+     * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
+     * @return {this}
+     */
+    addAsset(asset, supressEvent){
+        this.createAssetItem(asset);
+
+        if(supressEvent !== true){
+            this.triggerEvent('assetadd', {'asset': asset});
+        }
+
+        return this;
+    }
+
+    /**
      * Add assets
      *
      * @param {Array} assets The assets to add
@@ -241,25 +258,40 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Add an asset
+     * Remove an asset item
      *
-     * @param {Object} asset The asset to add
-     * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
+     * @param {Number} id The asset id to remove
+     * @param {Boolean} supressEvent Whether to prevent the assetremove event from firing
      * @return {this}
      */
-    addAsset(asset, supressEvent){
-        const item = new Dom('<div/>', {'class': 'asset'})
+    removeAsset(id, supressEvent){
+        const item = this.asset_items[id];
+        const asset = item.asset;
+        const el = item.el;
+
+        el.remove();
+
+        delete this.asset_items[asset.id];
+
+        if(supressEvent !== true){
+            this.triggerEvent('assetremove', {'asset': asset});
+        }
+
+        return this;
+    }
+
+    createAssetItem(asset){
+        const el = new Dom('<div/>', {'class': 'asset'})
             .attr('draggable', 'true')
+            .attr('tabindex', '0')
             .data('id', asset.id)
             .addListener('dragstart', this.onAssetDragStart)
             .addListener('dragend', this.onAssetDragEnd)
             .addDelegate('button', 'click', this.onAssetButtonClick)
             .appendTo(this.assets_container);
 
-        this.assets[asset.id] = asset;
-
         const figure = new Dom('<figure/>')
-            .appendTo(item);
+            .appendTo(el);
 
         let file = asset;
         if('shared' in asset && asset.shared){
@@ -288,64 +320,53 @@ export default class GuideAssets extends Dom {
         }
 
         new Dom('<div/>', {'class': 'label', 'text': asset.name, 'title': asset.name})
-            .appendTo(item);
+            .appendTo(el);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
-            .appendTo(item);
+            .appendTo(el);
 
         new Button({'icon': delete_icon})
             .attr('title', Locale.t('editor.assetbrowser.GuideAssets.AssetDeleteButton.label', 'Delete'))
             .data('action', 'delete')
             .appendTo(buttons);
 
-        if(supressEvent !== true){
-            this.triggerEvent('assetadd', {'asset': asset});
-        }
+        el.focus();
+        el.get(0).scrollIntoView();
 
-        return this;
-    }
-
-    /**
-     * Remove an asset
-     *
-     * @param {Object} asset The asset to remove
-     * @param {Boolean} supressEvent Whether to prevent the assetremove event from firing
-     * @return {this}
-     */
-    removeAsset(asset, supressEvent){
-        const item = this.assets_container.find(`.asset[data-id="${asset.id}"]`);
-        item.remove();
-
-        delete this.assets[asset.id];
-
-        if(supressEvent !== true){
-            this.triggerEvent('assetremove', {'asset': asset});
-        }
+        this.asset_items[asset.id] = {
+            'asset': asset,
+            'el': el,
+            'figure': figure
+        };
 
         return this;
     }
 
     clearAssets(){
-        this.assets = {};
+        this.asset_items = {};
         this.assets_container.empty();
 
         return this;
     }
 
     getAsset(id){
-        return this.assets[id];
+        return this.asset_items[id].asset;
     }
 
     getAssets(){
-        return this.assets;
+        return Object.values(this.asset_items).map((item) => {
+            return item.asset;
+        });
     }
 
     onAssetDragStart(evt){
-        const item = new Dom(evt.target);
-        const asset_id = item.data('id');
-        const asset = this.getAsset(asset_id);
+        const el = new Dom(evt.target);
+        const asset_id = el.data('id');
+        const item = this.asset_items[asset_id];
+        const asset = item.asset;
+        const figure = item.figure;
 
-        item.addClass('dragging');
+        el.addClass('dragging');
 
         evt.dataTransfer.effectAllowed = 'copy';
 
@@ -361,7 +382,7 @@ export default class GuideAssets extends Dom {
             evt.dataTransfer.setData('text/html', `<img src="${asset.url}" />`);
         }
 
-        this._asset_drag_ghost = new Dom(item.child('figure').get(0).cloneNode(true))
+        this._asset_drag_ghost = new Dom(figure.get(0).cloneNode(true))
             .addClass(assetDragGhostClassName)
             .appendTo('body');
 
@@ -369,8 +390,8 @@ export default class GuideAssets extends Dom {
     }
 
     onAssetDragEnd(evt){
-        const item = new Dom(evt.target);
-        item.removeClass('dragging');
+        const el = new Dom(evt.target);
+        el.removeClass('dragging');
 
         this._asset_drag_ghost.remove();
         delete this._asset_drag_ghost;
@@ -380,9 +401,10 @@ export default class GuideAssets extends Dom {
         const button = new Dom(evt.target);
         const action = button.data('action');
 
-        const item = new Dom(evt.currentTarget);
-        const asset_id = item.data('id');
-        const asset = this.getAsset(asset_id);
+        const el = new Dom(evt.currentTarget);
+        const asset_id = el.data('id');
+        const item = this.asset_items[asset_id];
+        const asset = item.asset;
 
         switch(action){
             case 'delete':
@@ -392,7 +414,7 @@ export default class GuideAssets extends Dom {
                         'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
                         'confirmLabel': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.confirmLabel', 'Delete'),
                         'onConfirm': () => {
-                            this.removeAsset(asset);
+                            this.removeAsset(asset_id);
                         }
                     });
                 }
