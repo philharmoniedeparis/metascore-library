@@ -106,11 +106,11 @@ export default class Controller extends Dom {
         this.middle = new Dom('<div/>', {'class': 'middle'})
             .appendTo(this);
 
-        const sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
+        this.sticky_top = new Dom('<div/>', {'class': 'sticky-top'})
             .appendTo(this.middle);
 
         const left = new Dom('<div/>', {'class': 'left'})
-            .appendTo(sticky_top);
+            .appendTo(this.sticky_top);
 
         this.controls = new Dom('<div/>', {'class': 'controls'})
             .appendTo(left);
@@ -130,7 +130,7 @@ export default class Controller extends Dom {
             .appendTo(this.controls);
 
         const right = new Dom('<div/>', {'class': 'right'})
-            .appendTo(sticky_top);
+            .appendTo(this.sticky_top);
 
         /**
          * The zoom waveform
@@ -298,14 +298,18 @@ export default class Controller extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTimelineTrackSelect(evt){
-        // Scroll track into view
         const scroll_el = this.middle.get(0);
         const scroll_el_rect = scroll_el.getBoundingClientRect();
+
+        const sticky_top_el = this.sticky_top.get(0);
+        const sticky_top_el_rect = sticky_top_el.getBoundingClientRect();
+
         const track_rect = evt.target.getBoundingClientRect();
 
-        if(track_rect.top < scroll_el_rect.top || track_rect.top > scroll_el_rect.top + scroll_el_rect.height){
+        if(track_rect.top < sticky_top_el_rect.bottom || track_rect.bottom > scroll_el_rect.bottom){
             window.requestAnimationFrame(() => {
-                scroll_el.scrollTop = track_rect.top - scroll_el_rect.top;
+                // Scroll track into view
+                scroll_el.scrollTop = track_rect.top - sticky_top_el_rect.bottom;
             });
         }
     }
