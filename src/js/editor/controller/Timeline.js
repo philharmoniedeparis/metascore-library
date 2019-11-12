@@ -354,7 +354,7 @@ export default class Timeline extends Dom {
      *
      * @param {Component} component The component to associate with the track
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @return {this}
+     * @return {Track} The added track
      */
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
@@ -401,7 +401,7 @@ export default class Timeline extends Dom {
             this.addTrack(child_component);
         });
 
-        return this;
+        return track;
     }
 
     /**

@@ -1829,13 +1829,22 @@ export default class Editor extends Dom {
                 .addListener('drop', this.onPlayerDrop.bind(this));
 
             // Update the timeline and scenario list
+            const active_scenario = this.player.getActiveScenario();
             const timeline = this.controller.getTimeline();
             const scenarioselector = this.controller.getScenarioSelector().clear();
             this.player.getScenarios().forEach((scenario) => {
-                timeline.addTrack(scenario);
+                const track = timeline.addTrack(scenario);
                 scenarioselector.addScenario(scenario.getName(), true);
+
+                if(scenario === active_scenario){
+                    track.show();
+                    scenarioselector.setActiveScenario(active_scenario.getName(), true);
+                }
+                else{
+                    track.hide();
+                }
+
             });
-            scenarioselector.setActiveScenario(this.player.getActiveScenario().getName(), true);
 
             this.updateConfigEditorImageFields();
             this.updateConfigEditorComponentFields();
