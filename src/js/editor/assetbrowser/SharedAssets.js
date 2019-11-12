@@ -7,7 +7,7 @@ import LoadMask from '../../core/ui/overlay/LoadMask';
 import Overlay from '../../core/ui/Overlay';
 import TextInput from '../../core/ui/input/TextInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
-import Lottie from 'lottie-web';
+import AssetFigure from './AssetFigure';
 import Fuse from 'fuse.js';
 
 import search_icon from '../../../img/editor/assetbrowser/sharedassets/search.svg?svg-sprite';
@@ -16,9 +16,9 @@ import close_icon from '../../../img/editor/assetbrowser/sharedassets/close.svg?
 import {className, toolbarClassName} from '../../../css/editor/assetbrowser/SharedAssets.scss';
 
 /**
- * An asset browser class
+ * A shared assets browser class
  */
-export default class AssetBrowser extends Dom {
+export default class SharedAssets extends Dom {
 
     /**
      * Instantiate
@@ -96,7 +96,7 @@ export default class AssetBrowser extends Dom {
     }
 
     loadAssets(){
-        if(!this.assets){
+        if(!this.asset_items){
             // add a loading mask
             const loadmask = new LoadMask({
                 'parent': this.assets_container,
@@ -125,13 +125,13 @@ export default class AssetBrowser extends Dom {
          * The list of assets
          * @type {Array}
          */
-        this.assets = response.assets;
+        this.asset_items = {};
 
-        this.assets.forEach((asset) => {
-            this.createAssetItem(asset).appendTo(this.assets_container);
+        response.assets.forEach((asset) => {
+            this.createAssetItem(asset);
         });
 
-        this.fuzzy_search = new Fuse(this.assets, {
+        this.fuzzy_search = new Fuse(response.assets, {
             'shouldSort': true,
             'tokenize': true,
             'matchAllTokens': true,
@@ -150,35 +150,14 @@ export default class AssetBrowser extends Dom {
     }
 
     createAssetItem(asset){
-        const item = new Dom('<div/>', {'class': `asset ${asset.type}`})
+        const el = new Dom('<div/>', {'class': `asset ${asset.type}`})
             .data('id', asset.id)
             .data('type', asset.type)
-            .addDelegate('button', 'click', this.onAssetButtonClick);
+            .addDelegate('button', 'click', this.onAssetButtonClick)
+            .appendTo(this.assets_container);
 
-        const figure = new Dom('<figure/>')
-            .appendTo(item);
-
-        switch(asset.type){
-            case 'image':
-            case 'svg':
-                new Dom('<img/>', {'src': asset.file.url})
-                    .appendTo(figure);
-                break;
-
-            case 'lottie_animation':{
-                    const animation = Lottie.loadAnimation({
-                        container: figure.get(0),
-                        path: asset.file.url,
-                        renderer: 'svg',
-                        loop: true,
-                        autoplay: true,
-                    });
-
-                    this._animations = this._animations || [];
-                    this._animations.push(animation);
-                }
-                break;
-        }
+        const figure = new AssetFigure(asset)
+            .appendTo(el);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
             .appendTo(figure);
@@ -189,9 +168,15 @@ export default class AssetBrowser extends Dom {
 
         new Dom('<div/>', {'class': 'label'})
             .text(asset.name)
-            .appendTo(item);
+            .appendTo(el);
 
-        return item;
+        this.asset_items[asset.id] = {
+            'asset': asset,
+            'el': el,
+            'figure': figure
+        };
+
+        return this;
     }
 
     onFilterSearchInput(){
@@ -209,18 +194,19 @@ export default class AssetBrowser extends Dom {
 
         const search_result = search ? this.fuzzy_search.search(search) : null;
 
-        this.assets.forEach((asset) => {
-            const item = this.getAssetItem(asset);
+        Object.values(this.asset_items).forEach((item) => {
+            const asset = item.asset;
+            const el = item.el;
 
-            item.css('order', null);
+            el.css('order', null);
 
             if(!animated_toggle && asset.type === 'lottie_animation'){
-                item.hide();
+                el.hide();
                 return;
             }
 
             if(!static_toggle && asset.type !== 'lottie_animation'){
-                item.hide();
+                el.hide();
                 return;
             }
 
@@ -228,14 +214,14 @@ export default class AssetBrowser extends Dom {
                 const search_index = search_result.indexOf(asset);
 
                 if(search_index < 0){
-                    item.hide();
+                    el.hide();
                     return;
                 }
 
-                item.css('order', search_index);
+                el.css('order', search_index);
             }
 
-            item.show();
+            el.show();
         });
     }
 
@@ -243,9 +229,10 @@ export default class AssetBrowser extends Dom {
         const button = new Dom(evt.target);
         const action = button.data('action');
 
-        const item = new Dom(evt.currentTarget);
-        const asset_id = item.data('id');
-        const asset = this.getAssetById(asset_id);
+        const el = new Dom(evt.currentTarget);
+        const asset_id = el.data('id');
+        const item = this.asset_items[asset_id];
+        const asset = item.asset;
 
         switch(action){
             case 'import':
@@ -272,16 +259,6 @@ export default class AssetBrowser extends Dom {
         });
     }
 
-    getAssetById(id){
-        return this.assets.find((asset) => {
-            return asset.id === id;
-        });
-    }
-
-    getAssetItem(asset){
-        return this.assets_container.child(`.asset[data-id="${asset.id}"]`);
-    }
-
     getToolbar(){
         return this.toolbar;
     }
@@ -289,16 +266,14 @@ export default class AssetBrowser extends Dom {
     show(){
         super.show();
 
-        if(!this.assets){
+        if(!this.asset_items){
             this.loadAssets();
         }
         else{
             // Play all animations
-            if(this._animations){
-                this._animations.forEach((animation) => {
-                    animation.play();
-                });
-            }
+            Object.values(this.asset_items).forEach((item) => {
+                item.figure.play();
+            });
         }
     }
 
@@ -309,9 +284,9 @@ export default class AssetBrowser extends Dom {
         }
 
         // Stop all animations
-        if(this._animations){
-            this._animations.forEach((animation) => {
-                animation.stop();
+        if(this.asset_items){
+            Object.values(this.asset_items).forEach((item) => {
+                item.figure.stop();
             });
         }
 
