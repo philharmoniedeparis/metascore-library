@@ -102,9 +102,9 @@ export default class ComponentLinks extends Dom {
         this.links = {};
 
         Object.entries(this.configs.links).forEach(([key, value]) => {
-            const link = new Dom('<a/>', {'class': key})
-                .text(value.text)
+            const link = new Dom('<div/>', {'class': `link ${key}`})
                 .attr('draggable', 'true')
+                .attr('tabindex', '0')
                 .data('type', value.type)
                 .data('configs', JSON.stringify(value.configs))
                 .appendTo(this);
@@ -112,25 +112,20 @@ export default class ComponentLinks extends Dom {
             new Icon({'symbol': value.icon})
                 .appendTo(link);
 
+            new Dom('<div/>', {'class': 'label'})
+                .text(value.text)
+                .appendTo(link);
+
             this.links[key] = link;
         });
 
         this
-            .addDelegate('a', 'click', this.onLinkClick.bind(this))
             .addDelegate('a', 'dragstart', this.onLinkDragStart.bind(this))
             .addDelegate('a', 'dragend', this.onLinkDragEnd.bind(this));
     }
 
     getLink(id){
         return this.links[id];
-    }
-
-    onLinkClick(evt){
-        const link = new Dom(evt.target);
-        const type = link.data('type');
-        const configs = link.data('configs');
-
-        this.triggerEvent('componentlinkclick', {'type': type, 'configs': JSON.parse(configs)});
     }
 
     onLinkDragStart(evt){
