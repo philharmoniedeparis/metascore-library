@@ -9,8 +9,10 @@ import {className, handleDragGhostClassName} from '../../../css/editor/controlle
  * The editor's timeline
  * @emits {trackadd} Fired when a track is added
  * @param {Track} track The track
+ *
  * @emits {trackremove} Fired when a track is removed
  * @param {Track} track The track
+ *
  * @emits {offsetupdate} Fired when the offset is updated
  * @param {Number} start The start time of the offset in centiseconds
  * @param {Number} end The end time of the offset in centiseconds
@@ -261,23 +263,10 @@ export default class Timeline extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTrackDragStart(evt){
-        const draggable = evt.detail.behavior;
+        const behavior = evt.detail.behavior;
         const track_id = Dom.data(evt.target, 'component');
 
-        Object.entries(this.tracks).forEach(([id, track]) => {
-            if(track.hidden()){
-                return;
-            }
-
-            if(id === track_id){
-                return;
-            }
-
-            const rect = track.info.get(0).getBoundingClientRect();
-            draggable
-                .addSnapGuide('x', rect.left)
-                .addSnapGuide('x', rect.right);
-        });
+        this.setupTrackSnapGuides(track_id, behavior);
     }
 
     /**
@@ -298,23 +287,10 @@ export default class Timeline extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onTrackResizeStart(evt){
-        const resizable = evt.detail.behavior;
+        const behavior = evt.detail.behavior;
         const track_id = Dom.data(evt.target, 'component');
 
-        Object.entries(this.tracks).forEach(([id, track]) => {
-            if(track.hidden()){
-                return;
-            }
-
-            if(id === track_id){
-                return;
-            }
-
-            const rect = track.info.get(0).getBoundingClientRect();
-            resizable
-                .addSnapGuide('x', rect.left)
-                .addSnapGuide('x', rect.right);
-        });
+        this.setupTrackSnapGuides(track_id, behavior);
     }
 
     /**
@@ -439,6 +415,29 @@ export default class Timeline extends Dom {
                 this.triggerEvent('trackremove', {'track': track});
             }
         }
+
+        return this;
+    }
+
+    /**
+     * Setup drag or resize snap guides
+     *
+     * @private
+     * @param {String} id The track's id
+     * @param {Draggable|Resizable} behavior The draggable or resizable behavior
+     * @return {this}
+     */
+    setupTrackSnapGuides(id, behavior){
+        // Add snapping to other tracks
+        Object.entries(this.tracks).forEach(([track_id, track]) => {
+            if(track.hidden() || track_id === id){
+                return;
+            }
+
+            const track_rect = track.info.get(0).getBoundingClientRect();
+            behavior.addSnapGuide('x', track_rect.left);
+            behavior.addSnapGuide('x', track_rect.right);
+        });
 
         return this;
     }

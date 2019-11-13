@@ -231,11 +231,15 @@ export default class Draggable {
             const guide = new Dom('<div/>', {'class': `${guideClassName} snap-guide`})
                 .data('axis', axis)
                 .data('position', position)
-                .css('margin-left', `${-offsetX}px`)
-                .css('margin-top', `${-offsetY}px`)
-                .css(axis === 'y' ? 'top' : 'left', `${position}px`)
                 .hide()
                 .appendTo(container);
+
+            if(axis === 'y'){
+                guide.css('top', `${position - offsetY}px`);
+            }
+            else{
+                guide.css('left', `${position - offsetX}px`);
+            }
 
             this._snap_guides.push(guide);
         }

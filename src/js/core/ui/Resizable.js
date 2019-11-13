@@ -264,7 +264,7 @@ export default class Resizable {
     */
     addSnapGuide(axis, position){
         const exists = this._snap_guides.find((guide) => {
-            return guide.data('axis') === axis && guide.data('position') === position;
+            return guide.data('axis') === axis && guide.data('position') === position.toString();
         });
 
         if(!exists){
@@ -280,14 +280,10 @@ export default class Resizable {
                 .appendTo(container);
 
             if(axis === 'y'){
-                guide
-                    .css('left', `${-offsetX}px`)
-                    .css('top', `${position - offsetY}px`);
+                guide.css('top', `${position - offsetY}px`);
             }
             else{
-                guide
-                    .css('left', `${position - offsetX}px`)
-                    .css('top', `${-offsetY}px`);
+                guide.css('left', `${position - offsetX}px`);
             }
 
             this._snap_guides.push(guide);
