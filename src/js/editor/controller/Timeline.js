@@ -428,6 +428,10 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     setupTrackSnapGuides(id, behavior){
+        // Add snapping to playhead
+        const tracks_container_rect = this.tracks_container_outer.get(0).getBoundingClientRect();
+        behavior.addSnapGuide('x', this.playhead_position + tracks_container_rect.left);
+
         // Add snapping to other tracks
         Object.entries(this.tracks).forEach(([track_id, track]) => {
             if(track.hidden() || track_id === id){
