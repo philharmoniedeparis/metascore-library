@@ -113,6 +113,11 @@
             background: $block-color;
         }
     }
+    &[data-type="Page"]{
+        & > .inner .info{
+            background: $page-color;
+        }
+    }
     &[data-type="Cursor"]{
         & > .inner .info{
             background: $cursor-element-color;
