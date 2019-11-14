@@ -633,11 +633,11 @@ export default class Zoom extends Dom {
 
         const renderer = evt.detail.renderer;
         if(renderer){
-            renderer.getWaveformData(this.onMediaWaveformData.bind(this));
-
             this
                 .setMessage(Locale.t('editor.controller.waveform.Zoom.loading', 'Loading waveform...'))
                 .updateSize();
+
+            renderer.getWaveformData(this.onMediaWaveformData.bind(this));
         }
 
         return this;
@@ -674,7 +674,7 @@ export default class Zoom extends Dom {
             this.updateSize().setData(data, range).setMessage(null);
         }
         else{
-            this.setMessage(Locale.t('editor.Controller.zoom.noWaveform', 'No waveform data available'));
+            this.setMessage(Locale.t('editor.controller.Zoom.noWaveform', 'No waveform data available'));
         }
     }
 

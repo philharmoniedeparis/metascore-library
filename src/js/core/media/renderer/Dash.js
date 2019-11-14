@@ -188,6 +188,12 @@ export default class Dash extends HTML5 {
         const DashJS = window.dashjs.MediaPlayer;
         const dash = DashJS().create();
 
+        /**
+         * The current source
+         * @type {Object}
+         */
+        this.source = source;
+
         dash.on(DashJS.events.ERROR, this.onLibError.bind(this));
 
         dash.initialize(this.dom, source.url, false);

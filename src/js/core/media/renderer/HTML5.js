@@ -10,20 +10,28 @@ import WebAudioBuilder from 'waveform-data/webaudio';
  *
  * @emits {ready} Fired when the renderer is ready
  * @param {Object} renderer The renderer instance
+ *
  * @emits {sourceset} Fired when the source is set
  * @param {Object} renderer The renderer instance
+ *
  * @emits {loadedmetadata} Fired when the metadata has loaded
  * @param {Object} renderer The renderer instance
+ *
  * @emits {play} Fired when the renderer starts playing
  * @param {Object} renderer The renderer instance
+ *
  * @emits {pause} Fired when the renderer is paused
  * @param {Object} renderer The renderer instance
+ *
  * @emits {seeking} Fired when a seek operation begins
  * @param {Object} renderer The renderer instance
+ *
  * @emits {seeked} Fired when a seek operation completes
  * @param {Object} renderer The renderer instance
+ *
  * @emits {progress} Fired as the resource loads
  * @param {Object} renderer The renderer instance
+ *
  * @emits {waveformdataloaded} Fired when the waveform data has finished loading
  * @param {Object} renderer The renderer instance
  * @param {Mixed} data The waveformdata instance, or null

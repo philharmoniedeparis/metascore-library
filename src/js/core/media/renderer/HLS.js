@@ -182,6 +182,12 @@ export default class HLS extends HTML5 {
         const Hls = window.Hls;
         const hls = new Hls();
 
+        /**
+         * The current source
+         * @type {Object}
+         */
+        this.source = source;
+
         hls.on(Hls.Events.ERROR, this.onLibError.bind(this));
 
         hls.loadSource(source.url);
