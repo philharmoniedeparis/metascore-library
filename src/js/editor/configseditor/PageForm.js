@@ -38,70 +38,63 @@ export default class PageForm extends ComponentForm {
         });
     }
 
-    setComponents(components){
-        super.setComponents(components);
+    /**
+     * @inheritdoc
+     */
+    updateFieldValues(supressEvent){
+        if(this.components){
+            if(this.hasField('start-time')){
+                const input = this.getField('start-time').getInput();
+                input.readonly(false).setMin(null).enable();
 
-        if(this.hasField('start-time')){
-            const input = this.getField('start-time').getInput();
-            input.readonly(false).setMin(null).enable();
+                this.components.forEach((page) => {
+                    const block = page.getParent();
 
-            components.forEach((page) => {
-                const block = page.getParent();
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getChildIndex(page);
+                        const previous_page = block.getChild(index-1);
 
-                if(block.getPropertyValue('synched')){
-                    const index = block.getChildIndex(page);
-                    const previous_page = block.getChild(index-1);
-
-                    if(previous_page){
-                        let min = previous_page.getPropertyValue('end-time');
-                        if(input.getMin() !== null){
-                            min = Math.max(input.getMin(), min);
+                        if(previous_page){
+                            const min = previous_page.getPropertyValue('end-time');
+                            input.setMin(min);
                         }
-                        input.setMin(min);
+                        else{
+                            input.readonly(true);
+                        }
                     }
                     else{
-                        input.readonly(true);
+                        input.disable();
                     }
-                }
-                else{
-                    input.disable();
-                }
-            });
-        }
+                });
+            }
 
-        if(this.hasField('end-time')){
-            const input = this.getField('end-time').getInput();
-            input.readonly(false).setMax(null).enable();
+            if(this.hasField('end-time')){
+                const input = this.getField('end-time').getInput();
+                input.readonly(false).setMax(null).enable();
 
-            components.forEach((page) => {
-                const block = page.getParent();
+                this.components.forEach((page) => {
+                    const block = page.getParent();
 
-                if(block.getPropertyValue('synched')){
-                    const index = block.getChildIndex(page);
-                    const next_page = block.getChild(index+1);
+                    if(block.getPropertyValue('synched')){
+                        const index = block.getChildIndex(page);
+                        const next_page = block.getChild(index+1);
 
-                    if(next_page){
-                        let max = next_page.getPropertyValue('end-time');
-                        if(input.getMax() !== null){
-                            max = Math.min(input.getMax(), max);
+                        if(next_page){
+                            const max = next_page.getPropertyValue('end-time');
+                            input.setMax(max);
                         }
-                        input.setMax(max);
+                        else{
+                            input.readonly(true);
+                        }
                     }
                     else{
-                        input.readonly(true);
+                        input.disable();
                     }
-                }
-                else{
-                    input.disable();
-                }
-            });
+                });
+            }
         }
 
-        return this;
-    }
-
-    unsetComponents(){
-        super.unsetComponents();
+        super.updateFieldValues(supressEvent);
 
         return this;
     }

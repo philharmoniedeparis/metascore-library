@@ -552,10 +552,6 @@ export default class ComponentForm extends Dom {
      */
     updateFieldValues(supressEvent){
         if(this.components){
-            Object.keys(this.getFields()).forEach((name) => {
-                this.updateFieldValue(name, supressEvent);
-            });
-
             if(this.hasField('start-time') && this.hasField('end-time')){
                 const start_values = [];
                 const end_values = [];
@@ -568,6 +564,10 @@ export default class ComponentForm extends Dom {
                 this.getField('start-time').getInput().setMax(Math.min(...end_values));
                 this.getField('end-time').getInput().setMin(Math.max(...start_values));
             }
+
+            Object.keys(this.getFields()).forEach((name) => {
+                this.updateFieldValue(name, supressEvent);
+            });
         }
 
         return this;
