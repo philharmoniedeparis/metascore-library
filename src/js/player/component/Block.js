@@ -124,6 +124,9 @@ export default class Block extends Component {
          * @type {Dom}
          */
         this.page_wrapper = new Dom('<div/>', {'class': 'pages'})
+            .addListener('childremove', this.onPageRemove.bind(this))
+            .addDelegate('.metaScore-component.page', 'activate', this.onPageActivate.bind(this))
+            .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this))
             .appendTo(this);
 
         /**
@@ -133,10 +136,6 @@ export default class Block extends Component {
         this.pager = new Pager()
             .addDelegate('.button', 'click', this.onPagerClick.bind(this))
             .appendTo(this);
-
-        this
-            .addDelegate('.metaScore-component.page', 'activate', this.onPageActivate.bind(this))
-            .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this));
 
         return this;
     }
@@ -202,6 +201,15 @@ export default class Block extends Component {
      * @private
      */
     onPageDeactivate(){
+        this.updatePager();
+    }
+
+    /**
+     * Page wrapper childremove event handler
+     *
+     * @private
+     */
+    onPageRemove(){
         this.updatePager();
     }
 
