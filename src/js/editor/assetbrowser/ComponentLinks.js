@@ -120,14 +120,26 @@ export default class ComponentLinks extends Dom {
         });
 
         this
-            .addDelegate('a', 'dragstart', this.onLinkDragStart.bind(this))
-            .addDelegate('a', 'dragend', this.onLinkDragEnd.bind(this));
+            .addDelegate('.link', 'dragstart', this.onLinkDragStart.bind(this))
+            .addDelegate('.link', 'dragend', this.onLinkDragEnd.bind(this));
     }
 
+    /**
+     * Get a link by id
+     *
+     * @param {String} id The link's id
+     * @returns {Dom} The corresponding link if found, undefined otherwise
+     */
     getLink(id){
         return this.links[id];
     }
 
+    /**
+     * Link dragstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onLinkDragStart(evt){
         const link = new Dom(evt.target);
         const type = link.data('type');
@@ -139,6 +151,12 @@ export default class ComponentLinks extends Dom {
         evt.dataTransfer.setData(`metascore/${type}`, configs);
     }
 
+    /**
+     * Link dragend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onLinkDragEnd(evt){
         const link = new Dom(evt.target);
         link.removeClass('dragging');
