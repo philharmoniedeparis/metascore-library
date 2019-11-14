@@ -7,24 +7,29 @@
     overflow: hidden;
 
     .link{
+        display: flex;
+        height: 2em;
+        flex-direction: row;
+        align-items: center;
         padding: 0.25em;
-        line-height: 2em;
-        color: #fff;
-        background: $lightgray;
         border-bottom: 1px solid $mediumgray;
-        user-select: none;
-        white-space: nowrap;
         cursor: grab;
 
         .icon{
-            width: 2em;
+            flex: 0 0 2em;
             height: 100%;
             margin-right: 0.5em;
+            pointer-events: none;
             filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
         }
 
         .label{
-            display: inline-block;
+            flex: 1 1 auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+            pointer-events: none;
         }
 
         &::before{

@@ -19,7 +19,7 @@ export default class ComponentLinks extends Dom {
         return {
             'links': {
                 'video-renderer': {
-                    'text': Locale.t('editor.AssetBrowser.create-video-renderer.text', 'Create a video renderer'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
                     'type': 'block',
                     'configs': {
                         'type':
@@ -28,7 +28,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.videorenderer
                 },
                 'controller': {
-                    'text': Locale.t('editor.AssetBrowser.create-controller.text', 'Create a controller'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
                     'type': 'block',
                     'configs': {
                         'type': 'Controller'
@@ -36,7 +36,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.controller
                 },
                 'synced-block': {
-                    'text': Locale.t('editor.AssetBrowser.create-synced-block.text', 'Create a synched block'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.synced-block.text', 'Synchronized block'),
                     'type': 'block',
                     'configs': {
                         'type': 'Block',
@@ -45,7 +45,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.block.synched
                 },
                 'non-synced-block': {
-                    'text': Locale.t('editor.AssetBrowser.create-non-synced-block.text', 'Create a non-synched block'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.non-synced-block.text', 'Non-synchronized block'),
                     'type': 'block',
                     'configs': {
                         'type': 'Block',
@@ -54,7 +54,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.block.non_synched
                 },
                 'page': {
-                    'text': Locale.t('editor.AssetBrowser.create-page.text', 'Create a page'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.page.text', 'Page'),
                     'type': 'page',
                     'configs': {
                         'position': 'before'
@@ -62,7 +62,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.page
                 },
                 'cursor': {
-                    'text': Locale.t('editor.AssetBrowser.create-cursor-element.text', 'Create a cursor element'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.cursor-element.text', 'Cursor element'),
                     'type': 'element',
                     'configs': {
                         'type': 'Cursor'
@@ -70,7 +70,7 @@ export default class ComponentLinks extends Dom {
                     'icon': icons.cursor
                 },
                 'content': {
-                    'text': Locale.t('editor.AssetBrowser.create-content-element.text', 'Create a content element'),
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.content-element.text', 'Content element'),
                     'type': 'element',
                     'configs': {
                         'type': 'Content'
