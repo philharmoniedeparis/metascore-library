@@ -2280,9 +2280,10 @@ export default class Editor extends Dom {
             component = evt.target._metaScore;
         }
 
-        this.selectPlayerComponent(component, evt.shiftKey);
-
-        evt.stopImmediatePropagation();
+        if(!component.instanceOf('Scenario')){
+            this.selectPlayerComponent(component, evt.shiftKey);
+            evt.stopImmediatePropagation();
+        }
     }
 
     /**
