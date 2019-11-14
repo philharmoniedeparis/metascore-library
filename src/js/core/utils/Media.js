@@ -161,13 +161,13 @@ export function isValidMimeType(mimetype, accepted_mimetypes){
 /**
  * Formats a time to a string represetation
  *
- * @param {Number} time The time in centiseconds
+ * @param {Number} time The time in seconds
  * @return {String} The string represetation
  */
 export function formatTime(time){
-    const centiseconds = pad(parseInt(time % 100, 10), 2, '0', 'left');
-    const seconds = pad(parseInt((time / 100) % 60, 10), 2, '0', 'left');
-    const minutes = pad(parseInt((time / 6000), 10), 2, '0', 'left');
+    const centiseconds = pad(parseInt((time / 100) % 100, 10), 2, '0', 'left');
+    const seconds = pad(parseInt(time % 60, 10), 2, '0', 'left');
+    const minutes = pad(parseInt((time / 60), 10), 2, '0', 'left');
 
     return `${minutes}:${seconds}.${centiseconds}`;
 }
