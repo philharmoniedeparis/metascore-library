@@ -15,7 +15,7 @@
             overflow: hidden;
 
             .playhead{
-                position: fixed;
+                position: absolute;
                 pointer-events: none;
                 z-index: 1;
             }
