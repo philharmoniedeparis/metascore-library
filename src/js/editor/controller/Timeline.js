@@ -41,7 +41,9 @@ export default class Timeline extends Dom {
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));
 
-        MasterClock.addListener('rendererchange', this.onMediaClockRendererChange.bind(this));
+        MasterClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -85,13 +87,6 @@ export default class Timeline extends Dom {
             .appendTo(tracks_container);
 
         /**
-         * The playhead <canvas> element
-         * @type {Dom}
-         */
-        this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
-            .appendTo(this.tracks_container_outer);
-
-        /**
          * The tracks inner container
          * @type {Dom}
          */
@@ -101,6 +96,13 @@ export default class Timeline extends Dom {
             .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
             .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
             .appendTo(this.tracks_container_outer);
+
+        /**
+         * The playhead <canvas> element
+         * @type {Dom}
+         */
+        this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
+            .appendTo(tracks_container);
     }
 
     /**
@@ -305,7 +307,7 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Set the associated media
+     * MasterClock rendererchange event callback
      *
      * @param {Media} media The media component
      * @return {this}
@@ -323,6 +325,15 @@ export default class Timeline extends Dom {
         this.updateSize();
 
         return this;
+    }
+
+    /**
+     * MasterClock timeupdate event callback
+     *
+     * @private
+     */
+    onMediaClockTimeUpdate(){
+        this.updatePlayhead();
     }
 
     /**
@@ -429,8 +440,8 @@ export default class Timeline extends Dom {
      */
     setupTrackSnapGuides(id, behavior){
         // Add snapping to playhead
-        const tracks_container_rect = this.tracks_container_outer.get(0).getBoundingClientRect();
-        behavior.addSnapGuide('x', this.playhead_position + tracks_container_rect.left);
+        const container_rect = this.tracks_container_inner.get(0).getBoundingClientRect();
+        behavior.addSnapGuide('x', this.playhead_position + container_rect.left);
 
         // Add snapping to other tracks
         Object.entries(this.tracks).forEach(([track_id, track]) => {
@@ -469,6 +480,8 @@ export default class Timeline extends Dom {
 
             container_dom.scrollLeft = Math.min(scroll, max_scroll);
 
+            this.updatePlayhead();
+
             if(supressEvent !== true){
                 this.triggerEvent('offsetupdate', {'start': start, 'end': end});
             }
@@ -481,8 +494,9 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        const width = this.get(0).clientWidth;
-        const height = this.get(0).clientHeight;
+        const container = this.tracks_container_outer.get(0);
+        const width = container.clientWidth;
+        const height = container.clientHeight;
 
         this.find('canvas').forEach((canvas) => {
             canvas.width = width;
@@ -499,18 +513,20 @@ export default class Timeline extends Dom {
      *
      * @return {this}
      */
-    updatePlayheadPosition(position){
-        this.playhead_position = position;
-
-        this.updatePlayhead();
-    }
-
-    /**
-     * Update the playhead layer
-     *
-     * @return {this}
-     */
     updatePlayhead(){
+        const renderer = MasterClock.getRenderer();
+
+        if(renderer){
+            const time = MasterClock.getTime();
+            const rect = this.tracks_container_inner.get(0).getBoundingClientRect();
+            this.playhead_position = time / renderer.getDuration() * rect.width;
+        }
+        else{
+            this.playhead_position = 0;
+        }
+
+        const offset = this.tracks_container_outer.get(0).scrollLeft;
+        const x = Math.floor(this.playhead_position - offset) + 0.5;
         const canvas = this.playhead.get(0);
 
         if(canvas.width > 0 && canvas.height > 0){
@@ -518,8 +534,8 @@ export default class Timeline extends Dom {
 
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
-            context.moveTo(this.playhead_position, 0);
-            context.lineTo(this.playhead_position, canvas.height);
+            context.moveTo(x, 0);
+            context.lineTo(x, canvas.height);
             context.lineWidth = this.configs.playheadWidth;
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();

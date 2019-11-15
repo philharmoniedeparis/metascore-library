@@ -15,8 +15,10 @@ import {className, controlsClassName} from '../../../../css/editor/controller/Wa
  * @emits {playheadupdate} Fired when the playhead is updated
  * @param {Number} time The time in centiseconds corresponding to playhead position
  * @param {Number} position The playhead's position in pixels
+ *
  * @emits {playheadclick} Fired when the playhead is clicked
  * @param {Number} time The time in centiseconds corresponding to the click position
+ *
  * @emits {offsetupdate} Fired when the offset is updated
  * @param {Number} start The start time of the offset in centiseconds
  * @param {Number} end The end time of the offset in centiseconds
@@ -392,7 +394,8 @@ export default class Zoom extends Dom {
         if(this.width > 0 && this.height > 0){
             const canvas = this.playhead_layer.get(0);
             const context = canvas.getContext('2d');
-            const x = this.getPositionAt(MasterClock.getTime()) + 0.5;
+            const position = this.getPositionAt(MasterClock.getTime());
+            const x = position + 0.5;
 
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
@@ -412,7 +415,7 @@ export default class Zoom extends Dom {
             context.strokeStyle = this.configs.playheadColor;
             context.stroke();
 
-            this.triggerEvent('playheadupdate', {'position': x});
+            this.triggerEvent('playheadupdate', {'position': position});
         }
 
         return this;
