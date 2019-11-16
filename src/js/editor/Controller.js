@@ -302,7 +302,7 @@ export default class Controller extends Dom {
         if(track_rect.top < sticky_top_el_rect.bottom || track_rect.bottom > scroll_el_rect.bottom){
             window.requestAnimationFrame(() => {
                 // Scroll track into view
-                scroll_el.scrollTop = track_rect.top - sticky_top_el_rect.bottom;
+                scroll_el.scrollTop += track_rect.top - sticky_top_el_rect.bottom;
             });
         }
     }
