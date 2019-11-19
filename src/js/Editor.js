@@ -87,7 +87,9 @@ export default class Editor extends Dom {
             'player': {
                 'url': null,
                 'update_url': null,
+                'autosave_url': null,
             },
+            'autosave_interval': null,
             'asset_browser': {},
             'lang': 'en',
             'xhr': {},
@@ -1868,6 +1870,10 @@ export default class Editor extends Dom {
 
         this.updateMainmenu();
 
+        if(this.configs.autosave_interval){
+            this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave_interval);
+        }
+
         loadmask.hide();
     }
 
@@ -2427,7 +2433,7 @@ export default class Editor extends Dom {
      * @return {this}
      */
     setDirty(key){
-        this.dirty[key] = true;
+        this.dirty[key] = Date.now();
 
         return this;
     }
@@ -2457,9 +2463,28 @@ export default class Editor extends Dom {
      */
     isDirty(key) {
         if(typeof key !== 'undefined'){
-            return key in this.dirty && this.dirty[key];
+            return key in this.dirty;
         }
+
         return Object.keys(this.dirty).length > 0;
+    }
+
+    /**
+     * Check whether there are unsaved data since last autosave
+     *
+     * @param {String} key The key corresponding to the data; if undefined, checks whether any data is dirty
+     * @return {Boolean} Whether unsaved autosave data exists
+     */
+    isAutoSaveDirty(key){
+        const last_autosave = this._last_autosave ? this._last_autosave : 0;
+
+        if(typeof key !== 'undefined'){
+            return key in this.dirty && this.dirty[key] > last_autosave;
+        }
+
+        return Object.values(this.dirty).some((date) => {
+            return date > last_autosave;
+        });
     }
 
     /**
@@ -2508,6 +2533,11 @@ export default class Editor extends Dom {
      */
     unloadPlayer() {
         delete this.player;
+
+        if(this._autosave_interval){
+            clearInterval(this._autosave_interval);
+            delete this._autosave_interval;
+        }
 
         this.configs_editor.unsetComponents();
 
@@ -3029,6 +3059,63 @@ export default class Editor extends Dom {
                     loadmask.setProgress(hundred);
                 })
                 .send();
+        }
+
+        return this;
+    }
+
+    autoSave(){
+        if(this.isAutoSaveDirty()){
+            const now = Date.now();
+            const player = this.getPlayer();
+            const data = new FormData();
+
+            // Add title
+            if(this.isAutoSaveDirty('title')){
+                data.set('title', this.mainmenu.getItem('title').getValue());
+            }
+
+            // Add title
+            if(this.isAutoSaveDirty('media')){
+                const source = Object.assign({}, player.getRenderer().getSource());
+                if(source.source === 'upload'){
+                    data.set('files[media]', source.object);
+                    delete source.object;
+                }
+
+                data.set('media', JSON.stringify(source));
+            }
+
+            // Add components
+            if(this.isAutoSaveDirty('components')){
+                const components = player.getScenarios().map((component) => {
+                    return component.getPropertyValues();
+                });
+                data.set('components', JSON.stringify(components));
+            }
+
+            // Add assets
+            if(this.isAutoSaveDirty('assets')){
+                const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
+                if(assets.length > 0){
+                    assets.forEach((asset) => {
+                        data.append('assets[]', JSON.stringify(asset));
+                    });
+                }
+                else{
+                    data.set('assets', []);
+                }
+            }
+
+            const options = Object.assign({}, this.configs.xhr, {
+                'data': data,
+                'responseType': 'json',
+                'onSuccess': () => {
+                    this._last_autosave = now;
+                }
+            });
+
+            Ajax.PATCH(this.configs.player.autosave_url, options);
         }
 
         return this;
