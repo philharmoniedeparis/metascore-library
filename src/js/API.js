@@ -42,7 +42,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
  *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
  */
-export default class API{
+export class API{
 
     /**
      * Instantiate

@@ -26,9 +26,8 @@ module.exports = (env, argv) => {
     output: {
         filename: LIB_NAME +'.[name].js',
         path: DIST_DIR,
-        library: [LIB_NAME, "[name]"],
+        library: LIB_NAME,
         libraryTarget: 'var',
-        libraryExport: 'default',
         devtoolNamespace: LIB_NAME
     },
     devtool: "source-map",

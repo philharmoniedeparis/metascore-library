@@ -36,7 +36,7 @@ import {getRendererForMime} from './core/utils/Media';
  * @param {Object} player The player instance
  * @param {Object} value The scenario
  */
-export default class Player extends Dom {
+export class Player extends Dom {
 
     /**
      * Instantiate

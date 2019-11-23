@@ -29,7 +29,7 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  * @emits {ready} Fired when the editor is fully setup
  * @param {Object} editor The editor instance
  */
-export default class Editor extends Dom {
+export class Editor extends Dom {
 
     /**
      * Instantiate
@@ -3034,3 +3034,6 @@ export default class Editor extends Dom {
         return this;
     }
 }
+
+// Export the TimeInput class to be used in CKEditor plugins
+export {TimeInput};
