@@ -136,9 +136,9 @@ export class Player extends Dom {
             .addListener('.componentadd', this.onComponentAdd.bind(this))
             .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
             .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
-            .addDelegate('.metaScore-component.element.Text', 'play', this.onTextElementPlay.bind(this))
-            .addDelegate('.metaScore-component.element.Text', 'page', this.onTextElementPage.bind(this))
-            .addDelegate('.metaScore-component.element.Text', 'block_visibility', this.onTextElementBlockVisibility.bind(this))
+            .addDelegate('.metaScore-component.element.Content', 'play', this.onContentElementPlay.bind(this))
+            .addDelegate('.metaScore-component.element.Content', 'page', this.onContentElementPage.bind(this))
+            .addDelegate('.metaScore-component.element.Content', 'blockvisibility', this.onContentElementBlockVisibility.bind(this))
             .appendTo(this.configs.container);
 
         this.triggerEvent('ready', {'player': this}, false, false);
@@ -473,22 +473,22 @@ export class Player extends Dom {
     }
 
     /**
-     * Element of type Text play event callback
+     * Content element play event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTextElementPlay(evt){
+    onContentElementPlay(evt){
         this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.scenario);
     }
 
     /**
-     * Element of type Text page event callback
+     * Content element page event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTextElementPage(evt){
+    onContentElementPage(evt){
         const block = this.getBlockByName(evt.detail.block);
         if(block){
             block.setActivePage(evt.detail.index);
@@ -496,12 +496,12 @@ export class Player extends Dom {
     }
 
     /**
-     * Element of type Text block_visibility event callback
+     * Content element blockvisibility event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTextElementBlockVisibility(evt){
+    onContentElementBlockVisibility(evt){
         const block = this.getBlockByName(evt.detail.block);
 
         if(block){
@@ -861,6 +861,8 @@ export class Player extends Dom {
      * @return {this}
      */
     play(inTime, outTime, scenario){
+        const renderer = this.getRenderer();
+
         if(this.cuepoint){
             this.cuepoint.deactivate();
         }
@@ -869,7 +871,7 @@ export class Player extends Dom {
         const _outTime = parseFloat(outTime);
 
         if(isNaN(_inTime)){
-            this.getRenderer().play();
+            renderer.play();
         }
         else{
             /**
@@ -881,28 +883,30 @@ export class Player extends Dom {
                 'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
             })
-            .addListener('seekout', (evt) => {
-                evt.target.deactivate();
+            .addListener('seekout', () => {
+                this.cuepoint.deactivate();
                 delete this.cuepoint;
             })
-            .addListener('stop', (evt) => {
-                evt.target.getRenderer().pause();
+            .addListener('stop', () => {
+                renderer.pause();
             });
 
             if(scenario){
-                const previous_scenario = this.getActiveScenario();
-                this.cuepoint
-                    .addListener('start', () => {
-                        this.setActiveScenario(scenario);
-                    })
-                    .addListener('seekout', () => {
-                        this.setActiveScenario(previous_scenario);
-                    });
+                const previous_scenario = this.getActiveScenario().getName();
+                if(scenario !== previous_scenario){
+                    this.cuepoint
+                        .addListener('start', () => {
+                            this.setActiveScenario(scenario);
+                        })
+                        .addListener('seekout', () => {
+                            this.setActiveScenario(previous_scenario);
+                        });
+                }
             }
 
             this.cuepoint.activate();
 
-            this.getRenderer().setTime(_inTime).play();
+            renderer.setTime(_inTime).play();
         }
 
         return this;
