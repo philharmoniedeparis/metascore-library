@@ -87,9 +87,11 @@ export default class Editor extends Dom {
             'player': {
                 'url': null,
                 'update_url': null,
-                'autosave_url': null,
             },
-            'autosave_interval': null,
+            'autosave': {
+                'url': null,
+                'interval': null
+            },
             'asset_browser': {},
             'lang': 'en',
             'xhr': {},
@@ -1870,8 +1872,8 @@ export default class Editor extends Dom {
 
         this.updateMainmenu();
 
-        if(this.configs.autosave_interval){
-            this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave_interval);
+        if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
+            this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
         }
 
         loadmask.hide();
@@ -3115,7 +3117,7 @@ export default class Editor extends Dom {
                 }
             });
 
-            Ajax.PATCH(this.configs.player.autosave_url, options);
+            Ajax.PATCH(this.configs.autosave.url, options);
         }
 
         return this;

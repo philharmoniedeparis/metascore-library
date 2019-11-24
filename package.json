@@ -13,7 +13,7 @@
     "dev": "webpack -d -w",
     "lint": "eslint -c .eslintrc.json src/js",
     "doc": "esdoc",
-    "drupal": "git-branch-is -q drupal-8 && npm run drupal-8 || npm run drupal-7",
+    "drupal": "git-branch-is -q dev && npm run drupal-7 || npm run drupal-8",
     "drupal-7": "copyfiles -u 1 dist/**/* ../Drupal.git/sites/default/libraries/metaScore",
     "drupal-8": "copyfiles -u 1 dist/**/* ../Drupal-8.git/web/modules/custom/metascore_library/vendor/metaScore"
   },
