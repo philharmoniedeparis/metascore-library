@@ -40,6 +40,7 @@
 	"editor.addPlayerComponents.block.name": "untitled",
 	"editor.addPlayerComponents.page.time.msg": "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>",
 	"editor.addPlayerComponents.page.time.ok": "OK",
+	"editor.assetbrowser.ComponentLinks.blocktoggler.text": "Block Toggler",
 	"editor.assetbrowser.ComponentLinks.content-element.text": "Content element",
 	"editor.assetbrowser.ComponentLinks.controller.text": "Controller",
 	"editor.assetbrowser.ComponentLinks.cursor-element.text": "Cursor element",

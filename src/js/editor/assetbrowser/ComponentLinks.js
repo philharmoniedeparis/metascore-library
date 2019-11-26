@@ -35,6 +35,14 @@ export default class ComponentLinks extends Dom {
                     },
                     'icon': icons.controller
                 },
+                'blocktoggler': {
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'BlockToggler'
+                    },
+                    'icon': icons.blocktoggler
+                },
                 'synced-block': {
                     'text': Locale.t('editor.assetbrowser.ComponentLinks.synced-block.text', 'Synchronized block'),
                     'type': 'block',
