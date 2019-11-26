@@ -173,6 +173,21 @@
         }
     }
 
+    .autosave-indicator{
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        z-index: 1;
+        font-size: 0.9em;
+        color: #FFF;
+        background: $darkgray;
+        padding: 0 0.5em;
+        box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+        transform: translateX(-50%);
+        opacity: 0.75;
+        pointer-events: none;
+    }
+
     &:not(.has-player){
         .player-frame{
             display: none;

@@ -198,7 +198,7 @@ export default class Editor extends Dom {
 
         /**
          * The grid
-         * @type {Dom}
+         * @type {Grid}
          */
         this.grid = new Grid()
             .appendTo(this.workspace)
@@ -252,6 +252,15 @@ export default class Editor extends Dom {
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
+
+        /**
+         * The auto-save indicator
+         * @type {Dom}
+         */
+        this.autosave_indicator = new Dom('<div/>', {'class': 'autosave-indicator'})
+            .text(Locale.t('Editor.autosaveIndicator.text', 'Saving auto-recovery data...'))
+            .hide()
+            .appendTo(this);
 
         /**
          * The undo/redo handler
@@ -3067,7 +3076,10 @@ export default class Editor extends Dom {
     }
 
     autoSave(){
-        if(this.isAutoSaveDirty()){
+        if(!this._autosaving && this.isAutoSaveDirty()){
+            this._autosaving = true;
+            this.autosave_indicator.show();
+
             const now = Date.now();
             const player = this.getPlayer();
             const data = new FormData();
@@ -3114,10 +3126,16 @@ export default class Editor extends Dom {
                 'responseType': 'json',
                 'onSuccess': () => {
                     this._last_autosave = now;
+                    delete this._autosaving;
+                    this.autosave_indicator.hide();
+                },
+                'onError': () => {
+                    delete this._autosaving;
+                    this.autosave_indicator.hide();
                 }
             });
 
-            Ajax.PATCH(this.configs.autosave.url, options);
+            Ajax.PUT(this.configs.autosave.url, options);
         }
 
         return this;
