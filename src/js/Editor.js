@@ -88,6 +88,10 @@ export class Editor extends Dom {
                 'url': null,
                 'update_url': null,
             },
+            'autosave': {
+                'url': null,
+                'interval': null
+            },
             'asset_browser': {},
             'lang': 'en',
             'xhr': {},
@@ -194,7 +198,7 @@ export class Editor extends Dom {
 
         /**
          * The grid
-         * @type {Dom}
+         * @type {Grid}
          */
         this.grid = new Grid()
             .appendTo(this.workspace)
@@ -250,6 +254,15 @@ export class Editor extends Dom {
             .appendTo(bottom_pane.getContents());
 
         /**
+         * The auto-save indicator
+         * @type {Dom}
+         */
+        this.autosave_indicator = new Dom('<div/>', {'class': 'autosave-indicator'})
+            .text(Locale.t('Editor.autosaveIndicator.text', 'Saving auto-recovery data...'))
+            .hide()
+            .appendTo(this);
+
+        /**
          * The undo/redo handler
          * @type {UndoRedo}
          */
@@ -270,6 +283,7 @@ export class Editor extends Dom {
         });
 
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
+        Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
         this
             .addListener('keydown', this.onKeydown.bind(this))
@@ -280,11 +294,47 @@ export class Editor extends Dom {
             .setClean()
             .setEditing(false)
             .updateMainmenu()
-            .setupContextMenus()
-            .loadPlayer();
+            .setupContextMenus();
 
         this.triggerEvent('ready', {'editor': this}, false, false);
 
+        // Check if auto-save data exists.
+        if(this.configs.autosave && this.configs.autosave.url){
+            const loadmask = new LoadMask({
+                'parent': this
+            });
+            const options = Object.assign({}, this.configs.xhr, {
+                'responseType': 'json',
+                'onSuccess': () => {
+                    loadmask.hide();
+
+                    new Confirm({
+                        'text': Locale.t('editor.autosave.recover.text', 'Auto-save data were found for this guide. Would you like to recover them?'),
+                        'confirmLabel': Locale.t('editor.autosave.recover.confirmLabel', 'Recover'),
+                        'onConfirm': () => {
+                            this.loadPlayer({'autosave': ''});
+                        },
+                        'onCancel': () => {
+                            // Delete auto-save data.
+                            Ajax.DELETE(this.configs.autosave.url, this.configs.xhr);
+
+                            // Load the player with the latest revision.
+                            this.loadPlayer();
+                        },
+                        'parent': this
+                    });
+                },
+                'onError': () => {
+                    loadmask.hide();
+                    this.loadPlayer();
+                }
+            });
+
+            Ajax.HEAD(this.configs.autosave.url, options);
+        }
+        else{
+            this.loadPlayer();
+        }
     }
 
     /**
@@ -1202,19 +1252,19 @@ export class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onMainmenuRevisionsChange(evt){
-        const vid = evt.detail.value;
+        const params = {'vid': evt.detail.value};
 
         if(this.isDirty()){
             new Confirm({
                 'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
                 'onConfirm': () => {
-                    this.loadPlayer(vid);
+                    this.loadPlayer(params);
                 },
                 'parent': this
             });
         }
         else{
-            this.loadPlayer(vid);
+            this.loadPlayer(params);
         }
     }
 
@@ -1868,6 +1918,10 @@ export class Editor extends Dom {
 
         this.updateMainmenu();
 
+        if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
+            this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
+        }
+
         loadmask.hide();
     }
 
@@ -2326,6 +2380,21 @@ export class Editor extends Dom {
     }
 
     /**
+     * Window unload event callback
+     *
+     * @private
+     */
+    onWindowUnload(){
+        if(this.configs.autosave && this.configs.autosave.url){
+            // Delete auto-save data using the fetch API as Ajax doesn't support keepalive.
+            fetch(this.configs.autosave.url, Object.assign({}, this.configs.xhr, {
+                'method': 'DELETE',
+                'keepalive': true
+            }));
+        }
+    }
+
+    /**
      * Updates the editing state
      *
      * @param {Boolean} editing The new state
@@ -2427,7 +2496,7 @@ export class Editor extends Dom {
      * @return {this}
      */
     setDirty(key){
-        this.dirty[key] = true;
+        this.dirty[key] = Date.now();
 
         return this;
     }
@@ -2457,9 +2526,28 @@ export class Editor extends Dom {
      */
     isDirty(key) {
         if(typeof key !== 'undefined'){
-            return key in this.dirty && this.dirty[key];
+            return key in this.dirty;
         }
+
         return Object.keys(this.dirty).length > 0;
+    }
+
+    /**
+     * Check whether there are unsaved data since last autosave
+     *
+     * @param {String} key The key corresponding to the data; if undefined, checks whether any data is dirty
+     * @return {Boolean} Whether unsaved autosave data exists
+     */
+    isAutoSaveDirty(key){
+        const last_autosave = this._last_autosave ? this._last_autosave : 0;
+
+        if(typeof key !== 'undefined'){
+            return key in this.dirty && this.dirty[key] > last_autosave;
+        }
+
+        return Object.values(this.dirty).some((date) => {
+            return date > last_autosave;
+        });
     }
 
     /**
@@ -2474,10 +2562,10 @@ export class Editor extends Dom {
     /**
      * Loads the player
      *
-     * @param {Number} [vid] The revision id to load; if undefined, the current revision will be loaded
+     * @param {Object} [params] URL parameters to add to the default url
      * @return {this}
      */
-    loadPlayer(vid){
+    loadPlayer(params){
         const loadmask = new LoadMask({
             'parent': this
         });
@@ -2485,9 +2573,12 @@ export class Editor extends Dom {
         this.unloadPlayer();
 
         const url = new URL(this.configs.player.url);
-        if(typeof vid !== 'undefined'){
-            const params = url.searchParams;
-            params.set('vid', vid);
+
+        if(typeof params !== 'undefined'){
+            const searchParams = url.searchParams;
+            Object.entries(params).forEach(([key, value]) => {
+                searchParams.set(key, value);
+            });
         }
 
         /**
@@ -2508,6 +2599,11 @@ export class Editor extends Dom {
      */
     unloadPlayer() {
         delete this.player;
+
+        if(this._autosave_interval){
+            clearInterval(this._autosave_interval);
+            delete this._autosave_interval;
+        }
 
         this.configs_editor.unsetComponents();
 
@@ -3029,6 +3125,72 @@ export class Editor extends Dom {
                     loadmask.setProgress(hundred);
                 })
                 .send();
+        }
+
+        return this;
+    }
+
+    autoSave(){
+        if(!this._autosaving && this.isAutoSaveDirty()){
+            this._autosaving = true;
+            this.autosave_indicator.show();
+
+            const now = Date.now();
+            const player = this.getPlayer();
+            const data = new FormData();
+
+            // Add title
+            if(this.isAutoSaveDirty('title')){
+                data.set('title', this.mainmenu.getItem('title').getValue());
+            }
+
+            // Add title
+            if(this.isAutoSaveDirty('media')){
+                const source = Object.assign({}, player.getRenderer().getSource());
+                if(source.source === 'upload'){
+                    data.set('files[media]', source.object);
+                    delete source.object;
+                }
+
+                data.set('media', JSON.stringify(source));
+            }
+
+            // Add components
+            if(this.isAutoSaveDirty('components')){
+                const components = player.getScenarios().map((component) => {
+                    return component.getPropertyValues();
+                });
+                data.set('components', JSON.stringify(components));
+            }
+
+            // Add assets
+            if(this.isAutoSaveDirty('assets')){
+                const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
+                if(assets.length > 0){
+                    assets.forEach((asset) => {
+                        data.append('assets[]', JSON.stringify(asset));
+                    });
+                }
+                else{
+                    data.set('assets', []);
+                }
+            }
+
+            const options = Object.assign({}, this.configs.xhr, {
+                'data': data,
+                'responseType': 'json',
+                'onSuccess': () => {
+                    this._last_autosave = now;
+                    delete this._autosaving;
+                    this.autosave_indicator.hide();
+                },
+                'onError': () => {
+                    delete this._autosaving;
+                    this.autosave_indicator.hide();
+                }
+            });
+
+            Ajax.PUT(this.configs.autosave.url, options);
         }
 
         return this;

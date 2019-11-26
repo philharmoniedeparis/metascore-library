@@ -5,8 +5,12 @@ import {isObject} from './utils/Var';
  * A class to handle AJAX requests
  *
  * @emits {complete} Fired when the operation is complete (the request's readyState is 4)
+ *
  * @emits {success} Fired when the operation is complete and the status is greater or equal to 200 and less than 300 or equal to 304
+ *
  * @emits {error} Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
+ *
+ * @TODO swtich to using the fetch API with polyfill (see https://github.com/github/fetch)
  */
 export default class Ajax extends EventEmitter {
 
@@ -100,6 +104,19 @@ export default class Ajax extends EventEmitter {
             'onSuccess': null,
             'onError': null,
         };
+    }
+
+    /**
+     * Send an XMLHttp HEAD request
+     *
+     * @param {String} url The URL to which the request is sent
+     * @param {Object} configs Custom configs to override defaults
+     * @return {Ajax} The Ajax instance
+     */
+    static HEAD(url, configs) {
+
+        return new this(url, Object.assign({}, configs, {'method': 'HEAD'}));
+
     }
 
     /**
