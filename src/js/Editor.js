@@ -294,11 +294,47 @@ export default class Editor extends Dom {
             .setClean()
             .setEditing(false)
             .updateMainmenu()
-            .setupContextMenus()
-            .loadPlayer();
+            .setupContextMenus();
 
         this.triggerEvent('ready', {'editor': this}, false, false);
 
+        // Check if auto-save data exists.
+        if(this.configs.autosave && this.configs.autosave.url){
+            const loadmask = new LoadMask({
+                'parent': this
+            });
+            const options = Object.assign({}, this.configs.xhr, {
+                'responseType': 'json',
+                'onSuccess': () => {
+                    loadmask.hide();
+
+                    new Confirm({
+                        'text': Locale.t('editor.autosave.recover.text', 'Auto-save data were found for this guide. Would you like to recover them?'),
+                        'confirmLabel': Locale.t('editor.autosave.recover.confirmLabel', 'Recover'),
+                        'onConfirm': () => {
+                            this.loadPlayer({'autosave': ''});
+                        },
+                        'onCancel': () => {
+                            // Delete auto-save data.
+                            Ajax.DELETE(this.configs.autosave.url, this.configs.xhr);
+
+                            // Load the player with the latest revision.
+                            this.loadPlayer();
+                        },
+                        'parent': this
+                    });
+                },
+                'onError': () => {
+                    loadmask.hide();
+                    this.loadPlayer();
+                }
+            });
+
+            Ajax.HEAD(this.configs.autosave.url, options);
+        }
+        else{
+            this.loadPlayer();
+        }
     }
 
     /**
@@ -1216,19 +1252,19 @@ export default class Editor extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onMainmenuRevisionsChange(evt){
-        const vid = evt.detail.value;
+        const params = {'vid': evt.detail.value};
 
         if(this.isDirty()){
             new Confirm({
                 'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
                 'onConfirm': () => {
-                    this.loadPlayer(vid);
+                    this.loadPlayer(params);
                 },
                 'parent': this
             });
         }
         else{
-            this.loadPlayer(vid);
+            this.loadPlayer(params);
         }
     }
 
@@ -2526,10 +2562,10 @@ export default class Editor extends Dom {
     /**
      * Loads the player
      *
-     * @param {Number} [vid] The revision id to load; if undefined, the current revision will be loaded
+     * @param {Object} [params] URL parameters to add to the default url
      * @return {this}
      */
-    loadPlayer(vid){
+    loadPlayer(params){
         const loadmask = new LoadMask({
             'parent': this
         });
@@ -2537,9 +2573,12 @@ export default class Editor extends Dom {
         this.unloadPlayer();
 
         const url = new URL(this.configs.player.url);
-        if(typeof vid !== 'undefined'){
-            const params = url.searchParams;
-            params.set('vid', vid);
+
+        if(typeof params !== 'undefined'){
+            const searchParams = url.searchParams;
+            Object.entries(params).forEach(([key, value]) => {
+                searchParams.set(key, value);
+            });
         }
 
         /**
