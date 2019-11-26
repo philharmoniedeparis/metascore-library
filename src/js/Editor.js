@@ -283,6 +283,7 @@ export default class Editor extends Dom {
         });
 
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
+        Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
         this
             .addListener('keydown', this.onKeydown.bind(this))
@@ -2339,6 +2340,21 @@ export default class Editor extends Dom {
     onWindowBeforeUnload(evt){
         if(this.isDirty()){
             evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
+        }
+    }
+
+    /**
+     * Window unload event callback
+     *
+     * @private
+     */
+    onWindowUnload(){
+        if(this.configs.autosave && this.configs.autosave.url){
+            // Delete auto-save data using the fetch API as Ajax doesn't support keepalive.
+            fetch(this.configs.autosave.url, Object.assign({}, this.configs.xhr, {
+                'method': 'DELETE',
+                'keepalive': true
+            }));
         }
     }
 
