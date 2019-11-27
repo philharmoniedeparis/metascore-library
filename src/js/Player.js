@@ -575,8 +575,9 @@ export class Player extends Dom {
         }
         else{
             // Add a default scenario if none exist
-            const default_scenario_name = Locale.t('Player.defaultScenarioName', 'Scenario 1');
-            scenario = this.addScenario(default_scenario_name);
+            scenario = this.addScenario({
+                'name': Locale.t('Player.defaultScenarioName', 'Scenario 1')
+            });
         }
         this.setActiveScenario(scenario.getName());
 
