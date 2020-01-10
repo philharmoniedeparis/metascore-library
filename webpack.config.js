@@ -179,13 +179,16 @@ module.exports = (env, argv) => {
 
   switch(argv.mode){
     case 'development':
+      if('copy' in argv) {
         configs.plugins.push(
           new ShellPlugin({
             onBuildExit: [
-            'echo "Copying files to Drupal" && npm run drupal'
+              `copyfiles -u 1 dist/**/* ${argv.copy} && echo "Copyied files to ${argv.copy}"`
             ]
           })
         );
+      }
+
       break;
   }
 
