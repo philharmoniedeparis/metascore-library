@@ -76,9 +76,11 @@ module.exports = (env, argv) => {
               {
                 loader: 'css-loader',
                 options: {
-                  modules: 'global',
-                  localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
-                  context: path.resolve(__dirname, './src/css'),
+                  modules: {
+                    mode: 'global',
+                    localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
+                    context: path.resolve(__dirname, './src/css'),
+                  },
                 }
               },
               {
@@ -177,13 +179,13 @@ module.exports = (env, argv) => {
 
   switch(argv.mode){
     case 'development':
-      configs.plugins.push(
-        new ShellPlugin({
-          onBuildExit: [
+        configs.plugins.push(
+          new ShellPlugin({
+            onBuildExit: [
             'echo "Copying files to Drupal" && npm run drupal'
-          ]
-        })
-      );
+            ]
+          })
+        );
       break;
   }
 
