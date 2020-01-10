@@ -262,10 +262,10 @@ export default class Zoom extends Dom {
              * The maximum zoom scale
              * @type {Number}
              */
-            this.max_scale = this.resampled_data.adapter.scale;
+            this.max_scale = this.resampled_data.scale;
 
             this.zoom_slider
-                .setMin(this.waveformdata.adapter.scale)
+                .setMin(this.waveformdata.scale)
                 .setMax(this.max_scale)
                 .setValue(this.max_scale, true);
 
@@ -313,20 +313,20 @@ export default class Zoom extends Dom {
             context.beginPath();
 
             if(this.resampled_data){
-                const adapter = this.resampled_data.adapter;
+                const channel = this.resampled_data.channel(0);
                 const margin = this.configs.waveMargin;
                 const height = this.height - (margin * 2);
                 const startX = this.offset;
                 const endX = startX + this.width;
 
-                for(let x = startX; x < endX; x++) {
-                    const val = adapter.at(2 * x);
-                    context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
+                for(let index = startX; index < endX; index++) {
+                    const val = channel.min_sample(index);
+                    context.lineTo(index - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
                 }
 
-                for(let x = endX - 1; x >= startX; x--) {
-                    const val = adapter.at(2 * x + 1);
-                    context.lineTo(x - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
+                for(let index = endX - 1; index >= startX; index--) {
+                    const val = channel.max_sample(index);
+                    context.lineTo(index - startX + 0.5, this.scaleY(val, height) + margin + 0.5);
                 }
 
                 context.closePath();
@@ -400,7 +400,7 @@ export default class Zoom extends Dom {
             if(this.resampled_data){
                 if(update_offset === true && !this._dragging){
                     // If the playhead is outside of the view area, update the offset.
-                    if(x < 0 || (x > this.width - 10 && this.resampled_data.adapter.length > this.offset + this.width)){
+                    if(x < 0 || (x > this.width - 10 && this.resampled_data.length > this.offset + this.width)){
                         this.setOffset(this.offset + x - 10);
                         return this;
                     }
@@ -481,8 +481,7 @@ export default class Zoom extends Dom {
      */
     zoomIn(){
         if(this.resampled_data){
-            const adapter = this.resampled_data.adapter;
-            this.setZoom(adapter.scale - this.configs.zoomStep);
+            this.setZoom(this.resampled_data.scale - this.configs.zoomStep);
         }
 
         return this;
@@ -495,8 +494,7 @@ export default class Zoom extends Dom {
      */
     zoomOut(){
         if(this.resampled_data){
-            const adapter = this.resampled_data.adapter;
-            this.setZoom(adapter.scale + this.configs.zoomStep);
+            this.setZoom(this.resampled_data.scale + this.configs.zoomStep);
         }
 
         return this;
@@ -510,13 +508,13 @@ export default class Zoom extends Dom {
      */
     setZoom(scale){
         if(this.resampled_data){
-            const min = this.waveformdata.adapter.scale;
+            const min = this.waveformdata.scale;
             const max = this.max_scale;
 
             let clamped = parseInt(scale, 10);
             clamped = Math.min(Math.max(scale, min), max);
 
-            if(clamped !== this.resampled_data.adapter.scale){
+            if(clamped !== this.resampled_data.scale){
                 this.resampled_data = this.waveformdata.resample({'scale': clamped});
 
                 this.zoom_out_btn.toggleClass('disabled', clamped >= max);
@@ -668,9 +666,10 @@ export default class Zoom extends Dom {
     onMediaWaveformData(data){
         if(data){
             let range = 0;
-            for(let x = 0; x < data.adapter.length; x++) {
-                const min = data.adapter.at(2 * x);
-                const max = data.adapter.at(2 * x + 1);
+            const channel = data.channel(0);
+            for(let index = 0; index < data.length; index++) {
+                const min = channel.min_sample(index);
+                const max = channel.max_sample(index);
                 range = Math.max(range, Math.abs(min), Math.abs(max));
             }
 
@@ -693,7 +692,7 @@ export default class Zoom extends Dom {
         if(this.resampled_data && this.width > 0){
             let new_offset = offset;
 
-            new_offset = Math.min(this.resampled_data.adapter.length - this.width, new_offset);
+            new_offset = Math.min(this.resampled_data.length - this.width, new_offset);
             new_offset = Math.max(0, new_offset);
             new_offset = Math.round(new_offset);
 
@@ -780,8 +779,7 @@ export default class Zoom extends Dom {
      */
     timeToPixels(time){
         if(this.resampled_data){
-            const adapter = this.resampled_data.adapter;
-            return Math.floor(time * adapter.sample_rate / adapter.scale);
+            return Math.floor(time * this.resampled_data.sample_rate / this.resampled_data.scale);
         }
         else if(this.media){
             return Math.round(time / this.media.getDuration() * this.width);

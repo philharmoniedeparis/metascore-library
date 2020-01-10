@@ -177,18 +177,18 @@ export default class Overview extends Dom {
         context.clearRect(0, 0, this.width, this.height);
 
         if(this.resampled_data){
-            const adapter = this.resampled_data.adapter;
+            const channel = this.resampled_data.channel(0);
 
             context.beginPath();
 
-            for(let x = 0; x < this.width; x++) {
-                const val = adapter.at(2 * x);
-                context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
+            for(let index = 0; index < this.width; index++) {
+                const val = channel.min_sample(index);
+                context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
             }
 
-            for(let x = this.width - 1; x >= 0; x--) {
-                const val = adapter.at(2 * x + 1);
-                context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
+            for(let index = this.width - 1; index >= 0; index--) {
+                const val = channel.max_sample(index);
+                context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
             }
 
             context.closePath();
@@ -320,9 +320,10 @@ export default class Overview extends Dom {
     onMediaWaveformData(data){
         if(data){
             let range = 0;
-            for(let x = 0; x < data.adapter.length; x++) {
-                const min = data.adapter.at(2 * x);
-                const max = data.adapter.at(2 * x + 1);
+            const channel = data.channel(0);
+            for(let index = 0; index < data.length; index++) {
+                const min = channel.min_sample(index);
+                const max = channel.max_sample(index);
                 range = Math.max(range, Math.abs(min), Math.abs(max));
             }
 

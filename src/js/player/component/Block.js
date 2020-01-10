@@ -197,22 +197,18 @@ export default class Block extends Component {
      * @param {Event} evt The event object
      */
     onPagerClick(evt){
-        const active = !Dom.hasClass(evt.target, 'inactive');
+        const action = Dom.data(evt.target, 'action');
 
-        if(active){
-            const action = Dom.data(evt.target, 'action');
-
-            switch(action){
-                case 'first':
-                    this.setActivePage(0);
-                    break;
-                case 'previous':
-                    this.setActivePage(this.getActivePageIndex() - 1);
-                    break;
-                case 'next':
-                    this.setActivePage(this.getActivePageIndex() + 1);
-                    break;
-            }
+        switch(action){
+            case 'first':
+                this.setActivePage(0);
+                break;
+            case 'previous':
+                this.setActivePage(this.getActivePageIndex() - 1);
+                break;
+            case 'next':
+                this.setActivePage(this.getActivePageIndex() + 1);
+                break;
         }
 
         evt.stopPropagation();
