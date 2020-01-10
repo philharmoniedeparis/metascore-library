@@ -234,7 +234,7 @@ body{
                         cursor: pointer;
 
                         &.inactive{
-                            cursor: default;
+                            pointer-events: none;
                         }
 
                         &[data-action="first"]{
