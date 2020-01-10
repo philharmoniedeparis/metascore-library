@@ -16,15 +16,15 @@ export function capitalize(str){
  * @param {Integer} [radix] The number of allowable values for each character
  * @return {String} The generated uuid
  *
- * @exqmple
+ * @example
  *    let id = uuid();
  *    // "66209871-857D-4A12-AC7E-E9EEBC2A6AC3"
  *
- * @exqmple
+ * @example
  *    let id = uuid(5);
  *    // "kryIh"
  *
- * @exqmple
+ * @example
  *    let id = uuid(5, 2);
  *    // "10100"
  */
