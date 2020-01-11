@@ -47,6 +47,7 @@ export class Player extends Dom {
      * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Boolean} [autoload=true] Whether to automatically call the load function
      * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
+     * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
      * @property {Boolean} [api=false] Whether to allow API access or not
      * @property {String} [lang] The language to use for i18n
      */
@@ -93,6 +94,7 @@ export class Player extends Dom {
             'xhr': {},
             'autoload': true,
             'keyboard': true,
+            'responsive': false,
             'api': false,
             'lang': 'en'
         };
@@ -547,7 +549,7 @@ export class Player extends Dom {
          * A stylesheet containing the guide's custom css
          * @type {StyleSheet}
          */
-        this.css = new StyleSheet()
+        this.stylesheet = new StyleSheet()
             .setInternalValue(this.data.css)
             .appendTo(document.head);
 
@@ -582,6 +584,14 @@ export class Player extends Dom {
         this.setActiveScenario(scenario.getName());
 
         this.updateBlockTogglers();
+
+        // Make the player rescale to fit available space.
+        if(this.configs.responsive){
+            this.adaptScale = this.adaptScale.bind(this);
+            Dom.addListener(window, 'resize', this.adaptScale);
+            Dom.addListener(window, 'orientationchange', this.adaptScale);
+            this.adaptScale();
+        }
 
         // Add keyboard listener
         if(this.configs.keyboard){
@@ -830,7 +840,7 @@ export class Player extends Dom {
      * @return {this}
      */
     updateCSS(value){
-        this.css.setInternalValue(value);
+        this.stylesheet.setInternalValue(value);
 
         return this;
     }
@@ -966,6 +976,48 @@ export class Player extends Dom {
         }
 
         return null;
+    }
+
+    /**
+     * Adapt the player's scale to fit the available space
+     */
+    adaptScale(){
+        // Calculate and store the overall dimentions.
+        // @TODO: add workspace width and height for guides.
+        if(!('_scaling_values' in this)){
+            let width = 0;
+            let height = 0;
+
+            this.getScenarios().forEach((scenario) => {
+                scenario.getChildren().forEach((component) => {
+                    const rect = component.get(0).getBoundingClientRect();
+                    width = Math.max(width, rect.right);
+                    height = Math.max(height, rect.bottom);
+                });
+            });
+
+            if(!width || !height){
+                this._scaling_values = null;
+            }
+
+            this._scaling_values = {
+                'width': width,
+                'height': height
+            };
+
+        }
+
+        // Calculate and apply the scale factor
+        if(this._scaling_values){
+            const container_el = this.parents().get(0);
+            const container_width = container_el.clientWidth;
+            const container_height = container_el.clientHeight;
+            const scale = Math.min(1, container_width/this._scaling_values.width, container_height/this._scaling_values.height);
+
+            this.css('width', `${this._scaling_values.width * scale}px`);
+            this.css('height', `${this._scaling_values.height * scale}px`);
+            this.css('transform', `scale(${scale})`);
+        }
     }
 
 }
