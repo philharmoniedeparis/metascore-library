@@ -41,6 +41,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
  *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
+ *         <a href="#toggleFullscreen" rel="metascore" data-guide="guide-93">TOGGLE FULLSCREEN</a>
  */
 export class API{
 
@@ -255,6 +256,24 @@ export class API{
     }
 
     /**
+     * Enter or exit fullscreen mode
+     *
+     * @param {String} value Whether to enter or exit fullscreen.
+     * @return {this}
+     */
+    toggleFullscreen(value){
+        const enter_fullscreen = typeof value !== 'undefined' ? value : !document.fullscreenElement;
+        if(enter_fullscreen){
+            this.target.requestFullscreen();
+        }
+        else{
+            this.target.exitFullscreen();
+        }
+
+        return this;
+    }
+
+    /**
      * Sends a 'playing' message to the player
      * Used to check the state of the player
      *
@@ -318,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const fn = action[0];
 
                     if(fn in api){
-                        const args = action[1].split(',').map(cleanArg);
+                        const args = action.length > 1 ? action[1].split(',').map(cleanArg) : [];
                         api[fn](...args);
                     }
                 }
