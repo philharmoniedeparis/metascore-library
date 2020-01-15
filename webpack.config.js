@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
+        Player: ['@babel/polyfill', 'classlist-polyfill', 'fullscreen-polyfill', './src/js/polyfills', './src/js/Player'],
         Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
         API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
     },

@@ -4,6 +4,7 @@ import Dom from '../../core/Dom';
 import Pager from './block/Pager';
 import Page from './Page';
 import {isNumber} from '../../core/utils/Var';
+import Hammer from 'hammerjs';
 
 /**
  * A block component
@@ -129,6 +130,12 @@ export default class Block extends Component {
             .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this))
             .appendTo(this);
 
+        const gesture_recognizer = new Hammer.Manager(this.page_wrapper.get(0));
+        gesture_recognizer.add(new Hammer.Swipe({
+            'direction': Hammer.DIRECTION_HORIZONTAL
+        }));
+        gesture_recognizer.on('swipe', this.onPageWrapperSwipe.bind(this));
+
         /**
          * The pager
          * @type {Pager}
@@ -155,6 +162,31 @@ export default class Block extends Component {
 
             default:
                 super.updatePropertyValue(property, value);
+        }
+    }
+
+    /**
+     * Page wrapper swipe event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onPageWrapperSwipe(evt){
+        const index = this.getActivePageIndex();
+        const count = this.getChildrenCount();
+
+        switch(evt.direction){
+            case Hammer.DIRECTION_LEFT:
+                if(index < count - 1){
+                    this.setActivePage(index + 1);
+                }
+                break;
+
+            case Hammer.DIRECTION_RIGHT:
+                if(index > 0){
+                    this.setActivePage(index - 1);
+                }
+                break;
         }
     }
 
