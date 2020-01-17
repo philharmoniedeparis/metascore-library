@@ -568,16 +568,23 @@ export default class ComponentForm extends Dom {
     updateFieldValues(supressEvent){
         if(this.components){
             if(this.hasField('start-time') && this.hasField('end-time')){
-                const start_values = [];
-                const end_values = [];
+                let start_values = [];
+                let end_values = [];
 
                 this.components.forEach((component) => {
-                    start_values.push(component.getPropertyValue('start-time'));
-                    end_values.push(component.getPropertyValue('end-time'));
+                    const start_value = component.getPropertyValue('start-time');
+                    if(start_value !== null){
+                        start_values.push(start_value);
+                    }
+
+                    const end_value = component.getPropertyValue('end-time');
+                    if(end_value !== null){
+                        end_values.push(end_value);
+                    }
                 });
 
-                this.getField('start-time').getInput().setMax(Math.min(...end_values));
-                this.getField('end-time').getInput().setMin(Math.max(...start_values));
+                this.getField('end-time').getInput().setMin(start_values.length > 0 ? Math.max(...start_values) : null);
+                this.getField('start-time').getInput().setMax(end_values.length > 0 ? Math.min(...end_values) : null);
             }
 
             Object.keys(this.getFields()).forEach((name) => {
