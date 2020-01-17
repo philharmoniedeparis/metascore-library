@@ -36,6 +36,7 @@ export default class ElementForm extends ComponentForm {
                 'hidden',
                 'background',
                 'border',
+                'opacity',
                 'time',
                 'position',
                 'dimension'

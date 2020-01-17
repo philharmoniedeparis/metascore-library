@@ -129,6 +129,7 @@
 	"editor.configseditor.ComponentForm.fields.height.label": "Height",
 	"editor.configseditor.ComponentForm.fields.hidden.label": "Hidden on start",
 	"editor.configseditor.ComponentForm.fields.name.label": "Name",
+	"editor.configseditor.ComponentForm.fields.opacity.label": "Opacity",
 	"editor.configseditor.ComponentForm.fields.start-time.label": "Start",
 	"editor.configseditor.ComponentForm.fields.width.label": "Width",
 	"editor.configseditor.ComponentForm.fields.x.label": "X",

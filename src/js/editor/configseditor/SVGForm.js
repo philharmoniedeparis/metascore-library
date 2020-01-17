@@ -50,6 +50,7 @@ export default class SVGForm extends ElementForm {
                 'marker-end',
                 'background',
                 'border',
+                'opacity',
                 'time',
                 'position',
                 'dimension'

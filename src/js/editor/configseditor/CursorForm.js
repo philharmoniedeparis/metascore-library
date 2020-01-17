@@ -48,6 +48,7 @@ export default class CursorForm extends ElementForm {
                 'loop-duration',
                 'background',
                 'border',
+                'opacity',
                 'cursor-width',
                 'cursor-color',
                 'time',

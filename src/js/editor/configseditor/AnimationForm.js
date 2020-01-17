@@ -48,6 +48,7 @@ export default class AnimationForm extends ElementForm {
                 'color-theme',
                 'background',
                 'border',
+                'opacity',
                 'time',
                 'position',
                 'dimension'

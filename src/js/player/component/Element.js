@@ -53,7 +53,8 @@ export default class Element extends Component{
                     'type': 'string'
                 },
                 'opacity': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 1
                 },
                 'start-time': {
                     'type': 'time'

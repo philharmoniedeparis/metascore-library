@@ -462,6 +462,21 @@ export default class ComponentForm extends Dom {
                 }
                 break;
 
+            case 'opacity':
+                this.fields.opacity = new Field(
+                    new NumberInput({
+                        'min': 0,
+                        'max': 1,
+                        'step': 0.1,
+                        'spinButtons': true
+                    }),
+                    {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity')
+                    })
+                    .data('property', 'opacity')
+                    .appendTo(this.fields_wrapper);
+                break;
+
             case 'time':
                 this.fields['start-time'] = new Field(
                     new TimeInput({
