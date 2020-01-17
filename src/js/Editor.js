@@ -2688,6 +2688,7 @@ export class Editor extends Dom {
                 const before = 'position' in config  && config.position === 'before';
                 const index = block.getActivePageIndex();
                 const current_time = MasterClock.getTime();
+                const timeline = this.controller.getTimeline();
 
                 delete config.position;
 
@@ -2715,6 +2716,7 @@ export class Editor extends Dom {
 
                 const component = block.addPage(config, before ? index : index + 1);
 
+                timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
                 this.history.add({
@@ -2725,6 +2727,7 @@ export class Editor extends Dom {
                             adjacent_page.setPropertyValue(prop, component.getPropertyValue(prop));
                         }
                         component.remove();
+                        timeline.updateBlockPagesTrackLabels(block);
                         block.setActivePage(index);
                     },
                     'redo': () => {
@@ -2734,6 +2737,7 @@ export class Editor extends Dom {
                             adjacent_page.setPropertyValue(prop, current_time);
                         }
                         block.addPage(component, before ? index : index + 1);
+                        timeline.updateBlockPagesTrackLabels(block);
                     }
                 });
                 break;
@@ -2855,6 +2859,7 @@ export class Editor extends Dom {
 
                 case 'page': {
                     const contexts = {};
+                    const timeline = this.controller.getTimeline();
 
                     components.forEach((component) => {
                         const block = component.getParent();
@@ -2921,6 +2926,7 @@ export class Editor extends Dom {
                                 context.auto_page = context.block.addPage(configs);
                             }
 
+                            timeline.updateBlockPagesTrackLabels(context.block);
                             context.block.setActivePage(Math.max(0, page_index));
                         });
                     };
@@ -2951,6 +2957,7 @@ export class Editor extends Dom {
                                 });
                             }
 
+                            timeline.updateBlockPagesTrackLabels(context.block);
                             context.block.setActivePage(page_index);
                         });
                     };
@@ -3036,6 +3043,10 @@ export class Editor extends Dom {
         handle.insertAt(handle_parent, position);
 
         return this;
+    }
+
+    updateTimelinePageLabels(){
+
     }
 
     /**

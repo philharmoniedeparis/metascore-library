@@ -28,7 +28,6 @@ export default class Track extends Dom {
 
         const component_id = component.getId();
         const component_type = component.getType();
-        const component_name = component.getName();
 
         this.duration = 0;
 
@@ -70,8 +69,7 @@ export default class Track extends Dom {
             .data('component', component_id)
             .data('type', component_type)
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
-            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
-            .setLabel(component_name);
+            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this));
 
         if(component_type !== 'Page'){
             this.handle.attr('draggable', 'true');
@@ -82,7 +80,7 @@ export default class Track extends Dom {
         this
             .data('component', component_id)
             .data('type', component_type)
-            .attr('title', component_name)
+            .updateLabel()
             .updateSize();
     }
 
@@ -560,6 +558,20 @@ export default class Track extends Dom {
         track.insertAt(this.descendents, index);
 
         this.addClass('has-descendents');
+
+        return this;
+    }
+
+    /**
+     * Update the track's title and its handle's label
+     *
+     * @return {this}
+     */
+    updateLabel(){
+        const component_name = this.getComponent().getName();
+
+        this.attr('title', component_name);
+        this.getHandle().setLabel(component_name);
 
         return this;
     }

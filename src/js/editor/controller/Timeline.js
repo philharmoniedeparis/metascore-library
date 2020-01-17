@@ -544,8 +544,30 @@ export default class Timeline extends Dom {
         return this;
     }
 
+    /**
+     * Get the handles container
+     *
+     * @return {Dom}
+     */
     getHandlesContainer(){
         return this.handles_container;
+    }
+
+    /**
+     * Update the track labels of a block's pages
+     *
+     * @return {this}
+     */
+    updateBlockPagesTrackLabels(block, index){
+        // Update Timeline labels of sibling pages.
+        block.getChildren().forEach((page, page_index) => {
+            if(typeof index === 'undefined' || page_index >= index){
+                const track = this.getTrack(page.getId());
+                if(track){
+                    track.updateLabel();
+                }
+            }
+        });
     }
 
     /**
