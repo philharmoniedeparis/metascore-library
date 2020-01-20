@@ -2443,12 +2443,11 @@ export class Editor extends Dom {
     }
 
     /**
-     * Updates ConfigEditor image fields options
+     * Get available image assets
      *
-     * @private
-     * @return {this}
+     * @return {Object} The list of image assets, keyed by url
      */
-    updateConfigEditorImageFields(){
+    getImageAssets(){
         const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
         const images = {};
 
@@ -2459,6 +2458,18 @@ export class Editor extends Dom {
                 images[file.url] = asset.name;
             }
         });
+
+        return images;
+    }
+
+    /**
+     * Updates ConfigEditor image fields options
+     *
+     * @private
+     * @return {this}
+     */
+    updateConfigEditorImageFields(){
+        const images = this.getImageAssets();
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
             if('updateImageFields' in form){
