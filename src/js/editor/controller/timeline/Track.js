@@ -460,6 +460,11 @@ export default class Track extends Dom {
                 return this;
             }
 
+            if(component.instanceOf('Page') && !component.getParent().getPropertyValue('synched')){
+                // Do not add resizable to a page component that is in a non-synched block
+                return this;
+            }
+
             if(!this._resizable){
                 const directions = [];
                 if(component.hasProperty('start-time')){

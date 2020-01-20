@@ -57,6 +57,11 @@
         & > .inner .info{
             background-color: $page-color;
         }
+
+        &:first-child > .inner .info .resize-handle[data-direction="left"],
+        &:last-child > .inner .info .resize-handle[data-direction="right"]{
+            display: none;
+        }
     }
     &[data-type="Cursor"]{
         & > .inner .info{
