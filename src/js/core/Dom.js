@@ -492,9 +492,13 @@ export default class Dom {
      * @return {String} The CSS style value of the property
      */
     static css(element, name, value, inline){
-        const camel = this.camel(name);
         if(typeof value !== "undefined"){
-            element.style[camel] = value;
+            if(value === null){
+                element.style.removeProperty(name);
+            }
+            else{
+                element.style.setProperty(name, value);
+            }
         }
 
         const style = inline === true ? element.style : window.getComputedStyle(element);

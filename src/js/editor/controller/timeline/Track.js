@@ -501,7 +501,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Update size according to associated component time values
+     * Update size and classes according to associated component time values
      *
      * @private
      * @return {this}
@@ -515,6 +515,10 @@ export default class Track extends Dom {
         const left = start_time === null ? 0 : start_time / this.duration;
         const right = end_time === null ? 1 : end_time / this.duration;
         const width = right - left;
+
+        this
+            .toggleClass('has-start-time', start_time !== null)
+            .toggleClass('has-end-time', end_time !== null);
 
         this.info
             .css('left', `${left * 100}%`)

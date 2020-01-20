@@ -8,17 +8,16 @@
 
     > .inner{
         position: relative;
-        height: 2em;
+        height: 1em;
+        padding: 0.5em 0;
         pointer-events: none;
 
         .info{
             position: absolute;
             height: 1em;
-            margin: 0.5em 0;
             width: 100%;
             left: 0;
-            top: 0;
-            background: #555;
+            background-color: #555;
             box-sizing: border-box;
             box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
             opacity: 0.5;
@@ -30,66 +29,7 @@
                 margin: -3px 0 0 0;
                 background: #fff;
                 border-radius: 50%;
-            }
-        }
-    }
-
-    > .descendents{
-        display: none;
-    }
-
-    &.user-expanded,
-    &.auto-expanded{
-        > .descendents{
-            display: block;
-        }
-    }
-
-    &.selected > .inner{
-        background: $lightgray;
-        pointer-events: auto;
-
-        .info{
-            opacity: 1;
-
-            .resize-handle{
-                display: block;
-            }
-        }
-    }
-
-    &.dragging{
-        > * {
-            opacity: 0.1;
-        }
-    }
-
-    &.dragover{
-        * {
-            pointer-events: none;
-        }
-
-        &::before{
-            content: "";
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: #FF00A6;
-            z-index: 1;
-        }
-
-        &.drag-above{
-            &::before{
-                top: 0;
-                margin-top: -1px;
-            }
-        }
-
-        &.drag-below{
-            &::before{
-                top: 100%;
-                margin-top: 1px;
+                z-index: 2;
             }
         }
     }
@@ -110,32 +50,129 @@
     &[data-type="BlockToggler"],
     &[data-type="Block"]{
         & > .inner .info{
-            background: $block-color;
+            background-color: $block-color;
         }
     }
     &[data-type="Page"]{
         & > .inner .info{
-            background: $page-color;
+            background-color: $page-color;
         }
     }
     &[data-type="Cursor"]{
         & > .inner .info{
-            background: $cursor-element-color;
+            background-color: $cursor-element-color;
         }
     }
     &[data-type="Content"]{
         & > .inner .info{
-            background: $content-element-color;
+            background-color: $content-element-color;
         }
     }
     &[data-type="Animation"]{
         & > .inner .info{
-            background: $animation-element-color;
+            background-color: $animation-element-color;
         }
     }
     &[data-type="SVG"]{
         & > .inner .info{
-            background: $svg-element-color;
+            background-color: $svg-element-color;
+        }
+    }
+
+    &.selected > .inner{
+        background: $lightgray;
+        pointer-events: auto;
+
+        .info{
+            opacity: 1;
+
+            .resize-handle{
+                display: block;
+            }
+        }
+    }
+
+    &:not(.has-start-time),
+    &:not(.has-end-time){
+        > .inner{
+            &::after{
+                content: '';
+                position: sticky;
+                left: 0;
+                display: block;
+                width: var(--tracks-container-width);
+                height: 1em;
+                z-index: 1;
+                pointer-events: none;
+                background-repeat: repeat-y;
+                background-size: 8px 8px;
+            }
+        }
+    }
+
+    &:not(.has-start-time) > .inner::after{
+        background-image: linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0);
+        background-position: left 3px;
+    }
+
+    &:not(.has-end-time) > .inner::after{
+        background-image: linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px,transparent 0);
+        background-position: right 3px;
+    }
+
+    &:not(.has-start-time):not(.has-end-time) > .inner::after{
+        background-image:
+            linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0),
+            linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px, transparent 0);
+        background-position:
+            left 3px, left 3px,
+            right 3px, right 3px;
+    }
+
+    > .descendents{
+        display: none;
+    }
+
+    &.user-expanded,
+    &.auto-expanded{
+        > .descendents{
+            display: block;
+        }
+    }
+
+    &.dragging{
+        > * {
+            opacity: 0.1;
+        }
+    }
+
+    &.dragover{
+        * {
+            pointer-events: none;
+        }
+
+        &::before{
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #FF00A6;
+            z-index: 1;
+        }
+
+        &.drag-above{
+            &::before{
+                top: 0;
+                margin-top: -1px;
+            }
+        }
+
+        &.drag-below{
+            &::before{
+                top: 100%;
+                margin-top: 1px;
+            }
         }
     }
 }

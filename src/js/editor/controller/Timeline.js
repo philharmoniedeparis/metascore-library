@@ -505,6 +505,8 @@ export default class Timeline extends Dom {
 
         this.updatePlayhead();
 
+        this.tracks_container_outer.css('--tracks-container-width', `${width}px`);
+
         return this;
     }
 
