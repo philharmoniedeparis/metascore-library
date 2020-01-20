@@ -379,7 +379,7 @@ export default class GuideAssets extends Dom {
             file = asset.file;
         }
         if(/^image\/.*/.test(file.mimetype)){
-            evt.dataTransfer.setData('text/html', `<img src="${asset.url}" />`);
+            evt.dataTransfer.setData('text/html', `<img src="${file.url}" />`);
         }
 
         this._asset_drag_ghost = new Dom(figure.get(0).cloneNode(true))
