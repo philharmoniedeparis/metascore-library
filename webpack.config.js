@@ -162,7 +162,7 @@ module.exports = (env, argv) => {
         filename: LIB_NAME +'.[name].css'
       }),
       new i18nExtractPlugin({
-        test: /^src\\.*\.js$/,
+        test: /^src[\/\\].*\.js$/,
         exclude: /node_modules/,
         regexp: /Locale\.t\((["'])((?:(?=(\\?))\3.)*?)\1, ?(["'])((?:(?=(\\?))\6.)*?)\4/gm,
         fn: (matches) => {
