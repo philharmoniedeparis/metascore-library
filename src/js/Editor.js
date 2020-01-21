@@ -241,9 +241,6 @@ export class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller(this)
-            .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
-            .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
-            .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
@@ -493,7 +490,7 @@ export class Editor extends Dom {
                                     'callback': (context, data) => {
                                         const component = data.component;
                                         const position = component.parents().children().count();
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -510,7 +507,7 @@ export class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.send-to-back', 'Send to back'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        this.arrangePlayerComponent(component, 0);
+                                        this.setPlayerComponentOrder(component, 0);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -532,7 +529,7 @@ export class Editor extends Dom {
                                         let position = siblings.index(`#${component.getId()}`);
                                         position = Math.min(siblings.count(), position + 2);
 
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -554,7 +551,7 @@ export class Editor extends Dom {
                                         let position = siblings.index(`#${component.getId()}`);
                                         position = Math.max(0, position - 1);
 
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -1276,45 +1273,6 @@ export class Editor extends Dom {
     }
 
     /**
-     * Controller timeset event callback
-     *
-     * @private
-     */
-    onControllerPlayheadClick(evt){
-        MasterClock.setTime(evt.detail.time);
-    }
-
-    /**
-     * Controller controls button click event callback
-     *
-     * @private
-     * @param {MouseEvent} evt The event object.
-     */
-    onControllerControlsButtonClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'play':
-                this.getPlayer().togglePlay();
-                break;
-
-            case 'rewind':
-                MasterClock.setTime(0);
-                break;
-        }
-    }
-
-    /**
-     * Controller time field valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onControllerTimeFieldChange(evt){
-        MasterClock.setTime(evt.detail.value);
-    }
-
-    /**
      * Timeline track click event callback
      *
      * @private
@@ -1345,7 +1303,7 @@ export class Editor extends Dom {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
-        this.arrangePlayerComponent(component, position);
+        this.setPlayerComponentOrder(component, position);
     }
 
     /**
@@ -2905,19 +2863,12 @@ export class Editor extends Dom {
         return this;
     }
 
-    arrangePlayerComponent(component, position){
-        const component_id = component.getId();
+    setPlayerComponentOrder(component, position){
         const parent = component.parents();
 
-        const track = this.controller.getTimeline().getTrack(component_id);
-        const track_parent = track.parents();
-
-        const handle = track.getHandle();
-        const handle_parent = handle.parents();
-
         component.insertAt(parent, position);
-        track.insertAt(track_parent, position);
-        handle.insertAt(handle_parent, position);
+
+        this.triggerEvent('playercomponentorder', {'component': component, 'position': position});
 
         return this;
     }
