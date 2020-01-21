@@ -568,8 +568,8 @@ export default class ComponentForm extends Dom {
     updateFieldValues(supressEvent){
         if(this.components){
             if(this.hasField('start-time') && this.hasField('end-time')){
-                let start_values = [];
-                let end_values = [];
+                const start_values = [];
+                const end_values = [];
 
                 this.components.forEach((component) => {
                     const start_value = component.getPropertyValue('start-time');
