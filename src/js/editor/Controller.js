@@ -38,6 +38,10 @@ export default class Controller extends Dom {
 
     /**
      * Instantiate
+     *
+     * @param {Editor} editor The Editor instance
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Object} [mediaSourceSelector={}] Configs to pass to the mediaSourceSelector
      */
     constructor(editor, configs) {
         // call parent constructor

@@ -36,12 +36,19 @@ export default class ConfigsEditor extends Dom {
     /**
      * Instantiate
      *
+     * @param {Editor} editor The Editor instance
      * @param {Object} configs Custom configs to override defaults
      * @property {Boolean} [allowMultiSelection=true] Whether multiple selection is allowed
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `configs-editor ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor;
 
         /**
          * The configuration values
@@ -72,6 +79,12 @@ export default class ConfigsEditor extends Dom {
          * @type {Array}
          */
         this.components = [];
+
+
+        this
+            .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
+            .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
+            .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this));
     }
 
     /**
@@ -83,6 +96,71 @@ export default class ConfigsEditor extends Dom {
         return {
             'allowMultiSelection': true
         };
+    }
+
+    /**
+     * ContentForm contentsunlock event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onContentFormContentsUnlock(evt){
+        const component = evt.detail.component;
+        component.addClass('isolate');
+
+        this.editor.getPlayer().addClass('isolating');
+        this.editor.addClass('contents-unlocked');
+    }
+
+    /**
+     * ContentForm contentschange event callback
+     *
+     * @private
+     */
+    onContentFormContentsChange(){
+        this.editor.setDirty('components');
+    }
+
+    /**
+     * ContentForm contentslock event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onContentFormContentsLock(evt){
+        const component = evt.detail.component;
+        component.removeClass('isolate');
+
+        this.editor.getPlayer().removeClass('isolating');
+        this.editor.removeClass('contents-unlocked');
+    }
+
+    /**
+     * CursorForm keyframeseditingstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onCursorFormKeyframesEditingStart(evt){
+        const component = evt.detail.component;
+        component.addClass('isolate');
+
+        this.editor.getPlayer().addClass('isolating');
+        this.editor.addClass('cursor-keyframes-editing');
+    }
+
+    /**
+     * CursorForm keyframeseditingstop event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onCursorFormKeyframesEditingStop(evt){
+        const component = evt.detail.component;
+        component.removeClass('isolate');
+
+        this.editor.getPlayer().removeClass('isolating');
+        this.editor.removeClass('cursor-keyframes-editing');
     }
 
     /**

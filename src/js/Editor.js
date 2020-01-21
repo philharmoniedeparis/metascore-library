@@ -218,12 +218,7 @@ export class Editor extends Dom {
          * The component form
          * @type {ConfigsEditor}
          */
-        this.configs_editor = new ConfigsEditor()
-            .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
-            .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
-            .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this))
-            .addDelegate('.cursor-form', 'keyframeseditingstart', this.onCursorFormKeyframesEditingStart.bind(this))
-            .addDelegate('.cursor-form', 'keyframeseditingstop', this.onCursorFormKeyframesEditingStop.bind(this))
+        this.configs_editor = new ConfigsEditor(this)
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -1447,71 +1442,6 @@ export class Editor extends Dom {
                 this.setDirty('media');
             }
         });
-    }
-
-    /**
-     * ContentForm contentsunlock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsUnlock(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.getPlayer().addClass('isolating');
-        this.addClass('contents-unlocked');
-    }
-
-    /**
-     * ContentForm contentschange event callback
-     *
-     * @private
-     */
-    onContentFormContentsChange(){
-        this.setDirty('components');
-    }
-
-    /**
-     * ContentForm contentslock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsLock(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.getPlayer().removeClass('isolating');
-        this.removeClass('contents-unlocked');
-    }
-
-    /**
-     * CursorForm keyframeseditingstart event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStart(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.getPlayer().addClass('isolating');
-        this.addClass('cursor-keyframes-editing');
-    }
-
-    /**
-     * CursorForm keyframeseditingstop event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStop(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.getPlayer().removeClass('isolating');
-        this.removeClass('cursor-keyframes-editing');
     }
 
     /**
