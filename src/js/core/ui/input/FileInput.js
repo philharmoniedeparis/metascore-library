@@ -86,7 +86,9 @@ export default class FileInput extends Input {
         }
         this.label.text(label_text);
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'files': this.files}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value, 'files': this.files}, true, false);
+
+        this.old_value = this.value;
     }
 
     /**

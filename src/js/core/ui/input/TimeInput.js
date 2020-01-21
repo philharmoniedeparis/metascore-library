@@ -260,7 +260,9 @@ export default class TimeInput extends Input {
             this.setValue(this.constructor.getNumericalValue(this.formatted_input.val()), true);
         }
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value}, true, false);
+
+        this.old_value = this.value;
     }
 
     /**

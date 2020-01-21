@@ -9,8 +9,6 @@ import {className} from '../../../css/core/ui/Input.scss';
  * @emits {valuechange} Fired when the input's value changes
  * @param {Object} input The input instance
  * @param {Mixed} value The new value
- * @emits {reset} Fired when the input is reset
- * @param {Object} input The input instance
  */
 export default class Input extends Dom{
 
@@ -134,7 +132,9 @@ export default class Input extends Dom{
     onChange(){
         this.value = this.native_input.val();
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value}, true, false);
+
+        this.old_value = this.value;
     }
 
     /**
@@ -163,6 +163,8 @@ export default class Input extends Dom{
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');
         }
+
+        this.old_value = this.value;
 
         return this;
     }
@@ -251,8 +253,6 @@ export default class Input extends Dom{
      * @return {this}
      */
     reset(supressEvent){
-        this.setValue(this.configs.value);
-
         if(this.configs.disabled){
             this.disable();
         }
@@ -262,9 +262,7 @@ export default class Input extends Dom{
 
         this.readonly(this.configs.readonly);
 
-        if(supressEvent !== true){
-            this.triggerEvent('reset', {'input': this}, true, false);
-        }
+        this.setValue(this.configs.value, supressEvent);
 
         return this;
     }

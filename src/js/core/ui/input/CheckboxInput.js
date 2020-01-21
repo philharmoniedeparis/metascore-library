@@ -109,7 +109,9 @@ export default class CheckboxInput extends Input{
             this.removeClass('checked');
         }
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value}, true, false);
+
+        this.old_value = this.value;
     }
 
     /**
@@ -125,6 +127,8 @@ export default class CheckboxInput extends Input{
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');
         }
+
+        this.old_value = this.value;
 
         return this;
     }
