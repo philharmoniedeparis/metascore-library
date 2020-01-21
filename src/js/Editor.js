@@ -1229,7 +1229,19 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onMainmenuTitleChange(){
+    onMainmenuTitleChange(evt){
+        const value = evt.detail.value;
+        const old = evt.detail.old;
+
+        this.history.add({
+            'undo': () => {
+                this.mainmenu.getItem('title').setValue(old, true);
+            },
+            'redo': () => {
+                this.mainmenu.getItem('title').setValue(value, true);
+            }
+        });
+
         this.setDirty('title');
     }
 
@@ -3054,10 +3066,6 @@ export class Editor extends Dom {
         handle.insertAt(handle_parent, position);
 
         return this;
-    }
-
-    updateTimelinePageLabels(){
-
     }
 
     /**
