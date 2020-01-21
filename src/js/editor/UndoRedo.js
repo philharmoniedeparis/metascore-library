@@ -9,8 +9,6 @@ import EventEmitter from '../core/EventEmitter';
  * @param {Object} command The added command
  * @emits {redo} Fired when a command is redone
  * @param {Object} command The added command
- *
- * @todo: make signleton ?
  */
 export default class UndoRedo extends EventEmitter {
 

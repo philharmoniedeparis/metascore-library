@@ -39,9 +39,15 @@ export default class Controller extends Dom {
     /**
      * Instantiate
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `controller ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor;
 
         /**
          * The configuration values
@@ -152,7 +158,7 @@ export default class Controller extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        this.scenario_selector = new ScenarioSelector()
+        this.scenario_selector = new ScenarioSelector(this.editor)
             .appendTo(bottom);
 
         this.waveform_zoom.getControls()
@@ -278,7 +284,7 @@ export default class Controller extends Dom {
      */
     onFileBtnClick(){
         const configs = Object.assign({
-            'parent': '.metaScore-editor'
+            'parent': this.editor
         }, this.configs.mediaSourceSelector);
 
         new MediaSourceSelector(configs);

@@ -247,9 +247,13 @@ export class Player extends Dom {
                 break;
             }
 
-            case 'scenario':
-                this.setActiveScenario(params.value);
+            case 'scenario':{
+                const scenario = this.getScenarios().find((s) => s.getName() === params.value);
+                if(scenario){
+                    this.setActiveScenario(scenario);
+                }
                 break;
+            }
 
             case 'playing':
                 source.postMessage(JSON.stringify({
@@ -581,7 +585,7 @@ export class Player extends Dom {
                 'name': Locale.t('Player.defaultScenarioName', 'Scenario 1')
             });
         }
-        this.setActiveScenario(scenario.getName());
+        this.setActiveScenario(scenario);
 
         this.updateBlockTogglers();
 
@@ -770,17 +774,6 @@ export class Player extends Dom {
     }
 
     /**
-     * Get the a scenario by name
-     *
-     * @return {String} The scenario
-     */
-    getScenario(name){
-        return this.getScenarios().find((scenario) => {
-            return scenario.getName() === name;
-        });
-    }
-
-    /**
      * Get the list of scenarios
      *
      * @return {Array} The scenarios
@@ -808,12 +801,11 @@ export class Player extends Dom {
     /**
      * Set the current scenario
      *
-     * @param {String} name The scenario's name
+     * @param {Scenario} scenario The scenario
      * @param {Boolean} [supressEvent=false] Whether to supress the scenariochange event or not
      * @return {this}
      */
-    setActiveScenario(name, supressEvent){
-        const scenario = this.getScenario(name);
+    setActiveScenario(scenario, supressEvent){
         const previous_scenario = this.getActiveScenario();
 
         if(scenario !== previous_scenario){
@@ -868,10 +860,10 @@ export class Player extends Dom {
      *
      * @param {String} [inTime] The time at which the media should start playing
      * @param {String} [outTime] The time at which the media should stop playing
-     * @param {String} [scenario] A reading index to go to while playing
+     * @param {String} [scenario_name] The name of the scenario to go to while playing
      * @return {this}
      */
-    play(inTime, outTime, scenario){
+    play(inTime, outTime, scenario_name){
         const renderer = this.getRenderer();
 
         if(this.cuepoint){
@@ -902,16 +894,20 @@ export class Player extends Dom {
                 renderer.pause();
             });
 
-            if(scenario){
-                const previous_scenario = this.getActiveScenario().getName();
-                if(scenario !== previous_scenario){
-                    this.cuepoint
-                        .addListener('start', () => {
-                            this.setActiveScenario(scenario);
-                        })
-                        .addListener('seekout', () => {
-                            this.setActiveScenario(previous_scenario);
-                        });
+            if(scenario_name){
+                const scenario = this.getScenarios().find((s) => s.getName() === scenario_name);
+
+                if(scenario){
+                    const previous_scenario = this.getActiveScenario();
+                    if(scenario !== previous_scenario){
+                        this.cuepoint
+                            .addListener('start', () => {
+                                this.setActiveScenario(scenario);
+                            })
+                            .addListener('seekout', () => {
+                                this.setActiveScenario(previous_scenario);
+                            });
+                    }
                 }
             }
 

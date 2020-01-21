@@ -240,13 +240,8 @@ export class Editor extends Dom {
          * The controller
          * @type {Controller}
          */
-        this.controller = new Controller()
+        this.controller = new Controller(this)
             .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
-            .addListener('scenarioactivate', this.onControllerScenarioActivate.bind(this))
-            .addListener('scenarioadd', this.onControllerScenarioAdd.bind(this))
-            .addListener('scenariorename', this.onControllerScenarioRename.bind(this))
-            .addListener('scenarioclone', this.onControllerScenarioClone.bind(this))
-            .addListener('scenarioremove', this.onControllerScenarioRemove.bind(this))
             .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
             .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
@@ -1290,99 +1285,6 @@ export class Editor extends Dom {
     }
 
     /**
-     * Controller scenarioactivate event callback
-     *
-     * @private
-     */
-    onControllerScenarioActivate(evt){
-        this.getPlayer().setActiveScenario(evt.detail.scenario);
-    }
-
-    /**
-     * Controller scenarioadd event callback
-     *
-     * @private
-     */
-    onControllerScenarioAdd(evt){
-        const scenario = evt.detail.scenario;
-        const player = this.getPlayer();
-
-        player.addScenario({'name': scenario});
-        player.setActiveScenario(scenario);
-
-        this.setDirty('components');
-    }
-
-    /**
-     * Controller scenariorename event callback
-     *
-     * @private
-     */
-    onControllerScenarioRename(evt){
-        const old_name = evt.detail.old;
-        const new_name = evt.detail.new;
-        const scenario = this.getPlayer().getScenario(old_name);
-
-        if(scenario){
-            scenario.setPropertyValue('name', new_name);
-            this.setDirty('components');
-        }
-    }
-
-    /**
-     * Controller scenarioclone event callback
-     *
-     * @private
-     */
-    onControllerScenarioClone(evt){
-        const original = evt.detail.original;
-        const clone = evt.detail.clone;
-        const player = this.getPlayer();
-        const scenario = player.getScenario(original);
-
-        if(scenario){
-            const configs = Object.assign(scenario.getPropertyValues(true), {
-                'name': clone
-            });
-            player.addScenario(configs);
-            player.setActiveScenario(clone);
-
-            this.setDirty('components');
-        }
-    }
-
-    /**
-     * Controller scenarioremove event callback
-     *
-     * @private
-     */
-    onControllerScenarioRemove(evt){
-        const name = evt.detail.scenario;
-        const player = this.getPlayer();
-        const scenario = player.getScenario(name);
-        const active = scenario.isActive();
-
-        if(scenario){
-            scenario.remove();
-
-            if(active){
-                player.setActiveScenario(null);
-            }
-
-            this.history.add({
-                'undo': () => {
-                    player.addScenario(scenario);
-                },
-                'redo': () => {
-                    scenario.remove();
-                }
-            });
-
-            this.setDirty('components');
-        }
-    }
-
-    /**
      * Controller controls button click event callback
      *
      * @private
@@ -1732,9 +1634,6 @@ export class Editor extends Dom {
             this.controller.getTimeline().getTrack(scenario.getId()).show();
         }
 
-        // Update ScenarioSelector
-        this.controller.getScenarioSelector().setActiveScenario(scenario ? scenario.getName() : null, true);
-
         // Update ConfigEditor component fields
         this.updateConfigEditorComponentFields();
     }
@@ -1893,19 +1792,14 @@ export class Editor extends Dom {
             // Update the timeline and scenario list
             const active_scenario = this.player.getActiveScenario();
             const timeline = this.controller.getTimeline();
-            const scenarioselector = this.controller.getScenarioSelector().clear();
             this.player.getScenarios().forEach((scenario) => {
                 const track = timeline.addTrack(scenario);
-                scenarioselector.addScenario(scenario.getName(), true);
-
                 if(scenario === active_scenario){
                     track.show();
-                    scenarioselector.setActiveScenario(active_scenario.getName(), true);
                 }
                 else{
                     track.hide();
                 }
-
             });
 
             this.updateConfigEditorImageFields();
@@ -1933,6 +1827,8 @@ export class Editor extends Dom {
         if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
             this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
         }
+
+        this.triggerEvent('playerload', {'player': this.player});
 
         loadmask.hide();
     }
@@ -2174,57 +2070,6 @@ export class Editor extends Dom {
         }
 
         this.setDirty('components');
-
-        // If we are not in an undo or redo operation, group property changes via a timeout
-        if(!this.history.isExecuting()){
-            if(this._oncomponentpropchange_timeout){
-                clearTimeout(this._oncomponentpropchange_timeout);
-            }
-
-            if(!this._oncomponentpropchange_stack){
-                this._oncomponentpropchange_stack = [];
-            }
-
-            // Check if the component and property are already in the stack
-            const existing = this._oncomponentpropchange_stack.find((detail) => {
-                return detail.component === component && detail.property === property;
-            });
-            if(existing){
-                // The component and property are already in the stack, update the value
-                existing.value = evt.detail.value;
-            }
-            else{
-                // Add the component and property to the stack
-                this._oncomponentpropchange_stack.push(evt.detail);
-            }
-
-            this._oncomponentpropchange_timeout = setTimeout(this.onComponentPropChangeTimeout.bind(this), this.configs.history.grouping_timeout);
-        }
-    }
-
-    /**
-     * Component propchange event timeout callback
-     *
-     * @private
-     */
-    onComponentPropChangeTimeout(){
-        const stack = this._oncomponentpropchange_stack;
-
-        delete this._oncomponentpropchange_stack;
-        delete this._oncomponentpropchange_timeout;
-
-        this.history.add({
-            'undo': () => {
-                stack.forEach((detail) => {
-                    detail.component.setPropertyValue(detail.property, detail.old);
-                });
-            },
-            'redo': () => {
-                stack.forEach((detail) => {
-                    detail.component.setPropertyValue(detail.property, detail.value);
-                });
-            }
-        });
     }
 
     /**
@@ -2452,6 +2297,15 @@ export class Editor extends Dom {
             .toggleItem('restore', !default_revision);
 
         return this;
+    }
+
+    /**
+     * Get the undo/redo instance
+     *
+     * @return {UndoRedo} The undo/redo instance
+     */
+    getHistory(){
+        return this.history;
     }
 
     /**
