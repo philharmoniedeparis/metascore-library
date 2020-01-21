@@ -140,24 +140,9 @@ export default class ComponentForm extends Dom {
     onFieldValueChange(evt){
         const name = evt.detail.field.data('property');
         const value = evt.detail.value;
-        const values = [];
 
         this.components.forEach((component) => {
-            const old_values = {
-                [name]: component.getPropertyValue(name)
-            };
-
             component.setPropertyValue(name, value);
-
-            const new_values = {
-                [name]: component.getPropertyValue(name)
-            };
-
-            values.push({
-                component: component,
-                new_values: new_values,
-                old_values: old_values,
-            });
         });
 
         this.toggleMultival(evt.detail.field, false);
