@@ -134,7 +134,8 @@ export default class CursorForm extends ElementForm {
                         'options': {
                             'linear': Locale.t('editor.configseditor.CursorForm.fields.form.options.linear', 'Linear'),
                             'circular': Locale.t('editor.configseditor.CursorForm.fields.form.options.circular', 'Circular')
-                        }
+                        },
+                        'required': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.form.label', 'Form')
@@ -153,7 +154,8 @@ export default class CursorForm extends ElementForm {
                             'top': Locale.t('editor.configseditor.CursorForm.fields.direction.options.top', 'Bottom > Top'),
                             'cw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.cw', 'Clockwise'),
                             'ccw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.ccw', 'Counterclockwise')
-                        }
+                        },
+                        'required': true
                     }),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.direction.label', 'Direction')
