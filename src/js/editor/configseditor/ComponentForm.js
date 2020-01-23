@@ -1,5 +1,6 @@
 import Dom from '../../core/Dom';
 import {clone} from '../../core/utils/Array';
+import {isFunction} from '../../core/utils/Var';
 import Locale from '../../core/Locale';
 import Field from '../Field';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
@@ -649,7 +650,8 @@ export default class ComponentForm extends Dom {
      */
     updateFieldValue(name, supressEvent){
         if(this.components){
-            const value = this.master_component.getPropertyValue(name);
+            const master_component = this.getMasterComponent();
+            const value = master_component.getPropertyValue(name);
             const field = this.getField(name);
 
             if(field && field instanceof Field){
@@ -662,12 +664,25 @@ export default class ComponentForm extends Dom {
                 this.toggleMultival(field, multival);
             }
 
+            // Toggle other fields' visibility
+            Object.entries(master_component.getProperties()).forEach(([prop_name, prop]) => {
+                if(prop_name !== name){
+                    const prop_field = this.getField(prop_name);
+                    if(prop_field){
+                        const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
+                        prop_field[toggle ? 'show' : 'hide']();
+                    }
+                }
+            });
+
             switch(name){
                 case 'editor.locked':
                     this
                         .toggleClass('locked', value)
-                        .toggleFields(['x', 'y'], !value)
-                        .toggleFields(['width', 'height'], !value);
+                        .toggleField('x', !value)
+                        .toggleField('y', !value)
+                        .toggleField('width', !value)
+                        .toggleField('height', !value)
                     break;
             }
         }
@@ -705,25 +720,23 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Toggle the enabled state of some fields
+     * Toggle the enabled state of a field
      *
-     * @param {Array} names The list of field names to toggle
-     * @param {Boolean} toggle Whether the fields are to be enabled or disabled
+     * @param {String} name The field name to toggle
+     * @param {Boolean} toggle Whether the field should be enabled or disabled
      * @return {this}
      */
-    toggleFields(names, toggle){
-        names.forEach((name) => {
-            const field = this.getField(name);
+    toggleField(name, toggle){
+        const field = this.getField(name);
 
-            if(field){
-                if(toggle){
-                    field.getInput().enable();
-                }
-                else{
-                    field.getInput().disable();
-                }
+        if(field){
+            if(toggle){
+                field.getInput().enable();
             }
-        });
+            else{
+                field.getInput().disable();
+            }
+        }
 
         return this;
     }

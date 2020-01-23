@@ -1,6 +1,7 @@
 import ElementForm from './ElementForm';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
+import {isFunction} from '../../core/utils/Var';
 import Field from '../Field';
 import SelectInput from '../../core/ui/input/SelectInput';
 import ColorInput from '../../core/ui/input/ColorInput';
@@ -26,6 +27,19 @@ export default class CursorForm extends ElementForm {
         super(configs);
 
         this.addClass(`cursor-form ${className}`);
+
+        this.direction_options = {
+            'linear': {
+                'right': Locale.t('editor.configseditor.CursorForm.fields.direction.options.right', 'Left > Right'),
+                'left': Locale.t('editor.configseditor.CursorForm.fields.direction.options.left', 'Right > Left'),
+                'bottom': Locale.t('editor.configseditor.CursorForm.fields.direction.options.bottom', 'Top > Bottom'),
+                'top': Locale.t('editor.configseditor.CursorForm.fields.direction.options.top', 'Bottom > Top'),
+            },
+            'circular': {
+                'cw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.cw', 'Clockwise'),
+                'ccw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.ccw', 'Counterclockwise')
+            }
+        };
     }
 
     /**
@@ -147,14 +161,7 @@ export default class CursorForm extends ElementForm {
             case 'direction':
                 this.fields[name] = new Field(
                     new SelectInput({
-                        'options': {
-                            'right': Locale.t('editor.configseditor.CursorForm.fields.direction.options.right', 'Left > Right'),
-                            'left': Locale.t('editor.configseditor.CursorForm.fields.direction.options.left', 'Right > Left'),
-                            'bottom': Locale.t('editor.configseditor.CursorForm.fields.direction.options.bottom', 'Top > Bottom'),
-                            'top': Locale.t('editor.configseditor.CursorForm.fields.direction.options.top', 'Bottom > Top'),
-                            'cw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.cw', 'Clockwise'),
-                            'ccw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.ccw', 'Counterclockwise')
-                        },
+                        'options': [],
                         'required': true
                     }),
                     {
@@ -250,6 +257,37 @@ export default class CursorForm extends ElementForm {
 
             default:
                 super.addField(name);
+        }
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updateFieldValue(name, supressEvent){
+        super.updateFieldValue(name, supressEvent);
+
+        if(this.components){
+            const master_component = this.getMasterComponent();
+
+            // Toggle the keyframes toggle visibility.
+            const prop = master_component.getProperty('keyframes');
+            const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
+            this.keyframes_toggle[toggle ? 'show' : 'hide']();
+
+            if(name === 'form'){
+                // Update the direction field options.
+                const direction_input = this.getField('direction').getInput();
+                const form = master_component.getPropertyValue(name);
+                direction_input.clear();
+
+                if(form in this.direction_options){
+                    Object.entries(this.direction_options[form]).forEach(([key, value]) => {
+                        direction_input.addOption(key, value);
+                    });
+                }
+            }
         }
 
         return this;
