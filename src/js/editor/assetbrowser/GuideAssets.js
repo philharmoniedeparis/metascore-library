@@ -195,7 +195,7 @@ export default class GuideAssets extends Dom {
 
         // add a loading mask
         const loadmask = new LoadMask({
-            'parent': '.metaScore-editor',
+            'parent': this.editor,
             'text': Locale.t('editor.assetbrowser.GuideAssets.importAssets.loadmask.text', 'Uploading...'),
             'bar': true
         });
@@ -467,7 +467,7 @@ export default class GuideAssets extends Dom {
             case 'spectrogram':
                 {
                     const form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
-                            'parent': '.metaScore-editor',
+                            'parent': this.editor,
                             'xhr': this.configs.xhr
                         }, this.configs.spectrogram_form.configs));
 

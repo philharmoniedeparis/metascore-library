@@ -497,7 +497,7 @@ export default class ComponentForm extends Dom {
                     this.fields['border-radius'] = new Field(
                         new BorderRadiusInput({
                             'overlay': {
-                                'parent': '.metaScore-editor'
+                                'parent': this.editor
                             }
                         }),
                         {

@@ -18,7 +18,6 @@ export default class BorderRadius extends Overlay {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {String} [parent='.metaScore-editor'] The parent element in which the overlay will be appended
      * @property {Boolean} [toolbar=true] Whether to show a toolbar with a title and close button
      * @property {String} [title='Border Radius'] The overlay's title
      * @property {String} [format="css"] The format of the value (css, object)

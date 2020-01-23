@@ -26,7 +26,7 @@ export default class CursorKeyframesEditor extends Dom {
             'labelColor': '#FFF',
             'labelPadding': 2,
             'mouseoverDistance': 1,
-            'contextmenuContainer': '.metaScore-editor .workspace'
+            'contextmenuContainer': 'body'
         };
     }
 

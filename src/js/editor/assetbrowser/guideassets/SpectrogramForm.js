@@ -393,7 +393,7 @@ export default class SpectrogramForm extends Overlay {
         data.set('legend', legend ? 1 : 0);
 
         const loadmask = new LoadMask({
-            'parent': '.metaScore-editor',
+            'parent': this,
             'text': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.sendData.LoadMask.text', 'Saving...')
         });
 
