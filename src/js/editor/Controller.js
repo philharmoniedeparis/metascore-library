@@ -349,7 +349,7 @@ export default class Controller extends Dom {
             'parent': this.editor
         }, this.configs.mediaSourceSelector);
 
-        new MediaSourceSelector(configs);
+        new MediaSourceSelector(this.editor, configs);
     }
 
     /**
