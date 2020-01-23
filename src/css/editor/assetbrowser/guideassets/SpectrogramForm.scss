@@ -33,19 +33,32 @@
                                     color: #fff;
                                 }
 
-                                .input{
-                                    &.number{
-                                        input{
-                                            width: 2em;
-                                        }
+                                .input.number{
+                                    input{
+                                        width: 2em;
                                     }
                                 }
 
                                 &[data-opt="width"],
-                                &[data-opt="height"]{
+                                &[data-opt="height"],
+                                &[data-opt="saturation"],
+                                &[data-opt="rotation"]{
                                     .input{
                                         input{
                                             width: 4em;
+                                        }
+                                    }
+                                }
+
+                                &[data-opt="scale"]{
+                                    grid-column: 1 / span 2;
+                                }
+
+                                &[data-opt="start"],
+                                &[data-opt="stop"]{
+                                    .input{
+                                        input{
+                                            width: 5em;
                                         }
                                     }
                                 }
