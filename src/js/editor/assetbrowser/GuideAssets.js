@@ -28,14 +28,21 @@ export default class GuideAssets extends Dom {
     /**
      * Instantiate
      *
+     * @param {Editor} editor The editor instance
      * @param {Object} configs Custom configs to override defaults
      * @property {Object} list_url The assets list url
      * @property {Object} import_url The asset import url
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `guide-assets ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor;
 
         /**
          * The configuration values
@@ -220,7 +227,22 @@ export default class GuideAssets extends Dom {
     }
 
     onAssetsImportSuccess(loadmask, evt){
-        this.addAssets(evt.target.getResponse());
+        const assets = evt.target.getResponse();
+
+        this.addAssets(assets);
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                assets.forEach((asset) => {
+                    this.removeAsset(asset.id);
+                });
+            },
+            'redo': () => {
+                this.addAssets(assets);
+            }
+        });
+
+        this.editor.setDirty('assets');
 
         loadmask.hide();
     }

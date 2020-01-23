@@ -20,12 +20,19 @@ export default class ComponentForm extends Dom {
     /**
      * Instantiate
      *
+     * @param {Editor} editor The Editor instance
      * @param {Object} configs Custom configs to override defaults
      * @property {Boolean} [allowMultiple=true] Whether multiple selection is allowed
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `component-form ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor;
 
         // fix event handlers scope
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
@@ -140,24 +147,25 @@ export default class ComponentForm extends Dom {
     onFieldValueChange(evt){
         const name = evt.detail.field.data('property');
         const value = evt.detail.value;
-        const values = [];
+        const components = clone(this.components);
+        const previous_values = {};
 
-        this.components.forEach((component) => {
-            const old_values = {
-                [name]: component.getPropertyValue(name)
-            };
-
+        components.forEach((component) => {
+            previous_values[component.getId()] = component.getPropertyValue(name);
             component.setPropertyValue(name, value);
+        });
 
-            const new_values = {
-                [name]: component.getPropertyValue(name)
-            };
-
-            values.push({
-                component: component,
-                new_values: new_values,
-                old_values: old_values,
-            });
+        this.editor.getHistory().add({
+            'undo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValue(name, previous_values[component.getId()]);
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValue(name, value);
+                });
+            }
         });
 
         this.toggleMultival(evt.detail.field, false);
@@ -208,13 +216,13 @@ export default class ComponentForm extends Dom {
         * Values of x and y when dragging starts
         * @type {Array}
         */
-        this._before_drag_values = [];
+        this._before_drag_values = {};
 
         this.components.forEach((component) => {
-            this._before_drag_values.push({
+            this._before_drag_values[component.getId()] = {
                 'x': component.getPropertyValue('x'),
                 'y': component.getPropertyValue('y')
-            });
+            };
         });
     }
 
@@ -261,25 +269,49 @@ export default class ComponentForm extends Dom {
      * @private
      */
     onComponentDragEnd(){
-        const fields = ['x', 'y'];
+        const components = clone(this.components);
+        const previous_values = this._before_drag_values;
+        const new_values = {};
 
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
-        });
+        components.forEach((component) => {
+            const id = component.getId();
 
-        this.components.forEach((component, index) => {
-            fields.forEach((field) => {
+            new_values[id] = {};
+
+            Object.entries(previous_values[id]).forEach(([field, previous_value]) => {
                 const value = component.getPropertyValue(field);
-                const old_value = this._before_drag_values[index][field];
+
+                new_values[id][field] = value;
 
                 component.triggerEvent('propchange', {
                     'component': component,
                     'property': field,
                     'value': value,
-                    'old': old_value
+                    'previous': previous_value
                 });
             });
         });
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                components.forEach((component) => {
+                    const id = component.getId();
+                    Object.entries(previous_values[id]).forEach(([field, value]) => {
+                        component.setPropertyValue(field, value);
+                    });
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    const id = component.getId();
+                    Object.entries(new_values[id]).forEach(([field, value]) => {
+                        component.setPropertyValue(field, value);
+                    });
+                });
+            }
+        });
+
+        this.editor.setDirty('components');
 
         delete this._before_drag_values;
     }
@@ -343,23 +375,36 @@ export default class ComponentForm extends Dom {
      */
     onComponentResizeEnd(evt){
         const component = evt.target._metaScore;
-        const fields = ['x', 'y', 'width', 'height'];
+        const previous_values = this._before_resize_values;
+        const new_values = {};
 
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
-        });
-
-        fields.forEach((field) => {
+        Object.entries(previous_values).forEach(([field, previous_value]) => {
             const value = component.getPropertyValue(field);
-            const old_value = this._before_resize_values[field];
+
+            new_values[field] = value;
 
             component.triggerEvent('propchange', {
                 'component': component,
                 'property': field,
                 'value': value,
-                'old': old_value
+                'previous': previous_value
             });
         });
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                Object.entries(previous_values).forEach(([field, value]) => {
+                    component.setPropertyValue(field, value);
+                });
+            },
+            'redo': () => {
+                Object.entries(new_values).forEach(([field, value]) => {
+                    component.setPropertyValue(field, value);
+                });
+            }
+        });
+
+        this.editor.setDirty('components');
 
         delete this._before_resize_values;
     }

@@ -38,10 +38,21 @@ export default class Controller extends Dom {
 
     /**
      * Instantiate
+     *
+     * @param {Editor} editor The Editor instance
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Object} [mediaSourceSelector={}] Configs to pass to the mediaSourceSelector
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `controller ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor
+            .addListener('playercomponentorder', this.onEditorPlayerComponentOrder.bind(this));
 
         /**
          * The configuration values
@@ -77,11 +88,13 @@ export default class Controller extends Dom {
          * @type {TimeInput}
          */
         this.timeinput = new TimeInput()
+            .addListener('valuechange', this.onTimeInputChange.bind(this))
             .appendTo(top);
 
         this.timeinput.play_btn = new Button({'icon': play_icon})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .addListener('click', this.onPlayBtnClick.bind(this))
             .appendTo(this.timeinput);
 
         const overview = new Dom('<div/>', {'class': 'overview'})
@@ -117,11 +130,13 @@ export default class Controller extends Dom {
 
         this.controls.rewind_btn = new Button({'icon': rewind_icon})
             .data('action', 'rewind')
+            .addListener('click', this.onRewindBtnClick.bind(this))
             .appendTo(this.controls);
 
         this.controls.play_btn = new Button({'icon': play_icon})
             .data('action', 'play')
             .addListener('keydown', this.onPlayBtnKeydown.bind(this))
+            .addListener('click', this.onPlayBtnClick.bind(this))
             .appendTo(this.controls);
 
         this.controls.file_btn = new Button()
@@ -152,11 +167,32 @@ export default class Controller extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        this.scenario_selector = new ScenarioSelector()
+        this.scenario_selector = new ScenarioSelector(this.editor)
             .appendTo(bottom);
 
         this.waveform_zoom.getControls()
             .appendTo(bottom);
+    }
+
+    /**
+     * Editor playercomponentorder event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onEditorPlayerComponentOrder(evt){
+        const component = evt.detail.component;
+        const position = evt.detail.position;
+
+        const component_id = component.getId();
+        const track = this.getTimeline().getTrack(component_id);
+        const track_parent = track.parents();
+
+        const handle = track.getHandle();
+        const handle_parent = handle.parents();
+
+        track.insertAt(track_parent, position);
+        handle.insertAt(handle_parent, position);
     }
 
     /**
@@ -178,8 +214,12 @@ export default class Controller extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onPlayheadClick(evt){
+        const time = evt.detail.time;
+
+        MasterClock.setTime(time);
+
         if(!Dom.is(evt.currentTarget, '.waveform-zoom')){
-            this.getWaveformZoom().centerToTime(evt.detail.time);
+            this.getWaveformZoom().centerToTime(time);
         }
     }
 
@@ -260,6 +300,16 @@ export default class Controller extends Dom {
     }
 
     /**
+     * TimeInput event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTimeInputChange(evt){
+        MasterClock.setTime(evt.detail.value);
+    }
+
+    /**
      * Play button keydown event callback
      *
      * @private
@@ -272,16 +322,34 @@ export default class Controller extends Dom {
     }
 
     /**
+     * Play button click event callback
+     *
+     * @private
+     */
+    onPlayBtnClick(){
+        this.editor.getPlayer().togglePlay();
+    }
+
+    /**
+     * Play button click event callback
+     *
+     * @private
+     */
+    onRewindBtnClick(){
+        MasterClock.setTime(0);
+    }
+
+    /**
      * File button click event callback
      *
      * @private
      */
     onFileBtnClick(){
         const configs = Object.assign({
-            'parent': '.metaScore-editor'
+            'parent': this.editor
         }, this.configs.mediaSourceSelector);
 
-        new MediaSourceSelector(configs);
+        new MediaSourceSelector(this.editor, configs);
     }
 
     /**

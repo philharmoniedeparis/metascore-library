@@ -37,16 +37,20 @@ export default class Block extends Component {
                     'type': 'boolean'
                 },
                 'x': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'y': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'width': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 200
                 },
                 'height': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 200
                 },
                 'background-color': {
                     'type': 'color'

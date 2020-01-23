@@ -132,9 +132,9 @@ export default class Input extends Dom{
     onChange(){
         this.value = this.native_input.val();
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'previous': this.previous_value}, true, false);
 
-        this.old_value = this.value;
+        this.previous_value = this.value;
     }
 
     /**
@@ -164,7 +164,7 @@ export default class Input extends Dom{
             this.native_input.triggerEvent('change');
         }
 
-        this.old_value = this.value;
+        this.previous_value = this.value;
 
         return this;
     }

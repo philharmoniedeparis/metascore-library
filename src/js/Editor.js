@@ -1,7 +1,6 @@
 import Dom from './core/Dom';
 import {MasterClock} from './core/media/Clock';
 import {isArray} from './core/utils/Var';
-import {getFileDuration, getMimeTypeFromURL} from './core/utils/Media';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -151,7 +150,7 @@ export class Editor extends Dom {
             .addClass('tools-pane')
             .appendTo(this);
 
-        this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
+        this.asset_browser = new AssetBrowser(this, Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
             .addListener('beforeassetremove', this.onAssetBrowserBeforeAssetRemove.bind(this))
@@ -218,12 +217,7 @@ export class Editor extends Dom {
          * The component form
          * @type {ConfigsEditor}
          */
-        this.configs_editor = new ConfigsEditor()
-            .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
-            .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
-            .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this))
-            .addDelegate('.cursor-form', 'keyframeseditingstart', this.onCursorFormKeyframesEditingStart.bind(this))
-            .addDelegate('.cursor-form', 'keyframeseditingstop', this.onCursorFormKeyframesEditingStop.bind(this))
+        this.configs_editor = new ConfigsEditor(this)
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -240,15 +234,7 @@ export class Editor extends Dom {
          * The controller
          * @type {Controller}
          */
-        this.controller = new Controller()
-            .addListener('playheadclick', this.onControllerPlayheadClick.bind(this))
-            .addListener('scenarioactivate', this.onControllerScenarioActivate.bind(this))
-            .addListener('scenarioadd', this.onControllerScenarioAdd.bind(this))
-            .addListener('scenariorename', this.onControllerScenarioRename.bind(this))
-            .addListener('scenarioclone', this.onControllerScenarioClone.bind(this))
-            .addListener('scenarioremove', this.onControllerScenarioRemove.bind(this))
-            .addDelegate('button', 'click', this.onControllerControlsButtonClick.bind(this))
-            .addDelegate('.time.input', 'valuechange', this.onControllerTimeFieldChange.bind(this))
+        this.controller = new Controller(this)
             .addDelegate('.timeline .track, .timeline .handle', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
@@ -290,7 +276,6 @@ export class Editor extends Dom {
             .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
-            .addDelegate('.media-source-selector', 'apply', this.onMediaSourceSelectorApply.bind(this))
             .setClean()
             .setEditing(false)
             .updateMainmenu()
@@ -498,7 +483,7 @@ export class Editor extends Dom {
                                     'callback': (context, data) => {
                                         const component = data.component;
                                         const position = component.parents().children().count();
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -515,7 +500,7 @@ export class Editor extends Dom {
                                     'text': Locale.t('editor.contextmenu.arrange.send-to-back', 'Send to back'),
                                     'callback': (context, data) => {
                                         const component = data.component;
-                                        this.arrangePlayerComponent(component, 0);
+                                        this.setPlayerComponentOrder(component, 0);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -537,7 +522,7 @@ export class Editor extends Dom {
                                         let position = siblings.index(`#${component.getId()}`);
                                         position = Math.min(siblings.count(), position + 2);
 
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -559,7 +544,7 @@ export class Editor extends Dom {
                                         let position = siblings.index(`#${component.getId()}`);
                                         position = Math.max(0, position - 1);
 
-                                        this.arrangePlayerComponent(component, position);
+                                        this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
                                         if(this.editing){
@@ -1059,7 +1044,6 @@ export class Editor extends Dom {
      * @private
      */
     onAssetBrowserAssetAdd(){
-        this.setDirty('assets');
         this.updateConfigEditorImageFields();
     }
 
@@ -1231,11 +1215,11 @@ export class Editor extends Dom {
      */
     onMainmenuTitleChange(evt){
         const value = evt.detail.value;
-        const old = evt.detail.old;
+        const previous_value = evt.detail.previous;
 
-        this.history.add({
+        this.getHistory().add({
             'undo': () => {
-                this.mainmenu.getItem('title').setValue(old, true);
+                this.mainmenu.getItem('title').setValue(previous_value, true);
             },
             'redo': () => {
                 this.mainmenu.getItem('title').setValue(value, true);
@@ -1281,138 +1265,6 @@ export class Editor extends Dom {
     }
 
     /**
-     * Controller timeset event callback
-     *
-     * @private
-     */
-    onControllerPlayheadClick(evt){
-        MasterClock.setTime(evt.detail.time);
-    }
-
-    /**
-     * Controller scenarioactivate event callback
-     *
-     * @private
-     */
-    onControllerScenarioActivate(evt){
-        this.getPlayer().setActiveScenario(evt.detail.scenario);
-    }
-
-    /**
-     * Controller scenarioadd event callback
-     *
-     * @private
-     */
-    onControllerScenarioAdd(evt){
-        const scenario = evt.detail.scenario;
-        const player = this.getPlayer();
-
-        player.addScenario({'name': scenario});
-        player.setActiveScenario(scenario);
-
-        this.setDirty('components');
-    }
-
-    /**
-     * Controller scenariorename event callback
-     *
-     * @private
-     */
-    onControllerScenarioRename(evt){
-        const old_name = evt.detail.old;
-        const new_name = evt.detail.new;
-        const scenario = this.getPlayer().getScenario(old_name);
-
-        if(scenario){
-            scenario.setPropertyValue('name', new_name);
-            this.setDirty('components');
-        }
-    }
-
-    /**
-     * Controller scenarioclone event callback
-     *
-     * @private
-     */
-    onControllerScenarioClone(evt){
-        const original = evt.detail.original;
-        const clone = evt.detail.clone;
-        const player = this.getPlayer();
-        const scenario = player.getScenario(original);
-
-        if(scenario){
-            const configs = Object.assign(scenario.getPropertyValues(true), {
-                'name': clone
-            });
-            player.addScenario(configs);
-            player.setActiveScenario(clone);
-
-            this.setDirty('components');
-        }
-    }
-
-    /**
-     * Controller scenarioremove event callback
-     *
-     * @private
-     */
-    onControllerScenarioRemove(evt){
-        const name = evt.detail.scenario;
-        const player = this.getPlayer();
-        const scenario = player.getScenario(name);
-        const active = scenario.isActive();
-
-        if(scenario){
-            scenario.remove();
-
-            if(active){
-                player.setActiveScenario(null);
-            }
-
-            this.history.add({
-                'undo': () => {
-                    player.addScenario(scenario);
-                },
-                'redo': () => {
-                    scenario.remove();
-                }
-            });
-
-            this.setDirty('components');
-        }
-    }
-
-    /**
-     * Controller controls button click event callback
-     *
-     * @private
-     * @param {MouseEvent} evt The event object.
-     */
-    onControllerControlsButtonClick(evt){
-        const action = Dom.data(evt.target, 'action');
-
-        switch(action){
-            case 'play':
-                this.getPlayer().togglePlay();
-                break;
-
-            case 'rewind':
-                MasterClock.setTime(0);
-                break;
-        }
-    }
-
-    /**
-     * Controller time field valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onControllerTimeFieldChange(evt){
-        MasterClock.setTime(evt.detail.value);
-    }
-
-    /**
      * Timeline track click event callback
      *
      * @private
@@ -1443,7 +1295,7 @@ export class Editor extends Dom {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
-        this.arrangePlayerComponent(component, position);
+        this.setPlayerComponentOrder(component, position);
     }
 
     /**
@@ -1467,191 +1319,6 @@ export class Editor extends Dom {
      */
     onTimeInputValueOut(evt){
         MasterClock.setTime(evt.detail.value);
-    }
-
-    /**
-     * MediaSourceSelector apply event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onMediaSourceSelectorApply(evt){
-        const overlay = evt.detail.overlay;
-        const file = evt.detail.file;
-        const url = evt.detail.url;
-        const player = this.getPlayer();
-        let source = null;
-
-        if(file){
-            source = {
-                'name': file.name,
-                'size': file.size,
-                'url': URL.createObjectURL(file),
-                'mime': file.type,
-                'source': 'upload',
-                'object': file
-            };
-        }
-        else if(url){
-            source = {
-                'name': url,
-                'url': url,
-                'mime': getMimeTypeFromURL(url),
-                'source': 'url'
-            };
-        }
-        else{
-            new Overlay({
-                'text': Locale.t('editor.onMediaSourceSelectorApply.empty.msg', 'Please fill in either the file or the URL field.'),
-                'buttons': {
-                    'ok': Locale.t('editor.onMediaSourceSelectorApply.empty.ok', 'OK'),
-                },
-                'parent': overlay
-            });
-            return;
-        }
-
-        const loadmask = new LoadMask({
-            'parent': overlay
-        });
-
-        const old_duration = MasterClock.getRenderer().getDuration();
-        getFileDuration(source, (error, new_duration) => {
-            loadmask.hide();
-
-            if(error){
-                new Overlay({
-                    'text': error,
-                    'buttons': {
-                        'ok': Locale.t('editor.onMediaSourceSelectorApply.error.ok', 'OK'),
-                    },
-                    'parent': overlay
-                });
-                return;
-            }
-
-            if(new_duration !== old_duration){
-                const formatted_old_duration = TimeInput.getTextualValue(old_duration);
-                const formatted_new_duration = TimeInput.getTextualValue(new_duration);
-                let msg = null;
-
-                if(new_duration < old_duration){
-                    const blocks = [];
-                    const scenarios = player.getScenarios();
-
-                    scenarios.forEach((scenario) => {
-                        scenario.getChildren().forEach((component) => {
-                            if(component.instanceOf('Block') && component.getPropertyValue('synched')){
-                                component.getChildren().some((page) => {
-                                    if(page.getPropertyValue('start-time') > new_duration){
-                                        blocks.push(component.getPropertyValue('name'));
-                                        return true;
-                                    }
-
-                                    return false;
-                                });
-                            }
-                        });
-                    });
-
-                    if(blocks.length > 0){
-                        new Overlay({
-                            'text': Locale.t('editor.onMediaSourceSelectorApply.needs_review.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>Pages with a start time after !new_duration will therefore be out of reach. This applies to blocks: !blocks</strong><br/>Delete those pages or modify their start time and try again.', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration, '!blocks': blocks.join(', ')}),
-                            'buttons': {
-                                'ok': Locale.t('editor.onMediaSourceSelectorApply.empty.ok', 'OK'),
-                            },
-                            'parent': overlay
-                        });
-                        return;
-                    }
-
-                    msg = Locale.t('editor.onMediaSourceSelectorApply.shorter.msg', 'The duration of selected media (!new_duration) is less than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                }
-                else{
-                    msg = Locale.t('editor.onMediaSourceSelectorApply.longer.msg', 'The duration of selected media (!new_duration) is greater than the current one (!old_duration).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is equal to that of the current media.</strong><br/>Are you sure you want to use the new media file?', {'!new_duration': formatted_new_duration, '!old_duration': formatted_old_duration});
-                }
-
-                new Confirm({
-                    'text': msg,
-                    'onConfirm': () => {
-                        player.setSource(source);
-                        overlay.hide();
-                        this.setDirty('media');
-                    },
-                    'parent': overlay
-                });
-            }
-            else{
-                player.setSource(source);
-                overlay.hide();
-                this.setDirty('media');
-            }
-        });
-    }
-
-    /**
-     * ContentForm contentsunlock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsUnlock(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.getPlayer().addClass('isolating');
-        this.addClass('contents-unlocked');
-    }
-
-    /**
-     * ContentForm contentschange event callback
-     *
-     * @private
-     */
-    onContentFormContentsChange(){
-        this.setDirty('components');
-    }
-
-    /**
-     * ContentForm contentslock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsLock(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.getPlayer().removeClass('isolating');
-        this.removeClass('contents-unlocked');
-    }
-
-    /**
-     * CursorForm keyframeseditingstart event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStart(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.getPlayer().addClass('isolating');
-        this.addClass('cursor-keyframes-editing');
-    }
-
-    /**
-     * CursorForm keyframeseditingstop event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStop(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.getPlayer().removeClass('isolating');
-        this.removeClass('cursor-keyframes-editing');
     }
 
     /**
@@ -1731,9 +1398,6 @@ export class Editor extends Dom {
             // Show scenario in Tinmeline
             this.controller.getTimeline().getTrack(scenario.getId()).show();
         }
-
-        // Update ScenarioSelector
-        this.controller.getScenarioSelector().setActiveScenario(scenario ? scenario.getName() : null, true);
 
         // Update ConfigEditor component fields
         this.updateConfigEditorComponentFields();
@@ -1893,19 +1557,14 @@ export class Editor extends Dom {
             // Update the timeline and scenario list
             const active_scenario = this.player.getActiveScenario();
             const timeline = this.controller.getTimeline();
-            const scenarioselector = this.controller.getScenarioSelector().clear();
             this.player.getScenarios().forEach((scenario) => {
                 const track = timeline.addTrack(scenario);
-                scenarioselector.addScenario(scenario.getName(), true);
-
                 if(scenario === active_scenario){
                     track.show();
-                    scenarioselector.setActiveScenario(active_scenario.getName(), true);
                 }
                 else{
                     track.hide();
                 }
-
             });
 
             this.updateConfigEditorImageFields();
@@ -1933,6 +1592,8 @@ export class Editor extends Dom {
         if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
             this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
         }
+
+        this.triggerEvent('playerload', {'player': this.player});
 
         loadmask.hide();
     }
@@ -2174,57 +1835,6 @@ export class Editor extends Dom {
         }
 
         this.setDirty('components');
-
-        // If we are not in an undo or redo operation, group property changes via a timeout
-        if(!this.history.isExecuting()){
-            if(this._oncomponentpropchange_timeout){
-                clearTimeout(this._oncomponentpropchange_timeout);
-            }
-
-            if(!this._oncomponentpropchange_stack){
-                this._oncomponentpropchange_stack = [];
-            }
-
-            // Check if the component and property are already in the stack
-            const existing = this._oncomponentpropchange_stack.find((detail) => {
-                return detail.component === component && detail.property === property;
-            });
-            if(existing){
-                // The component and property are already in the stack, update the value
-                existing.value = evt.detail.value;
-            }
-            else{
-                // Add the component and property to the stack
-                this._oncomponentpropchange_stack.push(evt.detail);
-            }
-
-            this._oncomponentpropchange_timeout = setTimeout(this.onComponentPropChangeTimeout.bind(this), this.configs.history.grouping_timeout);
-        }
-    }
-
-    /**
-     * Component propchange event timeout callback
-     *
-     * @private
-     */
-    onComponentPropChangeTimeout(){
-        const stack = this._oncomponentpropchange_stack;
-
-        delete this._oncomponentpropchange_stack;
-        delete this._oncomponentpropchange_timeout;
-
-        this.history.add({
-            'undo': () => {
-                stack.forEach((detail) => {
-                    detail.component.setPropertyValue(detail.property, detail.old);
-                });
-            },
-            'redo': () => {
-                stack.forEach((detail) => {
-                    detail.component.setPropertyValue(detail.property, detail.value);
-                });
-            }
-        });
     }
 
     /**
@@ -2452,6 +2062,15 @@ export class Editor extends Dom {
             .toggleItem('restore', !default_revision);
 
         return this;
+    }
+
+    /**
+     * Get the undo/redo instance
+     *
+     * @return {UndoRedo} The undo/redo instance
+     */
+    getHistory(){
+        return this.history;
     }
 
     /**
@@ -2691,7 +2310,7 @@ export class Editor extends Dom {
                     components.push(component);
                 });
 
-                this.history.add({
+                this.getHistory().add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2742,7 +2361,7 @@ export class Editor extends Dom {
                 timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
-                this.history.add({
+                this.getHistory().add({
                     'undo': () => {
                         if(block.getPropertyValue('synched')){
                             const adjacent_page = block.getChild(before ? index + 1 : index);
@@ -2779,7 +2398,7 @@ export class Editor extends Dom {
                     components.push(component);
                 });
 
-                this.history.add({
+                this.getHistory().add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2863,7 +2482,7 @@ export class Editor extends Dom {
                         component.remove();
                     });
 
-                    this.history.add({
+                    this.getHistory().add({
                         'undo': () => {
                             const player = this.getPlayer();
                             components.forEach((component) => {
@@ -2987,7 +2606,7 @@ export class Editor extends Dom {
 
                     removePages();
 
-                    this.history.add({
+                    this.getHistory().add({
                         'undo': unremovePages,
                         'redo': removePages
                     });
@@ -3007,7 +2626,7 @@ export class Editor extends Dom {
                         component.remove();
                     });
 
-                    this.history.add({
+                    this.getHistory().add({
                         'undo': () => {
                             context.forEach((ctx) => {
                                 ctx.page.addElement(ctx.component);
@@ -3051,19 +2670,12 @@ export class Editor extends Dom {
         return this;
     }
 
-    arrangePlayerComponent(component, position){
-        const component_id = component.getId();
+    setPlayerComponentOrder(component, position){
         const parent = component.parents();
 
-        const track = this.controller.getTimeline().getTrack(component_id);
-        const track_parent = track.parents();
-
-        const handle = track.getHandle();
-        const handle_parent = handle.parents();
-
         component.insertAt(parent, position);
-        track.insertAt(track_parent, position);
-        handle.insertAt(handle_parent, position);
+
+        this.triggerEvent('playercomponentorder', {'component': component, 'position': position});
 
         return this;
     }

@@ -12,7 +12,7 @@ import CuePoint from './CuePoint';
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
- * @param {Mixed} old The old value of the property
+ * @param {Mixed} previous The previous value of the property
  *
  * @emits {activate} Fired when the component is activated
  * @param {Component} component The component instance
@@ -284,9 +284,9 @@ export default class Component extends Dom {
     setPropertyValue(name, value, supressEvent){
         const prop = this.getProperty(name);
         if(prop){
-            const old_value = this.getPropertyValue(name);
+            const previous_value = this.getPropertyValue(name);
 
-            if(old_value !== value){
+            if(previous_value !== value){
                 if(value === null){
                     delete this.property_values[name];
                 }
@@ -297,7 +297,7 @@ export default class Component extends Dom {
                 this.updatePropertyValue(name, value);
 
                 if(supressEvent !== true){
-                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'old': old_value});
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'previous': previous_value});
                 }
             }
         }
