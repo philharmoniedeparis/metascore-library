@@ -86,9 +86,9 @@ export default class RadiosInput extends Input{
             this.value = radio.val();
         }
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'old': this.old_value}, true, false);
+        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'previous': this.previous_value}, true, false);
 
-        this.old_value = this.value;
+        this.previous_value = this.value;
     }
 
     /**
@@ -121,7 +121,7 @@ export default class RadiosInput extends Input{
             matched_checkbox.triggerEvent('change');
         }
 
-        this.old_value = this.value;
+        this.previous_value = this.value;
 
         return this;
     }

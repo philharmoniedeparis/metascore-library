@@ -1218,11 +1218,11 @@ export class Editor extends Dom {
      */
     onMainmenuTitleChange(evt){
         const value = evt.detail.value;
-        const old = evt.detail.old;
+        const previous_value = evt.detail.previous;
 
         this.history.add({
             'undo': () => {
-                this.mainmenu.getItem('title').setValue(old, true);
+                this.mainmenu.getItem('title').setValue(previous_value, true);
             },
             'redo': () => {
                 this.mainmenu.getItem('title').setValue(value, true);

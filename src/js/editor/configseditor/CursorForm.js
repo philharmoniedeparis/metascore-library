@@ -100,7 +100,7 @@ export default class CursorForm extends ElementForm {
             const vertical = direction === 'top' || direction === 'bottom';
 
             if((property === 'width' && !vertical) || (property === 'height' && vertical)){
-                this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.old);
+                this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.previous);
             }
         }
 
