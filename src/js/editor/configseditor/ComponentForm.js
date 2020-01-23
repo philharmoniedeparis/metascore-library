@@ -559,7 +559,6 @@ export default class ComponentForm extends Dom {
 
                     this.fields.x = new Field(
                         new NumberInput({
-                            'min': 0,
                             'spinButtons': true,
                             'spinDirection': 'horizontal'
                         }),
@@ -572,7 +571,6 @@ export default class ComponentForm extends Dom {
                     // Y
                     this.fields.y = new Field(
                         new NumberInput({
-                            'min': 0,
                             'spinButtons': true,
                             'flipSpinButtons': true
                         }),
