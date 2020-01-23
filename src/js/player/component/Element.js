@@ -26,16 +26,20 @@ export default class Element extends Component{
                     'type': 'string'
                 },
                 'x': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'y': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'width': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 50
                 },
                 'height': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 50
                 },
                 'background-color': {
                     'type': 'color'

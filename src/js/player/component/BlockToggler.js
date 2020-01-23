@@ -37,10 +37,12 @@ export default class BlockToggler extends Component{
                     'type': 'number'
                 },
                 'width': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 100
                 },
                 'height': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 20
                 },
                 'background-color': {
                     'type': 'color'

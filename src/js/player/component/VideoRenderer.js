@@ -29,16 +29,20 @@ export default class VideoRenderer extends Component{
                     'type': 'boolean'
                 },
                 'x': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'y': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 0
                 },
                 'width': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 320
                 },
                 'height': {
-                    'type': 'number'
+                    'type': 'number',
+                    'default': 240
                 },
                 'background-color': {
                     'type': 'color'
