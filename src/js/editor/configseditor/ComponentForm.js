@@ -467,11 +467,11 @@ export default class ComponentForm extends Dom {
                 break;
 
             case 'border': {
-                    const border_fields_wrapper = new Dom('<div/>', {'class': 'field-group border'})
+                    const wrapper = new Dom('<div/>', {'class': 'field-group border'})
                         .appendTo(this.fields_wrapper);
 
                     const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border')})
-                        .appendTo(border_fields_wrapper);
+                        .appendTo(wrapper);
 
                     this.fields['border-color'] = new Field(
                         new ColorInput(),
@@ -479,7 +479,7 @@ export default class ComponentForm extends Dom {
                             'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
                         })
                         .data('property', 'border-color')
-                        .appendTo(border_fields_wrapper);
+                        .appendTo(wrapper);
 
                     border_fields_label.attr('for', this.fields['border-color'].getInput().getId());
 
@@ -492,7 +492,7 @@ export default class ComponentForm extends Dom {
                             'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width')
                         })
                         .data('property', 'border-width')
-                        .appendTo(border_fields_wrapper);
+                        .appendTo(wrapper);
 
                     this.fields['border-radius'] = new Field(
                         new BorderRadiusInput({
@@ -501,10 +501,10 @@ export default class ComponentForm extends Dom {
                             }
                         }),
                         {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Border radius')
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius')
                         })
                         .data('property', 'border-radius')
-                        .appendTo(this.fields_wrapper);
+                        .appendTo(wrapper);
                 }
                 break;
 
@@ -523,82 +523,94 @@ export default class ComponentForm extends Dom {
                     .appendTo(this.fields_wrapper);
                 break;
 
-            case 'time':
-                this.fields['start-time'] = new Field(
-                    new TimeInput({
-                        'inButton': true,
-                        'outButton': true,
-                        'clearButton': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start')
-                    })
-                    .data('property', 'start-time')
-                    .appendTo(this.fields_wrapper);
+            case 'time': {
+                    const wrapper = new Dom('<div/>', {'class': 'field-group time'})
+                        .appendTo(this.fields_wrapper);
 
-                this.fields['end-time'] = new Field(
-                    new TimeInput({
-                        'inButton': true,
-                        'outButton': true,
-                        'clearButton': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End')
-                    })
-                    .data('property', 'end-time')
-                    .appendTo(this.fields_wrapper);
+                    this.fields['start-time'] = new Field(
+                        new TimeInput({
+                            'inButton': true,
+                            'outButton': true,
+                            'clearButton': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start')
+                        })
+                        .data('property', 'start-time')
+                        .appendTo(wrapper);
+
+                    this.fields['end-time'] = new Field(
+                        new TimeInput({
+                            'inButton': true,
+                            'outButton': true,
+                            'clearButton': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End')
+                        })
+                        .data('property', 'end-time')
+                        .appendTo(wrapper);
+                }
                 break;
 
-            case 'position':
-                this.fields.x = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'spinButtons': true,
-                        'spinDirection': 'horizontal'
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X')
-                    })
-                    .data('property', 'x')
+            case 'position': {
+                    const wrapper = new Dom('<div/>', {'class': 'field-group position'})
                     .appendTo(this.fields_wrapper);
 
-                // Y
-                this.fields.y = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'spinButtons': true,
-                        'flipSpinButtons': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y')
-                    })
-                    .data('property', 'y')
-                    .appendTo(this.fields_wrapper);
+                    this.fields.x = new Field(
+                        new NumberInput({
+                            'min': 0,
+                            'spinButtons': true,
+                            'spinDirection': 'horizontal'
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X')
+                        })
+                        .data('property', 'x')
+                        .appendTo(wrapper);
+
+                    // Y
+                    this.fields.y = new Field(
+                        new NumberInput({
+                            'min': 0,
+                            'spinButtons': true,
+                            'flipSpinButtons': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y')
+                        })
+                        .data('property', 'y')
+                        .appendTo(wrapper);
+                }
                 break;
 
-            case 'dimension':
-                this.fields.width = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'spinButtons': true,
-                        'spinDirection': 'horizontal'
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width')
-                    })
-                    .data('property', 'width')
+            case 'dimension': {
+                    const wrapper = new Dom('<div/>', {'class': 'field-group dimension'})
                     .appendTo(this.fields_wrapper);
 
-                this.fields.height = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'spinButtons': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height')
-                    })
-                    .data('property', 'height')
-                    .appendTo(this.fields_wrapper);
+                    this.fields.width = new Field(
+                        new NumberInput({
+                            'min': 0,
+                            'spinButtons': true,
+                            'spinDirection': 'horizontal'
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width')
+                        })
+                        .data('property', 'width')
+                        .appendTo(wrapper);
+
+                    this.fields.height = new Field(
+                        new NumberInput({
+                            'min': 0,
+                            'spinButtons': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height')
+                        })
+                        .data('property', 'height')
+                        .appendTo(wrapper);
+                }
                 break;
         }
 

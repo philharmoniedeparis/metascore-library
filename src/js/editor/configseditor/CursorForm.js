@@ -60,11 +60,11 @@ export default class CursorForm extends ElementForm {
                 'acceleration',
                 'keyframes',
                 'loop-duration',
+                'cursor-width',
+                'cursor-color',
                 'background',
                 'border',
                 'opacity',
-                'cursor-width',
-                'cursor-color',
                 'time',
                 'position',
                 'dimension'
@@ -231,28 +231,32 @@ export default class CursorForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
                 break;
 
-            case 'time':
-                this.fields['start-time'] = new Field(
-                    new TimeInput({
-                        'inButton': true,
-                        'outButton': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.CursorForm.fields.start-time.label', 'Start')
-                    })
-                    .data('property', 'start-time')
+            case 'time': {
+                    const wrapper = new Dom('<div/>', {'class': 'field-group time'})
                     .appendTo(this.fields_wrapper);
 
-                this.fields['end-time'] = new Field(
-                    new TimeInput({
-                        'inButton': true,
-                        'outButton': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.CursorForm.fields.end-time.label', 'End')
-                    })
-                    .data('property', 'end-time')
-                    .appendTo(this.fields_wrapper);
+                    this.fields['start-time'] = new Field(
+                        new TimeInput({
+                            'inButton': true,
+                            'outButton': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.CursorForm.fields.start-time.label', 'Start')
+                        })
+                        .data('property', 'start-time')
+                        .appendTo(wrapper);
+
+                    this.fields['end-time'] = new Field(
+                        new TimeInput({
+                            'inButton': true,
+                            'outButton': true
+                        }),
+                        {
+                            'label': Locale.t('editor.configseditor.CursorForm.fields.end-time.label', 'End')
+                        })
+                        .data('property', 'end-time')
+                        .appendTo(wrapper);
+                }
                 break;
 
             default:

@@ -95,22 +95,32 @@
         }
 
         .field-group{
-            > label{
-                margin-right: 0.5em;
-                vertical-align: middle;
-            }
-
-            .field{
-                label{
-                    display: none;
-                }
-            }
+            display: flex;
+            flex: 100%;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
 
             &.border{
+                justify-content: flex-start;
+
+                > label{
+                    margin-right: 0.5em;
+                    vertical-align: middle;
+                }
+
                 .field{
+                    &[data-property="border-color"],
+                    &[data-property="border-width"]{
+                        label{
+                            display: none;
+                        }
+                    }
+
                     &[data-property="border-width"]{
                         width: 4em;
-                        margin-left: 0.5em;
+                        margin: 0 0.5em;
                     }
                 }
             }

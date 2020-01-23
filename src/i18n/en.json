@@ -123,7 +123,7 @@
 	"editor.configseditor.ComponentForm.fields.background-image.label": "Background image",
 	"editor.configseditor.ComponentForm.fields.border-color.label": "Border color",
 	"editor.configseditor.ComponentForm.fields.border-fields.label": "Border",
-	"editor.configseditor.ComponentForm.fields.border-radius.label": "Border radius",
+	"editor.configseditor.ComponentForm.fields.border-radius.label": "Radius",
 	"editor.configseditor.ComponentForm.fields.border-width.label": "Border width",
 	"editor.configseditor.ComponentForm.fields.end-time.label": "End",
 	"editor.configseditor.ComponentForm.fields.height.label": "Height",
