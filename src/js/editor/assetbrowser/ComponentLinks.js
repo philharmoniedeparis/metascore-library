@@ -18,31 +18,6 @@ export default class ComponentLinks extends Dom {
     static getDefaults() {
         return {
             'links': {
-                'video-renderer': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
-                    'type': 'block',
-                    'configs': {
-                        'type':
-                        'VideoRenderer'
-                    },
-                    'icon': icons.videorenderer
-                },
-                'controller': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'Controller'
-                    },
-                    'icon': icons.controller
-                },
-                'blocktoggler': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'BlockToggler'
-                    },
-                    'icon': icons.blocktoggler
-                },
                 'synced-block': {
                     'text': Locale.t('editor.assetbrowser.ComponentLinks.synced-block.text', 'Synchronized block'),
                     'type': 'block',
@@ -84,6 +59,31 @@ export default class ComponentLinks extends Dom {
                         'type': 'Content'
                     },
                     'icon': icons.content
+                },
+                'video-renderer': {
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
+                    'type': 'block',
+                    'configs': {
+                        'type':
+                        'VideoRenderer'
+                    },
+                    'icon': icons.videorenderer
+                },
+                'controller': {
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'Controller'
+                    },
+                    'icon': icons.controller
+                },
+                'blocktoggler': {
+                    'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
+                    'type': 'block',
+                    'configs': {
+                        'type': 'BlockToggler'
+                    },
+                    'icon': icons.blocktoggler
                 }
             }
         };
@@ -111,6 +111,7 @@ export default class ComponentLinks extends Dom {
 
         Object.entries(this.configs.links).forEach(([key, value]) => {
             const link = new Dom('<div/>', {'class': `link ${key}`})
+                .addClass(key)
                 .attr('draggable', 'true')
                 .attr('tabindex', '0')
                 .data('type', value.type)

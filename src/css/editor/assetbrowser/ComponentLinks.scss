@@ -5,6 +5,7 @@
     flex-direction: column;
     position: relative;
     overflow-y: auto;
+    background-color: $mediumgray;
 
     .link{
         display: flex;
@@ -12,6 +13,7 @@
         flex-direction: row;
         align-items: center;
         padding: 0.25em;
+        background-color: $lightgray;
         border-bottom: 1px solid $mediumgray;
         cursor: grab;
 
@@ -58,6 +60,8 @@
         }
 
         &.controller{
+            margin-top: 2px;
+
             .icon{
                 filter: drop-shadow(1px 1px 0.25em rgba(0, 0, 0, 0.25));
             }
