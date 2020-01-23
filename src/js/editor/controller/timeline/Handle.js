@@ -77,7 +77,7 @@ export default class Handle extends Dom {
             return;
         }
 
-        this.toggleClass('has-descendents', this.descendents.is(':empty'));
+        this.toggleClass('has-descendents', !this.descendents.is(':empty'));
     }
 
     /**
