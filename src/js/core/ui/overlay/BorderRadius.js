@@ -146,7 +146,7 @@ export default class BorderRadius extends Overlay {
             brw: 0, brh: 0
         };
 
-        this.preview.css('border-radius', val);
+        this.preview.css('border-radius', val !== null ? val : 0);
 
         let matches = this.preview.css('border-top-left-radius', void 0, true).match(/(\d*)px/g);
         if(matches){

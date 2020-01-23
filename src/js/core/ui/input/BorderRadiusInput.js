@@ -116,7 +116,7 @@ export default class BorderRadiusInput extends Input{
      * @private
      */
     onClearClick(){
-        this.setValue('0px');
+        this.setValue(null);
     }
 
 }
