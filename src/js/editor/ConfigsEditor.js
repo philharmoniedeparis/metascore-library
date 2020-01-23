@@ -61,17 +61,17 @@ export default class ConfigsEditor extends Dom {
          * @type {Object}
          */
         this.forms = {
-            'Component': new ComponentForm(),
-            'VideoRenderer': new VideoRendererForm(),
-            'Controller': new ControllerForm(),
-            'Block': new BlockForm(),
-            'BlockToggler': new BlockTogglerForm(),
-            'Page': new PageForm(),
-            'Element': new ElementForm(),
-            'Cursor': new CursorForm(),
-            'Content': new ContentForm(),
-            'SVG': new SVGForm(),
-            'Animation': new AnimationForm()
+            'Component': new ComponentForm(this.editor),
+            'VideoRenderer': new VideoRendererForm(this.editor),
+            'Controller': new ControllerForm(this.editor),
+            'Block': new BlockForm(this.editor),
+            'BlockToggler': new BlockTogglerForm(this.editor),
+            'Page': new PageForm(this.editor),
+            'Element': new ElementForm(this.editor),
+            'Cursor': new CursorForm(this.editor),
+            'Content': new ContentForm(this.editor),
+            'SVG': new SVGForm(this.editor),
+            'Animation': new AnimationForm(this.editor)
         };
 
         /**
@@ -79,7 +79,6 @@ export default class ConfigsEditor extends Dom {
          * @type {Array}
          */
         this.components = [];
-
 
         this
             .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
