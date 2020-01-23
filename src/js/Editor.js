@@ -151,7 +151,7 @@ export class Editor extends Dom {
             .addClass('tools-pane')
             .appendTo(this);
 
-        this.asset_browser = new AssetBrowser(Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
+        this.asset_browser = new AssetBrowser(this, Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
             .addListener('beforeassetremove', this.onAssetBrowserBeforeAssetRemove.bind(this))
@@ -1046,7 +1046,6 @@ export class Editor extends Dom {
      * @private
      */
     onAssetBrowserAssetAdd(){
-        this.setDirty('assets');
         this.updateConfigEditorImageFields();
     }
 

@@ -15,14 +15,21 @@ export default class AssetBrowser extends Dom {
     /**
      * Instantiate
      *
+     * @param {Editor} editor The editor instance
      * @param {Object} configs Custom configs to override defaults
      * @property {Object} guide_assets Options for the guide assets tab
      * @property {Object} shared_assets Options for the shared assets tab
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      */
-    constructor(configs) {
+    constructor(editor, configs) {
         // call parent constructor
         super('<div/>', {'class': `asset-browser ${className}`});
+
+        /**
+         * A reference to the Editor instance
+         * @type {Editor}
+         */
+        this.editor = editor;
 
         /**
          * The configuration values
@@ -54,7 +61,7 @@ export default class AssetBrowser extends Dom {
             .addListener('click', this.onTabClick.bind(this))
             .appendTo(this.tabs_wrapper);
 
-        this.contents['guide-assets'] = new GuideAssets(Object.assign({'xhr': this.configs.xhr}, this.configs.guide_assets))
+        this.contents['guide-assets'] = new GuideAssets(this.editor, Object.assign({'xhr': this.configs.xhr}, this.configs.guide_assets))
             .appendTo(this);
 
         // Shared assets
@@ -134,7 +141,20 @@ export default class AssetBrowser extends Dom {
         this.switchTab('guide-assets');
 
         const asset = Object.assign({}, evt.detail.asset);
-        this.getTabContent('guide-assets').addAsset(asset);
+        const guide_assets = this.getTabContent('guide-assets');
+
+        guide_assets.addAsset(asset);
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                guide_assets.removeAsset(asset.id);
+            },
+            'redo': () => {
+                guide_assets.addAsset(asset);
+            }
+        });
+
+        this.editor.setDirty('assets');
     }
 
     onSharedAssetToolbarButtonClick(evt){

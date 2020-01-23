@@ -20,6 +20,7 @@ export default class ComponentForm extends Dom {
     /**
      * Instantiate
      *
+     * @param {Editor} editor The Editor instance
      * @param {Object} configs Custom configs to override defaults
      * @property {Boolean} [allowMultiple=true] Whether multiple selection is allowed
      */
@@ -310,6 +311,8 @@ export default class ComponentForm extends Dom {
             }
         });
 
+        this.editor.setDirty('components');
+
         delete this._before_drag_values;
     }
 
@@ -400,6 +403,8 @@ export default class ComponentForm extends Dom {
                 });
             }
         });
+
+        this.editor.setDirty('components');
 
         delete this._before_resize_values;
     }
