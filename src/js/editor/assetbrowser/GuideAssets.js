@@ -464,8 +464,7 @@ export default class GuideAssets extends Dom {
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'spectrogram':
-                {
+            case 'spectrogram': {
                     const form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
                             'parent': this.editor,
                             'xhr': this.configs.xhr
@@ -480,10 +479,22 @@ export default class GuideAssets extends Dom {
     }
 
     onSpectrogramFormGenerate(evt){
+        const form = evt.detail.form;
         const asset = evt.detail.asset;
+
         this.addAsset(asset);
 
-        const form = evt.detail.form;
+        this.editor.getHistory().add({
+            'undo': () => {
+                this.removeAsset(asset.id);
+            },
+            'redo': () => {
+                this.addAsset(asset);
+            }
+        });
+
+        this.editor.setDirty('assets');
+
         form.hide();
     }
 }
