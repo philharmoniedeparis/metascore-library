@@ -248,7 +248,7 @@ export class Player extends Dom {
             }
 
             case 'scenario':{
-                const scenario = this.getScenarios().find((s) => s.getName() === params.value);
+                const scenario = this.getScenarios().find((s) => s.getId() === params.value);
                 if(scenario){
                     this.setActiveScenario(scenario);
                 }
@@ -761,6 +761,19 @@ export class Player extends Dom {
             component.appendTo(this);
         }
         else{
+            if(!('id' in component)){
+                // Generate a user-freindly ID.
+                let next_id = 1;
+                this.getScenarios().forEach((s) => {
+                    const id = parseInt(s.getId().replace('scenario-', ''), 10);
+                    if(!isNaN(id)){
+                        next_id = Math.max(next_id, id + 1);
+                    }
+                });
+
+                component.id = `scenario-${next_id}`;
+            }
+
             component = new Scenario(component)
                 .appendTo(this)
                 .init();
@@ -860,10 +873,10 @@ export class Player extends Dom {
      *
      * @param {String} [inTime] The time at which the media should start playing
      * @param {String} [outTime] The time at which the media should stop playing
-     * @param {String} [scenario_name] The name of the scenario to go to while playing
+     * @param {String} [scenarioId] The id of the scenario to go to while playing
      * @return {this}
      */
-    play(inTime, outTime, scenario_name){
+    play(inTime, outTime, scenarioId){
         const renderer = this.getRenderer();
 
         if(this.cuepoint){
@@ -894,8 +907,8 @@ export class Player extends Dom {
                 renderer.pause();
             });
 
-            if(scenario_name){
-                const scenario = this.getScenarios().find((s) => s.getName() === scenario_name);
+            if(scenarioId){
+                const scenario = this.getScenarios().find((s) => s.getId() === scenarioId);
 
                 if(scenario){
                     const previous_scenario = this.getActiveScenario();
