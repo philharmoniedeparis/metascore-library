@@ -3,28 +3,17 @@
 :local(.className){
     display: flex;
     padding: 0 1em;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
 
     *{
         color: #fff;
     }
 
-    > .left,
-    > .right{
-        flex: 1 1 50%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
-    > .right{
-        justify-content: flex-end;
-    }
-
     .logo{
         flex: 0 0 5em;
         height: 100%;
+        margin-right: 2em;
     }
 
     button{
@@ -36,7 +25,7 @@
         }
 
         &[data-action="save"]{
-            margin: 0 2em;
+            margin-right: 2em;
         }
 
         &[data-action="redo"]{
@@ -69,75 +58,79 @@
         }
     }
 
-    .input.title{
-        padding: 0.5em 0;
+    .input{
+        &.preview-toggle{
+            margin-right: 2em;
 
-        input{
-            width: 100%;
-            background: none;
-            border-radius: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-
-            &:focus{
-                background: $mediumgray;
-                text-overflow: clip;
-            }
-        }
-    }
-
-    .input.preview-toggle{
-        margin: 0 1em;
-
-        .state{
-            label{
-                width: 100%;
-                height: 100%;
-                background: none;
-                cursor: pointer;
-
-                .icon{
-                    display: block;
-                    position: relative;
-                    top: 0;
-                    left: 0;
+            .state{
+                label{
+                    width: 100%;
                     height: 100%;
-                    font-size: 1.25em;
-                    opacity: 0.25;
+                    background: none;
+                    cursor: pointer;
+
+                    .icon{
+                        display: block;
+                        position: relative;
+                        top: 0;
+                        left: 0;
+                        height: 100%;
+                        font-size: 1.25em;
+                        opacity: 0.25;
+                    }
                 }
             }
-        }
 
-        input{
-            &:checked{
-                ~ .state{
-                    .icon{
-                        opacity: 1;
+            input{
+                &:checked{
+                    ~ .state{
+                        .icon{
+                            opacity: 1;
+                        }
                     }
                 }
             }
         }
-    }
 
-    .input.revisions{
-        align-self: center;
-        margin-right: 0.5em;
-        opacity: 0.5;
+        &.title{
+            flex: 1 1 auto;
+            margin-right: 2em;
+            padding: 0.5em 0;
 
-        select{
-            max-width: 15em;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            input{
+                width: 100%;
+                background: none;
+                border-radius: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
 
-            option:disabled{
-                color: $lightgray;
-                font-style: italic;
+                &:focus{
+                    background: $mediumgray;
+                    text-overflow: clip;
+                }
             }
+        }
 
-            &:hover{
-                border-color: #fff;
+        &.revisions{
+            align-self: center;
+            margin-right: 0.5em;
+            opacity: 0.5;
+
+            select{
+                max-width: 15em;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+
+                option:disabled{
+                    color: $lightgray;
+                    font-style: italic;
+                }
+
+                &:hover{
+                    border-color: #fff;
+                }
             }
         }
     }

@@ -38,14 +38,11 @@ export default class MainMenu extends Dom {
      * @private
      */
     setupUI() {
-        const left = new Dom('<div/>', {'class': 'left'})
-            .appendTo(this);
-
         new Icon({
                 'symbol': logo_icon
             })
             .addClass('logo')
-            .appendTo(left);
+            .appendTo(this);
 
         this.items.save = new Button({
                 'icon': save_icon
@@ -54,7 +51,7 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.save.title', 'Save')
             })
             .data('action', 'save')
-            .appendTo(left);
+            .appendTo(this);
 
         this.items.revert = new Button({
                 'icon': revert_icon
@@ -63,7 +60,7 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.revert.title', 'Revert')
             })
             .data('action', 'revert')
-            .appendTo(left);
+            .appendTo(this);
 
         this.items.undo = new Button({
                 'icon': undo_icon
@@ -72,7 +69,7 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.undo.title', 'Undo')
             })
             .data('action', 'undo')
-            .appendTo(left);
+            .appendTo(this);
 
         this.items.redo = new Button({
                 'icon': redo_icon
@@ -81,17 +78,6 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.redo.title', 'Redo')
             })
             .data('action', 'redo')
-            .appendTo(left);
-
-        this.items.title = new TextInput({
-                'name': 'title',
-                'placeholder': Locale.t('editor.MainMenu.title.placeholder', 'Title'),
-                'required': true
-            })
-            .addClass('title')
-            .appendTo(left);
-
-        const center = new Dom('<div/>', {'class': 'center'})
             .appendTo(this);
 
         this.items['preview-toggle'] = new CheckboxInput({
@@ -102,22 +88,27 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.preview-toggle.title', 'Toggle preview mode')
             })
             .addClass('preview-toggle')
-            .appendTo(center);
+            .appendTo(this);
 
-        const right = new Dom('<div/>', {'class': 'right'})
+        this.items.title = new TextInput({
+                'name': 'title',
+                'placeholder': Locale.t('editor.MainMenu.title.placeholder', 'Title'),
+                'required': true
+            })
+            .addClass('title')
             .appendTo(this);
 
         this.items.revisions = new SelectInput({
                 'name': 'revisions'
             })
             .addClass('revisions')
-            .appendTo(right);
+            .appendTo(this);
 
         this.items.restore = new Button({
                 'label': Locale.t('editor.MainMenu.restore.label', 'Restore')
             })
             .data('action', 'restore')
-            .appendTo(right);
+            .appendTo(this);
 
     }
 
