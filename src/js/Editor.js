@@ -2292,13 +2292,14 @@ export class Editor extends Dom {
                 configs.forEach((element_config) => {
                     const el_index = page.children(`.element.${element_config.type}`).count() + 1;
                     const defaults = {
-                        'name': `${element_config.type} ${el_index}`
+                        'name': `${element_config.type} ${el_index}`,
+                        'start-time': page.getPropertyValue('start-time'),
+                        'end-time': page.getPropertyValue('end-time')
                     };
 
                     switch(element_config.type){
                         case 'Cursor':
                             defaults['start-time'] = MasterClock.getTime();
-                            defaults['end-time'] = page.getPropertyValue('end-time');
 
                             if(defaults['end-time'] === null){
                                 defaults['end-time'] = MasterClock.getRenderer().getDuration();
