@@ -29,6 +29,8 @@ body{
         display: none;
         top: 0;
         left: 0;
+        min-width: 1px;
+        min-height: 1px;
 
         &.video-renderer{
             min-width: 10px;

@@ -38,11 +38,19 @@ export default class BlockToggler extends Component{
                 },
                 'width': {
                     'type': 'number',
-                    'default': 100
+                    'default': 100,
+                    'getter': function() {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('width'), 10);
+                    }
                 },
                 'height': {
                     'type': 'number',
-                    'default': 20
+                    'default': 20,
+                    'getter': function() {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('height'), 10);
+                    }
                 },
                 'background-color': {
                     'type': 'color'

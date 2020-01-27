@@ -35,11 +35,19 @@ export default class Element extends Component{
                 },
                 'width': {
                     'type': 'number',
-                    'default': 50
+                    'default': 50,
+                    'getter': function() {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('width'), 10);
+                    }
                 },
                 'height': {
                     'type': 'number',
-                    'default': 50
+                    'default': 50,
+                    'getter': function() {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('height'), 10);
+                    }
                 },
                 'background-color': {
                     'type': 'color'
