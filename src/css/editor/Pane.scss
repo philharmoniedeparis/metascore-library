@@ -32,11 +32,11 @@ $resize-handle-size: 0.5em;
 
         &.vertical{
             min-width: auto;
-            width: 0;
+            max-width: 0;
         }
         &.horizontal{
             min-height: auto;
-            height: 0;
+            max-height: 0;
         }
     }
 

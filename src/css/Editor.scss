@@ -29,8 +29,8 @@
     height: 100%;
     margin: 0;
     padding: 0;
-    grid-template-columns: minmax(0, min-content) auto minmax(0, min-content);
-    grid-template-rows: minmax(0, min-content) auto minmax(0, min-content);
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: min-content 1fr auto;
     grid-template-areas: "top top top" "left center right" "bottom bottom bottom";
     align-items: stretch;
     flex-wrap: nowrap;
@@ -54,7 +54,6 @@
 
         &.center-pane{
             grid-area: center;
-            flex: 1 1 auto;
 
             > .contents{
                 display: flex;
@@ -78,10 +77,11 @@
             &:not(.collapsed){
                 height: 300px;
                 min-height: 150px;
-                max-height: 50vh;
+                max-height: 75vh;
             }
 
             &.collapsed{
+                max-height: none;
                 height: auto;
 
                 > .contents{
@@ -95,6 +95,7 @@
                             }
                         }
 
+                        > .middle,
                         > .bottom{
                             display: none;
                         }
