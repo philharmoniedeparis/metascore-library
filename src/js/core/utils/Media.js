@@ -165,7 +165,7 @@ export function isValidMimeType(mimetype, accepted_mimetypes){
  * @return {String} The string represetation
  */
 export function formatTime(time){
-    const centiseconds = pad(parseInt((time / 100) % 100, 10), 2, '0', 'left');
+    const centiseconds = pad(parseInt((time * 100) % 100, 10), 2, '0', 'left');
     const seconds = pad(parseInt(time % 60, 10), 2, '0', 'left');
     const minutes = pad(parseInt((time / 60), 10), 2, '0', 'left');
 
