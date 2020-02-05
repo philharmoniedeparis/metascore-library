@@ -33,6 +33,15 @@ export default class Controller extends Component{
                 },
                 'y': {
                     'type': 'number'
+                },
+                'border-width': {
+                    'type': 'number'
+                },
+                'border-color': {
+                    'type': 'color'
+                },
+                'border-radius': {
+                    'type': 'string'
                 }
             })
         });
