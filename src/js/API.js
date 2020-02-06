@@ -32,11 +32,11 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  * Examples:
  *
  *         <a href="#play" rel="metascore" data-guide="guide-93">PLAY</a>
- *         <a href="#play=20,500,2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
+ *         <a href="#play=20,500,scenario-2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
  *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
- *         <a href="#scenario=2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO 2</a>
+ *         <a href="#scenario=scenario-2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO scenario-2</a>
  *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
@@ -159,6 +159,13 @@ export class API{
      * @return {this}
      */
     play(inTime, outTime, scenario){
+        if(!isNaN(scenario)){
+            // This is likely a v1 call, alter the parameters for backward compatibility.
+            inTime = inTime / 10;
+            outTime = outTime / 10;
+            scenario = 'scenario-' + scenario;
+        }
+
         this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'scenario': scenario});
 
         return this;
@@ -251,6 +258,18 @@ export class API{
      */
     scenario(value){
         this.postMessage('scenario', {'value': value});
+
+        return this;
+    }
+
+    /**
+     * Old rindex method for backward compatibility
+     *
+     * @param {String} value The scenario to set
+     * @return {this}
+     */
+    rindex(index){
+        this.postMessage('scenario', {'value': 'scenario-' + index});
 
         return this;
     }
