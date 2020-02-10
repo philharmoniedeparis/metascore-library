@@ -338,6 +338,12 @@ body{
                         border-radius: 100%;
                     }
                 }
+
+                &.activated:not(.active){
+                    display: block;
+                    opacity: 0;
+                    pointer-events: auto;
+                }
             }
 
             &.Content{

@@ -205,6 +205,26 @@ export default class Cursor extends Element {
     }
 
     /**
+     * @inheritdoc
+     */
+    activate(supressEvent, force){
+        super.activate(supressEvent, force);
+
+        // Add the "activated" to capture click events.
+        this.addClass('activated');
+        this.resizeCanvas();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    deactivate(supressEvent){
+        super.deactivate(supressEvent);
+
+        this.removeClass('activated');
+    }
+
+    /**
      * Readjust the canvas's size
      *
      * @private
