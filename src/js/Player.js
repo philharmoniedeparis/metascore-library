@@ -828,6 +828,7 @@ export class Player extends Dom {
 
             if(scenario){
                 scenario.activate();
+                this.updateBlockTogglers();
             }
 
             if(supressEvent !== true){
