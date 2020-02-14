@@ -2559,14 +2559,7 @@ export class Editor extends Dom {
 
                             // add a new page if the block is empty
                             if(context.block.getChildrenCount() < 1){
-                                const configs = {};
-
-                                if(context.block.getPropertyValue('synched')){
-                                    configs['start-time'] = 0;
-                                    configs['end-time'] = MasterClock.getRenderer().getDuration();
-                                }
-
-                                context.auto_page = context.block.addPage(configs);
+                                context.auto_page = context.block.addPage();
                             }
 
                             timeline.updateBlockPagesTrackLabels(context.block);

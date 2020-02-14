@@ -117,12 +117,7 @@ export default class Block extends Component {
 
         if(this.getChildrenCount() === 0){
             // add a page
-            const page_configs = {};
-            if(this.getPropertyValue('synched')){
-                page_configs['start-time'] = 0;
-                page_configs['end-time'] = MasterClock.getRenderer().getDuration();
-            }
-            this.addPage(page_configs);
+            this.addPage();
         }
 
         return this;
