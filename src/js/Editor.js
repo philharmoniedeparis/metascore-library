@@ -887,7 +887,8 @@ export class Editor extends Dom {
                     }
                 }
             }})
-            .appendTo(this.workspace);
+            .addListener('beforeshow', this.onPlayerContextMenuBeforeShow.bind(this))
+            .appendTo(this);
 
         return this;
     }
@@ -1026,6 +1027,21 @@ export class Editor extends Dom {
                 }
                 break;
         }
+    }
+
+    /**
+     * Player ContextMenu beforeshow event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPlayerContextMenuBeforeShow(evt){
+        // Adjust menu position.
+        const pos = evt.detail.pos;
+        const editor_rect = this.get(0).getBoundingClientRect();
+        const player_rect = this.player_frame.get(0).getBoundingClientRect();
+        pos.x += player_rect.left - editor_rect.left;
+        pos.y += player_rect.top - editor_rect.top;
     }
 
     /**

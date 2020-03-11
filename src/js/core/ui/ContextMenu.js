@@ -148,26 +148,32 @@ export default class ContextMenu extends Dom {
      * @param {Event} evt The event object
      */
     onTargetContextmenu(evt){
-        if(this.triggerEvent('beforeshow', {'original_event': evt}) === false){
-            return;
-        }
-
         if(evt.ctrlKey){
             return;
         }
 
-        let x = 0;
-        let y = 0;
+        const pos = {
+            'x': 0,
+            'y': 0
+        };
         if(evt.pageX || evt.pageY){
-            x = evt.pageX;
-            y = evt.pageY;
+            pos.x = evt.pageX;
+            pos.y = evt.pageY;
         }
         else if(evt.clientX || evt.clientY){
-            x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-            y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            pos.x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            pos.y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
 
-        this.show(x, y, evt);
+        const target_document = Dom.getElementDocument(this.target.get(0));
+        pos.x -= target_document.documentElement.scrollLeft;
+        pos.y -= target_document.documentElement.scrollTop;
+
+        if(this.triggerEvent('beforeshow', {'original_event': evt, 'pos': pos}) === false){
+            return;
+        }
+
+        this.show(pos.x, pos.y, evt);
 
         evt.preventDefault();
         evt.stopPropagation();
@@ -364,25 +370,24 @@ export default class ContextMenu extends Dom {
         super.show();
 
         const win = Dom.getElementWindow(this.get(0));
+        const win_width = win.innerWidth;
+        const win_height = win.innerHeight;
         Dom.addListener(win, 'mousedown', this.onWindowMousedown);
         Dom.addListener(win, 'blur', this.onWindowBlur);
         Dom.addListener(win, 'keyup', this.onWindowKeyup);
 
         const menu_el = this.get(0);
-        const target_win = Dom.getElementWindow(evt.target);
-        const target_win_width = target_win.innerWidth;
-        const target_win_height = target_win.innerHeight;
         const menu_width = menu_el.offsetWidth;
         const menu_height = menu_el.offsetHeight;
 
         let _x = x;
-        if((menu_width + _x) > target_win_width){
-            _x = target_win_width - menu_width;
+        if((menu_width + _x) > win_width){
+            _x = win_width - menu_width;
         }
 
         let _y = y;
-        if((menu_height + _y) > target_win_height){
-            _y = target_win_height - menu_height;
+        if((menu_height + _y) > win_height){
+            _y = win_height - menu_height;
         }
 
         this
