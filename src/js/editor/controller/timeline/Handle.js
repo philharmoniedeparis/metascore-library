@@ -87,9 +87,8 @@ export default class Handle extends Dom {
      * @return {this}
      */
     setLabel(value){
-        this.label
-            .text(value)
-            .attr('title', value);
+        this.label.text(value);
+        this.attr('title', value);
 
         return this;
     }
