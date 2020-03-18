@@ -1,6 +1,7 @@
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
+import {round} from '../../utils/Math';
 import Ajax from '../../Ajax';
 import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
@@ -88,8 +89,9 @@ export default class HTML5 extends Dom {
      *
      * @param {String} url The file's URL
      * @param {Function} callback The callback to invoke with a potential error and the duration
+     * @param {Boolean|Integer} decimals The number of decimals to round to, or false to return raw value
      */
-    static getDurationFromURI(url, callback){
+    static getDurationFromURI(url, callback, decimals = 2){
         const audio = new Audio();
 
         // @todo: replace with promises to eliminate the propability of both an error and a success being called
@@ -100,7 +102,7 @@ export default class HTML5 extends Dom {
         });
 
         audio.addEventListener('loadedmetadata', () => {
-            callback(null, audio.duration);
+            callback(null, decimals !== false ? round(audio.duration, decimals) : audio.duration);
         });
 
         audio.src = url;
@@ -436,19 +438,21 @@ export default class HTML5 extends Dom {
     /**
      * Get the current media time
      *
+     * @param {Boolean|Integer} decimals The number of decimals to round to, or false to return raw value
      * @return {Number} The time in centiseconds
      */
-    getTime() {
-        return this.dom.currentTime;
+    getTime(decimals = 2) {
+        return decimals !== false ? round(this.dom.currentTime, decimals) : this.dom.currentTime;
     }
 
     /**
      * Get the media's duration
      *
+     * @param {Boolean|Integer} decimals The number of decimals to round to, or false to return raw value
      * @return {Number} The duration in centiseconds
      */
-    getDuration() {
-        return this.dom.duration;
+    getDuration(decimals = 2) {
+        return decimals !== false ? round(this.dom.duration, decimals) : this.dom.duration;
     }
 
     /**

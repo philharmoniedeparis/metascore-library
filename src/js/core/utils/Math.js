@@ -80,3 +80,15 @@ export function radians(value) {
 export function degrees(value) {
     return value * 180 / Math.PI;
 }
+
+/**
+ * Round a value to a specified precision
+ *
+ * @param {float} value the value
+ * @param {Boolean|Integer} [precision=0] The number of decimal digits to round to
+ * @return {float} The rounded value
+ */
+export function round(value, precision = 0) {
+    const multiplier = precision > 0 ? Math.pow(10, precision) : 1;
+    return +Math.round((value + Number.EPSILON) * multiplier) / multiplier;
+}
