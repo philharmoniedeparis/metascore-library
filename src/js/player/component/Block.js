@@ -382,7 +382,17 @@ export default class Block extends Component {
 
             if(_page instanceof Page && _page !== previous){
                 const start_time = _page.getPropertyValue('start-time');
-                MasterClock.setTime(start_time || 0);
+                const end_time = _page.getPropertyValue('end-time');
+                if(start_time !== null || end_time !== null){
+                    MasterClock.setTime(start_time || 0);
+                }
+                else{
+                    if(previous){
+                        previous.deactivate();
+                    }
+
+                    _page.activate();
+                }
             }
         }
 
