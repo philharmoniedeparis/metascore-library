@@ -1,6 +1,7 @@
 import Component from '../Component';
 import Element from './Element';
 import Locale from '../../core/Locale';
+import {round} from '../../core/utils/Math';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
@@ -53,10 +54,16 @@ export default class Page extends Component {
                     'type': 'image'
                 },
                 'start-time': {
-                    'type': 'time'
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        return value ? round(value, 2) : value;
+                    }
                 },
                 'end-time': {
-                    'type': 'time'
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        return value ? round(value, 2) : value;
+                    }
                 },
                 'elements': {
                     'type': 'array',

@@ -1,6 +1,5 @@
 import HTML5 from './HTML5';
 import Locale from '../../Locale';
-import {round} from '../../utils/Math';
 
 /**
 * The hls.js CDN URL
@@ -118,9 +117,8 @@ export default class HLS extends HTML5 {
      *
      * @param {String} url The file's URL
      * @param {Function} callback The callback to invoke with a potential error and the duration
-     * @param {Boolean|Integer} decimals The number of decimals to round to, or false to return raw value
      */
-    static getDurationFromURI(url, callback, decimals = 2){
+    static getDurationFromURI(url, callback){
         this.loadLib((error) => {
             if(error){
                 callback(error);
@@ -145,7 +143,7 @@ export default class HLS extends HTML5 {
                 });
 
                 audio.addEventListener('loadedmetadata', () => {
-                    callback(null, decimals !== false ? round(audio.duration, decimals) : audio.duration);
+                    callback(null, audio.duration);
                 });
 
                 hls.loadSource(url);

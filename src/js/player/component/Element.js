@@ -1,6 +1,7 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
 import {isString} from '../../core/utils/Var';
+import {round} from '../../core/utils/Math';
 
 /**
  * An element component
@@ -69,10 +70,16 @@ export default class Element extends Component{
                     'default': 1
                 },
                 'start-time': {
-                    'type': 'time'
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        return value ? round(value, 2) : value;
+                    }
                 },
                 'end-time': {
-                    'type': 'time'
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        return value ? round(value, 2) : value;
+                    }
                 }
             })
         });

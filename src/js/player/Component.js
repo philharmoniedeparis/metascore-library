@@ -285,19 +285,24 @@ export default class Component extends Dom {
         const prop = this.getProperty(name);
         if(prop){
             const previous_value = this.getPropertyValue(name);
+            let new_value = value;
 
-            if(previous_value !== value){
-                if(value === null){
+            if(('sanitize' in prop) && isFunction(prop.sanitize)){
+                new_value = prop.sanitize(new_value);
+            }
+
+            if(previous_value !== new_value){
+                if(new_value === null){
                     delete this.property_values[name];
                 }
                 else{
-                    this.property_values[name] = value;
+                    this.property_values[name] = new_value;
                 }
 
-                this.updatePropertyValue(name, value);
+                this.updatePropertyValue(name, new_value);
 
                 if(supressEvent !== true){
-                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': value, 'previous': previous_value});
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': new_value, 'previous': previous_value});
                 }
             }
         }
