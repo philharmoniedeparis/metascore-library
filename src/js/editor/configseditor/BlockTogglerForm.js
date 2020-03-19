@@ -11,13 +11,11 @@ import {className} from '../../../css/editor/configseditor/BlockTogglerForm.scss
 export default class BlockTogglerForm extends BlockForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         this.addClass(`blocktoggler-form ${className}`);
     }

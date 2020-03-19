@@ -9,13 +9,11 @@ import {className} from '../../../css/editor/configseditor/VideoRendererForm.scs
 export default class VideoRendererForm extends ComponentForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         this.addClass(`video-renderer-form ${className}`);
     }

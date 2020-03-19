@@ -11,11 +11,11 @@ export default class ElementForm extends ComponentForm {
     /**
      * Instantiate
      *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         this.addClass(`element-form ${className}`);
     }

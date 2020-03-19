@@ -9,13 +9,11 @@ import {className} from '../../../css/editor/configseditor/BlockForm.scss';
 export default class BlockForm extends ComponentForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         this.addClass(`block-form ${className}`);
     }

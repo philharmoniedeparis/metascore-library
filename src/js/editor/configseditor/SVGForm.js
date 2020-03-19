@@ -14,13 +14,11 @@ import {className} from '../../../css/editor/configseditor/SVGForm.scss';
 export default class SVGForm extends ElementForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         // fix event handlers scope
         this.onComponentLoad = this.onComponentLoad.bind(this);

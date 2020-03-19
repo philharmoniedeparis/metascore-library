@@ -18,13 +18,11 @@ import {className} from '../../../css/editor/configseditor/CursorForm.scss';
 export default class CursorForm extends ElementForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         this.addClass(`cursor-form ${className}`);
 

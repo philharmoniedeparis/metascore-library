@@ -11,13 +11,11 @@ import {className} from '../../../css/editor/configseditor/ContentForm.scss';
 export default class ContentForm extends ElementForm {
 
     /**
-     * Instantiate
-     *
-     * @param {Object} configs Custom configs to override defaults
+     * @inheritdoc
      */
-    constructor(configs) {
+    constructor(...args) {
         // call parent constructor
-        super(configs);
+        super(...args);
 
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
