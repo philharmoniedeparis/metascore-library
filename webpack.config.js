@@ -5,6 +5,7 @@ const path = require("path");
 const git = require('git-rev-sync');
 const pckg = require('./package.json');
 const filenamify = require('filenamify');
+const glob = require('glob');
 
 const BeepPlugin = require('./webpack/plugins/BeepPlugin');
 const ShellPlugin = require('./webpack/plugins/ShellPlugin');
@@ -13,15 +14,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const LIB_NAME = "metaScore";
 const DIST_DIR = path.join(__dirname, "dist");
+const POLYFILLS = glob.sync('./polyfills/*.js');
 
 module.exports = (env, argv) => {
   const configs = {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['@babel/polyfill', 'classlist-polyfill', 'fullscreen-polyfill', './src/js/polyfills', './src/js/Player'],
-        Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
-        API: ['classlist-polyfill', './src/js/polyfills', './src/js/API']
+        Player: ['@babel/polyfill', 'classlist-polyfill', 'fullscreen-polyfill'].concat(POLYFILLS).concat(['./src/js/Player']),
+        Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(POLYFILLS).concat(['./src/js/Editor']),
+        API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './src/js/API']
     },
     output: {
         filename: LIB_NAME +'.[name].js',
