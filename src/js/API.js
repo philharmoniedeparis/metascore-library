@@ -161,9 +161,8 @@ export class API{
     play(inTime, outTime, scenario){
         if(!isNaN(scenario)){
             // This is likely a v1 call, alter the parameters for backward compatibility.
-            inTime = inTime / 10;
-            outTime = outTime / 10;
-            scenario = 'scenario-' + scenario;
+            this.postMessage('play', {'inTime': inTime / 10, 'outTime': outTime / 10, 'scenario': `scenario-${scenario}`});
+            return this;
         }
 
         this.postMessage('play', {'inTime': inTime, 'outTime': outTime, 'scenario': scenario});
@@ -265,11 +264,11 @@ export class API{
     /**
      * Old rindex method for backward compatibility
      *
-     * @param {String} value The scenario to set
+     * @param {String} index The scenario to set
      * @return {this}
      */
     rindex(index){
-        this.postMessage('scenario', {'value': 'scenario-' + index});
+        this.postMessage('scenario', {'value': `scenario-${index}`});
 
         return this;
     }

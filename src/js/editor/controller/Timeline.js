@@ -309,8 +309,8 @@ export default class Timeline extends Dom {
     /**
      * MasterClock rendererchange event callback
      *
-     * @param {Media} media The media component
-     * @return {this}
+     * @private
+     * @param {CustomEvent} evt The event object
      */
     onMediaClockRendererChange(evt){
         const renderer = evt.detail.renderer;
@@ -323,8 +323,6 @@ export default class Timeline extends Dom {
         }
 
         this.updateSize();
-
-        return this;
     }
 
     /**

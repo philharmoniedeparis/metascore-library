@@ -239,7 +239,8 @@ export default class ScenarioSelector extends Dom {
      * Rename prompt onConfirm callback
      *
      * @private
-     * @param {String} scenario The scenario's name
+     * @param {Scenario} scenario The scenario
+     * @param {String} name The scenario's new name
      * @param {Overlay} overlay The overlay
      */
     onRenameConfirm(scenario, name, overlay){
@@ -586,8 +587,7 @@ export default class ScenarioSelector extends Dom {
     /**
      * Update a scenario's item
      *
-     * @param {String} old_scenario The scenario current name
-     * @param {String} new_scenario The scenario new name
+     * @param {String} scenario The scenario
      * @return {this}
      */
     updateScenarioItem(scenario){

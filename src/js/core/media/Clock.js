@@ -121,13 +121,13 @@ export default class MediaClock extends Clock {
      * @param {Number} time The time in centiseconds
      * @param {Boolean} [supressEvent=false] Whether to supress the timeupdate event
      */
-    setTime(time) {
+    setTime(time, supressEvent) {
         const renderer = this.getRenderer();
 
         if(renderer){
             renderer.setTime(time);
 
-            if(!this.isTicking()){
+            if(!this.isTicking() && (supressEvent !== true)){
                 this.triggerTimeUpdate(false);
             }
         }

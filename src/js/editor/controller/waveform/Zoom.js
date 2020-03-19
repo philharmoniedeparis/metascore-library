@@ -624,10 +624,10 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Set the associated media
+     * MasterClock rendererchange event callback
      *
-     * @param {Media} media The media component
-     * @return {this}
+     * @private
+     * @param {CustomEvent} evt The event object
      */
     onMediaClockRendererChange(evt){
         this.clear();
@@ -640,8 +640,6 @@ export default class Zoom extends Dom {
 
             renderer.getWaveformData(this.onMediaWaveformData.bind(this));
         }
-
-        return this;
     }
 
     /**

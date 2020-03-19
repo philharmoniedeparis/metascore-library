@@ -69,7 +69,6 @@ export default class Draggable {
      * The mousedown event handler
      *
      * @private
-     * @param {Event} evt The event object
      */
     onMouseDown(){
         if(!this.doc){

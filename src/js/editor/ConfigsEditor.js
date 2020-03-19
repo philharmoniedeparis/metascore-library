@@ -316,6 +316,7 @@ export default class ConfigsEditor extends Dom {
      *
      * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @param {Boolean} updateUI Whether to update the UI
      * @return {this}
      */
     unsetComponent(component, supressEvent, updateUI){

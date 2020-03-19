@@ -324,7 +324,7 @@ export default class Component extends Dom {
      * Update a property value
      *
      * @private
-     * @param {String} name The name of the property
+     * @param {String} property The name of the property
      * @param {Mixed} value The value to set
      * @return {this}
      */
@@ -630,6 +630,7 @@ export default class Component extends Dom {
      * Activate the element
      *
      * @param {Boolean} [supressEvent=false] Whether to supress the activate event
+     * @param {Boolean} [force=false] Whether to force the re-activation
      * @return {this}
      */
     activate(supressEvent, force){

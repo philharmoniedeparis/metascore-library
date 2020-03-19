@@ -559,7 +559,7 @@ export default class CursorKeyframesEditor extends Dom {
      * Draw a keyframe
      *
      * @private
-     * @param {Number} position The keyframe's position
+     * @param {Object} keyframe The keyframe
      * @return {this}
      */
     drawKeyframe(keyframe){

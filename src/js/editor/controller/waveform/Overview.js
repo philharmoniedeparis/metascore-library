@@ -285,6 +285,12 @@ export default class Overview extends Dom {
         this.onMousemove(evt);
     }
 
+    /**
+     * MasterClock rendererchange event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
     onMediaClockRendererChange(evt){
         this.clear();
 

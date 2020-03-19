@@ -238,10 +238,10 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Set the media
+     * MasterClock rendererchange event callback
      *
-     * @param {Media} media The media component
-     * @return {this}
+     * @private
+     * @param {CustomEvent} evt The event object
      */
     onMediaClockRendererChange(evt){
         const renderer = evt.detail.renderer;
@@ -261,8 +261,6 @@ export default class Controller extends Dom {
             this.controls.file_btn.setLabel(null);
             this.addClass('disabled');
         }
-
-        return this;
     }
 
     /**

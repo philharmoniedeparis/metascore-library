@@ -171,7 +171,6 @@ export default class ContentForm extends ElementForm {
     /**
      * Unlock the component's contents
      *
-     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
@@ -215,7 +214,6 @@ export default class ContentForm extends ElementForm {
     /**
      * Lock the component's contents
      *
-     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */

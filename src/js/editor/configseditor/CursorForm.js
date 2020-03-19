@@ -309,7 +309,6 @@ export default class CursorForm extends ElementForm {
     /**
      * Unlock a cursor component's advance edit mode
      *
-     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the keyframeseditingstart event from firing
      * @return {this}
      */
@@ -332,7 +331,6 @@ export default class CursorForm extends ElementForm {
     /**
      * Lock a cursor component's advance edit mode
      *
-     * @param {Component} component The component
      * @param {Boolean} supressEvent Whether to prevent the keyframeseditingstop event from firing
      * @return {this}
      */

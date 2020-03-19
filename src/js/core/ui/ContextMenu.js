@@ -327,9 +327,9 @@ export default class ContextMenu extends Dom {
     /**
      * Show the menu
      *
-     * @param {HTMLElement} el The element on which the contextmenu event was triggered
      * @param {Number} x The horizontal position at which the menu should be shown
      * @param {Number} y The vertical position at which the menu should be shown
+     * @param {Event} evt The original contextmenu event object
      * @return {this}
      */
     show(x, y, evt){

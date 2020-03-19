@@ -124,7 +124,7 @@ export default class SelectInput extends Input {
     /**
      * Get options from the select or a group
      *
-     * @param {Dom} [parent] The parent group
+     * @param {Dom} [group] The parent group
      * @return {Dom} The options
      */
     getOptions(group){

@@ -13,9 +13,9 @@ export function randomFromTo(from, to) {
  * Linearly interpolate between start and stop by amount.
  * Mathematically the opposite of normalize.
  *
- * @param {float} start the start value
- * @param {float} to the stop value
- * @param {float} amount the interpolation amount between the two values
+ * @param {float} start The start value
+ * @param {float} stop The stop value
+ * @param {float} amount The interpolation amount between the two values
  * @return {float} The interpolated value
  */
 export function lerp(start, stop, amount) {
@@ -26,9 +26,9 @@ export function lerp(start, stop, amount) {
  * Normalize a value to be between 0 and 1 (inclusive).
  * Mathematically the opposite of lerp.
  *
- * @param {float} value the value to normalize
- * @param {float} start the min value of the input space
- * @param {float} to the max value of the input space
+ * @param {float} value The value to normalize
+ * @param {float} start The min value of the input space
+ * @param {float} stop The max value of the input space
  * @return {float} The normalized value
  */
 export function normalize(value, start, stop) {
@@ -38,11 +38,11 @@ export function normalize(value, start, stop) {
 /**
  * Map a value from one coordinate space to another
  *
- * @param {float} value the value to map
- * @param {float} input_start the min value of the input space
- * @param {float} input_stop the max value of the input space
- * @param {float} output_start the min value of the output space
- * @param {float} output_stop the max value of the output space
+ * @param {float} value The value to map
+ * @param {float} input_start The min value of the input space
+ * @param {float} input_stop The max value of the input space
+ * @param {float} output_start The min value of the output space
+ * @param {float} output_stop The max value of the output space
  * @return {float} The mapped value
  */
 export function map(value, input_start, input_stop, output_start, output_stop) {
@@ -52,9 +52,9 @@ export function map(value, input_start, input_stop, output_start, output_stop) {
 /**
  * Clamp a value between a min and max
  *
- * @param {float} value the value to clamp
- * @param {float} min the min value
- * @param {float} max the max value
+ * @param {float} value The value to clamp
+ * @param {float} min The min value
+ * @param {float} max The max value
  * @return {float} The clamped value
  */
 export function clamp(value, min, max) {
@@ -64,7 +64,7 @@ export function clamp(value, min, max) {
 /**
  * Convert a value from degrees to radians
  *
- * @param {float} value the value in degrees
+ * @param {float} value The value in degrees
  * @return {float} The value in radians
  */
 export function radians(value) {
@@ -74,7 +74,7 @@ export function radians(value) {
 /**
  * Convert a value from radians to degrees
  *
- * @param {float} value the value in radians
+ * @param {float} value The value in radians
  * @return {float} The value in degrees
  */
 export function degrees(value) {
@@ -84,7 +84,7 @@ export function degrees(value) {
 /**
  * Round a value to a specified precision
  *
- * @param {float} value the value
+ * @param {float} value The value
  * @param {Boolean|Integer} [precision=0] The number of decimal digits to round to
  * @return {float} The rounded value
  */

@@ -412,12 +412,20 @@ export default class SpectrogramForm extends Overlay {
      *
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
+     * @param {Event} evt The AJAX success event object
      */
     onGenerateSuccess(loadmask, evt){
         loadmask.hide();
         this.triggerEvent('generate', {'form': this, 'asset': evt.target.getResponse()});
     }
 
+    /**
+     * XHR error callback
+     *
+     * @private
+     * @param {LoadMask} loadmask the loadmask to hide
+     * @param {Event} evt The AJAX error event object
+     */
     onXHRError(loadmask, evt){
         loadmask.hide();
 
