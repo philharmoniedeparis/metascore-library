@@ -402,6 +402,12 @@ export default class GuideAssets extends Dom {
         }
         if(/^image\/.*/.test(file.mimetype)){
             evt.dataTransfer.setData('text/html', `<img src="${file.url}" />`);
+            if ('width' in file && 'height' in file) {
+                evt.dataTransfer.setData('text/html', `<img src="${file.url}" width="${file.width}" height="${file.height}" />`);
+            }
+            else {
+                evt.dataTransfer.setData('text/html', `<img src="${file.url}" />`);
+            }
         }
 
         this._asset_drag_ghost = new Dom(figure.get(0).cloneNode(true))
