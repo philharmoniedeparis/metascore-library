@@ -135,34 +135,6 @@ export default class ConfigsEditor extends Dom {
     }
 
     /**
-     * CursorForm keyframeseditingstart event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStart(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.editor.getPlayer().addClass('isolating');
-        this.editor.addClass('cursor-keyframes-editing');
-    }
-
-    /**
-     * CursorForm keyframeseditingstop event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onCursorFormKeyframesEditingStop(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.editor.getPlayer().removeClass('isolating');
-        this.editor.removeClass('cursor-keyframes-editing');
-    }
-
-    /**
     * Get the common types for the set of selected components
     *
     * @return {String} The common type
@@ -361,44 +333,5 @@ export default class ConfigsEditor extends Dom {
 
         return this;
     }
-
-    /**
-     * The imagefields' resize event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    /*onImageFieldResize(evt){
-        if(!evt.detail.value){
-            return;
-        }
-
-        getImageMetadata(this.getComponent().get(0).baseURI + evt.detail.value, (error, metadata) => {
-            if(error){
-                return;
-            }
-
-            const values = [];
-            this.components.forEach((component) => {
-                const old_values = {
-                    'width': component.getPropertyValue('width'),
-                    'height': component.getPropertyValue('height')
-                };
-
-                component.setPropertyValues({'width': metadata.width, 'height': metadata.height});
-
-                const new_values = {
-                    'width': component.getPropertyValue('width'),
-                    'height': component.getPropertyValue('height')
-                };
-
-                values.push({
-                    component: component,
-                    new_values: new_values,
-                    old_values: old_values
-                });
-            });
-        });
-    }*/
 
 }
