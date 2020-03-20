@@ -1,4 +1,3 @@
-// CustomEvent
 (function() {
     if (typeof window.CustomEvent === "function"){
         return;

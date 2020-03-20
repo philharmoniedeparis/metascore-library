@@ -1,4 +1,3 @@
-// Node.prototype.childElementCount
 (function(constructor) {
     if (constructor && constructor.prototype && !constructor.prototype.childElementCount) {
         Object.defineProperty(constructor.prototype, 'childElementCount', {

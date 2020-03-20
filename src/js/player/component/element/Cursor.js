@@ -308,12 +308,7 @@ export default class Cursor extends Element {
      * @returns {Object} The x and y position
      */
     getLinearPositionFromMouse(evt){
-        const rect = this.canvas.getBoundingClientRect();
-
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
+        return window.convertPointFromPageToNode(this.canvas, evt.clientX, evt.clientY);
     }
 
     /**

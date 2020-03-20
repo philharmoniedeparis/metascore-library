@@ -1,4 +1,3 @@
-// Element.prototype.closest
 (function() {
     if (!Element.prototype.closest) {
       Element.prototype.closest = function(s) {

@@ -1,4 +1,3 @@
-// HTMLTemplateElement.prototype.content
 (function() {
     const needsTemplate = typeof HTMLTemplateElement === "undefined";
 

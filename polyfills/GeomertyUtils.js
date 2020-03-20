@@ -1,5 +1,10 @@
-// convertPointFromPageToNode & convertPointFromNodeToPage
+import 'geometry-polyfill';
+
 (function() {
+    if (typeof window.convertPointFromPageToNode === "function" && typeof window.convertPointFromNodeToPage === "function"){
+        return;
+    }
+
     const I = new window.DOMMatrix();
 
     class Point{
@@ -52,7 +57,7 @@
      * @param {Number} pageY The y postion in the page's coordinate system
      * @returns {Object} The x and y position in the element's local coordinate system
      */
-    window.convertPointFromPageToNode = function (element, pageX, pageY) {
+    window.convertPointFromPageToNode = window.convertPointFromPageToNode || function (element, pageX, pageY) {
         return new Point(pageX, pageY, 0).transformBy(getTransformationMatrix(element).inverse());
     };
 
@@ -65,7 +70,7 @@
      * @param {Number} offset> The y postion in the element's local coordinate system
      * @returns {Object} The x and y position in the page's coordinate system
      */
-    window.convertPointFromNodeToPage = function (element, offsetX, offsetY) {
+    window.convertPointFromNodeToPage = window.convertPointFromNodeToPage || function (element, offsetX, offsetY) {
         return new Point(offsetX, offsetY, 0).transformBy(getTransformationMatrix(element));
     };
 })();
