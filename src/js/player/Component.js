@@ -53,10 +53,7 @@ export default class Component extends Dom {
                 },
                 'id': {
                     'type': 'string',
-                    'default': `component-${uuid(10)}`,
-                    'getter': function(){
-                        return this.attr('id');
-                    }
+                    'default': `component-${uuid(10)}`
                 },
                 'editor.locked': {
                     'type': 'boolean'
