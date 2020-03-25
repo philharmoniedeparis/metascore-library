@@ -54,9 +54,6 @@ export class Editor extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        // Set the banner for ContextMenus
-        ContextMenu.setBannerText(Locale.t('Editor.contextmenuBanner', 'metaScore Editor v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
-
         /**
          * The dirty data keys
          * @type {Object}
@@ -122,6 +119,9 @@ export class Editor extends Dom {
     * Initialize
     */
     init(){
+        // Set the banner for ContextMenus
+        ContextMenu.setBannerText(Locale.t('Editor.contextmenu.banner', 'metaScore Editor v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
+
         // Top pane ////////////////////////
         const top_pane = new Pane({
                 'axis': 'horizontal',

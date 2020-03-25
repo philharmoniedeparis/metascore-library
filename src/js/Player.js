@@ -61,9 +61,6 @@ export class Player extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
-        // Set the banner for ContextMenus
-        ContextMenu.setBannerText(Locale.t('Player.contextmenuBanner', 'metaScore Player v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
-
         /**
          * Whether the player has finished loading
          * @type {Boolean}
@@ -96,7 +93,8 @@ export class Player extends Dom {
             'keyboard': true,
             'responsive': false,
             'api': false,
-            'lang': 'en'
+            'lang': 'en',
+            'websiteUrl':  `${window.location.protocol}//${window.location.host}`
         };
     }
 
@@ -122,13 +120,25 @@ export class Player extends Dom {
     * Initialize
     */
     init() {
+        // Set the banner for ContextMenus
+        ContextMenu.setBannerText(Locale.t('Player.contextmenu.banner', 'metaScore Player v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
+
         /**
          * The context menu
          * @type {ContextMenu}
          */
         this.contextmenu = new ContextMenu({'target': this, 'items': {
+                'header': {
+                    'class': 'header',
+                    'text': Locale.t('Player.contextmenu.header', 'Created using')
+                },
                 'logo': {
-                    'class': 'logo'
+                    'class': 'logo',
+                    'callback': () => {
+                        if (this.configs.websiteUrl) {
+                            window.open(this.configs.websiteUrl, '_blank');
+                        }
+                    }
                 }
             }})
             .appendTo(this);

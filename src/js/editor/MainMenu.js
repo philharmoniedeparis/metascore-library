@@ -6,7 +6,7 @@ import TextInput from '../core/ui/input/TextInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
 import SelectInput from '../core/ui/input/SelectInput';
 
-import logo_icon from '../../img/logo.svg?svg-sprite';
+import logo_icon from '../../img/core/logo.svg?svg-sprite';
 import save_icon from '../../img/editor/mainmenu/save.svg?svg-sprite';
 import revert_icon from '../../img/editor/mainmenu/revert.svg?svg-sprite';
 import undo_icon from '../../img/editor/mainmenu/undo.svg?svg-sprite';
