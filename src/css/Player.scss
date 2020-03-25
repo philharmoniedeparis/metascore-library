@@ -413,13 +413,23 @@ body{
     .contextmenu{
         ul{
             li{
+                padding: 0.5em 1em;
+
                 &.logo{
-                    height: 36px;
-                    background: transparent url('../img/player/logo-philharmonie.png') left center no-repeat;
-                    background-size: contain;
-                    margin: 0.5em 1em;
+                    &::after{
+                        content: "";
+                        display: block;
+                        width: 144px;
+                        height: 52px;
+                        background: transparent url('../img/core/logo.svg') left center no-repeat;
+                        background-size: contain;
+                    }
                 }
             }
+        }
+
+        .banner{
+            display: none;
         }
     }
 }

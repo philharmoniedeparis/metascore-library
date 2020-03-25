@@ -1,7 +1,8 @@
 {
 	"Editor.autosaveIndicator.text": "Saving auto-recovery...",
-	"Editor.contextmenuBanner": "metaScore Editor v.!version r.!revision",
-	"Player.contextmenuBanner": "metaScore Player v.!version r.!revision",
+	"Editor.contextmenu.banner": "metaScore Editor v.!version r.!revision",
+	"Player.contextmenu.banner": "metaScore Player v.!version r.!revision",
+	"Player.contextmenu.header": "Created using",
 	"Player.defaultScenarioName": "Scenario 1",
 	"core.Confirm.cancelLabel": "No",
 	"core.Confirm.confirmLabel": "Yes",
