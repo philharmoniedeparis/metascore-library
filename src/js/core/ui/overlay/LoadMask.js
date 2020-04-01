@@ -16,6 +16,7 @@ export default class LoadMask extends Overlay{
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
+     * @property {Boolean|Icon} [icon] A loading icon to use, or no icon if set to false
      * @property {String} [text='Loading...'] The text to display
      */
     constructor(configs) {
@@ -48,12 +49,15 @@ export default class LoadMask extends Overlay{
     setupUI() {
         super.setupUI();
 
-        /**
-         * The loading icon
-         * @type {Icon}
-         */
-        this.icon = new Icon({'symbol': loading_icon})
-            .insertAt(this.getContents(), 0);
+        if(this.configs.icon !== false){
+            /**
+             * The loading icon
+             * @type {Icon}
+             */
+            this.icon = this.configs.icon instanceof Icon ? this.configs.icon : new Icon({'symbol': loading_icon});
+
+            this.icon.insertAt(this.getContents(), 0);
+        }
 
         if(this.configs.bar){
             this.addClass('with-bar');

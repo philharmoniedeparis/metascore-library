@@ -38,6 +38,7 @@ export class Editor extends Dom {
      * @property {Object} player Options for the player
      * @property {String} player.url The player URL
      * @property {String} player.update_url The player update URL
+     * @property {String} publish_url The URL of the publish button
      * @property {Object} asset_browser Options to pass to the asset browser
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
@@ -84,6 +85,7 @@ export class Editor extends Dom {
                 'url': null,
                 'update_url': null,
             },
+            'publish_url': null,
             'autosave': {
                 'url': null,
                 'interval': null
@@ -276,18 +278,15 @@ export class Editor extends Dom {
             .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
-            .setClean()
             .setEditing(false)
-            .updateMainmenu()
+            .setClean()
             .setupContextMenus();
 
         this.triggerEvent('ready', {'editor': this}, false, false);
 
         // Check if auto-save data exists.
         if(this.configs.autosave && this.configs.autosave.url){
-            const loadmask = new LoadMask({
-                'parent': this
-            });
+            const loadmask = this.createLoadMask();
             const options = Object.assign({}, this.configs.xhr, {
                 'responseType': 'json',
                 'onSuccess': () => {
@@ -930,8 +929,7 @@ export class Editor extends Dom {
     onSaveSuccess(loadmask){
         loadmask.hide();
 
-        this.setClean();
-        this.updateMainmenu();
+        this.setClean().updateMainmenu(true);
     }
 
     /**
@@ -1184,6 +1182,11 @@ export class Editor extends Dom {
                 this.save();
                 break;
 
+            case 'publish':
+                this.createLoadMask();
+                window.location.href = this.configs.publish_url;
+                break;
+
             case 'revert':
                 new Confirm({
                     'text': Locale.t('editor.onMainmenuClick.revert.text', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
@@ -1343,9 +1346,7 @@ export class Editor extends Dom {
      * @private
      */
     onPlayerSourceSet(){
-        const loadmask = new LoadMask({
-            'parent': this
-        });
+        const loadmask = this.createLoadMask();
 
         this.removeClass('metadata-loaded');
 
@@ -1527,31 +1528,12 @@ export class Editor extends Dom {
         // Update the title field
         this.mainmenu.getItem('title').setValue(this.player.getData('title'), true);
 
-        // Update the revision selector
-        const revisions_select = this.mainmenu.getItem('revisions');
-        const current_vid = this.player.getData('vid');
-        const date_formatter = new Intl.DateTimeFormat(void 0, {
-            'year': 'numeric', 'month': 'numeric', 'day': 'numeric',
-            'hour': 'numeric', 'minute': 'numeric', 'second': 'numeric',
-            'hour12': false,
-        });
-        this.player.getData('revisions').forEach((revision) => {
-            const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date', {
-                '@id': revision.vid,
-                '@date': date_formatter.format(new Date(revision.created * 1000))
-            });
-            revisions_select.addOption(revision.vid, text);
-        });
-        revisions_select
-            .setValue(current_vid, true)
-            .getOption(current_vid).attr('disabled', 'true');
-
         // Update the asset browser
         this.asset_browser.getTabContent('guide-assets')
             .addAssets(this.player.getData('assets'), true)
             .addAssets(this.player.getData('shared_assets'), true);
 
-        if(this.player.getData('default_revision')){
+        if(this.isLatestRevision()){
             this.player
                 .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
                 .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
@@ -1603,7 +1585,7 @@ export class Editor extends Dom {
             this.setEditing(false);
         }
 
-        this.updateMainmenu();
+        this.updateMainmenu(true);
 
         if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
             this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
@@ -2062,22 +2044,39 @@ export class Editor extends Dom {
      * Updates the states of the mainmenu buttons
      *
      * @private
+     * @param {Boolean} update_revisions Whether to also update the revisions field options
      * @return {this}
      */
-    updateMainmenu() {
-        const player = this.getPlayer();
-        const default_revision = player && player.getData('default_revision');
+    updateMainmenu(update_revisions = false) {
+        const is_latest_revision = this.isLatestRevision();
+        const is_dirty = this.isDirty();
+
+        if (update_revisions) {
+            this.mainmenu.updateRevisionsOptions(this.player.getData('revisions'), this.player.getData('vid'));
+        }
 
         this.mainmenu
-            .toggleItem('save', default_revision)
-            .toggleItem('title', default_revision)
-            .toggleItem('preview-toggle', default_revision)
+            .toggleItem('save', is_latest_revision)
+            .toggleItem('publish', is_latest_revision && !is_dirty)
+            .toggleItem('title', is_latest_revision)
+            .toggleItem('preview-toggle', is_latest_revision)
             .toggleItem('undo', this.history.hasUndo())
             .toggleItem('redo', this.history.hasRedo())
-            .toggleItem('revert', this.isDirty())
-            .toggleItem('restore', !default_revision);
+            .toggleItem('revert', is_dirty)
+            .toggleItem('restore', !is_latest_revision);
 
         return this;
+    }
+
+    /**
+     * Check if the loaded revision is the latest one.
+     *
+     * @private
+     * @return {Boolean} Whether the latest revision is the one loaded.
+     */
+    isLatestRevision() {
+        const player = this.getPlayer();
+        return player && this.player.getData('latest_revision') === this.player.getRevision();
     }
 
     /**
@@ -2156,6 +2155,8 @@ export class Editor extends Dom {
     setDirty(key){
         this.dirty[key] = Date.now();
 
+        this.updateMainmenu();
+
         return this;
     }
 
@@ -2172,6 +2173,8 @@ export class Editor extends Dom {
         else{
             this.dirty = {};
         }
+
+        this.updateMainmenu();
 
         return this;
     }
@@ -2224,13 +2227,11 @@ export class Editor extends Dom {
      * @return {this}
      */
     loadPlayer(params){
-        const loadmask = new LoadMask({
-            'parent': this
-        });
+        const loadmask = this.createLoadMask();
 
         this.unloadPlayer();
 
-        const url = new URL(this.configs.player.url);
+        const url = new URL(this.configs.player.url, window.location.origin);
 
         if(typeof params !== 'undefined'){
             const searchParams = url.searchParams;
@@ -2277,9 +2278,7 @@ export class Editor extends Dom {
 
         this.history.clear();
 
-        this.setClean()
-            .setEditing(false)
-            .updateMainmenu();
+        this.setEditing(false).setClean();
 
         if(this.player_frame){
             this.player_frame.remove();
@@ -2699,10 +2698,9 @@ export class Editor extends Dom {
         if(this.mainmenu.getItem('title').reportValidity()){
             const player = this.getPlayer();
             const data = new FormData();
-            const url = new URL(this.configs.player.update_url);
+            const url = new URL(this.configs.player.update_url, window.location.origin);
 
-            const loadmask = new LoadMask({
-                'parent': this,
+            const loadmask = this.createLoadMask({
                 'text': Locale.t('editor.save.LoadMask.text', 'Saving...'),
                 'bar': true
             });
@@ -2714,7 +2712,7 @@ export class Editor extends Dom {
                 'autoSend': false
             });
 
-            if(!player.getData('default_revision')){
+            if(!this.isLatestRevision()){
                 // This is a restore operation
                 const params = url.searchParams;
                 params.set('vid', this.getPlayer().getRevision());
@@ -2846,6 +2844,19 @@ export class Editor extends Dom {
         }
 
         return this;
+    }
+
+    /**
+     * Helper function to create a LoadMask
+     *
+     * @param {Object =  {'parent': this}} configs Config options to use for the LoadMask
+     *
+     * @returns {LoadMask} The LoadMask instance
+     */
+    createLoadMask(configs){
+        return new LoadMask(Object.assign({
+            'parent': this
+        }, configs));
     }
 }
 
