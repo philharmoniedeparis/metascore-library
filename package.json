@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "classlist-polyfill": "^1.2.0",
-    "fullscreen-polyfill": "^1.0.2",
     "fuse.js": "^3.4.6",
     "geometry-polyfill": "^1.0.7",
     "hammerjs": "^2.0.8",
