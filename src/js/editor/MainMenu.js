@@ -8,6 +8,7 @@ import SelectInput from '../core/ui/input/SelectInput';
 
 import logo_icon from '../../img/core/logo.svg?svg-sprite';
 import save_icon from '../../img/editor/mainmenu/save.svg?svg-sprite';
+import publish_icon from '../../img/editor/mainmenu/publish.svg?svg-sprite';
 import revert_icon from '../../img/editor/mainmenu/revert.svg?svg-sprite';
 import undo_icon from '../../img/editor/mainmenu/undo.svg?svg-sprite';
 import redo_icon from '../../img/editor/mainmenu/redo.svg?svg-sprite';
@@ -51,6 +52,15 @@ export default class MainMenu extends Dom {
                 'title': Locale.t('editor.MainMenu.save.title', 'Save')
             })
             .data('action', 'save')
+            .appendTo(this);
+
+        this.items.publish = new Button({
+                'icon': publish_icon
+            })
+            .attr({
+                'title': Locale.t('editor.MainMenu.publish.title', 'Publish')
+            })
+            .data('action', 'publish')
             .appendTo(this);
 
         this.items.revert = new Button({
@@ -140,6 +150,32 @@ export default class MainMenu extends Dom {
                 item.enable();
             }
         }
+
+        return this;
+    }
+
+    updateRevisionsOptions(revisions, current) {
+        const input = this.getItem('revisions');
+        const date_formatter = new Intl.DateTimeFormat(void 0, {
+            'year': 'numeric', 'month': 'numeric', 'day': 'numeric',
+            'hour': 'numeric', 'minute': 'numeric', 'second': 'numeric',
+            'hour12': false,
+        });
+
+        input.clear();
+
+        revisions.forEach((revision) => {
+            const text = Locale.t('editor.mainmenu.revisions.option.text', 'Revision @id from @date', {
+                '@id': revision.vid,
+                '@date': date_formatter.format(new Date(revision.created * 1000))
+            });
+            input.addOption(revision.vid, text);
+        });
+
+        input
+            .setValue(current, true)
+            .getOption(current)
+                .attr('disabled', 'true');
 
         return this;
     }

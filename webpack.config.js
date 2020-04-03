@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          // Lint JS files.
+          // Transpile JS code.
           test: /\.js$/,
           exclude: /node_modules/,
           use: [
