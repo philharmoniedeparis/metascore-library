@@ -8,6 +8,7 @@ body{
 
 body{
     margin: 0;
+    background: white;
     font: normal 11px Verdana, Arial, Helvetica, sans-serif;
 }
 
@@ -350,12 +351,8 @@ body{
                 .contents{
                     overflow: auto;
 
-                    .text{
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
+                    a :not(a){
+                        pointer-events: none;
                     }
                 }
             }

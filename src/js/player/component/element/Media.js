@@ -46,6 +46,7 @@ export default class Media extends Element{
 
                 this.media = new Dom(`<${value}/>`)
                     .attr('controls', '')
+                    .attr('playsinline', '')
                     .attr('src', this.getPropertyValue('src'))
                     .appendTo(this.contents);
                 break;

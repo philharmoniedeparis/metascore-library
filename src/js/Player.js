@@ -67,6 +67,9 @@ export class Player extends Dom {
          */
         this.loaded = false;
 
+        // keep a reference to this class instance in the DOM node
+        this.get(0)._metaScore = this;
+
         if(this.configs.api){
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
         }
@@ -148,9 +151,7 @@ export class Player extends Dom {
             .addListener('.componentadd', this.onComponentAdd.bind(this))
             .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
             .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
-            .addDelegate('.metaScore-component.element.Content', 'play', this.onContentElementPlay.bind(this))
-            .addDelegate('.metaScore-component.element.Content', 'page', this.onContentElementPage.bind(this))
-            .addDelegate('.metaScore-component.element.Content', 'blockvisibility', this.onContentElementBlockVisibility.bind(this))
+            .addDelegate('.metaScore-component.element.Content a', 'click', this.onContentElementLinkClick.bind(this))
             .appendTo(this.configs.container);
 
         this.triggerEvent('ready', {'player': this}, false, false);
@@ -220,7 +221,7 @@ export class Player extends Dom {
         const source = evt.source;
         const origin = evt.origin;
         const method = data.method;
-        const params = 'params' in data ? data.params : null;
+        const params = 'params' in data ? data.params : {};
 
         switch(method){
             case 'play':
@@ -229,6 +230,10 @@ export class Player extends Dom {
 
             case 'pause':
                 this.getRenderer().pause();
+                break;
+
+            case 'stop':
+                this.getRenderer().stop();
                 break;
 
             case 'seek':
@@ -244,14 +249,11 @@ export class Player extends Dom {
                 }
                 break;
 
-            case 'showBlock':
-            case 'hideBlock':
             case 'toggleBlock':{
                 const block = this.getBlockByName(params.name);
+                const show = params.value === 'toggle' ? void 0 : params.value !== 'hide';
 
                 if(block){
-                const state = method.replace('Block', '');
-                const show = state === 'toggle' ? void 0 : method !== 'hide';
                     block.toggleVisibility(show);
                 }
                 break;
@@ -489,41 +491,88 @@ export class Player extends Dom {
     }
 
     /**
-     * Content element play event callback
+     * Content element link click event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
+     * @param {Event} evt The event object
      */
-    onContentElementPlay(evt){
-        this.play(evt.detail.inTime, evt.detail.outTime, evt.detail.scenario);
-    }
+    onContentElementLinkClick(evt) {
+        const link = evt.target;
+        const href = Dom.attr(link, 'href');
 
-    /**
-     * Content element page event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentElementPage(evt){
-        const block = this.getBlockByName(evt.detail.block);
-        if(block){
-            block.setActivePage(evt.detail.index);
+        if((/^#/.test(href))){
+            let matches = null;
+            // play link.
+            if((matches = link.hash.match(/^#play$/))){
+                this.play();
+                evt.preventDefault();
+            }
+            // play excerpt link.
+            if((matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(.+)$/))){
+                const inTime = parseFloat(matches[1]);
+                const outTime = parseFloat(matches[2]);
+                const scenario = decodeURIComponent(matches[3]);
+                this.play(inTime, outTime, scenario);
+                evt.preventDefault();
+            }
+            // pause link.
+            else if((matches = link.hash.match(/^#pause$/))){
+                this.getRenderer().pause();
+                evt.preventDefault();
+            }
+            // stop link.
+            else if((matches = link.hash.match(/^#stop$/))){
+                this.getRenderer().stop();
+                evt.preventDefault();
+            }
+            // seek link.
+            else if((matches = link.hash.match(/^#seek=(\d*\.?\d+)$/))){
+                const seconds = parseFloat(matches[1]);
+                this.getRenderer().setTime(seconds);
+                evt.preventDefault();
+            }
+            // page link.
+            else if((matches = link.hash.match(/^#page=([^,]*),(\d+)$/))){
+                const block = this.getBlockByName(decodeURIComponent(matches[1]));
+                const index = parseInt(matches[2], 10)-1;
+                block.setActivePage(index);
+                evt.preventDefault();
+            }
+            // show/hide/toggleBlock link.
+            else if((matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/))){
+                const action = matches[1];
+                const block = this.getBlockByName(decodeURIComponent(matches[2]));
+                if(block){
+                    const show = action === 'toggle' ? void 0 : action !== 'hide';
+                    block.toggleVisibility(show);
+                }
+                evt.preventDefault();
+            }
+            // scenario link.
+            else if((matches = link.hash.match(/^#scenario=(.+)$/))){
+                const scenario_id = decodeURIComponent(matches[1]);
+                const scenario = this.getScenarios().find((s) => s.getId() === scenario_id);
+                if(scenario){
+                    this.setActiveScenario(scenario);
+                }
+                evt.preventDefault();
+            }
+            // fullscreen link.
+            else if((matches = link.hash.match(/^#(enter|exit|toggle)Fullscreen$/))){
+                const action = matches[1];
+                const enter = action === 'toggle' ? !document.fullscreenElement : action !== 'exit';
+                if (enter) {
+                    document.documentElement.requestFullscreen();
+                }
+                else {
+                    document.exitFullscreen();
+                }
+                evt.preventDefault();
+            }
         }
-    }
-
-    /**
-     * Content element blockvisibility event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentElementBlockVisibility(evt){
-        const block = this.getBlockByName(evt.detail.block);
-
-        if(block){
-            const state = evt.detail.action;
-            const show = state === 'toggle' ? void 0 : state !== 'hide';
-            block.toggleVisibility(show);
+        else{
+            window.open(link.href, '_blank');
+            evt.preventDefault();
         }
     }
 

@@ -2244,7 +2244,8 @@ export class Editor extends Dom {
          * The player's iframe
          * @type {Dom}
          */
-        this.player_frame = new Dom('<iframe/>', {'src': url.toString(), 'class': 'player-frame', 'tabindex': -1}).appendTo(this.workspace)
+        this.player_frame = new Dom('<iframe/>', {'src': url.toString(), 'class': 'player-frame', 'tabindex': -1, 'allowfullscreen': '', 'allow': 'fullscreen'})
+            .appendTo(this.workspace)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
 

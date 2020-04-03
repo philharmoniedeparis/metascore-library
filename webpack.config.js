@@ -14,15 +14,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const LIB_NAME = "metaScore";
 const DIST_DIR = path.join(__dirname, "dist");
-const POLYFILLS = glob.sync('./polyfills/*.js');
+const PLAYER_POLYFILLS = glob.sync('./polyfills/*.js');
+const EDITOR_POLYFILLS = glob.sync('./polyfills/*.js', {'ignore': './polyfills/Fullscreen.js'});
 
 module.exports = (env, argv) => {
   const configs = {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['@babel/polyfill', 'classlist-polyfill', 'fullscreen-polyfill'].concat(POLYFILLS).concat(['./src/js/Player']),
-        Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(POLYFILLS).concat(['./src/js/Editor']),
+        Player: ['@babel/polyfill', 'classlist-polyfill'].concat(PLAYER_POLYFILLS).concat(['./src/js/Player']),
+        Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(EDITOR_POLYFILLS).concat(['./src/js/Editor']),
         API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './src/js/API']
     },
     output: {
