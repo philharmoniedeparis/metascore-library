@@ -350,12 +350,8 @@ body{
                 .contents{
                     overflow: auto;
 
-                    .text{
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
+                    a :not(a){
+                        pointer-events: none;
                     }
                 }
             }
