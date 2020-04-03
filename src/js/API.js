@@ -34,6 +34,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#play" rel="metascore" data-guide="guide-93">PLAY</a>
  *         <a href="#play=20,500,scenario-2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
+ *         <a href="#stop" rel="metascore" data-guide="guide-93">PAUSE</a>
  *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
  *         <a href="#scenario=scenario-2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO scenario-2</a>
@@ -178,6 +179,18 @@ export class API{
      */
     pause() {
         this.postMessage('pause');
+
+        return this;
+    }
+
+    /**
+     * Sends a 'stop' message to the player
+     * Used to stop the player's media playback
+     *
+     * @return {this}
+     */
+    stop() {
+        this.postMessage('stop');
 
         return this;
     }
