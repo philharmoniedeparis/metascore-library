@@ -34,6 +34,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#play" rel="metascore" data-guide="guide-93">PLAY</a>
  *         <a href="#play=20,500,scenario-2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
+ *         <a href="#stop" rel="metascore" data-guide="guide-93">PAUSE</a>
  *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
  *         <a href="#scenario=scenario-2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO scenario-2</a>
@@ -41,6 +42,8 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
  *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
+ *         <a href="#enterFullscreen" rel="metascore" data-guide="guide-93">ENTER FULLSCREEN</a>
+ *         <a href="#exitFullscreen" rel="metascore" data-guide="guide-93">EXIT FULLSCREEN</a>
  *         <a href="#toggleFullscreen" rel="metascore" data-guide="guide-93">TOGGLE FULLSCREEN</a>
  */
 export class API{
@@ -183,6 +186,18 @@ export class API{
     }
 
     /**
+     * Sends a 'stop' message to the player
+     * Used to stop the player's media playback
+     *
+     * @return {this}
+     */
+    stop() {
+        this.postMessage('stop');
+
+        return this;
+    }
+
+    /**
      * Sends a 'seek' message to the player
      * Used to seek the player's media to a specific time
      *
@@ -211,26 +226,26 @@ export class API{
 
     /**
      * Sends a 'hideBlock' message to the player
-     * Used to hide a given block in the player
+     * Used to hide a given block in the player with the value = false
      *
      * @param {String} name The block's name
      * @return {this}
      */
     hideBlock(name){
-        this.postMessage('hideBlock', {'name': name});
+        this.postMessage('toggleBlock', {'name': name, 'value': false});
 
         return this;
     }
 
     /**
-     * Sends a 'showBlock' message to the player
+     * Sends a 'toggleBlock' message to the player with the value = true
      * Used to hide a given block in the player
      *
      * @param {String} name The block's name
      * @return {this}
      */
     showBlock(name){
-        this.postMessage('showBlock', {'name': name});
+        this.postMessage('toggleBlock', {'name': name, 'value': true});
 
         return this;
     }
@@ -274,9 +289,27 @@ export class API{
     }
 
     /**
-     * Enter or exit fullscreen mode
+     * Enter fullscreen mode
      *
-     * @param {String} value Whether to enter or exit fullscreen.
+     * @return {this}
+     */
+    enterFullscreen(){
+        return this.toggleFullscreen(true);
+    }
+
+    /**
+     * Exit fullscreen mode
+     *
+     * @return {this}
+     */
+    exitFullscreen(){
+        return this.toggleFullscreen(false);
+    }
+
+    /**
+     * Enter or exit fullscreen mode
+     * This cannot be done with postMessage due to browser security issues.
+     *
      * @return {this}
      */
     toggleFullscreen(value){
@@ -357,10 +390,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(fn in api){
                         const args = action.length > 1 ? action[1].split(',').map(cleanArg) : [];
                         api[fn](...args);
+                        evt.preventDefault();
                     }
                 }
-
-                evt.preventDefault();
             };
 
             document.querySelectorAll(`a[rel="metascore"][data-guide="${api.target.id}"]`).forEach((link) => {

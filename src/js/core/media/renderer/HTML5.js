@@ -422,6 +422,17 @@ export default class HTML5 extends Dom {
     }
 
     /**
+     * Stop the media
+     *
+     * @return {this}
+     */
+    stop() {
+        this.pause().setTime(0);
+
+        return this;
+    }
+
+    /**
      * Set the media time
      *
      * @param {Number} time The time in centiseconds
