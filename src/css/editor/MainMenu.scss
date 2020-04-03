@@ -24,8 +24,8 @@
             font-size: 1.25em;
         }
 
-        &[data-action="save"]{
-            margin-right: 2em;
+        &[data-action="revert"]{
+            margin-left: 2em;
         }
 
         &[data-action="redo"]{
