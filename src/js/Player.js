@@ -508,9 +508,9 @@ export class Player extends Dom {
                 evt.preventDefault();
             }
             // play excerpt link.
-            if((matches = link.hash.match(/^#play=(\d*\.?\d+),(\d*\.?\d+),(.+)$/))){
-                const inTime = parseFloat(matches[1]);
-                const outTime = parseFloat(matches[2]);
+            if((matches = link.hash.match(/^#play=(\d*\.?\d+)?,(\d*\.?\d+)?,(.+)$/))){
+                const inTime = matches[1];
+                const outTime = matches[2];
                 const scenario = decodeURIComponent(matches[3]);
                 this.play(inTime, outTime, scenario);
                 evt.preventDefault();
@@ -946,7 +946,7 @@ export class Player extends Dom {
         const _inTime = parseFloat(inTime);
         const _outTime = parseFloat(outTime);
 
-        if(isNaN(_inTime)){
+        if(isNaN(_inTime) && isNaN(outTime)){
             renderer.play();
         }
         else{
@@ -955,7 +955,7 @@ export class Player extends Dom {
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint({
-                'inTime': _inTime,
+                'inTime': !isNaN(_inTime) ? _inTime : null,
                 'outTime': !isNaN(_outTime) ? _outTime : null,
                 'considerError': true
             })
@@ -986,7 +986,11 @@ export class Player extends Dom {
 
             this.cuepoint.activate();
 
-            renderer.setTime(_inTime).play();
+            if (!isNaN(_inTime)) {
+                renderer.setTime(_inTime);
+            }
+
+            renderer.play();
         }
 
         return this;
