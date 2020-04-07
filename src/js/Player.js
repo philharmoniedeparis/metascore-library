@@ -151,7 +151,7 @@ export class Player extends Dom {
             .addListener('.componentadd', this.onComponentAdd.bind(this))
             .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
             .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
-            .addDelegate('.metaScore-component.element.Content a', 'click', this.onContentElementLinkClick.bind(this))
+            .addDelegate('.metaScore-component.element.Content a, .metaScore-component.element.Content a *', 'click', this.onContentElementLinkClick.bind(this))
             .appendTo(this.configs.container);
 
         this.triggerEvent('ready', {'player': this}, false, false);
@@ -497,7 +497,12 @@ export class Player extends Dom {
      * @param {Event} evt The event object
      */
     onContentElementLinkClick(evt) {
-        const link = evt.target;
+        let link = evt.target;
+
+        if(!Dom.is(link, 'a')){
+            link = Dom.closest(link, 'a');
+        }
+
         const href = Dom.attr(link, 'href');
 
         if((/^#/.test(href))){

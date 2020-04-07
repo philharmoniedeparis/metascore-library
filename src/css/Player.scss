@@ -350,10 +350,6 @@ body{
             &.Content{
                 .contents{
                     overflow: auto;
-
-                    a :not(a){
-                        pointer-events: none;
-                    }
                 }
             }
 
