@@ -19,7 +19,8 @@
     "url": "git@github.com:philharmoniedeparis/metascore-library.git"
   },
   "browserslist": [
-    "defaults"
+    "defaults",
+    "safari >= 9"
   ],
   "devDependencies": {
     "@babel/core": "^7.9.0",

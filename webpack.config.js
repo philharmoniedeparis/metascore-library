@@ -42,7 +42,12 @@ module.exports = (env, argv) => {
         {
           // Transpile JS code.
           test: /\.js$/,
-          exclude: /node_modules/,
+          include: [
+            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "polyfills"),
+            path.resolve(__dirname, "node_modules/geometry-polyfill"),
+            path.resolve(__dirname, "node_modules/waveform-data"),
+          ],
           use: [
             {
               loader: "babel-loader",
