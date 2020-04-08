@@ -1210,8 +1210,8 @@ export class Editor extends Dom {
                 {
                     const player = this.getPlayer();
                     const text = Locale.t('editor.onMainmenuClick.restore.text', 'Are you sure you want to revert to revision @id from @date?', {
-                        '@id': player.getRevision(),
-                        '@date': new Date(player.getData('changed') * 1000).toLocaleDateString(),
+                        '@id': player.getGuideRevision(),
+                        '@date': new Date(player.getGuideData('changed') * 1000).toLocaleDateString(),
                     });
 
                     new Confirm({
@@ -1526,12 +1526,7 @@ export class Editor extends Dom {
             .addListener('pause', this.onPlayerPause.bind(this));
 
         // Update the title field
-        this.mainmenu.getItem('title').setValue(this.player.getData('title'), true);
-
-        // Update the asset browser
-        this.asset_browser.getTabContent('guide-assets')
-            .addAssets(this.player.getData('assets'), true)
-            .addAssets(this.player.getData('shared_assets'), true);
+        this.mainmenu.getItem('title').setValue(this.player.getGuideData('title'), true);
 
         if(this.isLatestRevision()){
             this.player
@@ -1551,6 +1546,11 @@ export class Editor extends Dom {
                 .addListener('click', this.onPlayerClick.bind(this))
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
                 .addListener('drop', this.onPlayerDrop.bind(this));
+
+            // Update the asset browser
+            this.asset_browser.getTabContent('guide-assets')
+                .addAssets(this.player.getGuideData('assets'), true)
+                .addAssets(this.player.getGuideData('shared_assets'), true);
 
             // Update the timeline and scenario list
             const active_scenario = this.player.getActiveScenario();
@@ -1579,6 +1579,10 @@ export class Editor extends Dom {
                 .setTarget(player_document.body)
                 .enable();
 
+            if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
+                this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
+            }
+
             this.setEditing(true);
         }
         else{
@@ -1586,10 +1590,6 @@ export class Editor extends Dom {
         }
 
         this.updateMainmenu(true);
-
-        if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
-            this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
-        }
 
         this.triggerEvent('playerload', {'player': this.player});
 
@@ -2052,7 +2052,7 @@ export class Editor extends Dom {
         const is_dirty = this.isDirty();
 
         if (update_revisions) {
-            this.mainmenu.updateRevisionsOptions(this.player.getData('revisions'), this.player.getData('vid'));
+            this.mainmenu.updateRevisionsOptions(this.player.getGuideData('revisions'), this.player.getGuideRevision());
         }
 
         this.mainmenu
@@ -2076,7 +2076,7 @@ export class Editor extends Dom {
      */
     isLatestRevision() {
         const player = this.getPlayer();
-        return player && this.player.getData('latest_revision') === this.player.getRevision();
+        return player && this.player.getGuideData('latest_revision') === this.player.getGuideRevision();
     }
 
     /**
@@ -2718,7 +2718,7 @@ export class Editor extends Dom {
             if(!this.isLatestRevision()){
                 // This is a restore operation
                 const params = url.searchParams;
-                params.set('vid', this.getPlayer().getRevision());
+                params.set('vid', this.getPlayer().getGuideRevision());
 
                 options.onSuccess = this.onRestoreSuccess.bind(this, loadmask);
             }

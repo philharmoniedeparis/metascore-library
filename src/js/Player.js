@@ -704,12 +704,12 @@ export class Player extends Dom {
     }
 
     /**
-     * Get the loaded JSON data
+     * Get the data of the loaded guide
      *
      * @param {String} [key] An optional data key
      * @return {Object} The value corresponding to the key, or the entire JSON data
      */
-    getData(key){
+    getGuideData(key){
         if(key){
             return this.data[key];
         }
@@ -722,8 +722,8 @@ export class Player extends Dom {
      *
      * @return {String} The id
      */
-    getId() {
-        return this.getData('id');
+    getGuideId() {
+        return this.getGuideData('id');
     }
 
     /**
@@ -731,8 +731,8 @@ export class Player extends Dom {
      *
      * @return {String} The revision id
      */
-    getRevision() {
-        return this.getData('vid');
+    getGuideRevision() {
+        return this.getGuideData('vid');
     }
 
     /**
@@ -778,33 +778,6 @@ export class Player extends Dom {
                 .addListener('error', this.onRendererError.bind(this))
                 .appendTo(this)
                 .init();
-        }
-
-        return this;
-    }
-
-    /**
-     * Update the loaded JSON data
-     *
-     * @param {Object} data The data key, value pairs to update
-     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
-     * @return {this}
-     */
-    updateData(data, skipInternalUpdates){
-        Object.assign(this.data, data);
-
-        if(skipInternalUpdates !== true){
-            if('css' in data){
-                this.updateCSS(data.css);
-            }
-
-            if('media' in data){
-                this.setSource(data.media);
-            }
-
-            if('vid' in data){
-                this.setRevision(data.vid);
-            }
         }
 
         return this;
