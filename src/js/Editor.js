@@ -2275,6 +2275,8 @@ export class Editor extends Dom {
 
         this.mainmenu.getItem('revisions').clear();
 
+        this.controller.getTimeline().clear();
+
         this.asset_browser.getTabContent('guide-assets').clearAssets();
 
         this.history.clear();
