@@ -109,7 +109,8 @@ export default class MainMenu extends Dom {
             .appendTo(this);
 
         this.items.revisions = new SelectInput({
-                'name': 'revisions'
+                'name': 'revisions',
+                'required' : true
             })
             .addClass('revisions')
             .appendTo(this);
