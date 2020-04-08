@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
     entry: {
         Player: ['@babel/polyfill', 'classlist-polyfill'].concat(PLAYER_POLYFILLS).concat(['./src/js/Player']),
         Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(EDITOR_POLYFILLS).concat(['./src/js/Editor']),
-        API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './src/js/API']
+        API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './polyfills/Fullscreen.js', './src/js/API']
     },
     output: {
         filename: LIB_NAME +'.[name].js',
@@ -42,7 +42,12 @@ module.exports = (env, argv) => {
         {
           // Transpile JS code.
           test: /\.js$/,
-          exclude: /node_modules/,
+          include: [
+            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "polyfills"),
+            path.resolve(__dirname, "node_modules/geometry-polyfill"),
+            path.resolve(__dirname, "node_modules/waveform-data"),
+          ],
           use: [
             {
               loader: "babel-loader",
