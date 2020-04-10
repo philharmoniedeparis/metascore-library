@@ -9,6 +9,7 @@ import {className} from '../../../css/core/ui/Input.scss';
  * @emits {valuechange} Fired when the input's value changes
  * @param {Object} input The input instance
  * @param {Mixed} value The new value
+ * @param {Mixed} previous The old value
  */
 export default class Input extends Dom{
 
