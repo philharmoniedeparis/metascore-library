@@ -466,7 +466,7 @@ export class Player extends Dom {
         const component = evt.detail.child._metaScore;
 
         if(component){
-            this.triggerEvent('componentremove', {'component': component}, true, false);
+            this.triggerEvent('componentremove', {'player': this, 'component': component}, true, false);
         }
     }
 
@@ -621,12 +621,15 @@ export class Player extends Dom {
             .setInternalValue(this.data.css)
             .appendTo(document.head);
 
-        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+        // Set width & height.
+        this.setDimentions(this.data.width, this.data.height);
 
-        // Set media
+        // Set media.
         this.setSource(this.data.media);
 
-        // Add components
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+
+        // Add components.
         if(this.data.components){
             this.data.components.forEach((component) => {
                 switch(component.type){
@@ -637,14 +640,14 @@ export class Player extends Dom {
             });
         }
 
-        // Set active scenario
+        // Set active scenario.
         let scenario = null;
         const scenarios = this.getScenarios();
         if(scenarios.length > 0){
             scenario = scenarios[0];
         }
         else{
-            // Add a default scenario if none exist
+            // Add a default scenario if none exist.
             scenario = this.addScenario({
                 'name': Locale.t('Player.defaultScenarioName', 'Scenario 1')
             });
@@ -661,7 +664,7 @@ export class Player extends Dom {
             this.adaptScale();
         }
 
-        // Add keyboard listener
+        // Add keyboard listener.
         if(this.configs.keyboard){
             this.addListener('keydown', this.onKeydown.bind(this));
         }
@@ -742,6 +745,37 @@ export class Player extends Dom {
      */
     getRenderer(){
         return this.renderer;
+    }
+
+    /**
+     * Get the width and height
+     *
+     * @return {Object} Object with width and height keys.
+     */
+    getDimentions(){
+        return {
+            'width': this.getGuideData('width'),
+            'height': this.getGuideData('height')
+        };
+    }
+
+    /**
+     * Set the width and height
+     *
+     * @param {Number} width The width
+     * @param {Number} height The height
+     * @param {Boolean} [supressEvent=false] Whether to supress the dimentionsset event
+     * @return {this}
+     */
+    setDimentions(width, height, supressEvent){
+        this.css('width', `${width}px`);
+        this.css('height', `${height}px`);
+
+        if(supressEvent !== true){
+            this.triggerEvent('dimentionsset', {'player': this, 'width': width, 'height': height});
+        }
+
+        return this;
     }
 
     /**
@@ -1033,42 +1067,17 @@ export class Player extends Dom {
      * Adapt the player's scale to fit the available space
      */
     adaptScale(){
-        // Calculate and store the overall dimentions.
-        // @TODO: add workspace width and height for guides.
-        if(!('_scaling_values' in this)){
-            let width = 0;
-            let height = 0;
+        // Calculate the scale factor.
+        const {width, height} = this.getDimentions();
+        const container_el = this.parents().get(0);
+        const container_width = container_el.clientWidth;
+        const container_height = container_el.clientHeight;
+        const scale = Math.min(1, container_width/width, container_height/height);
 
-            this.getScenarios().forEach((scenario) => {
-                scenario.getChildren().forEach((component) => {
-                    const rect = component.get(0).getBoundingClientRect();
-                    width = Math.max(width, rect.right);
-                    height = Math.max(height, rect.bottom);
-                });
-            });
-
-            if(!width || !height){
-                this._scaling_values = null;
-            }
-
-            this._scaling_values = {
-                'width': width,
-                'height': height
-            };
-
-        }
-
-        // Calculate and apply the scale factor
-        if(this._scaling_values){
-            const container_el = this.parents().get(0);
-            const container_width = container_el.clientWidth;
-            const container_height = container_el.clientHeight;
-            const scale = Math.min(1, container_width/this._scaling_values.width, container_height/this._scaling_values.height);
-
-            this.css('width', `${this._scaling_values.width * scale}px`);
-            this.css('height', `${this._scaling_values.height * scale}px`);
-            this.css('transform', `scale(${scale})`);
-        }
+        // Apply scale.
+        this.css('width', `${width * scale}px`);
+        this.css('height', `${height * scale}px`);
+        this.css('transform', `scale(${scale})`);
     }
 
 }

@@ -40,6 +40,11 @@
             grid-area: top;
             height: 2.5em;
             background: $darkgray;
+
+            .main-menu{
+                flex: 0 0 auto;
+                height: 100%;
+            }
         }
 
         &.tools-pane{
@@ -56,36 +61,88 @@
             grid-area: center;
 
             > .contents{
+                $ruler-width: 20px;
+
+                padding-top: $ruler-width;
+                padding-left: $ruler-width;
+                box-sizing: border-box;
+                overflow: auto;
                 display: flex;
-                flex-direction: column;
+
+                .workspace{
+                    margin: auto;
+                    flex-shrink: 0;
+                    box-shadow: 0 0 1em 0.25em rgba(0,0,0,.75);
+                    transition: all 0.25s;
+
+                    .ruler{
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        box-sizing: border-box;
+                        z-index: 2;
+
+                        &[data-axis="x"]{
+                            width: 100%;
+                            padding-left: $ruler-width;
+                        }
+
+                        &[data-axis="y"]{
+                            height: 100%;
+                            padding-top: $ruler-width;
+                        }
+                    }
+
+                    .player-wrapper{
+                        position: relative;
+                        transform-origin: 0 0;
+                        transition: all 0.25s;
+
+                        .grid{
+                            position: absolute;
+                            width: 100%;
+                            height: 100%;
+                            pointer-events: none;
+                            background-image: url('../img/editor/grid.svg');
+                            background-repeat: repeat;
+                            background-size: 10px;
+                            opacity: 0.25;
+                            z-index: 1;
+                        }
+
+                        .player-frame{
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            margin: 0;
+                            padding: 0;
+                            border: none;
+                            background: #FFF;
+                        }
+                    }
+                }
             }
         }
 
         &.configs-pane{
             grid-area: right;
 
-            &:not(.collapsed){
-                width: 20em;
-                min-width: min-content;
-                max-width: 25vw;
-            }
+            width: 20em;
+            min-width: min-content;
+            max-width: 25vw;
         }
 
         &.bottom-pane{
             grid-area: bottom;
 
-            &:not(.collapsed){
-                height: 300px;
-                min-height: 150px;
-                max-height: 75vh;
-            }
+            height: 300px;
+            min-height: 150px;
+            max-height: 75vh;
 
             &.collapsed{
-                max-height: none;
-                height: auto;
-
                 > .contents{
                     display: block;
+
                     > .controller{
                         > .top{
                             .time.input{
@@ -122,55 +179,6 @@
             &.center-pane{
                 display: none;
             }
-        }
-    }
-
-    .main-menu{
-        flex: 0 0 auto;
-        height: 100%;
-    }
-
-    .workspace{
-        $ruler-width: 20px;
-
-        display: flex;
-        position: relative;
-        flex: 1 1 auto;
-        background: #ccc;
-        overflow: hidden;
-        padding: $ruler-width 0 0 $ruler-width;
-
-        .ruler{
-            position: absolute;
-            left: 0;
-            top: 0;
-            box-sizing: border-box;
-            z-index: 2;
-
-            &[data-axis="x"]{
-                width: 100%;
-                padding-left: $ruler-width;
-            }
-
-            &[data-axis="y"]{
-                height: 100%;
-                padding-top: $ruler-width;
-            }
-        }
-
-        .grid{
-            padding-top: $ruler-width;
-            padding-left: $ruler-width;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .player-frame{
-            flex: 1 1 auto;
-            margin: 0;
-            padding: 0;
-            border: none;
-            background-color: #FFF;
         }
     }
 

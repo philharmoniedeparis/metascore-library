@@ -16,7 +16,6 @@ import TimeInput from './core/ui/input/TimeInput';
 import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
-import Grid from './editor/Grid';
 import AssetBrowser from './editor/AssetBrowser';
 
 import {className} from '../css/Editor.scss';
@@ -137,9 +136,7 @@ export class Editor extends Dom {
          */
         this.mainmenu = new MainMenu()
             .addDelegate('button', 'click', this.onMainmenuClick.bind(this))
-            .addDelegate('.input.title', 'valuechange', this.onMainmenuTitleChange.bind(this))
-            .addDelegate('.input.preview-toggle', 'valuechange', this.onMainmenuPreviewToggleChange.bind(this))
-            .addDelegate('.input.revisions', 'valuechange', this.onMainmenuRevisionsChange.bind(this))
+            .addDelegate('.input', 'valuechange', this.onMainmenuInputChange.bind(this))
             .appendTo(top_pane.getContents());
 
         // Tools pane ////////////////////////
@@ -198,12 +195,18 @@ export class Editor extends Dom {
             .init();
 
         /**
-         * The grid
-         * @type {Grid}
+         * The player wrapper container.
+         * @type {Dom}
          */
-        this.grid = new Grid()
-            .appendTo(this.workspace)
-            .init();
+        this.player_wrapper = new Dom('<div/>', {'class': 'player-wrapper'})
+            .appendTo(this.workspace);
+
+        /**
+         * The grid
+         * @type {Dom}
+         */
+        this.grid = new Dom('<div/>', {'class': 'grid'})
+            .appendTo(this.player_wrapper);
 
         // Config pane ////////////////////////
         const config_pane = new Pane({
@@ -1228,58 +1231,59 @@ export class Editor extends Dom {
     }
 
     /**
-     * Mainmenu title input valuechange event callback
+     * Mainmenu input valuechange event callback
      *
      * @private
      */
-    onMainmenuTitleChange(evt){
+    onMainmenuInputChange(evt){
+        const name = evt.detail.input.data('name');
         const value = evt.detail.value;
         const previous_value = evt.detail.previous;
 
-        this.getHistory().add({
-            'undo': () => {
-                this.mainmenu.getItem('title').setValue(previous_value, true);
-            },
-            'redo': () => {
-                this.mainmenu.getItem('title').setValue(value, true);
-            }
-        });
+        switch(name){
+            case 'title':
+            case 'width':
+            case 'height':
+                if (name === 'width' || name === 'height') {
+                    this.getPlayer().setDimentions(
+                        this.mainmenu.getItem('width').getValue(),
+                        this.mainmenu.getItem('height').getValue()
+                    );
+                }
 
-        this.setDirty('title');
-    }
+                this.getHistory().add({
+                    'undo': () => {
+                        this.mainmenu.getItem(name).setValue(previous_value, true);
+                    },
+                    'redo': () => {
+                        this.mainmenu.getItem(name).setValue(value, true);
+                    }
+                });
+                this.setDirty(name);
+                break;
 
-    /**
-     * Mainmenu preview toggle valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onMainmenuPreviewToggleChange(evt){
-        const value = evt.detail.value;
+            case 'zoom':
+                this.setZoom(value/100);
+                break;
 
-        this.setEditing(!value);
-    }
+            case 'preview-toggle':
+                this.setEditing(!value);
+                break;
 
-    /**
-     * Mainmenu revisions input valuechange event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onMainmenuRevisionsChange(evt){
-        const params = {'vid': evt.detail.value};
-
-        if(this.isDirty()){
-            new Confirm({
-                'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
-                'onConfirm': () => {
-                    this.loadPlayer(params);
-                },
-                'parent': this
-            });
-        }
-        else{
-            this.loadPlayer(params);
+            case 'revisions':
+                if(this.isDirty()){
+                    new Confirm({
+                        'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
+                        'onConfirm': () => {
+                            this.loadPlayer({'vid': value});
+                        },
+                        'parent': this
+                    });
+                }
+                else{
+                    this.loadPlayer({'vid': value});
+                }
+                break;
         }
     }
 
@@ -1338,6 +1342,20 @@ export class Editor extends Dom {
      */
     onTimeInputValueOut(evt){
         MasterClock.setTime(evt.detail.value);
+    }
+
+    /**
+     * Player dimentionsset event callback
+     *
+     * @private
+     */
+    onPlayerDimentionsSet(evt){
+        const width = evt.detail.width;
+        const height = evt.detail.height;
+
+        this.player_wrapper
+            .css('width', `${width}px`)
+            .css('height', `${height}px`);
     }
 
     /**
@@ -1484,6 +1502,7 @@ export class Editor extends Dom {
             new Dom(this.player.get(0))
                 .addListener('load', this.onPlayerLoadSuccess.bind(this, loadmask))
                 .addListener('error', this.onPlayerLoadError.bind(this, loadmask))
+                .addListener('dimentionsset', this.onPlayerDimentionsSet.bind(this))
                 .addListener('sourceset', this.onPlayerSourceSet.bind(this))
                 .addListener('loadedmetadata', this.onPlayerLoadedMetadata.bind(this));
 
@@ -1525,8 +1544,10 @@ export class Editor extends Dom {
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
 
-        // Update the title field
-        this.mainmenu.getItem('title').setValue(this.player.getGuideData('title'), true);
+        // Update mainmenu inputs.
+        ['title', 'width', 'height'].forEach((input) => {
+            this.mainmenu.getItem(input).setValue(this.player.getGuideData(input), true);
+        });
 
         if(this.isLatestRevision()){
             this.player
@@ -2041,6 +2062,24 @@ export class Editor extends Dom {
     }
 
     /**
+     * Set the zoom level
+     *
+     * @private
+     * @param {Number} scale The zoom scale
+     * @return {this}
+     */
+    setZoom(scale){
+        const width = this.mainmenu.getItem('width').getValue();
+        const height = this.mainmenu.getItem('height').getValue();
+
+        this.workspace.css('width', `${width * scale}px`);
+        this.workspace.css('height', `${height * scale}px`);
+
+        this.player_wrapper.css('transform', `scale(${scale})`);
+        return this;
+    }
+
+    /**
      * Updates the states of the mainmenu buttons
      *
      * @private
@@ -2245,7 +2284,7 @@ export class Editor extends Dom {
          * @type {Dom}
          */
         this.player_frame = new Dom('<iframe/>', {'src': url.toString(), 'class': 'player-frame', 'tabindex': -1, 'allowfullscreen': '', 'allow': 'fullscreen'})
-            .appendTo(this.workspace)
+            .appendTo(this.player_wrapper)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
 
@@ -2725,12 +2764,14 @@ export class Editor extends Dom {
             else{
                 options.onSuccess = this.onSaveSuccess.bind(this, loadmask);
 
-                // Add title
-                if(this.isDirty('title')){
-                    data.set('title', this.mainmenu.getItem('title').getValue());
-                }
+                // Add mainmenu inputs.
+                ['title', 'width', 'height'].forEach((input) => {
+                    if(this.isDirty(input)){
+                        data.set(input, this.mainmenu.getItem(input).getValue());
+                    }
+                });
 
-                // Add title
+                // Add media.
                 if(this.isDirty('media')){
                     const source = Object.assign({}, player.getRenderer().getSource());
                     if(source.source === 'upload'){
@@ -2792,12 +2833,14 @@ export class Editor extends Dom {
             const player = this.getPlayer();
             const data = new FormData();
 
-            // Add title
-            if(this.isAutoSaveDirty('title')){
-                data.set('title', this.mainmenu.getItem('title').getValue());
-            }
+            // Add mainmenu inputs.
+            ['title', 'width', 'height'].forEach((input) => {
+                if(this.isAutoSaveDirty(input)){
+                    data.set(input, this.mainmenu.getItem(input).getValue());
+                }
+            });
 
-            // Add title
+            // Add media.
             if(this.isAutoSaveDirty('media')){
                 const source = Object.assign({}, player.getRenderer().getSource());
                 if(source.source === 'upload'){
@@ -2808,7 +2851,7 @@ export class Editor extends Dom {
                 data.set('media', JSON.stringify(source));
             }
 
-            // Add components
+            // Add components.
             if(this.isAutoSaveDirty('components')){
                 const components = player.getScenarios().map((component) => {
                     return component.getPropertyValues();
@@ -2816,7 +2859,7 @@ export class Editor extends Dom {
                 data.set('components', JSON.stringify(components));
             }
 
-            // Add assets
+            // Add assets.
             if(this.isAutoSaveDirty('assets')){
                 const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
                 if(assets.length > 0){
