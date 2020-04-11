@@ -270,4 +270,10 @@
             }
         }
     }
+
+    &:not(.player-ready){
+        .workspace{
+            visibility: hidden;
+        }
+    }
 }

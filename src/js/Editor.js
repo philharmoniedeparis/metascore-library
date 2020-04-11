@@ -1611,6 +1611,8 @@ export class Editor extends Dom {
 
         this.updateMainmenu(true);
 
+        this.addClass('player-ready');
+
         this.triggerEvent('playerload', {'player': this.player});
 
         loadmask.hide();
@@ -2306,6 +2308,8 @@ export class Editor extends Dom {
     unloadPlayer() {
         delete this.player;
 
+        this.removeClass('player-ready');
+
         if(this._autosave_interval){
             clearInterval(this._autosave_interval);
             delete this._autosave_interval;
@@ -2315,6 +2319,7 @@ export class Editor extends Dom {
 
         this
             .removeClass('has-player')
+            .removeClass('player-ready')
             .removeClass('metadata-loaded');
 
         this.player_contextmenu.disable();
