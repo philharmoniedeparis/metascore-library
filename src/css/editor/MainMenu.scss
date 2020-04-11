@@ -16,6 +16,10 @@
         margin-right: 2em;
     }
 
+    .separator{
+        flex: 1 1 auto;
+    }
+
     button{
         flex: 0 0 auto;
         padding: 0.5em;
@@ -60,8 +64,10 @@
 
     .input{
         &.text,
-        &.number{
-            input{
+        &.number,
+        &.select{
+            input,
+            select{
                 background: none;
                 border-radius: 0;
                 opacity: 0.5;
@@ -75,7 +81,6 @@
 
         &[data-name="title"]{
             flex: 1 1 auto;
-            margin-right: 2em;
             padding: 0.5em 0;
 
             input{
@@ -108,7 +113,7 @@
         }
 
         &[data-name="zoom"]{
-            margin: 0 1em;
+            margin-right: 1em;
 
             input{
                 width: 4em;

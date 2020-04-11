@@ -168,6 +168,9 @@ export default class MainMenu extends Dom {
             .data('name', 'preview-toggle')
             .appendTo(this);
 
+        new Dom('<div/>', {'class': 'separator'})
+            .appendTo(this);
+
         this.items.revisions = new SelectInput({
                 'name': 'revisions',
                 'required' : true
