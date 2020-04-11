@@ -171,10 +171,10 @@ export class Editor extends Dom {
         new Dom('<div/>', {'class': 'left-ruler-gutter'})
             .appendTo(center_pane.getContents());
 
-        const top_ruler = new Dom('<div/>', {'class': 'top-ruler'})
+        const top_ruler_wrapper = new Dom('<div/>', {'class': 'top-ruler'})
             .appendTo(center_pane.getContents());
 
-        const left_ruler = new Dom('<div/>', {'class': 'left-ruler'})
+        const left_ruler_wrapper = new Dom('<div/>', {'class': 'left-ruler'})
             .appendTo(center_pane.getContents());
 
         /**
@@ -184,18 +184,18 @@ export class Editor extends Dom {
         this.workspace = new Dom('<div/>', {'class': 'workspace'})
             .appendTo(center_pane.getContents());
 
-        new Ruler({
+        this.top_ruler = new Ruler({
                 'axis': 'x',
                 'trackTarget': this.workspace
             })
-            .appendTo(top_ruler)
+            .appendTo(top_ruler_wrapper)
             .init();
 
-        new Ruler({
+        this.left_ruler = new Ruler({
                 'axis': 'y',
                 'trackTarget': this.workspace
             })
-            .appendTo(left_ruler)
+            .appendTo(left_ruler_wrapper)
             .init();
 
         /**
@@ -2079,6 +2079,9 @@ export class Editor extends Dom {
             .css('transform', `scale(${scale})`)
             .css('margin-right', `${(scaled_width - width)}px`)
             .css('margin-bottom', `${(scaled_height - height)}px`);
+
+        this.top_ruler.setScale(scale);
+        this.left_ruler.setScale(scale);
 
         return this;
     }
