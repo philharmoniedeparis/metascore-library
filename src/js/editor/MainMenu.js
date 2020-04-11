@@ -24,14 +24,36 @@ export default class MainMenu extends Dom {
 
     /**
      * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Array} [zoom_levels=[25, 50, 75, 100, 125, 150, 200, 400]] The available zoom level options
+     * @property {Number} [default_zoom_level=100] The default zoom level
      */
-    constructor() {
+    constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': `main-menu ${className}`});
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.items = {};
 
         this.setupUI();
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults() {
+        return {
+            'zoom_levels': [25, 50, 75, 100, 125, 150, 200, 400],
+            'default_zoom_level': 100,
+        };
     }
 
     /**
@@ -123,8 +145,8 @@ export default class MainMenu extends Dom {
 
         this.items.zoom = new SelectInput({
                 'name': 'zoom',
-                'value': 100,
-                'options': [10, 25, 50, 75, 100, 125, 150, 200, 400].reduce((accumulator , value) => {
+                'value': this.configs.default_zoom_level,
+                'options': this.configs.zoom_levels.reduce((accumulator , value) => {
                     accumulator[value] = `${value}%`;
                     return accumulator;
                 }, {}),
