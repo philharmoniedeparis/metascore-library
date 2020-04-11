@@ -165,6 +165,18 @@ export class Editor extends Dom {
             .addClass('center-pane')
             .appendTo(this);
 
+        new Dom('<div/>', {'class': 'top-ruler-gutter'})
+            .appendTo(center_pane.getContents());
+
+        new Dom('<div/>', {'class': 'left-ruler-gutter'})
+            .appendTo(center_pane.getContents());
+
+        const top_ruler = new Dom('<div/>', {'class': 'top-ruler'})
+            .appendTo(center_pane.getContents());
+
+        const left_ruler = new Dom('<div/>', {'class': 'left-ruler'})
+            .appendTo(center_pane.getContents());
+
         /**
          * The workspace
          * @type {Dom}
@@ -172,26 +184,18 @@ export class Editor extends Dom {
         this.workspace = new Dom('<div/>', {'class': 'workspace'})
             .appendTo(center_pane.getContents());
 
-        /**
-         * The horizontal ruler
-         * @type {Ruler}
-         */
-        this.x_ruler = new Ruler({
+        new Ruler({
                 'axis': 'x',
                 'trackTarget': this.workspace
             })
-            .appendTo(this.workspace)
+            .appendTo(top_ruler)
             .init();
 
-        /**
-         * The vertical ruler
-         * @type {Ruler}
-         */
-        this.y_ruler = new Ruler({
+        new Ruler({
                 'axis': 'y',
                 'trackTarget': this.workspace
             })
-            .appendTo(this.workspace)
+            .appendTo(left_ruler)
             .init();
 
         /**
@@ -1263,7 +1267,7 @@ export class Editor extends Dom {
                 break;
 
             case 'zoom':
-                this.setZoom(value/100);
+                this.updateWorkspace();
                 break;
 
             case 'preview-toggle':
@@ -1349,13 +1353,8 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerDimentionsSet(evt){
-        const width = evt.detail.width;
-        const height = evt.detail.height;
-
-        this.player_wrapper
-            .css('width', `${width}px`)
-            .css('height', `${height}px`);
+    onPlayerDimentionsSet(){
+        this.updateWorkspace();
     }
 
     /**
@@ -2062,20 +2061,25 @@ export class Editor extends Dom {
     }
 
     /**
-     * Set the zoom level
+     * Update the workspace to reflect changes in dimentions and zoom.
      *
      * @private
-     * @param {Number} scale The zoom scale
      * @return {this}
      */
-    setZoom(scale){
-        const width = this.mainmenu.getItem('width').getValue();
-        const height = this.mainmenu.getItem('height').getValue();
+    updateWorkspace(){
+        const {width, height} = this.getPlayer().getDimentions();
+        const zoom = this.mainmenu.getItem('zoom').getValue();
+        const scale = zoom/100;
+        const scaled_width = width * scale;
+        const scaled_height = height * scale;
 
-        this.workspace.css('width', `${width * scale}px`);
-        this.workspace.css('height', `${height * scale}px`);
+        this.player_wrapper
+            .css('width', `${width}px`)
+            .css('height', `${height}px`)
+            .css('transform', `scale(${scale})`)
+            .css('margin-right', `${(scaled_width - width)}px`)
+            .css('margin-bottom', `${(scaled_height - height)}px`);
 
-        this.player_wrapper.css('transform', `scale(${scale})`);
         return this;
     }
 
