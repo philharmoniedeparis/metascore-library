@@ -768,9 +768,15 @@ export class Player extends Dom {
      * @return {this}
      */
     setDimentions(width, height, supressEvent){
+        // Update values in data object.
+        this.data.width = width;
+        this.data.height = height;
+
+        // Update style.
         this.css('width', `${width}px`);
         this.css('height', `${height}px`);
 
+        // Trigger event.
         if(supressEvent !== true){
             this.triggerEvent('dimentionsset', {'player': this, 'width': width, 'height': height});
         }
