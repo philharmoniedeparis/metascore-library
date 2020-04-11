@@ -59,9 +59,11 @@ export default class Ruler extends Dom {
             'axis': 'x',
             'tickWidth': 1,
             'minorTickLength': 5,
-            'majorTickLength': 18,
             'minorTickStep': 5,
+            'minMinorTickSpacing': 5,
+            'majorTickLength': 18,
             'majorTickStep': 50,
+            'minMajorTickSpacing': 50,
             'tickColor': '#fff',
             'textColor': '#fff',
             'font': '10px sans-serif',
@@ -160,17 +162,42 @@ export default class Ruler extends Dom {
         return this;
     }
 
+    getMinorTickStep(){
+        const base_step = this.configs.minorTickStep;
+        const min_spacing = this.configs.minMinorTickSpacing;
+        const scale = this.scale;
+        let step = base_step;
+
+        while(step * scale < min_spacing) {
+            step += base_step;
+        }
+
+        return step;
+    }
+
+    getMajorTickStep(){
+        const base_step = this.configs.majorTickStep;
+        const min_spacing = this.configs.minMajorTickSpacing;
+        const scale = this.scale;
+        let step = base_step;
+
+        while(step * scale < min_spacing) {
+            step += base_step;
+        }
+
+        return step;
+    }
+
     draw(){
         const canvas = this.canvas.get(0);
         const context = canvas.getContext('2d');
         const width = canvas.width;
-        const height = canvas.height
-        console.log(width, height);
+        const height = canvas.height;
 
         const axis = this.configs.axis;
         const scale = this.scale;
-        const minorTickStep = this.configs.minorTickStep;
-        const majorTickStep = this.configs.majorTickStep;
+        const minorTickStep = this.getMinorTickStep();
+        const majorTickStep = this.getMajorTickStep();
         const minorTickLength = this.configs.minorTickLength;
         const majorTickLength = this.configs.majorTickLength;
 
