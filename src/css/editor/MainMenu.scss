@@ -16,6 +16,10 @@
         margin-right: 2em;
     }
 
+    .separator{
+        flex: 1 1 auto;
+    }
+
     button{
         flex: 0 0 auto;
         padding: 0.5em;
@@ -59,7 +63,64 @@
     }
 
     .input{
-        &.preview-toggle{
+        &.text,
+        &.number,
+        &.select{
+            input,
+            select{
+                background: none;
+                border-radius: 0;
+                opacity: 0.5;
+
+                &:focus{
+                    background: $mediumgray;
+                    opacity: 1;
+                }
+            }
+        }
+
+        &[data-name="title"]{
+            flex: 1 1 auto;
+            padding: 0.5em 0;
+
+            input{
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+
+                &:focus{
+                    text-overflow: clip;
+                }
+            }
+        }
+
+        &[data-name="width"],
+        &[data-name="height"]{
+            input{
+                width: 3em;
+                text-align: center;
+            }
+        }
+
+        &[data-name="width"]{
+            &::after{
+                content: "x";
+                padding: 0.25em 0.25em 0 0.25em;
+                padding-top: 0.25em;
+                opacity: 0.5;
+            }
+        }
+
+        &[data-name="zoom"]{
+            margin-right: 1em;
+
+            input{
+                width: 4em;
+            }
+        }
+
+        &[data-name="preview-toggle"]{
             margin-right: 2em;
 
             .state{
@@ -92,27 +153,7 @@
             }
         }
 
-        &.title{
-            flex: 1 1 auto;
-            margin-right: 2em;
-            padding: 0.5em 0;
-
-            input{
-                width: 100%;
-                background: none;
-                border-radius: 0;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-
-                &:focus{
-                    background: $mediumgray;
-                    text-overflow: clip;
-                }
-            }
-        }
-
-        &.revisions{
+        &[data-name="revisions"]{
             align-self: center;
             margin-right: 0.5em;
             opacity: 0.5;
