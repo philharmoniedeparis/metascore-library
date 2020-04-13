@@ -260,16 +260,31 @@ body{
                 }
             }
 
-            &:hover{
+            &:not([data-pager-visibility]),
+            &[data-pager-visibility="auto"]{
+                &:hover{
+                    .pager{
+                        display: block;
+                    }
+
+                    &[data-page-count="0"],
+                    &[data-page-count="1"]{
+                        .pager{
+                            display: none;
+                        }
+                    }
+                }
+            }
+
+            &[data-pager-visibility="hidden"]{
+                .pager{
+                    display: none;
+                }
+            }
+
+            &[data-pager-visibility="visible"]{
                 .pager{
                     display: block;
-                }
-
-                &[data-page-count="0"],
-                &[data-page-count="1"]{
-                    .pager{
-                        display: none;
-                    }
                 }
             }
         }
