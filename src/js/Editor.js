@@ -2441,7 +2441,6 @@ export class Editor extends Dom {
                 }
 
                 const component = block.addPage(config, before ? index : index + 1);
-
                 timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
@@ -2457,13 +2456,12 @@ export class Editor extends Dom {
                         block.setActivePage(index);
                     },
                     'redo': () => {
-                        if(block.getPropertyValue('synched')){
-                            const adjacent_page = block.getChild(index);
-                            const prop = before ? 'start-time' : 'end-time';
-                            adjacent_page.setPropertyValue(prop, current_time);
-                        }
                         block.addPage(component, before ? index : index + 1);
+                        if(block.getPropertyValue('synched')){
+                            component.setPropertyValue(before ? 'end-time': 'start-time', current_time);
+                        }
                         timeline.updateBlockPagesTrackLabels(block);
+                        block.setActivePage(index);
                     }
                 });
                 break;
