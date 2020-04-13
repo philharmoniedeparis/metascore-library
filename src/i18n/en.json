@@ -115,7 +115,6 @@
 	"editor.assetbrowser.guideassets.SpectrogramForm.title": "Generate an audio spectrogram image",
 	"editor.autosave.recover.confirmLabel": "Recover",
 	"editor.autosave.recover.text": "Auto-save data were found for this guide. Would you like to recover them?",
-	"editor.configseditor.AnimationForm.fields.color-theme.label": "Color theme",
 	"editor.configseditor.AnimationForm.fields.loop-duration.label": "Loop duration",
 	"editor.configseditor.AnimationForm.fields.reversed.label": "Reversed",
 	"editor.configseditor.AnimationForm.fields.start-frame.label": "Start frame",
