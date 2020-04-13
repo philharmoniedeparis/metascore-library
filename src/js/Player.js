@@ -1081,9 +1081,10 @@ export class Player extends Dom {
         const scale = Math.min(1, container_width/width, container_height/height);
 
         // Apply scale.
-        this.css('width', `${width * scale}px`);
-        this.css('height', `${height * scale}px`);
-        this.css('transform', `scale(${scale})`);
+        this
+            .css('transform', `scale(${scale})`)
+            .css('margin-right', `${(width * scale) - width}px`)
+            .css('margin-bottom', `${(height * scale) - height}px`);
     }
 
 }
