@@ -82,9 +82,11 @@ export default class TimeInput extends Input {
      * @property {Number} [value=0] The default value
      * @property {Number} [min=0] The minimum allowed value
      * @property {Number} [max=null] The maximum allowed value
-     * @property {Boolean} [clearButton=false] Whether to show the clear button
      * @property {Boolean} [inButton=false] Whether to show the in button
      * @property {Boolean} [outButton=false] Whether to show the out button
+     * @property {Boolean} [clearButton=false] Whether to show the clear button
+     * @property {Icon} [clearButtonIcon=clear_icon] The icon to use for the clear button
+     * @property {String} [clearButtonTitle='Clear value'] The title of the clear button
      */
     constructor(configs) {
         // call parent constructor
@@ -116,7 +118,9 @@ export default class TimeInput extends Input {
             'max': null,
             'inButton': false,
             'outButton': false,
-            'clearButton': false
+            'clearButton': false,
+            'clearButtonIcon': clear_icon,
+            'clearButtonTitle': Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value')
         });
     }
 
@@ -237,9 +241,9 @@ export default class TimeInput extends Input {
                  * The potential clear button
                  * @type {Button}
                  */
-                this.clear_button = new Button({'icon': clear_icon})
+                this.clear_button = new Button({'icon': this.configs.clearButtonIcon})
                     .data('action', 'clear')
-                    .attr('title', Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value'))
+                    .attr('title', this.configs.clearButtonTitle)
                     .addListener('click', this.onClearClick.bind(this))
                     .appendTo(buttons);
             }

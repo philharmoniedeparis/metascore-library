@@ -285,7 +285,7 @@ export default class Component extends Dom {
             let new_value = value;
 
             if(('sanitize' in prop) && isFunction(prop.sanitize)){
-                new_value = prop.sanitize(new_value);
+                new_value = prop.sanitize.call(this, new_value);
             }
 
             if(previous_value !== new_value){

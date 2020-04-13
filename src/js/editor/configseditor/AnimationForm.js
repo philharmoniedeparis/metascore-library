@@ -5,6 +5,8 @@ import NumberInput from '../../core/ui/input/NumberInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 
+import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
+
 import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
 
 /**
@@ -70,7 +72,9 @@ export default class AnimationForm extends ElementForm {
                 this.fields[name] = new Field(
                     new TimeInput({
                         'min': 0.01,
-                        'clearButton': true
+                        'clearButton': true,
+                        'clearButtonIcon': loop_duration_clear_icon,
+                        'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
                     }),
                     {
                         'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration')
