@@ -2407,12 +2407,12 @@ export class Editor extends Dom {
                 if(block.getPropertyValue('synched')){
                     const duration = MasterClock.getRenderer().getDuration();
 
-                    // prevent adding the page if current time == 0 or >= media duration
+                    // Prevent adding the page if current time == 0 or >= media duration.
                     if(current_time === 0 || current_time >= duration){
                         new Overlay({
-                            'text': Locale.t('editor.addPlayerComponents.page.time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
+                            'text': Locale.t('editor.addPlayerComponents.page.media-time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
                             'buttons': {
-                                'ok': Locale.t('editor.addPlayerComponents.page.time.ok', 'OK'),
+                                'ok': Locale.t('editor.addPlayerComponents.page.media-time.ok', 'OK'),
                             },
                             'parent': this
                         });
@@ -2421,6 +2421,20 @@ export class Editor extends Dom {
                     }
 
                     const adjacent_page = block.getChild(index);
+
+                    // Prevent adding the page if current time == adjacent page's start-time.
+                    if(current_time === adjacent_page.getPropertyValue('start-time')){
+                        new Overlay({
+                            'text': Locale.t('editor.addPlayerComponents.page.adjacent-page-time.msg', "In a synchronized block, a page cannot be inserted at the very beginning of another page.<br/><b>Please move the media to a different time before inserting a new page.</b>"),
+                            'buttons': {
+                                'ok': Locale.t('editor.addPlayerComponents.page.adjacent-page-time.ok', 'OK'),
+                            },
+                            'parent': this
+                        });
+
+                        break;
+                    }
+
                     config['start-time'] = before ? adjacent_page.getPropertyValue('start-time') : current_time;
                     config['end-time'] = before ? current_time : adjacent_page.getPropertyValue('end-time');
                     adjacent_page.setPropertyValue(before ? 'start-time' : 'end-time', current_time);
