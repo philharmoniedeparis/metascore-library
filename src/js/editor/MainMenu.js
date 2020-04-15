@@ -124,6 +124,7 @@ export default class MainMenu extends Dom {
         this.items.width = new NumberInput({
                 'name': 'width',
                 'min': 1,
+                'max': 9999,
                 'spinButtons': false
             })
             .data('name', 'width')
@@ -135,6 +136,7 @@ export default class MainMenu extends Dom {
         this.items.height = new NumberInput({
                 'name': 'height',
                 'min': 1,
+                'max': 9999,
                 'spinButtons': false
             })
             .data('name', 'height')
