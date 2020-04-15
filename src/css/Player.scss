@@ -7,6 +7,10 @@ body{
 }
 
 body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     margin: 0;
     background: white;
     font: normal 11px Verdana, Arial, Helvetica, sans-serif;

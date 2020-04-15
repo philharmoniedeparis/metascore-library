@@ -1082,8 +1082,6 @@ export class Player extends Dom {
         const container_height = container_el.clientHeight;
         let scale = Math.min(container_width/width, container_height/height);
 
-        console.log(this.configs);
-
         if (!this.configs.allowUpscaling) {
             scale = Math.min(1, scale);
         }
