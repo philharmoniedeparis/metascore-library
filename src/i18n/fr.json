@@ -125,6 +125,7 @@
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.auto": "Auto",
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.hidden": "Caché",
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.visible": "Affiché",
+	"editor.configseditor.BlockForm.fields.pager-visibility.title": "Affecte le tourne page en mode lecteur",
 	"editor.configseditor.BlockForm.title.plural": "Attributs de @count Blocs",
 	"editor.configseditor.BlockForm.title.single": "Attributs du Bloc",
 	"editor.configseditor.BlockTogglerForm.fields.blocks.label": "Blocs",

@@ -125,6 +125,7 @@
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.auto": "Auto",
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.hidden": "Hidden",
 	"editor.configseditor.BlockForm.fields.pager-visibility.options.visible": "Visible",
+	"editor.configseditor.BlockForm.fields.pager-visibility.title": "Affects the pager in player mode",
 	"editor.configseditor.BlockForm.title.plural": "Attributes of @count blocks",
 	"editor.configseditor.BlockForm.title.single": "Attributes of block",
 	"editor.configseditor.BlockTogglerForm.fields.blocks.label": "Blocks",

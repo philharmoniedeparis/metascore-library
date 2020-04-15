@@ -59,6 +59,7 @@ export default class BlockForm extends ComponentForm {
                         'label': Locale.t('editor.configseditor.BlockForm.fields.pager-visibility.label', 'Pager visibility')
                     })
                     .data('property', 'pager-visibility')
+                    .attr('title', Locale.t('editor.configseditor.BlockForm.fields.pager-visibility.title', 'Affects the pager in player mode'))
                     .appendTo(this.fields_wrapper);
                 break;
 
