@@ -119,6 +119,9 @@ export default class MainMenu extends Dom {
                 'required': true
             })
             .data('name', 'title')
+            .addDelegate('input', 'focus', this.onTitleInputFocus.bind(this), true)
+            .addDelegate('input', 'blur', this.onTitleInputBlur.bind(this), true)
+            .addDelegate('input', 'keypress', this.onTitleInputKeypress.bind(this))
             .appendTo(this);
 
         this.items.width = new NumberInput({
@@ -220,6 +223,13 @@ export default class MainMenu extends Dom {
         return this;
     }
 
+    /**
+     * Update the revisions select options.
+     *
+     * @param {Array} revisions The list of revisions
+     * @param {Number} current The current revision
+     * @return {this}
+     */
     updateRevisionsOptions(revisions, current) {
         const input = this.getItem('revisions');
         const date_formatter = new Intl.DateTimeFormat(void 0, {
@@ -244,6 +254,36 @@ export default class MainMenu extends Dom {
                 .attr('disabled', 'true');
 
         return this;
+    }
+
+    /**
+     * Title input focus event handler
+     *
+     * @private
+     */
+    onTitleInputFocus(){
+        this.addClass('title-focused');
+    }
+
+    /**
+     * Title input blur event handler
+     *
+     * @private
+     */
+    onTitleInputBlur(){
+        this.removeClass('title-focused');
+    }
+
+    /**
+     * Title input keypress event handler
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onTitleInputKeypress(evt){
+        if(evt.key === 'Enter'){
+            evt.target.blur();
+        }
     }
 
 }

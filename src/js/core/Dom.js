@@ -1006,7 +1006,7 @@ export default class Dom {
     }
 
     /**
-     * Add an event listener for descendents all the elements managed by the Dom object that match a given selector
+     * Add an event listener for descendent elements managed by the Dom object that match a given selector
      *
      * @param {String} selector The CSS selector to filter descendents by
      * @param {String} type The event type
