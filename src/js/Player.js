@@ -48,6 +48,7 @@ export class Player extends Dom {
      * @property {Boolean} [autoload=true] Whether to automatically call the load function
      * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
      * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
+     * @property {Boolean} [allowUpscaling=false] Whether to allow the player to become larger than its original size
      * @property {Boolean} [api=false] Whether to allow API access or not
      * @property {String} [lang] The language to use for i18n
      */
@@ -95,6 +96,7 @@ export class Player extends Dom {
             'autoload': true,
             'keyboard': true,
             'responsive': false,
+            'allowUpscaling': false,
             'api': false,
             'lang': 'en',
             'websiteUrl':  `${window.location.protocol}//${window.location.host}`
@@ -1078,7 +1080,13 @@ export class Player extends Dom {
         const container_el = this.parents().get(0);
         const container_width = container_el.clientWidth;
         const container_height = container_el.clientHeight;
-        const scale = Math.min(1, container_width/width, container_height/height);
+        let scale = Math.min(container_width/width, container_height/height);
+
+        console.log(this.configs);
+
+        if (!this.configs.allowUpscaling) {
+            scale = Math.min(1, scale);
+        }
 
         // Apply scale.
         this
