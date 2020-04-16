@@ -48,6 +48,7 @@ export class Player extends Dom {
      * @property {Boolean} [autoload=true] Whether to automatically call the load function
      * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
      * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
+     * @property {Boolean} [allowUpscaling=false] Whether to allow the player to become larger than its original size
      * @property {Boolean} [api=false] Whether to allow API access or not
      * @property {String} [lang] The language to use for i18n
      */
@@ -95,6 +96,7 @@ export class Player extends Dom {
             'autoload': true,
             'keyboard': true,
             'responsive': false,
+            'allowUpscaling': false,
             'api': false,
             'lang': 'en',
             'websiteUrl':  `${window.location.protocol}//${window.location.host}`
@@ -466,7 +468,7 @@ export class Player extends Dom {
         const component = evt.detail.child._metaScore;
 
         if(component){
-            this.triggerEvent('componentremove', {'component': component}, true, false);
+            this.triggerEvent('componentremove', {'player': this, 'component': component}, true, false);
         }
     }
 
@@ -621,12 +623,15 @@ export class Player extends Dom {
             .setInternalValue(this.data.css)
             .appendTo(document.head);
 
-        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+        // Set width & height.
+        this.setDimentions(this.data.width, this.data.height);
 
-        // Set media
+        // Set media.
         this.setSource(this.data.media);
 
-        // Add components
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+
+        // Add components.
         if(this.data.components){
             this.data.components.forEach((component) => {
                 switch(component.type){
@@ -637,14 +642,14 @@ export class Player extends Dom {
             });
         }
 
-        // Set active scenario
+        // Set active scenario.
         let scenario = null;
         const scenarios = this.getScenarios();
         if(scenarios.length > 0){
             scenario = scenarios[0];
         }
         else{
-            // Add a default scenario if none exist
+            // Add a default scenario if none exist.
             scenario = this.addScenario({
                 'name': Locale.t('Player.defaultScenarioName', 'Scenario 1')
             });
@@ -661,7 +666,7 @@ export class Player extends Dom {
             this.adaptScale();
         }
 
-        // Add keyboard listener
+        // Add keyboard listener.
         if(this.configs.keyboard){
             this.addListener('keydown', this.onKeydown.bind(this));
         }
@@ -704,12 +709,12 @@ export class Player extends Dom {
     }
 
     /**
-     * Get the loaded JSON data
+     * Get the data of the loaded guide
      *
      * @param {String} [key] An optional data key
      * @return {Object} The value corresponding to the key, or the entire JSON data
      */
-    getData(key){
+    getGuideData(key){
         if(key){
             return this.data[key];
         }
@@ -722,8 +727,8 @@ export class Player extends Dom {
      *
      * @return {String} The id
      */
-    getId() {
-        return this.getData('id');
+    getGuideId() {
+        return this.getGuideData('id');
     }
 
     /**
@@ -731,8 +736,8 @@ export class Player extends Dom {
      *
      * @return {String} The revision id
      */
-    getRevision() {
-        return this.getData('vid');
+    getGuideRevision() {
+        return this.getGuideData('vid');
     }
 
     /**
@@ -742,6 +747,43 @@ export class Player extends Dom {
      */
     getRenderer(){
         return this.renderer;
+    }
+
+    /**
+     * Get the width and height
+     *
+     * @return {Object} Object with width and height keys.
+     */
+    getDimentions(){
+        return {
+            'width': this.getGuideData('width'),
+            'height': this.getGuideData('height')
+        };
+    }
+
+    /**
+     * Set the width and height
+     *
+     * @param {Number} width The width
+     * @param {Number} height The height
+     * @param {Boolean} [supressEvent=false] Whether to supress the dimentionsset event
+     * @return {this}
+     */
+    setDimentions(width, height, supressEvent){
+        // Update values in data object.
+        this.data.width = width;
+        this.data.height = height;
+
+        // Update style.
+        this.css('width', `${width}px`);
+        this.css('height', `${height}px`);
+
+        // Trigger event.
+        if(supressEvent !== true){
+            this.triggerEvent('dimentionsset', {'player': this, 'width': width, 'height': height});
+        }
+
+        return this;
     }
 
     /**
@@ -778,33 +820,6 @@ export class Player extends Dom {
                 .addListener('error', this.onRendererError.bind(this))
                 .appendTo(this)
                 .init();
-        }
-
-        return this;
-    }
-
-    /**
-     * Update the loaded JSON data
-     *
-     * @param {Object} data The data key, value pairs to update
-     * @param {Boolean} [skipInternalUpdates=false] Whether to skip internal update methods for CSS, media sources, etc
-     * @return {this}
-     */
-    updateData(data, skipInternalUpdates){
-        Object.assign(this.data, data);
-
-        if(skipInternalUpdates !== true){
-            if('css' in data){
-                this.updateCSS(data.css);
-            }
-
-            if('media' in data){
-                this.setSource(data.media);
-            }
-
-            if('vid' in data){
-                this.setRevision(data.vid);
-            }
         }
 
         return this;
@@ -1060,42 +1075,22 @@ export class Player extends Dom {
      * Adapt the player's scale to fit the available space
      */
     adaptScale(){
-        // Calculate and store the overall dimentions.
-        // @TODO: add workspace width and height for guides.
-        if(!('_scaling_values' in this)){
-            let width = 0;
-            let height = 0;
+        // Calculate the scale factor.
+        const {width, height} = this.getDimentions();
+        const container_el = this.parents().get(0);
+        const container_width = container_el.clientWidth;
+        const container_height = container_el.clientHeight;
+        let scale = Math.min(container_width/width, container_height/height);
 
-            this.getScenarios().forEach((scenario) => {
-                scenario.getChildren().forEach((component) => {
-                    const rect = component.get(0).getBoundingClientRect();
-                    width = Math.max(width, rect.right);
-                    height = Math.max(height, rect.bottom);
-                });
-            });
-
-            if(!width || !height){
-                this._scaling_values = null;
-            }
-
-            this._scaling_values = {
-                'width': width,
-                'height': height
-            };
-
+        if (!this.configs.allowUpscaling) {
+            scale = Math.min(1, scale);
         }
 
-        // Calculate and apply the scale factor
-        if(this._scaling_values){
-            const container_el = this.parents().get(0);
-            const container_width = container_el.clientWidth;
-            const container_height = container_el.clientHeight;
-            const scale = Math.min(1, container_width/this._scaling_values.width, container_height/this._scaling_values.height);
-
-            this.css('width', `${this._scaling_values.width * scale}px`);
-            this.css('height', `${this._scaling_values.height * scale}px`);
-            this.css('transform', `scale(${scale})`);
-        }
+        // Apply scale.
+        this
+            .css('transform', `scale(${scale})`)
+            .css('margin-right', `${(width * scale) - width}px`)
+            .css('margin-bottom', `${(height * scale) - height}px`);
     }
 
 }

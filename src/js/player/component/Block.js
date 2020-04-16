@@ -79,6 +79,10 @@ export default class Block extends Component {
                     'type': 'boolean',
                     'default': false
                 },
+                'pager-visibility': {
+                    'type': 'string',
+                    'default': 'auto'
+                },
                 'pages': {
                     'type': 'array',
                     'getter': function(skipID){
@@ -159,6 +163,10 @@ export default class Block extends Component {
      */
     updatePropertyValue(property, value){
         switch(property){
+            case 'pager-visibility':
+                this.data(property, value);
+                break;
+
             case 'pages':
                 this.removeAllChildren();
                 value.forEach((configs) => {

@@ -30,7 +30,13 @@ export default class Animation extends Element{
                     'default': 1
                 },
                 'loop-duration': {
-                    'type': 'time'
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        if (this.isLoaded() && !value) {
+                            return this.animation.getDuration();
+                        }
+                        return value;
+                    }
                 },
                 'reversed': {
                     'type': 'boolean',

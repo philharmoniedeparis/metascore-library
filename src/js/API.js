@@ -367,7 +367,10 @@ export class API{
 document.addEventListener("DOMContentLoaded", () => {
     const ids = [];
 
-    document.querySelectorAll('a[rel="metascore"][data-guide]').forEach((link) => {
+    document.querySelectorAll('a[rel="metascore"][data-guide]:not(.metascore-api-processed)').forEach((link) => {
+        // Prevent the link from being processed multiple times.
+        link.classList.add("metascore-api-processed");
+
         if(!ids.includes(link.dataset.guide)){
             ids.push(link.dataset.guide);
         }

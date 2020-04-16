@@ -1,10 +1,11 @@
 import ElementForm from './ElementForm';
 import Locale from '../../core/Locale';
 import Field from '../Field';
-import SelectInput from '../../core/ui/input/SelectInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import TimeInput from '../../core/ui/input/TimeInput';
+
+import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
 
 import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
 
@@ -43,7 +44,6 @@ export default class AnimationForm extends ElementForm {
                 'start-frame',
                 'loop-duration',
                 'reversed',
-                'color-theme',
                 'background',
                 'border',
                 'opacity',
@@ -72,7 +72,9 @@ export default class AnimationForm extends ElementForm {
                 this.fields[name] = new Field(
                     new TimeInput({
                         'min': 0.01,
-                        'clearButton': true
+                        'clearButton': true,
+                        'clearButtonIcon': loop_duration_clear_icon,
+                        'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
                     }),
                     {
                         'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration')
@@ -88,17 +90,6 @@ export default class AnimationForm extends ElementForm {
                     }),
                     {
                         'label': Locale.t('editor.configseditor.AnimationForm.fields.reversed.label', 'Reversed')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'color-theme':
-                this.fields[name] = new Field(
-                    new SelectInput({
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.color-theme.label', 'Color theme')
                     })
                     .data('property', name)
                     .appendTo(this.fields_wrapper);

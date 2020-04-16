@@ -31,12 +31,14 @@ $resize-handle-size: 0.5em;
         }
 
         &.vertical{
-            min-width: auto;
-            max-width: 0;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: auto !important;
         }
         &.horizontal{
-            min-height: auto;
-            max-height: 0;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: auto !important;
         }
     }
 

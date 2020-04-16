@@ -5,6 +5,7 @@ import Locale from '../core/Locale';
 import TextInput from '../core/ui/input/TextInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
 import SelectInput from '../core/ui/input/SelectInput';
+import NumberInput from '../core/ui/input/NumberInput';
 
 import logo_icon from '../../img/core/logo.svg?svg-sprite';
 import save_icon from '../../img/editor/mainmenu/save.svg?svg-sprite';
@@ -23,14 +24,36 @@ export default class MainMenu extends Dom {
 
     /**
      * Instantiate
+     *
+     * @param {Object} configs Custom configs to override defaults
+     * @property {Array} [zoom_levels=[25, 50, 75, 100, 125, 150, 200, 400]] The available zoom level options
+     * @property {Number} [default_zoom_level=100] The default zoom level
      */
-    constructor() {
+    constructor(configs) {
         // call parent constructor
         super('<div/>', {'class': `main-menu ${className}`});
+
+        /**
+         * The configuration values
+         * @type {Object}
+         */
+        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
 
         this.items = {};
 
         this.setupUI();
+    }
+
+    /**
+    * Get the default config values
+    *
+    * @return {Object} The default values
+    */
+    static getDefaults() {
+        return {
+            'zoom_levels': [25, 50, 75, 100, 125, 150, 200, 400],
+            'default_zoom_level': 100,
+        };
     }
 
     /**
@@ -90,6 +113,56 @@ export default class MainMenu extends Dom {
             .data('action', 'redo')
             .appendTo(this);
 
+        this.items.title = new TextInput({
+                'name': 'title',
+                'placeholder': Locale.t('editor.MainMenu.title.placeholder', 'Title'),
+                'required': true
+            })
+            .data('name', 'title')
+            .addDelegate('input', 'focus', this.onTitleInputFocus.bind(this), true)
+            .addDelegate('input', 'blur', this.onTitleInputBlur.bind(this), true)
+            .addDelegate('input', 'keypress', this.onTitleInputKeypress.bind(this))
+            .appendTo(this);
+
+        this.items.width = new NumberInput({
+                'name': 'width',
+                'min': 1,
+                'max': 9999,
+                'spinButtons': false
+            })
+            .data('name', 'width')
+            .attr({
+                'title': Locale.t('editor.MainMenu.width.title', 'Width')
+            })
+            .appendTo(this);
+
+        this.items.height = new NumberInput({
+                'name': 'height',
+                'min': 1,
+                'max': 9999,
+                'spinButtons': false
+            })
+            .data('name', 'height')
+            .attr({
+                'title': Locale.t('editor.MainMenu.height.title', 'Height')
+            })
+            .appendTo(this);
+
+        this.items.zoom = new SelectInput({
+                'name': 'zoom',
+                'value': this.configs.default_zoom_level,
+                'options': this.configs.zoom_levels.reduce((accumulator , value) => {
+                    accumulator[value] = `${value}%`;
+                    return accumulator;
+                }, {}),
+                'required': true
+            })
+            .data('name', 'zoom')
+            .attr({
+                'title': Locale.t('editor.MainMenu.zoom.title', 'Zoom')
+            })
+            .appendTo(this);
+
         this.items['preview-toggle'] = new CheckboxInput({
                 'icon': preview_toggle_icon,
                 'name': 'preview-toggle'
@@ -97,21 +170,17 @@ export default class MainMenu extends Dom {
             .attr({
                 'title': Locale.t('editor.MainMenu.preview-toggle.title', 'Toggle preview mode')
             })
-            .addClass('preview-toggle')
+            .data('name', 'preview-toggle')
             .appendTo(this);
 
-        this.items.title = new TextInput({
-                'name': 'title',
-                'placeholder': Locale.t('editor.MainMenu.title.placeholder', 'Title'),
-                'required': true
-            })
-            .addClass('title')
+        new Dom('<div/>', {'class': 'separator'})
             .appendTo(this);
 
         this.items.revisions = new SelectInput({
-                'name': 'revisions'
+                'name': 'revisions',
+                'required' : true
             })
-            .addClass('revisions')
+            .data('name', 'revisions')
             .appendTo(this);
 
         this.items.restore = new Button({
@@ -154,6 +223,13 @@ export default class MainMenu extends Dom {
         return this;
     }
 
+    /**
+     * Update the revisions select options.
+     *
+     * @param {Array} revisions The list of revisions
+     * @param {Number} current The current revision
+     * @return {this}
+     */
     updateRevisionsOptions(revisions, current) {
         const input = this.getItem('revisions');
         const date_formatter = new Intl.DateTimeFormat(void 0, {
@@ -178,6 +254,36 @@ export default class MainMenu extends Dom {
                 .attr('disabled', 'true');
 
         return this;
+    }
+
+    /**
+     * Title input focus event handler
+     *
+     * @private
+     */
+    onTitleInputFocus(){
+        this.addClass('title-focused');
+    }
+
+    /**
+     * Title input blur event handler
+     *
+     * @private
+     */
+    onTitleInputBlur(){
+        this.removeClass('title-focused');
+    }
+
+    /**
+     * Title input keypress event handler
+     *
+     * @private
+     * @param {KeyboardEvent} evt The event object
+     */
+    onTitleInputKeypress(evt){
+        if(evt.key === 'Enter'){
+            evt.target.blur();
+        }
     }
 
 }
