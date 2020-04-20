@@ -638,7 +638,7 @@ export default class Player extends Dom {
          * A stylesheet containing the guide's custom css
          * @type {StyleSheet}
          */
-        this.css = new StyleSheet()
+        this.stylesheet = new StyleSheet()
             .setInternalValue(this.json.css)
             .appendTo(document.head);
 
@@ -988,7 +988,7 @@ export default class Player extends Dom {
      * @return {this}
      */
     updateCSS(value){
-        this.css.setInternalValue(value);
+        this.stylesheet.setInternalValue(value);
 
         return this;
     }
