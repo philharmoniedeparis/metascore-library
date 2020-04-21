@@ -179,9 +179,9 @@
     }
 
     > .bottom{
-        height: $bottom-sticky-bottom-height;
         display: flex;
         flex-direction: row;
+        flex: 0 0 $bottom-sticky-bottom-height;
         background: $mediumgray;
         border-top: 1px solid $darkgray;
         z-index: 1;
