@@ -19,6 +19,10 @@
     "type": "git",
     "url": "git@github.com:philharmoniedeparis/metascore-library.git"
   },
+  "browserslist": [
+    "defaults",
+    "safari >= 9"
+  ],
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
@@ -27,6 +31,7 @@
     "autoprefixer": "^9.4.9",
     "babel-loader": "^8.0.5",
     "beepbeep": "^1.2.2",
+    "caniuse-lite": "^1.0.30001045",
     "clean-webpack-plugin": "^1.0.1",
     "copy-webpack-plugin": "^5.0.0",
     "copyfiles": "^2.1.0",
@@ -50,6 +55,7 @@
   },
   "dependencies": {
     "classlist-polyfill": "^1.2.0",
+    "geometry-polyfill": "^1.0.7",
     "resize-observer-polyfill": "^1.5.1",
     "waveform-data": "^2.1.2"
   }

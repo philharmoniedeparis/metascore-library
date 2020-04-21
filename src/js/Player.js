@@ -57,6 +57,8 @@ export default class Player extends Dom {
      * @property {Object} [xhr={}] Custom options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Boolean} [autoload=true] Whether to automatically call the load function
      * @property {Boolean} [keyboard=true] Whether to activate keyboard shortcuts or not
+     * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
+     * @property {Boolean} [allowUpscaling=false] Whether to allow the player to become larger than its original size
      * @property {Boolean} [api=false] Whether to allow API access or not
      * @property {String} [lang] The language to use for i18n
      */
@@ -100,6 +102,8 @@ export default class Player extends Dom {
             'xhr': {},
             'autoload': true,
             'keyboard': true,
+            'responsive': false,
+            'allowUpscaling': false,
             'api': false,
             'lang': 'en'
         };
@@ -674,6 +678,18 @@ export default class Player extends Dom {
 
         this.updateBlockTogglers();
 
+        if (this.configs.responsive) {
+            const {width, height} = this.getDimentions();
+            this.css('width', `${width}px`).css('height', `${height}px`);
+
+            new Dom('body').addClass('responsive');
+
+            const adaptScale = this.adaptScale.bind(this);
+            window.addEventListener('resize', adaptScale);
+            window.addEventListener('orientationchange', adaptScale);
+            adaptScale();
+        }
+
         if(this.configs.keyboard){
             this.addListener('keydown', this.onKeydown.bind(this));
         }
@@ -1154,4 +1170,46 @@ export default class Player extends Dom {
         return this;
     }
 
+    getDimentions(){
+        if (!this._dimentions) {
+            let width = 0;
+            let height = 0;
+
+            this.getComponents('.block, .block-toggler, .media.video, .controller').forEach((component) => {
+                const {right, bottom} = component.get(0).getBoundingClientRect();
+                width = Math.max(width, right);
+                height = Math.max(height, bottom);
+            });
+
+            this._dimentions = {
+                'width': width,
+                'height': height,
+            };
+        }
+
+        return this._dimentions;
+    }
+
+    adaptScale(){
+        const {width, height} = this.getDimentions();
+
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+
+        const container_el = this.parents().get(0);
+        const container_width = container_el.clientWidth;
+        const container_height = container_el.clientHeight;
+        let scale = Math.min(container_width/width, container_height/height);
+
+        if (!this.configs.allowUpscaling) {
+            scale = Math.min(1, scale);
+        }
+
+        // Apply scale.
+        this
+            .css('transform', `scale(${scale})`)
+            .css('margin-right', `${(width * scale) - width}px`)
+            .css('margin-bottom', `${(height * scale) - height}px`);
+      }
 }

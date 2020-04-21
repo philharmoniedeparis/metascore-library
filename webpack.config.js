@@ -110,7 +110,11 @@ module.exports = (env, argv) => {
         {
           // Lint JS files.
           test: /\.js$/,
-          exclude: /node_modules/,
+          include: [
+            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "node_modules/geometry-polyfill"),
+            path.resolve(__dirname, "node_modules/waveform-data"),
+          ],
           use: [
             {
               loader: "babel-loader",

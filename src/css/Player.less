@@ -624,3 +624,18 @@ body{
         }
     }
 }
+
+
+body.responsive{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+
+    :local(.className){
+        position: relative;
+        overflow: hidden;
+        transform-origin: left top;
+    }
+}
