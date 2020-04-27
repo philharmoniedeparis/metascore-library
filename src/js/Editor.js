@@ -227,6 +227,7 @@ export class Editor extends Dom {
          * @type {ConfigsEditor}
          */
         this.configs_editor = new ConfigsEditor(this)
+            .addListener('componentset', this.onConfigEditorComponentSet.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -1178,6 +1179,38 @@ export class Editor extends Dom {
     }
 
     /**
+     * ConfigEditor componentset event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onConfigEditorComponentSet(evt){
+        if (evt.detail.count === 1) {
+            const component = evt.detail.component;
+
+            if (component.instanceOf('Page')) {
+                const block = component.getParent();
+                if (block) {
+                    // Set page as active page.
+                    block.setActivePage(component);
+
+                    if(block.getPropertyValue('synched')){
+                        // Goto page's start-time.
+                        const start_time = component.getPropertyValue('start-time');
+                        MasterClock.setTime(start_time !== null ? start_time : 0);
+                    }
+                }
+            }
+            else if(component.hasProperty('start-time')){
+                const start_time = component.getPropertyValue('start-time');
+                if(start_time !== null){
+                    MasterClock.setTime(start_time);
+                }
+            }
+        }
+    }
+
+    /**
      * Mainmenu click event callback
      *
      * @private
@@ -1303,13 +1336,6 @@ export class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
-
-        if(!evt.shiftKey && component.hasProperty('start-time')){
-            const start_time = component.getPropertyValue('start-time');
-            if(start_time !== null){
-                MasterClock.setTime(start_time);
-            }
-        }
     }
 
     /**
