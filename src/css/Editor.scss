@@ -80,6 +80,7 @@
                     position: sticky;
                     left: 0;
                     grid-area: 2 / 1 / 5 / 2;
+                    background: $mediumgray;
                     z-index: 1;
                 }
 
@@ -95,7 +96,6 @@
                     position: sticky;
                     left: 0;
                     grid-area: 3 / 1 / 4 / 2;
-                    background: $mediumgray;
                     overflow: hidden;
                     z-index: 2;
                 }

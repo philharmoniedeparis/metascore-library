@@ -340,6 +340,8 @@ export default class Block extends Component {
             page.appendTo(this.page_wrapper);
         }
 
+        this.updatePager();
+
         if(!existing){
             page.init();
         }
