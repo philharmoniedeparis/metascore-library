@@ -247,7 +247,8 @@ export default class CursorForm extends ElementForm {
                     this.fields['end-time'] = new Field(
                         new TimeInput({
                             'inButton': true,
-                            'outButton': true
+                            'outButton': true,
+                            'clearButton': true
                         }),
                         {
                             'label': Locale.t('editor.configseditor.CursorForm.fields.end-time.label', 'End')

@@ -2388,19 +2388,9 @@ export class Editor extends Dom {
                     const el_index = page.children(`.element.${element_config.type}`).count() + 1;
                     const defaults = {
                         'name': `${element_config.type} ${el_index}`,
-                        'start-time': page.getPropertyValue('start-time'),
+                        'start-time': MasterClock.getTime(),
                         'end-time': page.getPropertyValue('end-time')
                     };
-
-                    switch(element_config.type){
-                        case 'Cursor':
-                            defaults['start-time'] = MasterClock.getTime();
-
-                            if(defaults['end-time'] === null){
-                                defaults['end-time'] = MasterClock.getRenderer().getDuration();
-                            }
-                            break;
-                    }
 
                     const component = page.addElement(Object.assign(defaults, element_config));
                     components.push(component);

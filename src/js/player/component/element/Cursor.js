@@ -76,7 +76,18 @@ export default class Cursor extends Element {
                 'cursor-color': {
                     'type': 'color',
                     'default': '#000000'
-                }
+                },
+                'start-time': {
+                    'type': 'time',
+                    'sanitize': function(value) {
+                        // Start time cannot be null for Cursor elements.
+                        if (value === null) {
+                            return 0;
+                        }
+
+                        return defaults.properties['start-time'].sanitize(value);
+                    }
+                },
             })
         });
     }
@@ -329,6 +340,13 @@ export default class Cursor extends Element {
         let acceleration = 1;
         const pos = {'x': 0, 'y': 0};
 
+        if (start_time === null) {
+            start_time = 0;
+        }
+        if (end_time === null) {
+            end_time = MasterClock.getRenderer().getDuration();
+        }
+
         if(reversed){
             start_position = end_position;
             end_position = 0;
@@ -400,6 +418,13 @@ export default class Cursor extends Element {
         const reversed = direction === 'left' || direction === 'top';
         let start_time = this.getPropertyValue('start-time');
         let end_time = this.getPropertyValue('end-time');
+
+        if (start_time === null) {
+            start_time = 0;
+        }
+        if (end_time === null) {
+            end_time = MasterClock.getRenderer().getDuration();
+        }
 
         let start_position = 0;
         let end_position = axis === 'y' ? this.canvas.height : this.canvas.width;
@@ -518,11 +543,18 @@ export default class Cursor extends Element {
      * @returns {Number} The angle in radians
      */
     getCircularAngleFromTime(time){
-        const start_time = this.getPropertyValue('start-time');
-        const end_time = this.getPropertyValue('end-time');
+        let start_time = this.getPropertyValue('start-time');
+        let end_time = this.getPropertyValue('end-time');
         const direction = this.getPropertyValue('direction');
         const start_angle = radians(this.getPropertyValue('start-angle'));
         const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
+
+        if (start_time === null) {
+            start_time = 0;
+        }
+        if (end_time === null) {
+            end_time = MasterClock.getRenderer().getDuration();
+        }
 
         let angle = start_angle;
         angle += Math.PI / 2; // Adjust the angle so that 0 start at top
@@ -535,21 +567,28 @@ export default class Cursor extends Element {
      * Helper function to get the media time corresponding to an angle in a circular cursor
      *
      * @private
-     * @param {Number} a The angle in radians
+     * @param {Number} angle The angle in radians
      * @returns {Number} The corresponding media time
      */
-    getTimeFromCircularAngle(a){
-        const start_time = this.getPropertyValue('start-time');
-        const end_time = this.getPropertyValue('end-time');
+    getTimeFromCircularAngle(angle){
+        let start_time = this.getPropertyValue('start-time');
+        let end_time = this.getPropertyValue('end-time');
         const start_angle = radians(this.getPropertyValue('start-angle'));
         const loop_duration = this.getPropertyValue('loop-duration') || end_time - start_time;
         const current_time = MasterClock.getTime();
 
-        let angle = a;
-        angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
-        angle -= start_angle;
+        if (start_time === null) {
+            start_time = 0;
+        }
+        if (end_time === null) {
+            end_time = MasterClock.getRenderer().getDuration();
+        }
 
-        let time = map(angle, 0, Math.PI * 2, 0, loop_duration);
+        let _angle = angle;
+        _angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
+        _angle -= start_angle;
+
+        let time = map(_angle, 0, Math.PI * 2, 0, loop_duration);
         time += start_time;
 
         const current_loop = Math.floor((current_time - start_time) / loop_duration);
