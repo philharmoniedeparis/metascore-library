@@ -313,6 +313,10 @@ export default class Player extends Dom {
                  * @todo add support
                  */
                 break;
+
+            case 'fullscreenchange':
+                Dom.toggleClass(document.body, 'fullscreen', params.value);
+                break;
         }
     }
 

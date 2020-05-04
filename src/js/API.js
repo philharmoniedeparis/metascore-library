@@ -100,6 +100,8 @@ export default class API{
      */
     onLoad(callback){
         this.on('ready', () => {
+            this.target.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this));
+
             callback(this);
         });
     }
@@ -129,6 +131,15 @@ export default class API{
         catch(e){
             console.error(e);
         }
+    }
+
+    /**
+     * Callback called when the player iframe switches into or out of full-screen mode
+     *
+     * @private
+     */
+    onFullscreenChange() {
+        this.postMessage('fullscreenchange', {'value': document.fullscreenElement === this.target});
     }
 
     /**
