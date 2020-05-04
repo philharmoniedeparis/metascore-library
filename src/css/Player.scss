@@ -12,8 +12,12 @@ body{
     align-items: center;
     justify-content: center;
     margin: 0;
-    background: white;
     font: normal 11px Verdana, Arial, Helvetica, sans-serif;
+}
+
+:fullscreen body,
+body.fullscreen{
+    background: white;
 }
 
 :local(.className){
