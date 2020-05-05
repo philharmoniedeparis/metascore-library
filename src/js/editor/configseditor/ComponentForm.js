@@ -96,7 +96,10 @@ export default class ComponentForm extends Dom {
                 .addListener('resizestart', this.onComponentResizeStart)
                 .addListener('resize', this.onComponentResize)
                 .addListener('resizeend', this.onComponentResizeEnd);
+
+            this.updateComponentLockedState(component);
         });
+
 
         if(this.components.length > 1){
             this.title.text(Locale.formatString(this.configs.title_plural, {'@count': this.components.length}));
@@ -190,14 +193,9 @@ export default class ComponentForm extends Dom {
     onComponentOwnPropChange(evt){
         const component = evt.detail.component;
         const property = evt.detail.property;
-        const value = evt.detail.value;
 
-        switch(property){
-            case 'editor.locked':
-                component
-                    .setDraggable(!value)
-                    .setResizable(!value);
-                break;
+        if(property === 'editor.locked') {
+            this.updateComponentLockedState(component);
         }
 
         // If this is the only component or the master one,
@@ -684,17 +682,6 @@ export default class ComponentForm extends Dom {
                     }
                 }
             });
-
-            switch(name){
-                case 'editor.locked':
-                    this
-                        .toggleClass('locked', value)
-                        .toggleField('x', !value)
-                        .toggleField('y', !value)
-                        .toggleField('width', !value)
-                        .toggleField('height', !value)
-                    break;
-            }
         }
 
         return this;
@@ -765,6 +752,12 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Update image field options.
+     *
+     * @param {Object} images The list of available images.
+     * @return {this}
+     */
     updateImageFields(images){
         if(this.hasField('background-image')){
             const input = this.getField('background-image').getInput();
@@ -781,6 +774,33 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Update a component's locked state
+     * depending on the value of its 'editor.locked' property.
+     *
+     * @param {Component} component
+     * @return {this}
+     */
+    updateComponentLockedState(component){
+        const locked = component.getPropertyValue('editor.locked');
+
+        this
+            .toggleClass('locked', locked)
+            .toggleField('x', !locked)
+            .toggleField('y', !locked)
+            .toggleField('width', !locked)
+            .toggleField('height', !locked);
+
+        component
+            .setDraggable(!locked)
+            .setResizable(!locked);
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     remove(){
         this.unsetComponents();
         super.remove();
