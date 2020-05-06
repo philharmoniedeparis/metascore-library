@@ -10,6 +10,7 @@ import ColorInput from '../../core/ui/input/ColorInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
+import {MasterClock} from '../../core/media/Clock';
 
 import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
 
@@ -194,8 +195,15 @@ export default class ComponentForm extends Dom {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        if(property === 'editor.locked') {
-            this.updateComponentLockedState(component);
+        switch(property) {
+            case 'editor.locked':
+                this.updateComponentLockedState(component);
+                break;
+
+            case 'start-time':
+            case 'end-time':
+                this.updateTimeFieldLimits();
+                break;
         }
 
         // If this is the only component or the master one,
@@ -621,26 +629,9 @@ export default class ComponentForm extends Dom {
      */
     updateFieldValues(supressEvent){
         if(this.components){
-            if(this.hasField('start-time') && this.hasField('end-time')){
-                const start_values = [];
-                const end_values = [];
+            this.updateTimeFieldLimits();
 
-                this.components.forEach((component) => {
-                    const start_value = component.getPropertyValue('start-time');
-                    if(start_value !== null){
-                        start_values.push(start_value);
-                    }
-
-                    const end_value = component.getPropertyValue('end-time');
-                    if(end_value !== null){
-                        end_values.push(end_value);
-                    }
-                });
-
-                this.getField('end-time').getInput().setMin(start_values.length > 0 ? Math.max(...start_values) : null);
-                this.getField('start-time').getInput().setMax(end_values.length > 0 ? Math.min(...end_values) : null);
-            }
-
+            // Update all field values.
             Object.keys(this.getFields()).forEach((name) => {
                 this.updateFieldValue(name, supressEvent);
             });
@@ -769,6 +760,40 @@ export default class ComponentForm extends Dom {
             });
 
             this.updateFieldValue('background-image', true);
+        }
+
+        return this;
+    }
+
+    /**
+     * Update start- and end-time min and max limits.
+     *
+     * @return {this}
+     */
+    updateTimeFieldLimits() {
+        if(this.components && this.hasField('start-time') && this.hasField('end-time')){
+            const start_values = [];
+            const end_values = [];
+
+            this.components.forEach((component) => {
+                const start_value = component.getPropertyValue('start-time');
+                if(start_value !== null){
+                    start_values.push(start_value);
+                }
+
+                const end_value = component.getPropertyValue('end-time');
+                if(end_value !== null){
+                    end_values.push(end_value);
+                }
+            });
+
+            this.getField('start-time').getInput()
+                .setMin(0)
+                .setMax(end_values.length > 0 ? Math.min(...end_values) : null);
+
+            this.getField('end-time').getInput()
+                .setMin(start_values.length > 0 ? Math.max(...start_values) : null)
+                .setMax(MasterClock.getRenderer().getDuration());
         }
 
         return this;
