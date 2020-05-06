@@ -976,6 +976,7 @@ export class Editor extends Dom {
                     const player = this.getPlayer();
                     if(player){
                         player.togglePlay();
+                        evt.preventDefault();
                     }
                 }
                 break;
