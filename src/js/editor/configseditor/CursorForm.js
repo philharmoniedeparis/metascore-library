@@ -314,7 +314,7 @@ export default class CursorForm extends ElementForm {
     enterKeyframesEditMode(supressEvent){
         const component = this.getMasterComponent();
         this.keyframes_editor = new CursorKeyframesEditor(component, {
-            'contextmenuContainer': this.editor.find('.workspace')
+            'contextmenuContainer': this.editor
         });
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.

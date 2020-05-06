@@ -156,18 +156,14 @@ export default class ContextMenu extends Dom {
             'x': 0,
             'y': 0
         };
-        if(evt.pageX || evt.pageY){
+        if('pageX' in evt && 'pageY' in evt){
             pos.x = evt.pageX;
             pos.y = evt.pageY;
         }
-        else if(evt.clientX || evt.clientY){
+        else{
             pos.x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
             pos.y = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
-
-        const target_document = Dom.getElementDocument(this.target.get(0));
-        pos.x -= target_document.documentElement.scrollLeft;
-        pos.y -= target_document.documentElement.scrollTop;
 
         if(this.triggerEvent('beforeshow', {'original_event': evt, 'pos': pos}) === false){
             return;
