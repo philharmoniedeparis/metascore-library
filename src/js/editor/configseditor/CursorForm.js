@@ -231,7 +231,7 @@ export default class CursorForm extends ElementForm {
 
             case 'time': {
                     const wrapper = new Dom('<div/>', {'class': 'field-group time'})
-                    .appendTo(this.fields_wrapper);
+                        .appendTo(this.fields_wrapper);
 
                     this.fields['start-time'] = new Field(
                         new TimeInput({
@@ -314,7 +314,7 @@ export default class CursorForm extends ElementForm {
     enterKeyframesEditMode(supressEvent){
         const component = this.getMasterComponent();
         this.keyframes_editor = new CursorKeyframesEditor(component, {
-            'contextmenuContainer': this.editor.find('.workspace')
+            'contextmenuContainer': this.editor
         });
 
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.

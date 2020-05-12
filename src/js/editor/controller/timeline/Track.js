@@ -3,6 +3,8 @@ import Handle from './Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 import * as icons from '../../ComponentIcons';
+import {clamp} from '../../../core/utils/Math';
+import {MasterClock} from '../../../core/media/Clock';
 
 import {className} from '../../../../css/editor/controller/timeline/Track.scss';
 
@@ -237,11 +239,16 @@ export default class Track extends Dom {
     onInfoDrag(evt){
         const component = this.getComponent();
         const state = evt.detail.behavior.getState();
-        const diff = state.offsetX * this._drag_multiplier;
+        const start_time = component.getPropertyValue('start-time');
+        const end_time = component.getPropertyValue('end-time');
+        let diff = state.offsetX * this._drag_multiplier;
+
+        // Adjust diff to prevent start-time from going below 0 and end-time above duration.
+        diff = clamp(diff, -start_time, MasterClock.getRenderer().getDuration() - end_time);
 
         component.setPropertyValues({
-            'start-time': component.getPropertyValue('start-time') + diff,
-            'end-time': component.getPropertyValue('end-time') + diff
+            'start-time': start_time + diff,
+            'end-time': end_time + diff
         });
 
         this.triggerEvent('drag', evt.detail, false, true);
@@ -290,13 +297,16 @@ export default class Track extends Dom {
         let new_value = 0;
 
         if(property === 'start-time'){
-            new_value =state.new_values.left;
+            new_value = state.new_values.left;
         }
         else{
             new_value = state.original_values.left + state.new_values.width;
         }
 
         new_value *= this._resize_multiplier;
+
+        // Clamp value between 0 and duration.
+        new_value = clamp(new_value, 0, MasterClock.getRenderer().getDuration());
 
         component.setPropertyValue(property, new_value);
 

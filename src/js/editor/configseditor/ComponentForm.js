@@ -10,6 +10,7 @@ import ColorInput from '../../core/ui/input/ColorInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
+import {MasterClock} from '../../core/media/Clock';
 
 import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
 
@@ -96,7 +97,10 @@ export default class ComponentForm extends Dom {
                 .addListener('resizestart', this.onComponentResizeStart)
                 .addListener('resize', this.onComponentResize)
                 .addListener('resizeend', this.onComponentResizeEnd);
+
+            this.updateComponentLockedState(component);
         });
+
 
         if(this.components.length > 1){
             this.title.text(Locale.formatString(this.configs.title_plural, {'@count': this.components.length}));
@@ -190,13 +194,15 @@ export default class ComponentForm extends Dom {
     onComponentOwnPropChange(evt){
         const component = evt.detail.component;
         const property = evt.detail.property;
-        const value = evt.detail.value;
 
-        switch(property){
+        switch(property) {
             case 'editor.locked':
-                component
-                    .setDraggable(!value)
-                    .setResizable(!value);
+                this.updateComponentLockedState(component);
+                break;
+
+            case 'start-time':
+            case 'end-time':
+                this.updateTimeFieldLimits();
                 break;
         }
 
@@ -623,26 +629,9 @@ export default class ComponentForm extends Dom {
      */
     updateFieldValues(supressEvent){
         if(this.components){
-            if(this.hasField('start-time') && this.hasField('end-time')){
-                const start_values = [];
-                const end_values = [];
+            this.updateTimeFieldLimits();
 
-                this.components.forEach((component) => {
-                    const start_value = component.getPropertyValue('start-time');
-                    if(start_value !== null){
-                        start_values.push(start_value);
-                    }
-
-                    const end_value = component.getPropertyValue('end-time');
-                    if(end_value !== null){
-                        end_values.push(end_value);
-                    }
-                });
-
-                this.getField('end-time').getInput().setMin(start_values.length > 0 ? Math.max(...start_values) : null);
-                this.getField('start-time').getInput().setMax(end_values.length > 0 ? Math.min(...end_values) : null);
-            }
-
+            // Update all field values.
             Object.keys(this.getFields()).forEach((name) => {
                 this.updateFieldValue(name, supressEvent);
             });
@@ -684,17 +673,6 @@ export default class ComponentForm extends Dom {
                     }
                 }
             });
-
-            switch(name){
-                case 'editor.locked':
-                    this
-                        .toggleClass('locked', value)
-                        .toggleField('x', !value)
-                        .toggleField('y', !value)
-                        .toggleField('width', !value)
-                        .toggleField('height', !value)
-                    break;
-            }
         }
 
         return this;
@@ -765,6 +743,12 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Update image field options.
+     *
+     * @param {Object} images The list of available images.
+     * @return {this}
+     */
     updateImageFields(images){
         if(this.hasField('background-image')){
             const input = this.getField('background-image').getInput();
@@ -781,6 +765,67 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Update start- and end-time min and max limits.
+     *
+     * @return {this}
+     */
+    updateTimeFieldLimits() {
+        if(this.components && this.hasField('start-time') && this.hasField('end-time')){
+            const start_values = [];
+            const end_values = [];
+
+            this.components.forEach((component) => {
+                const start_value = component.getPropertyValue('start-time');
+                if(start_value !== null){
+                    start_values.push(start_value);
+                }
+
+                const end_value = component.getPropertyValue('end-time');
+                if(end_value !== null){
+                    end_values.push(end_value);
+                }
+            });
+
+            this.getField('start-time').getInput()
+                .setMin(0)
+                .setMax(end_values.length > 0 ? Math.min(...end_values) : null);
+
+            this.getField('end-time').getInput()
+                .setMin(start_values.length > 0 ? Math.max(...start_values) : null)
+                .setMax(MasterClock.getRenderer().getDuration());
+        }
+
+        return this;
+    }
+
+    /**
+     * Update a component's locked state
+     * depending on the value of its 'editor.locked' property.
+     *
+     * @param {Component} component
+     * @return {this}
+     */
+    updateComponentLockedState(component){
+        const locked = component.getPropertyValue('editor.locked');
+
+        this
+            .toggleClass('locked', locked)
+            .toggleField('x', !locked)
+            .toggleField('y', !locked)
+            .toggleField('width', !locked)
+            .toggleField('height', !locked);
+
+        component
+            .setDraggable(!locked)
+            .setResizable(!locked);
+
+        return this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     remove(){
         this.unsetComponents();
         super.remove();

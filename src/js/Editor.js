@@ -278,6 +278,8 @@ export class Editor extends Dom {
             evt.stopImmediatePropagation();
         });
 
+        this.addDelegate('.contextmenu', 'beforeshow', this.onContextMenuBeforeShow.bind(this));
+
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
         Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
@@ -894,7 +896,6 @@ export class Editor extends Dom {
                     }
                 }
             }})
-            .addListener('beforeshow', this.onPlayerContextMenuBeforeShow.bind(this))
             .appendTo(this);
 
         return this;
@@ -976,6 +977,7 @@ export class Editor extends Dom {
                     const player = this.getPlayer();
                     if(player){
                         player.togglePlay();
+                        evt.preventDefault();
                     }
                 }
                 break;
@@ -1036,18 +1038,21 @@ export class Editor extends Dom {
     }
 
     /**
-     * Player ContextMenu beforeshow event callback
+     * ContextMenu beforeshow event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPlayerContextMenuBeforeShow(evt){
-        // Adjust menu position.
-        const pos = evt.detail.pos;
-        const editor_rect = this.get(0).getBoundingClientRect();
-        const player_rect = this.player_frame.get(0).getBoundingClientRect();
-        pos.x += player_rect.left - editor_rect.left;
-        pos.y += player_rect.top - editor_rect.top;
+    onContextMenuBeforeShow(evt){
+        const target = evt.detail.original_event.target;
+        const player = this.getPlayer();
+
+        if (player && Dom.getElementWindow(player.get(0)) === Dom.getElementWindow(target)) {
+            // Adjust menu position.
+            const pos = window.convertPointFromNodeToPage(this.player_wrapper.get(0), evt.detail.pos.x, evt.detail.pos.y);
+            evt.detail.pos.x = pos.x;
+            evt.detail.pos.y = pos.y;
+        }
     }
 
     /**

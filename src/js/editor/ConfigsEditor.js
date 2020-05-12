@@ -267,12 +267,6 @@ export default class ConfigsEditor extends Dom {
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(component.get(0)).addClass('selected');
 
-        if(!component.getPropertyValue('editor.locked')){
-            component
-                .setDraggable(true)
-                .setResizable(true);
-        }
-
         this.updateUI();
 
         if(supressEvent !== true){
