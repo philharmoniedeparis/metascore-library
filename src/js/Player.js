@@ -219,7 +219,17 @@ export default class Player extends Dom {
 
         switch(method){
             case 'play':
-                this.play(params.inTime, params.outTime, params.rIndex);
+                if ('scenario' in params) {
+                    // This is a call from the new API.
+                    // Convert values back to old version.
+                    const inTime = params.inTime * 10;
+                    const outTime = params.outTime * 10;
+                    const rIndex = typeof params.scenario === 'string' ? params.scenario.replace(/^scenario-/g,'') : params.scenario;
+                    this.play(inTime, outTime, rIndex);
+                }
+                else {
+                    this.play(params.inTime, params.outTime, params.rIndex);
+                }
                 break;
 
             case 'pause':
@@ -254,7 +264,15 @@ export default class Player extends Dom {
             }
 
             case 'rindex':
-                this.setReadingIndex(!isNaN(params.index) ? params.index : 0);
+                if (('value' in params) && (typeof params.value === 'string') && (params.value.indexOf("scenario-") === 0)) {
+                    // This is a call from the new API.
+                    // Remove the "scenario-" prefix.
+                    const index = params.value.replace(/^scenario-/g,'');
+                    this.setReadingIndex(!isNaN(index) ? index : 0);
+                }
+                else {
+                    this.setReadingIndex(!isNaN(params.index) ? params.index : 0);
+                }
                 break;
 
             case 'playing':
