@@ -402,7 +402,8 @@ export default class HTML5 extends Dom {
         const promise = this.dom.play();
 
         if (typeof promise !== "undefined") {
-          promise.catch(() => {
+          promise.catch((error) => {
+            console.error(error);
             console.warn('Play was prevented by the browser. If using the metaScore API, make sure to add allow="autoplay" to the player\'s iframe. See https://github.com/w3c/webappsec-feature-policy/blob/master/features.md for more information.');
           });
         }
