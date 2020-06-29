@@ -175,7 +175,7 @@ export class API{
     play(inTime, outTime, scenario){
         if(!isNaN(scenario)){
             // This is likely a v1 call, alter the parameters for backward compatibility.
-            this.postMessage('play', {'inTime': inTime / 10, 'outTime': outTime / 10, 'scenario': `scenario-${scenario}`});
+            this.postMessage('play', {'inTime': (inTime/10).toFixed(2), 'outTime': (outTime/10).toFixed(2), 'scenario': `scenario-${scenario}`});
             return this;
         }
 
