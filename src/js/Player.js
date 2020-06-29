@@ -970,7 +970,7 @@ export class Player extends Dom {
         const _inTime = parseFloat(inTime);
         const _outTime = parseFloat(outTime);
 
-        if(isNaN(_inTime) && isNaN(outTime)){
+        if(isNaN(_inTime) && isNaN(_outTime)){
             renderer.play();
         }
         else{
