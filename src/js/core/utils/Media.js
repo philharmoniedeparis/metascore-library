@@ -1,4 +1,4 @@
-import {pad} from './String';
+import {pad, escapeHTML} from './String';
 import {isEmpty} from './Var';
 import Locale from '../Locale';
 import HTML5 from '../media/renderer/HTML5';
@@ -44,7 +44,7 @@ export function getRendererForMime(mime){
  */
 export function getFileDuration(file, callback){
     if(isEmpty(file.mime)){
-        const message = Locale.t('media.getFileDuration.no-mime.error', "The file's mime type could not be determined for !url", {'!url': file.url});
+        const message = Locale.t('media.getFileDuration.no-mime.error', "The file's mime type could not be determined for !url", {'!url': escapeHTML(file.url)});
         callback(new Error(message));
     }
     else{

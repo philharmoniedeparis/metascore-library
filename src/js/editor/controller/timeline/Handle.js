@@ -2,6 +2,7 @@ import Dom from '../../../core/Dom';
 import Icon from '../../../core/ui/Icon';
 import Button from '../../../core/ui/Button';
 import CheckboxInput from '../../../core/ui/input/CheckboxInput';
+import {escapeHTML} from '../../../core/utils/String';
 
 import expander_icon from '../../../../img/editor/controller/timeline/handle/expander.svg?svg-sprite';
 import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
@@ -87,7 +88,7 @@ export default class Handle extends Dom {
      * @return {this}
      */
     setLabel(value){
-        this.label.text(value);
+        this.label.text(escapeHTML(value));
         this.attr('title', value);
 
         return this;
