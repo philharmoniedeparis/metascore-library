@@ -10,6 +10,7 @@ import FileInput from '../../core/ui/input/FileInput';
 import Field from  '../Field';
 import SpectrogramForm from './guideassets/SpectrogramForm';
 import {isValidMimeType} from '../../core/utils/Media';
+import {escapeHTML} from '../../core/utils/String';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
@@ -303,6 +304,8 @@ export default class GuideAssets extends Dom {
     }
 
     createAssetItem(asset){
+        const name = escapeHTML(asset.name);
+
         const el = new Dom('<div/>', {'class': 'asset'})
             .attr('draggable', 'true')
             .attr('tabindex', '0')
@@ -341,7 +344,7 @@ export default class GuideAssets extends Dom {
             new Icon({'symbol': image_icon}).appendTo(figure);
         }
 
-        new Dom('<div/>', {'class': 'label', 'text': asset.name, 'title': asset.name})
+        new Dom('<div/>', {'class': 'label', 'text': name, 'title': name})
             .appendTo(el);
 
         const buttons = new Dom('<div/>', {'class': 'buttons'})
@@ -439,7 +442,7 @@ export default class GuideAssets extends Dom {
                 if(this.triggerEvent('beforeassetremove', {'asset': asset})){
                     new Confirm({
                         'parent': this,
-                        'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', {'@name': asset.name}),
+                        'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', {'@name': escapeHTML(asset.name)}),
                         'confirmLabel': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.confirmLabel', 'Delete'),
                         'onConfirm': () => {
                             this.removeAsset(asset_id);

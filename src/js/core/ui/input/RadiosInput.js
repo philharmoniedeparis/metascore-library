@@ -148,7 +148,7 @@ export default class RadiosInput extends Input{
         const state = new Dom('<div/>', {'class': 'state'})
             .appendTo(radio_wrapper);
 
-        new Dom('<label/>', {'text': text, 'for': uid})
+        new Dom('<label/>', {'text': escapeHTML(text), 'for': uid})
             .appendTo(state);
 
         if(this.configs.icon){

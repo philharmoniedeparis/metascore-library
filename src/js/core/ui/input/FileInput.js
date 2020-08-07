@@ -1,6 +1,7 @@
 import Input from '../Input';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
+import {escapeHTML} from '../../utils/String';
 
 import {className} from '../../../../css/core/ui/input/File.scss';
 
@@ -81,7 +82,7 @@ export default class FileInput extends Input {
                 label_text = Locale.formatString(this.configs.multipleLabel, {'%count': this.files.length});
             }
             else{
-                label_text = this.files.item(0).name;
+                label_text = escapeHTML(this.files.item(0).name);
             }
         }
         this.label.text(label_text);

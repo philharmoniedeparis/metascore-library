@@ -207,3 +207,30 @@ export function naturalCompare(a, b, insensitive){ // eslint-disable-line comple
 
     return 0;
 }
+
+const escapeHTMLRegExp = /[&<>"']/;
+const escapeHTMLEntities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+};
+
+/**
+ * Converts the special html characters "&", "<", ">", '"', and "'" to their corresponding HTML entities.
+ *
+ * @param {String} str The original string
+ * @return {String} The escaped string
+ */
+export function escapeHTML(str) {
+    if (!str) {
+        return '';
+    }
+
+    if (escapeHTMLRegExp.test(str)) {
+        return str.replace(escapeHTMLRegExp, (c) => escapeHTMLEntities[c]);
+    }
+
+    return str;
+}

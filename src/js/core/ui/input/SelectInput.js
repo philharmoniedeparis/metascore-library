@@ -2,6 +2,7 @@ import Input from '../Input';
 import Icon from '../../ui/Icon';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
+import {escapeHTML} from '../../utils/String';
 
 import arrow_icon from '../../../../img/core/ui/input/select/arrow.svg?svg-sprite'
 
@@ -102,7 +103,7 @@ export default class SelectInput extends Input {
      * @return {Dom} The new option
      */
     addOption(value, text, group){
-        const option = new Dom('<option/>', {'text': text, 'value': value})
+        const option = new Dom('<option/>', {'text': escapeHTML(text), 'value': value})
             .appendTo(group ? group : this.native_input);
 
         // Refresh value
