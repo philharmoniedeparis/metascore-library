@@ -6,13 +6,12 @@
         "files.trimTrailingWhitespace": false
     },
     "files.exclude": {
+    },
+    "search.exclude": {
+        "**/bower_components": false,
         "**/design": true,
         "**/dist": true,
         "**/docs": true,
         "**/node_modules": true
-    },
-    "search.exclude": {
-        "**/bower_components": false,
-        "**/node_modules": false
     }
 }

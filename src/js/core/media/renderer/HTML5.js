@@ -1,6 +1,7 @@
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
+import {escapeHTML} from '../../utils/String';
 import Ajax from '../../Ajax';
 import WaveformData from 'waveform-data/waveform-data';
 import WebAudioBuilder from 'waveform-data/webaudio';
@@ -95,7 +96,11 @@ export default class HTML5 extends Dom {
         // @todo: replace with promises to eliminate the propability of both an error and a success being called
 
         audio.addEventListener('error', () => {
-            const message = Locale.t('core.media.renderer.HTML5.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+            const message = Locale.t(
+                'core.media.renderer.HTML5.getDurationFromURI.error',
+                'An error occured while attempting to load the media: !url',
+                {'!url': escapeHTML(url)}
+            );
             callback(new Error(message));
         });
 

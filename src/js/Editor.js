@@ -1,6 +1,7 @@
 import Dom from './core/Dom';
 import {MasterClock} from './core/media/Clock';
 import {isArray} from './core/utils/Var';
+import {escapeHTML} from './core/utils/String';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -2543,7 +2544,7 @@ export class Editor extends Dom {
                         alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', {'@count': components.length});
                     }
                     else{
-                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', {'@name': components[0].getName()});
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', {'@name': escapeHTML(components[0].getName())});
                     }
                     break;
 
@@ -2554,7 +2555,7 @@ export class Editor extends Dom {
                     else{
                         const block = components[0].getParent();
                         const index = block.getChildIndex(components[0]) + 1;
-                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': block.getName()});
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': escapeHTML(block.getName())});
                     }
                     break;
 
@@ -2563,7 +2564,7 @@ export class Editor extends Dom {
                         alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', {'@count': components.length});
                     }
                     else{
-                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', {'@name': components[0].getName()});
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', {'@name': escapeHTML(components[0].getName())});
                     }
                     break;
             }

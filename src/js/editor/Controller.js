@@ -9,6 +9,7 @@ import WaveformZoom from './controller/waveform/Zoom';
 import Timeline from './controller/Timeline';
 import MediaSourceSelector from './controller/MediaSourceSelector';
 import ResizeObserver from 'resize-observer-polyfill';
+import {escapeHTML} from '../core/utils/String';
 
 import play_icon from '../../img/editor/controller/play.svg?svg-sprite';
 import pause_icon from '../../img/editor/controller/pause.svg?svg-sprite';
@@ -253,7 +254,7 @@ export default class Controller extends Dom {
 
             this.getTimeInput().setMax(renderer.getDuration());
 
-            this.controls.file_btn.setLabel(renderer.getSource().name);
+            this.controls.file_btn.setLabel(escapeHTML(renderer.getSource().name));
 
             this.removeClass('disabled');
         }

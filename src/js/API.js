@@ -41,10 +41,10 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
  *         <a href="#hideBlock=block1" rel="metascore" data-guide="guide-93">HIDE BLOCK 1</a>
  *         <a href="#toggleBlock=block1" rel="metascore" data-guide="guide-93">TOGGLE BLOCK 1</a>
- *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
  *         <a href="#enterFullscreen" rel="metascore" data-guide="guide-93">ENTER FULLSCREEN</a>
  *         <a href="#exitFullscreen" rel="metascore" data-guide="guide-93">EXIT FULLSCREEN</a>
  *         <a href="#toggleFullscreen" rel="metascore" data-guide="guide-93">TOGGLE FULLSCREEN</a>
+ *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
  */
 export class API{
 
@@ -175,7 +175,7 @@ export class API{
     play(inTime, outTime, scenario){
         if(!isNaN(scenario)){
             // This is likely a v1 call, alter the parameters for backward compatibility.
-            this.postMessage('play', {'inTime': (inTime/10).toFixed(2), 'outTime': (outTime/10).toFixed(2), 'scenario': `scenario-${scenario}`});
+            this.postMessage('play', {'inTime': (inTime/100).toFixed(2), 'outTime': (outTime/100).toFixed(2), 'scenario': `scenario-${scenario}`});
             return this;
         }
 

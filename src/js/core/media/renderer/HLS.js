@@ -1,5 +1,6 @@
 import HTML5 from './HTML5';
 import Locale from '../../Locale';
+import {escapeHTML} from '../../utils/String';
 
 /**
 * The hls.js CDN URL
@@ -136,7 +137,11 @@ export default class HLS extends HTML5 {
                 hls.on(Hls.Events.ERROR, (evt) => {
                     if(evt.fatal){
                         // @todo: be more specific
-                        const message = Locale.t('core.media.renderer.HLS.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                        const message = Locale.t(
+                            'core.media.renderer.HLS.getDurationFromURI.error',
+                            'An error occured while attempting to load the media: !url',
+                            {'!url': escapeHTML(url)}
+                        );
                         console.error(evt.response.text);
                         callback(new Error(message));
                     }

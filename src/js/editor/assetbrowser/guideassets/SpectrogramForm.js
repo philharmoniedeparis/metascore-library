@@ -375,10 +375,21 @@ export default class SpectrogramForm extends Overlay {
         }
     }
 
+    /**
+     * Get a field by name
+     *
+     * @param {String} name The field's name
+     * @returns {Field|undefined} The corresponding field or undefined
+     */
     getField(name){
         return this.fields[name];
     }
 
+    /**
+     * Send the data via Ajax.
+     *
+     * @private
+     */
     sendData(){
         const data = new FormData(this.form.get(0));
 

@@ -6,6 +6,7 @@ import Prompt from '../../core/ui/overlay/Prompt';
 import Confirm from '../../core/ui/overlay/Confirm';
 import ContextMenu from '../../core/ui/ContextMenu';
 import ResizeObserver from 'resize-observer-polyfill';
+import {escapeHTML} from '../../core/utils/String';
 
 import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?svg-sprite';
 import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?svg-sprite';
@@ -527,7 +528,7 @@ export default class ScenarioSelector extends Dom {
      */
     showDeleteConfirm(scenario){
         new Confirm({
-            'text': Locale.t('editor.controller.ScenarioSelector.delete.confirm.text', 'Are you sure you want to delete the <em>@scenario</em> scenario?', {'@scenario': scenario}),
+            'text': Locale.t('editor.controller.ScenarioSelector.delete.confirm.text', 'Are you sure you want to delete the <em>@scenario</em> scenario?', {'@scenario': escapeHTML(scenario.getName())}),
             'confirmLabel': Locale.t('editor.controller.ScenarioSelector.delete.confirm.confirmLabel', 'Delete'),
             'onConfirm': this.onDeleteConfirm.bind(this, scenario),
             'parent': this.editor
@@ -575,7 +576,7 @@ export default class ScenarioSelector extends Dom {
      * @return {this}
      */
     addScenarioItem(scenario){
-        new Dom('<li/>', {'class': 'item', 'text': scenario.getName()})
+        new Dom('<li/>', {'class': 'item', 'text': escapeHTML(scenario.getName())})
             .data('scenario', scenario.getId())
             .appendTo(this.list);
 
@@ -593,7 +594,7 @@ export default class ScenarioSelector extends Dom {
     updateScenarioItem(scenario){
         const item = this.getScenarioItem(scenario);
         if(item){
-            item.text(scenario.getName());
+            item.text(escapeHTML(scenario.getName()));
         }
 
         return this;

@@ -74,6 +74,7 @@ export default class MediaSourceSelector extends Overlay {
         const contents = this.getContents();
 
         this.form = new Dom('<form/>')
+            .addListener('submit', this.onFormSubmit.bind(this))
             .appendTo(contents);
 
         /**
@@ -115,6 +116,17 @@ export default class MediaSourceSelector extends Overlay {
     }
 
     /**
+     * The form's submit event callback
+     *
+     * @param {Event} evt The event object
+     * @private
+     */
+    onFormSubmit(evt){
+        this.processValues();
+        evt.preventDefault();
+    }
+
+    /**
      * @inheritdoc
      */
     onButtonClick(evt){
@@ -122,7 +134,7 @@ export default class MediaSourceSelector extends Overlay {
 
         switch(action){
             case 'apply':
-                this.onApplyClick();
+                this.processValues();
                 break;
 
             default:
@@ -130,7 +142,12 @@ export default class MediaSourceSelector extends Overlay {
         }
     }
 
-    onApplyClick(){
+    /**
+     * Process the form values.
+     *
+     * @private
+     */
+    processValues(){
         const files = this.fields.file.getInput().getFiles();
         const file = files && files.length > 0 ? files.item(0) : null;
         const url = this.fields.url.getInput().getValue();
@@ -240,10 +257,6 @@ export default class MediaSourceSelector extends Overlay {
                 this.hide();
             }
         });
-    }
-
-    getField(name){
-        return this.fields[name];
     }
 
     /**
