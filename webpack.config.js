@@ -172,7 +172,7 @@ module.exports = (env, argv) => {
       new i18nExtractPlugin({
         test: /^src[\/\\].*\.js$/,
         exclude: /node_modules/,
-        regexp: /Locale\.t\((["'])((?:(?=(\\?))\3.)*?)\1, ?(["'])((?:(?=(\\?))\6.)*?)\4/gm,
+        regexp: /Locale\.t\(\s*?(["'])((?:(?=(\\?))\3.)*?)\1,\s*?(["'])((?:(?=(\\?))\6.)*?)\4/gm,
         fn: (matches) => {
           return {
             'key': matches[2],
