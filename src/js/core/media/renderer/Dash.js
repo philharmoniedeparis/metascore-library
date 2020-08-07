@@ -1,5 +1,6 @@
 import HTML5 from './HTML5';
 import Locale from '../../Locale';
+import {escapeHTML} from '../../utils/String';
 
 /**
 * The dash.js CDN URL
@@ -125,7 +126,11 @@ export default class Dash extends HTML5 {
             dash.on(DashJS.events.ERROR, (evt) => {
                 if(this.isErrorFatal(evt)){
                     // @todo: be more specific
-                    const message = Locale.t('core.media.renderer.Dash.getDurationFromURI.error', 'An error occured while attempting to load the media: !url', {'!url': url});
+                    const message = Locale.t(
+                        'core.media.renderer.Dash.getDurationFromURI.error',
+                        'An error occured while attempting to load the media: !url',
+                        {'!url': escapeHTML(url)}
+                    );
                     console.error(evt.response.text);
                     callback(new Error(message));
                 }
