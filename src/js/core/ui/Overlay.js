@@ -122,13 +122,6 @@ export default class Overlay extends Dom {
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this.body);
 
-        /**
-         * The text container
-         * @type {Dom}
-         */
-        this.text = new Dom('<div/>', {'class': 'text-wrapper'})
-            .appendTo(this.contents);
-
         if(this.configs.text){
             this.setText(this.configs.text);
         }
@@ -153,7 +146,16 @@ export default class Overlay extends Dom {
      * @return {this}
      */
     setText(str){
-        this.text.text(str);
+        if (!this.text_wrapper) {
+            /**
+             * The text container
+             * @type {Dom}
+             */
+            this.text_wrapper = new Dom('<div/>', {'class': 'text-wrapper'})
+                .appendTo(this.contents);
+        }
+
+        this.text_wrapper.text(str);
 
         return this;
     }
