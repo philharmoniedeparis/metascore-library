@@ -39,10 +39,6 @@ export default class Field extends Dom{
          */
         this.input = input;
 
-        if(this.configs.label){
-            this.setLabelText(this.configs.label);
-        }
-
         /**
          * The input
          * @type {Input}
@@ -50,6 +46,17 @@ export default class Field extends Dom{
         this.input
             .addListener('valuechange', this.onInputValueChange.bind(this))
             .appendTo(this);
+
+        /**
+         * The label element
+         * @type {Dom}
+         */
+        this.label = new Dom('<label/>', {'for': this.getInput().getId()})
+            .appendTo(this);
+
+        if(this.configs.label){
+            this.setLabelText(this.configs.label);
+        }
 
         if(this.configs.description){
             this.setDescriptionText(this.configs.description);
@@ -96,16 +103,6 @@ export default class Field extends Dom{
      * @return {this}
      */
     setLabelText(text){
-        if(!('label' in this)){
-            const id = this.getInput().getId();
-            /**
-             * A potential <label> element
-             * @type {Dom}
-             */
-            this.label = new Dom('<label/>', {'for': id})
-                .appendTo(this);
-        }
-
         this.label.text(text);
 
         return this;
