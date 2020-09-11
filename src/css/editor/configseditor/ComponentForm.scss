@@ -113,7 +113,7 @@
                 .field{
                     &[data-property="border-color"],
                     &[data-property="border-width"]{
-                        label{
+                        > label{
                             display: none;
                         }
                     }
