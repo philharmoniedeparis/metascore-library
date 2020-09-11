@@ -21,6 +21,8 @@
 	"core.media.renderer.HTML5.onError.default.msg": "An unknown error occurred.",
 	"core.media.renderer.HTML5.onError.network.msg": "A network error caused the media download to fail.",
 	"core.media.renderer.HTML5.onError.not-supported.msg": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+	"core.ui.input.ColorInput.tabs.picker.label": "Picker",
+	"core.ui.input.ColorInput.tabs.swatches.label": "Swatches",
 	"core.ui.input.TimeInput.clear.tooltip": "Clear value",
 	"core.ui.input.TimeInput.in.tooltip": "Set value to current time",
 	"core.ui.input.TimeInput.out.tooltip": "Set current time to this value",

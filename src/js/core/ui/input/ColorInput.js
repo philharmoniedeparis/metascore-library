@@ -1,10 +1,13 @@
 import Input from '../Input';
 import Dom from '../../Dom';
+import Locale from '../../Locale';
 import Picker from './color/Picker';
+import Swatches from './color/Swatches';
 import Button from '../Button';
 import {toRGBA} from '../../utils/Color';
 import {isEmpty} from '../../utils/Var';
 import {throttle} from '../../utils/Function';
+import {uuid} from '../../utils/String';
 
 import clear_icon from '../../../../img/core/ui/input/color/clear.svg?svg-sprite';
 
@@ -23,7 +26,9 @@ export default class ColorInput extends Input {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Mixed} [value={r:255, g:255, b:255, a:1}}] The default value (see {@link toRGBA} for valid values)
+     * @property {Mixed} [value=#fff}] The default value (see {@link toRGBA} for valid values)
+     * @property {Mixed} [picker={}] Configs to pass to the color picker, or false to disable the picker
+     * @property {Mixed} [swatches=false] Configs to pass to the color swatch selector, or false to disable swatches
      */
     constructor(configs) {
         // call parent constructor
@@ -35,8 +40,8 @@ export default class ColorInput extends Input {
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onWindowKeyDown = this.onWindowKeyDown.bind(this);
 
-        // throttle the repositionPicker
-        this.repositionPicker = throttle(this.repositionPicker.bind(this), 100);
+        // throttle the repositionOverlay
+        this.repositionOverlay = throttle(this.repositionOverlay.bind(this), 100);
 
         this.addClass(`color ${className}`);
     }
@@ -47,7 +52,10 @@ export default class ColorInput extends Input {
     * @return {Object} The default values
     */
     static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {});
+        return Object.assign({}, super.getDefaults(), {
+            'picker': {},
+            'swatches': {}
+        });
     }
 
     /**
@@ -65,42 +73,103 @@ export default class ColorInput extends Input {
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
 
-        this.picker = new Picker()
-            .addListener('buttonclick', this.onPickerButtonClick.bind(this))
-            .hide().appendTo(this);
+        this.overlay = new Dom('<div/>', {'class': `overlay`})
+            .hide()
+            .appendTo(this);
+
+        const tabs_input_name = `tabs-${uuid(5)}`;
+        if (this.configs.picker !== false) {
+            const id = `tab-input-${uuid(5)}`;
+
+            new Dom('<input/>', {'id': id, 'name': tabs_input_name, 'type': 'radio', 'checked': 'checked'})
+                .addClass('tab-input')
+                .appendTo(this.overlay);
+
+            new Dom('<label/>', {'for': id, 'text': Locale.t('core.ui.input.ColorInput.tabs.picker.label', 'Picker')})
+                .addClass('tab-label')
+                .appendTo(this.overlay);
+
+            this.picker = new Picker(this.configs.picker)
+                .addListener('buttonclick', this.onPickerButtonClick.bind(this))
+                .addClass('tab-content')
+                .appendTo(this.overlay);
+        }
+        if (this.configs.swatches !== false) {
+            const id = `tab-input-${uuid(5)}`;
+
+            new Dom('<input/>', {'id': id, 'name': tabs_input_name, 'type': 'radio'})
+                .addClass('tab-input')
+                .appendTo(this.overlay);
+
+            new Dom('<label/>', {'for': id, 'text': Locale.t('core.ui.input.ColorInput.tabs.swatches.label', 'Swatches')})
+                .addClass('tab-label')
+                .appendTo(this.overlay);
+
+            this.swatches = new Swatches(this.configs.swatches)
+                .addListener('swatchclick', this.onSwatchesSwatchClick.bind(this))
+                .addClass('tab-content')
+                .appendTo(this.overlay);
+        }
     }
 
+    /**
+     * Button click event callback
+     *
+     * @private
+     */
     onButtonClick(){
-        this.showPicker();
+        this.showOverlay();
     }
 
+    /**
+     * Picker button click event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onPickerButtonClick(evt){
         switch(evt.detail.button){
             case 'save':
                 {
                     const hex = this.picker.getHEX();
                     this.setValue(hex);
-                    this.picker.hide();
+                    this.overlay.hide();
                 }
                 break;
 
             case 'reset':
                 this.setValue(null);
-                this.picker.hide();
+                this.overlay.hide();
                 break;
 
             case 'cancel':
-                this.picker.hide();
+                this.overlay.hide();
                 break;
         }
     }
 
-    showPicker(){
-        this.picker
-            .setValue(this.getValue())
-            .show();
+    /**
+     * Swatches swatchclick event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onSwatchesSwatchClick(evt) {
+        this.setValue(evt.detail.value);
+        this.overlay.hide();
+    }
 
-        this.repositionPicker();
+    /**
+     * Show the overlay
+     */
+    showOverlay(){
+        if (this.picker) {
+            this.picker.setValue(this.getValue());
+        }
+
+        this.overlay.show();
+
+        this.repositionOverlay();
 
         if(!this.doc){
             /**
@@ -119,8 +188,11 @@ export default class ColorInput extends Input {
         return this;
     }
 
-    hidePicker(){
-        this.picker.hide();
+    /**
+     * Hide the overlay
+     */
+    hideOverlay(){
+        this.overlay.hide();
 
         this.doc.removeListener('mousedown', this.onDocMouseDown, true);
 
@@ -130,26 +202,26 @@ export default class ColorInput extends Input {
     }
 
     /**
-     * Reposition the picker relative to the button's position
+     * Reposition the overlay relative to the button's position
      *
      * @private
      */
-    repositionPicker(){
+    repositionOverlay(){
         const rect = this.button.get(0).getBoundingClientRect();
-        const picker_rect = this.picker.get(0).getBoundingClientRect();
+        const overlay_rect = this.overlay.get(0).getBoundingClientRect();
 
-        let x = Math.max(0, rect.left + (rect.width - picker_rect.width) / 2);
+        let x = Math.max(0, rect.left + (rect.width - overlay_rect.width) / 2);
         let y = Math.max(0, rect.bottom + 10);
 
-        if((x + picker_rect.width) > window.innerWidth){
-            x = window.innerWidth - picker_rect.width;
+        if((x + overlay_rect.width) > window.innerWidth){
+            x = window.innerWidth - overlay_rect.width;
         }
 
-        if((y + picker_rect.height) > window.innerHeight){
-            y = window.innerHeight - picker_rect.height;
+        if((y + overlay_rect.height) > window.innerHeight){
+            y = window.innerHeight - overlay_rect.height;
         }
 
-        this.picker
+        this.overlay
             .css('left', `${x}px`)
             .css('top', `${y}px`);
 
@@ -157,37 +229,37 @@ export default class ColorInput extends Input {
     }
 
     /**
-     * document mousedown event handler
+     * Document mousedown event handler
      *
      * @private
      * @param {Event} evt The event object
      */
     onDocMouseDown(evt){
         if(!this.get(0).contains(evt.target)){
-            this.hidePicker();
+            this.hideOverlay();
         }
     }
 
     /**
-     * window scroll event handler
+     * Window scroll event handler
      *
      * @private
      */
     onWindowScroll(){
-        this.repositionPicker(true);
+        this.repositionOverlay(true);
     }
 
     /**
-     * window resize event handler
+     * Window resize event handler
      *
      * @private
      */
     onWindowResize(){
-        this.repositionPicker(true);
+        this.repositionOverlay(true);
     }
 
     /**
-     * window keyup event handler
+     * Window keyup event handler
      *
      * @private
      * @param {Event} evt The event object
@@ -195,14 +267,14 @@ export default class ColorInput extends Input {
     onWindowKeyDown(evt){
         switch(evt.key){
             case 'Escape':
-                this.hidePicker();
+                this.hideOverlay();
                 break;
 
             case 'Enter':
                 {
-                    const hex = this.picker.getHEX();
+                    const hex = this.picker.getHEX(); //TODO: fix when no picker
                     this.setValue(hex);
-                    this.picker.hide();
+                    this.overlay.hide();
                 }
                 break;
         }
@@ -210,6 +282,9 @@ export default class ColorInput extends Input {
         evt.stopPropagation();
     }
 
+    /**
+     * @inheritdoc
+     */
     setValue(value, supressEvent){
         super.setValue(value, supressEvent);
 
