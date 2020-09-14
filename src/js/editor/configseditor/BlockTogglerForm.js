@@ -10,6 +10,20 @@ import {className} from '../../../css/editor/configseditor/BlockTogglerForm.scss
  */
 export default class BlockTogglerForm extends BlockForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.BlockTogglerForm.title.single', 'Attributes of block toggler'),
+        'title_plural': Locale.t('editor.configseditor.BlockTogglerForm.title.plural', 'Attributes of @count block togglers'),
+        'fields': [
+            'name',
+            'hidden',
+            'blocks',
+            'background',
+            'border',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -18,29 +32,6 @@ export default class BlockTogglerForm extends BlockForm {
         super(...args);
 
         this.addClass(`blocktoggler-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.BlockTogglerForm.title.single', 'Attributes of block toggler'),
-            'title_plural': Locale.t('editor.configseditor.BlockTogglerForm.title.plural', 'Attributes of @count block togglers'),
-            'fields': [
-                'name',
-                'hidden',
-                'blocks',
-                'background',
-                'border',
-                'position',
-                'dimension'
-            ]
-        });
     }
 
     addField(name){

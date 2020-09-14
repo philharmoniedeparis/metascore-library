@@ -13,6 +13,11 @@ import {className} from '../../../../css/editor/controller/timeline/Track.scss';
  */
 export default class Track extends Dom {
 
+    static defaults = {
+        'draggableConfigs': null,
+        'resizableConfigs': null
+    };
+
     /**
      * Instantiate
      *
@@ -26,7 +31,7 @@ export default class Track extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         const component_id = component.getId();
         const component_type = component.getType();
@@ -84,18 +89,6 @@ export default class Track extends Dom {
             .data('type', component_type)
             .updateLabel()
             .updateSize();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'draggableConfigs': null,
-            'resizableConfigs': null
-        };
     }
 
     /**

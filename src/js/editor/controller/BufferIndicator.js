@@ -8,6 +8,11 @@ import {className} from '../../../css/editor/controller/BufferIndicator.scss';
  */
 export default class BufferIndicator extends Dom {
 
+    static defaults = {
+        'bufferedColor': '#7070c5',
+        'playbackColor': '#0000fe'
+    };
+
     /**
      * Instantiate
      *
@@ -22,7 +27,7 @@ export default class BufferIndicator extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         const layers = new Dom('<div/>', {'class': 'layers'})
             .appendTo(this);
@@ -53,18 +58,6 @@ export default class BufferIndicator extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'bufferedColor': '#7070c5',
-            'playbackColor': '#0000fe'
-        };
     }
 
     /**

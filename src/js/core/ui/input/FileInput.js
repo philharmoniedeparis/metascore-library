@@ -10,6 +10,13 @@ import {className} from '../../../../css/core/ui/input/File.scss';
  */
 export default class FileInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'multiple': false,
+        'accept': null,
+        'emptyLabel': Locale.t('core.input.FileInput.emptyLabel', 'Browse...'),
+        'multipleLabel': Locale.t('core.input.FileInput.multipleLabel', '%count files selected'),
+    });
+
     /**
      * Instantiate
      *
@@ -21,20 +28,6 @@ export default class FileInput extends Input {
         super(configs);
 
         this.addClass(`file ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'multiple': false,
-            'accept': null,
-            'emptyLabel': Locale.t('core.input.FileInput.emptyLabel', 'Browse...'),
-            'multipleLabel': Locale.t('core.input.FileInput.multipleLabel', '%count files selected'),
-        });
     }
 
     /**

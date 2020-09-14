@@ -13,6 +13,27 @@ import {className} from '../../../css/editor/configseditor/SVGForm.scss';
  */
 export default class SVGForm extends ElementForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.SVGForm.title.single', 'Attributes of vector graphic'),
+        'title_plural': Locale.t('editor.configseditor.SVGForm.title.plural', 'Attributes of @count vector graphics'),
+        'fields': [
+            'name',
+            'hidden',
+            'stroke',
+            'stroke-width',
+            'stroke-dasharray',
+            'fill',
+            'marker-start',
+            'marker-end',
+            'background',
+            'border',
+            'opacity',
+            'time',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -24,36 +45,6 @@ export default class SVGForm extends ElementForm {
         this.onComponentLoad = this.onComponentLoad.bind(this);
 
         this.addClass(`svg-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.SVGForm.title.single', 'Attributes of vector graphic'),
-            'title_plural': Locale.t('editor.configseditor.SVGForm.title.plural', 'Attributes of @count vector graphics'),
-            'fields': [
-                'name',
-                'hidden',
-                'stroke',
-                'stroke-width',
-                'stroke-dasharray',
-                'fill',
-                'marker-start',
-                'marker-end',
-                'background',
-                'border',
-                'opacity',
-                'time',
-                'position',
-                'dimension'
-            ]
-        });
     }
 
     addField(name){

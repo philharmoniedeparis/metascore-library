@@ -13,6 +13,11 @@ import {className} from '../../css/editor/Field.scss';
  */
 export default class Field extends Dom{
 
+    static defaults = {
+        'label': null,
+        'description': null
+    };
+
     /**
      * Instantiate
      *
@@ -28,7 +33,7 @@ export default class Field extends Dom{
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -40,18 +45,14 @@ export default class Field extends Dom{
         this.input = input;
 
         /**
-         * The input
-         * @type {Input}
-         */
-        this.input
-            .addListener('valuechange', this.onInputValueChange.bind(this))
-            .appendTo(this);
-
-        /**
          * The label element
          * @type {Dom}
          */
-        this.label = new Dom('<label/>', {'for': this.getInput().getId()})
+        this.label = new Dom('<label/>', {'for': this.input.getId()})
+            .appendTo(this);
+
+        this.input
+            .addListener('valuechange', this.onInputValueChange.bind(this))
             .appendTo(this);
 
         if(this.configs.label){
@@ -61,18 +62,6 @@ export default class Field extends Dom{
         if(this.configs.description){
             this.setDescriptionText(this.configs.description);
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'label': null,
-            'description': null
-        };
     }
 
     /**

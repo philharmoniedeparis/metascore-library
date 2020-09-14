@@ -16,6 +16,25 @@ import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
  */
 export default class AnimationForm extends ElementForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
+        'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
+        'fields': [
+            'name',
+            'hidden',
+            'start-frame',
+            'loop-duration',
+            'reversed',
+            'colors',
+            'background',
+            'border',
+            'opacity',
+            'time',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -27,34 +46,6 @@ export default class AnimationForm extends ElementForm {
         this.onComponentLoad = this.onComponentLoad.bind(this);
 
         this.addClass(`animation-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
-            'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
-            'fields': [
-                'name',
-                'hidden',
-                'start-frame',
-                'loop-duration',
-                'reversed',
-            'colors',
-                'background',
-                'border',
-                'opacity',
-                'time',
-                'position',
-                'dimension'
-            ]
-        });
     }
 
     addField(name){

@@ -14,6 +14,10 @@ import {className} from '../../../../css/editor/controller/timeline/Handle.scss'
  */
 export default class Handle extends Dom {
 
+    static defaults = {
+        'icon': null
+    };
+
     /**
      * Instantiate
      */
@@ -25,7 +29,7 @@ export default class Handle extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         const inner = new Dom('<div/>', {'class': 'inner'})
             .appendTo(this);
@@ -53,17 +57,6 @@ export default class Handle extends Dom {
             .data('action', 'lock')
             .attr('title', 'Toggle lock')
             .appendTo(togglers);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'icon': null
-        };
     }
 
     /**

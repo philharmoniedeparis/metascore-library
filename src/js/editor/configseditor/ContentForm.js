@@ -10,6 +10,22 @@ import {className} from '../../../css/editor/configseditor/ContentForm.scss';
  */
 export default class ContentForm extends ElementForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.ContentForm.title.single', 'Attributes of content'),
+        'title_plural': Locale.t('editor.configseditor.ContentForm.title.plural', 'Attributes of @count contents'),
+        'fields': [
+            'name',
+            'hidden',
+            'contents',
+            'background',
+            'border',
+            'opacity',
+            'time',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -25,31 +41,6 @@ export default class ContentForm extends ElementForm {
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
         this.addClass(`content-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.ContentForm.title.single', 'Attributes of content'),
-            'title_plural': Locale.t('editor.configseditor.ContentForm.title.plural', 'Attributes of @count contents'),
-            'fields': [
-                'name',
-                'hidden',
-                'contents',
-                'background',
-                'border',
-                'opacity',
-                'time',
-                'position',
-                'dimension'
-            ]
-        });
     }
 
     setComponents(components){

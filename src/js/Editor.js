@@ -30,6 +30,26 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  */
 export class Editor extends Dom {
 
+    static defaults =  {
+        'container': 'body',
+        'player': {
+            'url': null,
+            'update_url': null,
+        },
+        'publish_url': null,
+        'autosave': {
+            'url': null,
+            'interval': null
+        },
+        'asset_browser': {},
+        'color_swatches': [],
+        'lang': 'en',
+        'xhr': {},
+        'history': {
+            'grouping_timeout': 100
+        }
+    };
+
     /**
      * Instantiate
      *
@@ -53,7 +73,7 @@ export class Editor extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The dirty data keys
@@ -71,32 +91,6 @@ export class Editor extends Dom {
         else{
             this.init();
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'container': 'body',
-            'player': {
-                'url': null,
-                'update_url': null,
-            },
-            'publish_url': null,
-            'autosave': {
-                'url': null,
-                'interval': null
-            },
-            'asset_browser': {},
-            'lang': 'en',
-            'xhr': {},
-            'history': {
-                'grouping_timeout': 100
-            }
-        };
     }
 
     /**

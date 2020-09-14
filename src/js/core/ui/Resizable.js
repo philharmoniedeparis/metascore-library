@@ -12,6 +12,23 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Res
  */
 export default class Resizable {
 
+    static defaults = {
+        'target': null,
+        'directions': [
+            'top',
+            'right',
+            'bottom',
+            'left',
+            'top-left',
+            'top-right',
+            'bottom-left',
+            'bottom-right'
+        ],
+        'autoUpdate': true,
+        'snapGuideContainer': null,
+        'snapThreshold': 5
+    };
+
     /**
      * Instantiate
      *
@@ -27,7 +44,7 @@ export default class Resizable {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * Snap guides
@@ -54,30 +71,6 @@ export default class Resizable {
         });
 
         this.enable();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'target': null,
-            'directions': [
-                'top',
-                'right',
-                'bottom',
-                'left',
-                'top-left',
-                'top-right',
-                'bottom-left',
-                'bottom-right'
-            ],
-            'autoUpdate': true,
-            'snapGuideContainer': null,
-            'snapThreshold': 5
-        };
     }
 
     /**

@@ -27,47 +27,40 @@ const svg_elements = [
  */
 export default class SVG extends Element {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'src': {
+                'type': 'string'
+            },
+            'stroke': {
+                'type': 'color'
+            },
+            'stroke-width': {
+                'type': 'number'
+            },
+            'stroke-dasharray': {
+                'type': 'string'
+            },
+            'fill': {
+                'type': 'color'
+            },
+            'marker-start': {
+                'type': 'string'
+            },
+            'marker-mid': {
+                'type': 'string'
+            },
+            'marker-end': {
+                'type': 'string'
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'SVG';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'src': {
-                    'type': 'string'
-                },
-                'stroke': {
-                    'type': 'color'
-                },
-                'stroke-width': {
-                    'type': 'number'
-                },
-                'stroke-dasharray': {
-                    'type': 'string'
-                },
-                'fill': {
-                    'type': 'color'
-                },
-                'marker-start': {
-                    'type': 'string'
-                },
-                'marker-mid': {
-                    'type': 'string'
-                },
-                'marker-end': {
-                    'type': 'string'
-                }
-            })
-        });
     }
 
     /**

@@ -7,6 +7,16 @@ import {className} from '../../../../css/core/ui/input/Slider.scss';
  */
 export default class SliderInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': 0,
+        'min': null,
+        'max': null,
+        'step': 1,
+        'vertical': false,
+        'reversed': false,
+        'triggerChangeOnDrag': false
+    })
+
     /**
      * Instantiate
      *
@@ -27,23 +37,6 @@ export default class SliderInput extends Input {
         super(configs);
 
         this.addClass(`slider ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': 0,
-            'min': null,
-            'max': null,
-            'step': 1,
-            'vertical': false,
-            'reversed': false,
-            'triggerChangeOnDrag': false
-        });
     }
 
     /**

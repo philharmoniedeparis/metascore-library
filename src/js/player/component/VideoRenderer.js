@@ -7,65 +7,58 @@ import {MasterClock} from '../../core/media/Clock';
  */
 export default class VideoRenderer extends Component{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'name': {
+                'type': 'string'
+            },
+            'hidden': {
+                'type': 'boolean'
+            },
+            'x': {
+                'type': 'number',
+                'default': 0
+            },
+            'y': {
+                'type': 'number',
+                'default': 0
+            },
+            'width': {
+                'type': 'number',
+                'default': 320,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('width'), 10);
+                }
+            },
+            'height': {
+                'type': 'number',
+                'default': 240,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('height'), 10);
+                }
+            },
+            'background-color': {
+                'type': 'color'
+            },
+            'border-width': {
+                'type': 'number'
+            },
+            'border-color': {
+                'type': 'color'
+            },
+            'border-radius': {
+                'type': 'string'
+            },
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'VideoRenderer';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'name': {
-                    'type': 'string'
-                },
-                'hidden': {
-                    'type': 'boolean'
-                },
-                'x': {
-                    'type': 'number',
-                    'default': 0
-                },
-                'y': {
-                    'type': 'number',
-                    'default': 0
-                },
-                'width': {
-                    'type': 'number',
-                    'default': 320,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('width'), 10);
-                    }
-                },
-                'height': {
-                    'type': 'number',
-                    'default': 240,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('height'), 10);
-                    }
-                },
-                'background-color': {
-                    'type': 'color'
-                },
-                'border-width': {
-                    'type': 'number'
-                },
-                'border-color': {
-                    'type': 'color'
-                },
-                'border-radius': {
-                    'type': 'string'
-                },
-            })
-        });
     }
 
     /**

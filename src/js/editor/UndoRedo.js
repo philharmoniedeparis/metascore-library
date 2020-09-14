@@ -12,6 +12,10 @@ import EventEmitter from '../core/EventEmitter';
  */
 export default class UndoRedo extends EventEmitter {
 
+    static defaults = {
+        'max_commands': 20
+    };
+
     /**
      * Instantiate
      *
@@ -26,7 +30,7 @@ export default class UndoRedo extends EventEmitter {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The list of available undo/redo commands
@@ -42,17 +46,6 @@ export default class UndoRedo extends EventEmitter {
          * @type {Boolean}
          */
         this.executing = false;
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'max_commands': 20
-        };
     }
 
     /**

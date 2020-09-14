@@ -12,23 +12,16 @@ import {MasterClock} from '../../core/media/Clock';
  */
 export default class CursorKeyframesEditor extends Dom {
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'defaultCursorColor': '#00F',
-            'hoverCursorColor': '#FF3100',
-            'labelFontSize': 10,
-            'labelFontFamily': 'Arial',
-            'labelColor': '#FFF',
-            'labelPadding': 2,
-            'mouseoverDistance': 1,
-            'contextmenuContainer': 'body'
-        };
-    }
+    static defaults = {
+        'defaultCursorColor': '#00F',
+        'hoverCursorColor': '#FF3100',
+        'labelFontSize': 10,
+        'labelFontFamily': 'Arial',
+        'labelColor': '#FFF',
+        'labelPadding': 2,
+        'mouseoverDistance': 1,
+        'contextmenuContainer': 'body'
+    };
 
     /**
      * Instantiate
@@ -43,7 +36,7 @@ export default class CursorKeyframesEditor extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.component = component;
 

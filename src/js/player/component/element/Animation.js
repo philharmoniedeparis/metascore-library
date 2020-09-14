@@ -7,46 +7,39 @@ import Lottie from 'lottie-web';
  */
 export default class Animation extends Element{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'src': {
+                'type': 'string'
+            },
+            'start-frame': {
+                'type': 'number',
+                'default': 1
+            },
+            'loop-duration': {
+                'type': 'time',
+                'sanitize': function(value) {
+                    if (this.isLoaded() && !value) {
+                        return this.animation.getDuration();
+                    }
+                    return value;
+                }
+            },
+            'reversed': {
+                'type': 'boolean',
+                'default': false
+            },
+            'colors': {
+                'type': 'array'
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Animation';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'src': {
-                    'type': 'string'
-                },
-                'start-frame': {
-                    'type': 'number',
-                    'default': 1
-                },
-                'loop-duration': {
-                    'type': 'time',
-                    'sanitize': function(value) {
-                        if (this.isLoaded() && !value) {
-                            return this.animation.getDuration();
-                        }
-                        return value;
-                    }
-                },
-                'reversed': {
-                    'type': 'boolean',
-                    'default': false
-                },
-                'colors': {
-                    'type': 'array'
-                }
-            })
-        });
     }
 
     /**

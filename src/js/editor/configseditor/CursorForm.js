@@ -17,6 +17,29 @@ import {className} from '../../../css/editor/configseditor/CursorForm.scss';
  */
 export default class CursorForm extends ElementForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.CursorForm.title.single', 'Attributes of cursor'),
+        'title_plural': Locale.t('editor.configseditor.CursorForm.title.plural', 'Attributes of @count cursors'),
+        'fields': [
+            'name',
+            'hidden',
+            'form',
+            'direction',
+            'start-angle',
+            'acceleration',
+            'keyframes',
+            'loop-duration',
+            'cursor-width',
+            'cursor-color',
+            'background',
+            'border',
+            'opacity',
+            'time',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -38,36 +61,6 @@ export default class CursorForm extends ElementForm {
                 'ccw': Locale.t('editor.configseditor.CursorForm.fields.direction.options.ccw', 'Counterclockwise')
             }
         };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.CursorForm.title.single', 'Attributes of cursor'),
-            'title_plural': Locale.t('editor.configseditor.CursorForm.title.plural', 'Attributes of @count cursors'),
-            'fields': [
-                'name',
-                'hidden',
-                'form',
-                'direction',
-                'start-angle',
-                'acceleration',
-                'keyframes',
-                'loop-duration',
-                'cursor-width',
-                'cursor-color',
-                'background',
-                'border',
-                'opacity',
-                'time',
-                'position',
-                'dimension'
-            ]
-        });
     }
 
     /**

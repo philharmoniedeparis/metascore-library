@@ -11,7 +11,15 @@ import {className} from '../../../css/core/ui/Input.scss';
  * @param {Mixed} value The new value
  * @param {Mixed} previous The old value
  */
-export default class Input extends Dom{
+export default class Input extends Dom {
+
+    static defaults = {
+        'value': null,
+        'placeholder': null,
+        'required': false,
+        'disabled': false,
+        'readonly': false
+    };
 
     /**
      * Instantiate
@@ -32,7 +40,7 @@ export default class Input extends Dom{
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({'name': `input-${uuid(5)}`}, this.constructor.defaults, configs);
 
         this.id = `input-${uuid(5)}`;
 
@@ -60,22 +68,6 @@ export default class Input extends Dom{
         }
 
         this.reset(true);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'value': null,
-            'name': `input-${uuid(5)}`,
-            'placeholder': null,
-            'required': false,
-            'disabled': false,
-            'readonly': false
-        };
     }
 
     /**

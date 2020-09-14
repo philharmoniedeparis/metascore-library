@@ -19,6 +19,12 @@ import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
  */
 export default class ComponentForm extends Dom {
 
+    static defaults = {
+        'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
+        'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
+        'fields': []
+    };
+
     /**
      * Instantiate
      *
@@ -49,7 +55,7 @@ export default class ComponentForm extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.title = new Dom('<h2/>', {'class': 'title'})
             .appendTo(this);
@@ -63,19 +69,6 @@ export default class ComponentForm extends Dom {
             .appendTo(this);
 
         this.setupFields();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
-            'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
-            'fields': []
-        };
     }
 
     setComponents(components){

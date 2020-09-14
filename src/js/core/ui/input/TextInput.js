@@ -7,6 +7,10 @@ import {className} from '../../../../css/core/ui/input/Text.scss';
  */
 export default class TextInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': ''
+    });
+
     /**
      * Instantiate
      *
@@ -18,17 +22,6 @@ export default class TextInput extends Input {
         super(configs);
 
         this.addClass(`text ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': ''
-        });
     }
 
     /**

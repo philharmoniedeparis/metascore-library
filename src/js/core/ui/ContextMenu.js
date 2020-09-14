@@ -16,6 +16,11 @@ let banner_text = '';
  */
 export default class ContextMenu extends Dom {
 
+    static defaults = {
+        'target': 'body',
+        'items': {}
+    };
+
     /**
      * Set the bottom banner text
      *
@@ -40,7 +45,7 @@ export default class ContextMenu extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The list of tasks
@@ -80,18 +85,6 @@ export default class ContextMenu extends Dom {
             .addDelegate('li', 'mouseover', this.onItemMouseover.bind(this))
             .hide()
             .enable();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'target': 'body',
-            'items': {}
-        };
     }
 
     /**

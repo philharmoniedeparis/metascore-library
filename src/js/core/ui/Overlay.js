@@ -20,6 +20,17 @@ import {className} from '../../../css/core/ui/Overlay.scss';
  */
 export default class Overlay extends Dom {
 
+    static defaults = {
+        'parent': 'body',
+        'modal': true,
+        'autoShow': true,
+        'autoHide': true,
+        'toolbar': false,
+        'title': '',
+        'text': '',
+        'buttons': {}
+    };
+
     /**
      * Instantiate
      *
@@ -41,7 +52,7 @@ export default class Overlay extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // fix event handlers scope
         this.onDocumentFocus = this.onDocumentFocus.bind(this);
@@ -53,24 +64,6 @@ export default class Overlay extends Dom {
         if(this.configs.autoShow){
             this.show();
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'parent': 'body',
-            'modal': true,
-            'autoShow': true,
-            'autoHide': true,
-            'toolbar': false,
-            'title': '',
-            'text': '',
-            'buttons': {}
-        };
     }
 
     /**

@@ -6,6 +6,10 @@ import Dom from '../../Dom';
  */
 export default class TextareaInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': ''
+    });
+
     /**
      * Instantiate
      *
@@ -17,17 +21,6 @@ export default class TextareaInput extends Input {
         super(configs);
 
         this.addClass('textarea');
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': ''
-        });
     }
 
     /**

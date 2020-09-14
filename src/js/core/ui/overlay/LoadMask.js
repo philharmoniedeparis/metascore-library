@@ -12,6 +12,12 @@ import {className} from '../../../../css/core/ui/overlay/LoadMask.scss';
  */
 export default class LoadMask extends Overlay{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'text': Locale.t('overlay.LoadMask.text', 'Loading...'),
+        'bar': false,
+        'barText': Locale.t('overlay.LoadMask.bar.text', '!percent%'),
+    });
+
     /**
      * Instantiate
      *
@@ -26,19 +32,6 @@ export default class LoadMask extends Overlay{
         this.addClass(`loadmask ${className}`);
 
         this.setProgress(0);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'text': Locale.t('overlay.LoadMask.text', 'Loading...'),
-            'bar': false,
-            'barText': Locale.t('overlay.LoadMask.bar.text', '!percent%'),
-        });
     }
 
     /**

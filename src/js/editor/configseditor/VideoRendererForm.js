@@ -8,6 +8,19 @@ import {className} from '../../../css/editor/configseditor/VideoRendererForm.scs
  */
 export default class VideoRendererForm extends ComponentForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.VideoRendererForm.title.single', 'Attributes of video renderer'),
+        'title_plural': Locale.t('editor.configseditor.VideoRendererForm.title.plural', 'Attributes of @count video renderers'),
+        'fields': [
+            'name',
+            'hidden',
+            'background',
+            'border',
+            'position',
+            'dimension'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -16,27 +29,5 @@ export default class VideoRendererForm extends ComponentForm {
         super(...args);
 
         this.addClass(`video-renderer-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.VideoRendererForm.title.single', 'Attributes of video renderer'),
-            'title_plural': Locale.t('editor.configseditor.VideoRendererForm.title.plural', 'Attributes of @count video renderers'),
-            'fields': [
-                'name',
-                'hidden',
-                'background',
-                'border',
-                'position',
-                'dimension'
-            ]
-        });
     }
 }

@@ -16,6 +16,13 @@ import {className} from '../../../../css/editor/assetbrowser/guideassets/Spectro
  */
 export default class SpectrogramForm extends Overlay {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'title': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
+        'url': null,
+        'xhr': {}
+    });
+
     /**
      * Instantiate
      *
@@ -31,20 +38,6 @@ export default class SpectrogramForm extends Overlay {
         this.url = url;
 
         this.addClass(`spectrogram-form ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'title': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
-            'url': null,
-            'xhr': {}
-        });
     }
 
     /**

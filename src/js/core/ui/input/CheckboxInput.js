@@ -15,6 +15,14 @@ import {className} from '../../../../css/core/ui/input/Checkbox.scss';
  */
 export default class CheckboxInput extends Input{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'label': null,
+        'icon': check_icon,
+        'checked': false,
+        'checked_value': true,
+        'unchecked_value': false
+    });
+
     /**
      * Instantiate
      *
@@ -31,21 +39,6 @@ export default class CheckboxInput extends Input{
         this.addClass(`checkbox ${className}`);
 
         this.setValue(this.configs.checked ? this.configs.checked_value : this.configs.unchecked_value);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'label': null,
-            'icon': check_icon,
-            'checked': false,
-            'checked_value': true,
-            'unchecked_value': false
-        });
     }
 
     /**

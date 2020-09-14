@@ -14,6 +14,20 @@ import {isObject} from './utils/Var';
  */
 export default class Ajax extends EventEmitter {
 
+    static defaults = {
+        'method': 'GET',
+        'headers': {},
+        'async': true,
+        'data': null,
+        'responseType': 'json',
+        'withCredentials': false,
+        'timeout': null,
+        'autoSend': true,
+        'onComplete': null,
+        'onSuccess': null,
+        'onError': null,
+    };
+
     /**
      * Instantiate
      */
@@ -30,7 +44,7 @@ export default class Ajax extends EventEmitter {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The XMLHttpRequest instance
@@ -83,27 +97,6 @@ export default class Ajax extends EventEmitter {
         if(this.configs.autoSend){
             this.send();
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'method': 'GET',
-            'headers': {},
-            'async': true,
-            'data': null,
-            'responseType': 'json',
-            'withCredentials': false,
-            'timeout': null,
-            'autoSend': true,
-            'onComplete': null,
-            'onSuccess': null,
-            'onError': null,
-        };
     }
 
     /**

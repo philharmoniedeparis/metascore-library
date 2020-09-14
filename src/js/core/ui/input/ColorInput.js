@@ -22,6 +22,11 @@ import {className} from '../../../../css/core/ui/input/Color.scss';
  */
 export default class ColorInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'picker': {},
+        'swatches': {}
+    });
+
     /**
      * Instantiate
      *
@@ -44,18 +49,6 @@ export default class ColorInput extends Input {
         this.repositionOverlay = throttle(this.repositionOverlay.bind(this), 100);
 
         this.addClass(`color ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'picker': {},
-            'swatches': {}
-        });
     }
 
     /**
@@ -164,8 +157,8 @@ export default class ColorInput extends Input {
     onSwatchesButtonClick(evt) {
         switch(evt.detail.button){
             case 'swatch':
-        this.setValue(evt.detail.value);
-        this.overlay.hide();
+                this.setValue(evt.detail.value);
+                this.overlay.hide();
                 break;
 
             case 'reset':
@@ -295,7 +288,7 @@ export default class ColorInput extends Input {
                     const checked_tab = this.overlay.child('.tab-input:checked');
                     if(checked_tab.count() > 0 && checked_tab.data('target') === 'picker'){
                         const hex = this.picker.getHEX();
-                    this.setValue(hex);
+                        this.setValue(hex);
                         this.hideOverlay();
                     }
                 }

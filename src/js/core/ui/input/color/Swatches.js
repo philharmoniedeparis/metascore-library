@@ -9,6 +9,13 @@ import {className} from '../../../../../css/core/ui/input/color/Swatches.scss';
  */
 export default class Swatches extends Dom {
 
+    static defaults = {
+        'colors': [
+            '#FFFFFF',
+            '#000000'
+        ]
+    };
+
     /**
      * Instantiate
      *
@@ -23,23 +30,9 @@ export default class Swatches extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.setupUI();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'colors': [
-                '#FFFFFF',
-                '#000000'
-            ]
-        };
     }
 
     /**
@@ -60,7 +53,7 @@ export default class Swatches extends Dom {
         });
 
         const bottom = new Dom('<div/>', {'class': 'bottom'})
-                .appendTo(this);
+            .appendTo(this);
 
         new Button({'label': Locale.t('core.ui.input.color.Swatches.reset.label', 'Reset')})
             .data('action', 'reset')

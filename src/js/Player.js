@@ -38,6 +38,19 @@ import {getRendererForMime} from './core/utils/Media';
  */
 export class Player extends Dom {
 
+    static defaults = {
+        'url': '',
+        'container': 'body',
+        'xhr': {},
+        'autoload': true,
+        'keyboard': true,
+        'responsive': false,
+        'allowUpscaling': false,
+        'api': false,
+        'lang': 'en',
+        'websiteUrl':  `${window.location.protocol}//${window.location.host}`
+    };
+
     /**
      * Instantiate
      *
@@ -60,7 +73,7 @@ export class Player extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * Whether the player has finished loading
@@ -81,26 +94,6 @@ export class Player extends Dom {
         else{
             this.init();
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'url': '',
-            'container': 'body',
-            'xhr': {},
-            'autoload': true,
-            'keyboard': true,
-            'responsive': false,
-            'allowUpscaling': false,
-            'api': false,
-            'lang': 'en',
-            'websiteUrl':  `${window.location.protocol}//${window.location.host}`
-        };
     }
 
     /**
