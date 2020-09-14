@@ -200,7 +200,7 @@ export default class AnimationForm extends ElementForm {
             const value = master_component.getPropertyValue(name);
 
             this.colors_subinputs.forEach((input, index) => {
-                input.setValue(value[index], true);
+                input.setValue(value ? value[index] : null, true);
             });
         }
     }

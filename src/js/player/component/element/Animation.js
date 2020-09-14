@@ -51,7 +51,7 @@ export default class Animation extends Element{
         // call parent constructor
         super(configs);
 
-        this.onAnimationLoad = this.onAnimationLoad.bind(this);
+        this.onLoad = this.onLoad.bind(this);
 
         this
             .addListener('cuepointset', this.onCuePointSet.bind(this))
@@ -65,7 +65,7 @@ export default class Animation extends Element{
     updatePropertyValue(property, value){
         switch(property){
             case 'src':
-                this.updateSrc();
+                this.updateSrc(value);
                 break;
 
             case 'start-frame':
@@ -158,7 +158,7 @@ export default class Animation extends Element{
         return this;
     }
 
-    onAnimationLoad(){
+    onLoad(){
         this._loaded = true;
 
         if(!this.getPropertyValue('loop-duration')){
@@ -215,22 +215,21 @@ export default class Animation extends Element{
         return this;
     }
 
-    updateSrc(){
+    updateSrc(value){
         this.removeAnimation();
 
         this.contents.empty();
 
-        const src = this.getPropertyValue('src');
-        if(src){
+        if(value){
             this.animation = Lottie.loadAnimation({
                 container: this.contents.get(0),
-                path: src,
+                path: value,
                 renderer: 'svg',
                 loop: true,
                 autoplay: false,
             });
 
-            this.animation.addEventListener('DOMLoaded', this.onAnimationLoad);
+            this.animation.addEventListener('DOMLoaded', this.onLoad);
         }
 
         return this;
@@ -292,7 +291,7 @@ export default class Animation extends Element{
         this.stop();
 
         if(this.animation){
-            this.animation.removeEventListener('DOMLoaded', this.onAnimationLoad);
+            this.animation.removeEventListener('DOMLoaded', this.onLoad);
             this.animation.destroy();
         }
 

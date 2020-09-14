@@ -52,6 +52,9 @@ export default class SVG extends Element {
             },
             'marker-end': {
                 'type': 'string'
+            },
+            'colors': {
+                'type': 'array'
             }
         })
     });
@@ -82,7 +85,7 @@ export default class SVG extends Element {
 
         this.svg = new Dom('<object/>')
             .attr('type', 'image/svg+xml')
-            .addListener('load', this.onSVGLoad.bind(this))
+            .addListener('load', this.onLoad.bind(this))
             .appendTo(this.contents);
     }
 
@@ -103,10 +106,11 @@ export default class SVG extends Element {
 
         switch(property){
             case 'src':
-                delete this._loaded;
-                delete this.svg_dom;
+                this.updateSrc(value);
+                break;
 
-                this.svg.attr('data', value);
+            case 'colors':
+                this.updateColors();
                 break;
 
             default:
@@ -116,7 +120,7 @@ export default class SVG extends Element {
         }
     }
 
-    onSVGLoad(evt){
+    onLoad(evt){
         this._loaded = true;
 
         this.svg_dom = new Dom(evt.target.contentDocument).child('svg');
@@ -128,6 +132,8 @@ export default class SVG extends Element {
         });
 
         this.updateSVGProperties();
+
+        this.updateColors();
 
         this.triggerEvent('contentload', {'component': this});
     }
@@ -179,6 +185,33 @@ export default class SVG extends Element {
                 svg.update();
             }
         }
+    }
+
+    updateSrc(value){
+        delete this._loaded;
+        delete this.svg_dom;
+
+        this.svg.attr('data', value);
+
+        return this;
+    }
+
+    updateColors(){
+        if(this.svg && this._loaded){
+            let colors = this.getPropertyValue('colors');
+
+            if(!colors){
+                colors = [null, null];
+            }
+
+            colors.forEach((val, index) => {
+                this.svg_dom.find(`.color${index+1}`).forEach((el) => {
+                    el.style.fill = val;
+                });
+            });
+        }
+
+        return this;
     }
 
 }
