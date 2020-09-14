@@ -98,8 +98,8 @@ export default class Picker extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        new Button({'label': Locale.t('core.ui.input.color.Picker.save.label', 'Save')})
-            .data('action', 'save')
+        new Button({'label': Locale.t('core.ui.input.color.Picker.apply.label', 'Apply')})
+            .data('action', 'apply')
             .appendTo(bottom);
 
         new Button({'label': Locale.t('core.ui.input.color.Picker.reset.label', 'Reset')})

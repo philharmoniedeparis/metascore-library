@@ -93,21 +93,18 @@
     .bottom{
         display: flex;
         flex-direction: row;
+        justify-content: end;
         padding: 0.5em 0.75em;
 
         button{
             margin: 0 0.25em;
             padding: 0.25em 0.5em;
             color: #fff;
+            background: $lightgray;
 
-            &[data-action="save"]{
+            &[data-action="apply"]{
                 margin-right: auto;
                 background: $darkgray;
-            }
-
-            &[data-action="reset"],
-            &[data-action="cancel"]{
-                background: $lightgray;
             }
         }
     }

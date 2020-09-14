@@ -1,4 +1,6 @@
 import Dom from '../../../Dom';
+import Locale from '../../../Locale';
+import Button from '../../Button';
 
 import {className} from '../../../../../css/core/ui/input/color/Swatches.scss';
 
@@ -46,24 +48,47 @@ export default class Swatches extends Dom {
      * @private
      */
     setupUI() {
+        const top = new Dom('<div/>', {'class': 'top'})
+            .appendTo(this);
+
         this.configs.colors.forEach((color) => {
             new Dom('<button/>', {'class': 'swatch', 'type': 'button'})
                 .css('background-color', color)
+                .data('action', 'swatch')
                 .data('value', color)
-                .addListener('click', this.onSwatchClick.bind(this))
-                .appendTo(this);
+                .appendTo(top);
         });
+
+        const bottom = new Dom('<div/>', {'class': 'bottom'})
+                .appendTo(this);
+
+        new Button({'label': Locale.t('core.ui.input.color.Swatches.reset.label', 'Reset')})
+            .data('action', 'reset')
+            .appendTo(bottom);
+
+        new Button({'label': Locale.t('core.ui.input.color.Swatches.cancel.label', 'Cancel')})
+            .data('action', 'cancel')
+            .appendTo(bottom);
+
+        this.addDelegate('button', 'click', this.onButtonClick.bind(this));
     }
 
     /**
-     * Swatch click event callback
+     * Button click event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onSwatchClick(evt){
-        const color = new Dom(evt.target).data('value');
-        this.triggerEvent('swatchclick', {'swatches': this, 'value': color});
+    onButtonClick(evt){
+        const target = new Dom(evt.target);
+        const action = target.data('action');
+        const data = {'swatches': this, 'button': action};
+
+        if (action === 'swatch') {
+            data.value = target.data('value');
+        }
+
+        this.triggerEvent('buttonclick', data);
     }
 
 }

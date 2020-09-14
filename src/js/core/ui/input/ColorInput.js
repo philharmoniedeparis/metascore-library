@@ -28,7 +28,7 @@ export default class ColorInput extends Input {
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [value=#fff}] The default value (see {@link toRGBA} for valid values)
      * @property {Mixed} [picker={}] Configs to pass to the color picker, or false to disable the picker
-     * @property {Mixed} [swatches=false] Configs to pass to the color swatch selector, or false to disable swatches
+     * @property {Mixed} [swatches={}] Configs to pass to the color swatch selector, or false to disable swatches
      */
     constructor(configs) {
         // call parent constructor
@@ -73,7 +73,7 @@ export default class ColorInput extends Input {
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
 
-        this.overlay = new Dom('<div/>', {'class': `overlay`})
+        this.overlay = new Dom('<div/>', {'class': `overlay`, 'tabindex': -1})
             .hide()
             .appendTo(this);
 
@@ -81,7 +81,8 @@ export default class ColorInput extends Input {
         if (this.configs.picker !== false) {
             const id = `tab-input-${uuid(5)}`;
 
-            new Dom('<input/>', {'id': id, 'name': tabs_input_name, 'type': 'radio', 'checked': 'checked'})
+            new Dom('<input/>', {'id': id, 'name': tabs_input_name, 'type': 'radio'})
+                .data('target', 'picker')
                 .addClass('tab-input')
                 .appendTo(this.overlay);
 
@@ -98,6 +99,7 @@ export default class ColorInput extends Input {
             const id = `tab-input-${uuid(5)}`;
 
             new Dom('<input/>', {'id': id, 'name': tabs_input_name, 'type': 'radio'})
+                .data('target', 'swatches')
                 .addClass('tab-input')
                 .appendTo(this.overlay);
 
@@ -106,9 +108,14 @@ export default class ColorInput extends Input {
                 .appendTo(this.overlay);
 
             this.swatches = new Swatches(this.configs.swatches)
-                .addListener('swatchclick', this.onSwatchesSwatchClick.bind(this))
+                .addListener('buttonclick', this.onSwatchesButtonClick.bind(this))
                 .addClass('tab-content')
                 .appendTo(this.overlay);
+        }
+
+        const first_tab = this.overlay.child('.tab-input');
+        if (first_tab.count() > 0) {
+            first_tab.get(0).checked = true;
         }
     }
 
@@ -129,7 +136,7 @@ export default class ColorInput extends Input {
      */
     onPickerButtonClick(evt){
         switch(evt.detail.button){
-            case 'save':
+            case 'apply':
                 {
                     const hex = this.picker.getHEX();
                     this.setValue(hex);
@@ -149,14 +156,27 @@ export default class ColorInput extends Input {
     }
 
     /**
-     * Swatches swatchclick event callback
+     * Swatches buttonclick event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onSwatchesSwatchClick(evt) {
+    onSwatchesButtonClick(evt) {
+        switch(evt.detail.button){
+            case 'swatch':
         this.setValue(evt.detail.value);
         this.overlay.hide();
+                break;
+
+            case 'reset':
+                this.setValue(null);
+                this.overlay.hide();
+                break;
+
+            case 'cancel':
+                this.overlay.hide();
+                break;
+        }
     }
 
     /**
@@ -167,7 +187,7 @@ export default class ColorInput extends Input {
             this.picker.setValue(this.getValue());
         }
 
-        this.overlay.show();
+        this.overlay.show().focus();
 
         this.repositionOverlay();
 
@@ -272,9 +292,12 @@ export default class ColorInput extends Input {
 
             case 'Enter':
                 {
-                    const hex = this.picker.getHEX(); //TODO: fix when no picker
+                    const checked_tab = this.overlay.child('.tab-input:checked');
+                    if(checked_tab.count() > 0 && checked_tab.data('target') === 'picker'){
+                        const hex = this.picker.getHEX();
                     this.setValue(hex);
-                    this.overlay.hide();
+                        this.hideOverlay();
+                    }
                 }
                 break;
         }

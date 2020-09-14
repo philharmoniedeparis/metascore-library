@@ -2,21 +2,41 @@
 
 :local(.className){
     display: flex;
-    padding: 0.5em;
+    flex-direction: column;
     background: #eee;
 
-    .swatch {
-        width: 1.5em;
-        height: 1.5em;
-        margin: 0.25em;
-        border: none;
-        border-radius: 2px;
-        box-shadow: 0 0 .25em 0 rgba(0,0,0,.25);
-        transition: opacity 0.1s;
-        cursor: pointer;
+    .top {
+        display: flex;
+        padding: 0.5em;
+        background: #eee;
 
-        &:hover {
-            opacity: 0.75;
+        .swatch {
+            width: 1.5em;
+            height: 1.5em;
+            margin: 0.25em;
+            border: none;
+            border-radius: 2px;
+            box-shadow: 0 0 .25em 0 rgba(0,0,0,.25);
+            transition: opacity 0.1s;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.75;
+            }
+        }
+    }
+
+    .bottom{
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+        padding: 0.5em 0.75em;
+
+        button{
+            margin: 0 0.25em;
+            padding: 0.25em 0.5em;
+            color: #fff;
+            background: $lightgray;
         }
     }
 }
