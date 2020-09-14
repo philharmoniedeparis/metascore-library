@@ -6,22 +6,28 @@
     background: #eee;
 
     .top {
-        display: flex;
+        display: grid;
+        grid-gap: 0.5em;
+        grid-template-columns: repeat(10, 1fr);
         padding: 0.5em;
-        background: #eee;
 
         .swatch {
-            width: 1.5em;
-            height: 1.5em;
-            margin: 0.25em;
-            border: none;
+            padding: 0;
+            border: 1px solid rgba(0,0,0,0.25);
             border-radius: 2px;
-            box-shadow: 0 0 .25em 0 rgba(0,0,0,.25);
+            box-shadow: 0 0 .25em 0 rgba(0,0,0,0.25);
             transition: opacity 0.1s;
             cursor: pointer;
 
+            &::after {
+                content: '';
+                display: inline-block;
+                width: 100%;
+                padding-top: 100%;
+            }
+
             &:hover {
-                opacity: 0.75;
+                transform: scale(1.2);
             }
         }
     }
