@@ -284,9 +284,6 @@ export default class Animation extends Element{
             if(!colors){
                 colors = [null, null];
             }
-            else{
-                colors = colors.split(',');
-            }
 
             if(colors.length >= 1){
                 this.contents.find('.color1 path').forEach((path) => {

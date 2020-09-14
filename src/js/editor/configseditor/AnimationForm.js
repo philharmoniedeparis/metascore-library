@@ -1,9 +1,11 @@
 import ElementForm from './ElementForm';
 import Locale from '../../core/Locale';
+import Dom from '../../core/Dom';
 import Field from '../Field';
 import NumberInput from '../../core/ui/input/NumberInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import TimeInput from '../../core/ui/input/TimeInput';
+import ColorInput from '../../core/ui/input/ColorInput';
 
 import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
 
@@ -44,6 +46,7 @@ export default class AnimationForm extends ElementForm {
                 'start-frame',
                 'loop-duration',
                 'reversed',
+            'colors',
                 'background',
                 'border',
                 'opacity',
@@ -95,6 +98,29 @@ export default class AnimationForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
                 break;
 
+            case 'colors': {
+                    const wrapper = new Dom('<div/>', {'class': 'field-group colors'})
+                        .appendTo(this.fields_wrapper);
+
+                    const colors_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.AnimationForm.fields.colors-fields.label', 'Colors')})
+                        .appendTo(wrapper);
+
+                    this.fields.color1 = new Field(new ColorInput({
+                            'picker': false
+                        }))
+                        .data('property', 'colors')
+                        .appendTo(wrapper);
+
+                    colors_fields_label.attr('for', this.fields.color1.getInput().getId());
+
+                    this.fields.color2 = new Field(new ColorInput({
+                            'picker': false
+                        }))
+                        .data('property', 'colors')
+                        .appendTo(wrapper);
+                }
+                break;
+
             default:
                 super.addField(name);
         }
@@ -134,10 +160,35 @@ export default class AnimationForm extends ElementForm {
         return this;
     }
 
+    /**
+     * Component contentload event handler.
+     *
+     * @private
+     */
     onComponentLoad(){
         this.updateInputs();
     }
 
+    /**
+     * @inheritdoc
+     */
+    onFieldValueChange(evt){
+        const name = evt.detail.field.data('property');
+
+        if (name === 'colors') {
+            const color1 = this.getField('color1').getInput().getValue();
+            const color2 = this.getField('color2').getInput().getValue();
+            evt.detail.value = [color1, color2];
+        }
+
+        super.onFieldValueChange(evt);
+    }
+
+    /**
+     * Update inputs.
+     *
+     * @private
+     */
     updateInputs(){
         const frames = [];
         this.components.forEach((component) => {
