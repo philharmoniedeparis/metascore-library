@@ -14,6 +14,7 @@ import Clipboard from './core/Clipboard';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
 import TimeInput from './core/ui/input/TimeInput';
+import ColorInput from './core/ui/input/ColorInput';
 import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
@@ -60,6 +61,7 @@ export class Editor extends Dom {
      * @property {String} player.update_url The player update URL
      * @property {String} publish_url The URL of the publish button
      * @property {Object} asset_browser Options to pass to the asset browser
+     * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
      * @property {String} [lang='en'] The language to use for i18n
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history] Options for the history
@@ -74,6 +76,9 @@ export class Editor extends Dom {
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
+
+        // Override ColorInput default swatches
+        ColorInput.defaults.swatches = Object.assign({}, ColorInput.defaults.swatches, {'colors': this.configs.color_swatches});
 
         /**
          * The dirty data keys
