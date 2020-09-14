@@ -1,11 +1,12 @@
 import ElementForm from './ElementForm';
 import Locale from '../../core/Locale';
-import Dom from '../../core/Dom';
+import { isString } from '../../core/utils/Var';
 import Field from '../Field';
 import NumberInput from '../../core/ui/input/NumberInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 import ColorInput from '../../core/ui/input/ColorInput';
+import HiddenInput from '../../core/ui/input/HiddenInput';
 
 import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
 
@@ -89,27 +90,23 @@ export default class AnimationForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
                 break;
 
-            case 'colors': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group colors'})
-                        .appendTo(this.fields_wrapper);
+            case 'colors':
+                this.fields.colors = new Field(
+                    new HiddenInput(),
+                    {
+                        'label': Locale.t('editor.configseditor.AnimationForm.fields.colors.label', 'Colors')
+                    })
+                    .data('property', 'colors')
+                    .appendTo(this.fields_wrapper);
 
-                    const colors_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.AnimationForm.fields.colors-fields.label', 'Colors')})
-                        .appendTo(wrapper);
-
-                    this.fields.color1 = new Field(new ColorInput({
-                            'picker': false
-                        }))
-                        .data('property', 'colors')
-                        .appendTo(wrapper);
-
-                    colors_fields_label.attr('for', this.fields.color1.getInput().getId());
-
-                    this.fields.color2 = new Field(new ColorInput({
-                            'picker': false
-                        }))
-                        .data('property', 'colors')
-                        .appendTo(wrapper);
-                }
+                this.colors_subinputs = [
+                    new ColorInput({'picker': false})
+                        .addListener('valuechange', this.onColorsInputValueChange.bind(this))
+                        .appendTo(this.fields.colors),
+                    new ColorInput({'picker': false})
+                        .addListener('valuechange', this.onColorsInputValueChange.bind(this))
+                        .appendTo(this.fields.colors),
+                ];
                 break;
 
             default:
@@ -146,6 +143,8 @@ export default class AnimationForm extends ElementForm {
             });
         }
 
+        this.updateInputs();
+
         super.unsetComponents(supressEvent);
 
         return this;
@@ -161,18 +160,49 @@ export default class AnimationForm extends ElementForm {
     }
 
     /**
+     * Colors sub-inputs valuechange event handler
+     *
+     * @private
+     */
+    onColorsInputValueChange(){
+        const colors = [];
+        this.colors_subinputs.forEach((input) => {
+            if (!input.disabled) {
+                colors.push(input.getValue());
+            }
+        });
+        this.getField('colors').getInput().setValue(colors);
+    }
+
+    /**
      * @inheritdoc
      */
-    onFieldValueChange(evt){
+    onFieldValueChange(evt) {
         const name = evt.detail.field.data('property');
+        const value = evt.detail.value;
 
-        if (name === 'colors') {
-            const color1 = this.getField('color1').getInput().getValue();
-            const color2 = this.getField('color2').getInput().getValue();
-            evt.detail.value = [color1, color2];
+        if (name === 'colors' && isString(value)) {
+            evt.detail.value = value.split(',');
         }
 
         super.onFieldValueChange(evt);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updateFieldValue(name, supressEvent){
+        super.updateFieldValue(name, supressEvent);
+
+        // Update colors sub-inputs values.
+        if(name === 'colors' && this.components){
+            const master_component = this.getMasterComponent();
+            const value = master_component.getPropertyValue(name);
+
+            this.colors_subinputs.forEach((input, index) => {
+                input.setValue(value[index], true);
+            });
+        }
     }
 
     /**
@@ -181,11 +211,20 @@ export default class AnimationForm extends ElementForm {
      * @private
      */
     updateInputs(){
+        // Update start-frame max value.
         const frames = [];
         this.components.forEach((component) => {
             frames.push(component.getTotalFrames());
         });
         const min_frames = Math.min(...frames);
         this.getField('start-frame').getInput().setMax(Math.max(min_frames, 0));
+
+        // Hide/show color fields.
+        this.colors_subinputs.forEach((input, index) => {
+            const enable = this.components.every((component) => {
+                return component.contents.find(`.color${index+1}`).count() > 0;
+            });
+            input[enable ? 'enable' : 'disable']();
+        });
     }
 }

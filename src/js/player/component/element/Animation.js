@@ -278,17 +278,11 @@ export default class Animation extends Element{
                 colors = [null, null];
             }
 
-            if(colors.length >= 1){
-                this.contents.find('.color1 path').forEach((path) => {
-                    path.style.fill = colors[0];
+            colors.forEach((val, index) => {
+                this.contents.find(`.color${index+1} path`).forEach((path) => {
+                    path.style.fill = val;
                 });
-            }
-
-            if(colors.length >= 2){
-                this.contents.find('.color2 path').forEach((path) => {
-                    path.style.fill = colors[1];
-                });
-            }
+            });
         }
 
         return this;

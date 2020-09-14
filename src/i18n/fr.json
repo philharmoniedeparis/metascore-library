@@ -119,7 +119,7 @@
 	"editor.assetbrowser.guideassets.SpectrogramForm.title": "Générer une image de spectrogramme",
 	"editor.autosave.recover.confirmLabel": "Récupérer",
 	"editor.autosave.recover.text": "Des données d'enregistrement automatique ont été trouvées pour ce guide. Voulez-vous les récupérer&nbsp;?",
-	"editor.configseditor.AnimationForm.fields.colors-fields.label": "Couleurs",
+	"editor.configseditor.AnimationForm.fields.colors.label": "Couleurs",
 	"editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title": "Réinitialiser la valeur",
 	"editor.configseditor.AnimationForm.fields.loop-duration.label": "Durée d'un boucle",
 	"editor.configseditor.AnimationForm.fields.reversed.label": "Inversé",
