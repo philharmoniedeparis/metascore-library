@@ -457,7 +457,7 @@ export default class ComponentForm extends Dom {
                     .appendTo(this.fields_wrapper);
 
                 this.fields['background-color'] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color')
                     })
@@ -473,7 +473,7 @@ export default class ComponentForm extends Dom {
                         .appendTo(wrapper);
 
                     this.fields['border-color'] = new Field(
-                        new ColorInput(),
+                        new ColorInput({'format': 'css'}),
                         {
                             'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
                         })

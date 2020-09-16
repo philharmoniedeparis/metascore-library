@@ -4,7 +4,7 @@ import Locale from '../../Locale';
 import Picker from './color/Picker';
 import Swatches from './color/Swatches';
 import Button from '../Button';
-import {toRGBA} from '../../utils/Color';
+import {rgb2hex, rgba2hex, toCSS, toRGBA} from '../../utils/Color';
 import {isEmpty} from '../../utils/Var';
 import {throttle} from '../../utils/Function';
 import {uuid} from '../../utils/String';
@@ -24,7 +24,8 @@ export default class ColorInput extends Input {
 
     static defaults = Object.assign({}, super.defaults, {
         'picker': {},
-        'swatches': {}
+        'swatches': {},
+        'format': 'rgba'
     });
 
     /**
@@ -34,6 +35,7 @@ export default class ColorInput extends Input {
      * @property {Mixed} [value=#fff}] The default value (see {@link toRGBA} for valid values)
      * @property {Mixed} [picker={}] Configs to pass to the color picker, or false to disable the picker
      * @property {Mixed} [swatches={}] Configs to pass to the color swatch selector, or false to disable swatches
+     * @property {String} [format=rgba] The format of the returned value (rgba, hex, or css)
      */
     constructor(configs) {
         // call parent constructor
@@ -131,8 +133,8 @@ export default class ColorInput extends Input {
         switch(evt.detail.button){
             case 'apply':
                 {
-                    const hex = this.picker.getHEX();
-                    this.setValue(hex);
+                    const rgba = this.picker.getRGBA();
+                    this.setValue(rgba);
                     this.overlay.hide();
                 }
                 break;
@@ -287,8 +289,8 @@ export default class ColorInput extends Input {
                 {
                     const checked_tab = this.overlay.child('.tab-input:checked');
                     if(checked_tab.count() > 0 && checked_tab.data('target') === 'picker'){
-                        const hex = this.picker.getHEX();
-                        this.setValue(hex);
+                        const rgba = this.picker.getRGBA();
+                        this.setValue(rgba);
                         this.hideOverlay();
                     }
                 }
@@ -302,14 +304,31 @@ export default class ColorInput extends Input {
      * @inheritdoc
      */
     setValue(value, supressEvent){
-        super.setValue(value, supressEvent);
+        const rgba = toRGBA(value);
+        let formatted_value = null;
 
-        if(isEmpty(value)){
+        if (rgba) {
+            switch (this.configs.format) {
+                case 'hex':
+                    formatted_value = rgba.a === 1 ? rgb2hex(rgba.r, rgba.g, rgba.b) : rgba2hex(rgba.r, rgba.g, rgba.b, rgba.a);
+                    break;
+
+                case 'css':
+                    formatted_value = toCSS(rgba);
+                    break;
+
+                default:
+                    formatted_value = Object.assign({}, rgba);
+            }
+        }
+
+        super.setValue(formatted_value, supressEvent);
+
+        if(isEmpty(formatted_value)){
             this.button.css('color', null);
             this.addClass('empty');
         }
         else{
-            const rgba = toRGBA(value);
             this.button.css('color', `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`);
             this.removeClass('empty');
         }

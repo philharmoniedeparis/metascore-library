@@ -55,7 +55,7 @@ export default class SVGForm extends ElementForm {
         switch(name){
             case 'stroke':
                 this.fields[name] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.SVGForm.fields.stroke.label', 'Stroke color')
                     })
@@ -95,7 +95,7 @@ export default class SVGForm extends ElementForm {
 
             case 'fill':
                 this.fields[name] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.SVGForm.fields.fill.label', 'Fill color')
                     })
@@ -143,10 +143,10 @@ export default class SVGForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
 
                 this.colors_subinputs = [
-                    new ColorInput({'picker': false})
+                    new ColorInput({'format': 'css', 'picker': false})
                         .addListener('valuechange', this.onColorsInputValueChange.bind(this))
                         .appendTo(this.fields.colors),
-                    new ColorInput({'picker': false})
+                    new ColorInput({'format': 'css', 'picker': false})
                         .addListener('valuechange', this.onColorsInputValueChange.bind(this))
                         .appendTo(this.fields.colors),
                 ];

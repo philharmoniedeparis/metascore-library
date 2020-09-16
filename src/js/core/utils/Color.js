@@ -365,3 +365,23 @@ export function toRGBA(color){
 
     return null;
 }
+
+/**
+ * Parse a color value into a CSS string.
+ *
+ * @param {Mixed} color The CSS value to parse
+ * @return {String} The CSS value in HEX if no alpha, in rgba otherwise.
+ */
+export function toCSS(color){
+    const rgba = toRGBA(color);
+
+    if (rgba) {
+        if (rgba.a === 1) {
+            return rgb2hex(rgba.r, rgba.g, rgba.b);
+        }
+
+        return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    }
+
+    return null;
+}

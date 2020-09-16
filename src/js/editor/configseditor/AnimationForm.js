@@ -100,10 +100,10 @@ export default class AnimationForm extends ElementForm {
                     .appendTo(this.fields_wrapper);
 
                 this.colors_subinputs = [
-                    new ColorInput({'picker': false})
+                    new ColorInput({'format': 'css', 'picker': false})
                         .addListener('valuechange', this.onColorsInputValueChange.bind(this))
                         .appendTo(this.fields.colors),
-                    new ColorInput({'picker': false})
+                    new ColorInput({'format': 'css', 'picker': false})
                         .addListener('valuechange', this.onColorsInputValueChange.bind(this))
                         .appendTo(this.fields.colors),
                 ];

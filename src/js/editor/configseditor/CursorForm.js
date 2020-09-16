@@ -214,7 +214,7 @@ export default class CursorForm extends ElementForm {
 
             case 'cursor-color':
                 this.fields[name] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.cursor-color.label', 'Cursor color')
                     })
