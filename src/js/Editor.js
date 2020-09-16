@@ -44,7 +44,7 @@ export class Editor extends Dom {
         },
         'asset_browser': {},
         'color_swatches': [],
-        'lang': 'en',
+        'locale': null,
         'xhr': {},
         'history': {
             'grouping_timeout': 100
@@ -62,7 +62,7 @@ export class Editor extends Dom {
      * @property {String} publish_url The URL of the publish button
      * @property {Object} asset_browser Options to pass to the asset browser
      * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
-     * @property {String} [lang='en'] The language to use for i18n
+     * @property {String} [locale] The URL of the locale file to use for i18n
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history] Options for the history
      * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
