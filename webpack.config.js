@@ -43,7 +43,7 @@ module.exports = (env, argv) => {
           // Transpile JS code.
           test: /\.js$/,
           include: [
-            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "src/js"),
             path.resolve(__dirname, "polyfills"),
             path.resolve(__dirname, "node_modules/geometry-polyfill"),
             path.resolve(__dirname, "node_modules/waveform-data"),
@@ -163,6 +163,9 @@ module.exports = (env, argv) => {
           ]
         }
       ]
+    },
+    externals: {
+      metaScoreLocale: 'metaScoreLocale'
     },
     plugins: [
       new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),

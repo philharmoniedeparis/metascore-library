@@ -47,7 +47,6 @@ export class Player extends Dom {
         'responsive': false,
         'allowUpscaling': false,
         'api': false,
-        'locale': null,
         'websiteUrl':  `${window.location.protocol}//${window.location.host}`
     };
 
@@ -63,7 +62,6 @@ export class Player extends Dom {
      * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
      * @property {Boolean} [allowUpscaling=false] Whether to allow the player to become larger than its original size
      * @property {Boolean} [api=false] Whether to allow API access or not
-     * @property {String} [locale] The URL of the locale file to use for i18n
      */
     constructor(configs) {
         // call parent constructor
@@ -88,12 +86,7 @@ export class Player extends Dom {
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
         }
 
-        if('locale' in this.configs){
-            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
-        }
-        else{
-            this.init();
-        }
+        this.init();
     }
 
     /**
