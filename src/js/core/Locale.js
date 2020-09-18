@@ -1,6 +1,10 @@
 import {replaceAll} from './utils/String';
-import translations from 'metaScoreLocale';
 
+/**
+ * Stores the string translations
+ * @type {Object}
+ */
+const translations = 'metaScoreLocale' in window ? window.metaScoreLocale : {};
 
 /**
  * A class to handle string translations
@@ -37,8 +41,8 @@ export default class Locale{
     static t(key, str, args){
         let translated = str;
 
-        if(translations && translations.hasOwnProperty(key)){
-            translated = translations[key];
+        if(translations.hasOwnProperty(key)){
+            translated = window.metaScoreLocale[key];
         }
 
         return Locale.formatString(translated, args);

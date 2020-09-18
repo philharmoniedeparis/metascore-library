@@ -30,12 +30,12 @@ class i18nExtractPlugin {
 
       this.templates.forEach((filepath) => {
         const filename = path.basename(filepath, '.json');
-        const content = fs.readFileSync(filepath, "utf8");
+        const json = JSON.parse(fs.readFileSync(filepath, 'utf8'));
         const stats = fs.statSync(filepath);
 
         compilation.assets[`i18n/${filename}.js`] = {
           source: function () {
-            return `window.metaScoreLocale=${content};`;
+            return `(function(){window.metaScoreLocale=${JSON.stringify(json)};})();\n`;
           },
           size: function () {
             return stats.size;

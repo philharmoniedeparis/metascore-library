@@ -164,9 +164,6 @@ module.exports = (env, argv) => {
         }
       ]
     },
-    externals: {
-      metaScoreLocale: 'metaScoreLocale'
-    },
     plugins: [
       new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
       new MiniCssExtractPlugin({
