@@ -182,10 +182,6 @@ export default class ColorInput extends Input {
             this.picker.setValue(this.getValue());
         }
 
-        this.overlay.show().focus();
-
-        this.repositionOverlay();
-
         if(!this.doc){
             /**
              * The target's owner document
@@ -193,6 +189,31 @@ export default class ColorInput extends Input {
              */
             this.doc = new Dom(Dom.getElementDocument(this.get(0)));
         }
+
+        this.overlay.show().focus();
+
+        // Observe DOM mutations to hide overlay when field is removed.
+        if(!this.overlay_observer){
+            this.overlay_observer = new MutationObserver((mutationsList, observer) => {
+                const el = this.get(0);
+
+                for(const mutation of mutationsList) {
+                    if (mutation.type === 'childList' && 'removedNodes' in mutation && mutation.removedNodes.length > 0) {
+                        Array.from(mutation.removedNodes).some((node) => {
+                            if (node.isSameNode(el) || node.contains(el)) {
+                                observer.disconnect();
+                                this.hideOverlay();
+                                return true;
+                            }
+                            return false;
+                        });
+                    }
+                }
+            });
+        }
+        this.overlay_observer.observe(this.doc.get(0), { childList: true, subtree: true });
+
+        this.repositionOverlay();
 
         this.doc.addListener('mousedown', this.onDocMouseDown, true);
 
