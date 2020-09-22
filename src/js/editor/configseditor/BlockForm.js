@@ -34,6 +34,9 @@ export default class BlockForm extends ComponentForm {
         this.addClass(`block-form ${className}`);
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'pager':

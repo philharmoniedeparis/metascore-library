@@ -34,6 +34,9 @@ export default class BlockTogglerForm extends BlockForm {
         this.addClass(`blocktoggler-form ${className}`);
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'blocks':

@@ -70,6 +70,9 @@ export default class ContentForm extends ElementForm {
         return this;
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'contents':
