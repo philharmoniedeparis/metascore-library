@@ -25,7 +25,8 @@ export default class ColorInput extends Input {
     static defaults = Object.assign({}, super.defaults, {
         'picker': {},
         'swatches': {},
-        'format': 'rgba'
+        'format': 'rgba',
+        'emptyValue': null
     });
 
     /**
@@ -36,6 +37,7 @@ export default class ColorInput extends Input {
      * @property {Mixed} [picker={}] Configs to pass to the color picker, or false to disable the picker
      * @property {Mixed} [swatches={}] Configs to pass to the color swatch selector, or false to disable swatches
      * @property {String} [format=rgba] The format of the returned value (rgba, hex, or css)
+     * @property {Mixed} [emptyValue=null] The color to display when the field is empty
      */
     constructor(configs) {
         // call parent constructor
@@ -113,6 +115,8 @@ export default class ColorInput extends Input {
         if (first_tab.count() > 0) {
             first_tab.get(0).checked = true;
         }
+
+        this.setEmptyValue(this.configs.emptyValue);
     }
 
     /**
@@ -173,6 +177,24 @@ export default class ColorInput extends Input {
                 this.overlay.hide();
                 break;
         }
+    }
+
+    /**
+     * Set the input's empty value
+     *
+     * Used to show a specific color when the current value is null.
+     *
+     * @param {Mixed} value The new value
+     * @return {this}
+     */
+    setEmptyValue(value){
+        this.empty_value = value;
+
+        this.toggleClass('has-empty-value', value);
+
+        this.updateButton();
+
+        return this;
     }
 
     /**
@@ -337,13 +359,20 @@ export default class ColorInput extends Input {
 
         super.setValue(formatted_value, supressEvent);
 
-        if(isEmpty(formatted_value)){
-            this.button.css('color', null);
-            this.addClass('empty');
-        }
-        else{
+        this.updateButton();
+    }
+
+    updateButton() {
+        const value = this.getValue();
+
+        if(!isEmpty(value)){
+            const rgba = toRGBA(value);
             this.button.css('color', `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`);
             this.removeClass('empty');
+        }
+        else{
+            this.button.css('color', this.empty_value);
+            this.addClass('empty');
         }
     }
 
