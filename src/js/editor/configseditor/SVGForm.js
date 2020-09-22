@@ -51,6 +51,9 @@ export default class SVGForm extends ElementForm {
         this.addClass(`svg-form ${className}`);
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'stroke':
@@ -165,7 +168,9 @@ export default class SVGForm extends ElementForm {
     setComponents(components){
         super.setComponents(components);
 
-        this.updateInputs();
+        this
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
 
         this.getComponents().forEach((component) => {
             if(!component.isLoaded()){
@@ -186,7 +191,9 @@ export default class SVGForm extends ElementForm {
             });
         }
 
-        this.updateInputs();
+        this
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
 
         super.unsetComponents(supressEvent);
 
@@ -199,7 +206,10 @@ export default class SVGForm extends ElementForm {
      * @private
      */
     onComponentLoad(){
-        this.updateInputs();
+        this
+            .updateFieldsVisibility()
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
     }
 
     /**
@@ -245,13 +255,33 @@ export default class SVGForm extends ElementForm {
             this.colors_subinputs.forEach((input, index) => {
                 input.setValue(value ? value[index] : null, true);
             });
+
+            this.updateColorsSubinputEmptyValue();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updateFieldsVisibility() {
+        super.updateFieldsVisibility();
+
+        // Hide/show colors inputs.
+        this.colors_subinputs.forEach((input, index) => {
+            const toggle = this.components.every((component) => {
+                return component.isLoaded() && component.svg_dom.find(`.color${index+1}`).count() > 0;
+            });
+            input[toggle ? 'show' : 'hide']();
+        });
+
+        return this;
     }
 
     /**
      * Update inputs.
      *
      * @private
+     * @return {this}
      */
     updateInputs(){
         const marker_start_input = this.getField('marker-start').getInput().clear().disable();
@@ -286,7 +316,39 @@ export default class SVGForm extends ElementForm {
                     marker_end_input.enable();
                 }
             }
-
         }
+
+        return this;
+    }
+
+    /**
+     * Update colors subinputs' empty value
+     * depending on the default value of the component's corresponding propoerty.
+     *
+     * @private
+     * @return {this}
+     */
+    updateColorsSubinputEmptyValue() {
+        const master_component = this.getMasterComponent();
+
+        if (master_component && master_component.isLoaded()) {
+            // Get current value.
+            const value = master_component.getPropertyValue('colors');
+
+            // Get default value.
+            master_component.setPropertyValue('colors', null, true);
+
+            this.colors_subinputs.forEach((input, index) => {
+                const empty_value = master_component.svg_dom.find(`.color${index+1}`).css('fill');
+
+                // Update input's empty value.
+                input.setEmptyValue(empty_value);
+            });
+
+            // Revert to current value.
+            master_component.setPropertyValue('colors', value, true);
+        }
+
+        return this;
     }
 }

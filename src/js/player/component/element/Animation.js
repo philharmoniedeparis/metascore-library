@@ -4,6 +4,9 @@ import Lottie from 'lottie-web';
 
 /**
  * An Animation element
+ *
+ * @emits {contentload} Fired when the animation is loaded
+ * @param {Animation} component The component instance
  */
 export default class Animation extends Element{
 
@@ -30,7 +33,10 @@ export default class Animation extends Element{
                 'default': false
             },
             'colors': {
-                'type': 'array'
+                'type': 'array',
+                'applies': function(){
+                    return this.contents.find(`[class^='color'] path, [class*=' color'] path`).count() > 0;
+                }
             }
         })
     });
@@ -43,7 +49,7 @@ export default class Animation extends Element{
     }
 
     /**
-     *Instantiate
+     * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
      */
@@ -69,19 +75,21 @@ export default class Animation extends Element{
                 break;
 
             case 'start-frame':
-                this.updateStartFrame();
+                if(!this._playing){
+                    this.draw();
+                }
                 break;
 
             case 'loop-duration':
-                this.updateFPS();
+                this.updateSpeed(value);
                 break;
 
             case 'reversed':
-                this.updateDirection();
+                this.updateDirection(value);
                 break;
 
             case 'colors':
-                this.updateColors();
+                this.updateColors(value);
                 break;
 
             default:
@@ -133,31 +141,40 @@ export default class Animation extends Element{
         this.draw();
     }
 
+    /**
+     * Update the animation's frame
+     *
+     * @private
+     * @return {this}
+     */
     draw(){
-        if(this.isActive()){
-            if(this.animation && this._loaded){
-                const start_time = this.getPropertyValue('start-time');
-                const start_frame = this.getPropertyValue('start-frame');
-                const loop_duration = this.getPropertyValue('loop-duration');
-                const reversed = this.getPropertyValue('reversed');
-                const current_time = MasterClock.getTime();
+        if(this.isActive() && this.isLoaded()){
+            const start_time = this.getPropertyValue('start-time');
+            const start_frame = this.getPropertyValue('start-frame');
+            const loop_duration = this.getPropertyValue('loop-duration');
+            const reversed = this.getPropertyValue('reversed');
+            const current_time = MasterClock.getTime();
 
-                const time = current_time - start_time;
-                const total_frames = this.getTotalFrames();
-                const fps = total_frames / loop_duration;
-                let frame = (time * fps + (start_frame-1)) % total_frames;
+            const time = current_time - start_time;
+            const total_frames = this.getTotalFrames();
+            const fps = total_frames / loop_duration;
+            let frame = (time * fps + (start_frame-1)) % total_frames;
 
-                if(reversed){
-                    frame = total_frames - frame;
-                }
-
-                this.animation.goToAndStop(frame, true);
+            if(reversed){
+                frame = total_frames - frame;
             }
+
+            this.animation.goToAndStop(frame, true);
         }
 
         return this;
     }
 
+    /**
+     * Animation DOMLoaded event handler.
+     *
+     * @private
+     */
     onLoad(){
         this._loaded = true;
 
@@ -168,9 +185,9 @@ export default class Animation extends Element{
         }
 
         this
-            .updateFPS()
-            .updateDirection()
-            .updateColors();
+            .updateSpeed(this.getPropertyValue('loop-duration'))
+            .updateDirection(this.getPropertyValue('reversed'))
+            .updateColors(this.getPropertyValue('colors'));
 
         if(this._playing){
             this.play();
@@ -179,14 +196,29 @@ export default class Animation extends Element{
         this.triggerEvent('contentload', {'component': this});
     }
 
+    /**
+     * Get the Lottie animation instance.
+     *
+     * @return {Object} The AnimationItem instance
+     */
     getAnimation(){
         return this.animation;
     }
 
+    /**
+     * Check if the animation has loaded.
+     *
+     * @return {Boolean} Whether the animation has loaded.
+     */
     isLoaded(){
         return this._loaded;
     }
 
+    /**
+     * Get the total number of frames.
+     *
+     * @return {number} The number of frames.
+     */
     getTotalFrames(){
         if(this.animation){
             return this.animation.getDuration(true);
@@ -195,8 +227,13 @@ export default class Animation extends Element{
         return 0;
     }
 
+    /**
+     * Play the animation.
+     *
+     * @return {this}
+     */
     play(){
-        if(this._loaded){
+        if(this.isLoaded()){
             this.animation.play();
         }
 
@@ -205,8 +242,13 @@ export default class Animation extends Element{
         return this;
     }
 
+    /**
+     * Stop the animation.
+     *
+     * @return {this}
+     */
     stop(){
-        if(this._loaded){
+        if(this.isLoaded()){
             this.animation.stop();
         }
 
@@ -215,15 +257,26 @@ export default class Animation extends Element{
         return this;
     }
 
-    updateSrc(value){
+    /**
+     * Update the animation's source URL.
+     *
+     * @private
+     * @param {string} url The new URL.
+     * @return {this}
+     */
+    updateSrc(url){
         this.removeAnimation();
 
         this.contents.empty();
 
-        if(value){
+        if(url){
+            /**
+             * The Lottie AnimationItem instance
+             * @type {Object}
+             */
             this.animation = Lottie.loadAnimation({
                 container: this.contents.get(0),
-                path: value,
+                path: url,
                 renderer: 'svg',
                 loop: true,
                 autoplay: false,
@@ -235,17 +288,16 @@ export default class Animation extends Element{
         return this;
     }
 
-    updateStartFrame(){
-        if(!this._playing){
-            this.draw();
-        }
-    }
-
-    updateFPS(){
-        if(this.animation && this._loaded){
+    /**
+     * Update the animation's speed.
+     *
+     * @private
+     * @param {number} loop_duration The loop duration.
+     * @return {this}
+     */
+    updateSpeed(loop_duration){
+        if(this.isLoaded()){
             const duration = this.animation.getDuration();
-            const loop_duration = this.getPropertyValue('loop-duration');
-
             this.animation.setSpeed(duration/loop_duration);
 
             if(!this._playing){
@@ -256,10 +308,16 @@ export default class Animation extends Element{
         return this;
     }
 
-    updateDirection(){
-        if(this.animation && this._loaded){
-            const direction = this.getPropertyValue('reversed') ? -1 : 1;
-            this.animation.setDirection(direction);
+    /**
+     * Update the animation's direction.
+     *
+     * @private
+     * @param {boolean} reversed Whether to play in reversed.
+     * @return {this}
+     */
+    updateDirection(reversed){
+        if(this.isLoaded()){
+            this.animation.setDirection(reversed ? -1 : 1);
 
             if(!this._playing){
                 this.draw();
@@ -269,24 +327,29 @@ export default class Animation extends Element{
         return this;
     }
 
-    updateColors(){
-        if(this.animation && this._loaded){
-            let colors = this.getPropertyValue('colors');
-
-            if(!colors){
-                colors = [null, null];
-            }
-
-            colors.forEach((val, index) => {
-                this.contents.find(`.color${index+1} path`).forEach((path) => {
-                    path.style.fill = val;
-                });
+    /**
+     * Update the animation's colors.
+     *
+     * @private
+     * @param {string[]} colors An array of color values.
+     * @return {this}
+     */
+    updateColors(colors){
+        if(this.animation && this.isLoaded()){
+            (colors ?? [null, null]).forEach((val, index) => {
+                this.contents.find(`.color${index+1} path`).css('fill', val);
             });
         }
 
         return this;
     }
 
+    /**
+     * Stop and remove the animation.
+     *
+     * @private
+     * @return {this}
+     */
     removeAnimation(){
         this.stop();
 
@@ -301,6 +364,9 @@ export default class Animation extends Element{
         return this;
     }
 
+    /**
+     * @inheritdoc
+     */
     remove(){
         this.removeAnimation();
 

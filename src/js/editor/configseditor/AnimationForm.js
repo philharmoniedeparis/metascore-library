@@ -49,6 +49,9 @@ export default class AnimationForm extends ElementForm {
         this.addClass(`animation-form ${className}`);
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'start-frame':
@@ -122,7 +125,9 @@ export default class AnimationForm extends ElementForm {
     setComponents(components){
         super.setComponents(components);
 
-        this.updateInputs();
+        this
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
 
         this.getComponents().forEach((component) => {
             if(!component.isLoaded()){
@@ -143,7 +148,9 @@ export default class AnimationForm extends ElementForm {
             });
         }
 
-        this.updateInputs();
+        this
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
 
         super.unsetComponents(supressEvent);
 
@@ -156,7 +163,10 @@ export default class AnimationForm extends ElementForm {
      * @private
      */
     onComponentLoad(){
-        this.updateInputs();
+        this
+            .updateFieldsVisibility()
+            .updateInputs()
+            .updateColorsSubinputEmptyValue();
     }
 
     /**
@@ -202,13 +212,33 @@ export default class AnimationForm extends ElementForm {
             this.colors_subinputs.forEach((input, index) => {
                 input.setValue(value ? value[index] : null, true);
             });
+
+            this.updateColorsSubinputEmptyValue();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    updateFieldsVisibility() {
+        super.updateFieldsVisibility();
+
+        // Hide/show colors inputs.
+        this.colors_subinputs.forEach((input, index) => {
+            const toggle = this.components.every((component) => {
+                return component.contents.find(`.color${index+1}`).count() > 0;
+            });
+            input[toggle ? 'show' : 'hide']();
+        });
+
+        return this;
     }
 
     /**
      * Update inputs.
      *
      * @private
+     * @return {this}
      */
     updateInputs(){
         // Update start-frame max value.
@@ -219,12 +249,36 @@ export default class AnimationForm extends ElementForm {
         const min_frames = Math.min(...frames);
         this.getField('start-frame').getInput().setMax(Math.max(min_frames, 0));
 
-        // Hide/show color fields.
-        this.colors_subinputs.forEach((input, index) => {
-            const enable = this.components.every((component) => {
-                return component.contents.find(`.color${index+1}`).count() > 0;
+        return this;
+    }
+
+    /**
+     * Update colors subinputs' empty value
+     * depending on the default value of the component's corresponding propoerty.
+     *
+     * @return {this}
+     */
+    updateColorsSubinputEmptyValue() {
+        const master_component = this.getMasterComponent();
+
+        if (master_component && master_component.isLoaded()) {
+            // Get current value.
+            const value = master_component.getPropertyValue('colors');
+
+            // Get default value.
+            master_component.setPropertyValue('colors', null, true);
+
+            this.colors_subinputs.forEach((input, index) => {
+                const empty_value = master_component.contents.find(`.color${index+1} path`).css('fill');
+
+                // Update input's empty value.
+                input.setEmptyValue(empty_value);
             });
-            input[enable ? 'enable' : 'disable']();
-        });
+
+            // Revert to current value.
+            master_component.setPropertyValue('colors', value, true);
+        }
+
+        return this;
     }
 }
