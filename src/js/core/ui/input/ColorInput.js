@@ -43,6 +43,7 @@ export default class ColorInput extends Input {
 
         // fix event handlers scope
         this.onDocMouseDown = this.onDocMouseDown.bind(this);
+        this.onWindowBlur = this.onWindowBlur.bind(this);
         this.onWindowScroll = this.onWindowScroll.bind(this);
         this.onWindowResize = this.onWindowResize.bind(this);
         this.onWindowKeyDown = this.onWindowKeyDown.bind(this);
@@ -192,31 +193,11 @@ export default class ColorInput extends Input {
 
         this.overlay.show().focus();
 
-        // Observe DOM mutations to hide overlay when field is removed.
-        if(!this.overlay_observer){
-            this.overlay_observer = new MutationObserver((mutationsList, observer) => {
-                const el = this.get(0);
-
-                for(const mutation of mutationsList) {
-                    if (mutation.type === 'childList' && 'removedNodes' in mutation && mutation.removedNodes.length > 0) {
-                        Array.from(mutation.removedNodes).some((node) => {
-                            if (node.isSameNode(el) || node.contains(el)) {
-                                observer.disconnect();
-                                this.hideOverlay();
-                                return true;
-                            }
-                            return false;
-                        });
-                    }
-                }
-            });
-        }
-        this.overlay_observer.observe(this.doc.get(0), { childList: true, subtree: true });
-
         this.repositionOverlay();
 
         this.doc.addListener('mousedown', this.onDocMouseDown, true);
 
+        Dom.addListener(window, 'blur', this.onWindowBlur);
         Dom.addListener(window, 'scroll', this.onWindowScroll, true);
         Dom.addListener(window, 'resize', this.onWindowResize);
         Dom.addListener(window, 'keydown', this.onWindowKeyDown, true);
@@ -232,6 +213,7 @@ export default class ColorInput extends Input {
 
         this.doc.removeListener('mousedown', this.onDocMouseDown, true);
 
+        Dom.removeListener(window, 'blur', this.onWindowBlur);
         Dom.removeListener(window, 'scroll', this.onWindowScroll, true);
         Dom.removeListener(window, 'resize', this.onWindowResize);
         Dom.removeListener(window, 'keydown', this.onWindowKeyDown, true);
@@ -271,9 +253,19 @@ export default class ColorInput extends Input {
      * @param {Event} evt The event object
      */
     onDocMouseDown(evt){
-        if(!this.get(0).contains(evt.target)){
+        const overlay_dom = this.overlay.get(0);
+        if (!overlay_dom.isSameNode(evt.target) && !overlay_dom.contains(evt.target)) {
             this.hideOverlay();
         }
+    }
+
+    /**
+     * Window blur event handler
+     *
+     * @private
+     */
+    onWindowBlur(){
+        this.hideOverlay();
     }
 
     /**
