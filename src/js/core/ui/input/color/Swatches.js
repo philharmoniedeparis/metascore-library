@@ -46,7 +46,7 @@ export default class Swatches extends Dom {
 
         this.configs.colors.forEach((color) => {
             new Dom('<button/>', {'class': 'swatch', 'type': 'button'})
-                .css('background-color', color)
+                .css('color', color)
                 .data('action', 'swatch')
                 .data('value', color)
                 .appendTo(top);
