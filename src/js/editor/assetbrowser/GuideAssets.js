@@ -473,16 +473,22 @@ export default class GuideAssets extends Dom {
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'spectrogram': {
-                    const form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
+            case 'spectrogram':
+                if (!this.spectrogram_form) {
+                    /**
+                     * The spectrogram form overlay
+                     * @type {SpectrogramForm}
+                     */
+                    this.spectrogram_form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
+                            'autoShow': false,
                             'parent': this.editor,
                             'xhr': this.configs.xhr
-                        }, this.configs.spectrogram_form.configs));
-
-                    form.addListener('generate', this.onSpectrogramFormGenerate.bind(this));
-
-                    this.triggerEvent('spectrogramformopen', {'form': form});
+                        }, this.configs.spectrogram_form.configs))
+                        .addListener('generate', this.onSpectrogramFormGenerate.bind(this));
                 }
+
+                this.spectrogram_form.show();
+                this.triggerEvent('spectrogramformopen', {'form': this.spectrogram_form});
                 break;
         }
     }
