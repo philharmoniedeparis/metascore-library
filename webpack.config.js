@@ -15,23 +15,23 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LIB_NAME = "metaScore";
 const DIST_DIR = path.join(__dirname, "dist");
 const PLAYER_POLYFILLS = glob.sync('./polyfills/*.js');
-const EDITOR_POLYFILLS = glob.sync('./polyfills/*.js', {'ignore': './polyfills/Fullscreen.js'});
+const EDITOR_POLYFILLS = glob.sync('./polyfills/*.js', { 'ignore': './polyfills/Fullscreen.js' });
 
 module.exports = (env, argv) => {
   const configs = {
     mode: 'production',
     bail: true,
     entry: {
-        Player: ['@babel/polyfill', 'classlist-polyfill'].concat(PLAYER_POLYFILLS).concat(['./src/js/Player']),
-        Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(EDITOR_POLYFILLS).concat(['./src/js/Editor']),
-        API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './polyfills/Fullscreen.js', './src/js/API']
+      Player: ['@babel/polyfill', 'classlist-polyfill'].concat(PLAYER_POLYFILLS).concat(['./src/js/Player']),
+      Editor: ['@babel/polyfill', 'classlist-polyfill'].concat(EDITOR_POLYFILLS).concat(['./src/js/Editor']),
+      API: ['classlist-polyfill', './polyfills/NodeList.forEach.js', './polyfills/Fullscreen.js', './src/js/API']
     },
     output: {
-        filename: LIB_NAME +'.[name].js',
-        path: DIST_DIR,
-        library: LIB_NAME,
-        libraryTarget: 'var',
-        devtoolNamespace: LIB_NAME
+      filename: LIB_NAME + '.[name].js',
+      path: DIST_DIR,
+      library: LIB_NAME,
+      libraryTarget: 'var',
+      devtoolNamespace: LIB_NAME
     },
     devtool: "source-map",
     watchOptions: {
@@ -80,22 +80,22 @@ module.exports = (env, argv) => {
           // Pack Sass and CSS.
           test: /\.(sa|sc|c)ss$/,
           use: [
-              MiniCssExtractPlugin.loader,
-              {
-                loader: 'css-loader',
-                options: {
-                  modules: {
-                    mode: 'global',
-                    localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
-                    context: path.resolve(__dirname, './src/css'),
-                  },
-                }
-              },
-              {
-                loader: 'postcss-loader'
-              },
-              'sass-loader'
-            ]
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                modules: {
+                  mode: 'global',
+                  localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
+                  context: path.resolve(__dirname, './src/css'),
+                },
+              }
+            },
+            {
+              loader: 'postcss-loader'
+            },
+            'sass-loader'
+          ]
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
@@ -110,7 +110,7 @@ module.exports = (env, argv) => {
                     symbolId: (filePath) => {
                       let dirname = path.dirname(filePath);
                       dirname = path.relative('./src/img', dirname);
-                      dirname = filenamify(dirname, {replacement: '-'});
+                      dirname = filenamify(dirname, { replacement: '-' });
                       const basename = path.basename(filePath, '.svg');
                       return `${dirname}-${basename}`;
                     }
@@ -167,7 +167,7 @@ module.exports = (env, argv) => {
     plugins: [
       new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
       new MiniCssExtractPlugin({
-        filename: LIB_NAME +'.[name].css'
+        filename: LIB_NAME + '.[name].css'
       }),
       new i18nExtractPlugin({
         test: /^src[\/\\].*\.js$/,
@@ -185,13 +185,13 @@ module.exports = (env, argv) => {
     ]
   };
 
-  switch(argv.mode){
+  switch (argv.mode) {
     case 'development':
-      if('copy' in argv) {
+      if ('copy' in argv) {
         configs.plugins.push(
           new ShellPlugin({
             onBuildExit: [
-              `copyfiles -u 1 dist/**/* ${argv.copy} && echo "Copyied files to ${argv.copy}"`
+              `copyfiles -u 1 "dist/**/*" ${argv.copy} && echo "Copyied files to ${argv.copy}"`
             ]
           })
         );
