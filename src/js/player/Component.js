@@ -100,12 +100,18 @@ export default class Component extends Dom {
     /**
      * Instantiate
      *
+     * @abstract
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
      * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
      * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
+        if (new.target === Component) {
+            // This is an abstract class.
+            throw new TypeError(`Cannot construct ${new.target.name} instances directly`);
+        }
+
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
@@ -604,7 +610,7 @@ export default class Component extends Dom {
     /**
      * The cuepoint start event handler
      *
-     * @private
+     * @protected
      */
     onCuePointStart(){
         this.doActivate();
@@ -613,16 +619,15 @@ export default class Component extends Dom {
     /**
      * The cuepoint update event handler
      *
-     * @private
+     * @abstract
+     * @protected
      */
-    onCuePointUpdate(){
-
-    }
+    onCuePointUpdate(){}
 
     /**
      * The cuepoint stop event handler
      *
-     * @private
+     * @protected
      */
     onCuePointStop(){
         this.doDeactivate();

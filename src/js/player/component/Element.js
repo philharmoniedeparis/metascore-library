@@ -88,9 +88,15 @@ export default class Element extends Component{
     /**
      * Instantiate
      *
+     * @abstract
      * @param {Object} configs Custom configs to override defaults
      */
     constructor(configs) {
+        if (new.target === Element) {
+            // This is an abstract class.
+            throw new TypeError(`Cannot construct ${new.target.name} instances directly`);
+        }
+
         // call parent constructor
         super(configs);
 
