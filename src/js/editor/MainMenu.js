@@ -81,7 +81,7 @@ export default class MainMenu extends Dom {
                 'icon': publish_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.publish.title', 'Publish')
+                'title': Locale.t('editor.MainMenu.publish.title', 'Edit details / publish')
             })
             .data('action', 'publish')
             .appendTo(this);
