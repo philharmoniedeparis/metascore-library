@@ -37,7 +37,7 @@
 	"editor.ComponentForm.multivalWarning": "La valeur correspond à celle du premier composant sélectionné",
 	"editor.MainMenu.height.title": "Hauteur",
 	"editor.MainMenu.preview-toggle.title": "Basculer le mode de prévisualisation",
-	"editor.MainMenu.publish.title": "Publier",
+	"editor.MainMenu.publish.title": "Modifier les information / rendre public",
 	"editor.MainMenu.redo.title": "Refaire",
 	"editor.MainMenu.restore.label": "Restaurer",
 	"editor.MainMenu.revert.title": "Revenir à la version précédente",

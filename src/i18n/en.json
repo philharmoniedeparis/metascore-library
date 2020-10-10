@@ -37,7 +37,7 @@
 	"editor.ComponentForm.multivalWarning": "The value corresponds to that of the first selected component",
 	"editor.MainMenu.height.title": "Height",
 	"editor.MainMenu.preview-toggle.title": "Toggle preview mode",
-	"editor.MainMenu.publish.title": "Publish",
+	"editor.MainMenu.publish.title": "Edit details / publish",
 	"editor.MainMenu.redo.title": "Redo",
 	"editor.MainMenu.restore.label": "Restore",
 	"editor.MainMenu.revert.title": "Revert",
