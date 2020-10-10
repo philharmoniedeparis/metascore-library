@@ -30,55 +30,48 @@ const ELEMENT_TYPES = {
  */
 export default class Page extends Component {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'draggable': false,
+        'resizable': false,
+        'properties': Object.assign({}, super.defaults.properties, {
+            'background-color': {
+                'type': 'color'
+            },
+            'background-image': {
+                'type': 'image'
+            },
+            'start-time': {
+                'type': 'time',
+                'sanitize': function(value) {
+                    return value ? round(value, 2) : value;
+                }
+            },
+            'end-time': {
+                'type': 'time',
+                'sanitize': function(value) {
+                    return value ? round(value, 2) : value;
+                }
+            },
+            'elements': {
+                'type': 'array',
+                'getter': function(skipID){
+                    const elements = [];
+
+                    this.getChildren().forEach((element) => {
+                        elements.push(element.getPropertyValues(skipID));
+                    });
+
+                    return elements;
+                }
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Page';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'draggable': false,
-            'resizable': false,
-            'properties': Object.assign({}, defaults.properties, {
-                'background-color': {
-                    'type': 'color'
-                },
-                'background-image': {
-                    'type': 'image'
-                },
-                'start-time': {
-                    'type': 'time',
-                    'sanitize': function(value) {
-                        return value ? round(value, 2) : value;
-                    }
-                },
-                'end-time': {
-                    'type': 'time',
-                    'sanitize': function(value) {
-                        return value ? round(value, 2) : value;
-                    }
-                },
-                'elements': {
-                    'type': 'array',
-                    'getter': function(skipID){
-                        const elements = [];
-
-                        this.getChildren().forEach((element) => {
-                            elements.push(element.getPropertyValues(skipID));
-                        });
-
-                        return elements;
-                    }
-                }
-            })
-        });
     }
 
     /**

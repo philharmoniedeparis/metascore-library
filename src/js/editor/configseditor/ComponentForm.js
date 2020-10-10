@@ -19,6 +19,12 @@ import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
  */
 export default class ComponentForm extends Dom {
 
+    static defaults = {
+        'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
+        'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
+        'fields': []
+    };
+
     /**
      * Instantiate
      *
@@ -49,7 +55,7 @@ export default class ComponentForm extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.title = new Dom('<h2/>', {'class': 'title'})
             .appendTo(this);
@@ -66,18 +72,11 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
-            'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
-            'fields': []
-        };
-    }
-
+     * Attach components to the form.
+     *
+     * @param {Component[]} components The list of components.
+     * @return {this}
+     */
     setComponents(components){
         /**
          * The components
@@ -114,6 +113,11 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Detach all components from the form.
+     *
+     * @return {this}
+     */
     unsetComponents(){
         if(this.components){
             this.components.forEach((component) => {
@@ -135,10 +139,20 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Get the master component.
+     *
+     * @return {Component} The component.
+     */
     getMasterComponent(){
         return this.master_component;
     }
 
+    /**
+     * Get the list of attached components.
+     *
+     * @return {Component[]} The components.
+     */
     getComponents(){
         return this.components;
     }
@@ -430,6 +444,12 @@ export default class ComponentForm extends Dom {
         return this;
     }
 
+    /**
+     * Add a field by name.
+     *
+     * @param {string} name The field's name.
+     * @param {this}
+     */
     addField(name){
         switch(name){
             case 'name':
@@ -464,7 +484,7 @@ export default class ComponentForm extends Dom {
                     .appendTo(this.fields_wrapper);
 
                 this.fields['background-color'] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color')
                     })
@@ -480,7 +500,7 @@ export default class ComponentForm extends Dom {
                         .appendTo(wrapper);
 
                     this.fields['border-color'] = new Field(
-                        new ColorInput(),
+                        new ColorInput({'format': 'css'}),
                         {
                             'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
                         })
@@ -654,25 +674,21 @@ export default class ComponentForm extends Dom {
             const field = this.getField(name);
 
             if(field && field instanceof Field){
+                const input = field.getInput();
                 const multival = this.components.length > 1 && this.components.some((component) => {
                     return component.getPropertyValue(name) !== value;
                 });
 
-                field.getInput().setValue(value, supressEvent);
+                input.setValue(value, supressEvent);
+
+                if (input instanceof ColorInput) {
+                    this.updateColorInputEmptyValue(input, name);
+                }
 
                 this.toggleMultival(field, multival);
             }
 
-            // Toggle other fields' visibility
-            Object.entries(master_component.getProperties()).forEach(([prop_name, prop]) => {
-                if(prop_name !== name){
-                    const prop_field = this.getField(prop_name);
-                    if(prop_field){
-                        const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
-                        prop_field[toggle ? 'show' : 'hide']();
-                    }
-                }
-            });
+            this.updateFieldsVisibility();
         }
 
         return this;
@@ -705,6 +721,27 @@ export default class ComponentForm extends Dom {
      */
     getFields(){
         return this.fields;
+    }
+
+    /**
+     * Update fields visibility according to whether they apply or not
+     *
+     * @return {this}
+     */
+    updateFieldsVisibility() {
+        if(this.components){
+            const master_component = this.getMasterComponent();
+
+            Object.entries(master_component.getProperties()).forEach(([name, prop]) => {
+                const prop_field = this.getField(name);
+                if(prop_field){
+                    const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
+                    prop_field[toggle ? 'show' : 'hide']();
+                }
+            });
+        }
+
+        return this;
     }
 
     /**
@@ -795,6 +832,40 @@ export default class ComponentForm extends Dom {
                 .setMin(start_values.length > 0 ? Math.max(...start_values) : null)
                 .setMax(MasterClock.getRenderer().getDuration());
         }
+
+        return this;
+    }
+
+    /**
+     * Update a color input's empty value
+     * depending on the default value of the component's corresponding propoerty.
+     *
+     * @param {ColorInput} input The color input
+     * @param {String} name The propoerty's name
+     * @return {this}
+     */
+    updateColorInputEmptyValue(input, name) {
+        const master_component = this.getMasterComponent();
+        const property = master_component.getProperty(name);
+        let empty_value = null;
+
+        if('default' in property){
+            empty_value = property.default;
+        }
+        else {
+            // Get current value.
+            const value = master_component.getPropertyValue(name);
+
+            // Get default value.
+            master_component.setPropertyValue(name, null, true);
+            empty_value = master_component.css(name);
+
+            // Revert to current value.
+            master_component.setPropertyValue(name, value, true);
+        }
+
+        // Update input's empty value.
+        input.setEmptyValue(empty_value);
 
         return this;
     }

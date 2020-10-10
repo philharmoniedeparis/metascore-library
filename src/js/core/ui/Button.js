@@ -8,6 +8,12 @@ import {className} from '../../../css/core/ui/Button.scss';
  */
 export default class Button extends Dom {
 
+    static defaults = {
+        'type': 'button',
+        'label': null,
+        'icon': null
+    };
+
     /**
      * Instantiate
      *
@@ -23,7 +29,7 @@ export default class Button extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.attr('type', this.configs.type);
 
@@ -33,19 +39,6 @@ export default class Button extends Dom {
         if(this.configs.icon){
             this.setIcon(this.configs.icon);
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'type': 'button',
-            'label': null,
-            'icon': null
-        };
     }
 
     /**

@@ -12,6 +12,13 @@ import {className} from '../../css/editor/AssetBrowser.scss';
  */
 export default class AssetBrowser extends Dom {
 
+    static defaults = {
+        'component_links': {},
+        'guide_assets': {},
+        'shared_assets': {},
+        'xhr': {}
+    };
+
     /**
      * Instantiate
      *
@@ -35,7 +42,7 @@ export default class AssetBrowser extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.top = new Dom('<div/>', {'class': 'top'})
             .appendTo(this);
@@ -80,20 +87,6 @@ export default class AssetBrowser extends Dom {
 
 
         this.switchTab('component-links');
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'component_links': {},
-            'guide_assets': {},
-            'shared_assets': {},
-            'xhr': {}
-        };
     }
 
     switchTab(id){

@@ -26,6 +26,25 @@ import CuePoint from './CuePoint';
  */
 export default class Component extends Dom {
 
+    static defaults = {
+        'draggable': true,
+        'resizable': true,
+        'properties': {
+            'type': {
+                'type': 'string',
+                'getter': function(){
+                    return this.constructor.getType();
+                }
+            },
+            'id': {
+                'type': 'string',
+            },
+            'editor.locked': {
+                'type': 'boolean'
+            }
+        }
+    };
+
     /**
     * Get the component's type
     *
@@ -33,33 +52,6 @@ export default class Component extends Dom {
     */
     static getType(){
         return 'Component';
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'draggable': true,
-            'resizable': true,
-            'properties': {
-                'type': {
-                    'type': 'string',
-                    'getter': function(){
-                        return this.constructor.getType();
-                    }
-                },
-                'id': {
-                    'type': 'string',
-                    'default': `component-${uuid(10)}`
-                },
-                'editor.locked': {
-                    'type': 'boolean'
-                }
-            }
-        };
     }
 
     /**
@@ -109,8 +101,8 @@ export default class Component extends Dom {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
-        // Get default configs.
-        const defaults = this.constructor.getDefaults();
+        // Get a clone of default configs.
+        const defaults = {...this.constructor.defaults};
 
         // Add default property values.
         Object.entries(defaults.properties).forEach(([name, property]) => {
@@ -123,7 +115,7 @@ export default class Component extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, defaults, configs);
+        this.configs = Object.assign({'id': `component-${uuid(10)}`}, defaults, configs);
 
         /**
          * The property values store

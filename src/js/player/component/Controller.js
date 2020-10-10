@@ -9,42 +9,35 @@ import {MasterClock} from '../../core/media/Clock';
  */
 export default class Controller extends Component{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'resizable': false,
+        'properties': Object.assign({}, super.defaults.properties, {
+            'hidden': {
+                'type': 'boolean'
+            },
+            'x': {
+                'type': 'number'
+            },
+            'y': {
+                'type': 'number'
+            },
+            'border-width': {
+                'type': 'number'
+            },
+            'border-color': {
+                'type': 'color'
+            },
+            'border-radius': {
+                'type': 'string'
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Controller';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'resizable': false,
-            'properties': Object.assign({}, defaults.properties, {
-                'hidden': {
-                    'type': 'boolean'
-                },
-                'x': {
-                    'type': 'number'
-                },
-                'y': {
-                    'type': 'number'
-                },
-                'border-width': {
-                    'type': 'number'
-                },
-                'border-color': {
-                    'type': 'color'
-                },
-                'border-radius': {
-                    'type': 'string'
-                }
-            })
-        });
     }
 
     /**

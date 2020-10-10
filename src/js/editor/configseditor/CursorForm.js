@@ -1,7 +1,6 @@
 import ElementForm from './ElementForm';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
-import {isFunction} from '../../core/utils/Var';
 import Field from '../Field';
 import SelectInput from '../../core/ui/input/SelectInput';
 import ColorInput from '../../core/ui/input/ColorInput';
@@ -16,6 +15,29 @@ import {className} from '../../../css/editor/configseditor/CursorForm.scss';
  * A cursor component form class
  */
 export default class CursorForm extends ElementForm {
+
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.CursorForm.title.single', 'Attributes of cursor'),
+        'title_plural': Locale.t('editor.configseditor.CursorForm.title.plural', 'Attributes of @count cursors'),
+        'fields': [
+            'name',
+            'hidden',
+            'form',
+            'direction',
+            'start-angle',
+            'acceleration',
+            'keyframes',
+            'loop-duration',
+            'cursor-width',
+            'cursor-color',
+            'background',
+            'border',
+            'opacity',
+            'time',
+            'position',
+            'dimension'
+        ]
+    });
 
     /**
      * @inheritdoc
@@ -43,44 +65,14 @@ export default class CursorForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.CursorForm.title.single', 'Attributes of cursor'),
-            'title_plural': Locale.t('editor.configseditor.CursorForm.title.plural', 'Attributes of @count cursors'),
-            'fields': [
-                'name',
-                'hidden',
-                'form',
-                'direction',
-                'start-angle',
-                'acceleration',
-                'keyframes',
-                'loop-duration',
-                'cursor-width',
-                'cursor-color',
-                'background',
-                'border',
-                'opacity',
-                'time',
-                'position',
-                'dimension'
-            ]
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
     setComponents(components){
         super.setComponents(components);
 
         if(this.components.length === 1){
-            this.keyframes_toggle.show();
+            this.fields.keyframes.show();
         }
         else{
-            this.keyframes_toggle.hide();
+            this.fields.keyframes.hide();
         }
 
         return this;
@@ -90,7 +82,7 @@ export default class CursorForm extends ElementForm {
      * @inheritdoc
      */
     unsetComponents(){
-        this.keyframes_toggle.setValue(false);
+        this.fields.keyframes.setValue(false);
 
         super.unsetComponents();
 
@@ -138,6 +130,9 @@ export default class CursorForm extends ElementForm {
         super.onComponentResizeEnd(evt);
     }
 
+    /**
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'form':
@@ -186,7 +181,7 @@ export default class CursorForm extends ElementForm {
                 break;
 
             case 'keyframes':
-                this.keyframes_toggle = new CheckboxInput({
+                this.fields[name] = new CheckboxInput({
                         'label': Locale.t('editor.configseditor.CursorForm.keyframes-toggle.label', 'Record positions')
                     })
                     .addClass('toggle-button')
@@ -221,7 +216,7 @@ export default class CursorForm extends ElementForm {
 
             case 'cursor-color':
                 this.fields[name] = new Field(
-                    new ColorInput(),
+                    new ColorInput({'format': 'css'}),
                     {
                         'label': Locale.t('editor.configseditor.CursorForm.fields.cursor-color.label', 'Cursor color')
                     })
@@ -269,15 +264,12 @@ export default class CursorForm extends ElementForm {
      * @inheritdoc
      */
     updateFieldValue(name, supressEvent){
-        super.updateFieldValue(name, supressEvent);
+        if (name !== 'keyframes') {
+            super.updateFieldValue(name, supressEvent);
+        }
 
         if(this.components){
             const master_component = this.getMasterComponent();
-
-            // Toggle the keyframes toggle visibility.
-            const prop = master_component.getProperty('keyframes');
-            const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
-            this.keyframes_toggle[toggle ? 'show' : 'hide']();
 
             if(name === 'form'){
                 // Update the direction field options.

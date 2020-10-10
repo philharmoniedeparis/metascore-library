@@ -19,6 +19,11 @@ import {className, handleDragGhostClassName} from '../../../css/editor/controlle
  */
 export default class Timeline extends Dom {
 
+    static defaults = {
+        'playheadWidth': 1,
+        'playheadColor': '#0000fe'
+    };
+
     /**
      * Instantiate
      */
@@ -30,7 +35,7 @@ export default class Timeline extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.playhead_position = 0;
 
@@ -44,18 +49,6 @@ export default class Timeline extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'playheadWidth': 1,
-            'playheadColor': '#0000fe'
-        };
     }
 
     /**

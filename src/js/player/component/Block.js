@@ -15,88 +15,81 @@ import Hammer from 'hammerjs';
  */
 export default class Block extends Component {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'name': {
+                'type': 'string'
+            },
+            'hidden': {
+                'type': 'boolean'
+            },
+            'x': {
+                'type': 'number',
+                'default': 0
+            },
+            'y': {
+                'type': 'number',
+                'default': 0
+            },
+            'width': {
+                'type': 'number',
+                'default': 200,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('width'), 10);
+                }
+            },
+            'height': {
+                'type': 'number',
+                'default': 200,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('height'), 10);
+                }
+            },
+            'background-color': {
+                'type': 'color'
+            },
+            'background-image': {
+                'type': 'image'
+            },
+            'border-width': {
+                'type': 'number'
+            },
+            'border-color': {
+                'type': 'color'
+            },
+            'border-radius': {
+                'type': 'string'
+            },
+            'synched': {
+                'type': 'boolean',
+                'default': false
+            },
+            'pager-visibility': {
+                'type': 'string',
+                'default': 'auto'
+            },
+            'pages': {
+                'type': 'array',
+                'getter': function(skipID){
+                    const pages = [];
+
+                    this.getChildren().forEach((page) => {
+                        pages.push(page.getPropertyValues(skipID));
+                    });
+
+                    return pages;
+                }
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Block';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'name': {
-                    'type': 'string'
-                },
-                'hidden': {
-                    'type': 'boolean'
-                },
-                'x': {
-                    'type': 'number',
-                    'default': 0
-                },
-                'y': {
-                    'type': 'number',
-                    'default': 0
-                },
-                'width': {
-                    'type': 'number',
-                    'default': 200,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('width'), 10);
-                    }
-                },
-                'height': {
-                    'type': 'number',
-                    'default': 200,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('height'), 10);
-                    }
-                },
-                'background-color': {
-                    'type': 'color'
-                },
-                'background-image': {
-                    'type': 'image'
-                },
-                'border-width': {
-                    'type': 'number'
-                },
-                'border-color': {
-                    'type': 'color'
-                },
-                'border-radius': {
-                    'type': 'string'
-                },
-                'synched': {
-                    'type': 'boolean',
-                    'default': false
-                },
-                'pager-visibility': {
-                    'type': 'string',
-                    'default': 'auto'
-                },
-                'pages': {
-                    'type': 'array',
-                    'getter': function(skipID){
-                        const pages = [];
-
-                        this.getChildren().forEach((page) => {
-                            pages.push(page.getPropertyValues(skipID));
-                        });
-
-                        return pages;
-                    }
-                }
-            })
-        });
     }
 
     /**

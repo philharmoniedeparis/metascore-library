@@ -20,6 +20,19 @@ import {className} from '../../../../css/core/ui/input/Number.scss';
  */
 export default class NumberInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': 0,
+        'min': null,
+        'max': null,
+        'step': 1,
+        'spinButtons': true,
+        'initSpinDelay': 500,
+        'spinDelay': 40,
+        'spinIncremental': true,
+        'spinDirection': 'vertical',
+        'flipSpinButtons': false
+    });
+
     /**
      * Instantiate
      *
@@ -40,26 +53,6 @@ export default class NumberInput extends Input {
         super(configs);
 
         this.addClass(`number ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': 0,
-            'min': null,
-            'max': null,
-            'step': 1,
-            'spinButtons': true,
-            'initSpinDelay': 500,
-            'spinDelay': 40,
-            'spinIncremental': true,
-            'spinDirection': 'vertical',
-            'flipSpinButtons': false
-        });
     }
 
     /**

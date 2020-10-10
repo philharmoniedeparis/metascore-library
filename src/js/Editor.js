@@ -14,6 +14,7 @@ import Clipboard from './core/Clipboard';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
 import TimeInput from './core/ui/input/TimeInput';
+import ColorInput from './core/ui/input/ColorInput';
 import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
@@ -30,6 +31,25 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  */
 export class Editor extends Dom {
 
+    static defaults =  {
+        'container': 'body',
+        'player': {
+            'url': null,
+            'update_url': null,
+        },
+        'publish_url': null,
+        'autosave': {
+            'url': null,
+            'interval': null
+        },
+        'asset_browser': {},
+        'color_swatches': [],
+        'xhr': {},
+        'history': {
+            'grouping_timeout': 100
+        }
+    };
+
     /**
      * Instantiate
      *
@@ -40,7 +60,7 @@ export class Editor extends Dom {
      * @property {String} player.update_url The player update URL
      * @property {String} publish_url The URL of the publish button
      * @property {Object} asset_browser Options to pass to the asset browser
-     * @property {String} [lang='en'] The language to use for i18n
+     * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history] Options for the history
      * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
@@ -53,7 +73,10 @@ export class Editor extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
+
+        // Override ColorInput default swatches
+        ColorInput.defaults.swatches = Object.assign({}, ColorInput.defaults.swatches, {'colors': this.configs.color_swatches});
 
         /**
          * The dirty data keys
@@ -65,38 +88,7 @@ export class Editor extends Dom {
             this.appendTo(this.configs.container);
         }
 
-        if('locale' in this.configs){
-            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
-        }
-        else{
-            this.init();
-        }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'container': 'body',
-            'player': {
-                'url': null,
-                'update_url': null,
-            },
-            'publish_url': null,
-            'autosave': {
-                'url': null,
-                'interval': null
-            },
-            'asset_browser': {},
-            'lang': 'en',
-            'xhr': {},
-            'history': {
-                'grouping_timeout': 100
-            }
-        };
+        this.init();
     }
 
     /**

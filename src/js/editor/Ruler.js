@@ -9,6 +9,21 @@ import {className} from '../../css/editor/Ruler.scss';
  */
 export default class Ruler extends Dom {
 
+    static defaults = {
+        'axis': 'x',
+        'tickWidth': 1,
+        'minorTickLength': 5,
+        'minorTickStep': 5,
+        'minMinorTickSpacing': 5,
+        'majorTickLength': 18,
+        'majorTickStep': 50,
+        'minMajorTickSpacing': 50,
+        'tickColor': '#fff',
+        'textColor': '#fff',
+        'font': '10px sans-serif',
+        'trackTarget': null,
+    };
+
     /**
      * Instantiate
      *
@@ -22,7 +37,7 @@ export default class Ruler extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // Fix event handlers scope.
         this.onMouseover = this.onMouseover.bind(this);
@@ -47,28 +62,6 @@ export default class Ruler extends Dom {
         this.tracker = new Dom('<div/>', {'class': 'tracker'})
             .hide()
             .appendTo(this);
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'axis': 'x',
-            'tickWidth': 1,
-            'minorTickLength': 5,
-            'minorTickStep': 5,
-            'minMinorTickSpacing': 5,
-            'majorTickLength': 18,
-            'majorTickStep': 50,
-            'minMajorTickSpacing': 50,
-            'tickColor': '#fff',
-            'textColor': '#fff',
-            'font': '10px sans-serif',
-            'trackTarget': null,
-        };
     }
 
     onResize(){

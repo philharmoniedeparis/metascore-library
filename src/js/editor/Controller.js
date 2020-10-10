@@ -26,16 +26,9 @@ import {className} from '../../css/editor/Controller.scss';
  */
 export default class Controller extends Dom {
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'mediaSourceSelector': {}
-        };
-    }
+    static defaults = {
+        'mediaSourceSelector': {}
+    };
 
     /**
      * Instantiate
@@ -59,7 +52,7 @@ export default class Controller extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // fix event handlers scope
         this.onMediaRendererPlay = this.onMediaRendererPlay.bind(this);

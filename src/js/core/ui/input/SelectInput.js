@@ -13,6 +13,12 @@ import {className} from '../../../../css/core/ui/input/Select.scss';
  */
 export default class SelectInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'options': {},
+        'multiple': false,
+        'emptyLabel': Locale.t('core.input.SelectInput.emptyLabel', '')
+    });
+
     /**
      * Instantiate
      *
@@ -25,19 +31,6 @@ export default class SelectInput extends Input {
         super(configs);
 
         this.addClass(`select ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'options': {},
-            'multiple': false,
-            'emptyLabel': Locale.t('core.input.SelectInput.emptyLabel', '')
-        });
     }
 
     /**

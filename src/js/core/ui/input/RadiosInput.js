@@ -14,6 +14,11 @@ import {className} from '../../../../css/core/ui/input/Radios.scss';
  */
 export default class RadiosInput extends Input{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'options': {},
+        'icon': null
+    });
+
     /**
      * Instantiate
      *
@@ -26,18 +31,6 @@ export default class RadiosInput extends Input{
         super(configs);
 
         this.addClass(`radios ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'options': {},
-            'icon': null
-        });
     }
 
     /**

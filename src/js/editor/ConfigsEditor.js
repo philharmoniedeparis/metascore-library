@@ -33,6 +33,11 @@ import {className} from '../../css/editor/ConfigsEditor.scss';
  */
 export default class ConfigsEditor extends Dom {
 
+    static defaults = {
+        'allowMultiSelection': true
+    };
+
+
     /**
      * Instantiate
      *
@@ -54,7 +59,7 @@ export default class ConfigsEditor extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The list of already instantiated forms
@@ -85,18 +90,6 @@ export default class ConfigsEditor extends Dom {
             .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
             .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this));
     }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'allowMultiSelection': true
-        };
-    }
-
     /**
      * ContentForm contentsunlock event callback
      *
