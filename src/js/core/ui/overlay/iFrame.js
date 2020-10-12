@@ -8,6 +8,11 @@ import {className} from '../../../../css/core/ui/overlay/iFrame.scss';
  */
 export default class iFrame extends Overlay{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'url': null
+    });
+
     /**
      * Instantiate
      *
@@ -20,18 +25,6 @@ export default class iFrame extends Overlay{
         super(configs);
 
         this.addClass(`iframe ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'url': null
-        });
     }
 
     /**

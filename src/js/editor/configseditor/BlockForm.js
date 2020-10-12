@@ -10,6 +10,20 @@ import {className} from '../../../css/editor/configseditor/BlockForm.scss';
  */
 export default class BlockForm extends ComponentForm {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'title': Locale.t('editor.configseditor.BlockForm.title.single', 'Attributes of block'),
+        'title_plural': Locale.t('editor.configseditor.BlockForm.title.plural', 'Attributes of @count blocks'),
+        'fields': [
+            'name',
+            'hidden',
+            'background',
+            'border',
+            'position',
+            'dimension',
+            'pager'
+        ]
+    });
+
     /**
      * @inheritdoc
      */
@@ -21,28 +35,8 @@ export default class BlockForm extends ComponentForm {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'title': Locale.t('editor.configseditor.BlockForm.title.single', 'Attributes of block'),
-            'title_plural': Locale.t('editor.configseditor.BlockForm.title.plural', 'Attributes of @count blocks'),
-            'fields': [
-                'name',
-                'hidden',
-                'background',
-                'border',
-                'position',
-                'dimension',
-                'pager'
-            ]
-        });
-    }
-
+     * @inheritdoc
+     */
     addField(name){
         switch(name){
             case 'pager':

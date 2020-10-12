@@ -18,28 +18,21 @@ import {className} from '../../../css/editor/controller/MediaSourceSelector.scss
  */
 export default class MediaSourceSelector extends Overlay {
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'title': Locale.t('editor.controller.MediaSourceSelector.title', 'Change media source'),
-            'file': {
-                'label': Locale.t('editor.controller.MediaSourceSelector.file.label', 'Select a file'),
-                'description': Locale.t('editor.controller.MediaSourceSelector.file.description', 'File must be less than: !maxsize<br/>Supported file types: !types'),
-                'accept': '.mp4, .mp3',
-                'maxsize': 0
-            },
-            'url': {
-                'label': Locale.t('editor.controller.MediaSourceSelector.url.label', 'Enter a media stream URL'),
-                'description': Locale.t('editor.controller.MediaSourceSelector.url.description', 'Supported file types: !types'),
-                'accept': '.mp4, .mp3, .m3u8 (HLS), .mpd (MPEG-Dash)'
-            }
-        });
-    }
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'title': Locale.t('editor.controller.MediaSourceSelector.title', 'Change media source'),
+        'file': {
+            'label': Locale.t('editor.controller.MediaSourceSelector.file.label', 'Select a file'),
+            'description': Locale.t('editor.controller.MediaSourceSelector.file.description', 'File must be less than: !maxsize<br/>Supported file types: !types'),
+            'accept': '.mp4, .mp3',
+            'maxsize': 0
+        },
+        'url': {
+            'label': Locale.t('editor.controller.MediaSourceSelector.url.label', 'Enter a media stream URL'),
+            'description': Locale.t('editor.controller.MediaSourceSelector.url.description', 'Supported file types: !types'),
+            'accept': '.mp4, .mp3, .m3u8 (HLS), .mpd (MPEG-Dash)'
+        }
+    });
 
     /**
      * Instantiate

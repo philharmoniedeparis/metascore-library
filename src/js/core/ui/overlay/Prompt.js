@@ -10,6 +10,13 @@ import {className} from '../../../../css/core/ui/overlay/Prompt.scss';
  */
 export default class Prompt extends Confirm{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'default': '',
+        'placeholder': '',
+        'confirmLabel': Locale.t('core.Prompt.confirmLabel', 'OK'),
+        'cancelLabel': Locale.t('core.Prompt.cancelLabel', 'Cancel'),
+    });
+
     /**
      * Instantiate
      *
@@ -19,20 +26,6 @@ export default class Prompt extends Confirm{
         super(configs);
 
         this.addClass(`prompt ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'default': '',
-            'placeholder': '',
-            'confirmLabel': Locale.t('core.Prompt.confirmLabel', 'OK'),
-            'cancelLabel': Locale.t('core.Prompt.cancelLabel', 'Cancel'),
-        });
     }
 
     /**

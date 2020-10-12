@@ -20,6 +20,11 @@ import {className, toolbarClassName} from '../../../css/editor/assetbrowser/Shar
  */
 export default class SharedAssets extends Dom {
 
+    static defaults = {
+        'url': null,
+        'xhr': {}
+    };
+
     /**
      * Instantiate
      *
@@ -35,7 +40,7 @@ export default class SharedAssets extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // fix event handlers scope
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
@@ -81,18 +86,6 @@ export default class SharedAssets extends Dom {
 
         this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
             .appendTo(this);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'url': null,
-            'xhr': {}
-        };
     }
 
     loadAssets(){

@@ -28,6 +28,23 @@ import { className, assetDragGhostClassName } from '../../../css/editor/assetbro
  */
 export default class GuideAssets extends Dom {
 
+    static defaults = {
+        'import': {
+            'url': null,
+            'max_filesize': null,
+            'allowed_types': null,
+        },
+        'spectrogram_form': {
+            'url': null,
+            'configs': {}
+        },
+        'audiowaveform_form': {
+            'url': null,
+            'configs': {}
+        },
+        'xhr': {}
+    };
+
     /**
      * Instantiate
      *
@@ -51,7 +68,7 @@ export default class GuideAssets extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The list of loaded assets
@@ -104,31 +121,7 @@ export default class GuideAssets extends Dom {
             .addListener('drop', this.onDrop.bind(this));
     }
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'import': {
-                'url': null,
-                'max_filesize': null,
-                'allowed_types': null,
-            },
-            'spectrogram_form': {
-                'url': null,
-                'configs': {}
-            },
-            'audiowaveform_form': {
-                'url': null,
-                'configs': {}
-            },
-            'xhr': {}
-        };
-    }
-
-    onAssetImportFieldVlueChange(evt) {
+    onAssetImportFieldVlueChange(evt){
         this.importAssets(evt.detail.files);
     }
 
@@ -486,7 +479,7 @@ export default class GuideAssets extends Dom {
     onButtonClick(evt) {
         const action = Dom.data(evt.target, 'action');
 
-        switch (action) {
+        switch(action){
             case 'spectrogram':
                 if (!this.spectrogram_form) {
                     /**

@@ -175,6 +175,7 @@ export default class AudioWaveformForm extends Overlay {
         this.fields['background-color'] = new Field(
             new ColorInput({
                 'name': 'background-color',
+                'format': 'hex',
                 'value': '#00000000',
             }),
             {
@@ -186,6 +187,7 @@ export default class AudioWaveformForm extends Overlay {
         this.fields['waveform-color'] = new Field(
             new ColorInput({
                 'name': 'waveform-color',
+                'format': 'hex',
                 'value': '#0000fe',
             }),
             {
@@ -197,6 +199,7 @@ export default class AudioWaveformForm extends Overlay {
         this.fields['axis-label-color'] = new Field(
             new ColorInput({
                 'name': 'axis-label-color',
+                'format': 'hex',
                 'value': '#0000fe',
             }),
             {

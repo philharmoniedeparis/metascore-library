@@ -75,6 +75,17 @@ const GLOBAL_REGEX = new RegExp(`^${PARTS.reduce((accumulator, value) => {
  */
 export default class TimeInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': null,
+        'min': 0,
+        'max': null,
+        'inButton': false,
+        'outButton': false,
+        'clearButton': false,
+        'clearButtonIcon': clear_icon,
+        'clearButtonTitle': Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value')
+    });
+
     /**
      * Instantiate
      *
@@ -104,24 +115,6 @@ export default class TimeInput extends Input {
         if(this.configs.max !== null){
             this.setMax(this.configs.max);
         }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': null,
-            'min': 0,
-            'max': null,
-            'inButton': false,
-            'outButton': false,
-            'clearButton': false,
-            'clearButtonIcon': clear_icon,
-            'clearButtonTitle': Locale.t('core.ui.input.TimeInput.clear.tooltip', 'Clear value')
-        });
     }
 
     /**

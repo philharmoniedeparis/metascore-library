@@ -25,6 +25,20 @@ import {className, controlsClassName} from '../../../../css/editor/controller/Wa
  */
 export default class Zoom extends Dom {
 
+    static defaults = {
+        'waveColor': '#eee',
+        'waveMargin': 20,
+        'axisTickWidth': 1,
+        'axisTickHeight': 6,
+        'axisTickColor': '#fff',
+        'axisTextColor': '#fff',
+        'axisFont': '11px sans-serif',
+        'playheadWidth': 1,
+        'playheadColor': '#0000fe',
+        'zoomStep': 32,
+        'zoomButtonInterval': 50
+    };
+
     /**
      * Instantiate
      *
@@ -48,7 +62,7 @@ export default class Zoom extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.onMousemove = this.onMousemove.bind(this);
         this.onMouseup = this.onMouseup.bind(this);
@@ -153,27 +167,6 @@ export default class Zoom extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'waveColor': '#eee',
-            'waveMargin': 20,
-            'axisTickWidth': 1,
-            'axisTickHeight': 6,
-            'axisTickColor': '#fff',
-            'axisTextColor': '#fff',
-            'axisFont': '11px sans-serif',
-            'playheadWidth': 1,
-            'playheadColor': '#0000fe',
-            'zoomStep': 32,
-            'zoomButtonInterval': 50
-        };
     }
 
     /**

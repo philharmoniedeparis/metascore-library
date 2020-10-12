@@ -11,6 +11,13 @@ import {className} from '../../../../css/editor/controller/WaveformOverview.scss
  */
 export default class Overview extends Dom {
 
+    static defaults = {
+        'waveColor': '#fff',
+        'highlightColor': '#000',
+        'playheadWidth': 1,
+        'playheadColor': '#0000fe'
+    };
+
     /**
      * Instantiate
      *
@@ -28,7 +35,7 @@ export default class Overview extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // fix event handlers scope
         this.onMousemove = this.onMousemove.bind(this);
@@ -65,20 +72,6 @@ export default class Overview extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'waveColor': '#fff',
-            'highlightColor': '#000',
-            'playheadWidth': 1,
-            'playheadColor': '#0000fe'
-        };
     }
 
     /**

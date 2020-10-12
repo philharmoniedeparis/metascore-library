@@ -14,6 +14,12 @@ import {className} from '../../../../css/core/ui/overlay/BorderRadius.scss';
  */
 export default class BorderRadius extends Overlay {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius'),
+        'format': 'css'
+    });
+
     /**
      * Instantiate
      *
@@ -27,19 +33,6 @@ export default class BorderRadius extends Overlay {
         super(configs);
 
         this.addClass(`border-radius ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'title': Locale.t('editor.overlay.BorderRadius.title', 'Border Radius'),
-            'format': 'css'
-        });
     }
 
     /**

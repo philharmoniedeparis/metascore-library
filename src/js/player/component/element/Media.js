@@ -6,30 +6,23 @@ import Dom from '../../../core/Dom';
  */
 export default class Media extends Element{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'tag': {
+                'type': 'string',
+                'default': 'audio'
+            },
+            'src': {
+                'type': 'string'
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Media';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'tag': {
-                    'type': 'string',
-                    'default': 'audio'
-                },
-                'src': {
-                    'type': 'string'
-                }
-            })
-        });
     }
 
     /**

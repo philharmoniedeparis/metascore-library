@@ -14,6 +14,18 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Dra
  */
 export default class Draggable {
 
+    static defaults = {
+        'target': null,
+        'handle': null,
+        'autoUpdate': true,
+        'snapThreshold': 5,
+        'snapGuideContainer': null,
+        'snapPositions': {
+            'x': [0, 0.5, 1],
+            'y': [0, 0.5, 1],
+        }
+    };
+
     /**
      * Instantiate
      *
@@ -29,7 +41,7 @@ export default class Draggable {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * Snap guides
@@ -44,25 +56,6 @@ export default class Draggable {
         this.onClick = this.onClick.bind(this);
 
         this.enable();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'target': null,
-            'handle': null,
-            'autoUpdate': true,
-            'snapThreshold': 5,
-            'snapGuideContainer': null,
-            'snapPositions': {
-                'x': [0, 0.5, 1],
-                'y': [0, 0.5, 1],
-            }
-        };
     }
 
     /**

@@ -12,6 +12,10 @@ import {className} from '../../../../../css/core/ui/input/color/Picker.scss';
  */
 export default class Picker extends Dom {
 
+    static defaults = {
+        'value': '#fff'
+    };
+
     /**
      * Instantiate
      *
@@ -26,7 +30,7 @@ export default class Picker extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         // fix event handlers scope
         this.onPaletteInputMouseMove = this.onPaletteInputMouseMove.bind(this);
@@ -43,17 +47,6 @@ export default class Picker extends Dom {
         this.setupUI();
 
         this.setValue(this.configs.value);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'value': '#fff'
-        };
     }
 
     /**
@@ -98,8 +91,8 @@ export default class Picker extends Dom {
         const bottom = new Dom('<div/>', {'class': 'bottom'})
             .appendTo(this);
 
-        new Button({'label': Locale.t('core.ui.input.color.Picker.save.label', 'Save')})
-            .data('action', 'save')
+        new Button({'label': Locale.t('core.ui.input.color.Picker.apply.label', 'Apply')})
+            .data('action', 'apply')
             .appendTo(bottom);
 
         new Button({'label': Locale.t('core.ui.input.color.Picker.reset.label', 'Reset')})

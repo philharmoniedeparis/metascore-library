@@ -6,66 +6,59 @@ import Dom from '../../core/Dom';
  */
 export default class BlockToggler extends Component{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'name': {
+                'type': 'string'
+            },
+            'hidden': {
+                'type': 'boolean'
+            },
+            'blocks': {
+                'type': 'array'
+            },
+            'x': {
+                'type': 'number'
+            },
+            'y': {
+                'type': 'number'
+            },
+            'width': {
+                'type': 'number',
+                'default': 100,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('width'), 10);
+                }
+            },
+            'height': {
+                'type': 'number',
+                'default': 20,
+                'getter': function() {
+                    // Get value from CSS to honor CSS min and max values.
+                    return parseInt(this.css('height'), 10);
+                }
+            },
+            'background-color': {
+                'type': 'color'
+            },
+            'border-width': {
+                'type': 'number'
+            },
+            'border-color': {
+                'type': 'color'
+            },
+            'border-radius': {
+                'type': 'string'
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'BlockToggler';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'name': {
-                    'type': 'string'
-                },
-                'hidden': {
-                    'type': 'boolean'
-                },
-                'blocks': {
-                    'type': 'array'
-                },
-                'x': {
-                    'type': 'number'
-                },
-                'y': {
-                    'type': 'number'
-                },
-                'width': {
-                    'type': 'number',
-                    'default': 100,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('width'), 10);
-                    }
-                },
-                'height': {
-                    'type': 'number',
-                    'default': 20,
-                    'getter': function() {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('height'), 10);
-                    }
-                },
-                'background-color': {
-                    'type': 'color'
-                },
-                'border-width': {
-                    'type': 'number'
-                },
-                'border-color': {
-                    'type': 'color'
-                },
-                'border-radius': {
-                    'type': 'string'
-                }
-            })
-        });
     }
 
     /**

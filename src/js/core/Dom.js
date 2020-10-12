@@ -1091,7 +1091,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.text(this.get(0));
+        return this.count() > 0 ? Dom.text(this.get(0)) : null;
     }
 
     /**
@@ -1108,7 +1108,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.val(this.get(0));
+        return this.count() > 0 ? Dom.val(this.get(0)) : null;
     }
 
     /**
@@ -1127,7 +1127,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.attr(this.get(0), name);
+        return this.count() > 0 ? Dom.attr(this.get(0), name) : null;
     }
 
     /**
@@ -1145,7 +1145,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.prop(this.get(0), name);
+        return this.count() > 0 ? Dom.prop(this.get(0), name) : null;
     }
 
     /**
@@ -1164,7 +1164,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.css(this.get(0), name, value, inline);
+        return this.count() > 0 ? Dom.css(this.get(0), name, value, inline) : null;
     }
 
     /**
@@ -1182,7 +1182,7 @@ export default class Dom {
             return this;
         }
 
-        return Dom.data(this.get(0), name);
+        return this.count() > 0 ? Dom.data(this.get(0), name): null;
     }
 
     /**
@@ -1192,9 +1192,10 @@ export default class Dom {
      * @return {this}
      */
     append(children){
-        const _children = children instanceof Dom ? children.elements : children;
-
-        Dom.append(this.get(0), _children);
+        if (this.count() > 0) {
+            const _children = children instanceof Dom ? children.elements : children;
+            Dom.append(this.get(0), _children);
+        }
 
         return this;
     }
@@ -1278,8 +1279,12 @@ export default class Dom {
      * @return {Boolean} Whether the element is hidden or not
      */
     hidden() {
-        const el = this.get(0);
-        return !(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+        if (this.count() > 0) {
+            const el = this.get(0);
+            return !(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+        }
+
+        return null;
     }
 
     /**
@@ -1288,7 +1293,9 @@ export default class Dom {
      * @return {this}
      */
     focus() {
-        this.get(0).focus();
+        if (this.count() > 0) {
+            this.get(0).focus();
+        }
 
         return this;
     }
@@ -1299,7 +1306,9 @@ export default class Dom {
      * @return {this}
      */
     blur() {
-        this.get(0).blur();
+        if (this.count() > 0) {
+            this.get(0).blur();
+        }
 
         return this;
     }
@@ -1310,7 +1319,7 @@ export default class Dom {
      * @return {Object} offset The top and left offset
      */
     offset() {
-        return Dom.offset(this.get(0));
+        return this.count() > 0 ? Dom.offset(this.get(0)) : null;
     }
 
     /**

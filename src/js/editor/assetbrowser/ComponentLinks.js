@@ -10,84 +10,77 @@ import {className} from '../../../css/editor/assetbrowser/ComponentLinks.scss';
  */
 export default class ComponentLinks extends Dom {
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'links': {
-                'synced-block': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.synced-block.text', 'Synchronized block'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'Block',
-                        'synched': true
-                    },
-                    'icon': icons.block.synched
+    static defaults = {
+        'links': {
+            'synced-block': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.synced-block.text', 'Synchronized block'),
+                'type': 'block',
+                'configs': {
+                    'type': 'Block',
+                    'synched': true
                 },
-                'non-synced-block': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.non-synced-block.text', 'Non-synchronized block'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'Block',
-                        'synched': false
-                    },
-                    'icon': icons.block.non_synched
+                'icon': icons.block.synched
+            },
+            'non-synced-block': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.non-synced-block.text', 'Non-synchronized block'),
+                'type': 'block',
+                'configs': {
+                    'type': 'Block',
+                    'synched': false
                 },
-                'page': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.page.text', 'Page'),
-                    'type': 'page',
-                    'configs': {
-                        'position': 'before'
-                    },
-                    'icon': icons.page
+                'icon': icons.block.non_synched
+            },
+            'page': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.page.text', 'Page'),
+                'type': 'page',
+                'configs': {
+                    'position': 'before'
                 },
-                'cursor': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.cursor-element.text', 'Cursor element'),
-                    'type': 'element',
-                    'configs': {
-                        'type': 'Cursor'
-                    },
-                    'icon': icons.cursor
+                'icon': icons.page
+            },
+            'cursor': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.cursor-element.text', 'Cursor element'),
+                'type': 'element',
+                'configs': {
+                    'type': 'Cursor'
                 },
-                'content': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.content-element.text', 'Content element'),
-                    'type': 'element',
-                    'configs': {
-                        'type': 'Content'
-                    },
-                    'icon': icons.content
+                'icon': icons.cursor
+            },
+            'content': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.content-element.text', 'Content element'),
+                'type': 'element',
+                'configs': {
+                    'type': 'Content'
                 },
-                'video-renderer': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
-                    'type': 'block',
-                    'configs': {
-                        'type':
-                        'VideoRenderer'
-                    },
-                    'icon': icons.videorenderer
+                'icon': icons.content
+            },
+            'video-renderer': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
+                'type': 'block',
+                'configs': {
+                    'type':
+                    'VideoRenderer'
                 },
-                'controller': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'Controller'
-                    },
-                    'icon': icons.controller
+                'icon': icons.videorenderer
+            },
+            'controller': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
+                'type': 'block',
+                'configs': {
+                    'type': 'Controller'
                 },
-                'blocktoggler': {
-                    'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
-                    'type': 'block',
-                    'configs': {
-                        'type': 'BlockToggler'
-                    },
-                    'icon': icons.blocktoggler
-                }
+                'icon': icons.controller
+            },
+            'blocktoggler': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
+                'type': 'block',
+                'configs': {
+                    'type': 'BlockToggler'
+                },
+                'icon': icons.blocktoggler
             }
-        };
-    }
+        }
+    };
 
     /**
      * Instantiate
@@ -105,7 +98,7 @@ export default class ComponentLinks extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.links = {};
 

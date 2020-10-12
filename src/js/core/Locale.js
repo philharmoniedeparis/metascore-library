@@ -1,35 +1,15 @@
 import {replaceAll} from './utils/String';
-import Ajax from './Ajax';
 
 /**
- * Stores the loaded string translations
+ * Stores the string translations
  * @type {Object}
  */
-let translations = {};
+const translations = 'metaScoreLocale' in window ? window.metaScoreLocale : {};
 
 /**
  * A class to handle string translations
  */
 export default class Locale{
-
-    /**
-    * Load translations
-    *
-    * @param {String} file The url to load
-    * @param {Function} callback The callback to invoke once loading ends
-    */
-    static load(file, callback) {
-        Ajax.GET(file, {
-            'responseType': 'json',
-            'onSuccess': (evt) => {
-                translations = evt.target.getResponse();
-                callback(null, translations);
-            },
-            'onError': (evt) => {
-                callback(evt.target.getStatusText());
-            }
-        });
-    }
 
     /**
      * Replace placeholders with sanitized values in a string
@@ -62,7 +42,7 @@ export default class Locale{
         let translated = str;
 
         if(translations.hasOwnProperty(key)){
-            translated = translations[key];
+            translated = window.metaScoreLocale[key];
         }
 
         return Locale.formatString(translated, args);
