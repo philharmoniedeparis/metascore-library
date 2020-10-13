@@ -211,6 +211,7 @@ export default class AudioWaveformForm extends Overlay {
         this.fields['border-color'] = new Field(
             new ColorInput({
                 'name': 'border-color',
+                'format': 'hex',
                 'value': '#0000fe',
             }),
             {
