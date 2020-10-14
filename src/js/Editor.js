@@ -2,6 +2,7 @@ import Dom from './core/Dom';
 import { MasterClock } from './core/media/Clock';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
+import { clone } from './core/utils/Array';
 import Hotkeys from './core/Hotkeys';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
@@ -285,7 +286,7 @@ export class Editor extends Dom {
             .setClean()
             .setupContextMenus();
 
-        this.getHotkeys().attachTo(this, ':not(input)');
+        this.getGlobalHotkeys().attachTo(this, ':not(input)');
 
         this.triggerEvent('ready', { 'editor': this }, false, false);
 
@@ -327,13 +328,23 @@ export class Editor extends Dom {
     }
 
     /**
-     * Get the keyboard shortcuts.
+     * Get the global keyboard shortcuts.
      *
      * @return {Hotkeys}
      */
-    getHotkeys() {
+    getGlobalHotkeys() {
         if(!('hotkeys' in this)){
             this.hotkeys = new Hotkeys()
+                .bind('Control+S',
+                    () => {
+                        this.save();
+                    }
+                )
+                .bind('Control+R',
+                    () => {
+                        this.revert();
+                    }
+                )
                 .bind('Control+Z',
                     () => {
                         this.history.undo();
@@ -343,6 +354,18 @@ export class Editor extends Dom {
                     () => {
                         this.history.redo();
                     }
+                )
+                .bind('Control+L',
+                    () => {
+                        const components = this.configs_editor.getComponents();
+                        if (components.length > 0) {
+                            const locked = components[0].getPropertyValue('editor.locked');
+                            components.forEach((component) => {
+                                component.setPropertyValue('editor.locked', !locked);
+                            });
+                        }
+                    },
+                    {'preventRepeat': true}
                 )
                 .bind('Alt',
                     () => {
@@ -360,6 +383,39 @@ export class Editor extends Dom {
         }
 
         return this.hotkeys;
+    }
+
+    /**
+     * Get the player keyboard shortcuts.
+     *
+     * @return {Hotkeys} The hotkeys instance.
+     */
+    getPlayerHotkeys() {
+        if(!('player_hotkeys' in this)){
+            this.player_hotkeys = new Hotkeys()
+                .bind(['ArrowRight', 'Shift+ArrowRight'],
+                    (evt) => {
+                        this.moveSelectedPlayerComponents(evt.shiftKey ? 10 : 1);
+                    }
+                )
+                .bind(['ArrowLeft', 'Shift+ArrowLeft'],
+                    (evt) => {
+                        this.moveSelectedPlayerComponents(evt.shiftKey ? -10 : -1);
+                    }
+                )
+                .bind(['ArrowUp', 'Shift+ArrowUp'],
+                    (evt) => {
+                        this.moveSelectedPlayerComponents(0, evt.shiftKey ? -10 : -1);
+                    }
+                )
+                .bind(['ArrowDown', 'Shift+ArrowDown'],
+                    (evt) => {
+                        this.moveSelectedPlayerComponents(0, evt.shiftKey ? 10 : 1);
+                    }
+                );
+        }
+
+        return this.player_hotkeys;
     }
 
     /**
@@ -1215,14 +1271,7 @@ export class Editor extends Dom {
                 break;
 
             case 'revert':
-                new Confirm({
-                    'text': Locale.t('editor.onMainmenuClick.revert.text', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
-                    'confirmLabel': Locale.t('editor.onMainmenuClick.revert.confirmLabel', 'Revert'),
-                    'onConfirm': () => {
-                        this.loadPlayer();
-                    },
-                    'parent': this
-                });
+                this.revert();
                 break;
 
             case 'undo':
@@ -1620,7 +1669,8 @@ export class Editor extends Dom {
             this.setEditing(false);
         }
 
-        this.getHotkeys().attachTo(this.player, ':not(input)');
+        this.getGlobalHotkeys().attachTo(this.player, ':not(input)');
+        this.getPlayerHotkeys().attachTo(this.player, ':not(input)');
 
         this
             .updateMainmenu(true)
@@ -2335,7 +2385,8 @@ export class Editor extends Dom {
 
         this.history.clear();
 
-        this.getHotkeys().detachFrom(this.player);
+        this.getGlobalHotkeys().detachFrom(this.player);
+        this.getPlayerHotkeys().detachFrom(this.player);
 
         this
             .removeClass('has-player')
@@ -2758,6 +2809,51 @@ export class Editor extends Dom {
     }
 
     /**
+     * Move player components.
+     *
+     * @param {Number} x The number of pixels to move to the right.
+     * @param {Number} y The number of pixels to move to the bottom.
+     * @param {Boolean} relative Whether the values are relative to the actual position.
+     * @returns {this}
+     */
+    moveSelectedPlayerComponents(x = 0, y = 0, relative = true) {
+        const components = clone(this.configs_editor.getComponents());
+        const previous_values = {};
+        const new_values = {};
+
+        components.forEach((component) => {
+            const id = component.getId();
+            previous_values[id] = {};
+            new_values[id] = {};
+
+            if (!relative || x) {
+                previous_values[id].x = parseInt(component.css('left'), 10);
+                new_values[id].x = relative ? previous_values[id].x + x : x;
+            }
+            if (!relative || y) {
+                previous_values[id].y = parseInt(component.css('top'), 10);
+                new_values[id].y = relative ? previous_values[id].y + y : y;
+            }
+            component.setPropertyValues(new_values[id]);
+        });
+
+        this.getHistory().add({
+            'undo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValues(previous_values[component.getId()]);
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValuse(new_values[component.getId()]);
+                });
+            }
+        });
+
+        return this;
+    }
+
+    /**
      * Saves the loaded guide
      *
      * @return {this}
@@ -2913,6 +3009,30 @@ export class Editor extends Dom {
             });
 
             Ajax.PUT(this.configs.autosave.url, options);
+        }
+
+        return this;
+    }
+
+    /**
+     * Revert the player to its last saved state.
+     *
+     * @param {Boolean} confirm Whether to display a confirmation dialog
+     * @returns {this}
+     */
+    revert(confirm = true) {
+        if (confirm !== false) {
+            new Confirm({
+                'text': Locale.t('editor.onMainmenuClick.revert.text', 'Are you sure you want to revert back to the last saved version?<br/><strong>Any unsaved data will be lost.</strong>'),
+                'confirmLabel': Locale.t('editor.onMainmenuClick.revert.confirmLabel', 'Revert'),
+                'onConfirm': () => {
+                    this.revert(false);
+                },
+                'parent': this
+            });
+        }
+        else {
+            this.loadPlayer();
         }
 
         return this;
