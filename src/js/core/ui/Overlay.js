@@ -177,6 +177,8 @@ export default class Overlay extends Dom {
     show() {
         this.appendTo(this.configs.parent);
 
+        this.active_element = document.activeElement;
+
         this.triggerEvent('show', {'overlay': this}, true, false);
 
         if(this.configs.modal){
@@ -204,6 +206,11 @@ export default class Overlay extends Dom {
         this.triggerEvent('hide', {'overlay': this}, true, false);
 
         Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
+
+        if (this.active_element) {
+            this.active_element.focus();
+            delete this.active_element;
+        }
 
         return this;
     }
