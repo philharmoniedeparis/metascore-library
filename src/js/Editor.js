@@ -2,6 +2,7 @@ import Dom from './core/Dom';
 import { MasterClock } from './core/media/Clock';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
+import Hotkeys from './core/Hotkeys';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -278,13 +279,13 @@ export class Editor extends Dom {
         Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
         this
-            .addListener('keydown', this.onKeydown.bind(this))
-            .addListener('keyup', this.onKeyup.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
             .setEditing(false)
             .setClean()
             .setupContextMenus();
+
+        this.getHotkeys().attachTo(this, ':not(input)');
 
         this.triggerEvent('ready', { 'editor': this }, false, false);
 
@@ -326,7 +327,50 @@ export class Editor extends Dom {
     }
 
     /**
-     * Setup the context menus
+     * Get the keyboard shortcuts.
+     *
+     * @return {Hotkeys}
+     */
+    getHotkeys() {
+        if(!('hotkeys' in this)){
+            this.hotkeys = new Hotkeys()
+                .bind('Control+Z',
+                    () => {
+                        this.history.undo();
+                    }
+                )
+                .bind('Control+Y',
+                    () => {
+                        this.history.redo();
+                    }
+                )
+                .bind('Control+H',
+                    (evt) => {
+                        const player = this.getPlayer();
+                        if (player) {player.toggleClass('show-contents', evt.type === 'keydown');}
+                    },
+                    {'keyup': true, 'preventRepeat': true}
+                )
+                .bind('Alt',
+                    () => {
+                        this.setEditing(!this.editing);
+                    },
+                    {'keyup': true, 'preventRepeat': true}
+                )
+                .bind(' ',
+                    () => {
+                        const player = this.getPlayer();
+                        if(player) {player.togglePlay();}
+                    },
+                    {'preventRepeat': true}
+                );
+        }
+
+        return this.hotkeys;
+    }
+
+    /**
+     * Setup the context menus.
      *
      * @return {this}
      */
@@ -950,90 +994,6 @@ export class Editor extends Dom {
     }
 
     /**
-     * Keydown event callback
-     *
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeydown(evt) {
-        if (Dom.is(evt.target, 'input')) {
-            return;
-        }
-
-        switch (evt.key) {
-            case "Alt":
-                if (!evt.repeat) {
-                    this.setEditing(!this.editing);
-                    evt.preventDefault();
-                }
-                break;
-
-            case " ":
-                if (!evt.repeat) {
-                    const player = this.getPlayer();
-                    if (player) {
-                        player.togglePlay();
-                        evt.preventDefault();
-                    }
-                }
-                break;
-
-            case "h":
-                if (evt.ctrlKey && !evt.repeat) {
-                    const player = this.getPlayer();
-                    if (player) {
-                        player.addClass('show-contents');
-                    }
-                    evt.preventDefault();
-                }
-                break;
-
-            case "z":
-                if (evt.ctrlKey) {
-                    this.history.undo();
-                    evt.preventDefault();
-                }
-                break;
-
-            case "y":
-                if (evt.ctrlKey) {
-                    this.history.redo();
-                    evt.preventDefault();
-                }
-                break;
-        }
-    }
-
-    /**
-     * Keyup event callback
-     *
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeyup(evt) {
-        if (Dom.is(evt.target, 'input')) {
-            return;
-        }
-
-        switch (evt.key) {
-            case "Alt":
-                this.setEditing(!this.editing);
-                evt.preventDefault();
-                break;
-
-            case "h":
-                if (evt.ctrlKey) {
-                    const player = this.getPlayer();
-                    if (player) {
-                        player.removeClass('show-contents');
-                    }
-                    evt.preventDefault();
-                }
-                break;
-        }
-    }
-
-    /**
      * ContextMenu beforeshow event callback
      *
      * @private
@@ -1621,8 +1581,6 @@ export class Editor extends Dom {
                 .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
                 .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
                 .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
-                .addListener('keydown', this.onKeydown.bind(this))
-                .addListener('keyup', this.onKeyup.bind(this))
                 .addListener('click', this.onPlayerClick.bind(this))
                 .addListener('dragover', this.onPlayerDragOver.bind(this))
                 .addListener('drop', this.onPlayerDrop.bind(this));
@@ -1669,11 +1627,12 @@ export class Editor extends Dom {
             this.setEditing(false);
         }
 
-        this.updateMainmenu(true);
+        this.getHotkeys().attachTo(this.player, ':not(input)');
 
-        this.addClass('player-ready');
-
-        this.triggerEvent('playerload', { 'player': this.player });
+        this
+            .updateMainmenu(true)
+            .addClass('player-ready')
+            .triggerEvent('playerload', { 'player': this.player });
 
         loadmask.hide();
     }
@@ -2366,21 +2325,12 @@ export class Editor extends Dom {
      * @return {this}
      */
     unloadPlayer() {
-        delete this.player;
-
-        this.removeClass('player-ready');
-
         if (this._autosave_interval) {
             clearInterval(this._autosave_interval);
             delete this._autosave_interval;
         }
 
         this.configs_editor.unsetComponents();
-
-        this
-            .removeClass('has-player')
-            .removeClass('player-ready')
-            .removeClass('metadata-loaded');
 
         this.player_contextmenu.disable();
 
@@ -2392,7 +2342,16 @@ export class Editor extends Dom {
 
         this.history.clear();
 
-        this.setEditing(false).setClean();
+        this.getHotkeys().detachFrom(this.player);
+
+        this
+            .removeClass('has-player')
+            .removeClass('player-ready')
+            .removeClass('metadata-loaded')
+            .setEditing(false)
+            .setClean();
+
+        delete this.player;
 
         if (this.player_frame) {
             this.player_frame.remove();
