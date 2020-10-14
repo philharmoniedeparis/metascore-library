@@ -344,13 +344,6 @@ export class Editor extends Dom {
                         this.history.redo();
                     }
                 )
-                .bind('Control+H',
-                    (evt) => {
-                        const player = this.getPlayer();
-                        if (player) {player.toggleClass('show-contents', evt.type === 'keydown');}
-                    },
-                    {'keyup': true, 'preventRepeat': true}
-                )
                 .bind('Alt',
                     () => {
                         this.setEditing(!this.editing);

@@ -152,16 +152,5 @@ $selected-shadow: 0 0 0.5em 0;
                 pointer-events: none;
             }
         }
-
-        &.show-contents{
-            .metaScore-component.element{
-                &.active{
-                    .contents{
-                        visibility: visible;
-                        pointer-events: auto;
-                    }
-                }
-            }
-        }
     }
 }
