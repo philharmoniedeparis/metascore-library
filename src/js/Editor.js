@@ -62,7 +62,8 @@ export class Editor extends Dom {
         'xhr': {},
         'history': {
             'grouping_timeout': 100
-        }
+        },
+        'component_copy_displacement': 10
     };
 
     /**
@@ -489,9 +490,12 @@ export class Editor extends Dom {
                                 const configs = [];
                                 data.components.forEach((element) => {
                                     const config = element.getPropertyValues(true);
-                                    // Slightly move the copy by 5 pixels right and 5 pixels down.
-                                    config.x += 5;
-                                    config.y += 5;
+
+                                    if(this.configs.component_copy_displacement){
+                                        // Slightly move the copy to prevent exact overlap.
+                                        config.x += this.configs.component_copy_displacement;
+                                        config.y += this.configs.component_copy_displacement;
+                                    }
 
                                     configs.push(config);
                                 });
@@ -781,9 +785,11 @@ export class Editor extends Dom {
                                 const configs = [];
                                 data.components.forEach((block) => {
                                     const config = block.getPropertyValues(true);
-                                    // Slightly move the copy by 5 pixels right and 5 pixels down.
-                                    config.x += 5;
-                                    config.y += 5;
+                                    if(this.configs.component_copy_displacement){
+                                        // Slightly move the copy to prevent exact overlap.
+                                        config.x += this.configs.component_copy_displacement;
+                                        config.y += this.configs.component_copy_displacement;
+                                    }
 
                                     configs.push(config);
                                 });
