@@ -41,9 +41,7 @@ export default class SpectrogramForm extends Overlay {
     }
 
     /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method

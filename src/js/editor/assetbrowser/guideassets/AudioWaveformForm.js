@@ -17,6 +17,13 @@ import { className } from '../../../../css/editor/assetbrowser/guideassets/Audio
  */
 export default class AudioWaveformForm extends Overlay {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'title': Locale.t('editor.assetbrowser.guideassets.AudioWaveformForm.title', 'Generate an audio waveform image'),
+        'url': null,
+        'xhr': {}
+    });
+
     /**
      * Instantiate
      *
@@ -35,23 +42,7 @@ export default class AudioWaveformForm extends Overlay {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'title': Locale.t('editor.assetbrowser.guideassets.AudioWaveformForm.title', 'Generate an audio waveform image'),
-            'url': null,
-            'xhr': {}
-        });
-    }
-
-    /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method
