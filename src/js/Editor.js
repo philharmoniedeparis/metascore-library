@@ -379,11 +379,17 @@ export class Editor extends Dom {
                     },
                     {'preventRepeat': true}
                 )
-                .bind('Alt',
+                .bind('Control+E',
                     () => {
                         this.togglePreviewMode();
                     },
                     {'keyup': true, 'preventRepeat': true}
+                )
+                .bind('Control+Shift+E',
+                    () => {
+                        this.togglePreviewMode();
+                    },
+                    {'preventRepeat': true}
                 )
                 .bind(' ',
                     () => {

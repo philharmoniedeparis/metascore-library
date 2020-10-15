@@ -192,8 +192,12 @@ export default class Hotkeys {
             });
         }
 
-        if (listener && (!listener.preventRepeat || !evt.repeat)) {
-            listener.handler(evt);
+        if (listener) {
+            // Only call the handler if this is not a repeat, or preventRepeat is false.
+            if (!listener.preventRepeat || !evt.repeat) {
+                listener.handler(evt);
+            }
+            // Prevent default browser action even on repeat.
             evt.preventDefault();
         }
     }
