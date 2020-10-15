@@ -282,7 +282,6 @@ export class Editor extends Dom {
         this
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
-            .setEditing(false)
             .setClean()
             .setupContextMenus();
 
@@ -369,7 +368,7 @@ export class Editor extends Dom {
                 )
                 .bind('Alt',
                     () => {
-                        this.setEditing(!this.editing);
+                        this.togglePreviewMode();
                     },
                     {'keyup': true, 'preventRepeat': true}
                 )
@@ -435,9 +434,13 @@ export class Editor extends Dom {
          * @type {ContextMenu}
          */
         this.player_contextmenu = new ContextMenu({
-            'target': null, 'items': {
+            'target': null,
+            'items': {
                 'element': {
                     'text': Locale.t('editor.contextmenu.element', 'Element'),
+                    'toggler': (context) => {
+                        return !this.inPreviewMode() && (context.el.closest('.metaScore-component.page') ? true : false);
+                    },
                     'items': {
                         'select': {
                             'text': Locale.t('editor.contextmenu.select-elements', 'Select all elements'),
@@ -448,12 +451,10 @@ export class Editor extends Dom {
                                 });
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.page');
-                                    if (dom) {
-                                        data.parent = dom._metaScore;
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.page');
+                                if (dom) {
+                                    data.parent = dom._metaScore;
+                                    return true;
                                 }
                                 return false;
                             }
@@ -478,18 +479,16 @@ export class Editor extends Dom {
                                 this.clipboard.setData('element', configs);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const elements = this.configs_editor.getComponents('Element');
-                                    if (elements.length > 0) {
-                                        data.selected = true;
-                                        data.components = elements;
-                                        return true;
-                                    }
-                                    const dom = context.el.closest('.metaScore-component.element');
-                                    if (dom) {
-                                        data.components = [dom._metaScore];
-                                        return true;
-                                    }
+                                const elements = this.configs_editor.getComponents('Element');
+                                if (elements.length > 0) {
+                                    data.selected = true;
+                                    data.components = elements;
+                                    return true;
+                                }
+                                const dom = context.el.closest('.metaScore-component.element');
+                                if (dom) {
+                                    data.components = [dom._metaScore];
+                                    return true;
                                 }
                                 return false;
                             }
@@ -500,14 +499,12 @@ export class Editor extends Dom {
                                 this.addPlayerComponents('element', data.component, data.parent);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    if (this.clipboard.getDataType() === 'element') {
-                                        const dom = context.el.closest('.metaScore-component.page');
-                                        if (dom) {
-                                            data.component = this.clipboard.getData();
-                                            data.parent = dom._metaScore;
-                                            return true;
-                                        }
+                                if (this.clipboard.getDataType() === 'element') {
+                                    const dom = context.el.closest('.metaScore-component.page');
+                                    if (dom) {
+                                        data.component = this.clipboard.getData();
+                                        data.parent = dom._metaScore;
+                                        return true;
                                     }
                                 }
                                 return false;
@@ -521,21 +518,19 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('element', data.components);
+                                this.deletePlayerComponents('Element', data.components);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const elements = this.configs_editor.getComponents('Element');
-                                    if (elements.length > 0) {
-                                        data.selected = true;
-                                        data.components = elements;
-                                        return true;
-                                    }
-                                    const dom = context.el.closest('.metaScore-component.element');
-                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
-                                        data.components = [dom._metaScore];
-                                        return true;
-                                    }
+                                const elements = this.configs_editor.getComponents('Element');
+                                if (elements.length > 0) {
+                                    data.selected = true;
+                                    data.components = elements;
+                                    return true;
+                                }
+                                const dom = context.el.closest('.metaScore-component.element');
+                                if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
+                                    data.components = [dom._metaScore];
+                                    return true;
                                 }
                                 return false;
                             }
@@ -546,12 +541,10 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.element');
-                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
-                                        data.component = dom._metaScore;
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.element');
+                                if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
+                                    data.component = dom._metaScore;
+                                    return true;
                                 }
                                 return false;
                             }
@@ -562,12 +555,10 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.element');
-                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
-                                        data.component = dom._metaScore;
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.element');
+                                if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
+                                    data.component = dom._metaScore;
+                                    return true;
                                 }
                                 return false;
                             }
@@ -583,12 +574,10 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.element');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.element');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -600,12 +589,10 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, 0);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.element');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.element');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -622,12 +609,10 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.element');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.element');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -644,54 +629,41 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.element');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.element');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
                                 }
                             },
                             'toggler': (context) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.element');
-                                    if (dom) {
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.element');
+                                if (dom) {
+                                    return true;
                                 }
                                 return false;
                             }
                         }
-                    },
-                    'toggler': (context) => {
-                        if (this.editing) {
-                            return context.el.closest('.metaScore-component.page') ? true : false
-                        }
-                        return false;
                     }
                 },
                 'page': {
                     'text': Locale.t('editor.contextmenu.page', 'Page'),
+                    'toggler': (context) => {
+                        return !this.inPreviewMode() && (context.el.closest('.metaScore-component.block') ? true : false);
+                    },
                     'items': {
                         'add-before': {
                             'text': Locale.t('editor.contextmenu.add-page-before', 'Add a page before'),
                             'callback': (context) => {
                                 this.addPlayerComponents('page', { 'position': 'before' }, context.el.closest('.metaScore-component.block')._metaScore);
-                            },
-                            'toggler': (context) => {
-                                return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                             }
                         },
                         'add-after': {
                             'text': Locale.t('editor.contextmenu.add-page-after', 'Add a page after'),
                             'callback': (context) => {
                                 this.addPlayerComponents('page', { 'position': 'after' }, context.el.closest('.metaScore-component.block')._metaScore);
-                            },
-                            'toggler': (context) => {
-                                return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
                             }
                         },
                         'delete': {
@@ -702,38 +674,36 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-page', 'Delete page');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('page', data.components);
+                                this.deletePlayerComponents('Page', data.components);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const pages = this.configs_editor.getComponents('Page');
-                                    if (pages.length > 0) {
-                                        data.selected = true;
-                                        data.components = pages;
-                                        return true;
-                                    }
-                                    const dom = context.el.closest('.metaScore-component.page');
-                                    if (dom) {
-                                        data.components = [dom._metaScore];
-                                        return true;
-                                    }
+                                const pages = this.configs_editor.getComponents('Page');
+                                if (pages.length > 0) {
+                                    data.selected = true;
+                                    data.components = pages;
+                                    return true;
+                                }
+                                const dom = context.el.closest('.metaScore-component.page');
+                                if (dom) {
+                                    data.components = [dom._metaScore];
+                                    return true;
                                 }
                                 return false;
                             }
                         }
-                    },
-                    'toggler': (context) => {
-                        if (this.editing) {
-                            return context.el.closest('.metaScore-component.block') ? true : false
-                        }
-                        return false;
                     }
                 },
                 'block': {
                     'text': Locale.t('editor.contextmenu.block', 'Block'),
+                    'toggler': () => {
+                        return !this.inPreviewMode();
+                    },
                     'items': {
                         'add': {
                             'text': Locale.t('editor.contextmenu.add-block', 'Add a block'),
+                            'toggler': (context) => {
+                                return context.el.is('.metaScore-player');
+                            },
                             'items': {
                                 'add-block-synched': {
                                     'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
@@ -768,9 +738,6 @@ export class Editor extends Dom {
                                         this.addPlayerComponents('block', { 'type': 'BlockToggler' });
                                     }
                                 }
-                            },
-                            'toggler': (context) => {
-                                return this.editing && (context.el.is('.metaScore-player'));
                             }
                         },
                         'select': {
@@ -782,9 +749,6 @@ export class Editor extends Dom {
                                         this.configs_editor.setComponent(component, index > 0);
                                     });
                                 }
-                            },
-                            'toggler': () => {
-                                return this.editing === true;
                             }
                         },
                         'copy': {
@@ -807,18 +771,16 @@ export class Editor extends Dom {
                                 this.clipboard.setData('block', configs);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
-                                    if (blocks.length > 0) {
-                                        data.selected = true;
-                                        data.components = blocks;
-                                        return true;
-                                    }
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if (dom) {
-                                        data.components = [dom._metaScore];
-                                        return true;
-                                    }
+                                const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
+                                if (blocks.length > 0) {
+                                    data.selected = true;
+                                    data.components = blocks;
+                                    return true;
+                                }
+                                const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                if (dom) {
+                                    data.components = [dom._metaScore];
+                                    return true;
                                 }
                                 return false;
                             }
@@ -829,7 +791,7 @@ export class Editor extends Dom {
                                 this.addPlayerComponents('block', this.clipboard.getData());
                             },
                             'toggler': (context) => {
-                                return this.editing && (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
+                                return (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
                             }
                         },
                         'delete': {
@@ -840,21 +802,19 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('block', data.components);
+                                this.deletePlayerComponents('Block', data.components);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
-                                    if (blocks.length > 0) {
-                                        data.selected = true;
-                                        data.components = blocks;
-                                        return true;
-                                    }
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if (dom) {
-                                        data.components = [dom._metaScore];
-                                        return true;
-                                    }
+                                const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
+                                if (blocks.length > 0) {
+                                    data.selected = true;
+                                    data.components = blocks;
+                                    return true;
+                                }
+                                const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                if (dom) {
+                                    data.components = [dom._metaScore];
+                                    return true;
                                 }
                                 return false;
                             }
@@ -865,12 +825,10 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
-                                        data.component = dom._metaScore;
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
+                                    data.component = dom._metaScore;
+                                    return true;
                                 }
                                 return false;
                             }
@@ -881,18 +839,23 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context, data) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
-                                        data.component = dom._metaScore;
-                                        return true;
-                                    }
+                                const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
+                                    data.component = dom._metaScore;
+                                    return true;
                                 }
                                 return false;
                             }
                         },
                         'arrange': {
                             'text': Locale.t('editor.contextmenu.arrange', 'Arrange'),
+                            'toggler': (context) => {
+                                const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                if (dom) {
+                                    return true;
+                                }
+                                return false;
+                            },
                             'items': {
                                 'bring-to-front': {
                                     'text': Locale.t('editor.contextmenu.arrange.bring-to-front', 'Bring to front'),
@@ -902,12 +865,10 @@ export class Editor extends Dom {
                                         component.appendTo(parent);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -920,12 +881,10 @@ export class Editor extends Dom {
                                         component.insertAt(parent, 0);
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -940,12 +899,10 @@ export class Editor extends Dom {
                                         component.insertAt(parent, Math.min(siblings.count(), position + 2));
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
@@ -960,32 +917,21 @@ export class Editor extends Dom {
                                         component.insertAt(parent, Math.max(0, position - 1));
                                     },
                                     'toggler': (context, data) => {
-                                        if (this.editing) {
-                                            const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if (dom) {
-                                                data.component = dom._metaScore;
-                                                return true;
-                                            }
+                                        const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
+                                        if (dom) {
+                                            data.component = dom._metaScore;
+                                            return true;
                                         }
                                         return false;
                                     }
                                 }
-                            },
-                            'toggler': (context) => {
-                                if (this.editing) {
-                                    const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if (dom) {
-                                        return true;
-                                    }
-                                }
-                                return false;
                             }
                         }
                     }
                 }
             }
         })
-            .appendTo(this);
+        .appendTo(this);
 
         return this;
     }
@@ -1340,7 +1286,7 @@ export class Editor extends Dom {
                 break;
 
             case 'preview-toggle':
-                this.setEditing(!value);
+                this.togglePreviewMode(value);
                 break;
 
             case 'revisions':
@@ -1663,10 +1609,10 @@ export class Editor extends Dom {
                 this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
             }
 
-            this.setEditing(true);
+            this.togglePreviewMode(false);
         }
         else {
-            this.setEditing(false);
+            this.togglePreviewMode(true);
         }
 
         this.getGlobalHotkeys().attachTo(this.player, ':not(input)');
@@ -1870,7 +1816,7 @@ export class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onPlayerClick(evt) {
-        if (this.editing !== true) {
+        if (this.inPreviewMode()) {
             return;
         }
 
@@ -1926,7 +1872,7 @@ export class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentBeforeDrag(evt) {
-        if (this.editing !== true) {
+        if (this.inPreviewMode()) {
             evt.preventDefault();
         }
     }
@@ -1976,7 +1922,7 @@ export class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentBeforeResize(evt) {
-        if (this.editing !== true) {
+        if (this.inPreviewMode()) {
             evt.preventDefault();
         }
     }
@@ -2026,7 +1972,7 @@ export class Editor extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onComponentClick(evt) {
-        if (this.editing !== true) {
+        if (this.inPreviewMode()) {
             return;
         }
 
@@ -2099,29 +2045,40 @@ export class Editor extends Dom {
     }
 
     /**
-     * Updates the editing state
+     * Updates the preview mode state
      *
-     * @param {Boolean} editing The new state
+     * @param {Boolean} state The new state
      * @return {this}
      */
-    setEditing(editing) {
+    togglePreviewMode(state) {
         const player = this.getPlayer();
 
         /**
-         * Whether in editing mode
+         * Whether in preview mode
          * @type {Boolean}
          */
-        this.editing = editing !== false;
+        this.preview_mode = typeof state !== 'undefined' ? state : !this.preview_mode;
 
-        this.toggleClass('editing', this.editing);
+        this.toggleClass('preview', this.preview_mode);
 
-        this.mainmenu.getItem('preview-toggle').setValue(!this.editing, true);
+        this.mainmenu.getItem('preview-toggle').setValue(this.preview_mode, true);
 
         if (player) {
-            player.toggleClass('editing', this.editing);
+            player.toggleClass('editing', !this.preview_mode);
         }
 
+        this.triggerEvent('previewmode', { 'editor': this, 'preview': this.preview_mode });
+
         return this;
+    }
+
+    /**
+     * Get the preview mode state
+     *
+     * @return {Boolean} Whether in preview mode.
+     */
+    inPreviewMode() {
+        return this.preview_mode === true;
     }
 
     /**
@@ -2392,7 +2349,7 @@ export class Editor extends Dom {
             .removeClass('has-player')
             .removeClass('player-ready')
             .removeClass('metadata-loaded')
-            .setEditing(false)
+            .togglePreviewMode(false)
             .setClean();
 
         delete this.player;

@@ -239,7 +239,7 @@
         }
     }
 
-    &:not(.editing){
+    &.preview{
         .pane{
             &.tools-pane{
                 display: none;
