@@ -121,10 +121,22 @@ export default class GuideAssets extends Dom {
             .addListener('drop', this.onDrop.bind(this));
     }
 
+    /**
+     * Asset import field valuechange callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAssetImportFieldVlueChange(evt){
         this.importAssets(evt.detail.files);
     }
 
+    /**
+     * Get the list of files being dragged.
+     *
+     * @private
+     * @param {DataTransfer} dataTransfer The DataTransfer object.
+     */
     getDraggedFiles(dataTransfer) {
         let files = [];
 
@@ -144,6 +156,12 @@ export default class GuideAssets extends Dom {
         return files;
     }
 
+    /**
+     * Dragover event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onDragOver(evt) {
         const files = this.getDraggedFiles(evt.dataTransfer);
         if (files.length > 0) {
@@ -152,10 +170,21 @@ export default class GuideAssets extends Dom {
         }
     }
 
+    /**
+     * Dragrelease event callback.
+     *
+     * @private
+     */
     onDragLeave() {
         this.removeClass('droppable');
     }
 
+    /**
+     * Drop event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onDrop(evt) {
         const files = this.getDraggedFiles(evt.dataTransfer);
         this.importAssets(files);
@@ -166,6 +195,12 @@ export default class GuideAssets extends Dom {
         evt.stopPropagation();
     }
 
+    /**
+     * Import a list of files.
+     *
+     * @private
+     * @param {FileList} files The list of files.
+     */
     importAssets(files) {
         if (files.length === 0) {
             return;
@@ -234,6 +269,13 @@ export default class GuideAssets extends Dom {
             .send();
     }
 
+    /**
+     * Asset import XHR success event callback.
+     *
+     * @private
+     * @param {LoadMask} loadmask The load mask.
+     * @param {Event} evt The event object.
+     */
     onAssetsImportSuccess(loadmask, evt) {
         const assets = evt.target.getResponse();
 
@@ -256,7 +298,7 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Add an asset
+     * Add an asset.
      *
      * @param {Object} asset The asset to add
      * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
@@ -273,7 +315,7 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Add assets
+     * Add assets.
      *
      * @param {Array} assets The assets to add
      * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
@@ -288,8 +330,9 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Remove an asset item
+     * Remove an asset item.
      *
+     * @private
      * @param {Number} id The asset id to remove
      * @param {Boolean} supressEvent Whether to prevent the assetremove event from firing
      * @return {this}
@@ -310,6 +353,13 @@ export default class GuideAssets extends Dom {
         return this;
     }
 
+    /**
+     * Create an item corresponding to an asset.
+     *
+     * @private
+     * @param {Object} asset The asset.
+     * @returns {this}
+     */
     createAssetItem(asset) {
         const name = escapeHTML(asset.name);
 
@@ -374,6 +424,9 @@ export default class GuideAssets extends Dom {
         return this;
     }
 
+    /**
+     * Remove all assets.
+     */
     clearAssets() {
         this.asset_items = {};
         this.assets_container.empty();
@@ -381,16 +434,33 @@ export default class GuideAssets extends Dom {
         return this;
     }
 
+    /**
+     * Get an asset by id.
+     *
+     * @param {string} id The asset's identifier.
+     * @returns {Object|undefined} The asset.
+     */
     getAsset(id) {
         return this.asset_items[id].asset;
     }
 
+    /**
+     * Get the lists of available assets.
+     *
+     * @returns {Array} The assets.
+     */
     getAssets() {
         return Object.values(this.asset_items).map((item) => {
             return item.asset;
         });
     }
 
+    /**
+     * Asset dragstart event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAssetDragStart(evt) {
         const el = new Dom(evt.target);
         const asset_id = el.data('id');
@@ -427,6 +497,12 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.setDragImage(this._asset_drag_ghost.get(0), 0, 0);
     }
 
+    /**
+     * Asset dragend event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAssetDragEnd(evt) {
         const el = new Dom(evt.target);
         el.removeClass('dragging');
@@ -435,6 +511,12 @@ export default class GuideAssets extends Dom {
         delete this._asset_drag_ghost;
     }
 
+    /**
+     * Asset button click event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAssetButtonClick(evt) {
         const button = new Dom(evt.target);
         const action = button.data('action');
@@ -460,6 +542,13 @@ export default class GuideAssets extends Dom {
         }
     }
 
+    /**
+     * XHR error event callback.
+     *
+     * @private
+     * @param {LoadMask} loadmask The loadmask.
+     * @param {Event} evt The event object.
+     */
     onXHRError(loadmask, evt) {
         loadmask.hide();
 
@@ -476,6 +565,12 @@ export default class GuideAssets extends Dom {
         });
     }
 
+    /**
+     * Button click event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onButtonClick(evt) {
         const action = Dom.data(evt.target, 'action');
 
@@ -513,11 +608,17 @@ export default class GuideAssets extends Dom {
                 }
 
                 this.audiowaveform_form.show();
-                this.triggerEvent('spectrogramformopen', { 'form': this.audiowaveform_form });
+                this.triggerEvent('audiowaveformformopen', { 'form': this.audiowaveform_form });
                 break;
         }
     }
 
+    /**
+     * SpectrogramForm generate event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onSpectrogramFormGenerate(evt) {
         const form = evt.detail.form;
         const asset = evt.detail.asset;
@@ -538,6 +639,12 @@ export default class GuideAssets extends Dom {
         form.hide();
     }
 
+    /**
+     * AudioWaveformForm generate event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAudioWaveformFormGenerate(evt) {
         const form = evt.detail.form;
         const asset = evt.detail.asset;
