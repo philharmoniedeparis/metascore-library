@@ -2538,15 +2538,15 @@ export class Editor extends Dom {
      * @private
      * @param {String} type The components' type
      * @param {Array} components The components
-     * @param {Boolean} confirm Whether to display a confirmation dialog
+     * @param {Boolean} [confirm=true] Whether to display a confirmation dialog
      * @return {this}
      */
-    deletePlayerComponents(type, components, confirm) {
+    deletePlayerComponents(type, components, confirm = true) {
         if (confirm !== false) {
             let alert_msg = '';
 
             switch (type) {
-                case 'block':
+                case 'Block':
                     if (components.length > 1) {
                         alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', { '@count': components.length });
                     }
@@ -2555,7 +2555,7 @@ export class Editor extends Dom {
                     }
                     break;
 
-                case 'page':
+                case 'Page':
                     if (components.length > 1) {
                         alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', { '@count': components.length });
                     }
@@ -2566,7 +2566,7 @@ export class Editor extends Dom {
                     }
                     break;
 
-                case 'element':
+                case 'Element':
                     if (components.length > 1) {
                         alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', { '@count': components.length });
                     }
@@ -2587,7 +2587,7 @@ export class Editor extends Dom {
         }
         else {
             switch (type) {
-                case 'block': {
+                case 'Block': {
                     components.forEach((component) => {
                         this.configs_editor.unsetComponent(component);
                         component.remove();
@@ -2610,7 +2610,7 @@ export class Editor extends Dom {
                     break;
                 }
 
-                case 'page': {
+                case 'Page': {
                     const contexts = {};
                     const timeline = this.controller.getTimeline();
 
@@ -2717,7 +2717,7 @@ export class Editor extends Dom {
                     break;
                 }
 
-                case 'element': {
+                case 'Element': {
                     const context = [];
 
                     components.forEach((component) => {
