@@ -28,8 +28,21 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
 /**
  * Provides the main Editor class
  *
- * @emits {ready} Fired when the editor is fully setup
- * @param {Object} editor The editor instance
+ * @emits {ready} Fired when the editor is fully setup.
+ * @param {Editor} editor The editor instance
+ *
+ * @emits {playerload} Fired when the player has loaded.
+ * @param {Editor} editor The editor instance.
+ * @param {Player} player The player instance.
+ *
+ * @emits {previewmode} Fired when the preview mode's state changes.
+ * @param {Editor} editor The editor instance.
+ * @param {boolean} preview Whether in preview mode.
+ *
+ * @emits {playercomponentorder} Fired when a player's component changes stack position.
+ * @param {Editor} editor The editor instance.
+ * @param {Component} component The component instance.
+ * @param {number} position The new position.
  */
 export class Editor extends Dom {
 
@@ -1621,7 +1634,7 @@ export class Editor extends Dom {
         this
             .updateMainmenu(true)
             .addClass('player-ready')
-            .triggerEvent('playerload', { 'player': this.player });
+            .triggerEvent('playerload', { 'editor': this, 'player': this.player });
 
         loadmask.hide();
     }
@@ -2760,7 +2773,11 @@ export class Editor extends Dom {
 
         component.insertAt(parent, position);
 
-        this.triggerEvent('playercomponentorder', { 'component': component, 'position': position });
+        this.triggerEvent('playercomponentorder', {
+            'editor': this,
+            'component': component,
+            'position': position
+        });
 
         return this;
     }
