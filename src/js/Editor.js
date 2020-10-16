@@ -163,7 +163,6 @@ export class Editor extends Dom {
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
             .addListener('beforeassetremove', this.onAssetBrowserBeforeAssetRemove.bind(this))
             .addListener('assetremove', this.onAssetBrowserAssetRemove.bind(this))
-            .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
             .addListener('spectrogramformopen', this.onAssetBrowserSpectrogramFormOpen.bind(this))
             .addListener('audiowaveformformopen', this.onAssetBrowserAudioWaveformFormOpen.bind(this))
             .appendTo(tools_pane.getContents());
@@ -962,15 +961,6 @@ export class Editor extends Dom {
     }
 
     /**
-    * Local load callback
-    *
-    * @private
-    */
-    onLocaleLoad() {
-        this.init();
-    }
-
-    /**
      * XHR error callback
      *
      * @private
@@ -1109,33 +1099,6 @@ export class Editor extends Dom {
     onAssetBrowserAssetRemove() {
         this.setDirty('assets');
         this.updateConfigEditorImageFields();
-    }
-
-    /**
-     * AssetBrowser componentlinkclick event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onAssetBrowserComponentLinkClick(evt) {
-        const type = evt.detail.type;
-        const configs = evt.detail.configs;
-
-        switch (type) {
-            case 'element':
-                this.configs_editor.getComponents('Page').forEach((page) => {
-                    this.addPlayerComponents(type, configs, page);
-                });
-                break;
-            case 'page':
-                this.configs_editor.getComponents('Block').forEach((block) => {
-                    this.addPlayerComponents(type, configs, block);
-                });
-                break;
-            case 'block':
-                this.addPlayerComponents(type, configs, this.getPlayer());
-                break;
-        }
     }
 
     /**

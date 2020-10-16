@@ -150,15 +150,6 @@ export class Player extends Dom {
     }
 
     /**
-    * Local load callback
-    *
-    * @private
-    */
-    onLocaleLoad(){
-        this.init();
-    }
-
-    /**
      * Keydown event callback
      *
      * @private
