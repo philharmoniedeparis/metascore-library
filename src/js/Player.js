@@ -468,9 +468,7 @@ export class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onCursorElementTime(evt){
-        if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
-            this.getRenderer().setTime(evt.detail.time);
-        }
+        this.getRenderer().setTime(evt.detail.time);
     }
 
     /**

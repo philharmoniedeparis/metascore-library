@@ -1554,6 +1554,7 @@ export class Editor extends Dom {
                 .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
                 .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
+                .addDelegate('.metaScore-component.Element.Cursor', 'time', this.onCursorElementTime.bind(this), true)
                 .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
                 .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
                 .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
@@ -1975,6 +1976,19 @@ export class Editor extends Dom {
         if (!component.instanceOf('Scenario')) {
             this.selectPlayerComponent(component, evt.shiftKey);
             evt.stopImmediatePropagation();
+        }
+    }
+
+    /**
+     * Cursor element time event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onCursorElementTime(evt){
+        if (!this.inPreviewMode() && !evt.detail.component.hasClass('selected')) {
+            // Prevent the event from propagating to the player.
+            evt.stopPropagation();
         }
     }
 
