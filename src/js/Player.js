@@ -136,7 +136,7 @@ export class Player extends Dom {
 
         this
             .addListener('childremove', this.onChildRemove.bind(this))
-            .addListener('.componentadd', this.onComponentAdd.bind(this))
+            .addListener('componentadd', this.onComponentAdd.bind(this))
             .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
             .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
             .addDelegate('.metaScore-component.element.Content a, .metaScore-component.element.Content a *', 'click', this.onContentElementLinkClick.bind(this))
