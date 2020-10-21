@@ -26,6 +26,25 @@ import CuePoint from './CuePoint';
  */
 export default class Component extends Dom {
 
+    static defaults = {
+        'draggable': true,
+        'resizable': true,
+        'properties': {
+            'type': {
+                'type': 'string',
+                'getter': function(){
+                    return this.constructor.getType();
+                }
+            },
+            'id': {
+                'type': 'string',
+            },
+            'editor.locked': {
+                'type': 'boolean'
+            }
+        }
+    };
+
     /**
     * Get the component's type
     *
@@ -33,33 +52,6 @@ export default class Component extends Dom {
     */
     static getType(){
         return 'Component';
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'draggable': true,
-            'resizable': true,
-            'properties': {
-                'type': {
-                    'type': 'string',
-                    'getter': function(){
-                        return this.constructor.getType();
-                    }
-                },
-                'id': {
-                    'type': 'string',
-                    'default': `component-${uuid(10)}`
-                },
-                'editor.locked': {
-                    'type': 'boolean'
-                }
-            }
-        };
     }
 
     /**
@@ -100,17 +92,23 @@ export default class Component extends Dom {
     /**
      * Instantiate
      *
+     * @abstract
      * @param {Object} configs Custom configs to override defaults
      * @property {Mixed} [draggable=true] Wether the component can be dragged, or the component's drag target
      * @property {Mixed} [resizable=true] Wether the component can be resized, or the component's resize target
      * @property {Object} [properties={}] A list of the component properties as name/descriptor pairs
      */
     constructor(configs) {
+        if (new.target === Component) {
+            // This is an abstract class.
+            throw new TypeError(`Cannot construct ${new.target.name} instances directly`);
+        }
+
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
-        // Get default configs.
-        const defaults = this.constructor.getDefaults();
+        // Get a clone of default configs.
+        const defaults = {...this.constructor.defaults};
 
         // Add default property values.
         Object.entries(defaults.properties).forEach(([name, property]) => {
@@ -123,7 +121,7 @@ export default class Component extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, defaults, configs);
+        this.configs = Object.assign({'id': `component-${uuid(10)}`}, defaults, configs);
 
         /**
          * The property values store
@@ -604,7 +602,7 @@ export default class Component extends Dom {
     /**
      * The cuepoint start event handler
      *
-     * @private
+     * @protected
      */
     onCuePointStart(){
         this.doActivate();
@@ -613,16 +611,15 @@ export default class Component extends Dom {
     /**
      * The cuepoint update event handler
      *
-     * @private
+     * @abstract
+     * @protected
      */
-    onCuePointUpdate(){
-
-    }
+    onCuePointUpdate(){}
 
     /**
      * The cuepoint stop event handler
      *
-     * @private
+     * @protected
      */
     onCuePointStop(){
         this.doDeactivate();

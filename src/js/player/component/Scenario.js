@@ -21,40 +21,33 @@ const component_types = {
  */
 export default class Scenario extends Component {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'draggable': false,
+        'resizable': false,
+        'properties': Object.assign({}, super.defaults.properties, {
+            'name': {
+                'type': 'string'
+            },
+            'components': {
+                'type': 'array',
+                'getter': function(skipID){
+                    const components = [];
+
+                    this.getChildren().forEach((component) => {
+                        components.push(component.getPropertyValues(skipID));
+                    });
+
+                    return components;
+                }
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Scenario';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'draggable': false,
-            'resizable': false,
-            'properties': Object.assign({}, defaults.properties, {
-                'name': {
-                    'type': 'string'
-                },
-                'components': {
-                    'type': 'array',
-                    'getter': function(skipID){
-                        const components = [];
-
-                        this.getChildren().forEach((component) => {
-                            components.push(component.getPropertyValues(skipID));
-                        });
-
-                        return components;
-                    }
-                }
-            })
-        });
     }
 
     /**

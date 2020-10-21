@@ -1,7 +1,7 @@
 import Dom from './core/Dom';
-import {MasterClock} from './core/media/Clock';
-import {isArray} from './core/utils/Var';
-import {escapeHTML} from './core/utils/String';
+import { MasterClock } from './core/media/Clock';
+import { isArray } from './core/utils/Var';
+import { escapeHTML } from './core/utils/String';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -14,12 +14,13 @@ import Clipboard from './core/Clipboard';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
 import TimeInput from './core/ui/input/TimeInput';
+import ColorInput from './core/ui/input/ColorInput';
 import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import AssetBrowser from './editor/AssetBrowser';
 
-import {className} from '../css/Editor.scss';
+import { className } from '../css/Editor.scss';
 import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
 
 /**
@@ -29,6 +30,25 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  * @param {Object} editor The editor instance
  */
 export class Editor extends Dom {
+
+    static defaults =  {
+        'container': 'body',
+        'player': {
+            'url': null,
+            'update_url': null,
+        },
+        'publish_url': null,
+        'autosave': {
+            'url': null,
+            'interval': null
+        },
+        'asset_browser': {},
+        'color_swatches': [],
+        'xhr': {},
+        'history': {
+            'grouping_timeout': 100
+        }
+    };
 
     /**
      * Instantiate
@@ -40,20 +60,23 @@ export class Editor extends Dom {
      * @property {String} player.update_url The player update URL
      * @property {String} publish_url The URL of the publish button
      * @property {Object} asset_browser Options to pass to the asset browser
-     * @property {String} [lang='en'] The language to use for i18n
+     * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
      * @property {Object} [history] Options for the history
      * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `metaScore-editor ${className}`, 'tabindex': 0});
+        super('<div/>', { 'class': `metaScore-editor ${className}`, 'tabindex': 0 });
 
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
+
+        // Override ColorInput default swatches
+        ColorInput.defaults.swatches = Object.assign({}, ColorInput.defaults.swatches, {'colors': this.configs.color_swatches});
 
         /**
          * The dirty data keys
@@ -61,42 +84,11 @@ export class Editor extends Dom {
          */
         this.dirty = {};
 
-        if(this.configs.container){
+        if (this.configs.container) {
             this.appendTo(this.configs.container);
         }
 
-        if('locale' in this.configs){
-            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
-        }
-        else{
-            this.init();
-        }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'container': 'body',
-            'player': {
-                'url': null,
-                'update_url': null,
-            },
-            'publish_url': null,
-            'autosave': {
-                'url': null,
-                'interval': null
-            },
-            'asset_browser': {},
-            'lang': 'en',
-            'xhr': {},
-            'history': {
-                'grouping_timeout': 100
-            }
-        };
+        this.init();
     }
 
     /**
@@ -104,7 +96,7 @@ export class Editor extends Dom {
     *
     * @return {String} The version number
     */
-    static getVersion(){
+    static getVersion() {
         return "[[VERSION]]";
     }
 
@@ -113,21 +105,21 @@ export class Editor extends Dom {
     *
     * @return {String} The revirsion number
     */
-    static getRevision(){
+    static getRevision() {
         return "[[REVISION]]";
     }
 
     /**
     * Initialize
     */
-    init(){
+    init() {
         // Set the banner for ContextMenus
-        ContextMenu.setBannerText(Locale.t('Editor.contextmenu.banner', 'metaScore Editor v.!version r.!revision', {'!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision()}));
+        ContextMenu.setBannerText(Locale.t('Editor.contextmenu.banner', 'metaScore Editor v.!version r.!revision', { '!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision() }));
 
         // Top pane ////////////////////////
         const top_pane = new Pane({
-                'axis': 'horizontal',
-            })
+            'axis': 'horizontal',
+        })
             .addClass('top-pane')
             .appendTo(this);
 
@@ -142,60 +134,61 @@ export class Editor extends Dom {
 
         // Tools pane ////////////////////////
         const tools_pane = new Pane({
-                'axis': 'vertical',
-                'resizable': {
-                    'directions': ['right']
-                }
-            })
+            'axis': 'vertical',
+            'resizable': {
+                'directions': ['right']
+            }
+        })
             .addClass('tools-pane')
             .appendTo(this);
 
-        this.asset_browser = new AssetBrowser(this, Object.assign({'xhr': this.configs.xhr}, this.configs.asset_browser))
+        this.asset_browser = new AssetBrowser(this, Object.assign({ 'xhr': this.configs.xhr }, this.configs.asset_browser))
             .addListener('tabchange', this.onAssetBrowserTabChange.bind(this))
             .addListener('assetadd', this.onAssetBrowserAssetAdd.bind(this))
             .addListener('beforeassetremove', this.onAssetBrowserBeforeAssetRemove.bind(this))
             .addListener('assetremove', this.onAssetBrowserAssetRemove.bind(this))
             .addListener('componentlinkclick', this.onAssetBrowserComponentLinkClick.bind(this))
             .addListener('spectrogramformopen', this.onAssetBrowserSpectrogramFormOpen.bind(this))
+            .addListener('audiowaveformformopen', this.onAssetBrowserAudioWaveformFormOpen.bind(this))
             .appendTo(tools_pane.getContents());
 
         // Center pane ////////////////////////
         const center_pane = new Pane({
-                'axis': 'vertical'
-            })
+            'axis': 'vertical'
+        })
             .addClass('center-pane')
             .appendTo(this);
 
-        new Dom('<div/>', {'class': 'top-ruler-gutter'})
+        new Dom('<div/>', { 'class': 'top-ruler-gutter' })
             .appendTo(center_pane.getContents());
 
-        new Dom('<div/>', {'class': 'left-ruler-gutter'})
+        new Dom('<div/>', { 'class': 'left-ruler-gutter' })
             .appendTo(center_pane.getContents());
 
-        const top_ruler_wrapper = new Dom('<div/>', {'class': 'top-ruler'})
+        const top_ruler_wrapper = new Dom('<div/>', { 'class': 'top-ruler' })
             .appendTo(center_pane.getContents());
 
-        const left_ruler_wrapper = new Dom('<div/>', {'class': 'left-ruler'})
+        const left_ruler_wrapper = new Dom('<div/>', { 'class': 'left-ruler' })
             .appendTo(center_pane.getContents());
 
         /**
          * The workspace
          * @type {Dom}
          */
-        this.workspace = new Dom('<div/>', {'class': 'workspace'})
+        this.workspace = new Dom('<div/>', { 'class': 'workspace' })
             .appendTo(center_pane.getContents());
 
         this.top_ruler = new Ruler({
-                'axis': 'x',
-                'trackTarget': this.workspace
-            })
+            'axis': 'x',
+            'trackTarget': this.workspace
+        })
             .appendTo(top_ruler_wrapper)
             .init();
 
         this.left_ruler = new Ruler({
-                'axis': 'y',
-                'trackTarget': this.workspace
-            })
+            'axis': 'y',
+            'trackTarget': this.workspace
+        })
             .appendTo(left_ruler_wrapper)
             .init();
 
@@ -203,23 +196,23 @@ export class Editor extends Dom {
          * The player wrapper container.
          * @type {Dom}
          */
-        this.player_wrapper = new Dom('<div/>', {'class': 'player-wrapper'})
+        this.player_wrapper = new Dom('<div/>', { 'class': 'player-wrapper' })
             .appendTo(this.workspace);
 
         /**
          * The grid
          * @type {Dom}
          */
-        this.grid = new Dom('<div/>', {'class': 'grid'})
+        this.grid = new Dom('<div/>', { 'class': 'grid' })
             .appendTo(this.player_wrapper);
 
         // Config pane ////////////////////////
         const config_pane = new Pane({
-                'axis': 'vertical',
-                'resizable': {
-                    'directions': ['left']
-                }
-            })
+            'axis': 'vertical',
+            'resizable': {
+                'directions': ['left']
+            }
+        })
             .addClass('configs-pane')
             .appendTo(this);
 
@@ -233,11 +226,11 @@ export class Editor extends Dom {
 
         // Bottom pane ////////////////////////
         const bottom_pane = new Pane({
-                'axis': 'horizontal',
-                'resizable': {
-                    'directions': ['top']
-                }
-            })
+            'axis': 'horizontal',
+            'resizable': {
+                'directions': ['top']
+            }
+        })
             .addClass('bottom-pane')
             .appendTo(this);
 
@@ -254,7 +247,7 @@ export class Editor extends Dom {
          * The auto-save indicator
          * @type {Dom}
          */
-        this.autosave_indicator = new Dom('<div/>', {'class': 'autosave-indicator'})
+        this.autosave_indicator = new Dom('<div/>', { 'class': 'autosave-indicator' })
             .text(Locale.t('Editor.autosaveIndicator.text', 'Saving auto-recovery data...'))
             .hide()
             .appendTo(this);
@@ -293,10 +286,10 @@ export class Editor extends Dom {
             .setClean()
             .setupContextMenus();
 
-        this.triggerEvent('ready', {'editor': this}, false, false);
+        this.triggerEvent('ready', { 'editor': this }, false, false);
 
         // Check if auto-save data exists.
-        if(this.configs.autosave && this.configs.autosave.url){
+        if (this.configs.autosave && this.configs.autosave.url) {
             const loadmask = this.createLoadMask();
             const options = Object.assign({}, this.configs.xhr, {
                 'responseType': 'json',
@@ -307,7 +300,7 @@ export class Editor extends Dom {
                         'text': Locale.t('editor.autosave.recover.text', 'Auto-save data were found for this guide. Would you like to recover them?'),
                         'confirmLabel': Locale.t('editor.autosave.recover.confirmLabel', 'Recover'),
                         'onConfirm': () => {
-                            this.loadPlayer({'autosave': ''});
+                            this.loadPlayer({ 'autosave': '' });
                         },
                         'onCancel': () => {
                             // Delete auto-save data.
@@ -327,7 +320,7 @@ export class Editor extends Dom {
 
             Ajax.HEAD(this.configs.autosave.url, options);
         }
-        else{
+        else {
             this.loadPlayer();
         }
     }
@@ -337,18 +330,19 @@ export class Editor extends Dom {
      *
      * @return {this}
      */
-    setupContextMenus(){
+    setupContextMenus() {
         /**
          * The editor's context menu
          * @type {ContextMenu}
          */
-        this.contextmenu = new ContextMenu({'target': this}).appendTo(this);
+        this.contextmenu = new ContextMenu({ 'target': this }).appendTo(this);
 
         /**
          * The player's context menu
          * @type {ContextMenu}
          */
-        this.player_contextmenu = new ContextMenu({'target': null, 'items': {
+        this.player_contextmenu = new ContextMenu({
+            'target': null, 'items': {
                 'element': {
                     'text': Locale.t('editor.contextmenu.element', 'Element'),
                     'items': {
@@ -361,9 +355,9 @@ export class Editor extends Dom {
                                 });
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.page');
-                                    if(dom){
+                                    if (dom) {
                                         data.parent = dom._metaScore;
                                         return true;
                                     }
@@ -373,7 +367,7 @@ export class Editor extends Dom {
                         },
                         'copy': {
                             'text': (context, data) => {
-                                if(data.selected){
+                                if (data.selected) {
                                     return Locale.t('editor.contextmenu.copy-selected-elements', 'Copy selected elements');
                                 }
                                 return Locale.t('editor.contextmenu.copy-element', 'Copy element');
@@ -391,15 +385,15 @@ export class Editor extends Dom {
                                 this.clipboard.setData('element', configs);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const elements = this.configs_editor.getComponents('Element');
-                                    if(elements.length > 0){
+                                    if (elements.length > 0) {
                                         data.selected = true;
                                         data.components = elements;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom){
+                                    if (dom) {
                                         data.components = [dom._metaScore];
                                         return true;
                                     }
@@ -413,10 +407,10 @@ export class Editor extends Dom {
                                 this.addPlayerComponents('element', data.component, data.parent);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
-                                    if(this.clipboard.getDataType() === 'element'){
+                                if (this.editing) {
+                                    if (this.clipboard.getDataType() === 'element') {
                                         const dom = context.el.closest('.metaScore-component.page');
-                                        if(dom){
+                                        if (dom) {
                                             data.component = this.clipboard.getData();
                                             data.parent = dom._metaScore;
                                             return true;
@@ -428,7 +422,7 @@ export class Editor extends Dom {
                         },
                         'delete': {
                             'text': (context, data) => {
-                                if(data.selected){
+                                if (data.selected) {
                                     return Locale.t('editor.contextmenu.delete-selected-elements', 'Delete selected elements');
                                 }
                                 return Locale.t('editor.contextmenu.delete-element', 'Delete element');
@@ -437,15 +431,15 @@ export class Editor extends Dom {
                                 this.deletePlayerComponents('element', data.components);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const elements = this.configs_editor.getComponents('Element');
-                                    if(elements.length > 0){
+                                    if (elements.length > 0) {
                                         data.selected = true;
                                         data.components = elements;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
                                         data.components = [dom._metaScore];
                                         return true;
                                     }
@@ -459,9 +453,9 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
                                         data.component = dom._metaScore;
                                         return true;
                                     }
@@ -475,9 +469,9 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
                                         data.component = dom._metaScore;
                                         return true;
                                     }
@@ -496,9 +490,9 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.element');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -513,9 +507,9 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, 0);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.element');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -535,9 +529,9 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.element');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -557,9 +551,9 @@ export class Editor extends Dom {
                                         this.setPlayerComponentOrder(component, position);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.element');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -569,9 +563,9 @@ export class Editor extends Dom {
                                 }
                             },
                             'toggler': (context) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.element');
-                                    if(dom){
+                                    if (dom) {
                                         return true;
                                     }
                                 }
@@ -580,7 +574,7 @@ export class Editor extends Dom {
                         }
                     },
                     'toggler': (context) => {
-                        if(this.editing){
+                        if (this.editing) {
                             return context.el.closest('.metaScore-component.page') ? true : false
                         }
                         return false;
@@ -592,7 +586,7 @@ export class Editor extends Dom {
                         'add-before': {
                             'text': Locale.t('editor.contextmenu.add-page-before', 'Add a page before'),
                             'callback': (context) => {
-                                this.addPlayerComponents('page', {'position': 'before'}, context.el.closest('.metaScore-component.block')._metaScore);
+                                this.addPlayerComponents('page', { 'position': 'before' }, context.el.closest('.metaScore-component.block')._metaScore);
                             },
                             'toggler': (context) => {
                                 return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
@@ -601,7 +595,7 @@ export class Editor extends Dom {
                         'add-after': {
                             'text': Locale.t('editor.contextmenu.add-page-after', 'Add a page after'),
                             'callback': (context) => {
-                                this.addPlayerComponents('page', {'position': 'after'}, context.el.closest('.metaScore-component.block')._metaScore);
+                                this.addPlayerComponents('page', { 'position': 'after' }, context.el.closest('.metaScore-component.block')._metaScore);
                             },
                             'toggler': (context) => {
                                 return this.editing && (context.el.closest('.metaScore-component.block') ? true : false);
@@ -609,7 +603,7 @@ export class Editor extends Dom {
                         },
                         'delete': {
                             'text': (context, data) => {
-                                if(data.selected){
+                                if (data.selected) {
                                     return Locale.t('editor.contextmenu.delete-selected-pages', 'Delete selected pages');
                                 }
                                 return Locale.t('editor.contextmenu.delete-page', 'Delete page');
@@ -618,15 +612,15 @@ export class Editor extends Dom {
                                 this.deletePlayerComponents('page', data.components);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const pages = this.configs_editor.getComponents('Page');
-                                    if(pages.length > 0){
+                                    if (pages.length > 0) {
                                         data.selected = true;
                                         data.components = pages;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.page');
-                                    if(dom){
+                                    if (dom) {
                                         data.components = [dom._metaScore];
                                         return true;
                                     }
@@ -636,7 +630,7 @@ export class Editor extends Dom {
                         }
                     },
                     'toggler': (context) => {
-                        if(this.editing){
+                        if (this.editing) {
                             return context.el.closest('.metaScore-component.block') ? true : false
                         }
                         return false;
@@ -651,13 +645,13 @@ export class Editor extends Dom {
                                 'add-block-synched': {
                                     'text': Locale.t('editor.contextmenu.add-block-synched', 'Synchronized'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': true});
+                                        this.addPlayerComponents('block', { 'type': 'Block', 'synched': true });
                                     }
                                 },
                                 'add-block-non-synched': {
                                     'text': Locale.t('editor.contextmenu.add-block-non-synched', 'Non-synchronized'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Block', 'synched': false});
+                                        this.addPlayerComponents('block', { 'type': 'Block', 'synched': false });
                                     }
                                 },
                                 'separator': {
@@ -666,19 +660,19 @@ export class Editor extends Dom {
                                 'add-video-renderer': {
                                     'text': Locale.t('editor.contextmenu.add-video-renderer', 'Video renderer'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'VideoRenderer'});
+                                        this.addPlayerComponents('block', { 'type': 'VideoRenderer' });
                                     }
                                 },
                                 'add-controller': {
                                     'text': Locale.t('editor.contextmenu.add-controller', 'Controller'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'Controller'});
+                                        this.addPlayerComponents('block', { 'type': 'Controller' });
                                     }
                                 },
                                 'add-block-toggler': {
                                     'text': Locale.t('editor.contextmenu.add-block-toggler', 'Block Toggler'),
                                     'callback': () => {
-                                        this.addPlayerComponents('block', {'type': 'BlockToggler'});
+                                        this.addPlayerComponents('block', { 'type': 'BlockToggler' });
                                     }
                                 }
                             },
@@ -690,7 +684,7 @@ export class Editor extends Dom {
                             'text': Locale.t('editor.contextmenu.select-blocks', 'Select all blocks'),
                             'callback': () => {
                                 const scenario = this.getPlayer().getActiveScenario();
-                                if(scenario){
+                                if (scenario) {
                                     scenario.getChildren().forEach((component, index) => {
                                         this.configs_editor.setComponent(component, index > 0);
                                     });
@@ -702,7 +696,7 @@ export class Editor extends Dom {
                         },
                         'copy': {
                             'text': (context, data) => {
-                                if(data.selected){
+                                if (data.selected) {
                                     return Locale.t('editor.contextmenu.copy-selected-blocks', 'Copy selected blocks');
                                 }
                                 return Locale.t('editor.contextmenu.copy-block', 'Copy block');
@@ -720,15 +714,15 @@ export class Editor extends Dom {
                                 this.clipboard.setData('block', configs);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
-                                    if(blocks.length > 0){
+                                    if (blocks.length > 0) {
                                         data.selected = true;
                                         data.components = blocks;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom){
+                                    if (dom) {
                                         data.components = [dom._metaScore];
                                         return true;
                                     }
@@ -747,7 +741,7 @@ export class Editor extends Dom {
                         },
                         'delete': {
                             'text': (context, data) => {
-                                if(data.selected){
+                                if (data.selected) {
                                     return Locale.t('editor.contextmenu.delete-selected-blocks', 'Delete selected blocks');
                                 }
                                 return Locale.t('editor.contextmenu.delete-block', 'Delete block');
@@ -756,15 +750,15 @@ export class Editor extends Dom {
                                 this.deletePlayerComponents('block', data.components);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
-                                    if(blocks.length > 0){
+                                    if (blocks.length > 0) {
                                         data.selected = true;
                                         data.components = blocks;
                                         return true;
                                     }
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom){
+                                    if (dom) {
                                         data.components = [dom._metaScore];
                                         return true;
                                     }
@@ -778,9 +772,9 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', true);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
                                         data.component = dom._metaScore;
                                         return true;
                                     }
@@ -794,9 +788,9 @@ export class Editor extends Dom {
                                 data.component.setPropertyValue('editor.locked', false);
                             },
                             'toggler': (context, data) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom && !dom._metaScore.getPropertyValue('editor.locked')){
+                                    if (dom && !dom._metaScore.getPropertyValue('editor.locked')) {
                                         data.component = dom._metaScore;
                                         return true;
                                     }
@@ -815,9 +809,9 @@ export class Editor extends Dom {
                                         component.appendTo(parent);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -833,9 +827,9 @@ export class Editor extends Dom {
                                         component.insertAt(parent, 0);
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -853,9 +847,9 @@ export class Editor extends Dom {
                                         component.insertAt(parent, Math.min(siblings.count(), position + 2));
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -873,9 +867,9 @@ export class Editor extends Dom {
                                         component.insertAt(parent, Math.max(0, position - 1));
                                     },
                                     'toggler': (context, data) => {
-                                        if(this.editing){
+                                        if (this.editing) {
                                             const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                            if(dom){
+                                            if (dom) {
                                                 data.component = dom._metaScore;
                                                 return true;
                                             }
@@ -885,9 +879,9 @@ export class Editor extends Dom {
                                 }
                             },
                             'toggler': (context) => {
-                                if(this.editing){
+                                if (this.editing) {
                                     const dom = context.el.closest('.metaScore-component.block, .metaScore-component.video-renderer, .metaScore-component.controller, .metaScore-component.block-toggler');
-                                    if(dom){
+                                    if (dom) {
                                         return true;
                                     }
                                 }
@@ -896,7 +890,8 @@ export class Editor extends Dom {
                         }
                     }
                 }
-            }})
+            }
+        })
             .appendTo(this);
 
         return this;
@@ -907,7 +902,7 @@ export class Editor extends Dom {
     *
     * @private
     */
-    onLocaleLoad(){
+    onLocaleLoad() {
         this.init();
     }
 
@@ -918,11 +913,11 @@ export class Editor extends Dom {
      * @param {LoadMask} loadmask the loadmask to hide
      * @param {Event} evt The event object
      */
-    onXHRError(loadmask, evt){
+    onXHRError(loadmask, evt) {
         loadmask.hide();
 
         new Overlay({
-            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', {'@error': evt.target.getStatusText(), '@code': evt.target.getStatus()}),
+            'text': Locale.t('editor.onXHRError.msg', 'The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.', { '@error': evt.target.getStatusText(), '@code': evt.target.getStatus() }),
             'buttons': {
                 'ok': Locale.t('editor.onXHRError.ok', 'OK'),
             },
@@ -936,7 +931,7 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
      */
-    onSaveSuccess(loadmask){
+    onSaveSuccess(loadmask) {
         loadmask.hide();
 
         this.setClean().updateMainmenu(true);
@@ -948,7 +943,7 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
      */
-    onRestoreSuccess(loadmask){
+    onRestoreSuccess(loadmask) {
         loadmask.hide();
 
         this.loadPlayer();
@@ -960,23 +955,23 @@ export class Editor extends Dom {
      * @private
      * @param {KeyboardEvent} evt The event object
      */
-    onKeydown(evt){
-        if(Dom.is(evt.target, 'input')){
+    onKeydown(evt) {
+        if (Dom.is(evt.target, 'input')) {
             return;
         }
 
-        switch(evt.key){
+        switch (evt.key) {
             case "Alt":
-                if(!evt.repeat){
+                if (!evt.repeat) {
                     this.setEditing(!this.editing);
                     evt.preventDefault();
                 }
                 break;
 
             case " ":
-                if(!evt.repeat){
+                if (!evt.repeat) {
                     const player = this.getPlayer();
-                    if(player){
+                    if (player) {
                         player.togglePlay();
                         evt.preventDefault();
                     }
@@ -984,9 +979,9 @@ export class Editor extends Dom {
                 break;
 
             case "h":
-                if(evt.ctrlKey && !evt.repeat){
+                if (evt.ctrlKey && !evt.repeat) {
                     const player = this.getPlayer();
-                    if(player){
+                    if (player) {
                         player.addClass('show-contents');
                     }
                     evt.preventDefault();
@@ -994,14 +989,14 @@ export class Editor extends Dom {
                 break;
 
             case "z":
-                if(evt.ctrlKey){
+                if (evt.ctrlKey) {
                     this.history.undo();
                     evt.preventDefault();
                 }
                 break;
 
             case "y":
-                if(evt.ctrlKey){
+                if (evt.ctrlKey) {
                     this.history.redo();
                     evt.preventDefault();
                 }
@@ -1015,21 +1010,21 @@ export class Editor extends Dom {
      * @private
      * @param {KeyboardEvent} evt The event object
      */
-    onKeyup(evt){
-        if(Dom.is(evt.target, 'input')){
+    onKeyup(evt) {
+        if (Dom.is(evt.target, 'input')) {
             return;
         }
 
-        switch(evt.key){
+        switch (evt.key) {
             case "Alt":
                 this.setEditing(!this.editing);
                 evt.preventDefault();
                 break;
 
             case "h":
-                if(evt.ctrlKey){
+                if (evt.ctrlKey) {
                     const player = this.getPlayer();
-                    if(player){
+                    if (player) {
                         player.removeClass('show-contents');
                     }
                     evt.preventDefault();
@@ -1044,7 +1039,7 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onContextMenuBeforeShow(evt){
+    onContextMenuBeforeShow(evt) {
         const target = evt.detail.original_event.target;
         const player = this.getPlayer();
 
@@ -1062,7 +1057,7 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onAssetBrowserTabChange(evt){
+    onAssetBrowserTabChange(evt) {
         this.toggleClass('assetbrowser-expanded', evt.detail.tab === 'shared-assets');
     }
 
@@ -1071,7 +1066,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onAssetBrowserAssetAdd(){
+    onAssetBrowserAssetAdd() {
         this.updateConfigEditorImageFields();
     }
 
@@ -1081,19 +1076,19 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onAssetBrowserBeforeAssetRemove(evt){
+    onAssetBrowserBeforeAssetRemove(evt) {
         const asset = evt.detail.asset;
         const file = 'shared' in asset && asset.shared ? asset.file : asset;
 
-        if(/^image\/.*/.test(file.mimetype)){
+        if (/^image\/.*/.test(file.mimetype)) {
             const components = this.findComponentsWithAsset(file.url);
-            if(components.length > 0){
+            if (components.length > 0) {
                 const names = components.map((component) => {
                     return component.getName();
                 });
 
                 new Overlay({
-                    'text': Locale.t('editor.onAssetBrowserBeforeAssetRemove.used.msg', '<em>!asset</em> cannot be deleted as it is being used in the following components: <em>!components</em>.', {'!asset': asset.name, '!components': names.join('</em>, <em>')}),
+                    'text': Locale.t('editor.onAssetBrowserBeforeAssetRemove.used.msg', '<em>!asset</em> cannot be deleted as it is being used in the following components: <em>!components</em>.', { '!asset': asset.name, '!components': names.join('</em>, <em>') }),
                     'buttons': {
                         'ok': Locale.t('editor.onAssetBrowserBeforeAssetRemove.used.ok', 'OK'),
                     },
@@ -1105,16 +1100,16 @@ export class Editor extends Dom {
         }
     }
 
-    findComponentsWithAsset(url, component){
+    findComponentsWithAsset(url, component) {
         let results = [];
 
-        if(typeof component === "undefined"){
+        if (typeof component === "undefined") {
             this.getPlayer().getScenarios().forEach((scenario) => {
                 results = results.concat(this.findComponentsWithAsset(url, scenario));
             });
         }
-        else{
-            if(component.hasProperty('background-image') && component.getPropertyValue('background-image') === url){
+        else {
+            if (component.hasProperty('background-image') && component.getPropertyValue('background-image') === url) {
                 results.push(component);
             }
 
@@ -1131,7 +1126,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onAssetBrowserAssetRemove(){
+    onAssetBrowserAssetRemove() {
         this.setDirty('assets');
         this.updateConfigEditorImageFields();
     }
@@ -1142,11 +1137,11 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onAssetBrowserComponentLinkClick(evt){
+    onAssetBrowserComponentLinkClick(evt) {
         const type = evt.detail.type;
         const configs = evt.detail.configs;
 
-        switch(type){
+        switch (type) {
             case 'element':
                 this.configs_editor.getComponents('Page').forEach((page) => {
                     this.addPlayerComponents(type, configs, page);
@@ -1163,11 +1158,17 @@ export class Editor extends Dom {
         }
     }
 
-    onAssetBrowserSpectrogramFormOpen(evt){
+    /**
+     * AssetBrowser spectrogramformopen event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onAssetBrowserSpectrogramFormOpen(evt) {
         const form = evt.detail.form;
         const configs_form = this.configs_editor.getForm();
 
-        if(configs_form){
+        if (configs_form) {
             const component = configs_form.getMasterComponent();
             const defaults = {
                 'width': component.getPropertyValue('width'),
@@ -1177,7 +1178,34 @@ export class Editor extends Dom {
             };
 
             Object.entries(defaults).forEach(([key, value]) => {
-                if(value !== null){
+                if (value !== null) {
+                    form.getField(key).getInput().setValue(value, true);
+                }
+            });
+        }
+    }
+
+    /**
+     * AssetBrowser audiowaveformformopen event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onAssetBrowserAudioWaveformFormOpen(evt) {
+        const form = evt.detail.form;
+        const configs_form = this.configs_editor.getForm();
+
+        if (configs_form) {
+            const component = configs_form.getMasterComponent();
+            const defaults = {
+                'width': component.getPropertyValue('width'),
+                'height': component.getPropertyValue('height'),
+                'start': component.getPropertyValue('start-time'),
+                'end': component.getPropertyValue('end-time'),
+            };
+
+            Object.entries(defaults).forEach(([key, value]) => {
+                if (value !== null) {
                     form.getField(key).getInput().setValue(value, true);
                 }
             });
@@ -1190,7 +1218,7 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onConfigEditorComponentSet(evt){
+    onConfigEditorComponentSet(evt) {
         if (evt.detail.count === 1) {
             const component = evt.detail.component;
 
@@ -1200,16 +1228,16 @@ export class Editor extends Dom {
                     // Set page as active page.
                     block.setActivePage(component);
 
-                    if(block.getPropertyValue('synched')){
+                    if (block.getPropertyValue('synched')) {
                         // Goto page's start-time.
                         const start_time = component.getPropertyValue('start-time');
                         MasterClock.setTime(start_time !== null ? start_time : 0);
                     }
                 }
             }
-            else if(component.hasProperty('start-time')){
+            else if (component.hasProperty('start-time')) {
                 const start_time = component.getPropertyValue('start-time');
-                if(start_time !== null){
+                if (start_time !== null) {
                     MasterClock.setTime(start_time);
                 }
             }
@@ -1222,8 +1250,8 @@ export class Editor extends Dom {
      * @private
      * @param {MouseEvent} evt The event object
      */
-    onMainmenuClick(evt){
-        switch(Dom.data(evt.target, 'action')){
+    onMainmenuClick(evt) {
+        switch (Dom.data(evt.target, 'action')) {
             case 'save':
                 this.save();
                 break;
@@ -1278,12 +1306,12 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onMainmenuInputChange(evt){
+    onMainmenuInputChange(evt) {
         const name = evt.detail.input.data('name');
         const value = evt.detail.value;
         const previous_value = evt.detail.previous;
 
-        switch(name){
+        switch (name) {
             case 'title':
             case 'width':
             case 'height':
@@ -1314,17 +1342,17 @@ export class Editor extends Dom {
                 break;
 
             case 'revisions':
-                if(this.isDirty()){
+                if (this.isDirty()) {
                     new Confirm({
                         'text': Locale.t('editor.onMainmenuRevisionsChange.confirm.msg', "You are about to load an old revision. Any unsaved data will be lost."),
                         'onConfirm': () => {
-                            this.loadPlayer({'vid': value});
+                            this.loadPlayer({ 'vid': value });
                         },
                         'parent': this
                     });
                 }
-                else{
-                    this.loadPlayer({'vid': value});
+                else {
+                    this.loadPlayer({ 'vid': value });
                 }
                 break;
         }
@@ -1336,7 +1364,7 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackClick(evt){
+    onTimelineTrackClick(evt) {
         const component_id = Dom.data(evt.target, 'component');
         const track = this.controller.getTimeline().getTrack(component_id);
         const component = track.getComponent();
@@ -1350,7 +1378,7 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackDrop(evt){
+    onTimelineTrackDrop(evt) {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
@@ -1363,7 +1391,7 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt
      */
-    onTimeInputValueIn(evt){
+    onTimeInputValueIn(evt) {
         const input = evt.detail.input;
         const time = MasterClock.getTime();
 
@@ -1376,7 +1404,7 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTimeInputValueOut(evt){
+    onTimeInputValueOut(evt) {
         MasterClock.setTime(evt.detail.value);
     }
 
@@ -1385,7 +1413,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerDimentionsSet(){
+    onPlayerDimentionsSet() {
         this.updateWorkspace();
     }
 
@@ -1394,7 +1422,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerSourceSet(){
+    onPlayerSourceSet() {
         const loadmask = this.createLoadMask();
 
         this.removeClass('metadata-loaded');
@@ -1423,16 +1451,16 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerLoadedMetadata(evt){
+    onPlayerLoadedMetadata(evt) {
         const renderer = evt.detail.renderer;
         const renderer_dom = renderer.getDom();
         const link = this.asset_browser.getTabContent('component-links').getLink('video-renderer');
 
-        if(link){
-            if(Dom.is(renderer_dom, 'video')){
+        if (link) {
+            if (Dom.is(renderer_dom, 'video')) {
                 link.show();
             }
-            else{
+            else {
                 link.hide();
             }
         }
@@ -1449,18 +1477,18 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPlayerScenarioChange(evt){
+    onPlayerScenarioChange(evt) {
         const scenario = evt.detail.scenario;
         const previous = evt.detail.previous;
 
         // Deselect all components
         this.configs_editor.unsetComponents();
 
-        if(previous){
+        if (previous) {
             // Hide previous scenario in Tinmeline
             this.controller.getTimeline().getTrack(previous.getId()).hide();
         }
-        if(scenario){
+        if (scenario) {
             // Show scenario in Tinmeline
             this.controller.getTimeline().getTrack(scenario.getId()).show();
         }
@@ -1474,12 +1502,12 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerComponentAdd(evt){
+    onPlayerComponentAdd(evt) {
         const component = evt.detail.component;
 
         this.controller.getTimeline().addTrack(component);
 
-        if(component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')){
+        if (component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')) {
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1494,14 +1522,14 @@ export class Editor extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPlayerComponentRemove(evt){
+    onPlayerComponentRemove(evt) {
         const component = evt.detail.component;
 
         this.configs_editor.unsetComponent(component, true);
 
         this.controller.getTimeline().removeTrack(component);
 
-        if(component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')){
+        if (component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')) {
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1514,13 +1542,13 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
      */
-    onPlayerFrameLoadSuccess(loadmask){
+    onPlayerFrameLoadSuccess(loadmask) {
         const iframe = this.player_frame.get(0);
         const player = iframe.contentWindow.player;
 
         Dom.bubbleIframeMouseEvent(iframe, 'mousemove');
 
-        if(player){
+        if (player) {
             this.addClass('has-player');
 
             /**
@@ -1539,7 +1567,7 @@ export class Editor extends Dom {
 
             this.player.load();
         }
-        else{
+        else {
             // Assume an error occured
             this.unloadPlayer();
             this.onPlayerFrameLoadError(loadmask);
@@ -1552,7 +1580,7 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
      */
-    onPlayerFrameLoadError(loadmask){
+    onPlayerFrameLoadError(loadmask) {
         loadmask.hide();
 
         new Overlay({
@@ -1570,7 +1598,7 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask the loadmask to hide
      */
-    onPlayerLoadSuccess(loadmask){
+    onPlayerLoadSuccess(loadmask) {
         this.player
             .addListener('play', this.onPlayerPlay.bind(this))
             .addListener('pause', this.onPlayerPause.bind(this));
@@ -1580,7 +1608,7 @@ export class Editor extends Dom {
             this.mainmenu.getItem(input).setValue(this.player.getGuideData(input), true);
         });
 
-        if(this.isLatestRevision()){
+        if (this.isLatestRevision()) {
             this.player
                 .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
                 .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
@@ -1609,10 +1637,10 @@ export class Editor extends Dom {
             const timeline = this.controller.getTimeline();
             this.player.getScenarios().forEach((scenario) => {
                 const track = timeline.addTrack(scenario);
-                if(scenario === active_scenario){
+                if (scenario === active_scenario) {
                     track.show();
                 }
-                else{
+                else {
                     track.hide();
                 }
             });
@@ -1631,13 +1659,13 @@ export class Editor extends Dom {
                 .setTarget(player_document.body)
                 .enable();
 
-            if(this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval){
+            if (this.configs.autosave && this.configs.autosave.url && this.configs.autosave.interval) {
                 this._autosave_interval = setInterval(this.autoSave.bind(this), this.configs.autosave.interval * 1000);
             }
 
             this.setEditing(true);
         }
-        else{
+        else {
             this.setEditing(false);
         }
 
@@ -1645,7 +1673,7 @@ export class Editor extends Dom {
 
         this.addClass('player-ready');
 
-        this.triggerEvent('playerload', {'player': this.player});
+        this.triggerEvent('playerload', { 'player': this.player });
 
         loadmask.hide();
     }
@@ -1656,7 +1684,7 @@ export class Editor extends Dom {
      * @private
      * @param {LoadMask} loadmask The loadmask to hide
      */
-    onPlayerLoadError(loadmask){
+    onPlayerLoadError(loadmask) {
         loadmask.hide();
 
         new Overlay({
@@ -1674,34 +1702,34 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onPlayerDragOver(evt){
+    onPlayerDragOver(evt) {
         /**
          * @todo: highlight drop zone
          * @todo: handle page before, page after
          **/
 
-        if(this.hasClass('contents-unlocked')){
+        if (this.hasClass('contents-unlocked')) {
             return;
         }
 
-        if(evt.dataTransfer.types.includes('metascore/block')){
+        if (evt.dataTransfer.types.includes('metascore/block')) {
             evt.preventDefault();
         }
-        else if(evt.dataTransfer.types.includes('metascore/page')){
+        else if (evt.dataTransfer.types.includes('metascore/page')) {
             const block_dom = evt.target.closest('.metaScore-component.block');
-            if(block_dom){
+            if (block_dom) {
                 evt.preventDefault();
             }
         }
-        else if(evt.dataTransfer.types.includes('metascore/element')){
+        else if (evt.dataTransfer.types.includes('metascore/element')) {
             const page_dom = evt.target.closest('.metaScore-component.page');
-            if(page_dom){
+            if (page_dom) {
                 evt.preventDefault();
             }
         }
-        else if(evt.dataTransfer.types.includes('metascore/asset')){
+        else if (evt.dataTransfer.types.includes('metascore/asset')) {
             const page_dom = evt.target.closest('.metaScore-component.page');
-            if(page_dom){
+            if (page_dom) {
                 evt.preventDefault();
             }
         }
@@ -1713,13 +1741,13 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onPlayerDrop(evt){
-        if(this.hasClass('contents-unlocked')){
+    onPlayerDrop(evt) {
+        if (this.hasClass('contents-unlocked')) {
             return;
         }
 
         // Handle block drop ////////////////////////
-        if(evt.dataTransfer.types.includes('metascore/block')){
+        if (evt.dataTransfer.types.includes('metascore/block')) {
             const configs = JSON.parse(evt.dataTransfer.getData('metascore/block'));
             this.addPlayerComponents('block', Object.assign({
                 'x': evt.clientX,
@@ -1732,9 +1760,9 @@ export class Editor extends Dom {
         }
 
         // Handle page drop ////////////////////////
-        if(evt.dataTransfer.types.includes('metascore/page')){
+        if (evt.dataTransfer.types.includes('metascore/page')) {
             const block_dom = evt.target.closest('.metaScore-component.block');
-            if(block_dom){
+            if (block_dom) {
                 const configs = JSON.parse(evt.dataTransfer.getData('metascore/page'));
                 const block = block_dom._metaScore;
                 this.addPlayerComponents('page', configs, block);
@@ -1746,9 +1774,9 @@ export class Editor extends Dom {
         }
 
         // Handle element drop ////////////////////////
-        if(evt.dataTransfer.types.includes('metascore/element')){
+        if (evt.dataTransfer.types.includes('metascore/element')) {
             const page_dom = evt.target.closest('.metaScore-component.page');
-            if(page_dom){
+            if (page_dom) {
                 const configs = JSON.parse(evt.dataTransfer.getData('metascore/element'));
                 const page = page_dom._metaScore;
                 const page_rect = page_dom.getBoundingClientRect();
@@ -1765,9 +1793,9 @@ export class Editor extends Dom {
         }
 
         // Handle asset drop ////////////////////////
-        if(evt.dataTransfer.types.includes('metascore/asset')){
+        if (evt.dataTransfer.types.includes('metascore/asset')) {
             const page_dom = evt.target.closest('.metaScore-component.page');
-            if(page_dom){
+            if (page_dom) {
                 const asset = JSON.parse(evt.dataTransfer.getData('metascore/asset'));
                 const page = page_dom._metaScore;
                 const page_rect = page.get(0).getBoundingClientRect();
@@ -1778,8 +1806,8 @@ export class Editor extends Dom {
                     'y': evt.clientY - page_rect.top,
                 };
 
-                if('shared' in asset && asset.shared){
-                    switch(asset.type){
+                if ('shared' in asset && asset.shared) {
+                    switch (asset.type) {
                         case 'image':
                             Object.assign(configs, {
                                 'type': 'Content',
@@ -1798,11 +1826,11 @@ export class Editor extends Dom {
                             break;
                     }
                 }
-                else{
+                else {
                     const matches = /^(image|audio|video)\/.*/.exec(asset.mimetype);
-                    if(matches){
+                    if (matches) {
                         const type = matches[1];
-                        switch(type){
+                        switch (type) {
                             case 'image':
                                 Object.assign(configs, {
                                     'type': 'Content',
@@ -1839,12 +1867,12 @@ export class Editor extends Dom {
      * @private
      * @param {MouseEvent} evt The event object
      */
-    onPlayerClick(evt){
-        if(this.editing !== true){
+    onPlayerClick(evt) {
+        if (this.editing !== true) {
             return;
         }
 
-		this.configs_editor.unsetComponents();
+        this.configs_editor.unsetComponents();
 
         evt.stopPropagation();
     }
@@ -1854,7 +1882,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerPlay(){
+    onPlayerPlay() {
         this.addClass('playing');
     }
 
@@ -1863,7 +1891,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onPlayerPause(){
+    onPlayerPause() {
         this.removeClass('playing');
     }
 
@@ -1873,15 +1901,15 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentPropChange(evt){
+    onComponentPropChange(evt) {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        if(component.instanceOf('VideoRenderer') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')){
-            if(['x', 'y', 'width', 'height', 'blocks'].includes(property)){
+        if (component.instanceOf('VideoRenderer') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')) {
+            if (['x', 'y', 'width', 'height', 'blocks'].includes(property)) {
                 this.getPlayer().updateBlockTogglers();
             }
-            else if(property === 'name'){
+            else if (property === 'name') {
                 this.updateConfigEditorComponentFields();
             }
         }
@@ -1895,8 +1923,8 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentBeforeDrag(evt){
-        if(this.editing !== true){
+    onComponentBeforeDrag(evt) {
+        if (this.editing !== true) {
             evt.preventDefault();
         }
     }
@@ -1907,12 +1935,12 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentDragStart(evt){
+    onComponentDragStart(evt) {
         const draggable = evt.detail.behavior;
         const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
 
         siblings.forEach((sibling) => {
-            if(new Dom(sibling).hidden()){
+            if (new Dom(sibling).hidden()) {
                 // Do not add guides for hidden siblings
                 return;
             }
@@ -1934,7 +1962,7 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentDragEnd(evt){
+    onComponentDragEnd(evt) {
         const draggable = evt.detail.behavior;
         draggable.clearSnapGudies();
     }
@@ -1945,8 +1973,8 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentBeforeResize(evt){
-        if(this.editing !== true){
+    onComponentBeforeResize(evt) {
+        if (this.editing !== true) {
             evt.preventDefault();
         }
     }
@@ -1957,12 +1985,12 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentResizeStart(evt){
+    onComponentResizeStart(evt) {
         const resizable = evt.detail.behavior;
         const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
 
         siblings.forEach((sibling) => {
-            if(new Dom(sibling).hidden()){
+            if (new Dom(sibling).hidden()) {
                 // Do not add guides for hidden siblings
                 return;
             }
@@ -1984,7 +2012,7 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentResizeEnd(evt){
+    onComponentResizeEnd(evt) {
         const resizable = evt.detail.behavior;
         resizable.clearSnapGudies();
     }
@@ -1995,20 +2023,20 @@ export class Editor extends Dom {
      * @private
      * @param {MouseEvent} evt The event object
      */
-    onComponentClick(evt){
-        if(this.editing !== true){
+    onComponentClick(evt) {
+        if (this.editing !== true) {
             return;
         }
 
         let component = null;
-        if(!Dom.is(evt.target, '.metaScore-component')){
+        if (!Dom.is(evt.target, '.metaScore-component')) {
             component = Dom.closest(evt.target, '.metaScore-component')._metaScore;
         }
-        else{
+        else {
             component = evt.target._metaScore;
         }
 
-        if(!component.instanceOf('Scenario')){
+        if (!component.instanceOf('Scenario')) {
             this.selectPlayerComponent(component, evt.shiftKey);
             evt.stopImmediatePropagation();
         }
@@ -2019,7 +2047,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onHistoryAdd(){
+    onHistoryAdd() {
         this.updateMainmenu();
     }
 
@@ -2028,7 +2056,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onHistoryUndo(){
+    onHistoryUndo() {
         this.updateMainmenu();
     }
 
@@ -2037,7 +2065,7 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onHistoryRedo(){
+    onHistoryRedo() {
         this.updateMainmenu();
     }
 
@@ -2047,8 +2075,8 @@ export class Editor extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onWindowBeforeUnload(evt){
-        if(this.isDirty()){
+    onWindowBeforeUnload(evt) {
+        if (this.isDirty()) {
             evt.returnValue = Locale.t('editor.onWindowBeforeUnload.msg', 'Any unsaved data will be lost.');
         }
     }
@@ -2058,8 +2086,8 @@ export class Editor extends Dom {
      *
      * @private
      */
-    onWindowUnload(){
-        if(this.configs.autosave && this.configs.autosave.url){
+    onWindowUnload() {
+        if (this.configs.autosave && this.configs.autosave.url) {
             // Delete auto-save data using the fetch API as Ajax doesn't support keepalive.
             fetch(this.configs.autosave.url, Object.assign({}, this.configs.xhr, {
                 'method': 'DELETE',
@@ -2074,7 +2102,7 @@ export class Editor extends Dom {
      * @param {Boolean} editing The new state
      * @return {this}
      */
-    setEditing(editing){
+    setEditing(editing) {
         const player = this.getPlayer();
 
         /**
@@ -2087,7 +2115,7 @@ export class Editor extends Dom {
 
         this.mainmenu.getItem('preview-toggle').setValue(!this.editing, true);
 
-        if(player){
+        if (player) {
             player.toggleClass('editing', this.editing);
         }
 
@@ -2100,10 +2128,10 @@ export class Editor extends Dom {
      * @private
      * @return {this}
      */
-    updateWorkspace(){
-        const {width, height} = this.getPlayer().getDimentions();
+    updateWorkspace() {
+        const { width, height } = this.getPlayer().getDimentions();
         const zoom = this.mainmenu.getItem('zoom').getValue();
-        const scale = zoom/100;
+        const scale = zoom / 100;
         const scaled_width = width * scale;
         const scaled_height = height * scale;
 
@@ -2164,7 +2192,7 @@ export class Editor extends Dom {
      *
      * @return {UndoRedo} The undo/redo instance
      */
-    getHistory(){
+    getHistory() {
         return this.history;
     }
 
@@ -2173,14 +2201,14 @@ export class Editor extends Dom {
      *
      * @return {Object} The list of image assets, keyed by url
      */
-    getImageAssets(){
+    getImageAssets() {
         const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
         const images = {};
 
         Object.values(assets).forEach((asset) => {
             const file = 'shared' in asset && asset.shared ? asset.file : asset;
 
-            if(/^image\/.*/.test(file.mimetype)){
+            if (/^image\/.*/.test(file.mimetype)) {
                 images[file.url] = asset.name;
             }
         });
@@ -2194,11 +2222,11 @@ export class Editor extends Dom {
      * @private
      * @return {this}
      */
-    updateConfigEditorImageFields(){
+    updateConfigEditorImageFields() {
         const images = this.getImageAssets();
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
-            if('updateImageFields' in form){
+            if ('updateImageFields' in form) {
                 form.updateImageFields(images);
             }
         });
@@ -2212,13 +2240,13 @@ export class Editor extends Dom {
      * @private
      * @return {this}
      */
-    updateConfigEditorComponentFields(){
+    updateConfigEditorComponentFields() {
         const player = this.getPlayer();
         const scenario = player.getActiveScenario();
         const components = scenario ? scenario.getChildren() : [];
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
-            if('updateComponentFields' in form){
+            if ('updateComponentFields' in form) {
                 form.updateComponentFields(components);
             }
         });
@@ -2232,7 +2260,7 @@ export class Editor extends Dom {
      * @param {String} key The key corresponding to the dirty data
      * @return {this}
      */
-    setDirty(key){
+    setDirty(key) {
         this.dirty[key] = Date.now();
 
         this.updateMainmenu();
@@ -2246,11 +2274,11 @@ export class Editor extends Dom {
      * @param {String} key The key corresponding to the data; if undefined, all data will be set as clean
      * @return {this}
      */
-    setClean(key){
-        if(typeof key !== 'undefined'){
+    setClean(key) {
+        if (typeof key !== 'undefined') {
             delete this.dirty[key];
         }
-        else{
+        else {
             this.dirty = {};
         }
 
@@ -2266,7 +2294,7 @@ export class Editor extends Dom {
      * @return {Boolean} Whether unsaved data exists
      */
     isDirty(key) {
-        if(typeof key !== 'undefined'){
+        if (typeof key !== 'undefined') {
             return key in this.dirty;
         }
 
@@ -2279,10 +2307,10 @@ export class Editor extends Dom {
      * @param {String} key The key corresponding to the data; if undefined, checks whether any data is dirty
      * @return {Boolean} Whether unsaved autosave data exists
      */
-    isAutoSaveDirty(key){
+    isAutoSaveDirty(key) {
         const last_autosave = this._last_autosave ? this._last_autosave : 0;
 
-        if(typeof key !== 'undefined'){
+        if (typeof key !== 'undefined') {
             return key in this.dirty && this.dirty[key] > last_autosave;
         }
 
@@ -2306,14 +2334,14 @@ export class Editor extends Dom {
      * @param {Object} [params] URL parameters to add to the default url
      * @return {this}
      */
-    loadPlayer(params){
+    loadPlayer(params) {
         const loadmask = this.createLoadMask();
 
         this.unloadPlayer();
 
         const url = new URL(this.configs.player.url, window.location.origin);
 
-        if(typeof params !== 'undefined'){
+        if (typeof params !== 'undefined') {
             const searchParams = url.searchParams;
             Object.entries(params).forEach(([key, value]) => {
                 searchParams.set(key, value);
@@ -2324,7 +2352,7 @@ export class Editor extends Dom {
          * The player's iframe
          * @type {Dom}
          */
-        this.player_frame = new Dom('<iframe/>', {'src': url.toString(), 'class': 'player-frame', 'tabindex': -1, 'allowfullscreen': '', 'allow': 'fullscreen'})
+        this.player_frame = new Dom('<iframe/>', { 'src': url.toString(), 'class': 'player-frame', 'tabindex': -1, 'allowfullscreen': '', 'allow': 'fullscreen' })
             .appendTo(this.player_wrapper)
             .addListener('load', this.onPlayerFrameLoadSuccess.bind(this, loadmask))
             .addListener('error', this.onPlayerFrameLoadError.bind(this, loadmask));
@@ -2342,7 +2370,7 @@ export class Editor extends Dom {
 
         this.removeClass('player-ready');
 
-        if(this._autosave_interval){
+        if (this._autosave_interval) {
             clearInterval(this._autosave_interval);
             delete this._autosave_interval;
         }
@@ -2366,7 +2394,7 @@ export class Editor extends Dom {
 
         this.setEditing(false).setClean();
 
-        if(this.player_frame){
+        if (this.player_frame) {
             this.player_frame.remove();
             delete this.player_frame;
         }
@@ -2383,8 +2411,8 @@ export class Editor extends Dom {
      * @param {Mixed} [parent] The components' parent
      * @return {this}
      */
-    addPlayerComponents(type, config, parent){
-        switch(type){
+    addPlayerComponents(type, config, parent) {
+        switch (type) {
             case 'element': {
                 const configs = isArray(config) ? config : [config];
                 const page = parent;
@@ -2419,20 +2447,20 @@ export class Editor extends Dom {
 
             case 'page': {
                 const block = parent;
-                const before = 'position' in config  && config.position === 'before';
+                const before = 'position' in config && config.position === 'before';
                 const index = block.getActivePageIndex();
                 const current_time = MasterClock.getTime();
                 const timeline = this.controller.getTimeline();
 
                 delete config.position;
 
-                if(block.getPropertyValue('synched')){
+                if (block.getPropertyValue('synched')) {
                     const duration = MasterClock.getRenderer().getDuration();
 
                     // Prevent adding the page if current time == 0 or >= media duration.
-                    if(current_time === 0 || current_time >= duration){
+                    if (current_time === 0 || current_time >= duration) {
                         new Overlay({
-                            'text': Locale.t('editor.addPlayerComponents.page.media-time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", {'@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration)}),
+                            'text': Locale.t('editor.addPlayerComponents.page.media-time.msg', "In a synchronized block, a page cannot be inserted at the media's beginning (@start_time) or end (@duration).<br/><b>Please move the media to a different time before inserting a new page.</b>", { '@start_time': TimeInput.getTextualValue(0), '@duration': TimeInput.getTextualValue(duration) }),
                             'buttons': {
                                 'ok': Locale.t('editor.addPlayerComponents.page.media-time.ok', 'OK'),
                             },
@@ -2445,7 +2473,7 @@ export class Editor extends Dom {
                     const adjacent_page = block.getChild(index);
 
                     // Prevent adding the page if current time == adjacent page's start-time.
-                    if(current_time === adjacent_page.getPropertyValue('start-time')){
+                    if (current_time === adjacent_page.getPropertyValue('start-time')) {
                         new Overlay({
                             'text': Locale.t('editor.addPlayerComponents.page.adjacent-page-time.msg', "In a synchronized block, a page cannot be inserted at the very beginning of another page.<br/><b>Please move the media to a different time before inserting a new page.</b>"),
                             'buttons': {
@@ -2468,7 +2496,7 @@ export class Editor extends Dom {
 
                 this.getHistory().add({
                     'undo': () => {
-                        if(block.getPropertyValue('synched')){
+                        if (block.getPropertyValue('synched')) {
                             const adjacent_page = block.getChild(before ? index + 1 : index);
                             const prop = before ? 'start-time' : 'end-time';
                             adjacent_page.setPropertyValue(prop, component.getPropertyValue(prop));
@@ -2479,8 +2507,8 @@ export class Editor extends Dom {
                     },
                     'redo': () => {
                         block.addPage(component, before ? index : index + 1);
-                        if(block.getPropertyValue('synched')){
-                            component.setPropertyValue(before ? 'end-time': 'start-time', current_time);
+                        if (block.getPropertyValue('synched')) {
+                            component.setPropertyValue(before ? 'end-time' : 'start-time', current_time);
                         }
                         timeline.updateBlockPagesTrackLabels(block);
                         block.setActivePage(index);
@@ -2534,37 +2562,37 @@ export class Editor extends Dom {
      * @param {Boolean} confirm Whether to display a confirmation dialog
      * @return {this}
      */
-    deletePlayerComponents(type, components, confirm){
-        if(confirm !== false){
+    deletePlayerComponents(type, components, confirm) {
+        if (confirm !== false) {
             let alert_msg = '';
 
-            switch(type){
+            switch (type) {
                 case 'block':
-                    if(components.length > 1){
-                        alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', {'@count': components.length});
+                    if (components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', { '@count': components.length });
                     }
-                    else{
-                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', {'@name': escapeHTML(components[0].getName())});
+                    else {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', { '@name': escapeHTML(components[0].getName()) });
                     }
                     break;
 
                 case 'page':
-                    if(components.length > 1){
-                        alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', {'@count': components.length});
+                    if (components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', { '@count': components.length });
                     }
-                    else{
+                    else {
                         const block = components[0].getParent();
                         const index = block.getChildIndex(components[0]) + 1;
-                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', {'@index': index, '@block': escapeHTML(block.getName())});
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', { '@index': index, '@block': escapeHTML(block.getName()) });
                     }
                     break;
 
                 case 'element':
-                    if(components.length > 1){
-                        alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', {'@count': components.length});
+                    if (components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', { '@count': components.length });
                     }
-                    else{
-                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', {'@name': escapeHTML(components[0].getName())});
+                    else {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', { '@name': escapeHTML(components[0].getName()) });
                     }
                     break;
             }
@@ -2576,10 +2604,10 @@ export class Editor extends Dom {
                 },
                 'parent': this
             })
-            .addClass('delete-player-component');
+                .addClass('delete-player-component');
         }
-        else{
-            switch(type){
+        else {
+            switch (type) {
                 case 'block': {
                     components.forEach((component) => {
                         this.configs_editor.unsetComponent(component);
@@ -2629,7 +2657,7 @@ export class Editor extends Dom {
                             let page_index = 0;
 
                             // store original page start and end times
-                            if(context.block.getPropertyValue('synched')){
+                            if (context.block.getPropertyValue('synched')) {
                                 context.times = {};
                                 context.block.getChildren().forEach((page) => {
                                     context.times[page.getId()] = {
@@ -2644,12 +2672,12 @@ export class Editor extends Dom {
                                 const index = context.block.getChildIndex(ctx.component);
                                 this.configs_editor.unsetComponent(ctx.component);
 
-                                if(index > 0){
+                                if (index > 0) {
                                     // if there is a page before, update it's end time
                                     const previous_page = context.block.getChild(index - 1);
                                     previous_page.setPropertyValue('end-time', ctx.component.getPropertyValue('end-time'));
                                 }
-                                else if(context.block.getChildrenCount() > 1){
+                                else if (context.block.getChildrenCount() > 1) {
                                     // else if there is a page after, update it's start time
                                     const next_page = context.block.getChild(index + 1);
                                     next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
@@ -2661,7 +2689,7 @@ export class Editor extends Dom {
                             });
 
                             // add a new page if the block is empty
-                            if(context.block.getChildrenCount() < 1){
+                            if (context.block.getChildrenCount() < 1) {
                                 context.auto_page = context.block.addPage();
                             }
 
@@ -2675,7 +2703,7 @@ export class Editor extends Dom {
                             let page_index = 0;
 
                             // remove the new page if one was added
-                            if(context.auto_page){
+                            if (context.auto_page) {
                                 context.auto_page.remove();
                             }
 
@@ -2686,10 +2714,10 @@ export class Editor extends Dom {
                             });
 
                             // reset all page times
-                            if(context.block.getPropertyValue('synched')){
+                            if (context.block.getPropertyValue('synched')) {
                                 context.block.getChildren().forEach((page) => {
                                     const page_id = page.getId();
-                                    if(page_id in context.times){
+                                    if (page_id in context.times) {
                                         page.setPropertyValue('start-time', context.times[page_id].start);
                                         page.setPropertyValue('end-time', context.times[page_id].end);
                                     }
@@ -2756,23 +2784,23 @@ export class Editor extends Dom {
      * @param {Boolean} keep_existing Whether to keep already selected components selected
      * @return {this}
      */
-    selectPlayerComponent(component, keep_existing){
-        if(keep_existing && this.configs_editor.getComponents().includes(component)){
+    selectPlayerComponent(component, keep_existing) {
+        if (keep_existing && this.configs_editor.getComponents().includes(component)) {
             this.configs_editor.unsetComponent(component);
         }
-        else{
+        else {
             this.configs_editor.setComponent(component, keep_existing);
         }
 
         return this;
     }
 
-    setPlayerComponentOrder(component, position){
+    setPlayerComponentOrder(component, position) {
         const parent = component.parents();
 
         component.insertAt(parent, position);
 
-        this.triggerEvent('playercomponentorder', {'component': component, 'position': position});
+        this.triggerEvent('playercomponentorder', { 'component': component, 'position': position });
 
         return this;
     }
@@ -2782,8 +2810,8 @@ export class Editor extends Dom {
      *
      * @return {this}
      */
-    save(){
-        if(this.mainmenu.getItem('title').reportValidity()){
+    save() {
+        if (this.mainmenu.getItem('title').reportValidity()) {
             const player = this.getPlayer();
             const data = new FormData();
             const url = new URL(this.configs.player.update_url, window.location.origin);
@@ -2800,27 +2828,27 @@ export class Editor extends Dom {
                 'autoSend': false
             });
 
-            if(!this.isLatestRevision()){
+            if (!this.isLatestRevision()) {
                 // This is a restore operation
                 const params = url.searchParams;
                 params.set('vid', this.getPlayer().getGuideRevision());
 
                 options.onSuccess = this.onRestoreSuccess.bind(this, loadmask);
             }
-            else{
+            else {
                 options.onSuccess = this.onSaveSuccess.bind(this, loadmask);
 
                 // Add mainmenu inputs.
                 ['title', 'width', 'height'].forEach((input) => {
-                    if(this.isDirty(input)){
+                    if (this.isDirty(input)) {
                         data.set(input, this.mainmenu.getItem(input).getValue());
                     }
                 });
 
                 // Add media.
-                if(this.isDirty('media')){
+                if (this.isDirty('media')) {
                     const source = Object.assign({}, player.getRenderer().getSource());
-                    if(source.source === 'upload'){
+                    if (source.source === 'upload') {
                         data.set('files[media]', source.object);
                         delete source.object;
                     }
@@ -2829,7 +2857,7 @@ export class Editor extends Dom {
                 }
 
                 // Add components
-                if(this.isDirty('components')){
+                if (this.isDirty('components')) {
                     const components = player.getScenarios().map((component) => {
                         return component.getPropertyValues();
                     });
@@ -2837,14 +2865,14 @@ export class Editor extends Dom {
                 }
 
                 // Add assets
-                if(this.isDirty('assets')){
+                if (this.isDirty('assets')) {
                     const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
-                    if(assets.length > 0){
+                    if (assets.length > 0) {
                         assets.forEach((asset) => {
                             data.append('assets[]', JSON.stringify(asset));
                         });
                     }
-                    else{
+                    else {
                         data.set('assets', []);
                     }
                 }
@@ -2870,8 +2898,8 @@ export class Editor extends Dom {
         return this;
     }
 
-    autoSave(){
-        if(!this._autosaving && this.isAutoSaveDirty()){
+    autoSave() {
+        if (!this._autosaving && this.isAutoSaveDirty()) {
             this._autosaving = true;
             this.autosave_indicator.show();
 
@@ -2881,15 +2909,15 @@ export class Editor extends Dom {
 
             // Add mainmenu inputs.
             ['title', 'width', 'height'].forEach((input) => {
-                if(this.isAutoSaveDirty(input)){
+                if (this.isAutoSaveDirty(input)) {
                     data.set(input, this.mainmenu.getItem(input).getValue());
                 }
             });
 
             // Add media.
-            if(this.isAutoSaveDirty('media')){
+            if (this.isAutoSaveDirty('media')) {
                 const source = Object.assign({}, player.getRenderer().getSource());
-                if(source.source === 'upload'){
+                if (source.source === 'upload') {
                     data.set('files[media]', source.object);
                     delete source.object;
                 }
@@ -2898,7 +2926,7 @@ export class Editor extends Dom {
             }
 
             // Add components.
-            if(this.isAutoSaveDirty('components')){
+            if (this.isAutoSaveDirty('components')) {
                 const components = player.getScenarios().map((component) => {
                     return component.getPropertyValues();
                 });
@@ -2906,14 +2934,14 @@ export class Editor extends Dom {
             }
 
             // Add assets.
-            if(this.isAutoSaveDirty('assets')){
+            if (this.isAutoSaveDirty('assets')) {
                 const assets = this.asset_browser.getTabContent('guide-assets').getAssets();
-                if(assets.length > 0){
+                if (assets.length > 0) {
                     assets.forEach((asset) => {
                         data.append('assets[]', JSON.stringify(asset));
                     });
                 }
-                else{
+                else {
                     data.set('assets', []);
                 }
             }
@@ -2945,7 +2973,7 @@ export class Editor extends Dom {
      *
      * @returns {LoadMask} The LoadMask instance
      */
-    createLoadMask(configs){
+    createLoadMask(configs) {
         return new LoadMask(Object.assign({
             'parent': this
         }, configs));
@@ -2953,4 +2981,4 @@ export class Editor extends Dom {
 }
 
 // Export the TimeInput class to be used in CKEditor plugins
-export {TimeInput};
+export { TimeInput };

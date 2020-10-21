@@ -7,6 +7,10 @@ import Input from '../Input';
  */
 export default class UrlInput extends Input {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'value': ''
+    });
+
     /**
      * Instantiate
      *
@@ -18,17 +22,6 @@ export default class UrlInput extends Input {
         super(configs);
 
         this.addClass('url');
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'value': ''
-        });
     }
 
     /**

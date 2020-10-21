@@ -10,6 +10,10 @@ import Button from '../Button';
  */
 export default class ButtonsInput extends Input{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'buttons': {}
+    });
+
     /**
      * Instantiate
      *
@@ -21,17 +25,6 @@ export default class ButtonsInput extends Input{
         super(configs);
 
         this.addClass('buttons');
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'buttons': {}
-        });
     }
 
     /**

@@ -14,82 +14,75 @@ import {isEmpty} from '../../../core/utils/Var';
  */
 export default class Cursor extends Element {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'border-radius': {
+                'type': 'string',
+                'applies': function(){
+                    return this.getPropertyValue('form') !== 'circular';
+                }
+            },
+            'form': {
+                'type': 'string',
+                'default': 'linear'
+            },
+            'keyframes': {
+                'type': 'array',
+                'applies': function(){
+                    return this.getPropertyValue('form') === 'linear';
+                }
+            },
+            'direction': {
+                'type': 'string',
+                'default': 'right'
+            },
+            'start-angle': {
+                'type': 'number',
+                'default': 0,
+                'applies': function(){
+                    return this.getPropertyValue('form') === 'circular';
+                }
+            },
+            'loop-duration': {
+                'type': 'time',
+                'applies': function(){
+                    return this.getPropertyValue('form') === 'circular';
+                }
+            },
+            'acceleration': {
+                'type': 'number',
+                'default': 1,
+                'applies': function(){
+                    return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
+                }
+            },
+            'cursor-width': {
+                'type': 'number',
+                'default': 1
+            },
+            'cursor-color': {
+                'type': 'color',
+                'default': '#000000'
+            },
+            'start-time': {
+                'type': 'time',
+                'sanitize': function(value){
+                    // Start time cannot be null for Cursor elements.
+                    if (value === null) {
+                        return 0;
+                    }
+
+                    return Element.defaults.properties['start-time'].sanitize.call(this, value);
+                }
+            },
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Cursor';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'border-radius': {
-                    'type': 'string',
-                    'applies': function(){
-                        return this.getPropertyValue('form') !== 'circular';
-                    }
-                },
-                'form': {
-                    'type': 'string',
-                    'default': 'linear'
-                },
-                'keyframes': {
-                    'type': 'array',
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'linear';
-                    }
-                },
-                'direction': {
-                    'type': 'string',
-                    'default': 'right'
-                },
-                'start-angle': {
-                    'type': 'number',
-                    'default': 0,
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'circular';
-                    }
-                },
-                'loop-duration': {
-                    'type': 'time',
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'circular';
-                    }
-                },
-                'acceleration': {
-                    'type': 'number',
-                    'default': 1,
-                    'applies': function(){
-                        return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
-                    }
-                },
-                'cursor-width': {
-                    'type': 'number',
-                    'default': 1
-                },
-                'cursor-color': {
-                    'type': 'color',
-                    'default': '#000000'
-                },
-                'start-time': {
-                    'type': 'time',
-                    'sanitize': function(value) {
-                        // Start time cannot be null for Cursor elements.
-                        if (value === null) {
-                            return 0;
-                        }
-
-                        return defaults.properties['start-time'].sanitize(value);
-                    }
-                },
-            })
-        });
     }
 
     /**

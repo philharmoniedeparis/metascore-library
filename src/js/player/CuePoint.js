@@ -12,6 +12,12 @@ import {uuid} from '../core/utils/String';
  */
 export default class CuePoint extends EventEmitter{
 
+    static defaults = {
+        'inTime': null,
+        'outTime': null,
+        'considerError': false
+    };
+
     /**
      * Instantiate
      *
@@ -28,7 +34,7 @@ export default class CuePoint extends EventEmitter{
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The cuepoint's unique id
@@ -53,19 +59,6 @@ export default class CuePoint extends EventEmitter{
         this.onMediaClockTimeUpdate = this.onMediaClockTimeUpdate.bind(this);
         this.onMediaRendererSeeking = this.onMediaRendererSeeking.bind(this);
         this.onMediaRendererSeeked = this.onMediaRendererSeeked.bind(this);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'inTime': null,
-            'outTime': null,
-            'considerError': false
-        };
     }
 
     /**

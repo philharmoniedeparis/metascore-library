@@ -9,6 +9,13 @@ import {className} from '../../../../css/core/ui/overlay/Confirm.scss';
  */
 export default class Confirm extends Overlay{
 
+    static defaults = Object.assign({}, super.defaults, {
+        'confirmLabel': Locale.t('core.Confirm.confirmLabel', 'Yes'),
+        'cancelLabel': Locale.t('core.Confirm.cancelLabel', 'No'),
+        'onConfirm': null,
+        'onCancel': null
+    });
+
     /**
      * Instantiate
      *
@@ -20,20 +27,6 @@ export default class Confirm extends Overlay{
         super(configs);
 
         this.addClass(`confirm ${className}`);
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'confirmLabel': Locale.t('core.Confirm.confirmLabel', 'Yes'),
-            'cancelLabel': Locale.t('core.Confirm.cancelLabel', 'No'),
-            'onConfirm': null,
-            'onCancel': null
-        });
     }
 
     setupUI(){

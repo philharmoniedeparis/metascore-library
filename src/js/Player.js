@@ -38,6 +38,18 @@ import {getRendererForMime} from './core/utils/Media';
  */
 export class Player extends Dom {
 
+    static defaults = {
+        'url': '',
+        'container': 'body',
+        'xhr': {},
+        'autoload': true,
+        'keyboard': true,
+        'responsive': false,
+        'allowUpscaling': false,
+        'api': false,
+        'websiteUrl':  `${window.location.protocol}//${window.location.host}`
+    };
+
     /**
      * Instantiate
      *
@@ -50,7 +62,6 @@ export class Player extends Dom {
      * @property {Boolean} [responsive=false] Whether to auto-scale the player to fit the available space
      * @property {Boolean} [allowUpscaling=false] Whether to allow the player to become larger than its original size
      * @property {Boolean} [api=false] Whether to allow API access or not
-     * @property {String} [lang] The language to use for i18n
      */
     constructor(configs) {
         // call parent constructor
@@ -60,7 +71,7 @@ export class Player extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * Whether the player has finished loading
@@ -75,32 +86,7 @@ export class Player extends Dom {
             Dom.addListener(window, 'message', this.onAPIMessage.bind(this));
         }
 
-        if('locale' in this.configs){
-            Locale.load(this.configs.locale, this.onLocaleLoad.bind(this));
-        }
-        else{
-            this.init();
-        }
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'url': '',
-            'container': 'body',
-            'xhr': {},
-            'autoload': true,
-            'keyboard': true,
-            'responsive': false,
-            'allowUpscaling': false,
-            'api': false,
-            'lang': 'en',
-            'websiteUrl':  `${window.location.protocol}//${window.location.host}`
-        };
+        this.init();
     }
 
     /**

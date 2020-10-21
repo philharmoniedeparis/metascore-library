@@ -8,6 +8,11 @@ import {className} from '../../css/editor/Pane.scss';
  */
 export default class Pane extends Dom {
 
+    static defaults = {
+        'axis': 'horizontal',
+        'resizable': false
+    };
+
     /**
      * Instantiate
      *
@@ -21,7 +26,7 @@ export default class Pane extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.addClass(this.configs.axis);
 
@@ -37,18 +42,6 @@ export default class Pane extends Dom {
 
         this.contents = new Dom('<div/>', {'class': 'contents'})
             .appendTo(this);
-    }
-
-    /**
-     * Get the default config values
-     *
-     * @return {Object} The default values
-     */
-    static getDefaults(){
-        return {
-            'axis': 'horizontal',
-            'resizable': false
-        };
     }
 
     onResizeHandleDblclick(){

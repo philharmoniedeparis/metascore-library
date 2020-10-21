@@ -16,6 +16,13 @@ import {className} from '../../../../css/editor/assetbrowser/guideassets/Spectro
  */
 export default class SpectrogramForm extends Overlay {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'toolbar': true,
+        'title': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
+        'url': null,
+        'xhr': {}
+    });
+
     /**
      * Instantiate
      *
@@ -34,23 +41,7 @@ export default class SpectrogramForm extends Overlay {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'toolbar': true,
-            'title': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.title', 'Generate an audio spectrogram image'),
-            'url': null,
-            'xhr': {}
-        });
-    }
-
-    /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method
@@ -109,8 +100,8 @@ export default class SpectrogramForm extends Overlay {
                 'name': 'mode',
                 'value': 'combined',
                 'options': {
-                    'combined': 'Combined',
-                    'separate': 'Separate'
+                    'combined': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.combined.options.combined', 'Combined'),
+                    'separate': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.combined.options.separate', 'Separate'),
                 },
                 'required': true
             }),
@@ -182,12 +173,12 @@ export default class SpectrogramForm extends Overlay {
                 'name': 'scale',
                 'value': 'log',
                 'options': {
-                    'lin': 'linear',
-                    'sqrt': 'square root',
-                    'cbrt': 'cubic root',
-                    'log': 'logarithmic',
-                    '4thrt': '4th root',
-                    '5thrt': '5th root'
+                    'lin': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.lin', 'linear'),
+                    'sqrt': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.sqrt', 'square root'),
+                    'cbrt': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.cbrt', 'cubic root'),
+                    'log': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.log', 'logarithmic'),
+                    '4thrt': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.4thrt', '4th root'),
+                    '5thrt': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.scale.options.5thrt', '5th root')
                 },
                 'required': true
             }),
@@ -240,21 +231,21 @@ export default class SpectrogramForm extends Overlay {
                 'name': 'color',
                 'value': 'intensity',
                 'options': {
-                    'channel': 'Channel',
-                    'intensity': 'Intensity',
-                    'rainbow': 'Rainbow',
-                    'moreland': 'Moreland',
-                    'nebulae': 'Nebulae',
-                    'fire': 'Fire',
-                    'fiery': 'Fiery',
-                    'fruit': 'Fruit',
-                    'cool': 'Cool',
-                    'magma': 'Magma',
-                    'green': 'Green',
-                    'viridis': 'Viridis',
-                    'plasma': 'Plasma',
-                    'cividis': 'Cividis',
-                    'terrain': 'Terrain'
+                    'channel': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.channel', 'Channel'),
+                    'intensity': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.intensity', 'Intensity'),
+                    'rainbow': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.rainbow', 'Rainbow'),
+                    'moreland': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.moreland', 'Moreland'),
+                    'nebulae': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.nebulae', 'Nebulae'),
+                    'fire': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.fire', 'Fire'),
+                    'fiery': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.fiery', 'Fiery'),
+                    'fruit': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.fruit', 'Fruit'),
+                    'cool': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.cool', 'Cool'),
+                    'magma': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.magma', 'Magma'),
+                    'green': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.green', 'Green'),
+                    'viridis': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.viridis', 'Viridis'),
+                    'plasma': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.plasma', 'Plasma'),
+                    'cividis': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.cividis', 'Cividis'),
+                    'terrain': Locale.t('editor.assetbrowser.guideassets.SpectrogramForm.fields.intensity.options.terrain', 'Terrain')
                 },
                 'required': true
             }),

@@ -10,6 +10,18 @@
                     }
                 }
             }
+            &[data-property="colors"]{
+                width: 100%;
+                justify-content: flex-start;
+
+                .input {
+                    flex: 0;
+
+                    &.color {
+                        margin-right: 0.5em;
+                    }
+                }
+            }
         }
     }
 }

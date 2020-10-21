@@ -12,16 +12,9 @@ import {className} from '../../../../css/core/ui/input/BorderRadius.scss';
  */
 export default class BorderRadiusInput extends Input{
 
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return Object.assign({}, super.getDefaults(), {
-            'overlay': {}
-        });
-    }
+    static defaults = Object.assign({}, super.defaults, {
+        'overlay': {}
+    });
 
     /**
      * Instantiate

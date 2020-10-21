@@ -22,6 +22,11 @@ import {className} from '../../css/editor/MainMenu.scss';
  */
 export default class MainMenu extends Dom {
 
+    static defaults = {
+        'zoom_levels': [25, 50, 75, 100, 125, 150, 200, 400],
+        'default_zoom_level': 100,
+    };
+
     /**
      * Instantiate
      *
@@ -37,23 +42,11 @@ export default class MainMenu extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         this.items = {};
 
         this.setupUI();
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'zoom_levels': [25, 50, 75, 100, 125, 150, 200, 400],
-            'default_zoom_level': 100,
-        };
     }
 
     /**

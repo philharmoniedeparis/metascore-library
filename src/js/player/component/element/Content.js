@@ -9,29 +9,22 @@ import Element from '../Element';
  */
 export default class Content extends Element {
 
+    static defaults = Object.assign({}, super.defaults, {
+        'properties': Object.assign({}, super.defaults.properties, {
+            'text': {
+                'type': 'string',
+                'getter': function(){
+                    return this.contents.text();
+                }
+            }
+        })
+    });
+
     /**
      * @inheritdoc
     */
     static getType(){
         return 'Content';
-    }
-
-    /**
-     * @inheritdoc
-    */
-    static getDefaults(){
-        const defaults = super.getDefaults();
-
-        return Object.assign({}, defaults, {
-            'properties': Object.assign({}, defaults.properties, {
-                'text': {
-                    'type': 'string',
-                    'getter': function(){
-                        return this.contents.text();
-                    }
-                }
-            })
-        });
     }
 
     /**

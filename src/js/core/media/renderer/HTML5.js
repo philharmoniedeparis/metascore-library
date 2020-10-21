@@ -39,6 +39,10 @@ import WebAudioBuilder from 'waveform-data/webaudio';
  */
 export default class HTML5 extends Dom {
 
+    static defaults = {
+        'tag': 'audio'
+    };
+
     /**
      * Instantiate
      *
@@ -53,24 +57,13 @@ export default class HTML5 extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * Whether the renderer is playing
          * @type {Boolean}
          */
         this.playing = false;
-    }
-
-    /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults(){
-        return {
-            'tag': 'audio'
-        };
     }
 
     /**

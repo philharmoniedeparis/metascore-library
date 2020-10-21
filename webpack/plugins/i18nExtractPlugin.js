@@ -1,8 +1,8 @@
 const path = require('path');
-const fs   = require('fs');
+const fs = require('fs');
 
 class i18nExtractPlugin {
-  constructor(options){
+  constructor(options) {
     this.options = options;
 
     this.templates = this.walkSync(this.options.templates);
@@ -15,11 +15,11 @@ class i18nExtractPlugin {
       compilation.fileDependencies.forEach((filepath) => {
         const relative_filepath = path.relative(compiler.context, filepath);
 
-        if(this.options.exclude && this.options.exclude.test(relative_filepath)){
+        if (this.options.exclude && this.options.exclude.test(relative_filepath)) {
           return;
         }
 
-        if(this.options.test && !this.options.test.test(relative_filepath)){
+        if (this.options.test && !this.options.test.test(relative_filepath)) {
           return;
         }
 
@@ -29,15 +29,15 @@ class i18nExtractPlugin {
       this.updateTemplates();
 
       this.templates.forEach((filepath) => {
-        const filename = path.basename(filepath);
-        const content = fs.readFileSync(filepath, "utf8");
+        const filename = path.basename(filepath, '.json');
+        const json = JSON.parse(fs.readFileSync(filepath, 'utf8'));
         const stats = fs.statSync(filepath);
 
-        compilation.assets[`i18n/${filename}`] = {
-          source: function() {
-            return content;
+        compilation.assets[`i18n/${filename}.js`] = {
+          source: function () {
+            return `(function(){window.metaScoreLocale=${JSON.stringify(json)};})();\n`;
           },
-          size: function() {
+          size: function () {
             return stats.size;
           }
         };
@@ -47,44 +47,44 @@ class i18nExtractPlugin {
     });
   }
 
-  walkSync(dir){
+  walkSync(dir) {
     let files = [];
 
     fs.readdirSync(dir).forEach((file) => {
-        let file_path = path.join(dir, file);
+      const file_path = path.join(dir, file);
 
-        if(fs.lstatSync(file_path).isDirectory()){
-            files = files.concat(walkSync(file_path));
-        }
-        else{
-            files.push(file_path);
-        }
+      if (fs.lstatSync(file_path).isDirectory()) {
+        files = files.concat(walkSync(file_path));
+      }
+      else {
+        files.push(file_path);
+      }
     });
 
     return files;
-}
+  }
 
-  extract(filepath){
-    let content = fs.readFileSync(filepath, "utf8");
-    let matches;
+  extract(filepath) {
+    const content = fs.readFileSync(filepath, "utf8");
+    let matches = null;
 
     while ((matches = this.options.regexp.exec(content)) !== null) {
-      const {key, value} = this.options.fn(matches);
+      const { key, value } = this.options.fn(matches);
       this.entries[key] = value;
     }
   }
 
-  updateTemplates(){
+  updateTemplates() {
     this.templates.forEach((filepath) => {
-      let template = JSON.parse(fs.readFileSync(filepath, "utf8"));
-      let content = {};
+      const template = JSON.parse(fs.readFileSync(filepath, "utf8"));
+      const content = {};
 
       Object.keys(this.entries).sort().forEach((key) => {
-          content[key] = key in template ? template[key] : this.entries[key];
+        content[key] = key in template ? template[key] : this.entries[key];
       });
 
       fs.writeFileSync(filepath, JSON.stringify(content, null, '\t'));
-  });
+    });
   }
 }
 

@@ -7,24 +7,43 @@ import LoadMask from '../../core/ui/overlay/LoadMask';
 import Overlay from '../../core/ui/Overlay';
 import Confirm from '../../core/ui/overlay/Confirm';
 import FileInput from '../../core/ui/input/FileInput';
-import Field from  '../Field';
+import Field from '../Field';
 import SpectrogramForm from './guideassets/SpectrogramForm';
-import {isValidMimeType} from '../../core/utils/Media';
-import {escapeHTML} from '../../core/utils/String';
+import AudioWaveformForm from './guideassets/AudioWaveformForm';
+import { isValidMimeType } from '../../core/utils/Media';
+import { escapeHTML } from '../../core/utils/String';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
 import spectrogram_icon from '../../../img/editor/assetbrowser/guideassets/spectrogram.svg?svg-sprite';
+import audiowaveform_icon from '../../../img/editor/assetbrowser/guideassets/audiowaveform.svg?svg-sprite';
 import image_icon from '../../../img/editor/assetbrowser/guideassets/image.svg?svg-sprite';
 import audio_icon from '../../../img/editor/assetbrowser/guideassets/audio.svg?svg-sprite';
 import video_icon from '../../../img/editor/assetbrowser/guideassets/video.svg?svg-sprite';
 
-import {className, assetDragGhostClassName} from '../../../css/editor/assetbrowser/GuideAssets.scss';
+import { className, assetDragGhostClassName } from '../../../css/editor/assetbrowser/GuideAssets.scss';
 
 /**
  * A guide assets browser class
  */
 export default class GuideAssets extends Dom {
+
+    static defaults = {
+        'import': {
+            'url': null,
+            'max_filesize': null,
+            'allowed_types': null,
+        },
+        'spectrogram_form': {
+            'url': null,
+            'configs': {}
+        },
+        'audiowaveform_form': {
+            'url': null,
+            'configs': {}
+        },
+        'xhr': {}
+    };
 
     /**
      * Instantiate
@@ -37,7 +56,7 @@ export default class GuideAssets extends Dom {
      */
     constructor(editor, configs) {
         // call parent constructor
-        super('<div/>', {'class': `guide-assets ${className}`});
+        super('<div/>', { 'class': `guide-assets ${className}` });
 
         /**
          * A reference to the Editor instance
@@ -49,7 +68,7 @@ export default class GuideAssets extends Dom {
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({}, this.constructor.getDefaults(), configs);
+        this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
          * The list of loaded assets
@@ -62,7 +81,7 @@ export default class GuideAssets extends Dom {
         this.onAssetDragEnd = this.onAssetDragEnd.bind(this);
         this.onAssetButtonClick = this.onAssetButtonClick.bind(this);
 
-        this.assets_container = new Dom('<div/>', {'class': 'assets-container'})
+        this.assets_container = new Dom('<div/>', { 'class': 'assets-container' })
             .appendTo(this);
 
         const import_field = new Field(
@@ -77,14 +96,22 @@ export default class GuideAssets extends Dom {
             .addListener('valuechange', this.onAssetImportFieldVlueChange.bind(this))
             .appendTo(this);
 
-        new Icon({'symbol': import_icon})
+        new Icon({ 'symbol': import_icon })
             .appendTo(import_field.getLabel());
 
         new Button({
-                'icon': spectrogram_icon,
-                'label': Locale.t('editor.assetbrowser.GuideAssets.spectrogram-button.label', 'Create spectrogram image')
-            })
+            'icon': spectrogram_icon,
+            'label': Locale.t('editor.assetbrowser.GuideAssets.spectrogram-button.label', 'Create spectrogram image')
+        })
             .data('action', 'spectrogram')
+            .addListener('click', this.onButtonClick.bind(this))
+            .appendTo(this);
+
+        new Button({
+            'icon': audiowaveform_icon,
+            'label': Locale.t('editor.assetbrowser.GuideAssets.audiowaveform-button.label', 'Create audio waveform image')
+        })
+            .data('action', 'audiowaveform')
             .addListener('click', this.onButtonClick.bind(this))
             .appendTo(this);
 
@@ -95,40 +122,32 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-    * Get the default config values
-    *
-    * @return {Object} The default values
-    */
-    static getDefaults() {
-        return {
-            'import': {
-                'url': null,
-                'max_filesize': null,
-                'allowed_types': null,
-            },
-            'spectrogram_form': {
-                'url': null,
-                'configs': {}
-            },
-            'xhr': {}
-        };
-    }
-
+     * Asset import field valuechange callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
     onAssetImportFieldVlueChange(evt){
         this.importAssets(evt.detail.files);
     }
 
-    getDraggedFiles(dataTransfer){
+    /**
+     * Get the list of files being dragged.
+     *
+     * @private
+     * @param {DataTransfer} dataTransfer The DataTransfer object.
+     */
+    getDraggedFiles(dataTransfer) {
         let files = [];
 
         // Use DataTransfer interface to access the file(s)
-        if(dataTransfer.files && dataTransfer.files.length > 0){
+        if (dataTransfer.files && dataTransfer.files.length > 0) {
             files = dataTransfer.files;
         }
-        else if(dataTransfer.items) {
+        else if (dataTransfer.items) {
             // Use DataTransferItemList interface to access the file(s)
             for (let i = 0; i < dataTransfer.items.length; i++) {
-                if(dataTransfer.items[i].kind === 'file') {
+                if (dataTransfer.items[i].kind === 'file') {
                     files.push(dataTransfer.items[i].getAsFile());
                 }
             }
@@ -137,19 +156,36 @@ export default class GuideAssets extends Dom {
         return files;
     }
 
-    onDragOver(evt){
+    /**
+     * Dragover event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onDragOver(evt) {
         const files = this.getDraggedFiles(evt.dataTransfer);
-        if(files.length > 0){
+        if (files.length > 0) {
             this.addClass('droppable');
             evt.preventDefault();
         }
     }
 
-    onDragLeave(){
+    /**
+     * Dragrelease event callback.
+     *
+     * @private
+     */
+    onDragLeave() {
         this.removeClass('droppable');
     }
 
-    onDrop(evt){
+    /**
+     * Drop event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onDrop(evt) {
         const files = this.getDraggedFiles(evt.dataTransfer);
         this.importAssets(files);
 
@@ -159,19 +195,25 @@ export default class GuideAssets extends Dom {
         evt.stopPropagation();
     }
 
-    importAssets(files){
-        if(files.length === 0){
+    /**
+     * Import a list of files.
+     *
+     * @private
+     * @param {FileList} files The list of files.
+     */
+    importAssets(files) {
+        if (files.length === 0) {
             return;
         }
 
         const formdata = new FormData();
 
-        for(let i=0; i<files.length; i++){
+        for (let i = 0; i < files.length; i++) {
             const file = files.item(i);
 
-            if(this.configs.import.allowed_types && !isValidMimeType(file.type, this.configs.import.allowed_types)){
+            if (this.configs.import.allowed_types && !isValidMimeType(file.type, this.configs.import.allowed_types)) {
                 new Overlay({
-                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_type.msg', '<em>@name</em> is not an accepted file type.', {'@name': file.name}),
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_type.msg', '<em>@name</em> is not an accepted file type.', { '@name': file.name }),
                     'buttons': {
                         'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
                     },
@@ -180,9 +222,9 @@ export default class GuideAssets extends Dom {
                 return;
             }
 
-            if(this.configs.import.max_filesize && file.size > this.configs.import.max_filesize){
+            if (this.configs.import.max_filesize && file.size > this.configs.import.max_filesize) {
                 new Overlay({
-                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_size.msg', '<em>@name</em> size (@filesize) exceeds the allowed size (@maxsize).', {'@name': file.name, '@filesize': file.size, '@maxsize': this.configs.import.max_filesize}),
+                    'text': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid_size.msg', '<em>@name</em> size (@filesize) exceeds the allowed size (@maxsize).', { '@name': file.name, '@filesize': file.size, '@maxsize': this.configs.import.max_filesize }),
                     'buttons': {
                         'ok': Locale.t('editor.assetbrowser.GuideAssets.onDrop.invalid.ok', 'OK'),
                     },
@@ -227,7 +269,14 @@ export default class GuideAssets extends Dom {
             .send();
     }
 
-    onAssetsImportSuccess(loadmask, evt){
+    /**
+     * Asset import XHR success event callback.
+     *
+     * @private
+     * @param {LoadMask} loadmask The load mask.
+     * @param {Event} evt The event object.
+     */
+    onAssetsImportSuccess(loadmask, evt) {
         const assets = evt.target.getResponse();
 
         this.addAssets(assets);
@@ -249,30 +298,30 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Add an asset
+     * Add an asset.
      *
      * @param {Object} asset The asset to add
      * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
      * @return {this}
      */
-    addAsset(asset, supressEvent){
+    addAsset(asset, supressEvent) {
         this.createAssetItem(asset);
 
-        if(supressEvent !== true){
-            this.triggerEvent('assetadd', {'asset': asset});
+        if (supressEvent !== true) {
+            this.triggerEvent('assetadd', { 'asset': asset });
         }
 
         return this;
     }
 
     /**
-     * Add assets
+     * Add assets.
      *
      * @param {Array} assets The assets to add
      * @param {Boolean} supressEvent Whether to prevent the assetadd event from firing
      * @return {this}
      */
-    addAssets(assets, supressEvent){
+    addAssets(assets, supressEvent) {
         assets.forEach((asset) => {
             this.addAsset(asset, supressEvent);
         });
@@ -281,13 +330,14 @@ export default class GuideAssets extends Dom {
     }
 
     /**
-     * Remove an asset item
+     * Remove an asset item.
      *
+     * @private
      * @param {Number} id The asset id to remove
      * @param {Boolean} supressEvent Whether to prevent the assetremove event from firing
      * @return {this}
      */
-    removeAsset(id, supressEvent){
+    removeAsset(id, supressEvent) {
         const item = this.asset_items[id];
         const asset = item.asset;
         const el = item.el;
@@ -296,17 +346,24 @@ export default class GuideAssets extends Dom {
 
         delete this.asset_items[asset.id];
 
-        if(supressEvent !== true){
-            this.triggerEvent('assetremove', {'asset': asset});
+        if (supressEvent !== true) {
+            this.triggerEvent('assetremove', { 'asset': asset });
         }
 
         return this;
     }
 
-    createAssetItem(asset){
+    /**
+     * Create an item corresponding to an asset.
+     *
+     * @private
+     * @param {Object} asset The asset.
+     * @returns {this}
+     */
+    createAssetItem(asset) {
         const name = escapeHTML(asset.name);
 
-        const el = new Dom('<div/>', {'class': 'asset'})
+        const el = new Dom('<div/>', { 'class': 'asset' })
             .attr('draggable', 'true')
             .attr('tabindex', '0')
             .data('id', asset.id)
@@ -319,38 +376,38 @@ export default class GuideAssets extends Dom {
             .appendTo(el);
 
         let file = asset;
-        if('shared' in asset && asset.shared){
+        if ('shared' in asset && asset.shared) {
             file = asset.file;
         }
 
         const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
-        if(matches){
+        if (matches) {
             const type = matches[1];
-            switch(type){
+            switch (type) {
                 case 'image':
-                    new Dom('<img/>', {'src': file.url}).appendTo(figure);
+                    new Dom('<img/>', { 'src': file.url }).appendTo(figure);
                     break;
 
                 case 'audio':
-                    new Icon({'symbol': audio_icon}).appendTo(figure);
+                    new Icon({ 'symbol': audio_icon }).appendTo(figure);
                     break;
 
                 case 'video':
-                    new Icon({'symbol': video_icon}).appendTo(figure);
+                    new Icon({ 'symbol': video_icon }).appendTo(figure);
                     break;
             }
         }
-        else{
-            new Icon({'symbol': image_icon}).appendTo(figure);
+        else {
+            new Icon({ 'symbol': image_icon }).appendTo(figure);
         }
 
-        new Dom('<div/>', {'class': 'label', 'text': name, 'title': name})
+        new Dom('<div/>', { 'class': 'label', 'text': name, 'title': name })
             .appendTo(el);
 
-        const buttons = new Dom('<div/>', {'class': 'buttons'})
+        const buttons = new Dom('<div/>', { 'class': 'buttons' })
             .appendTo(el);
 
-        new Button({'icon': delete_icon})
+        new Button({ 'icon': delete_icon })
             .attr('title', Locale.t('editor.assetbrowser.GuideAssets.AssetDeleteButton.label', 'Delete'))
             .data('action', 'delete')
             .appendTo(buttons);
@@ -367,24 +424,44 @@ export default class GuideAssets extends Dom {
         return this;
     }
 
-    clearAssets(){
+    /**
+     * Remove all assets.
+     */
+    clearAssets() {
         this.asset_items = {};
         this.assets_container.empty();
 
         return this;
     }
 
-    getAsset(id){
+    /**
+     * Get an asset by id.
+     *
+     * @param {string} id The asset's identifier.
+     * @returns {Object|undefined} The asset.
+     */
+    getAsset(id) {
         return this.asset_items[id].asset;
     }
 
-    getAssets(){
+    /**
+     * Get the lists of available assets.
+     *
+     * @returns {Array} The assets.
+     */
+    getAssets() {
         return Object.values(this.asset_items).map((item) => {
             return item.asset;
         });
     }
 
-    onAssetDragStart(evt){
+    /**
+     * Asset dragstart event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onAssetDragStart(evt) {
         const el = new Dom(evt.target);
         const asset_id = el.data('id');
         const item = this.asset_items[asset_id];
@@ -400,10 +477,10 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.setData('text/plain', asset.url);
 
         let file = asset;
-        if('shared' in asset && asset.shared){
+        if ('shared' in asset && asset.shared) {
             file = asset.file;
         }
-        if(/^image\/.*/.test(file.mimetype)){
+        if (/^image\/.*/.test(file.mimetype)) {
             evt.dataTransfer.setData('text/html', `<img src="${file.url}" />`);
             if ('width' in file && 'height' in file) {
                 evt.dataTransfer.setData('text/html', `<img src="${file.url}" width="${file.width}" height="${file.height}" />`);
@@ -420,7 +497,13 @@ export default class GuideAssets extends Dom {
         evt.dataTransfer.setDragImage(this._asset_drag_ghost.get(0), 0, 0);
     }
 
-    onAssetDragEnd(evt){
+    /**
+     * Asset dragend event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onAssetDragEnd(evt) {
         const el = new Dom(evt.target);
         el.removeClass('dragging');
 
@@ -428,7 +511,13 @@ export default class GuideAssets extends Dom {
         delete this._asset_drag_ghost;
     }
 
-    onAssetButtonClick(evt){
+    /**
+     * Asset button click event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onAssetButtonClick(evt) {
         const button = new Dom(evt.target);
         const action = button.data('action');
 
@@ -437,12 +526,12 @@ export default class GuideAssets extends Dom {
         const item = this.asset_items[asset_id];
         const asset = item.asset;
 
-        switch(action){
+        switch (action) {
             case 'delete':
-                if(this.triggerEvent('beforeassetremove', {'asset': asset})){
+                if (this.triggerEvent('beforeassetremove', { 'asset': asset })) {
                     new Confirm({
                         'parent': this,
-                        'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', {'@name': escapeHTML(asset.name)}),
+                        'text': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.text', 'Are you sure you want to delete <em>@name</em>?', { '@name': escapeHTML(asset.name) }),
                         'confirmLabel': Locale.t('editor.assetbrowser.GuideAssets.onAssetButtonClick.delete.confirmLabel', 'Delete'),
                         'onConfirm': () => {
                             this.removeAsset(asset_id);
@@ -453,7 +542,14 @@ export default class GuideAssets extends Dom {
         }
     }
 
-    onXHRError(loadmask, evt){
+    /**
+     * XHR error event callback.
+     *
+     * @private
+     * @param {LoadMask} loadmask The loadmask.
+     * @param {Event} evt The event object.
+     */
+    onXHRError(loadmask, evt) {
         loadmask.hide();
 
         const response = evt.target.getResponse();
@@ -461,7 +557,7 @@ export default class GuideAssets extends Dom {
         const code = evt.target.getStatus();
 
         new Overlay({
-            'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', {'@error': error, '@code': code}),
+            'text': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.msg', 'The following error occured:<br/><strong><em>@error</em></strong><br/>Please try again.', { '@error': error, '@code': code }),
             'buttons': {
                 'ok': Locale.t('editor.assetbrowser.GuideAssets.onXHRError.ok', 'OK'),
             },
@@ -469,25 +565,87 @@ export default class GuideAssets extends Dom {
         });
     }
 
-    onButtonClick(evt){
+    /**
+     * Button click event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onButtonClick(evt) {
         const action = Dom.data(evt.target, 'action');
 
         switch(action){
-            case 'spectrogram': {
-                    const form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
-                            'parent': this.editor,
-                            'xhr': this.configs.xhr
-                        }, this.configs.spectrogram_form.configs));
-
-                    form.addListener('generate', this.onSpectrogramFormGenerate.bind(this));
-
-                    this.triggerEvent('spectrogramformopen', {'form': form});
+            case 'spectrogram':
+                if (!this.spectrogram_form) {
+                    /**
+                     * The spectrogram form overlay
+                     * @type {SpectrogramForm}
+                     */
+                    this.spectrogram_form = new SpectrogramForm(this.configs.spectrogram_form.url, Object.assign({
+                        'autoShow': false,
+                        'parent': this.editor,
+                        'xhr': this.configs.xhr
+                    }, this.configs.spectrogram_form.configs))
+                        .addListener('generate', this.onSpectrogramFormGenerate.bind(this));
                 }
+
+                this.spectrogram_form.show();
+                this.triggerEvent('spectrogramformopen', { 'form': this.spectrogram_form });
+                break;
+
+            case 'audiowaveform':
+                if (!this.audiowaveform_form) {
+                    /**
+                     * The audiowaveform form overlay
+                     * @type {AudioWaveformForm}
+                     */
+                    this.audiowaveform_form = new AudioWaveformForm(this.configs.audiowaveform_form.url, Object.assign({
+                        'autoShow': false,
+                        'parent': this.editor,
+                        'xhr': this.configs.xhr
+                    }, this.configs.audiowaveform_form.configs))
+                        .addListener('generate', this.onAudioWaveformFormGenerate.bind(this));
+                }
+
+                this.audiowaveform_form.show();
+                this.triggerEvent('audiowaveformformopen', { 'form': this.audiowaveform_form });
                 break;
         }
     }
 
-    onSpectrogramFormGenerate(evt){
+    /**
+     * SpectrogramForm generate event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onSpectrogramFormGenerate(evt) {
+        const form = evt.detail.form;
+        const asset = evt.detail.asset;
+
+        this.addAsset(asset);
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                this.removeAsset(asset.id);
+            },
+            'redo': () => {
+                this.addAsset(asset);
+            }
+        });
+
+        this.editor.setDirty('assets');
+
+        form.hide();
+    }
+
+    /**
+     * AudioWaveformForm generate event callback.
+     *
+     * @private
+     * @param {Event} evt The event object.
+     */
+    onAudioWaveformFormGenerate(evt) {
         const form = evt.detail.form;
         const asset = evt.detail.asset;
 
