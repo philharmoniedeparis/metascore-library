@@ -244,8 +244,25 @@ export default class ConfigsEditor extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    setComponent(component, keepExisting, supressEvent){
-        if(keepExisting !== true || !this.configs.allowMultiSelection){
+    setComponent(component, keepExisting=false, supressEvent=false){
+        // Check if same level as first selected component.
+        let do_keep_existing = this.configs.allowMultiSelection && keepExisting === true;
+        if (do_keep_existing) {
+            const master_component = this.getComponent();
+            if (master_component) {
+                if (master_component.instanceOf('Element')){
+                    do_keep_existing = component.instanceOf('Element');
+                }
+                else if (master_component.instanceOf('Page')){
+                    do_keep_existing = component.instanceOf('Page');
+                }
+                else if (master_component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])){
+                    do_keep_existing = component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler']);
+                }
+            }
+        }
+
+        if(!do_keep_existing){
             this.components.filter((comp) => comp !== component).forEach((comp) => {
                 this.unsetComponent(comp);
             });

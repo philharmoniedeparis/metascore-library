@@ -1443,7 +1443,7 @@ export class Editor extends Dom {
 
         this.controller.getTimeline().addTrack(component);
 
-        if (component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')) {
+        if (component.instanceOf(['Block', 'Controller', 'VideoRenderer'])) {
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1465,7 +1465,7 @@ export class Editor extends Dom {
 
         this.controller.getTimeline().removeTrack(component);
 
-        if (component.instanceOf('Block') || component.instanceOf('VideoRenderer') || component.instanceOf('Controller')) {
+        if (component.instanceOf(['Block', 'Controller', 'VideoRenderer'])) {
             this.getPlayer().updateBlockTogglers();
         }
 
@@ -1842,7 +1842,7 @@ export class Editor extends Dom {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        if (component.instanceOf('VideoRenderer') || component.instanceOf('Controller') || component.instanceOf('Block') || component.instanceOf('BlockToggler')) {
+        if (component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
             if (['x', 'y', 'width', 'height', 'blocks'].includes(property)) {
                 this.getPlayer().updateBlockTogglers();
             }

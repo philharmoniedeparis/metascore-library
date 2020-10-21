@@ -1,7 +1,7 @@
 import Dom from '../core/Dom';
 import Draggable from '../core/ui/Draggable';
 import Resizable from '../core/ui/Resizable';
-import {isFunction, isString} from '../core/utils/Var';
+import {isArray, isFunction, isString} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
 import CuePoint from './CuePoint';
 
@@ -73,10 +73,14 @@ export default class Component extends Dom {
     /**
     * Check if the component is an instance of a component type
     *
-    * @param {String} type The type to check for
+    * @param {String|Array} type The type(s) to check for
     * @return {Boolean} Whether the component is of the specified type or a sub-type
     */
     static instanceOf(type){
+        if (isArray(type)) {
+            return type.some((t) => this.instanceOf(t));
+        }
+
         if(type === this.getType()){
             return true;
         }
