@@ -142,11 +142,14 @@ export class Player extends Dom {
             .addDelegate('.metaScore-component.element.Content a, .metaScore-component.element.Content a *', 'click', this.onContentElementLinkClick.bind(this))
             .appendTo(this.configs.container);
 
-        this.triggerEvent('ready', {'player': this}, false, false);
-
         if(this.configs.autoload !== false){
             this.load();
         }
+
+        // Delay to next iteration of the Event Loop.
+        setTimeout(() => {
+            this.triggerEvent('ready', {'player': this}, false, false);
+        }, 0);
     }
 
     /**

@@ -286,8 +286,6 @@ export class Editor extends Dom {
             .setClean()
             .setupContextMenus();
 
-        this.triggerEvent('ready', { 'editor': this }, false, false);
-
         // Check if auto-save data exists.
         if (this.configs.autosave && this.configs.autosave.url) {
             const loadmask = this.createLoadMask();
@@ -323,6 +321,11 @@ export class Editor extends Dom {
         else {
             this.loadPlayer();
         }
+
+        // Delay to next iteration of the Event Loop.
+        setTimeout(() => {
+            this.triggerEvent('ready', { 'editor': this }, false, false);
+        }, 0);
     }
 
     /**
