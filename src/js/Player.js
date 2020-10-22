@@ -1,6 +1,7 @@
 import {className} from '../css/Player.scss';
 
 import Dom from './core/Dom';
+import Hotkeys from './core/Hotkeys';
 import {MasterClock} from './core/media/Clock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
@@ -146,34 +147,6 @@ export class Player extends Dom {
 
         if(this.configs.autoload !== false){
             this.load();
-        }
-    }
-
-    /**
-     * Keydown event callback
-     *
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeydown(evt){
-        switch(evt.key){
-            case " ":
-                this.togglePlay();
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
-
-            case "ArrowLeft":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
-
-            case "ArrowRight":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
         }
     }
 
@@ -645,9 +618,28 @@ export class Player extends Dom {
             this.adaptScale();
         }
 
-        // Add keyboard listener.
+        // Add keyboard shortcuts.
         if(this.configs.keyboard){
-            this.addListener('keydown', this.onKeydown.bind(this));
+            this.hotkeys = new Hotkeys()
+                .bind(' ',
+                    () => {
+                        this.togglePlay();
+                    },
+                    {'preventRepeat': true}
+                )
+                .bind('ArrowLeft',
+                    () => {
+                        this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]')
+                            .triggerEvent('click');
+                    }
+                )
+                .bind('ArrowRight',
+                    () => {
+                        this.find('.metaScore-component.block:hover .pager .button[data-action="next"]')
+                            .triggerEvent('click');
+                    }
+                )
+                .attachTo(this);
         }
 
         this.removeClass('loading');
