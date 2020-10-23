@@ -128,6 +128,7 @@
 
                 .workspace{
                     grid-area: 3 / 3 / 4 / 4;
+                    overflow: hidden;
 
                     .player-wrapper{
                         transform-origin: 0 0;
