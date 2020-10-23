@@ -96,10 +96,7 @@ export default class LoadMask extends Overlay{
     }
 
     /**
-     * keydown event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
     onKeyDown(evt){
         evt.preventDefault();
