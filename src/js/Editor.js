@@ -540,7 +540,7 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-element', 'Delete element');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('Element', data.components);
+                                this.deletePlayerComponents(data.components);
                             },
                             'toggler': (context, data) => {
                                 const elements = this.configs_editor.getComponents('Element');
@@ -696,7 +696,7 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-page', 'Delete page');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('Page', data.components);
+                                this.deletePlayerComponents(data.components);
                             },
                             'toggler': (context, data) => {
                                 const pages = this.configs_editor.getComponents('Page');
@@ -826,7 +826,7 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.delete-block', 'Delete block');
                             },
                             'callback': (context, data) => {
-                                this.deletePlayerComponents('Block', data.components);
+                                this.deletePlayerComponents(data.components);
                             },
                             'toggler': (context, data) => {
                                 const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
@@ -2519,216 +2519,168 @@ export class Editor extends Dom {
      * Remove components from the player
      *
      * @private
-     * @param {String} type The components' type
      * @param {Array} components The components
      * @param {Boolean} [confirm=true] Whether to display a confirmation dialog
      * @return {this}
      */
-    deletePlayerComponents(type, components, confirm = true) {
-        if (confirm !== false) {
-            let alert_msg = '';
+    deletePlayerComponents(components, confirm=true) {
+        const _components = clone(components);
 
+        if (confirm !== false) {
+            let type = null;
+            _components.some((component) => {
+                if (!type) {
+                    type = component.instanceOf('Element') ? 'Element' : component.getType();
+                    return false;
+                }
+                else if (component.instanceOf(type)) {
+                    return false;
+                }
+
+                type = 'Mixed';
+                return true;
+            });
+
+            let alert_msg = '';
             switch (type) {
-                case 'Block':
-                    if (components.length > 1) {
-                        alert_msg = Locale.t('editor.deletePlayerComponents.blocks.msg', 'Are you sure you want to delete those @count blocks?', { '@count': components.length });
+                case 'Element':
+                    if (_components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg.plural', 'Are you sure you want to delete those @count elements?', { '@count': _components.length });
                     }
                     else {
-                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg', 'Are you sure you want to delete the block "<em>@name</em>"?', { '@name': escapeHTML(components[0].getName()) });
+                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg.single', 'Are you sure you want to delete the element "<em>@name</em>"?', { '@name': escapeHTML(_components[0].getName()) });
                     }
                     break;
 
                 case 'Page':
-                    if (components.length > 1) {
-                        alert_msg = Locale.t('editor.deletePlayerComponents.pages.msg', 'Are you sure you want to delete those @count pages?', { '@count': components.length });
+                    if (_components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg.plural', 'Are you sure you want to delete those @count pages?', { '@count': _components.length });
                     }
                     else {
-                        const block = components[0].getParent();
-                        const index = block.getChildIndex(components[0]) + 1;
-                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg', 'Are you sure you want to delete page @index of "<em>@block</em>"?', { '@index': index, '@block': escapeHTML(block.getName()) });
+                        const block = _components[0].getParent();
+                        const index = block.getChildIndex(_components[0]) + 1;
+                        alert_msg = Locale.t('editor.deletePlayerComponents.page.msg.single', 'Are you sure you want to delete page @index of "<em>@block</em>"?', { '@index': index, '@block': escapeHTML(block.getName()) });
                     }
                     break;
 
-                case 'Element':
-                    if (components.length > 1) {
-                        alert_msg = Locale.t('editor.deletePlayerComponents.elements.msg', 'Are you sure you want to delete those @count elements?', { '@count': components.length });
+                case 'Block':
+                    if (_components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg.plural', 'Are you sure you want to delete those @count blocks?', { '@count': _components.length });
                     }
                     else {
-                        alert_msg = Locale.t('editor.deletePlayerComponents.element.msg', 'Are you sure you want to delete the element "<em>@name</em>"?', { '@name': escapeHTML(components[0].getName()) });
+                        alert_msg = Locale.t('editor.deletePlayerComponents.block.msg.single', 'Are you sure you want to delete the block "<em>@name</em>"?', { '@name': escapeHTML(_components[0].getName()) });
                     }
+                    break;
+
+                case 'Mixed':
+                    alert_msg = Locale.t('editor.deletePlayerComponents.mixed.msg', 'Are you sure you want to delete those @count components?', { '@count': _components.length });
                     break;
             }
 
             new Confirm({
-                'text': alert_msg,
-                'onConfirm': () => {
-                    this.deletePlayerComponents(type, components, false);
-                },
-                'parent': this
-            })
+                    'text': alert_msg,
+                    'onConfirm': () => {
+                        this.deletePlayerComponents(_components, false);
+                    },
+                    'parent': this
+                })
                 .addClass('delete-player-component');
         }
         else {
-            switch (type) {
-                case 'Block': {
-                    components.forEach((component) => {
+            const history = this.getHistory().startGroup();
+
+            _components.forEach((component) => {
+                let undo = null;
+                let redo = null;
+
+                if (component.instanceOf('Element')) {
+                    const page = component.getParent();
+
+                    redo = () => {
                         this.configs_editor.unsetComponent(component);
                         component.remove();
-                    });
+                    };
 
-                    this.getHistory().add({
-                        'undo': () => {
-                            const player = this.getPlayer();
-                            components.forEach((component) => {
-                                player[`add${component.getPropertyValue('type')}`](component);
-                            });
-                        },
-                        'redo': () => {
-                            components.forEach((component) => {
-                                this.configs_editor.unsetComponent(component);
-                                component.remove();
-                            });
-                        }
-                    });
-                    break;
+                    undo = () => {
+                        page.addElement(component);
+                    };
                 }
-
-                case 'Page': {
-                    const contexts = {};
+                else if (component.instanceOf('Page')) {
                     const timeline = this.controller.getTimeline();
+                    const block = component.getParent();
+                    const index = block.getChildIndex(component);
+                    const start_time = component.getPropertyValue('start-time');
+                    const end_time = component.getPropertyValue('end-time');
+                    let auto_page = null;
 
-                    components.forEach((component) => {
-                        const block = component.getParent();
-                        const block_id = block.getId();
-                        const index = block.getChildIndex(component);
+                    redo = () => {
+                        // remove page
+                        this.configs_editor.unsetComponent(component);
 
-                        contexts[block_id] = contexts[block_id] || {
-                            'block': block,
-                            'auto_page': null,
-                            'pages': []
-                        };
-
-                        contexts[block_id].pages.push({
-                            'component': component,
-                            'index': index
-                        });
-                    });
-
-                    const removePages = () => {
-                        Object.values(contexts).forEach((context) => {
-                            let page_index = 0;
-
-                            // store original page start and end times
-                            if (context.block.getPropertyValue('synched')) {
-                                context.times = {};
-                                context.block.getChildren().forEach((page) => {
-                                    context.times[page.getId()] = {
-                                        'start': page.getPropertyValue('start-time'),
-                                        'end': page.getPropertyValue('end-time')
-                                    };
-                                });
+                        if (block.getPropertyValue('synched')) {
+                            if (index > 0) {
+                                // if there is a page before, update it's end time
+                                const previous_page = block.getChild(index - 1);
+                                previous_page.setPropertyValue('end-time', end_time);
                             }
-
-                            // remove deleted pages
-                            context.pages.forEach((ctx) => {
-                                const index = context.block.getChildIndex(ctx.component);
-                                this.configs_editor.unsetComponent(ctx.component);
-
-                                if (index > 0) {
-                                    // if there is a page before, update it's end time
-                                    const previous_page = context.block.getChild(index - 1);
-                                    previous_page.setPropertyValue('end-time', ctx.component.getPropertyValue('end-time'));
-                                }
-                                else if (context.block.getChildrenCount() > 1) {
-                                    // else if there is a page after, update it's start time
-                                    const next_page = context.block.getChild(index + 1);
-                                    next_page.setPropertyValue('start-time', ctx.component.getPropertyValue('start-time'));
-                                }
-
-                                ctx.component.remove();
-
-                                page_index = ctx.index - 1;
-                            });
-
-                            // add a new page if the block is empty
-                            if (context.block.getChildrenCount() < 1) {
-                                context.auto_page = context.block.addPage();
+                            else if (block.getChildrenCount() > 1) {
+                                // else if there is a page after, update it's start time
+                                const next_page = block.getChild(index + 1);
+                                next_page.setPropertyValue('start-time', start_time);
                             }
+                        }
 
-                            timeline.updateBlockPagesTrackLabels(context.block);
-                            context.block.setActivePage(Math.max(0, page_index));
-                        });
+                        component.remove();
+
+                        // add a new page if the block is empty
+                        if (block.getChildrenCount() < 1) {
+                            auto_page = block.addPage();
+                        }
+
+                        timeline.updateBlockPagesTrackLabels(block);
+                        block.setActivePage(Math.max(0, index - 1));
                     };
 
-                    const unremovePages = () => {
-                        Object.values(contexts).forEach((context) => {
-                            let page_index = 0;
+                    undo = () => {
+                        // remove the new page if one was added
+                        if (auto_page) {
+                            auto_page.remove();
+                        }
 
-                            // remove the new page if one was added
-                            if (context.auto_page) {
-                                context.auto_page.remove();
-                            }
+                        // re-add page
+                        block.addPage(component, index);
 
-                            // re-add removed pages
-                            context.pages.forEach((ctx) => {
-                                context.block.addPage(ctx.component, ctx.index);
-                                page_index = ctx.index;
-                            });
+                        // reset all page times
+                        if (block.getPropertyValue('synched')) {
+                            component.setPropertyValue('start-time', start_time);
+                            component.setPropertyValue('end-time', end_time);
+                        }
 
-                            // reset all page times
-                            if (context.block.getPropertyValue('synched')) {
-                                context.block.getChildren().forEach((page) => {
-                                    const page_id = page.getId();
-                                    if (page_id in context.times) {
-                                        page.setPropertyValue('start-time', context.times[page_id].start);
-                                        page.setPropertyValue('end-time', context.times[page_id].end);
-                                    }
-                                });
-                            }
-
-                            timeline.updateBlockPagesTrackLabels(context.block);
-                            context.block.setActivePage(page_index);
-                        });
+                        timeline.updateBlockPagesTrackLabels(block);
+                        block.setActivePage(index);
                     };
-
-                    removePages();
-
-                    this.getHistory().add({
-                        'undo': unremovePages,
-                        'redo': removePages
-                    });
-                    break;
                 }
-
-                case 'Element': {
-                    const context = [];
-
-                    components.forEach((component) => {
-                        context.push({
-                            'component': component,
-                            'page': component.getParent()
-                        });
-
+                else {
+                    redo = () => {
                         this.configs_editor.unsetComponent(component);
                         component.remove();
-                    });
+                    };
 
-                    this.getHistory().add({
-                        'undo': () => {
-                            context.forEach((ctx) => {
-                                ctx.page.addElement(ctx.component);
-                            });
-                        },
-                        'redo': () => {
-                            context.forEach((ctx) => {
-                                this.configs_editor.unsetComponent(ctx.component);
-                                ctx.component.remove();
-                            });
-                        }
-                    });
-                    break;
+                    undo = () => {
+                        // @TODO: keep order.
+                        const scenario = this.getPlayer().getActiveScenario();
+                        scenario.addComponent(component);
+                    }
                 }
-            }
+
+                redo();
+                history.add({
+                    'undo': undo,
+                    'redo': redo
+                });
+            });
+
+            history.endGroup();
 
             this.setDirty('components');
 
