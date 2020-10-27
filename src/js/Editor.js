@@ -304,7 +304,7 @@ export class Editor extends Dom {
 
         // Check if auto-save data exists.
         if (this.configs.autosave && this.configs.autosave.url) {
-            const loadmask = this.createLoadMask();
+            const loadmask = new LoadMask({'parent': this});
             const options = Object.assign({}, this.configs.xhr, {
                 'responseType': 'json',
                 'onSuccess': () => {
@@ -1200,7 +1200,7 @@ export class Editor extends Dom {
                 break;
 
             case 'publish':
-                this.createLoadMask();
+                new LoadMask({'parent': this});
                 window.location.href = this.configs.publish_url;
                 break;
 
@@ -1359,7 +1359,7 @@ export class Editor extends Dom {
      * @private
      */
     onPlayerSourceSet() {
-        const loadmask = this.createLoadMask();
+        const loadmask = new LoadMask({'parent': this});
 
         this.removeClass('metadata-loaded');
 
@@ -2296,7 +2296,7 @@ export class Editor extends Dom {
      * @return {this}
      */
     loadPlayer(params) {
-        const loadmask = this.createLoadMask();
+        const loadmask = new LoadMask({'parent': this});
 
         this.unloadPlayer();
 
@@ -2779,9 +2779,10 @@ export class Editor extends Dom {
             const data = new FormData();
             const url = new URL(this.configs.player.update_url, window.location.origin);
 
-            const loadmask = this.createLoadMask({
+            const loadmask = new LoadMask({
                 'text': Locale.t('editor.save.LoadMask.text', 'Saving...'),
-                'bar': true
+                'bar': true,
+                'parent': this
             });
 
             const options = Object.assign({}, this.configs.xhr, {
@@ -2951,19 +2952,6 @@ export class Editor extends Dom {
         }
 
         return this;
-    }
-
-    /**
-     * Helper function to create a LoadMask
-     *
-     * @param {Object =  {'parent': this}} configs Config options to use for the LoadMask
-     *
-     * @returns {LoadMask} The LoadMask instance
-     */
-    createLoadMask(configs) {
-        return new LoadMask(Object.assign({
-            'parent': this
-        }, configs));
     }
 }
 
