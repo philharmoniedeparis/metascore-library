@@ -491,7 +491,7 @@ export default class Dom {
      * @param {Boolean} [inline=false] Whether to return the inline or computed style value
      * @return {String} The CSS style value of the property
      */
-    static css(element, name, value, inline){
+    static css(element, name, value, inline){ /* eslint-disable-line complexity */
         if(typeof value !== "undefined"){
             if(value === null){
                 element.style.removeProperty(name);
