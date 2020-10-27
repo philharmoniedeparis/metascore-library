@@ -1,0 +1,70 @@
+:local(.className){
+    > .inner{
+        flex: 1 1 auto;
+        max-width: 75vw;
+
+        > .body{
+            > .contents{
+                color: #fff;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                gap: 2em;
+            }
+        }
+    }
+
+    .hotkeys {
+        display: grid;
+        grid-template-columns: auto auto;
+        flex: 1 1 auto;
+        text-align: left;
+        padding-bottom: 2em;
+
+        .title {
+            grid-column: 1 / span 2;
+
+            h2,
+            p {
+                margin: 0;
+            }
+        }
+
+        .header {
+            padding: 0.5em 0;
+            border-bottom: 2px solid #fff;
+        }
+
+        .combos,
+        .description {
+            padding: 0.5em 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            white-space: nowrap;
+        }
+
+        .combos {
+            padding-right: 1em;
+
+            kbd.combo {
+                kbd.key {
+                    display: inline-block;
+                    color: #000;
+                    text-align: center;
+                    line-height: 1em;
+                    padding: 0.25em 0.5em;
+                    border-radius: 0.25em;
+                    background: #f7f7f7;
+                    border: 1px solid #bbb;
+                }
+
+                .key-separator {
+                    margin: 0.1em;
+                }
+            }
+
+            .combo-separator {
+                margin: 0.5em;
+            }
+        }
+    }
+}

@@ -4,6 +4,7 @@ import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
 import { clone } from './core/utils/Array';
 import Hotkeys from './core/Hotkeys';
+import HotkeysHelp from './editor/HotkeysHelp';
 import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
@@ -63,7 +64,137 @@ export class Editor extends Dom {
         'history': {
             'grouping_timeout': 100
         },
-        'component_copy_displacement': 10
+        'component_copy_displacement': 10,
+        'hotkeys': {
+            'global': {
+                'title': Locale.t('editor.hotkeys.global.title', 'Editor'),
+                'description': Locale.t('editor.hotkeys.global.description', 'Shortcuts available throughout the editor'),
+                'items': {
+                    'save': {
+                        'combo': 'Control+s',
+                        'description': Locale.t('editor.hotkeys.global.save.description', 'Save')
+                    },
+                    'revert': {
+                        'combo': 'Control+r',
+                        'description': Locale.t('editor.hotkeys.global.revert.description', 'Revert')
+                    },
+                    'undo': {
+                        'combo': 'Control+z',
+                        'description': Locale.t('editor.hotkeys.global.undo.description', 'Undo')
+                    },
+                    'redo': {
+                        'combo': 'Control+y',
+                        'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
+                    },
+                    'preview_tmp': {
+                        'combo': 'Control+e',
+                        'description': Locale.t('editor.hotkeys.global.preview_tmp.description', 'Toggle preview mode temporarily'),
+                        'configs': {
+                            'keyup': true,
+                            'preventRepeat': true
+                        }
+                    },
+                    'preview': {
+                        'combo': 'Control+Shift+e',
+                        'description': Locale.t('editor.hotkeys.global.preview.description', 'Toggle preview mode'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'toggle_play': {
+                        'combo': ' ',
+                        'description': Locale.t('editor.hotkeys.global.toggle_play.description', 'Play/pause'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'hotkeyshelp': {
+                        'combo': '?',
+                        'description': Locale.t('editor.hotkeys.global.hotkeyshelp.description', 'Show keyboard shortcuts')
+                    }
+                }
+            },
+            'player': {
+                'title': Locale.t('editor.hotkeys.player.title', 'Workspace'),
+                'description': Locale.t('editor.hotkeys.player.description', 'Shortcuts available in the workspace'),
+                'items': {
+                    'right': {
+                        'combo': 'ArrowRight',
+                        'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
+                    },
+                    'right10': {
+                        'combo': 'Shift+ArrowRight',
+                        'description': Locale.t('editor.hotkeys.player.right10.description', 'Move selected component(s) by 10 pixel to the right')
+                    },
+                    'left': {
+                        'combo': 'ArrowLeft',
+                        'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
+                    },
+                    'left10': {
+                        'combo': 'Shift+ArrowLeft',
+                        'description': Locale.t('editor.hotkeys.player.left10.description', 'Move selected component(s) by 10 pixels to the left'),
+                    },
+                    'up': {
+                        'combo': 'ArrowUp',
+                        'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
+                    },
+                    'up10': {
+                        'combo': 'Shift+ArrowUp',
+                        'description': Locale.t('editor.hotkeys.player.up10.description', 'Move selected component(s) by 10 pixels upwards'),
+                    },
+                    'down': {
+                        'combo': 'ArrowDown',
+                        'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
+                    },
+                    'down10': {
+                        'combo': 'Shift+ArrowDown',
+                        'description': Locale.t('editor.hotkeys.player.down10.description', 'Move selected component(s) by 10 pixels downwards'),
+                    },
+                    'copy': {
+                        'combo': 'Control+c',
+                        'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'paste': {
+                        'combo': 'Control+v',
+                        'description': Locale.t('editor.hotkeys.player.paste.description', 'Paste component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'cut': {
+                        'combo': 'Control+x',
+                        'description': Locale.t('editor.hotkeys.player.cut.description', 'Cut selected component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'duplicate': {
+                        'combo': 'Control+d',
+                        'description': Locale.t('editor.hotkeys.player.duplicate.description', 'Duplicate selected component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'lock': {
+                        'combo': 'Control+l',
+                        'description': Locale.t('editor.hotkeys.player.lock.description', 'Lock/unlock selected component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'delete': {
+                        'combo': ['Delete', 'Backspace'],
+                        'description': Locale.t('editor.hotkeys.player.delete.description', 'Delete selected component(s)'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    }
+                }
+            }
+        }
     };
 
     /**
@@ -298,7 +429,7 @@ export class Editor extends Dom {
             .setClean()
             .setupContextMenus();
 
-        this.getGlobalHotkeys().attachTo(this, ':not(input)');
+        this.getHotkeys('global').attachTo(this, ':not(input)');
 
         this.triggerEvent('ready', { 'editor': this }, false, false);
 
@@ -340,100 +471,139 @@ export class Editor extends Dom {
     }
 
     /**
-     * Get the global keyboard shortcuts.
+     * Get a context's keyboard shortcuts.
      *
+     * @param {string} context The keyboard shortcuts context.
      * @return {Hotkeys}
      */
-    getGlobalHotkeys() {
+    getHotkeys(context) {
         if(!('hotkeys' in this)){
-            this.hotkeys = new Hotkeys()
-                .bind('Control+S',
-                    () => {
-                        this.save();
-                    }
-                )
-                .bind('Control+R',
-                    () => {
-                        this.revert();
-                    }
-                )
-                .bind('Control+Z',
-                    () => {
-                        this.history.undo();
-                    }
-                )
-                .bind('Control+Y',
-                    () => {
-                        this.history.redo();
-                    }
-                )
-                .bind('Control+L',
-                    () => {
-                        const components = this.configs_editor.getComponents();
-                        if (components.length > 0) {
-                            const locked = components[0].getPropertyValue('editor.locked');
-                            components.forEach((component) => {
-                                component.setPropertyValue('editor.locked', !locked);
-                            });
-                        }
-                    },
-                    {'preventRepeat': true}
-                )
-                .bind('Control+E',
-                    () => {
-                        this.togglePreviewMode();
-                    },
-                    {'keyup': true, 'preventRepeat': true}
-                )
-                .bind('Control+Shift+E',
-                    () => {
-                        this.togglePreviewMode();
-                    },
-                    {'preventRepeat': true}
-                )
-                .bind(' ',
-                    () => {
-                        const player = this.getPlayer();
-                        if(player) {player.togglePlay();}
-                    },
-                    {'preventRepeat': true}
-                );
+            this.hotkeys = {};
         }
 
-        return this.hotkeys;
+        if(!(context in this.hotkeys)){
+            const hotkeys = new Hotkeys();
+
+            if (this.configs.hotkeys && this.configs.hotkeys[context] && this.configs.hotkeys[context].items) {
+                Object.entries(this.configs.hotkeys[context].items).forEach(([key, value]) => {
+                    hotkeys.bind(value.combo,
+                        (evt) => {
+                            this.handleHotkey(context, key, evt);
+                        },
+                        value.configs
+                    );
+                });
+            }
+
+            this.hotkeys[context] = hotkeys;
+        }
+
+        return this.hotkeys[context];
     }
 
     /**
-     * Get the player keyboard shortcuts.
+     * Hotkeys generic handler.
      *
-     * @return {Hotkeys} The hotkeys instance.
+     * @param {string} context The hotkey's context
+     * @param {string} id The hotkey's identifier
+     * @param {KeyboardEvent} evt The keyboard event.
      */
-    getPlayerHotkeys() {
-        if(!('player_hotkeys' in this)){
-            this.player_hotkeys = new Hotkeys()
-                .bind(['ArrowRight', 'Shift+ArrowRight'],
-                    (evt) => {
-                        this.moveSelectedPlayerComponents(evt.shiftKey ? 10 : 1);
-                    }
-                )
-                .bind(['ArrowLeft', 'Shift+ArrowLeft'],
-                    (evt) => {
-                        this.moveSelectedPlayerComponents(evt.shiftKey ? -10 : -1);
-                    }
-                )
-                .bind(['ArrowUp', 'Shift+ArrowUp'],
-                    (evt) => {
-                        this.moveSelectedPlayerComponents(0, evt.shiftKey ? -10 : -1);
-                    }
-                )
-                .bind(['ArrowDown', 'Shift+ArrowDown'],
-                    (evt) => {
-                        this.moveSelectedPlayerComponents(0, evt.shiftKey ? 10 : 1);
+    handleHotkey(context, id, evt) { /* eslint-disable-line complexity */
+        switch(id) {
+            case 'save':
+                this.save();
+                break;
+            case 'revert':
+                this.revert();
+                break;
+            case 'undo':
+                this.history.undo();
+                break;
+            case 'redo':
+                this.history.redo();
+                break;
+            case 'preview_tmp':
+            case 'preview':
+                this.togglePreviewMode();
+                break;
+            case 'toggle_play':
+                {
+                    const player = this.getPlayer();
+                    if(player) {player.togglePlay();}
+                }
+                break;
+            case 'hotkeyshelp':
+                new HotkeysHelp(
+                    this.configs.hotkeys,
+                    {
+                        'parent': this,
                     }
                 );
+                break;
+            case 'right':
+            case 'right10':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.movePlayerComponents(components, evt.shiftKey ? 10 : 1);
+                }
+                break;
+            case 'left':
+            case 'left10':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.movePlayerComponents(components, evt.shiftKey ? -10 : -1);
+                }
+                break;
+            case 'up':
+            case 'up10':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.movePlayerComponents(components, 0, evt.shiftKey ? -10 : -1);
+                }
+                break;
+            case 'down':
+            case 'down10':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.movePlayerComponents(components, 0, evt.shiftKey ? 10 : 1);
+                }
+                break;
+            case 'copy':
+                this.copyPlayerComponents(this.configs_editor.getComponents());
+                break;
+            case 'paste':
+                this.pastePlayerComponents();
+                break;
+            case 'cut':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.copyPlayerComponents(components);
+                    this.deletePlayerComponents(components, false);
+                }
+                break;
+            case 'duplicate':
+                {
+                    const components = this.configs_editor.getComponents();
+                    this.copyPlayerComponents(components);
+                    this.pastePlayerComponents();
+                    this.pastePlayerComponents();
+                }
+                break;
+            case 'lock':
+                {
+                    const components = this.configs_editor.getComponents();
+                    if (components.length > 0) {
+                        const locked = components[0].getPropertyValue('editor.locked');
+                        components.forEach((component) => {
+                            component.setPropertyValue('editor.locked', !locked);
+                        });
+                    }
+                }
+                break;
+            case 'delete':
+                this.deletePlayerComponents(this.configs_editor.getComponents());
+                break;
         }
-
-        return this.player_hotkeys;
     }
 
     /**
@@ -486,19 +656,7 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.copy-element', 'Copy element');
                             },
                             'callback': (context, data) => {
-                                const configs = [];
-                                data.components.forEach((element) => {
-                                    const config = element.getPropertyValues(true);
-
-                                    if(this.configs.component_copy_displacement){
-                                        // Slightly move the copy to prevent exact overlap.
-                                        config.x += this.configs.component_copy_displacement;
-                                        config.y += this.configs.component_copy_displacement;
-                                    }
-
-                                    configs.push(config);
-                                });
-                                this.clipboard.setData('element', configs);
+                                this.copyPlayerComponents(data.components);
                             },
                             'toggler': (context, data) => {
                                 const elements = this.configs_editor.getComponents('Element');
@@ -518,13 +676,12 @@ export class Editor extends Dom {
                         'paste': {
                             'text': Locale.t('editor.contextmenu.paste-elements', 'Paste elements'),
                             'callback': (context, data) => {
-                                this.addPlayerComponents('element', data.component, data.parent);
+                                this.pastePlayerComponents(data.parent);
                             },
                             'toggler': (context, data) => {
                                 if (this.clipboard.getDataType() === 'element') {
                                     const dom = context.el.closest('.metaScore-component.page');
                                     if (dom) {
-                                        data.component = this.clipboard.getData();
                                         data.parent = dom._metaScore;
                                         return true;
                                     }
@@ -781,18 +938,7 @@ export class Editor extends Dom {
                                 return Locale.t('editor.contextmenu.copy-block', 'Copy block');
                             },
                             'callback': (context, data) => {
-                                const configs = [];
-                                data.components.forEach((block) => {
-                                    const config = block.getPropertyValues(true);
-                                    if(this.configs.component_copy_displacement){
-                                        // Slightly move the copy to prevent exact overlap.
-                                        config.x += this.configs.component_copy_displacement;
-                                        config.y += this.configs.component_copy_displacement;
-                                    }
-
-                                    configs.push(config);
-                                });
-                                this.clipboard.setData('block', configs);
+                                this.copyPlayerComponents(data.components);
                             },
                             'toggler': (context, data) => {
                                 const blocks = this.configs_editor.getComponents(['Block', 'VideoRenderer', 'Controller', 'BlockToggler']);
@@ -812,10 +958,10 @@ export class Editor extends Dom {
                         'paste': {
                             'text': Locale.t('editor.contextmenu.paste-block', 'Paste block'),
                             'callback': () => {
-                                this.addPlayerComponents('block', this.clipboard.getData());
+                                this.pastePlayerComponents();
                             },
-                            'toggler': (context) => {
-                                return (this.clipboard.getDataType() === 'block') && (context.el.is('.metaScore-player'));
+                            'toggler': () => {
+                                return this.clipboard.getDataType() === 'block';
                             }
                         },
                         'delete': {
@@ -1604,8 +1750,8 @@ export class Editor extends Dom {
             this.togglePreviewMode(true);
         }
 
-        this.getGlobalHotkeys().attachTo(this.player, ':not(input)');
-        this.getPlayerHotkeys().attachTo(this.player, ':not(input)');
+        this.getHotkeys('global').attachTo(this.player, ':not(input)');
+        this.getHotkeys('player').attachTo(this.player, ':not(input)');
 
         this
             .updateMainmenu(true)
@@ -2344,8 +2490,8 @@ export class Editor extends Dom {
 
         this.history.clear();
 
-        this.getGlobalHotkeys().detachFrom(this.player);
-        this.getPlayerHotkeys().detachFrom(this.player);
+        this.getHotkeys('global').detachFrom(this.player);
+        this.getHotkeys('player').detachFrom(this.player);
 
         this
             .removeClass('has-player')
@@ -2511,6 +2657,113 @@ export class Editor extends Dom {
         this.setDirty('components');
 
         this.player_frame.focus();
+
+        return this;
+    }
+
+    /**
+     * Copy player components to internal clipbaord.
+     *
+     * @private
+     * @param {Array} components The list of components.
+     * @returns {this}
+     */
+    copyPlayerComponents(components) {
+        if (components.length > 0) {
+            const configs = [];
+            const master_component = components[0];
+            let type = null;
+
+            if(master_component.instanceOf('Element')) {
+                type = 'Element';
+            }
+            else if(master_component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
+                type = 'block';
+            }
+
+            if (type) {
+                components.forEach((element) => {
+                    const config = element.getPropertyValues(true);
+
+                    if(this.configs.component_copy_displacement){
+                        // Slightly move the copy to prevent exact overlap.
+                        config.x += this.configs.component_copy_displacement;
+                        config.y += this.configs.component_copy_displacement;
+                    }
+
+                    configs.push(config);
+                });
+
+                this.clipboard.setData(type, configs);
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Paste player components from internal clipbaord to specified component.
+     *
+     * @private
+     * @param {Component} parent The component to paste into.
+     * @returns {this}
+     */
+    pastePlayerComponents(parent=null) {
+        if (this.clipboard.getDataType() === 'element') {
+            if (parent === null) {
+                this.configs_editor.getComponents('Page').forEach((page) => {
+                    this.addPlayerComponents('element', this.clipboard.getData(), page);
+                });
+            }
+            else if (parent.instanceOf('Page')) {
+                this.addPlayerComponents('element', this.clipboard.getData(), parent);
+            }
+        }
+        else if (this.clipboard.getDataType() === 'block') {
+            this.addPlayerComponents('block', this.clipboard.getData(), parent ? parent : this.player.getActiveScenario());
+        }
+
+        return this;
+    }
+
+    /**
+     * Move player components.
+     *
+     * @private
+     * @param {Array} components The list of components.
+     * @param {Number} x The number of pixels to move to the right.
+     * @param {Number} y The number of pixels to move to the bottom.
+     * @param {Boolean} relative Whether the values are relative to the actual position.
+     * @returns {this}
+     */
+    movePlayerComponents(components, x = 0, y = 0, relative = true) {
+        const history = this.getHistory().startGroup();
+
+        components.forEach((component) => {
+            const previous_values = {};
+            const new_values = {};
+
+            if (!relative || x) {
+                previous_values.x = parseInt(component.css('left'), 10);
+                new_values.x = relative ? previous_values.x + x : x;
+            }
+            if (!relative || y) {
+                previous_values.y = parseInt(component.css('top'), 10);
+                new_values.y = relative ? previous_values.y + y : y;
+            }
+            component.setPropertyValues(new_values);
+
+            history.add({
+                'undo': () => {
+                    component.setPropertyValues(previous_values);
+                },
+                'redo': () => {
+                    component.setPropertyValuse(new_values);
+                }
+            });
+        });
+
+        history.endGroup();
 
         return this;
     }
@@ -2718,51 +2971,6 @@ export class Editor extends Dom {
             'editor': this,
             'component': component,
             'position': position
-        });
-
-        return this;
-    }
-
-    /**
-     * Move player components.
-     *
-     * @param {Number} x The number of pixels to move to the right.
-     * @param {Number} y The number of pixels to move to the bottom.
-     * @param {Boolean} relative Whether the values are relative to the actual position.
-     * @returns {this}
-     */
-    moveSelectedPlayerComponents(x = 0, y = 0, relative = true) {
-        const components = clone(this.configs_editor.getComponents());
-        const previous_values = {};
-        const new_values = {};
-
-        components.forEach((component) => {
-            const id = component.getId();
-            previous_values[id] = {};
-            new_values[id] = {};
-
-            if (!relative || x) {
-                previous_values[id].x = parseInt(component.css('left'), 10);
-                new_values[id].x = relative ? previous_values[id].x + x : x;
-            }
-            if (!relative || y) {
-                previous_values[id].y = parseInt(component.css('top'), 10);
-                new_values[id].y = relative ? previous_values[id].y + y : y;
-            }
-            component.setPropertyValues(new_values[id]);
-        });
-
-        this.getHistory().add({
-            'undo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValues(previous_values[component.getId()]);
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValuse(new_values[component.getId()]);
-                });
-            }
         });
 
         return this;

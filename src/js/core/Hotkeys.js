@@ -2,6 +2,75 @@ import {isArray} from './utils/Var';
 import Dom from './Dom';
 
 /**
+ * A key combination.
+ *
+ * @private
+ */
+class KeyCombo {
+    /**
+     * Instantiate
+     *
+     * @param {string} combo The key combination.
+     */
+    constructor(combo) {
+        this.key = null;
+        this.modifiers = [];
+
+        const keys = combo.split('+');
+        if (keys.length > 0) {
+            const key = keys.pop();
+            const modifiers = keys;
+
+            this.key = key;
+            this.modifiers = modifiers.sort();
+        }
+    }
+
+    getKey() {
+        return this.key;
+    }
+
+    getModifiers() {
+        return this.modifiers;
+    }
+
+    matchesEvent(evt) {
+        if (this.key !== evt.key) {
+            return false;
+        }
+
+        if (this.modifiers.length === 0) {
+            return true;
+        }
+
+        const modifiers = [];
+        if (evt.altKey && evt.key !== 'Alt') {
+            modifiers.push('Alt');
+        }
+        if (evt.ctrlKey && evt.key !== 'Control') {
+            modifiers.push('Control');
+        }
+        if (evt.shiftKey && evt.key !== 'Shift') {
+            modifiers.push('Shift');
+        }
+
+        return this.modifiers.join('+') === modifiers.sort().join('+');
+    }
+
+    isEqual(combo){
+        if (this.key !== combo.key) {
+            return false;
+        }
+
+        if (this.modifiers.length === combo.modifiers.length) {
+            return true;
+        }
+
+        return this.modifiers.join('+') === combo.modifiers.join('+');
+    }
+}
+
+/**
  * A keyboard shortcuts manager.
  */
 export default class Hotkeys {
@@ -15,12 +84,10 @@ export default class Hotkeys {
         this.handleEvent = this.handleEvent.bind(this);
 
         /**
-         * A list of listeners by context.
-         * @type {Object}
+         * A list of listeners.
+         * @type {Array}
          */
-        this.listeners = {
-            'global': []
-        };
+        this.listeners = [];
 
         /**
          * A list of attached element configs.
@@ -47,8 +114,8 @@ export default class Hotkeys {
         }
 
         element
-           .addListener('keydown', handler)
-           .addListener('keyup', handler);
+            .addListener('keydown', handler)
+            .addListener('keyup', handler);
 
         this.elements.push({
             'element': element,
@@ -87,38 +154,41 @@ export default class Hotkeys {
      *
      * @param {String|Array} keyCombo The key combination(s).
      * @param {Function} handler The callback function.
-     * @param {Object} options Options
+     * @param {Object} [options] Options
      * @property {String} [options.keydown=true] Whether to call the handler on keydown events.
      * @property {String} [options.keyup=false] Whether to call the handler on keyup events.
-     * @property {String} [options.context='global'] A context to assign the key combination(s) to.
      * @property {String} [options.preventRepeat=false] Whether to call the handler on repeat events.
      * @returns {this}
      */
-    bind(keyCombo, handler = null, {keydown = true, keyup = false, context = 'global', preventRepeat = false} = {}) {
-        if (isArray(keyCombo)){
-            keyCombo.forEach((combo) => {
-                this.bind(combo, handler, {
-                    'keydown': keydown,
-                    'keyup': keyup,
-                    'context': context,
-                    'preventRepeat': preventRepeat
-                });
-            });
-        }
-        else{
-            if (!(context in this.listeners)) {
-                this.listeners[context] = [];
+    bind(keyCombo, handler, {keydown=true, keyup=false, preventRepeat=false, description=''} = {}) {
+        this.listeners.push({
+            'keyCombo': !isArray(keyCombo) ? new KeyCombo(keyCombo) : keyCombo.map((k) => new KeyCombo(k)),
+            'handler': handler,
+            'keydown': keydown,
+            'keyup': keyup,
+            'preventRepeat': preventRepeat,
+            'description': description
+        });
+
+        this.listeners = this.listeners.sort((a, b) => {
+            if (isArray(a.keyCombo) || isArray(b.keyCombo)) {
+                // @TODO: sort.
+                return 0;
             }
 
-            this.listeners[context].push({
-                'keyCombo': this.normalizeKeyCombo(keyCombo),
-                'handler': handler,
-                'keydown': keydown,
-                'keyup': keyup,
-                'preventRepeat': preventRepeat,
-                'executing': false
-            });
-        }
+            if (a.keyCombo.getKey() !== b.keyCombo.getKey()) {
+                return 0;
+            }
+            const a_modifiers = a.keyCombo.getModifiers();
+            const b_modifiers = b.keyCombo.getModifiers();
+            if (a_modifiers.length > b_modifiers.length) {
+                return -1;
+            }
+            else if (a_modifiers.length < b_modifiers.length) {
+                return 1;
+            }
+            return 0;
+        });
 
         return this;
     }
@@ -127,48 +197,39 @@ export default class Hotkeys {
      * Unbind one or more key combinations.
      *
      * @param {String|Array} keyCombo The key combination(s).
-     * @param {Function} handler The callback function.
-     * @param {Object} options Options
-     * @property {String} [options.context='global'] The context the key combination(s) is assigned to.
+     * @param {Function} [handler] The callback function.
      * @returns {this}
      */
-    unbind(keyCombo, handler = null, {context = 'global'}) {
-        if (isArray(keyCombo)){
-            keyCombo.forEach((combo) => {
-                this.unbind(combo, handler, {'context': context});
-            });
-        }
-        else if (context in this.listeners) {
-            this.listeners[context] = this.listeners[context].filter((listener) => {
-                return !(
-                    listener.keyCombo === this.normalizeKeyCombo(keyCombo) &&
-                    (!handler || listener.handler === handler)
-                );
-            });
-        }
+    unbind(keyCombo, handler=null) {
+        const combo = !isArray(keyCombo) ? new KeyCombo(keyCombo) : keyCombo.map((k) => new KeyCombo(k));
+        const listeners = [];
+
+        this.listeners.forEach((listener) => {
+            if (handler && listener.handler !== handler) {
+                listeners.push(listener);
+                return;
+            }
+
+            if(isArray(listener.keyCombo)) {
+                listener.keyCombo = listener.keyCombo.filter((c) => {
+                    if (isArray(combo)) {
+                        return combo.some((v) => {
+                            return c.isEqual(v);
+                        });
+                    }
+
+                    return c.isEqual(combo);
+                });
+
+                if (listener.keyCombo.length) {
+                    listeners.push(listener);
+                }
+            }
+        });
+
+        this.listeners = listeners;
 
         return this;
-    }
-
-    /**
-     * Set the active context.
-     *
-     * @param {String} context The context to activate.
-     * @returns {this}
-     */
-    setActiveContext(context) {
-        this.context = context;
-
-        return this;
-    }
-
-    /**
-     * Get the active context.
-     *
-     * @returns {String} The active context.
-     */
-    getActiveContext() {
-        return this.context || 'global';
     }
 
     /**
@@ -177,73 +238,29 @@ export default class Hotkeys {
      * @param {KeyboardEvent} evt The event to handle.
      */
     handleEvent(evt) {
-        const keyCombo = this.getEventKeyCombo(evt);
-        const context = this.getActiveContext();
+        let found = null;
+        found = this.listeners.find((listener) => {
+            if (!listener[evt.type]) {
+                return false;
+            }
 
-        let listener = null;
-        if (context !== 'global' && context in this.listeners) {
-            listener = this.listeners[context].find((value) => {
-                return value.keyCombo === keyCombo && value[evt.type];
-            });
-        }
-        if (!listener) {
-            listener = this.listeners.global.find((value) => {
-                return value.keyCombo === keyCombo && value[evt.type];
-            });
-        }
+            if (isArray(listener.keyCombo)) {
+                return listener.keyCombo.some((c) => {
+                    return c.matchesEvent(evt);
+                })
+            }
 
-        if (listener) {
+            return listener.keyCombo.matchesEvent(evt);
+        });
+
+        if (found) {
             // Only call the handler if this is not a repeat, or preventRepeat is false.
-            if (!listener.preventRepeat || !evt.repeat) {
-                listener.handler(evt);
+            if (!found.preventRepeat || !evt.repeat) {
+                found.handler(evt);
             }
             // Prevent default browser action even on repeat.
             evt.preventDefault();
         }
-    }
-
-    /**
-     * Get a key combination string from a keyboard event.
-     *
-     * @param {KeyboardEvent} evt The event.
-     * @returns {String} The key combination.
-     */
-    getEventKeyCombo(evt) {
-        const key = evt.key;
-        const modifiers = [];
-
-        if (evt.altKey && key !== 'Alt') {
-            modifiers.push('alt');
-        }
-        if (evt.ctrlKey && key !== 'Control') {
-            modifiers.push('control');
-        }
-        if (evt.shiftKey && key !== 'Shift') {
-            modifiers.push('shift');
-        }
-
-        const combo = modifiers.length > 0 ? `${key}+${modifiers.sort().join('+')}` : key;
-
-        return combo.toLowerCase();
-    }
-
-    /**
-     * Normalize a key combination string.
-     *
-     * @param {String} combo The key combination string.
-     * @returns {String} The normalized key combination string.
-     */
-    normalizeKeyCombo(combo) {
-        const keys = combo.toLowerCase().split('+');
-
-        if (keys.length < 1) {
-            return null;
-        }
-
-        const key = keys.pop();
-        const normalized = keys.length > 0 ? `${key}+${keys.sort().join('+')}` : key;
-
-        return normalized;
     }
 
     /**
