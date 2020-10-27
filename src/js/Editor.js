@@ -1666,7 +1666,7 @@ export class Editor extends Dom {
         loadmask.hide();
 
         new Overlay({
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the player. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
             },
@@ -1771,7 +1771,7 @@ export class Editor extends Dom {
         loadmask.hide();
 
         new Overlay({
-            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the guide. Please try again.'),
+            'text': Locale.t('editor.onPlayerLoadError.msg', 'An error occured while trying to load the player. Please try again.'),
             'buttons': {
                 'ok': Locale.t('editor.onPlayerLoadError.ok', 'OK'),
             },

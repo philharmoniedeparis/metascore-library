@@ -65,7 +65,7 @@ export default class MainMenu extends Dom {
                 'icon': save_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.save.title', 'Save')
+                'title': Locale.t('editor.MainMenu.save.title', 'Save [Ctrl+S]')
             })
             .data('action', 'save')
             .appendTo(this);
@@ -83,7 +83,7 @@ export default class MainMenu extends Dom {
                 'icon': revert_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.revert.title', 'Revert')
+                'title': Locale.t('editor.MainMenu.revert.title', 'Revert [Ctrl+R]')
             })
             .data('action', 'revert')
             .appendTo(this);
@@ -92,7 +92,7 @@ export default class MainMenu extends Dom {
                 'icon': undo_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.undo.title', 'Undo')
+                'title': Locale.t('editor.MainMenu.undo.title', 'Undo [Ctrl+Z]')
             })
             .data('action', 'undo')
             .appendTo(this);
@@ -101,7 +101,7 @@ export default class MainMenu extends Dom {
                 'icon': redo_icon
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.redo.title', 'Redo')
+                'title': Locale.t('editor.MainMenu.redo.title', 'Redo [Ctrl+Y]')
             })
             .data('action', 'redo')
             .appendTo(this);
@@ -161,7 +161,7 @@ export default class MainMenu extends Dom {
                 'name': 'preview-toggle'
             })
             .attr({
-                'title': Locale.t('editor.MainMenu.preview-toggle.title', 'Toggle preview mode')
+                'title': Locale.t('editor.MainMenu.preview-toggle.title', 'Toggle preview mode [Ctrl+Shift+E]')
             })
             .data('name', 'preview-toggle')
             .appendTo(this);
