@@ -15,9 +15,6 @@ import {getRendererForMime} from './core/utils/Media';
 /**
  * Provides the main Player class
  *
- * @emits {ready} Fired when the player finished initializing
- * @param {Object} player The player instance
- *
  * @emits {load} Fired when the guide's loading finished successfully
  * @param {Object} player The player instance
  * @param {Object} data The json data loaded
@@ -145,11 +142,6 @@ export class Player extends Dom {
         if(this.configs.autoload !== false){
             this.load();
         }
-
-        // Delay to next iteration of the Event Loop.
-        setTimeout(() => {
-            this.triggerEvent('ready', {'player': this}, false, false);
-        }, 0);
     }
 
     /**

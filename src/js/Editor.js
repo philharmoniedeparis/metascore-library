@@ -25,9 +25,6 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
 
 /**
  * Provides the main Editor class
- *
- * @emits {ready} Fired when the editor is fully setup
- * @param {Object} editor The editor instance
  */
 export class Editor extends Dom {
 
@@ -321,11 +318,6 @@ export class Editor extends Dom {
         else {
             this.loadPlayer();
         }
-
-        // Delay to next iteration of the Event Loop.
-        setTimeout(() => {
-            this.triggerEvent('ready', { 'editor': this }, false, false);
-        }, 0);
     }
 
     /**
