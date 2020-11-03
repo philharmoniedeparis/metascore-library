@@ -1521,6 +1521,7 @@ export class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
+        this.player_frame.focus();
     }
 
     /**
