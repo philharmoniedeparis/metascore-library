@@ -343,6 +343,8 @@
 	"editor.hotkeys.player.right-10.description": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers la droite",
 	"editor.hotkeys.player.right.description": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers la droite",
 	"editor.hotkeys.player.select-all.description": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n'est déjà sélectionné",
+	"editor.hotkeys.player.select-next.description": "Sélectionner le composant suivant",
+	"editor.hotkeys.player.select-previous.description": "Sélectionner le composant précédent",
 	"editor.hotkeys.player.title": "Espace de travail",
 	"editor.hotkeys.player.up-10.description": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
 	"editor.hotkeys.player.up.description": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le haut",

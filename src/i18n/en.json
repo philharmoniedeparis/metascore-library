@@ -343,6 +343,8 @@
 	"editor.hotkeys.player.right-10.description": "Move selected component(s) by 10 pixel to the right",
 	"editor.hotkeys.player.right.description": "Move selected component(s) by 1 pixel to the right",
 	"editor.hotkeys.player.select-all.description": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
+	"editor.hotkeys.player.select-next.description": "Select the next component",
+	"editor.hotkeys.player.select-previous.description": "Select the previous component",
 	"editor.hotkeys.player.title": "Workspace",
 	"editor.hotkeys.player.up-10.description": "Move selected component(s) by 10 pixels upwards",
 	"editor.hotkeys.player.up.description": "Move selected component(s) by 1 pixels upwards",

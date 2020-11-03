@@ -241,7 +241,7 @@ export default class ConfigsEditor extends Dom {
      *
      * @param {Component} component The component
      * @param {Boolean} [keepExisting=false] Whether to keep other set components
-     * @param {Boolean} supressEvent Whether to prevent the custom event from firing
+     * @param {Boolean} [supressEvent=false] Whether to prevent the custom event from firing
      * @return {this}
      */
     setComponent(component, keepExisting=false, supressEvent=false){

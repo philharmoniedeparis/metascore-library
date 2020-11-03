@@ -157,6 +157,20 @@ export class Editor extends Dom {
                             'preventRepeat': true
                         }
                     },
+                    'select-next': {
+                        'combo': 'Tab',
+                        'description': Locale.t('editor.hotkeys.player.select-next.description', 'Select the next component'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
+                    'select-previous': {
+                        'combo': 'Shift+Tab',
+                        'description': Locale.t('editor.hotkeys.player.select-previous.description', 'Select the previous component'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
+                    },
                     'copy': {
                         'combo': 'Control+c',
                         'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
@@ -569,6 +583,30 @@ export class Editor extends Dom {
                     new_selection.forEach((component, index) => {
                         this.selectPlayerComponent(component, index > 0);
                     });
+                }
+                break;
+            case 'select-next':
+            case 'select-previous':
+                {
+                    const previous_selection = this.configs_editor.getComponents();
+                    if (previous_selection.length > 0) {
+                        const master_component = previous_selection[0];
+                        const parent = master_component.getParent();
+                        let index = parent.getChildIndex(master_component) + (id === 'select-previous' ? -1 : 1);
+                        if (index < 0) {
+                            index = parent.getChildrenCount() - 1;
+                        }
+                        else if (index >= parent.getChildrenCount()) {
+                            index = 0;
+                        }
+                        this.selectPlayerComponent(parent.getChild(index));
+                    }
+                    else {
+                        const scenario = this.getPlayer().getActiveScenario();
+                        if (scenario && scenario.getChildrenCount() > 0) {
+                            this.selectPlayerComponent(scenario.getChild(0));
+                        }
+                    }
                 }
                 break;
             case 'right':
@@ -2979,15 +3017,15 @@ export class Editor extends Dom {
      *
      * @private
      * @param {Component} component The component
-     * @param {Boolean} keep_existing Whether to keep already selected components selected
+     * @param {Boolean} [keepExisting=false] Whether to keep already selected components selected
      * @return {this}
      */
-    selectPlayerComponent(component, keep_existing) {
-        if (keep_existing && this.configs_editor.getComponents().includes(component)) {
+    selectPlayerComponent(component, keepExisting = false) {
+        if (keepExisting && this.configs_editor.getComponents().includes(component)) {
             this.configs_editor.unsetComponent(component);
         }
         else {
-            this.configs_editor.setComponent(component, keep_existing);
+            this.configs_editor.setComponent(component, keepExisting);
         }
 
         return this;
