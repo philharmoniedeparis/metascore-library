@@ -16,7 +16,7 @@
 
     .hotkeys {
         display: grid;
-        grid-template-columns: auto auto;
+        grid-template-columns: min-content auto;
         flex: 1 1 auto;
         text-align: left;
         padding-bottom: 2em;
@@ -39,11 +39,11 @@
         .description {
             padding: 0.5em 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-            white-space: nowrap;
         }
 
         .combos {
             padding-right: 1em;
+            white-space: nowrap;
 
             kbd.combo {
                 kbd.key {

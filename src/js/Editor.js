@@ -2,7 +2,7 @@ import Dom from './core/Dom';
 import { MasterClock } from './core/media/Clock';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
-import { clone } from './core/utils/Array';
+import { clone, unique } from './core/utils/Array';
 import Hotkeys from './core/Hotkeys';
 import HotkeysHelp from './editor/HotkeysHelp';
 import Locale from './core/Locale';
@@ -86,9 +86,9 @@ export class Editor extends Dom {
                         'combo': 'Control+y',
                         'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
                     },
-                    'preview_tmp': {
+                    'preview-tmp': {
                         'combo': 'Control+e',
-                        'description': Locale.t('editor.hotkeys.global.preview_tmp.description', 'Toggle preview mode temporarily'),
+                        'description': Locale.t('editor.hotkeys.global.preview-tmp.description', 'Toggle preview mode temporarily'),
                         'configs': {
                             'keyup': true,
                             'preventRepeat': true
@@ -101,16 +101,16 @@ export class Editor extends Dom {
                             'preventRepeat': true
                         }
                     },
-                    'toggle_play': {
+                    'toggle-play': {
                         'combo': ' ',
-                        'description': Locale.t('editor.hotkeys.global.toggle_play.description', 'Play/pause'),
+                        'description': Locale.t('editor.hotkeys.global.toggle-play.description', 'Play/pause'),
                         'configs': {
                             'preventRepeat': true
                         }
                     },
-                    'hotkeyshelp': {
+                    'hotkeys-help': {
                         'combo': '?',
-                        'description': Locale.t('editor.hotkeys.global.hotkeyshelp.description', 'Show keyboard shortcuts')
+                        'description': Locale.t('editor.hotkeys.global.hotkeys-help.description', 'Show keyboard shortcuts')
                     }
                 }
             },
@@ -122,33 +122,40 @@ export class Editor extends Dom {
                         'combo': 'ArrowRight',
                         'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
                     },
-                    'right10': {
+                    'right-10': {
                         'combo': 'Shift+ArrowRight',
-                        'description': Locale.t('editor.hotkeys.player.right10.description', 'Move selected component(s) by 10 pixel to the right')
+                        'description': Locale.t('editor.hotkeys.player.right-10.description', 'Move selected component(s) by 10 pixel to the right')
                     },
                     'left': {
                         'combo': 'ArrowLeft',
                         'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
                     },
-                    'left10': {
+                    'left-10': {
                         'combo': 'Shift+ArrowLeft',
-                        'description': Locale.t('editor.hotkeys.player.left10.description', 'Move selected component(s) by 10 pixels to the left'),
+                        'description': Locale.t('editor.hotkeys.player.left-10.description', 'Move selected component(s) by 10 pixels to the left'),
                     },
                     'up': {
                         'combo': 'ArrowUp',
                         'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
                     },
-                    'up10': {
+                    'up-10': {
                         'combo': 'Shift+ArrowUp',
-                        'description': Locale.t('editor.hotkeys.player.up10.description', 'Move selected component(s) by 10 pixels upwards'),
+                        'description': Locale.t('editor.hotkeys.player.up-10.description', 'Move selected component(s) by 10 pixels upwards'),
                     },
                     'down': {
                         'combo': 'ArrowDown',
                         'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
                     },
-                    'down10': {
+                    'down-10': {
                         'combo': 'Shift+ArrowDown',
-                        'description': Locale.t('editor.hotkeys.player.down10.description', 'Move selected component(s) by 10 pixels downwards'),
+                        'description': Locale.t('editor.hotkeys.player.down-10.description', 'Move selected component(s) by 10 pixels downwards'),
+                    },
+                    'select-all': {
+                        'combo': 'Control+a',
+                        'description': Locale.t('editor.hotkeys.player.select-all.description', 'Select all components of the same level as the already selected ones, or all blocks if no components are already selected'),
+                        'configs': {
+                            'preventRepeat': true
+                        }
                     },
                     'copy': {
                         'combo': 'Control+c',
@@ -525,17 +532,17 @@ export class Editor extends Dom {
             case 'redo':
                 this.history.redo();
                 break;
-            case 'preview_tmp':
             case 'preview':
+            case 'preview-tmp':
                 this.togglePreviewMode();
                 break;
-            case 'toggle_play':
+            case 'toggle-play':
                 {
                     const player = this.getPlayer();
                     if(player) {player.togglePlay();}
                 }
                 break;
-            case 'hotkeyshelp':
+            case 'hotkeys-help':
                 new HotkeysHelp(
                     this.configs.hotkeys,
                     {
@@ -543,29 +550,50 @@ export class Editor extends Dom {
                     }
                 );
                 break;
+            case 'select-all':
+                {
+                    const previous_selection = this.configs_editor.getComponents();
+                    let new_selection = [];
+                    if (previous_selection.length > 0) {
+                        previous_selection.forEach((component) => {
+                            new_selection = new_selection.concat(component.getParent().getChildren());
+                        });
+                        new_selection = unique(new_selection);
+                    }
+                    else {
+                        const scenario = this.getPlayer().getActiveScenario();
+                        if (scenario) {
+                            new_selection = scenario.getChildren();
+                        }
+                    }
+                    new_selection.forEach((component, index) => {
+                        this.selectPlayerComponent(component, index > 0);
+                    });
+                }
+                break;
             case 'right':
-            case 'right10':
+            case 'right-10':
                 {
                     const components = this.configs_editor.getComponents();
                     this.movePlayerComponents(components, evt.shiftKey ? 10 : 1);
                 }
                 break;
             case 'left':
-            case 'left10':
+            case 'left-10':
                 {
                     const components = this.configs_editor.getComponents();
                     this.movePlayerComponents(components, evt.shiftKey ? -10 : -1);
                 }
                 break;
             case 'up':
-            case 'up10':
+            case 'up-10':
                 {
                     const components = this.configs_editor.getComponents();
                     this.movePlayerComponents(components, 0, evt.shiftKey ? -10 : -1);
                 }
                 break;
             case 'down':
-            case 'down10':
+            case 'down-10':
                 {
                     const components = this.configs_editor.getComponents();
                     this.movePlayerComponents(components, 0, evt.shiftKey ? 10 : 1);
@@ -928,7 +956,7 @@ export class Editor extends Dom {
                                 const scenario = this.getPlayer().getActiveScenario();
                                 if (scenario) {
                                     scenario.getChildren().forEach((component, index) => {
-                                        this.configs_editor.setComponent(component, index > 0);
+                                        this.selectPlayerComponent(component, index > 0);
                                     });
                                 }
                             }
@@ -2965,6 +2993,14 @@ export class Editor extends Dom {
         return this;
     }
 
+    /**
+     * Change a component's stacking order.
+     *
+     * @private
+     * @param {Component} component The component.
+     * @param {number} position The new stacking position.
+     * @return {this}
+     */
     setPlayerComponentOrder(component, position) {
         const parent = component.parents();
 
