@@ -54,6 +54,14 @@ export default class ComponentLinks extends Dom {
                 },
                 'icon': ComponentIcons.Element.Content
             },
+            'controller': {
+                'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
+                'type': 'block',
+                'configs': {
+                    'type': 'Controller'
+                },
+                'icon': ComponentIcons.Controller
+            },
             'video-renderer': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
                 'type': 'block',
@@ -62,14 +70,6 @@ export default class ComponentLinks extends Dom {
                     'VideoRenderer'
                 },
                 'icon': ComponentIcons.VideoRenderer
-            },
-            'controller': {
-                'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
-                'type': 'block',
-                'configs': {
-                    'type': 'Controller'
-                },
-                'icon': ComponentIcons.Controller
             },
             'blocktoggler': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
