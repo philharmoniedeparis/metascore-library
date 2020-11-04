@@ -60,12 +60,14 @@ export default class Component extends Dom {
     * @return {Array} The component's types
     */
     static getTypes(){
-        let types = [this.getType()];
+        let types = [];
 
         const parent = Object.getPrototypeOf(this);
         if('getTypes' in parent){
             types = types.concat(parent.getTypes());
         }
+
+        types.push(this.getType());
 
         return types;
     }

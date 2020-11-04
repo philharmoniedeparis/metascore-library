@@ -1,7 +1,7 @@
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Icon from '../../core/ui/Icon';
-import * as icons from '../ComponentIcons';
+import ComponentIcons from '../ComponentIcons';
 
 import {className} from '../../../css/editor/assetbrowser/ComponentLinks.scss';
 
@@ -19,7 +19,7 @@ export default class ComponentLinks extends Dom {
                     'type': 'Block',
                     'synched': true
                 },
-                'icon': icons.block.synched
+                'icon': ComponentIcons.Block.synched
             },
             'non-synced-block': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.non-synced-block.text', 'Non-synchronized block'),
@@ -28,7 +28,7 @@ export default class ComponentLinks extends Dom {
                     'type': 'Block',
                     'synched': false
                 },
-                'icon': icons.block.non_synched
+                'icon': ComponentIcons.Block.non_synched
             },
             'page': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.page.text', 'Page'),
@@ -36,7 +36,7 @@ export default class ComponentLinks extends Dom {
                 'configs': {
                     'position': 'before'
                 },
-                'icon': icons.page
+                'icon': ComponentIcons.Page
             },
             'cursor': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.cursor-element.text', 'Cursor element'),
@@ -44,7 +44,7 @@ export default class ComponentLinks extends Dom {
                 'configs': {
                     'type': 'Cursor'
                 },
-                'icon': icons.cursor
+                'icon': ComponentIcons.Element.Cursor
             },
             'content': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.content-element.text', 'Content element'),
@@ -52,7 +52,7 @@ export default class ComponentLinks extends Dom {
                 'configs': {
                     'type': 'Content'
                 },
-                'icon': icons.content
+                'icon': ComponentIcons.Element.Content
             },
             'video-renderer': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.video-renderer.text', 'Video renderer'),
@@ -61,7 +61,7 @@ export default class ComponentLinks extends Dom {
                     'type':
                     'VideoRenderer'
                 },
-                'icon': icons.videorenderer
+                'icon': ComponentIcons.VideoRenderer
             },
             'controller': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.controller.text', 'Controller'),
@@ -69,7 +69,7 @@ export default class ComponentLinks extends Dom {
                 'configs': {
                     'type': 'Controller'
                 },
-                'icon': icons.controller
+                'icon': ComponentIcons.Controller
             },
             'blocktoggler': {
                 'text': Locale.t('editor.assetbrowser.ComponentLinks.blocktoggler.text', 'Block Toggler'),
@@ -77,7 +77,7 @@ export default class ComponentLinks extends Dom {
                 'configs': {
                     'type': 'BlockToggler'
                 },
-                'icon': icons.blocktoggler
+                'icon': ComponentIcons.BlockToggler
             }
         }
     };

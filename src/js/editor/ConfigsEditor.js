@@ -138,7 +138,7 @@ export default class ConfigsEditor extends Dom {
         const common_types = [];
 
         components.forEach((component) => {
-            types_array.push(component.getTypes());
+            types_array.push(component.getTypes().reverse());
         });
 
         types_array[0].forEach((type) => {
