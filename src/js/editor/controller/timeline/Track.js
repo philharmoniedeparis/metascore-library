@@ -343,7 +343,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Handle exonader click event callback
+     * Handle expander click event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
