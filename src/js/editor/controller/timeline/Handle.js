@@ -31,23 +31,20 @@ export default class Handle extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
 
-        const inner = new Dom('<div/>', {'class': 'inner'})
-            .appendTo(this);
-
         if(this.configs.icon){
             new Icon({'symbol': this.configs.icon})
-                .appendTo(inner);
+                .appendTo(this);
         }
 
         new Button({'icon': expander_icon})
             .data('action', 'expander')
-            .appendTo(inner);
+            .appendTo(this);
 
         this.label = new Dom('<div/>', {'class': 'label'})
-            .appendTo(inner);
+            .appendTo(this);
 
         const togglers = new Dom('<div/>', {'class': 'togglers'})
-            .appendTo(inner);
+            .appendTo(this);
 
         this.togglers = {};
 
@@ -60,21 +57,6 @@ export default class Handle extends Dom {
     }
 
     /**
-     * Descendents childremove event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onDescendentsChildRemove(evt){
-        const child = evt.detail.child;
-        if(!Dom.is(child, `.${className}`)){
-            return;
-        }
-
-        this.toggleClass('has-descendents', !this.descendents.is(':empty'));
-    }
-
-    /**
      * Set the label's text
      *
      * @param {String} value The text
@@ -83,27 +65,6 @@ export default class Handle extends Dom {
     setLabel(value){
         this.label.text(escapeHTML(value));
         this.attr('title', value);
-
-        return this;
-    }
-
-    /**
-     * Add a descendent handle
-     *
-     * @param {Handle} handle The handle to add
-     * @param {Integer} index The position at which the handle should be added
-     * @return {this}
-     */
-    addDescendent(handle, index){
-        if(!this.descendents){
-            this.descendents = new Dom('<div/>', {'class': 'descendents'})
-                .addListener('childremove', this.onDescendentsChildRemove.bind(this))
-                .appendTo(this)
-        }
-
-        handle.insertAt(this.descendents, index);
-
-        this.addClass('has-descendents');
 
         return this;
     }

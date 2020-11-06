@@ -3,7 +3,7 @@ import {MasterClock} from '../../core/media/Clock';
 import Track from './timeline/Track';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className, handleDragGhostClassName} from '../../../css/editor/controller/Timeline.scss';
+import {className} from '../../../css/editor/controller/Timeline.scss';
 
 /**
  * The editor's timeline
@@ -41,27 +41,17 @@ export default class Timeline extends Dom {
 
         this.tracks = {};
 
-        this.setupUI();
+        this.offset = 0;
 
-        const resize_observer = new ResizeObserver(this.onResize.bind(this));
-        resize_observer.observe(this.get(0));
-
-        MasterClock
-            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
-            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
-
-    /**
-     * Setup the UI
-     *
-     * @private
-     */
-    setupUI() {
         /**
-         * The handles container
+         * The tracks container
          * @type {Dom}
          */
-        this.handles_container = new Dom('<div/>', {'class': 'handles-container'})
+        this.tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
+            .addDelegate('.track', 'dragstart', this.onTrackDragStart.bind(this), true)
+            .addDelegate('.track', 'dragend', this.onTrackDragEnd.bind(this), true)
+            .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
+            .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
             .addDelegate('.handle', 'dragstart', this.onHandleDragStart.bind(this), true)
             .addDelegate('.handle', 'dragover', this.onHandleDragOver.bind(this), true)
             .addDelegate('.handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
@@ -69,33 +59,19 @@ export default class Timeline extends Dom {
             .addDelegate('.handle', 'dragend', this.onHandleDragEnd.bind(this), true)
             .appendTo(this);
 
-        const tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .appendTo(this);
-
-        /**
-         * The tracks outer container
-         * @type {Dom}
-         */
-        this.tracks_container_outer = new Dom('<div/>', {'class': 'tracks-container-outer'})
-            .appendTo(tracks_container);
-
-        /**
-         * The tracks inner container
-         * @type {Dom}
-         */
-        this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
-            .addDelegate('.track', 'dragstart', this.onTrackDragStart.bind(this), true)
-            .addDelegate('.track', 'dragend', this.onTrackDragEnd.bind(this), true)
-            .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
-            .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
-            .appendTo(this.tracks_container_outer);
-
         /**
          * The playhead <canvas> element
          * @type {Dom}
          */
         this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
-            .appendTo(tracks_container);
+            .appendTo(this);
+
+        const resize_observer = new ResizeObserver(this.onResize.bind(this));
+        resize_observer.observe(this.get(0));
+
+        MasterClock
+            .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
+            .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
     }
 
     /**
@@ -119,20 +95,17 @@ export default class Timeline extends Dom {
 
         const handle = track.getHandle();
 
-        this._handle_drag_ghost = new Dom(evt.target.cloneNode(true))
-            .addClass(handleDragGhostClassName)
-            .css('width', handle.css('width'))
-            .appendTo(this.handles_container);
+        this._drag_ghost = new Dom(track.get(0).cloneNode(true))
+            .appendTo(this.tracks_container);
 
         evt.dataTransfer.effectAllowed = 'move';
         evt.dataTransfer.setData('metascore/timeline', component_id);
-        evt.dataTransfer.setDragImage(this._handle_drag_ghost.get(0), 0, 0);
+        evt.dataTransfer.setDragImage(this._drag_ghost.get(0), 0, 0);
 
         // dragover does not have access to dataTransfer data
         this._dragging_handle = handle;
 
         track.addClass('dragging');
-        handle.addClass('dragging');
 
         evt.stopPropagation();
     }
@@ -155,11 +128,6 @@ export default class Timeline extends Dom {
                 const above = y < handle_rect.height/2;
 
                 track
-                    .addClass('dragover', above)
-                    .toggleClass('drag-above', above)
-                    .toggleClass('drag-below', !above);
-
-                handle
                     .addClass('dragover', above)
                     .toggleClass('drag-above', above)
                     .toggleClass('drag-below', !above);
@@ -345,10 +313,10 @@ export default class Timeline extends Dom {
 
         const track = new Track(component, {
             'draggableConfigs': {
-                'snapGuideContainer': this.tracks_container_inner
+                'snapGuideContainer': this.tracks_container
             },
             'resizableConfigs': {
-                'snapGuideContainer': this.tracks_container_inner
+                'snapGuideContainer': this.tracks_container
             },
         });
 
@@ -356,17 +324,13 @@ export default class Timeline extends Dom {
             track.setDuration(renderer.getDuration());
         }
 
-        const handle = track.getHandle();
-
         if(parent_component){
             const index = parent_component.getChildIndex(component);
             parent_track.addDescendent(track, index);
-            parent_track.getHandle().addDescendent(handle, index);
         }
         else{
             const index = component.parents().children().index(`#${component.getId()}`);
-            track.insertAt(this.tracks_container_inner, index);
-            handle.insertAt(this.handles_container, index);
+            track.insertAt(this.tracks_container, index);
         }
 
         this.tracks[component.getId()] = track;
@@ -431,7 +395,7 @@ export default class Timeline extends Dom {
      */
     setupTrackSnapGuides(id, behavior){
         // Add snapping to playhead
-        const container_rect = this.tracks_container_inner.get(0).getBoundingClientRect();
+        const container_rect = this.tracks_container.get(0).getBoundingClientRect();
         behavior.addSnapGuide('x', this.playhead_position + container_rect.left);
 
         // Add snapping to other tracks
@@ -463,13 +427,10 @@ export default class Timeline extends Dom {
             const duration = renderer.getDuration();
             const zoom = duration / (end - start);
 
-            this.tracks_container_inner.css('width', `${zoom * 100}%`);
+            this.tracks_container.css('--timline-zoom', `${zoom * 100}%`);
+            this.tracks_container.css('--timline-offert', start / duration * zoom);
 
-            const container_dom = this.tracks_container_outer.get(0);
-            const scroll = container_dom.clientWidth * start / duration * zoom;
-            const max_scroll = container_dom.scrollWidth - container_dom.clientWidth;
-
-            container_dom.scrollLeft = Math.min(scroll, max_scroll);
+            this.offset = start / duration * zoom;
 
             this.updatePlayhead();
 
@@ -485,18 +446,12 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        const container = this.tracks_container_outer.get(0);
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-
         this.find('canvas').forEach((canvas) => {
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
         });
 
         this.updatePlayhead();
-
-        this.tracks_container_outer.css('--tracks-container-width', `${width}px`);
 
         return this;
     }
@@ -508,19 +463,18 @@ export default class Timeline extends Dom {
      */
     updatePlayhead(){
         const renderer = MasterClock.getRenderer();
+        const canvas = this.playhead.get(0);
+        const {width} = canvas.getBoundingClientRect();
 
         if(renderer){
             const time = MasterClock.getTime();
-            const rect = this.tracks_container_inner.get(0).getBoundingClientRect();
-            this.playhead_position = time / renderer.getDuration() * rect.width;
+            this.playhead_position = time / renderer.getDuration() * width;
         }
         else{
             this.playhead_position = 0;
         }
 
-        const offset = this.tracks_container_outer.get(0).scrollLeft;
-        const x = Math.floor(this.playhead_position - offset) + 0.5;
-        const canvas = this.playhead.get(0);
+        const x = Math.floor(this.playhead_position - (this.offset * width)) + 0.5;
 
         if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
@@ -535,15 +489,6 @@ export default class Timeline extends Dom {
         }
 
         return this;
-    }
-
-    /**
-     * Get the handles container
-     *
-     * @return {Dom}
-     */
-    getHandlesContainer(){
-        return this.handles_container;
     }
 
     /**

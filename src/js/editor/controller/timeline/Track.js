@@ -43,18 +43,6 @@ export default class Track extends Dom {
             .addListener('deselected', this.onComponentDeselected.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
-        const inner = new Dom('<div/>', {'class': 'inner'})
-            .appendTo(this);
-
-        this.info = new Dom('<div/>', {'class': 'info'})
-            .addListener('dragstart', this.onInfoDragStart.bind(this))
-            .addListener('drag', this.onInfoDrag.bind(this))
-            .addListener('dragend', this.onInfoDragEnd.bind(this))
-            .addListener('resizestart', this.onInfoResizeStart.bind(this))
-            .addListener('resize', this.onInfoResize.bind(this))
-            .addListener('resizeend', this.onInfoResizeEnd.bind(this))
-            .appendTo(inner);
-
         let icon = null;
         switch(component_type){
             case 'Block':
@@ -79,16 +67,27 @@ export default class Track extends Dom {
         this.handle = new Handle({
                 'icon': icon
             })
-            .data('component', component_id)
-            .data('type', component_type)
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
-            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this));
+            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
+            .appendTo(this);
 
         if(component_type !== 'Page'){
             this.handle.attr('draggable', 'true');
         }
 
         this.handle.getToggler('lock').setValue(component.getPropertyValue('editor.locked'), true);
+
+        this.time_wrapper = new Dom('<div/>', {'class': 'time-wrapper'})
+            .appendTo(this);
+
+        this.time = new Dom('<div/>', {'class': 'time'})
+            .addListener('dragstart', this.onTimeDragStart.bind(this))
+            .addListener('drag', this.onTimeDrag.bind(this))
+            .addListener('dragend', this.onTimeDragEnd.bind(this))
+            .addListener('resizestart', this.onTimeResizeStart.bind(this))
+            .addListener('resize', this.onTimeResize.bind(this))
+            .addListener('resizeend', this.onTimeResizeEnd.bind(this))
+            .appendTo(this.time_wrapper);
 
         this
             .data('component', component_id)
@@ -220,8 +219,8 @@ export default class Track extends Dom {
      *
      * @private
      */
-    onInfoDragStart(evt){
-        const {width} = this.get(0).getBoundingClientRect();
+    onTimeDragStart(evt){
+        const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._drag_multiplier = this.duration / width;
 
         this.triggerEvent('dragstart', evt.detail, false, true);
@@ -235,7 +234,7 @@ export default class Track extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onInfoDrag(evt){
+    onTimeDrag(evt){
         const component = this.getComponent();
         const state = evt.detail.behavior.getState();
         const start_time = component.getPropertyValue('start-time');
@@ -260,7 +259,7 @@ export default class Track extends Dom {
      *
      * @private
      */
-    onInfoDragEnd(evt){
+    onTimeDragEnd(evt){
         delete this._drag_multiplier;
 
         this.triggerEvent('dragend', evt.detail, false, true);
@@ -273,8 +272,8 @@ export default class Track extends Dom {
      *
      * @private
      */
-    onInfoResizeStart(evt){
-        const {width} = this.get(0).getBoundingClientRect();
+    onTimeResizeStart(evt){
+        const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._resize_multiplier = this.duration / width;
 
         this.triggerEvent('resizestart', evt.detail, false, true);
@@ -288,7 +287,7 @@ export default class Track extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onInfoResize(evt){
+    onTimeResize(evt){
         const component = this.getComponent();
         const state = evt.detail.behavior.getState();
         const property = state.direction === 'left' ? 'start-time' : 'end-time';
@@ -319,7 +318,7 @@ export default class Track extends Dom {
      *
      * @private
      */
-    onInfoResizeEnd(evt){
+    onTimeResizeEnd(evt){
         delete this._resize_multiplier;
 
         this.triggerEvent('resizeend', evt.detail, false, true);
@@ -350,19 +349,15 @@ export default class Track extends Dom {
      */
     onHandleExpanderClick(evt){
         const expand = !(this.hasClass('user-expanded') || this.hasClass('auto-expanded'));
-        const handle = this.getHandle();
 
         this.toggleClass('user-expanded', expand);
-        handle.toggleClass('user-expanded', expand);
 
         if(!expand){
             // Force shrink
             this.removeClass('auto-expanded');
-            handle.removeClass('auto-expanded');
 
             // Shrink children
             this.find('.user-expanded').removeClass('user-expanded');
-            handle.find('.user-expanded').removeClass('user-expanded');
         }
 
         evt.stopPropagation();
@@ -422,8 +417,8 @@ export default class Track extends Dom {
 
             if(!this._draggable){
                 const configs = Object.assign({}, this.configs.draggableConfigs, {
-                    'target': this.info,
-                    'handle': this.info,
+                    'target': this.time,
+                    'handle': this.time,
                     'autoUpdate': false,
                     'snapPositions': {
                         'x': [0, 1]
@@ -484,7 +479,7 @@ export default class Track extends Dom {
                 }
                 if(directions.length > 0){
                     const configs = Object.assign({}, this.configs.resizableConfigs, {
-                        'target': this.info,
+                        'target': this.time,
                         'directions': directions,
                         'autoUpdate': false
                     });
@@ -534,7 +529,7 @@ export default class Track extends Dom {
             .toggleClass('has-start-time', start_time !== null)
             .toggleClass('has-end-time', end_time !== null);
 
-        this.info
+        this.time
             .css('left', `${left * 100}%`)
             .css('width', `${width * 100}%`);
 

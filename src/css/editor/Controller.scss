@@ -1,12 +1,7 @@
 @import "../theme";
+@import "./variables.scss";
 
 :local(.className){
-    $top-height: 2.5em;
-    $left-width: 12em;
-    $left-min-width: 8em;
-    $bottom-sticky-top-height: 8em;
-    $bottom-sticky-bottom-height: 1.5em;
-
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -16,21 +11,21 @@
     > .top {
         display: flex;
         flex-direction: row;
-        flex: 0 0 $top-height;
+        flex: 0 0 $controller-top-height;
         background: $mediumgray;
         border-bottom: 2px solid $darkgray;
         z-index: 1;
 
         .time.input{
             display: flex;
-            flex: 0 0 $left-width;
+            flex: 0 0 $controller-left-width;
             box-sizing: border-box;
             border-right: 2px solid $darkgray;
 
             button[data-action="play"]{
                 display: none;
                 order: 0;
-                flex: 0 0 $top-height;
+                flex: 0 0 $controller-top-height;
                 background: #fff;
 
                 .icon{
@@ -76,8 +71,9 @@
         > .sticky-top{
             position: sticky;
             top: 0;
+            left: 0;
             width: 100%;
-            height: $bottom-sticky-top-height;
+            height: $controller-bottom-sticky-top-height;
             display: flex;
             flex-direction: row;
             background: $lightgray;
@@ -88,7 +84,7 @@
                 display: flex;
                 flex-direction: column;
                 flex-wrap: nowrap;
-                width: $left-width;
+                width: $controller-left-width;
                 flex: 0 0 auto;
                 box-sizing: border-box;
                 border-right: 2px solid $darkgray;
@@ -162,26 +158,12 @@
                 }
             }
         }
-
-        .timeline{
-            background: $darkgray;
-            z-index: 0;
-
-            .handles-container{
-                width: $left-width;
-                flex: 0 0 auto;
-            }
-
-            .tracks-container {
-                flex: 1 1 auto;
-            }
-        }
     }
 
     > .bottom{
         display: flex;
         flex-direction: row;
-        flex: 0 0 $bottom-sticky-bottom-height;
+        flex: 0 0 $controller-bottom-sticky-bottom-height;
         background: $mediumgray;
         border-top: 1px solid $darkgray;
         z-index: 1;

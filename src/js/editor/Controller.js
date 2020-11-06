@@ -357,12 +357,14 @@ export default class Controller extends Dom {
         const sticky_top_el = this.sticky_top.get(0);
         const sticky_top_el_rect = sticky_top_el.getBoundingClientRect();
 
-        const track_rect = evt.target.getBoundingClientRect();
+        const track = this.getTimeline().getTrack(Dom.data(evt.target, 'component'));
+        const handle = track.getHandle();
+        const handle_rect = handle.get(0).getBoundingClientRect();
 
-        if(track_rect.top < sticky_top_el_rect.bottom || track_rect.bottom > scroll_el_rect.bottom){
+        if(handle_rect.top < sticky_top_el_rect.bottom || handle_rect.bottom > scroll_el_rect.bottom){
             window.requestAnimationFrame(() => {
                 // Scroll track into view
-                scroll_el.scrollTop += track_rect.top - sticky_top_el_rect.bottom;
+                scroll_el.scrollTop += handle_rect.top - sticky_top_el_rect.bottom;
             });
         }
     }

@@ -1,22 +1,29 @@
 @import "../../../theme";
 
 :local(.className){
-    position: relative;
-    background: $mediumgray;
-    border-top: 1px solid $darkgray;
+    display: contents;
+    height: 2em;
+    user-select: none;
     cursor: pointer;
 
-    > .inner{
+    > .time-wrapper{
         position: relative;
-        height: 1em;
-        padding: 0.5em 0;
+        height: 100%;
+        width: var(--timline-zoom);
+        margin-left: calc(var(--timline-offert) * -100%);
+        grid-column-start: 2;
+        grid-column-end: 2;
+        background: $mediumgray;
+        border-bottom: 1px solid $darkgray;
+        box-sizing: border-box;
         pointer-events: none;
 
-        .info{
+        .time{
             position: absolute;
-            height: 1em;
-            width: 100%;
+            top: 0.5em;
+            bottom: 0.5em;
             left: 0;
+            width: 100%;
             background-color: #555;
             box-sizing: border-box;
             box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
@@ -29,66 +36,46 @@
                 margin: -3px 0 0 0;
                 background: #fff;
                 border-radius: 50%;
-                z-index: 2;
+                z-index: 1;
             }
         }
     }
 
-    &[data-type="Scenario"]{
-        border-top: 0;
-
-        > .inner{
-            display: none;
-        }
-
-        > .descendents{
-            display: block;
-        }
+    &:not(.has-end-time) > .time-wrapper::after{
+        content: '';
+        display: block;
+        position: sticky;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-repeat: repeat-y;
+        background-size: 8px 8px;
+        pointer-events: none;
     }
-    &[data-type="Controller"],
-    &[data-type="VideoRenderer"],
-    &[data-type="BlockToggler"],
-    &[data-type="Block"]{
-        & > .inner .info{
-            background-color: $block-color;
-        }
+    &:not(.has-start-time) > .time-wrapper::after{
+        background-image: linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0);
+        background-position: left 3px;
     }
-    &[data-type="Page"]{
-        & > .inner .info{
-            background-color: $page-color;
-        }
-
-        &:first-child > .inner .info .resize-handle[data-direction="left"],
-        &:last-child > .inner .info .resize-handle[data-direction="right"]{
-            display: none;
-        }
+    &:not(.has-end-time) > .time-wrapper::after{
+        background-image: linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px,transparent 0);
+        background-position: right 3px;
     }
-    &[data-type="Cursor"]{
-        & > .inner .info{
-            background-color: $cursor-element-color;
-        }
-    }
-    &[data-type="Content"]{
-        & > .inner .info{
-            background-color: $content-element-color;
-        }
-    }
-    &[data-type="Animation"]{
-        & > .inner .info{
-            background-color: $animation-element-color;
-        }
-    }
-    &[data-type="SVG"]{
-        & > .inner .info{
-            background-color: $svg-element-color;
-        }
+    &:not(.has-start-time):not(.has-end-time) > .time-wrapper::after{
+        background-image:
+            linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0),
+            linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px, transparent 0);
+        background-position: left 3px, left 3px, right 3px, right 3px;
     }
 
-    &.selected > .inner{
+    > .descendents{
+        display: none;
+    }
+
+    &.selected > .time-wrapper{
         background: $lightgray;
         pointer-events: auto;
 
-        .info{
+        .time{
             opacity: 1;
 
             .resize-handle{
@@ -97,51 +84,10 @@
         }
     }
 
-    &:not(.has-start-time),
-    &:not(.has-end-time){
-        > .inner{
-            &::after{
-                content: '';
-                position: sticky;
-                left: 0;
-                display: block;
-                width: var(--tracks-container-width);
-                height: 1em;
-                z-index: 1;
-                pointer-events: none;
-                background-repeat: repeat-y;
-                background-size: 8px 8px;
-            }
-        }
-    }
-
-    &:not(.has-start-time) > .inner::after{
-        background-image: linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0);
-        background-position: left 3px;
-    }
-
-    &:not(.has-end-time) > .inner::after{
-        background-image: linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px,transparent 0);
-        background-position: right 3px;
-    }
-
-    &:not(.has-start-time):not(.has-end-time) > .inner::after{
-        background-image:
-            linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0),
-            linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px, transparent 0);
-        background-position:
-            left 3px, left 3px,
-            right 3px, right 3px;
-    }
-
-    > .descendents{
-        display: none;
-    }
-
     &.user-expanded,
     &.auto-expanded{
         > .descendents{
-            display: block;
+            display: contents;
         }
     }
 
@@ -178,6 +124,57 @@
                 top: 100%;
                 margin-top: 1px;
             }
+        }
+    }
+
+    &[data-type="Scenario"]{
+        border-top: 0;
+
+        > .handle,
+        > .time-wrapper{
+            display: none;
+        }
+
+        > .descendents{
+            display: contents;
+        }
+    }
+    &[data-type="Controller"],
+    &[data-type="VideoRenderer"],
+    &[data-type="BlockToggler"],
+    &[data-type="Block"]{
+        > .time-wrapper .time{
+            background-color: $block-color;
+        }
+    }
+    &[data-type="Page"]{
+        > .time-wrapper .time{
+            background-color: $page-color;
+        }
+
+        &:first-child > .time-wrapper .time .resize-handle[data-direction="left"],
+        &:last-child > .time-wrapper .time .resize-handle[data-direction="right"]{
+            display: none;
+        }
+    }
+    &[data-type="Cursor"]{
+        > .time-wrapper .time{
+            background-color: $cursor-element-color;
+        }
+    }
+    &[data-type="Content"]{
+        > .time-wrapper .time{
+            background-color: $content-element-color;
+        }
+    }
+    &[data-type="Animation"]{
+        > .time-wrapper .time{
+            background-color: $animation-element-color;
+        }
+    }
+    &[data-type="SVG"]{
+        > .time-wrapper .time{
+            background-color: $svg-element-color;
         }
     }
 }

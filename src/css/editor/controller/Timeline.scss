@@ -1,61 +1,39 @@
 @import "../../theme";
+@import "../variables.scss";
 
 :local(.className){
+    position: relative;
     display: flex;
     flex-direction: row;
-    background: $mediumgray;
+    background: $darkgray;
+    z-index: 0;
 
     .tracks-container {
-        position: relative;
-
-        .tracks-container-outer{
-            position: absolute;
-            width: 100%;
-            min-height: 100%;
-            overflow: hidden;
-
-            --tracks-container-width: 100%;
-
-            .snap-guide{
-                margin-top: 0;
-            }
-
-            .tracks-container-inner{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                padding-bottom: 2px;
-            }
-        }
-
-        .playhead{
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 3;
-            pointer-events: none;
-        }
+        display: grid;
+        grid-template-columns: $controller-left-width auto;
+        flex: 1;
     }
 
-    .handles-container{
-        background: $mediumgray;
-        padding-bottom: 2px;
-
-        > .handle{
-            border-right: 2px solid $darkgray;
-        }
+    .playhead{
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding-left: $controller-left-width;
+        pointer-events: none;
+        z-index: 3;
     }
 }
 
-:local(.handleDragGhostClassName){
+:local(.dragGhostClassName){
     position: absolute;
     top: 0;
     right: 100%;
     background: $mediumgray;
     z-index: 99;
 
-    > .inner{
+    > .handle{
         > .togglers{
             display: none;
         }
