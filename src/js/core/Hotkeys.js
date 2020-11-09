@@ -35,7 +35,7 @@ class KeyCombo {
     }
 
     matchesEvent(evt) {
-        if (this.key !== evt.key) {
+        if (this.key.toLowerCase() !== evt.key.toLowerCase()) {
             return false;
         }
 
