@@ -655,7 +655,6 @@ export class Editor extends Dom {
                     const components = this.configs_editor.getComponents();
                     this.copyPlayerComponents(components);
                     this.pastePlayerComponents();
-                    this.pastePlayerComponents();
                 }
                 break;
             case 'lock':
@@ -2835,7 +2834,7 @@ export class Editor extends Dom {
                     component.setPropertyValues(previous_values);
                 },
                 'redo': () => {
-                    component.setPropertyValuse(new_values);
+                    component.setPropertyValues(new_values);
                 }
             });
         });
