@@ -45,20 +45,24 @@
             padding-right: 1em;
             white-space: nowrap;
 
-            kbd.combo {
-                kbd.key {
-                    display: inline-block;
-                    color: #000;
-                    text-align: center;
-                    line-height: 1em;
-                    padding: 0.25em 0.5em;
-                    border-radius: 0.25em;
-                    background: #f7f7f7;
-                    border: 1px solid #bbb;
-                }
+            kbd {
+                font-family: inherit;
 
-                .key-separator {
-                    margin: 0.1em;
+                &.combo {
+                    kbd.key {
+                        display: inline-block;
+                        color: #000;
+                        text-align: center;
+                        line-height: 1em;
+                        padding: 0.25em 0.5em;
+                        border-radius: 0.25em;
+                        background: #f7f7f7;
+                        border: 1px solid #bbb;
+                    }
+
+                    .key-separator {
+                        margin: 0.1em;
+                    }
                 }
             }
 
