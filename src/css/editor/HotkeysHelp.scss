@@ -23,6 +23,7 @@
 
         .title {
             grid-column: 1 / span 2;
+            white-space: nowrap;
 
             h2,
             p {
@@ -31,8 +32,9 @@
         }
 
         .header {
-            padding: 0.5em 0;
+            padding: 0.5em 1em 0.5em 0;
             border-bottom: 2px solid #fff;
+            white-space: nowrap;
         }
 
         .combos,
@@ -68,6 +70,16 @@
 
             .combo-separator {
                 margin: 0.5em;
+            }
+        }
+    }
+
+    @media only screen and (min-width: 1200px) {
+        > .inner{
+            > .body{
+                > .contents{
+                    flex-wrap: nowrap;
+                }
             }
         }
     }
