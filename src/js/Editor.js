@@ -2281,6 +2281,13 @@ export class Editor extends Dom {
 
         this.mainmenu.getItem('preview-toggle').setValue(this.preview_mode, true);
 
+        if (this.preview_mode) {
+            this.getHotkeys('player').disable();
+        }
+        else {
+            this.getHotkeys('player').enable();
+        }
+
         if (player) {
             player.toggleClass('editing', !this.preview_mode);
         }

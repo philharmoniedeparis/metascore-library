@@ -84,6 +84,12 @@ export default class Hotkeys {
         this.handleEvent = this.handleEvent.bind(this);
 
         /**
+         * Whether the hotkeys are enabled or not.
+         * @type {Boolean}
+         */
+        this.enabled = true;
+
+        /**
          * A list of listeners.
          * @type {Array}
          */
@@ -238,6 +244,10 @@ export default class Hotkeys {
      * @param {KeyboardEvent} evt The event to handle.
      */
     handleEvent(evt) {
+        if (!this.enabled) {
+            return;
+        }
+
         let found = null;
         found = this.listeners.find((listener) => {
             if (!listener[evt.type]) {
@@ -261,6 +271,28 @@ export default class Hotkeys {
             // Prevent default browser action even on repeat.
             evt.preventDefault();
         }
+    }
+
+    /**
+     * Enable the hotkeys.
+     *
+     * @returns {this}
+     */
+    enable() {
+        this.enabled = true;
+
+        return this;
+    }
+
+    /**
+     * Disable the hotkeys.
+     *
+     * @returns {this}
+     */
+    disable() {
+        this.enabled = false;
+
+        return this;
     }
 
     /**
