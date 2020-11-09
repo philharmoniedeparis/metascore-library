@@ -67,7 +67,7 @@ export class Editor extends Dom {
         'component_copy_displacement': 10,
         'hotkeys': {
             'global': {
-                'title': Locale.t('editor.hotkeys.global.title', 'Editor'),
+                'title': Locale.t('editor.hotkeys.global.title', 'General'),
                 'description': Locale.t('editor.hotkeys.global.description', 'Shortcuts available throughout the editor'),
                 'items': {
                     'save': {
@@ -116,7 +116,7 @@ export class Editor extends Dom {
             },
             'player': {
                 'title': Locale.t('editor.hotkeys.player.title', 'Workspace'),
-                'description': Locale.t('editor.hotkeys.player.description', 'Shortcuts available in the workspace'),
+                'description': Locale.t('editor.hotkeys.player.description', 'Shortcuts available in the workspace (central zone)'),
                 'items': {
                     'right': {
                         'combo': 'ArrowRight',

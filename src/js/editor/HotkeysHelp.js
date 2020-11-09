@@ -77,7 +77,7 @@ export default class HotkeysInfo extends Overlay {
 
                     if(c_index < c_arr.length-1) {
                         new Dom('<span/>', {'class': 'combo-separator'})
-                            .text('or')
+                            .text(Locale.t('editor.HotkeysInfo.combo-separator', 'or'))
                             .appendTo(combos);
                     }
                 });
@@ -98,7 +98,13 @@ export default class HotkeysInfo extends Overlay {
     getKeyName(key) {
         switch (key){
             case ' ':
-                return 'Spacebar';
+                return Locale.t('editor.HotkeysInfo.keyname.Spacebar', 'Spacebar');
+
+            case 'Delete':
+                return Locale.t('editor.HotkeysInfo.keyname.Delete', 'Delete');
+
+            case 'Backspace':
+                return Locale.t('editor.HotkeysInfo.keyname.Backspace', 'Backspace');
 
             case 'Control':
                 return 'Ctrl';
