@@ -1,12 +1,15 @@
 import EventEmitter from '../core/EventEmitter';
+import {isArray} from '../core/utils/Var';
 
 /**
  * An undo/redo manager
  *
  * @emits {add} Fired when a command is added
  * @param {Object} command The added command
+ *
  * @emits {undo} Fired when a command is undone
  * @param {Object} command The added command
+ *
  * @emits {redo} Fired when a command is redone
  * @param {Object} command The added command
  */
@@ -59,7 +62,17 @@ export default class UndoRedo extends EventEmitter {
     execute(command, action) {
         if (command && (action in command)) {
             this.executing = true;
-            command[action](command);
+
+            // Check if this is a group of commands.
+            if (isArray(command[action])) {
+                command[action].forEach((sub_command) => {
+                    sub_command();
+                });
+            }
+            else {
+                command[action]();
+            }
+
             this.executing = false;
         }
 
@@ -69,7 +82,7 @@ export default class UndoRedo extends EventEmitter {
     /**
      * Add a command
      *
-     * @param {Object} command The command object. It should contain an 'undo' and a 'redo' function
+     * @param {Object|Array} command The command(s) object. It/each should contain an 'undo' and a 'redo' function
      * @return {this}
      */
     add(command){
@@ -77,18 +90,56 @@ export default class UndoRedo extends EventEmitter {
             return this;
         }
 
-        // remove all redo items
-        this.commands.redo = [];
+        if (this.group) {
+            // Add command(s) to group.
+            this.group.undo = this.group.undo.concat(command.undo);
+            this.group.redo = this.group.redo.concat(command.redo);
+        }
+        else {
+            // remove all redo items
+            this.commands.redo = [];
 
-        // insert the new command
-        this.commands.undo.push(command);
+            // insert the new command
+            this.commands.undo.push(command);
 
-        // remove old commands
-        if(this.commands.undo.length > this.configs.max_commands){
-            this.commands.undo = this.commands.undo.slice(this.configs.max_commands * -1);
+            // remove old commands
+            if(this.commands.undo.length > this.configs.max_commands){
+                this.commands.undo = this.commands.undo.slice(this.configs.max_commands * -1);
+            }
+
+            this.triggerEvent('add', {'command': command});
+
         }
 
-        this.triggerEvent('add', {'command': command});
+        return this;
+    }
+
+    /**
+     * Start a group of undo/redo commands.
+     *
+     * @return {this}
+     */
+    startGroup() {
+        if (!this.group) {
+            this.group = {
+                'undo': [],
+                'redo': []
+            };
+        }
+
+        return this;
+    }
+
+    /**
+     * End a group of undo/redo commands.
+     *
+     * @return {this}
+     */
+    endGroup() {
+        const group = this.group;
+        delete this.group;
+
+        this.add(group);
 
         return this;
     }

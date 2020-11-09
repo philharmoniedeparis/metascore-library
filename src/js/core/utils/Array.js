@@ -11,7 +11,6 @@ export function naturalSortInsensitive(){
     }
 }
 
-
 /**
  * A natural case-sentive sorting function to use with Array.sort
  *
@@ -23,12 +22,22 @@ export function naturalSortSensitive(){
     }
 }
 
-
 /**
- * A natural case-sentive sorting function to use with Array.sort
+ * Clone an array.
  *
- * @return {Function} The sorting function
+ * @return {Array} The new array.
  */
 export function clone(array){
     return [...array];
+}
+
+/**
+ * Get unique array values
+ *
+ * @return {Array} The array of unique values
+ */
+export function unique(array){
+    return array.filter((el, index, arr) => {
+        return arr.indexOf(el) === index;
+    });
 }
