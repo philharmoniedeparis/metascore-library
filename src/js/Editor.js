@@ -2895,8 +2895,13 @@ export class Editor extends Dom {
                     }
                     break;
 
-                case 'Mixed':
-                    alert_msg = Locale.t('editor.deletePlayerComponents.mixed.msg', 'Are you sure you want to delete those @count components?', { '@count': _components.length });
+                default:
+                    if (_components.length > 1) {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.mixed.msg.plural', 'Are you sure you want to delete those @count components?', { '@count': _components.length });
+                    }
+                    else {
+                        alert_msg = Locale.t('editor.deletePlayerComponents.mixed.msg.single', 'Are you sure you want to delete the component "<em>@name</em>"?', { '@name': escapeHTML(_components[0].getName()) });
+                    }
                     break;
             }
 
