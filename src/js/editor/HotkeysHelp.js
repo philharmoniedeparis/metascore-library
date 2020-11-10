@@ -110,16 +110,16 @@ export default class HotkeysInfo extends Overlay {
                 return 'Ctrl';
 
             case 'ArrowRight':
-                return '⯈';
+                return '▶';
 
             case 'ArrowLeft':
-                return '⯇';
+                return '◀';
 
             case 'ArrowUp':
-                return '⯅';
+                return '▲';
 
             case 'ArrowDown':
-                return '⯆';
+                return '▼';
 
             default:
                 return key.length === 1 ? key.toUpperCase() : key;
