@@ -10,7 +10,6 @@
         position: relative;
         height: 1em;
         padding: 0.5em 0;
-        pointer-events: none;
 
         .info{
             position: absolute;
@@ -86,7 +85,6 @@
 
     &.selected > .inner{
         background: $lightgray;
-        pointer-events: auto;
 
         .info{
             opacity: 1;

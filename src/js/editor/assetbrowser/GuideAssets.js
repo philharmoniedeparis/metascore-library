@@ -12,6 +12,7 @@ import SpectrogramForm from './guideassets/SpectrogramForm';
 import AudioWaveformForm from './guideassets/AudioWaveformForm';
 import { isValidMimeType } from '../../core/utils/Media';
 import { escapeHTML } from '../../core/utils/String';
+import Lottie from 'lottie-web';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
 import delete_icon from '../../../img/editor/assetbrowser/guideassets/delete.svg?svg-sprite';
@@ -380,25 +381,44 @@ export default class GuideAssets extends Dom {
             file = asset.file;
         }
 
-        const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
-        if (matches) {
-            const type = matches[1];
-            switch (type) {
-                case 'image':
-                    new Dom('<img/>', { 'src': file.url }).appendTo(figure);
-                    break;
+        if (asset.type === 'lottie_animation') {
+            const animation = Lottie.loadAnimation({
+                container: figure.get(0),
+                path: file.url,
+                renderer: 'svg',
+                loop: true,
+                autoplay: false,
+            });
 
-                case 'audio':
-                    new Icon({ 'symbol': audio_icon }).appendTo(figure);
-                    break;
-
-                case 'video':
-                    new Icon({ 'symbol': video_icon }).appendTo(figure);
-                    break;
-            }
+            el.addListener('mouseover', () => {
+                animation.play();
+            }).addListener('mouseout', () => {
+                animation.stop();
+            }).addListener('drag', () => {
+                animation.stop();
+            });
         }
         else {
-            new Icon({ 'symbol': image_icon }).appendTo(figure);
+            const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
+            if (matches) {
+                const type = matches[1];
+                switch (type) {
+                    case 'image':
+                        new Dom('<img/>', { 'src': file.url }).appendTo(figure);
+                        break;
+
+                    case 'audio':
+                        new Icon({ 'symbol': audio_icon }).appendTo(figure);
+                        break;
+
+                    case 'video':
+                        new Icon({ 'symbol': video_icon }).appendTo(figure);
+                        break;
+                }
+            }
+            else {
+                new Icon({ 'symbol': image_icon }).appendTo(figure);
+            }
         }
 
         new Dom('<div/>', { 'class': 'label', 'text': name, 'title': name })

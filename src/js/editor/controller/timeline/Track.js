@@ -2,7 +2,7 @@ import Dom from '../../../core/Dom';
 import Handle from './Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
-import * as icons from '../../ComponentIcons';
+import ComponentIcons from '../../ComponentIcons';
 import {clamp} from '../../../core/utils/Math';
 import {MasterClock} from '../../../core/media/Clock';
 
@@ -58,15 +58,21 @@ export default class Track extends Dom {
         let icon = null;
         switch(component_type){
             case 'Block':
-                icon = icons.block[component.getPropertyValue('synched') ? 'synched' : 'non_synched'];
+                icon = ComponentIcons.Block[component.getPropertyValue('synched') ? 'synched' : 'non_synched'];
                 break;
 
             case 'Media':
-                icon = icons.media[component.getPropertyValue('tag')];
+                icon = ComponentIcons.Element.Media[component.getPropertyValue('tag')];
                 break;
 
             default:
-                icon = icons[component_type.toLowerCase()];
+                {
+                    const component_types = component.getTypes();
+                    component_types.shift();
+                    icon = component_types.reduce((acc, cur) => {
+                        return (cur in acc) ? acc[cur] : null;
+                    }, ComponentIcons);
+                }
                 break;
         }
 
@@ -337,7 +343,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Handle exonader click event callback
+     * Handle expander click event callback
      *
      * @private
      * @param {CustomEvent} evt The event object

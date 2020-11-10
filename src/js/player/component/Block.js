@@ -134,11 +134,12 @@ export default class Block extends Component {
             .addDelegate('.metaScore-component.page', 'deactivate', this.onPageDeactivate.bind(this))
             .appendTo(this);
 
-        const gesture_recognizer = new Hammer.Manager(this.page_wrapper.get(0));
-        gesture_recognizer.add(new Hammer.Swipe({
-            'direction': Hammer.DIRECTION_HORIZONTAL
-        }));
-        gesture_recognizer.on('swipe', this.onPageWrapperSwipe.bind(this));
+        // Add the swipe gesture handler.
+        new Hammer.Manager(this.page_wrapper.get(0), {
+                'recognizers': [[Hammer.Swipe, {'direction': Hammer.DIRECTION_HORIZONTAL}]],
+                'cssProps': {'userSelect': 'auto'} // Allow user selection.
+            })
+            .on('swipe', this.onPageWrapperSwipe.bind(this));
 
         /**
          * The pager
