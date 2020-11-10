@@ -201,11 +201,11 @@ export default class Overlay extends Dom {
      * @return {this}
      */
     hide() {
+        Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
+
         this.remove();
 
         this.triggerEvent('hide', {'overlay': this}, true, false);
-
-        Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
 
         if (this.active_element) {
             this.active_element.focus();
