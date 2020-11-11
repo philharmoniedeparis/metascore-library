@@ -447,7 +447,7 @@ export class Editor extends Dom {
             .setClean()
             .setupContextMenus();
 
-        this.getHotkeys('global').attachTo(this, ':not(input)');
+        this.getHotkeys('global').attachTo(this);
 
         // Check if auto-save data exists.
         if (this.configs.autosave && this.configs.autosave.url) {
@@ -1812,8 +1812,8 @@ export class Editor extends Dom {
             this.togglePreviewMode(true);
         }
 
-        this.getHotkeys('global').attachTo(this.player, ':not(input)');
-        this.getHotkeys('player').attachTo(this.player, ':not(input)');
+        this.getHotkeys('global').attachTo(this.player);
+        this.getHotkeys('player').attachTo(this.player);
 
         this
             .updateMainmenu(true)
@@ -2082,7 +2082,7 @@ export class Editor extends Dom {
      */
     onComponentDragStart(evt) {
         const draggable = evt.detail.behavior;
-        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.selected)');
 
         siblings.forEach((sibling) => {
             if (new Dom(sibling).hidden()) {
@@ -2132,7 +2132,7 @@ export class Editor extends Dom {
      */
     onComponentResizeStart(evt) {
         const resizable = evt.detail.behavior;
-        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.audio):not(.selected)');
+        const siblings = new Dom(evt.target).siblings('.metaScore-component:not(.selected)');
 
         siblings.forEach((sibling) => {
             if (new Dom(sibling).hidden()) {
