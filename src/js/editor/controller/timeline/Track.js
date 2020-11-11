@@ -215,7 +215,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info dragstart event callback
+     * Time dragstart event callback
      *
      * @private
      */
@@ -229,7 +229,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info drag event callback
+     * Time drag event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -255,7 +255,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info dragend event callback
+     * Time dragend event callback
      *
      * @private
      */
@@ -268,7 +268,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info resizestart event callback
+     * Time resizestart event callback
      *
      * @private
      */
@@ -282,7 +282,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info resize event callback
+     * Time resize event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -314,7 +314,7 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info resizeend event callback
+     * Time resizeend event callback
      *
      * @private
      */

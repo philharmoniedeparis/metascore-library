@@ -403,7 +403,7 @@ export class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller(this)
-            .addDelegate('.timeline .track *, .timeline .handle *', 'click', this.onTimelineTrackClick.bind(this))
+            .addDelegate('.timeline .track *', 'click', this.onTimelineTrackClick.bind(this))
             .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
 
@@ -1507,8 +1507,9 @@ export class Editor extends Dom {
      * @param {Event} evt The event object
      */
     onTimelineTrackClick(evt) {
-        const el = Dom.is(evt.target, '.track, .handle') ? evt.target : Dom.closest(evt.target, '.track, .handle');
+        const el = Dom.closest(evt.target, '.track');
         const component_id = Dom.data(el, 'component');
+        console.log(el, component_id);
         const track = this.controller.getTimeline().getTrack(component_id);
         const component = track.getComponent();
 

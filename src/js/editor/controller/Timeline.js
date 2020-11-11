@@ -59,12 +59,15 @@ export default class Timeline extends Dom {
             .addDelegate('.handle', 'dragend', this.onHandleDragEnd.bind(this), true)
             .appendTo(this);
 
+        const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
+            .appendTo(this);
+
         /**
          * The playhead <canvas> element
          * @type {Dom}
          */
-        this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
-            .appendTo(this);
+        this.playhead = new Dom('<canvas/>')
+            .appendTo(playhead_wrapper);
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));
@@ -395,18 +398,19 @@ export default class Timeline extends Dom {
      */
     setupTrackSnapGuides(id, behavior){
         // Add snapping to playhead
-        const container_rect = this.tracks_container.get(0).getBoundingClientRect();
-        behavior.addSnapGuide('x', this.playhead_position + container_rect.left);
+        const {left: playhead_left} = this.playhead.get(0).getBoundingClientRect();
+        behavior.addSnapGuide('x', this.playhead_position + playhead_left);
 
         // Add snapping to other tracks
         Object.entries(this.tracks).forEach(([track_id, track]) => {
-            if(track.hidden() || track_id === id){
+            if(track_id === id ||track.time.hidden()){
                 return;
             }
 
-            const track_rect = track.info.get(0).getBoundingClientRect();
-            behavior.addSnapGuide('x', track_rect.left);
-            behavior.addSnapGuide('x', track_rect.right);
+            const {left, right} = track.time.get(0).getBoundingClientRect();
+            behavior.addSnapGuide('x', left);
+            behavior.addSnapGuide('x', right);
+            console.log('x', left, 'x', right);
         });
 
         return this;
@@ -425,12 +429,12 @@ export default class Timeline extends Dom {
 
         if(renderer){
             const duration = renderer.getDuration();
-            const zoom = duration / (end - start);
 
-            this.tracks_container.css('--timline-zoom', `${zoom * 100}%`);
-            this.tracks_container.css('--timline-offert', start / duration * zoom);
+            this.zoom = duration / (end - start);
+            this.offset = start / (end - start);
 
-            this.offset = start / duration * zoom;
+            this.tracks_container.css('--timline-zoom', `${this.zoom * 100}%`);
+            this.tracks_container.css('--timline-offert', this.offset);
 
             this.updatePlayhead();
 
@@ -446,10 +450,9 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        this.find('canvas').forEach((canvas) => {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        });
+        const canvas = this.playhead.get(0);
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
 
         this.updatePlayhead();
 
@@ -468,16 +471,16 @@ export default class Timeline extends Dom {
 
         if(renderer){
             const time = MasterClock.getTime();
-            this.playhead_position = time / renderer.getDuration() * width;
+            const duration = renderer.getDuration();
+            this.playhead_position = Math.floor(((time / duration * this.zoom) - this.offset) * width);
         }
         else{
             this.playhead_position = 0;
         }
 
-        const x = Math.floor(this.playhead_position - (this.offset * width)) + 0.5;
-
         if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
+            const x = this.playhead_position + 0.5;
 
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
