@@ -18,7 +18,8 @@
                 background-color: $scrollbar-thumb-active-color;
             }
         }
-        scrollbar-color: $scrollbar-track-color $scrollbar-thumb-color;
+
+        scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
         scrollbar-width: thin;
     }
 
@@ -128,6 +129,7 @@
 
                 .workspace{
                     grid-area: 3 / 3 / 4 / 4;
+                    overflow: hidden;
 
                     .player-wrapper{
                         transform-origin: 0 0;
@@ -239,7 +241,7 @@
         }
     }
 
-    &:not(.editing){
+    &.preview{
         .pane{
             &.tools-pane{
                 display: none;

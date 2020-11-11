@@ -177,12 +177,14 @@ export default class Overlay extends Dom {
     show() {
         this.appendTo(this.configs.parent);
 
+        this.active_element = document.activeElement;
+
         this.triggerEvent('show', {'overlay': this}, true, false);
 
         if(this.configs.modal){
             if(!this.focus_anchor){
                 const focusables = this.body.find('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
-                this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this.body;
+                this.focus_anchor = focusables.count() > 0 ? focusables.get(0) : this.body.attr('tabindex', 0);
             }
 
             Dom.addListener(document, 'focus', this.onDocumentFocus, true);
@@ -199,11 +201,16 @@ export default class Overlay extends Dom {
      * @return {this}
      */
     hide() {
+        Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
+
         this.remove();
 
         this.triggerEvent('hide', {'overlay': this}, true, false);
 
-        Dom.removeListener(document, 'focus', this.onDocumentFocus, true);
+        if (this.active_element) {
+            this.active_element.focus();
+            delete this.active_element;
+        }
 
         return this;
     }

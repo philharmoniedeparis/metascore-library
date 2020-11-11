@@ -1,6 +1,7 @@
 import {className} from '../css/Player.scss';
 
 import Dom from './core/Dom';
+import Hotkeys from './core/Hotkeys';
 import {MasterClock} from './core/media/Clock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
@@ -133,7 +134,7 @@ export class Player extends Dom {
 
         this
             .addListener('childremove', this.onChildRemove.bind(this))
-            .addListener('.componentadd', this.onComponentAdd.bind(this))
+            .addListener('componentadd', this.onComponentAdd.bind(this))
             .addDelegate('.metaScore-component.controller .buttons button', 'click', this.onControllerButtonClick.bind(this))
             .addDelegate('.metaScore-component.element.Cursor', 'time', this.onCursorElementTime.bind(this))
             .addDelegate('.metaScore-component.element.Content a, .metaScore-component.element.Content a *', 'click', this.onContentElementLinkClick.bind(this))
@@ -141,43 +142,6 @@ export class Player extends Dom {
 
         if(this.configs.autoload !== false){
             this.load();
-        }
-    }
-
-    /**
-    * Local load callback
-    *
-    * @private
-    */
-    onLocaleLoad(){
-        this.init();
-    }
-
-    /**
-     * Keydown event callback
-     *
-     * @private
-     * @param {KeyboardEvent} evt The event object
-     */
-    onKeydown(evt){
-        switch(evt.key){
-            case " ":
-                this.togglePlay();
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
-
-            case "ArrowLeft":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]').triggerEvent('click');
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
-
-            case "ArrowRight":
-                this.find('.metaScore-component.block:hover .pager .button[data-action="next"]').triggerEvent('click');
-                evt.preventDefault();
-                evt.stopPropagation();
-                break;
         }
     }
 
@@ -472,9 +436,7 @@ export class Player extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onCursorElementTime(evt){
-        if(!this.hasClass('editing') || evt.detail.element.hasClass('selected')){
-            this.getRenderer().setTime(evt.detail.time);
-        }
+        this.getRenderer().setTime(evt.detail.time);
     }
 
     /**
@@ -651,9 +613,28 @@ export class Player extends Dom {
             this.adaptScale();
         }
 
-        // Add keyboard listener.
+        // Add keyboard shortcuts.
         if(this.configs.keyboard){
-            this.addListener('keydown', this.onKeydown.bind(this));
+            this.hotkeys = new Hotkeys()
+                .bind(' ',
+                    () => {
+                        this.togglePlay();
+                    },
+                    {'preventRepeat': true}
+                )
+                .bind('ArrowLeft',
+                    () => {
+                        this.find('.metaScore-component.block:hover .pager .button[data-action="previous"]')
+                            .triggerEvent('click');
+                    }
+                )
+                .bind('ArrowRight',
+                    () => {
+                        this.find('.metaScore-component.block:hover .pager .button[data-action="next"]')
+                            .triggerEvent('click');
+                    }
+                )
+                .attachTo(this);
         }
 
         this.removeClass('loading');

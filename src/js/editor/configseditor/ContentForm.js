@@ -40,9 +40,14 @@ export default class ContentForm extends ElementForm {
         this.onComponentDragOver = this.onComponentDragOver.bind(this);
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
+        this.editor.addListener('previewmode', this.onEditorPreviewMode.bind(this));
+
         this.addClass(`content-form ${className}`);
     }
 
+    /**
+     * @inheritdoc
+     */
     setComponents(components){
         super.setComponents(components);
 
@@ -59,6 +64,9 @@ export default class ContentForm extends ElementForm {
         return this;
     }
 
+    /**
+     * @inheritdoc
+     */
     unsetComponents(){
         this.contents_toggle.setValue(false);
 
@@ -101,6 +109,24 @@ export default class ContentForm extends ElementForm {
         return this;
     }
 
+    /**
+     * The editor previewmode event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onEditorPreviewMode(evt) {
+        if(evt.detail.preview){
+            this.exitContentsEditMode();
+        }
+    }
+
+    /**
+     * The content toggle valuechange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
     onContentsToggleValueChange(evt){
         if(evt.detail.value){
             this.enterContentsEditMode();
@@ -111,12 +137,14 @@ export default class ContentForm extends ElementForm {
     }
 
     /**
-     * The text component dblclick event handler
+     * The component's contents dblclick event handler
      *
      * @private
      */
     onComponentDblClick(){
-        this.contents_toggle.setValue(true);
+        if (!this.editor.inPreviewMode()) {
+            this.contents_toggle.setValue(true);
+        }
     }
 
     /**
@@ -167,37 +195,39 @@ export default class ContentForm extends ElementForm {
      * @return {this}
      */
     enterContentsEditMode(supressEvent){
-        const component = this.getMasterComponent();
+        if(!this.hasClass('contents-unlocked')){
+            const component = this.getMasterComponent();
 
-        this.contents_toggle.setValue(true, true);
+            this.contents_toggle.setValue(true, true);
 
-        const draggable = component.getDraggable();
-        if(draggable){
-            draggable.disable();
-        }
+            const draggable = component.getDraggable();
+            if(draggable){
+                draggable.disable();
+            }
 
-        const resizable = component.getResizable();
-        if(resizable){
-            resizable.disable();
-        }
+            const resizable = component.getResizable();
+            if(resizable){
+                resizable.disable();
+            }
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.contents.get(0))
-            .attr('contenteditable', 'true')
-            .addListener('click', this.onComponentContentsClick)
-            .addListener('input', this.onComponentContentsInput)
-            .addListener('dragover', this.onComponentDragOver)
-            .addListener('keydown', this.onComponentContentsKey)
-            .addListener('keypress', this.onComponentContentsKey)
-            .addListener('keyup', this.onComponentContentsKey);
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.contents.get(0))
+                .attr('contenteditable', 'true')
+                .addListener('click', this.onComponentContentsClick)
+                .addListener('input', this.onComponentContentsInput)
+                .addListener('dragover', this.onComponentDragOver)
+                .addListener('keydown', this.onComponentContentsKey)
+                .addListener('keypress', this.onComponentContentsKey)
+                .addListener('keyup', this.onComponentContentsKey);
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.get(0)).addClass('contents-unlocked');
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.get(0)).addClass('contents-unlocked');
 
-        this.addClass('contents-unlocked');
+            this.addClass('contents-unlocked');
 
-        if(supressEvent !== true){
-            this.triggerEvent('contentsunlock', {'component': component});
+            if(supressEvent !== true){
+                this.triggerEvent('contentsunlock', {'component': component});
+            }
         }
 
         return this;
@@ -210,37 +240,39 @@ export default class ContentForm extends ElementForm {
      * @return {this}
      */
     exitContentsEditMode(supressEvent){
-        const component = this.getMasterComponent();
+        if(this.hasClass('contents-unlocked')){
+            const component = this.getMasterComponent();
 
-        this.contents_toggle.setValue(false, true);
+            this.contents_toggle.setValue(false, true);
 
-        const draggable = component.getDraggable();
-        if(draggable){
-            draggable.enable();
-        }
+            const draggable = component.getDraggable();
+            if(draggable){
+                draggable.enable();
+            }
 
-        const resizable = component.getResizable();
-        if(resizable){
-            resizable.enable();
-        }
+            const resizable = component.getResizable();
+            if(resizable){
+                resizable.enable();
+            }
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.contents.get(0))
-            .attr('contenteditable', null)
-            .removeListener('click', this.onComponentContentsClick)
-            .removeListener('input', this.onComponentContentsInput)
-            .removeListener('dragover', this.onComponentDragOver)
-            .removeListener('keydown', this.onComponentContentsKey)
-            .removeListener('keypress', this.onComponentContentsKey)
-            .removeListener('keyup', this.onComponentContentsKey);
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.contents.get(0))
+                .attr('contenteditable', null)
+                .removeListener('click', this.onComponentContentsClick)
+                .removeListener('input', this.onComponentContentsInput)
+                .removeListener('dragover', this.onComponentDragOver)
+                .removeListener('keydown', this.onComponentContentsKey)
+                .removeListener('keypress', this.onComponentContentsKey)
+                .removeListener('keyup', this.onComponentContentsKey);
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
-        new Dom(component.get(0)).removeClass('contents-unlocked');
+            // Create a new Dom instance to workaround the different JS contexts of the player and editor.
+            new Dom(component.get(0)).removeClass('contents-unlocked');
 
-        this.removeClass('contents-unlocked');
+            this.removeClass('contents-unlocked');
 
-        if(supressEvent !== true){
-            this.triggerEvent('contentslock', {'component': component});
+            if(supressEvent !== true){
+                this.triggerEvent('contentslock', {'component': component});
+            }
         }
 
         return this;

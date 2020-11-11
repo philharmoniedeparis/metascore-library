@@ -73,7 +73,6 @@
 
     &.selected > .time-wrapper{
         background: $lightgray;
-        pointer-events: auto;
 
         .time{
             opacity: 1;
