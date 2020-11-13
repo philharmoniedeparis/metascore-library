@@ -3,8 +3,6 @@ import Locale from '../../core/Locale';
 import Field from '../Field';
 import SelectInput from '../../core/ui/input/SelectInput';
 
-import {className} from '../../../css/editor/configseditor/BlockForm.scss';
-
 /**
  * A block component form class
  */
@@ -31,7 +29,7 @@ export default class BlockForm extends ComponentForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`block-form ${className}`);
+        this.addClass(`block-form`);
     }
 
     /**

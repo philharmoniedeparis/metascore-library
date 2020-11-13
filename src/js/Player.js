@@ -1,5 +1,3 @@
-import {className} from '../css/Player.scss';
-
 import Dom from './core/Dom';
 import Hotkeys from './core/Hotkeys';
 import {MasterClock} from './core/media/Clock';
@@ -12,6 +10,8 @@ import CuePoint from './player/CuePoint';
 import Component from './player/Component';
 import Scenario from './player/component/Scenario';
 import {getRendererForMime} from './core/utils/Media';
+
+import {className} from '../css/Player.scss';
 
 /**
  * Provides the main Player class

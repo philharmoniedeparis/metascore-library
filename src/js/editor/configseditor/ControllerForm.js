@@ -1,8 +1,6 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
 
-import {className} from '../../../css/editor/configseditor/ControllerForm.scss';
-
 /**
  * A controller component form class
  */
@@ -24,6 +22,6 @@ export default class ControllerForm extends ComponentForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`controller-form ${className}`);
+        this.addClass(`controller-form`);
     }
 }

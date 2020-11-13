@@ -1,8 +1,6 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
 
-import {className} from '../../../css/editor/configseditor/PageForm.scss';
-
 /**
  * A page component form class
  */
@@ -24,7 +22,7 @@ export default class PageForm extends ComponentForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`page-form ${className}`);
+        this.addClass(`page-form`);
     }
 
     /**

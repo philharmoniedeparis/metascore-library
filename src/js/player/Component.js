@@ -620,7 +620,9 @@ export default class Component extends Dom {
      * @abstract
      * @protected
      */
-    onCuePointUpdate(){}
+    onCuePointUpdate(){
+        // This is an abstract callback.
+    }
 
     /**
      * The cuepoint stop event handler

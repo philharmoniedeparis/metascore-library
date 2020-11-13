@@ -1,8 +1,6 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
 
-import {className} from '../../../css/editor/configseditor/ElementForm.scss';
-
 /**
  * An element component form class
  */
@@ -30,7 +28,7 @@ export default class ElementForm extends ComponentForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`element-form ${className}`);
+        this.addClass(`element-form`);
     }
 
     /**

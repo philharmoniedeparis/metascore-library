@@ -1,4 +1,3 @@
-
 /**
  * The value of the targetOrigin parameter sent with each postMessage
  * See https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage

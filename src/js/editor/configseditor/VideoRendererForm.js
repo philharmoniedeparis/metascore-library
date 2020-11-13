@@ -1,8 +1,6 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
 
-import {className} from '../../../css/editor/configseditor/VideoRendererForm.scss';
-
 /**
  * A video renderer component form class
  */
@@ -28,6 +26,6 @@ export default class VideoRendererForm extends ComponentForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`video-renderer-form ${className}`);
+        this.addClass(`video-renderer-form`);
     }
 }
