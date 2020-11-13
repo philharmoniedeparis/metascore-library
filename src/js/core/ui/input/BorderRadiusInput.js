@@ -30,9 +30,7 @@ export default class BorderRadiusInput extends Input{
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();

@@ -56,9 +56,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
@@ -107,9 +105,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * The change event handler
-     *
-     * @private
+     * @inheritdoc
      */
     onChange(){
         if(this.dirty){

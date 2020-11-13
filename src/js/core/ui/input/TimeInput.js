@@ -170,9 +170,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();

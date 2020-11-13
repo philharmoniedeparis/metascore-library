@@ -34,9 +34,7 @@ export default class SelectInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         const id = this.getId();

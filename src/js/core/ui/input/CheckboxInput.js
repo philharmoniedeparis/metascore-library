@@ -42,9 +42,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
@@ -78,10 +76,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * The change event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
     onChange(evt){
         if(this.is_readonly){

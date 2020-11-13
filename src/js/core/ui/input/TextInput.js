@@ -25,9 +25,7 @@ export default class TextInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
