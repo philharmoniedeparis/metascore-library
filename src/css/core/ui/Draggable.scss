@@ -3,14 +3,14 @@
     pointer-events: none;
 }
 
-:local(.className){
+:local(.className) {
     &.drag-handle,
-    .drag-handle{
+    .drag-handle {
         cursor: move;
     }
 }
 
-:local(.guideClassName){
+:local(.guideClassName) {
     position: absolute;
     top: 0;
     left: 0;
@@ -18,12 +18,12 @@
     pointer-events: none;
     z-index: 999;
 
-    &[data-axis="x"]{
+    &[data-axis='x'] {
         width: 1px;
         height: 100%;
     }
 
-    &[data-axis="y"]{
+    &[data-axis='y'] {
         width: 100%;
         height: 1px;
     }

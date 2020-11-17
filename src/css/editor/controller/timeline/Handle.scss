@@ -1,6 +1,12 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.className) {
+
+    /* darken and shift to the right sub-handles */
+    $initial-level: 3;
+    $final-level: 4;
+    $lighten-scale: -10%;
+    $margin: 0.5em;
     display: flex;
     position: sticky;
     left: 0;
@@ -16,34 +22,34 @@
     border-bottom: 1px solid $darkgray;
     z-index: 2;
 
-    > .icon{
+    > .icon {
         margin: 0 0.25em;
         font-size: 1.5em;
         flex: 0 0 auto;
     }
 
-    > button{
+    > button {
         padding: 0;
         color: #fff;
         align-self: stretch;
 
-        &[data-action="expander"]{
+        &[data-action='expander'] {
             width: 2em;
             font-size: 0.75em;
             box-sizing: border-box;
 
-            .icon{
+            .icon {
                 height: 1em;
                 transition: rotate 0.2s;
             }
 
-            &:hover{
+            &:hover {
                 opacity: 0.25;
             }
         }
     }
 
-    > .label{
+    > .label {
         flex: 1 1 auto;
         white-space: nowrap;
         overflow: hidden;
@@ -51,24 +57,24 @@
         user-select: none;
     }
 
-    > .togglers{
+    > .togglers {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         padding: 0 0.25em;
 
-        .input{
+        .input {
             margin-left: 1px;
             pointer-events: auto;
 
-            input{
-                + .state{
-                    label{
+            input {
+                + .state {
+                    label {
                         padding: 0.1em;
                         background: $darkgray;
                         cursor: pointer;
 
-                        .icon{
+                        .icon {
                             position: relative;
                             display: block;
                             top: 0;
@@ -82,9 +88,9 @@
                     }
                 }
 
-                &:checked{
-                    + .state{
-                        .icon{
+                &:checked {
+                    + .state {
+                        .icon {
                             opacity: 1;
                         }
                     }
@@ -93,85 +99,79 @@
         }
     }
 
-    &.dragging{
+    &.dragging {
         > * {
             opacity: 0.1;
         }
     }
 
-    &.dragover{
+    &.dragover {
         * {
             pointer-events: none;
         }
 
-        &::before{
-            content: "";
+        &::before {
+            content: '';
             position: absolute;
             left: 0;
             width: 100%;
             height: 2px;
-            background: #FF00A6;
+            background: #ff00a6;
             z-index: 1;
         }
 
-        &::after{
-            content: "";
+        &::after {
+            content: '';
             position: absolute;
             left: 0;
             width: 6px;
             height: 6px;
-            background: #FF00A6;
+            background: #ff00a6;
             border-radius: 50%;
             z-index: 1;
         }
 
-        &.drag-above{
-            &::before{
+        &.drag-above {
+            &::before {
                 top: 0;
                 margin-top: -1px;
             }
 
-            &::after{
+            &::after {
                 top: 0;
                 margin-top: -3px;
             }
         }
 
-        &.drag-below{
-            &::before{
+        &.drag-below {
+            &::before {
                 top: 100%;
                 margin-top: 1px;
             }
 
-            &::after{
+            &::after {
                 top: 100%;
                 margin-top: -1px;
             }
         }
     }
 
-    .track.user-expanded > & > button[data-action="expander"],
-    .track.auto-expanded > & > button[data-action="expander"]{
-        .icon{
+    .track.user-expanded > & > button[data-action='expander'],
+    .track.auto-expanded > & > button[data-action='expander'] {
+        .icon {
             transform: rotate(90deg);
         }
     }
 
-    .track:not(.has-descendents) > & > button[data-action="expander"]{
+    .track:not(.has-descendents) > & > button[data-action='expander'] {
         display: none;
     }
-
-    /* darken and shift to the right sub-handles */
-    $initial-level: 3;
-    $final-level: 4;
-    $lighten-scale: -10%;
-    $margin: 0.5em;
     @for $i from $initial-level through $final-level {
         $selector: '';
         @for $j from 1 through $i {
-            $selector : $selector '.track';
+            $selector: $selector '.track';
         }
-        #{$selector} &{
+        #{$selector} & {
             border-left: $margin * ($i - $initial-level + 1) solid $darkgray;
             background: scale-color($mediumgray, $lightness: $lighten-scale * ($i - $initial-level + 1));
         }

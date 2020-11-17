@@ -1,28 +1,28 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
-    form{
+:local(.className) {
+    form {
         text-align: left;
 
-        .field{
+        .field {
             display: block;
             text-align: left;
 
-            > label{
-                margin-right: .5em;
+            > label {
+                margin-right: 0.5em;
                 color: #fff;
             }
 
-            > .input{
-                &.text{
-                    input{
+            > .input {
+                &.text {
+                    input {
                         width: 100%;
                         box-sizing: border-box;
                     }
                 }
             }
 
-            > .description{
+            > .description {
                 flex: 0 0 100%;
                 font-size: 0.9em;
                 color: $darkgray;
@@ -30,21 +30,21 @@
             }
         }
 
-        .separator{
+        .separator {
             position: relative;
             margin: 0.5em;
             text-align: center;
 
-            span{
+            span {
                 position: relative;
-                padding: 0 .5em;
+                padding: 0 0.5em;
                 color: #fff;
                 background: $lightgray;
                 z-index: 1;
             }
 
-            &::before{
-                content: "";
+            &::before {
+                content: '';
                 position: absolute;
                 top: 50%;
                 left: 0;

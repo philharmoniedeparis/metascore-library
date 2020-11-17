@@ -1,19 +1,19 @@
-:local(.className){
+:local(.className) {
     display: inline-flex;
     flex-direction: row;
     align-items: center;
     outline: none;
 
-    label{
+    label {
         user-select: none;
     }
 
-    .description{
+    .description {
         opacity: 0.5;
     }
 
     .input.required ~ label {
-        &::after{
+        &::after {
             content: '*';
             color: red;
         }

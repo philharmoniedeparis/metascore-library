@@ -1,17 +1,17 @@
-:local(.className){
+:local(.className) {
     position: relative;
 
-    .layers{
+    .layers {
         overflow: hidden;
         position: relative;
         height: 100%;
 
-        .layer{
+        .layer {
             position: absolute;
             top: 0;
             left: 0;
 
-            &.highlight{
+            &.highlight {
                 opacity: 0.33;
             }
         }

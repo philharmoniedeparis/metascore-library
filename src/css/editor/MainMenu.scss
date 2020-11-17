@@ -1,42 +1,42 @@
-@import "../theme";
+@import '../theme';
 
-:local(.className){
+:local(.className) {
     display: flex;
     padding: 0 1em;
     justify-content: flex-start;
     align-items: center;
 
-    *{
+    * {
         color: #fff;
     }
 
-    .logo{
+    .logo {
         flex: 0 0 5em;
         height: 100%;
         margin-right: 2em;
     }
 
-    .separator{
+    .separator {
         flex: 1 1 auto;
     }
 
-    button{
+    button {
         flex: 0 0 auto;
         padding: 0.5em;
 
-        .icon{
+        .icon {
             font-size: 1.25em;
         }
 
-        &[data-action="revert"]{
+        &[data-action='revert'] {
             margin-left: 2em;
         }
 
-        &[data-action="redo"]{
+        &[data-action='redo'] {
             margin-right: 2em;
         }
 
-        &[data-action="restore"]{
+        &[data-action='restore'] {
             align-self: center;
             padding: 0.1em 1em;
             background: #fff;
@@ -44,96 +44,96 @@
             border-radius: 1.5em;
             opacity: 1;
 
-            .label{
+            .label {
                 color: #000;
             }
 
-            &:hover{
+            &:hover {
                 background: none;
 
-                .label{
+                .label {
                     color: #fff;
                 }
             }
 
-            &[disabled]{
+            &[disabled] {
                 opacity: 0.25;
             }
         }
     }
 
-    .input{
+    .input {
         &.text,
         &.number,
-        &.select{
+        &.select {
             input,
-            select{
+            select {
                 background: none;
                 border-radius: 0;
                 opacity: 0.5;
 
                 &:invalid,
-                &:focus{
+                &:focus {
                     background: $mediumgray;
                     opacity: 1;
                 }
             }
         }
 
-        &[data-name="title"]{
+        &[data-name='title'] {
             flex: 1 1 auto;
             padding: 0.5em 0;
 
-            input{
+            input {
                 width: 100%;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
 
-                &:focus{
+                &:focus {
                     text-overflow: clip;
                 }
             }
         }
 
-        &[data-name="width"],
-        &[data-name="height"]{
-            input{
+        &[data-name='width'],
+        &[data-name='height'] {
+            input {
                 width: 3em;
                 text-align: center;
             }
         }
 
-        &[data-name="width"]{
-            &::after{
-                content: "x";
-                padding: 0.25em 0.25em 0 0.25em;
+        &[data-name='width'] {
+            &::after {
+                content: 'x';
+                padding: 0.25em 0.25em 0;
                 padding-top: 0.25em;
                 opacity: 0.5;
             }
         }
 
-        &[data-name="zoom"]{
+        &[data-name='zoom'] {
             margin-right: 1em;
 
-            input{
+            input {
                 width: 4em;
             }
         }
 
-        &[data-name="preview-toggle"]{
+        &[data-name='preview-toggle'] {
             margin-right: 2em;
 
-            .state{
-                label{
+            .state {
+                label {
                     width: 100%;
                     height: 100%;
                     background: none;
                     cursor: pointer;
                     opacity: 0.5;
-                    transition: opacity .2s;
+                    transition: opacity 0.2s;
 
-                    .icon{
+                    .icon {
                         display: block;
                         position: relative;
                         top: 0;
@@ -143,44 +143,44 @@
                     }
 
                     &:hover,
-                    &:focus{
+                    &:focus {
                         opacity: 1;
                     }
                 }
             }
 
-            input:checked ~ .state label{
+            input:checked ~ .state label {
                 opacity: 1;
             }
         }
 
-        &[data-name="revisions"]{
+        &[data-name='revisions'] {
             align-self: center;
             margin-right: 0.5em;
             opacity: 0.5;
 
-            select{
+            select {
                 max-width: 15em;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
 
-                option:disabled{
+                option:disabled {
                     color: $lightgray;
                     font-style: italic;
                 }
 
-                &:hover{
+                &:hover {
                     border-color: #fff;
                 }
             }
         }
     }
 
-    &.title-focused{
+    &.title-focused {
         button,
-        .input:not([data-name="title"]),
-        .separator{
+        .input:not([data-name='title']),
+        .separator {
             display: none;
         }
     }

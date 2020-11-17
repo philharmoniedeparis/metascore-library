@@ -1,12 +1,12 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.className) {
     display: contents;
     height: 2em;
     user-select: none;
     cursor: pointer;
 
-    > .time-wrapper{
+    > .time-wrapper {
         position: relative;
         height: 100%;
         width: var(--timline-zoom);
@@ -17,7 +17,7 @@
         border-bottom: 1px solid $darkgray;
         box-sizing: border-box;
 
-        .time{
+        .time {
             position: absolute;
             top: 0.5em;
             bottom: 0.5em;
@@ -25,14 +25,14 @@
             width: 100%;
             background-color: #555;
             box-sizing: border-box;
-            box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+            box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
             opacity: 0.5;
 
-            .resize-handle{
+            .resize-handle {
                 display: none;
                 width: 6px;
                 height: 6px;
-                margin: -3px 0 0 0;
+                margin: -3px 0 0;
                 background: #fff;
                 border-radius: 50%;
                 z-index: 1;
@@ -40,7 +40,7 @@
         }
     }
 
-    &:not(.has-end-time) > .time-wrapper::after{
+    &:not(.has-end-time) > .time-wrapper::after {
         content: '';
         display: block;
         position: sticky;
@@ -51,127 +51,136 @@
         background-size: 8px 8px;
         pointer-events: none;
     }
-    &:not(.has-start-time) > .time-wrapper::after{
+
+    &:not(.has-start-time) > .time-wrapper::after {
         background-image: linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0);
         background-position: left 3px;
     }
-    &:not(.has-end-time) > .time-wrapper::after{
-        background-image: linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px,transparent 0);
+
+    &:not(.has-end-time) > .time-wrapper::after {
+        background-image: linear-gradient(-135deg, #606060 4px, transparent 0),linear-gradient(-45deg, #606060 4px, transparent 0);
         background-position: right 3px;
     }
-    &:not(.has-start-time):not(.has-end-time) > .time-wrapper::after{
+
+    &:not(.has-start-time):not(.has-end-time) > .time-wrapper::after {
         background-image:
             linear-gradient(135deg, #606060 4px, transparent 0), linear-gradient(45deg, #606060 4px, transparent 0),
-            linear-gradient(-135deg,#606060 4px,transparent 0),linear-gradient(-45deg,#606060 4px, transparent 0);
+            linear-gradient(-135deg, #606060 4px, transparent 0),linear-gradient(-45deg, #606060 4px, transparent 0);
         background-position: left 3px, left 3px, right 3px, right 3px;
     }
 
-    > .descendents{
+    > .descendents {
         display: none;
     }
 
-    &.selected > .time-wrapper{
+    &.selected > .time-wrapper {
         background: $lightgray;
 
-        .time{
+        .time {
             opacity: 1;
 
-            .resize-handle{
+            .resize-handle {
                 display: block;
             }
         }
     }
 
     &.user-expanded,
-    &.auto-expanded{
-        > .descendents{
+    &.auto-expanded {
+        > .descendents {
             display: contents;
         }
     }
 
-    &.dragging{
+    &.dragging {
         > * {
             opacity: 0.1;
         }
     }
 
-    &.dragover{
+    &.dragover {
         * {
             pointer-events: none;
         }
 
-        &::before{
-            content: "";
+        &::before {
+            content: '';
             position: absolute;
             left: 0;
             width: 100%;
             height: 2px;
-            background-color: #FF00A6;
+            background-color: #ff00a6;
             z-index: 1;
         }
 
-        &.drag-above{
-            &::before{
+        &.drag-above {
+            &::before {
                 top: 0;
                 margin-top: -1px;
             }
         }
 
-        &.drag-below{
-            &::before{
+        &.drag-below {
+            &::before {
                 top: 100%;
                 margin-top: 1px;
             }
         }
     }
 
-    &[data-type="Scenario"]{
+    &[data-type='Scenario'] {
         border-top: 0;
 
         > .handle,
-        > .time-wrapper{
+        > .time-wrapper {
             display: none;
         }
 
-        > .descendents{
+        > .descendents {
             display: contents;
         }
     }
-    &[data-type="Controller"],
-    &[data-type="VideoRenderer"],
-    &[data-type="BlockToggler"],
-    &[data-type="Block"]{
-        > .time-wrapper .time{
+
+    &[data-type='Controller'],
+    &[data-type='VideoRenderer'],
+    &[data-type='BlockToggler'],
+    &[data-type='Block'] {
+        > .time-wrapper .time {
             background-color: $block-color;
         }
     }
-    &[data-type="Page"]{
-        > .time-wrapper .time{
+
+    &[data-type='Page'] {
+        > .time-wrapper .time {
             background-color: $page-color;
         }
 
-        &:first-child > .time-wrapper .time .resize-handle[data-direction="left"],
-        &:last-child > .time-wrapper .time .resize-handle[data-direction="right"]{
+        &:first-child > .time-wrapper .time .resize-handle[data-direction='left'],
+        &:last-child > .time-wrapper .time .resize-handle[data-direction='right'] {
             display: none;
         }
     }
-    &[data-type="Cursor"]{
-        > .time-wrapper .time{
+
+    &[data-type='Cursor'] {
+        > .time-wrapper .time {
             background-color: $cursor-element-color;
         }
     }
-    &[data-type="Content"]{
-        > .time-wrapper .time{
+
+    &[data-type='Content'] {
+        > .time-wrapper .time {
             background-color: $content-element-color;
         }
     }
-    &[data-type="Animation"]{
-        > .time-wrapper .time{
+
+    &[data-type='Animation'] {
+        > .time-wrapper .time {
             background-color: $animation-element-color;
         }
     }
-    &[data-type="SVG"]{
-        > .time-wrapper .time{
+
+    &[data-type='SVG'] {
+        > .time-wrapper .time {
             background-color: $svg-element-color;
         }
     }

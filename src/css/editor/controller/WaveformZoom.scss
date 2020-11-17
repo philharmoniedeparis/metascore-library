@@ -1,21 +1,21 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.className) {
     position: relative;
 
-    .layers{
+    .layers {
         overflow: hidden;
         position: relative;
         height: 100%;
 
-        .layer{
+        .layer {
             position: absolute;
             top: 0;
             left: 0;
         }
     }
 
-    .message{
+    .message {
         position: absolute;
         top: 50%;
         left: 0;
@@ -26,18 +26,18 @@
     }
 }
 
-:local(.controlsClassName){
+:local(.controlsClassName) {
     display: flex;
     flex-direction: row;
     align-items: stretch;
     width: 12em;
 
-    button{
+    button {
         color: #fff;
         line-height: 0.5em;
 
-        &[data-action="zoom-in"]{
-            .icon{
+        &[data-action='zoom-in'] {
+            .icon {
                 width: 1.5em;
                 height: 1.5em;
             }

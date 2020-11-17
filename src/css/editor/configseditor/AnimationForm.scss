@@ -1,9 +1,9 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
-    .fields{
-        .field{
-            &[data-property="colors"]{
+:local(.className) {
+    .fields {
+        .field {
+            &[data-property='colors'] {
                 width: 100%;
                 justify-content: flex-start;
 

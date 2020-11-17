@@ -1,10 +1,10 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.className) {
     position: relative;
     cursor: pointer;
 
-    input{
+    input {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -13,14 +13,14 @@
         visibility: hidden;
         z-index: -1;
 
-        + .state{
-            label{
+        + .state {
+            label {
                 display: block;
                 width: 1em;
                 height: 1em;
                 background: #fff;
 
-                .icon{
+                .icon {
                     display: none;
                     position: absolute;
                     top: -0.1em;
@@ -32,19 +32,19 @@
             }
         }
 
-        &:checked{
-           + .state{
-                .icon{
+        &:checked {
+            + .state {
+                .icon {
                     display: block;
                 }
             }
         }
     }
 
-    &.toggle-button{
-        input{
-            + .state{
-                label{
+    &.toggle-button {
+        input {
+            + .state {
+                label {
                     width: auto;
                     height: auto;
                     padding: 0.25em 0.5em;
@@ -55,17 +55,17 @@
                     cursor: pointer;
                     user-select: none;
                     outline: 0;
-                    transition: all .4s ease;
+                    transition: all 0.4s ease;
                 }
 
-                .icon{
+                .icon {
                     display: none;
                 }
             }
 
-            &:checked{
-                + .state{
-                    label{
+            &:checked {
+                + .state {
+                    label {
                         background: #fff;
                         color: #000;
                     }

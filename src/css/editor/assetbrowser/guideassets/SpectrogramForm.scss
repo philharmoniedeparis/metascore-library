@@ -1,63 +1,63 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
-    > .inner{
+:local(.className) {
+    > .inner {
         background: $lightgray;
 
-        > .body{
-            > .contents{
+        > .body {
+            > .contents {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
 
                 form {
-                    fieldset{
+                    fieldset {
                         margin-bottom: 0.5em;
                         border: 1px solid $darkgray;
 
-                        > legend{
+                        > legend {
                             padding: 0 0.5em;
-                            color:#fff;
+                            color: #fff;
                             background: $lightgray;
                             text-align: left;
                         }
 
-                        > .fields-wrapper{
+                        > .fields-wrapper {
                             display: grid;
                             grid-template-columns: 1fr 1fr;
                             grid-gap: 0.5em 1em;
 
-                            .field{
-                                > label{
+                            .field {
+                                > label {
                                     margin-right: 0.5em;
                                     color: #fff;
                                 }
 
-                                .input.number{
-                                    input{
+                                .input.number {
+                                    input {
                                         width: 2em;
                                     }
                                 }
 
-                                &[data-opt="width"],
-                                &[data-opt="height"],
-                                &[data-opt="saturation"],
-                                &[data-opt="rotation"]{
-                                    .input{
-                                        input{
+                                &[data-opt='width'],
+                                &[data-opt='height'],
+                                &[data-opt='saturation'],
+                                &[data-opt='rotation'] {
+                                    .input {
+                                        input {
                                             width: 4em;
                                         }
                                     }
                                 }
 
-                                &[data-opt="scale"]{
+                                &[data-opt='scale'] {
                                     grid-column: 1 / span 2;
                                 }
 
-                                &[data-opt="start"],
-                                &[data-opt="stop"]{
-                                    .input{
-                                        input{
+                                &[data-opt='start'],
+                                &[data-opt='stop'] {
+                                    .input {
+                                        input {
                                             width: 5em;
                                         }
                                     }

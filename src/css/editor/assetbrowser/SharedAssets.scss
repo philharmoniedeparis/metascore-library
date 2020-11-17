@@ -1,24 +1,24 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.className) {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: $lightgray;
 
-    .assets-container{
+    .assets-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(5em, 20%));
         overflow-y: auto;
         padding: 1em;
 
-        .asset{
+        .asset {
             display: flex;
             flex-direction: column;
             align-items: stretch;
             margin: 1em;
 
-            figure{
+            figure {
                 position: relative;
                 margin: 0;
                 background: $mediumgray;
@@ -29,20 +29,20 @@
                     left: 0;
                 }
 
-                &::before{
+                &::before {
                     position: relative;
-                    content: "";
+                    content: '';
                     display: block;
                     padding-top: 100%;
                 }
 
-                .buttons{
+                .buttons {
                     display: none;
                     width: 100%;
                     height: 100%;
                     z-index: 1;
 
-                    button{
+                    button {
                         min-width: 50%;
                         padding: 0.5em;
                         background: #fff;
@@ -51,8 +51,8 @@
                     }
                 }
 
-                &:hover{
-                    .buttons{
+                &:hover {
+                    .buttons {
                         display: flex;
                         flex-direction: column;
                         flex-wrap: wrap;
@@ -63,7 +63,7 @@
                 }
             }
 
-            .label{
+            .label {
                 padding: 0.5em 0;
                 text-align: center;
                 user-select: none;
@@ -71,12 +71,12 @@
         }
     }
 
-    .overlay.loadmask{
+    .overlay.loadmask {
         position: absolute;
     }
 }
 
-:local(.toolbarClassName){
+:local(.toolbarClassName) {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -84,16 +84,16 @@
     background: $lightgray;
     margin-left: 0.25em;
 
-    .input{
+    .input {
         margin: 0 0.25em;
 
-        &.text{
+        &.text {
             position: relative;
             flex: 1 1 auto;
             max-width: 30em;
             min-width: 10em;
 
-            input{
+            input {
                 width: 100%;
                 padding: 0.5em 1em 0.5em 2.5em;
                 border: 0;
@@ -107,7 +107,7 @@
                 }
             }
 
-            .icon{
+            .icon {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -120,7 +120,7 @@
         }
     }
 
-    button{
+    button {
         margin-left: auto;
         color: #fff;
     }

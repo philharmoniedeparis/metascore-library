@@ -1,10 +1,10 @@
-:local(.className){
-    > .inner{
+:local(.className) {
+    > .inner {
         flex: 1 1 auto;
         max-width: 75vw;
 
-        > .body{
-            > .contents{
+        > .body {
+            > .contents {
                 color: #fff;
                 display: flex;
                 flex-wrap: wrap;
@@ -75,9 +75,9 @@
     }
 
     @media only screen and (min-width: 1200px) {
-        > .inner{
-            > .body{
-                > .contents{
+        > .inner {
+            > .body {
+                > .contents {
                     flex-wrap: nowrap;
                 }
             }

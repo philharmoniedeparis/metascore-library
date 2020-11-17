@@ -1,9 +1,9 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.className) {
     position: relative;
 
-    .buttons{
+    .buttons {
         display: none;
         position: absolute;
         top: 0;
@@ -11,28 +11,28 @@
         height: 100%;
         background-color: $darkgray;
 
-        button{
+        button {
             height: 100%;
             opacity: 0.5;
 
-            .icon{
+            .icon {
                 color: #fff;
             }
 
-            &:hover{
+            &:hover {
                 opacity: 1;
             }
         }
     }
 
-    &:hover{
-        .buttons{
+    &:hover {
+        .buttons {
             display: block;
         }
     }
 
-    &.disabled{
-        .buttons{
+    &.disabled {
+        .buttons {
             cursor: default;
             pointer-events: none;
         }

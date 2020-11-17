@@ -1,29 +1,31 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.className) {
     @keyframes pulse {
-        0%, 100% {
+        0%,
+        100% {
             opacity: 1;
         }
+
         50% {
             opacity: 0.3;
         }
     }
 
-    .fields{
-        .keyframes-toggle{
+    .fields {
+        .keyframes-toggle {
             flex: 100%;
             margin: 0.5em 0;
 
-            input{
-                + .state label{
+            input {
+                + .state label {
                     padding-left: 1.75em;
                     color: #000;
                     background: #fff;
                     border: 0;
 
-                    &::before{
-                        content: "";
+                    &::before {
+                        content: '';
                         position: absolute;
                         display: block;
                         height: 1em;
@@ -31,16 +33,16 @@
                         top: 50%;
                         left: 0.5em;
                         margin-top: -0.5em;
-                        background: #FF4E00;
+                        background: #ff4e00;
                         border-radius: 50%;
                     }
                 }
 
-                &:checked + .state label{
+                &:checked + .state label {
                     color: #fff;
                     background: $darkgray;
 
-                    &::before{
+                    &::before {
                         animation: pulse 1s ease infinite;
                     }
                 }
