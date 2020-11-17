@@ -1,4 +1,4 @@
-:local(.className) {
+:local(.class-name) {
     > .inner {
         > .body {
             > .contents {
@@ -9,7 +9,7 @@
                     height: 75vh;
                     min-width: 800px;
                     min-height: 500px;
-                    border: none;
+                    border: 0;
                 }
             }
         }

@@ -1,6 +1,6 @@
 @import '../../theme';
 
-:local(.className) {
+:local(.class-name) {
     position: relative;
 
     .layers {
@@ -26,7 +26,7 @@
     }
 }
 
-:local(.controlsClassName) {
+:local(.controls-class-name) {
     display: flex;
     flex-direction: row;
     align-items: stretch;

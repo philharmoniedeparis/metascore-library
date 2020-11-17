@@ -1,6 +1,6 @@
 @import '../../theme';
 
-:local(.className) {
+:local(.class-name) {
     display: flex;
     flex-direction: column;
     position: relative;
@@ -152,7 +152,7 @@
     }
 }
 
-:local(.assetDragGhostClassName) {
+:local(.asset-drag-ghost-class-name) {
     position: absolute;
     top: 0;
     right: 100%;

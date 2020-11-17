@@ -1,6 +1,6 @@
 @import '../../../../theme';
 
-:local(.className) {
+:local(.class-name) {
     display: flex;
     flex-direction: column;
 
@@ -71,7 +71,7 @@
 
             .draggable-input {
                 height: 0.5em;
-                background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+                background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
 
                 .thumb {
                     top: 50%;
@@ -79,7 +79,7 @@
                 }
 
                 &.hue {
-                    background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+                    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
                 }
 
                 &.opacity {

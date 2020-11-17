@@ -1,7 +1,7 @@
 @import '../theme';
-@import './variables.scss';
+@import './variables';
 
-:local(.className) {
+:local(.class-name) {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -100,7 +100,7 @@
                     flex-wrap: wrap;
 
                     button {
-                        border: none;
+                        border: 0;
                         outline: none;
                         background-color: transparent;
                         background-repeat: no-repeat;

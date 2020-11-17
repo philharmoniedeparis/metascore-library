@@ -1,7 +1,7 @@
 @import '../../theme';
-@import '../variables.scss';
+@import '../variables';
 
-:local(.className) {
+:local(.class-name) {
     position: relative;
     display: flex;
     flex-direction: row;
@@ -32,7 +32,7 @@
     }
 }
 
-:local(.dragGhostClassName) {
+:local(.drag-ghost-class-name) {
     position: absolute;
     top: 0;
     right: 100%;

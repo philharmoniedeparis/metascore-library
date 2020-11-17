@@ -1,6 +1,6 @@
 @import '../../../theme';
 
-:local(.className) {
+:local(.class-name) {
     input {
         width: 0.1px;
         height: 0.1px;
@@ -9,15 +9,11 @@
         position: absolute;
         z-index: -1;
 
-        & + label {
-            padding: 0.25em 0.5em;
+        + label {
+            padding: 0 0.5em;
             color: #fff;
             background: $mediumgray;
             border-radius: 0.25em;
-
-            padding: 0 0.5em;
-            color: white;
-            background-color: $mediumgray;
             cursor: pointer;
 
             &:focus {

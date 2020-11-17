@@ -1,9 +1,9 @@
-:local(.bodyClassName) * {
+:local(.body-class-name) * {
     user-select: none;
     pointer-events: none;
 }
 
-:local(.className) {
+:local(.class-name) {
     .resize-handle {
         position: absolute;
         width: 8px;
@@ -81,7 +81,7 @@
     }
 }
 
-:local(.guideClassName) {
+:local(.guide-class-name) {
     position: absolute;
     top: 0;
     left: 0;

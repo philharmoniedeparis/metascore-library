@@ -1,8 +1,7 @@
 @import './theme';
 @import '../fonts/source-sans-pro/source-sans-variable.css';
 
-:local(.className) {
-
+:local(.class-name) {
     font-size: 14px;
     font-family: 'Source Sans Variable', sans-serif;
     display: grid;
@@ -158,7 +157,7 @@
                             height: 100%;
                             margin: 0;
                             padding: 0;
-                            border: none;
+                            border: 0;
                             background: #fff;
                         }
                     }

@@ -1,6 +1,6 @@
 @import '../../theme';
 
-:local(.className) {
+:local(.class-name) {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -76,7 +76,7 @@
     }
 }
 
-:local(.toolbarClassName) {
+:local(.toolbar-class-name) {
     display: flex;
     flex-direction: row;
     align-items: center;
