@@ -7,19 +7,6 @@ import 'geometry-polyfill';
 
     const I = new window.DOMMatrix();
 
-    class Point{
-        constructor(x, y, z){
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        transformBy(matrix) {
-            const tmp = matrix.multiply(I.translate(this.x, this.y, this.z));
-            return new Point(tmp.m41, tmp.m42, tmp.m43);
-        }
-    }
-
     function getTransformationMatrix(element) {
         let transformationMatrix = I;
         let x = element;
@@ -35,10 +22,10 @@ import 'geometry-polyfill';
 
         const w = element.offsetWidth;
         const h = element.offsetHeight;
-        const p0 = new Point(0, 0, 0).transformBy(transformationMatrix);
-        const p1 = new Point(w, 0, 0).transformBy(transformationMatrix);
-        const p2 = new Point(w, h, 0).transformBy(transformationMatrix);
-        const p3 = new Point(0, h, 0).transformBy(transformationMatrix);
+        const p0 = new window.DOMPoint(0, 0, 0).matrixTransform(transformationMatrix);
+        const p1 = new window.DOMPoint(w, 0, 0).matrixTransform(transformationMatrix);
+        const p2 = new window.DOMPoint(w, h, 0).matrixTransform(transformationMatrix);
+        const p3 = new window.DOMPoint(0, h, 0).matrixTransform(transformationMatrix);
         const left = Math.min(p0.x, p1.x, p2.x, p3.x);
         const top = Math.min(p0.y, p1.y, p2.y, p3.y);
         const rect = element.getBoundingClientRect();
@@ -58,7 +45,7 @@ import 'geometry-polyfill';
      * @returns {Object} The x and y position in the element's local coordinate system
      */
     window.convertPointFromPageToNode = window.convertPointFromPageToNode || function (element, pageX, pageY) {
-        return new Point(pageX, pageY, 0).transformBy(getTransformationMatrix(element).inverse());
+        return new window.DOMPoint(pageX, pageY, 0).matrixTransform(getTransformationMatrix(element).inverse());
     };
 
     /**
@@ -71,6 +58,6 @@ import 'geometry-polyfill';
      * @returns {Object} The x and y position in the page's coordinate system
      */
     window.convertPointFromNodeToPage = window.convertPointFromNodeToPage || function (element, offsetX, offsetY) {
-        return new Point(offsetX, offsetY, 0).transformBy(getTransformationMatrix(element));
+        return new window.DOMPoint(offsetX, offsetY, 0).matrixTransform(getTransformationMatrix(element));
     };
 })();
