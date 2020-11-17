@@ -1,9 +1,6 @@
 {
 	"Editor.autosaveIndicator.text": "Sauvegarde des données de récupération&nbsp;...",
 	"Editor.contextmenu.banner": "metaScore Editor v.!version r.!revision",
-	"Player.contextmenu.banner": "metaScore Player v.!version r.!revision",
-	"Player.contextmenu.header": "Créé avec",
-	"Player.defaultScenarioName": "Scénario 1",
 	"core.Confirm.cancelLabel": "Non",
 	"core.Confirm.confirmLabel": "Oui",
 	"core.Prompt.cancelLabel": "Annuler",
@@ -372,8 +369,5 @@
 	"media.getFileDuration.no-mime.error": "Le type de média du fichier n'a pas pu être déterminé pour !url",
 	"media.getFileDuration.no-renderer.error": "Aucun moteur de rendu compatible n'a été trouvé pour le type de média !mime",
 	"overlay.LoadMask.bar.text": "!percent%",
-	"overlay.LoadMask.text": "Chargement&nbsp;...",
-	"player.block.Pager.count": "page !current/!count",
-	"player.component.Page.name": "page !index",
-	"player.onRendererError.ok": "OK"
+	"overlay.LoadMask.text": "Chargement&nbsp;..."
 }

@@ -1,0 +1,20 @@
+{
+	"Player.contextmenu.banner": "metaScore Player v.!version r.!revision",
+	"Player.contextmenu.header": "Créé avec",
+	"Player.defaultScenarioName": "Scénario 1",
+	"core.media.renderer.Dash.error": "Une erreur s'est produite lors de la tentative de lecture du flux média",
+	"core.media.renderer.Dash.getDurationFromURI.error": "Une erreur s'est produite lors du chargement du média: !url",
+	"core.media.renderer.HLS.error": "Une erreur s'est produite lors de la tentative de lecture du flux média",
+	"core.media.renderer.HLS.getDurationFromURI.error": "Une erreur s'est produite lors du chargement du média: !url",
+	"core.media.renderer.HTML5.getDurationFromURI.error": "Une erreur s'est produite lors du chargement du média: !url",
+	"core.media.renderer.HTML5.onError.aborted.msg": "Vous avez interrompu la lecture du média.",
+	"core.media.renderer.HTML5.onError.decode.msg": "La lecture du média a été abandonnée en raison d'un problème de format.",
+	"core.media.renderer.HTML5.onError.default.msg": "Une erreur inconnue est survenue.",
+	"core.media.renderer.HTML5.onError.network.msg": "Une erreur réseau a entraîné l'échec du téléchargement du média.",
+	"core.media.renderer.HTML5.onError.not-supported.msg": "Le média ne peut être chargé, soit parce que le réseau a échoué ou parce que le format est pas pris en charge.",
+	"media.getFileDuration.no-mime.error": "Le type de média du fichier n'a pas pu être déterminé pour !url",
+	"media.getFileDuration.no-renderer.error": "Aucun moteur de rendu compatible n'a été trouvé pour le type de média !mime",
+	"player.block.Pager.count": "page !current/!count",
+	"player.component.Page.name": "page !index",
+	"player.onRendererError.ok": "OK"
+}
