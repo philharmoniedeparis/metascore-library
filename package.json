@@ -11,9 +11,6 @@
   "scripts": {
     "pack": "webpack",
     "dev": "webpack --mode='development' --watch",
-    "lint:js": "eslint -c .eslintrc.json src/js",
-    "lint:css": "stylelint src/css/**/*.scss",
-    "lint": "npm run lint:js && npm run lint:css",
     "doc": "esdoc"
   },
   "repository": {
@@ -37,7 +34,7 @@
     "esdoc": "^1.1.0",
     "esdoc-standard-plugin": "^1.0.0",
     "eslint": "^7.13.0",
-    "eslint-plugin-compat": "^3.8.0",
+    "eslint-plugin-compat": "^3.8.0-2",
     "eslint-webpack-plugin": "^2.2.1",
     "file-loader": "^6.2.0",
     "filenamify": "^4.2.0",

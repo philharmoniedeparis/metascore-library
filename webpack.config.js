@@ -25,7 +25,7 @@ const getConfigs = (entry_id, env, argv) => {
             entry['API'] = ['classlist-polyfill', './polyfills/NodeList.forEach.js', './polyfills/Fullscreen.js', './src/js/API'];
             break;
         case 'Editor':
-            entry['Editor'] = ['./src/js/Editor'];
+            entry['Editor'] = ['./polyfills/GeomertyUtils.js', './src/js/Editor'];
             break;
     }
 
@@ -53,10 +53,10 @@ const getConfigs = (entry_id, env, argv) => {
                     // Transpile JS code.
                     test: /\.js$/,
                     include: [
-                        path.resolve(__dirname, "src/js"),
-                        path.resolve(__dirname, "polyfills"),
-                        path.resolve(__dirname, "node_modules/geometry-polyfill"),
-                        path.resolve(__dirname, "node_modules/waveform-data"),
+                        path.resolve(__dirname, "./src/js"),
+                        path.resolve(__dirname, "./polyfills"),
+                        path.resolve(__dirname, "./node_modules/geometry-polyfill"),
+                        path.resolve(__dirname, "./node_modules/waveform-data"),
                     ],
                     use: [
                         {
@@ -73,8 +73,7 @@ const getConfigs = (entry_id, env, argv) => {
                                             useBuiltIns: "usage",
                                             corejs: "3.7.0",
                                             modules: "amd",
-                                            targets: browsers,
-                                            //debug: true
+                                            targets: browsers
                                         }
                                     ]
                                 ]
@@ -206,6 +205,7 @@ const getConfigs = (entry_id, env, argv) => {
         plugins: [
             new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
             new StylelintPlugin({
+                context: path.resolve(__dirname, './src'),
                 config: {
                     extends: "stylelint-config-sass-guidelines",
                     plugins: [
@@ -214,12 +214,18 @@ const getConfigs = (entry_id, env, argv) => {
                     rules: {
                         "plugin/no-unsupported-browser-features": [true, {
                             "browsers": browsers,
-                            "ignorePartialSupport": true
+                            "ignorePartialSupport": true,
+                            "ignore": [
+                                "user-select-none",
+                                "pointer-events"
+                            ]
                         }],
                         "indentation": 4,
                         "max-nesting-depth": null,
                         "selector-max-compound-selectors": null,
-                        "order/properties-alphabetical-order": null
+                        "order/properties-alphabetical-order": null,
+                        "selector-no-qualifying-type": null,
+                        "selector-class-pattern": null
                     },
                     defaultSeverity: "warning"
                 }

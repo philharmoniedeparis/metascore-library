@@ -15,5 +15,12 @@
   "globals": {
   },
   "rules": {
+  },
+  "settings": {
+    "polyfills": [
+      "es:all",
+      "DOMMatrix",
+      "DOMPoint"
+    ]
   }
 }
