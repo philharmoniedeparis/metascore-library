@@ -41,7 +41,7 @@ export default class Locale{
     static t(key, str, args){
         let translated = str;
 
-        if(translations.hasOwnProperty(key)){
+        if(Object.prototype.hasOwnProperty.call(translations, key)){
             translated = window.metaScoreLocale[key];
         }
 
