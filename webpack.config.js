@@ -215,10 +215,7 @@ const getConfigs = (entry_id, env, argv) => {
                         "plugin/no-unsupported-browser-features": [true, {
                             "browsers": browsers,
                             "ignorePartialSupport": true,
-                            "ignore": [
-                                "user-select-none",
-                                "pointer-events"
-                            ]
+                            "ignore": []
                         }],
                         "indentation": 4,
                         "max-nesting-depth": null,

@@ -52,7 +52,7 @@
     "stylelint": "^13.7.2",
     "stylelint-config-sass-guidelines": "^7.1.0",
     "stylelint-no-unsupported-browser-features": "^4.1.4",
-    "stylelint-webpack-plugin": "^2.1.1",
+    "stylelint-webpack-plugin": "github:semiaddict/stylelint-webpack-plugin#fix/181--improve-compilation-time",
     "svg-inline-loader": "^0.8.2",
     "svg-sprite-loader": "^5.0.0",
     "svgo-loader": "^2.2.1",
