@@ -2744,7 +2744,7 @@ export class Editor extends Dom {
             let type = null;
 
             if(master_component.instanceOf('Element')) {
-                type = 'Element';
+                type = 'element';
             }
             else if(master_component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
                 type = 'block';
