@@ -2780,7 +2780,13 @@ export class Editor extends Dom {
     pastePlayerComponents(parent=null) {
         if (this.clipboard.getDataType() === 'element') {
             if (parent === null) {
-                this.configs_editor.getComponents('Page').forEach((page) => {
+                const pages = this.configs_editor.getComponents('Page');
+                if (pages.length === 0) {
+                    this.configs_editor.getComponents('Element').forEach((element) => {
+                        pages.push(element.getParent());
+                    });
+                }
+                pages.forEach((page) => {
                     this.addPlayerComponents('element', this.clipboard.getData(), page);
                 });
             }
