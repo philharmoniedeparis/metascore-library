@@ -213,9 +213,21 @@ const getConfigs = (entry_id, env, argv) => {
                     ],
                     rules: {
                         "plugin/no-unsupported-browser-features": [true, {
+                            "severity": "warning",
                             "browsers": browsers,
                             "ignorePartialSupport": true,
-                            "ignore": []
+                            "ignore": [
+                                // Not supported in "Opera Mini all"
+                                "border-radius",
+                                "css-boxshadow",
+                                "css-fixed",
+                                "outline",
+                                "pointer-events",
+                                "user-select-none",
+                                "viewport-units",
+                                // Partially supported in "IE 11"
+                                "flexbox",
+                            ]
                         }],
                         "indentation": 4,
                         "max-nesting-depth": null,
@@ -223,8 +235,7 @@ const getConfigs = (entry_id, env, argv) => {
                         "order/properties-alphabetical-order": null,
                         "selector-no-qualifying-type": null,
                         "selector-class-pattern": null
-                    },
-                    defaultSeverity: "warning"
+                    }
                 }
             }),
             new ESLintPlugin({
