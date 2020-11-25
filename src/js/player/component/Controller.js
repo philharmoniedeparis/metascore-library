@@ -2,7 +2,7 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {formatTime} from '../../core/utils/Media';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 
 /**
  * A controller component

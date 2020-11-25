@@ -1,5 +1,5 @@
 import Element from '../Element';
-import {MasterClock} from '../../../core/media/Clock';
+import {MasterClock} from '../../../core/media/MediaClock';
 import Lottie from 'lottie-web';
 
 /**

@@ -10,7 +10,7 @@ import ColorInput from '../../core/ui/input/ColorInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 
 import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
 

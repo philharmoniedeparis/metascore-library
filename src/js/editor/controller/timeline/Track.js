@@ -4,7 +4,7 @@ import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 import ComponentIcons from '../../ComponentIcons';
 import {clamp} from '../../../core/utils/Math';
-import {MasterClock} from '../../../core/media/Clock';
+import {MasterClock} from '../../../core/media/MediaClock';
 
 import {className} from '../../../../css/editor/controller/timeline/Track.scss';
 

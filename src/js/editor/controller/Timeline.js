@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 import Track from './timeline/Track';
 import ResizeObserver from 'resize-observer-polyfill';
 

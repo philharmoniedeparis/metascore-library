@@ -1,5 +1,5 @@
 import EventEmitter from '../core/EventEmitter';
-import {MasterClock} from '../core/media/Clock';
+import {MasterClock} from '../core/media/MediaClock';
 import {uuid} from '../core/utils/String';
 
 /**

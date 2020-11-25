@@ -1,5 +1,5 @@
 import Dom from './core/Dom';
-import { MasterClock } from './core/media/Clock';
+import { MasterClock } from './core/media/MediaClock';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
 import { clone, unique } from './core/utils/Array';

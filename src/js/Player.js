@@ -1,6 +1,6 @@
 import Dom from './core/Dom';
 import Hotkeys from './core/Hotkeys';
-import {MasterClock} from './core/media/Clock';
+import {MasterClock} from './core/media/MediaClock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';

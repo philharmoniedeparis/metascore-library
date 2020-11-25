@@ -1,6 +1,6 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 
 /**
  * A video renderer component

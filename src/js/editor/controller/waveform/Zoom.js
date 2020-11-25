@@ -1,5 +1,5 @@
 import Dom from '../../../core/Dom';
-import {MasterClock} from '../../../core/media/Clock';
+import {MasterClock} from '../../../core/media/MediaClock';
 import Button from '../../../core/ui/Button';
 import SliderInput from '../../../core/ui/input/SliderInput';
 import {formatTime} from '../../../core/utils/Media';
