@@ -403,8 +403,8 @@ export class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller(this)
-            .addDelegate('.timeline .track *', 'click', this.onTimelineTrackClick.bind(this))
-            .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
+            .addDelegate('.timeline .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this))
+            .addDelegate('.timeline', 'componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
 
         /**
@@ -1501,16 +1501,16 @@ export class Editor extends Dom {
     }
 
     /**
-     * Timeline track click event callback
+     * Timeline ComponentTrack click event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackClick(evt) {
-        const el = Dom.closest(evt.target, '.track');
+    onTimelineComponentTrackClick(evt) {
+        const el = Dom.closest(evt.target, '.component-track');
         const component_id = Dom.data(el, 'component');
         console.log(el, component_id);
-        const track = this.controller.getTimeline().getTrack(component_id);
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
@@ -1518,12 +1518,12 @@ export class Editor extends Dom {
     }
 
     /**
-     * Timeline trackdrop event callback
+     * Timeline componenttrackdrop event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackDrop(evt) {
+    onTimelineComponentTrackDrop(evt) {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
@@ -1631,11 +1631,11 @@ export class Editor extends Dom {
 
         if (previous) {
             // Hide previous scenario in Tinmeline
-            this.controller.getTimeline().getTrack(previous.getId()).hide();
+            this.controller.getTimeline().getComponentTrack(previous.getId()).hide();
         }
         if (scenario) {
             // Show scenario in Tinmeline
-            this.controller.getTimeline().getTrack(scenario.getId()).show();
+            this.controller.getTimeline().getComponentTrack(scenario.getId()).show();
         }
 
         // Update ConfigEditor component fields
@@ -1672,7 +1672,7 @@ export class Editor extends Dom {
 
         this.configs_editor.unsetComponent(component, true);
 
-        this.controller.getTimeline().removeTrack(component);
+        this.controller.getTimeline().removeComponentTrack(component);
 
         if (component.instanceOf(['Block', 'Controller', 'VideoRenderer'])) {
             this.getPlayer().updateBlockTogglers();

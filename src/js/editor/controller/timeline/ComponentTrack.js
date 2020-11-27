@@ -1,17 +1,20 @@
 import Dom from '../../../core/Dom';
-import Handle from './Handle';
+import Locale from '../../../core/Locale'
+import Handle from './track/Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 import ComponentIcons from '../../ComponentIcons';
 import {clamp} from '../../../core/utils/Math';
 import {MasterClock} from '../../../core/media/MediaClock';
 
-import {className} from '../../../../css/editor/controller/timeline/Track.scss';
+import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
+
+import {className} from '../../../../css/editor/controller/timeline/ComponentTrack.scss';
 
 /**
- * A timeline track
+ * A timeline track for components
  */
-export default class Track extends Dom {
+export default class ComponentTrack extends Dom {
 
     static defaults = {
         'draggableConfigs': null,
@@ -25,7 +28,7 @@ export default class Track extends Dom {
      */
     constructor(component, configs) {
         // call parent constructor
-        super('<div/>', {'class': `track ${className}`});
+        super('<div/>', {'class': `component-track ${className}`});
 
         /**
          * The configuration values
@@ -65,8 +68,10 @@ export default class Track extends Dom {
         }
 
         this.handle = new Handle({
-                'icon': icon
+                'icon': icon,
+                'expander': true,
             })
+            .addToggler('lock', locked_icon, Locale.t('togglers.lock', 'Toggle lock'))
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
             .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
             .appendTo(this);
@@ -342,6 +347,16 @@ export default class Track extends Dom {
     }
 
     /**
+     * Properties childremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPropertiesChildRemove() {
+
+    }
+
+    /**
      * Handle expander click event callback
      *
      * @private
@@ -587,30 +602,6 @@ export default class Track extends Dom {
         this.getHandle().setLabel(component_name);
 
         return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    show(){
-        this.getHandle().show();
-        super.show();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    hide(){
-        this.getHandle().hide();
-        super.hide();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    remove(){
-        this.getHandle().remove();
-        return super.remove();
     }
 
 }
