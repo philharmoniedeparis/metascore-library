@@ -132,10 +132,10 @@ export default class SVG extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        super.updatePropertyValue(property, value);
+    updatePropertyValue(name, value){
+        super.updatePropertyValue(name, value);
 
-        switch(property){
+        switch(name){
             case 'src':
                 this.updateSrc(value);
                 break;
@@ -145,10 +145,12 @@ export default class SVG extends Element {
                 break;
 
             default:
-                if(svg_properties.includes(property)){
-                    this.updateSVGProperty(property, value);
+                if(svg_properties.includes(name)){
+                    this.updateSVGProperty(name, value);
                 }
         }
+
+        return this;
     }
 
     /**

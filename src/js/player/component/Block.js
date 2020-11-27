@@ -155,10 +155,10 @@ export default class Block extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'pager-visibility':
-                this.data(property, value);
+                this.data(name, value);
                 break;
 
             case 'pages':
@@ -170,8 +170,10 @@ export default class Block extends Component {
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
     /**

@@ -68,8 +68,8 @@ export default class Animation extends Element{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'src':
                 this.updateSrc(value);
                 break;
@@ -93,8 +93,10 @@ export default class Animation extends Element{
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
     /**

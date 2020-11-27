@@ -65,8 +65,8 @@ export default class Scenario extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'components':
                 this.removeAllChildren();
                 value.forEach((configs) => {
@@ -75,8 +75,10 @@ export default class Scenario extends Component {
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
     /**

@@ -30,15 +30,17 @@ export default class Content extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'text':
                 this.contents.text(value);
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
 }

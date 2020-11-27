@@ -329,23 +329,23 @@ export default class Component extends Dom {
     /**
      * Update a property value
      *
-     * @private
-     * @param {String} property The name of the property
+     * @protected
+     * @param {String} name The name of the property
      * @param {Mixed} value The value to set
      * @return {this}
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'id':
                 this.attr('id', value);
                 break;
 
             case 'name':
-                this.data(property, value);
+                this.data(name, value);
                 break;
 
             case 'hidden':
-                this.toggleClass(property, value);
+                this.toggleClass(name, value);
                 break;
 
             case 'x':
@@ -359,13 +359,13 @@ export default class Component extends Dom {
             case 'width':
             case 'height':
             case 'border-width':
-                this.css(property, `${value}px`);
+                this.css(name, `${value}px`);
                 break;
 
             case 'background-color':
             case 'border-color':
             case 'border-radius':
-                this.css(property, value);
+                this.css(name, value);
                 break;
 
             case 'background-image':
@@ -384,6 +384,8 @@ export default class Component extends Dom {
                 this.toggleClass('editor-locked', value);
                 break;
         }
+
+        return this;
     }
 
     /**

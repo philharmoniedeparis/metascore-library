@@ -28,8 +28,8 @@ export default class Media extends Element{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'tag':
                 if(this.media){
                     this.media.remove();
@@ -51,8 +51,10 @@ export default class Media extends Element{
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
 }

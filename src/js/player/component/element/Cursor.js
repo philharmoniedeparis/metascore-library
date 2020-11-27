@@ -101,9 +101,7 @@ export default class Cursor extends Element {
     }
 
     /**
-     * Setup the cursor's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI(){
         // call parent function
@@ -125,8 +123,8 @@ export default class Cursor extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'form':
                 this.data('form', value);
                 break;
@@ -143,15 +141,17 @@ export default class Cursor extends Element {
             case 'width':
             case 'height':
             case 'border-width':
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
                 this.resizeCanvas();
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
 
         this.draw();
+
+        return this;
     }
 
     /**

@@ -118,30 +118,32 @@ export default class Element extends Component{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value) {
+        switch (name) {
             case 'background-color':
             case 'border-color':
             case 'border-radius':
             case 'opacity':
-                this.contents.css(property, value);
+                this.contents.css(name, value);
                 break;
 
             case 'border-width':
-                this.contents.css(property, `${value}px`);
+                this.contents.css(name, `${value}px`);
                 break;
 
             case 'background-image':
                 {
                     const css_value = (value !== 'none' && isString(value) && (value.length > 0)) ? `url(${value})` : null;
-                    this.contents.css(property, css_value);
+                    this.contents.css(name, css_value);
                 }
                 break;
 
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
 }

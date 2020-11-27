@@ -89,21 +89,21 @@ export default class Page extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value){
+        switch(name){
             case 'start-time':
             case 'end-time':
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
 
                 {
                     const block = this.getParent();
 
                     if(block.getPropertyValue('synched')){
                         const index = block.getChildIndex(this);
-                        const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
+                        const sibling_page = name === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
 
                         if(sibling_page){
-                            sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', value);
+                            sibling_page.setPropertyValue(name === 'start-time' ? 'end-time' : 'start-time', value);
                         }
                     }
                 }
@@ -116,8 +116,10 @@ export default class Page extends Component {
                 break;
 
             default:
-                super.updatePropertyValue(property, value);
+                super.updatePropertyValue(name, value);
         }
+
+        return this;
     }
 
     getName(){

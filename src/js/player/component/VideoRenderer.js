@@ -117,10 +117,12 @@ export default class VideoRenderer extends Component{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        super.updatePropertyValue(property, value);
+    updatePropertyValue(name, value){
+        super.updatePropertyValue(name, value);
 
         this.draw();
+
+        return this;
     }
 
     /**
