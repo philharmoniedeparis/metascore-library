@@ -1,18 +1,34 @@
 @import '../../../theme';
 
+/* darken and shift to the right sub-handles */
+$handles-initial-level: 2;
+$handles-final-level: 3;
+$handles-lighten-scale: -10%;
+$handles-margin: 0.5em;
+
 :local(.class-name) {
     display: contents;
     height: 2em;
     user-select: none;
     cursor: pointer;
 
+    @for $i from $handles-initial-level through $handles-final-level {
+        $selector: '';
+        @for $j from 1 through $i {
+            $selector: $selector #{&};
+        }
+        #{$selector} > .handle {
+            border-left: $handles-margin * ($i - $handles-initial-level + 1) solid $darkgray;
+            background: scale-color($mediumgray, $lightness: $handles-lighten-scale * ($i - $handles-initial-level + 1));
+        }
+    }
+
     > .time-wrapper {
         position: relative;
         height: 100%;
         width: var(--timline-zoom);
         margin-left: calc(var(--timline-offert) * -100%);
-        grid-column-start: 2;
-        grid-column-end: 2;
+        grid-column: 2;
         background: $mediumgray;
         border-bottom: 1px solid $darkgray;
         box-sizing: border-box;
@@ -87,8 +103,25 @@
 
     &.user-expanded,
     &.auto-expanded {
+        > .handle {
+            button[data-action='expander'] {
+                .icon {
+                    transform: rotate(90deg);
+                }
+
+            }
+        }
+
         > .descendents {
             display: contents;
+        }
+    }
+
+    &:not(.has-descendents) {
+        > .handle {
+            button[data-action='expander'] {
+                display: none;
+            }
         }
     }
 
@@ -99,32 +132,12 @@
     }
 
     &.dragover {
-        * {
-            pointer-events: none;
-        }
-
-        &::before {
+        &.drag-above::before,
+        &.drag-below::after {
             content: '';
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #ff00a6;
-            z-index: 1;
-        }
-
-        &.drag-above {
-            &::before {
-                top: 0;
-                margin-top: -1px;
-            }
-        }
-
-        &.drag-below {
-            &::before {
-                top: 100%;
-                margin-top: 1px;
-            }
+            grid-column: 1 / span 2;
+            outline: #ff00a6 solid 1px;
+            z-index: 3;
         }
     }
 

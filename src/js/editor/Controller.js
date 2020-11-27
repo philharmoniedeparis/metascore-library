@@ -182,11 +182,7 @@ export default class Controller extends Dom {
         const track = this.getTimeline().getComponentTrack(component_id);
         const track_parent = track.parents();
 
-        const handle = track.getHandle();
-        const handle_parent = handle.parents();
-
         track.insertAt(track_parent, position);
-        handle.insertAt(handle_parent, position);
     }
 
     /**

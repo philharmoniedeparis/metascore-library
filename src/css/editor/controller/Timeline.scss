@@ -32,16 +32,13 @@
     }
 }
 
-:local(.drag-ghost-class-name) {
+:local(.handle-drag-ghost-class-name) {
     position: absolute;
     top: 0;
     right: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: $controller-left-width auto;
     background: $mediumgray;
     z-index: 99;
-
-    > .handle {
-        > .togglers {
-            display: none;
-        }
-    }
 }

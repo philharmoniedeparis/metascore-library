@@ -3,7 +3,7 @@ import {MasterClock} from '../../core/media/MediaClock';
 import ComponentTrack from './timeline/ComponentTrack';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import {className} from '../../../css/editor/controller/Timeline.scss';
+import {className, handleDragGhostClassName} from '../../../css/editor/controller/Timeline.scss';
 
 /**
  * The editor's timeline
@@ -52,11 +52,11 @@ export default class Timeline extends Dom {
             .addDelegate('.component-track', 'dragend', this.onComponentTrackDragEnd.bind(this), true)
             .addDelegate('.component-track', 'resizestart', this.onComponentTrackResizeStart.bind(this), true)
             .addDelegate('.component-track', 'resizeend', this.onComponentTrackResizeEnd.bind(this), true)
-            .addDelegate('.handle', 'dragstart', this.onHandleDragStart.bind(this), true)
-            .addDelegate('.handle', 'dragover', this.onHandleDragOver.bind(this), true)
-            .addDelegate('.handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
-            .addDelegate('.handle', 'drop', this.onHandleDrop.bind(this), true)
-            .addDelegate('.handle', 'dragend', this.onHandleDragEnd.bind(this), true)
+            .addDelegate('.component-track .handle', 'dragstart', this.onHandleDragStart.bind(this), true)
+            .addDelegate('.component-track .handle', 'dragover', this.onHandleDragOver.bind(this), true)
+            .addDelegate('.component-track .handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
+            .addDelegate('.component-track .handle', 'drop', this.onHandleDrop.bind(this), true)
+            .addDelegate('.component-track .handle', 'dragend', this.onHandleDragEnd.bind(this), true)
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
@@ -93,20 +93,19 @@ export default class Timeline extends Dom {
      * @param {Event} evt The event object
      */
     onHandleDragStart(evt){
-        const component_id = Dom.data(evt.target, 'component');
+        const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
         const track = this.getComponentTrack(component_id);
 
-        const handle = track.getHandle();
-
-        this._drag_ghost = new Dom(track.get(0).cloneNode(true))
+        this._handle_drag_ghost = new Dom(track.get(0).cloneNode(true))
+            .addClass(handleDragGhostClassName)
             .appendTo(this.tracks_container);
 
         evt.dataTransfer.effectAllowed = 'move';
         evt.dataTransfer.setData('metascore/timeline', component_id);
-        evt.dataTransfer.setDragImage(this._drag_ghost.get(0), 0, 0);
+        evt.dataTransfer.setDragImage(this._handle_drag_ghost.get(0), 0, 0);
 
         // dragover does not have access to dataTransfer data
-        this._dragging_handle = handle;
+        this._handle_drag_track = track;
 
         track.addClass('dragging');
 
@@ -121,11 +120,11 @@ export default class Timeline extends Dom {
      */
     onHandleDragOver(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
-            const handle = track.getHandle();
 
-            if(handle.parents().get(0) === this._dragging_handle.parents().get(0)){
+            if(track.parents().get(0) === this._handle_drag_track.parents().get(0)){
+                const handle = track.getHandle();
                 const handle_rect = handle.get(0).getBoundingClientRect();
                 const y = evt.clientY - handle_rect.top;
                 const above = y < handle_rect.height/2;
@@ -148,16 +147,10 @@ export default class Timeline extends Dom {
      */
     onHandleDragLeave(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
-            const handle = track.getHandle();
 
             track
-                .removeClass('dragover')
-                .removeClass('drag-below')
-                .removeClass('drag-above');
-
-            handle
                 .removeClass('dragover')
                 .removeClass('drag-below')
                 .removeClass('drag-above');
@@ -174,26 +167,19 @@ export default class Timeline extends Dom {
      */
     onHandleDrop(evt){
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
-            const handle = track.getHandle();
-            const handle_parent = handle.parents();
 
             const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
             const dragging_track = this.getComponentTrack(dragging_component_id);
 
-            const index = handle_parent.children('.handle').index('.dragover');
+            const index = track.parents().children('.component-track').index('.dragover');
             const above = track.hasClass('drag-above');
             const position = above ? index : index + 1;
 
             this.triggerEvent('componenttrackdrop', {'component': dragging_track.getComponent(), 'position': position});
 
             track
-                .removeClass('dragover')
-                .removeClass('drag-below')
-                .removeClass('drag-above');
-
-            handle
                 .removeClass('dragover')
                 .removeClass('drag-below')
                 .removeClass('drag-above');
@@ -209,17 +195,15 @@ export default class Timeline extends Dom {
      * @param {Event} evt The event object
      */
     onHandleDragEnd(evt){
-        const component_id = Dom.data(evt.target, 'component');
+        const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
         const track = this.getComponentTrack(component_id);
-        const handle = track.getHandle();
 
         this._handle_drag_ghost.remove();
         delete this._handle_drag_ghost;
 
-        delete this._dragging_handle;
+        delete this._handle_drag_track;
 
         track.removeClass('dragging');
-        handle.removeClass('dragging');
     }
 
     /**
