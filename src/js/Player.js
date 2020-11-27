@@ -929,10 +929,10 @@ export class Player extends Dom {
             this.cuepoint.deactivate();
         }
 
-        const _inTime = parseFloat(inTime);
-        const _outTime = parseFloat(outTime);
+        const _inTime = isNaN(inTime) ? null : parseFloat(inTime);
+        const _outTime = isNaN(outTime) ? null : parseFloat(outTime);
 
-        if(isNaN(_inTime) && isNaN(_outTime)){
+        if(_inTime === null && _outTime === null){
             renderer.play();
         }
         else{
@@ -941,8 +941,8 @@ export class Player extends Dom {
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint({
-                'inTime': !isNaN(_inTime) ? _inTime : null,
-                'outTime': !isNaN(_outTime) ? _outTime : null,
+                'inTime': _inTime,
+                'outTime': _outTime,
                 'considerError': true
             })
             .addListener('seekout', () => {
@@ -972,7 +972,7 @@ export class Player extends Dom {
 
             this.cuepoint.activate();
 
-            if (!isNaN(_inTime)) {
+            if (_inTime !== null) {
                 renderer.setTime(_inTime);
             }
 
