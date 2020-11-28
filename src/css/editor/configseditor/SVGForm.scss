@@ -1,28 +1,22 @@
 @import '../../theme';
 
 :local(.class-name) {
-    .fields {
+    .field {
+        &[data-property*='marker-'] {
+            .input {
+                select {
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    .field-group.colors {
+        width: 100%;
+        justify-content: flex-start;
+
         .field {
-            &[data-property*='marker-'] {
-                .input {
-                    select {
-                        text-align: center;
-                    }
-                }
-            }
-
-            &[data-property='colors'] {
-                width: 100%;
-                justify-content: flex-start;
-
-                .input {
-                    flex: 0;
-
-                    &.color {
-                        margin-right: 0.5em;
-                    }
-                }
-            }
+            flex: 0;
         }
     }
 }

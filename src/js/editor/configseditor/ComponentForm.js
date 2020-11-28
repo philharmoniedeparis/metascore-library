@@ -22,7 +22,151 @@ export default class ComponentForm extends Dom {
     static defaults = {
         'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
         'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
-        'fields': []
+        'fields': {
+            'name': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.name.label', 'Name'),
+                'input': {
+                    'type': TextInput
+                }
+            },
+            'hidden': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.hidden.label', 'Hidden on start'),
+                'input': {
+                    'type': CheckboxInput,
+                    'configs': {'checked': false}
+                }
+            },
+            'background-color': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background color'),
+                'input': {
+                    'type': ColorInput,
+                    'configs': {'format': 'css'}
+                }
+            },
+            'background-image': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background image'),
+                'input': {
+                    'type': SelectInput
+                }
+            },
+            'border': {
+                'group': true,
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border'),
+                'items': {
+                    'border-color': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color'),
+                        'input': {
+                            'type': ColorInput,
+                            'configs': {'format': 'css'}
+                        }
+                    },
+                    'border-width': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width'),
+                        'input': {
+                            'type': NumberInput,
+                            'configs': {'min': 0, 'spinButtons': true}
+                        }
+                    },
+                    'border-radius': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius'),
+                        'input': {
+                            'type': BorderRadiusInput,
+                            'configs': {'overlay': {'parent': this.editor}}
+                        }
+                    }
+                }
+            },
+            'opacity': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity'),
+                'input': {
+                    'type': NumberInput,
+                    'configs': {
+                        'min': 0,
+                        'max': 1,
+                        'step': 0.1,
+                        'spinButtons': true
+                    }
+                }
+            },
+            'time': {
+                'group': true,
+                'items': {
+                    'start-time': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start'),
+                        'input': {
+                            'type': TimeInput,
+                            'configs': {
+                                'inButton': true,
+                                'outButton': true,
+                                'clearButton': true
+                            }
+                        }
+                    },
+                    'end-time': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End'),
+                        'input': {
+                            'type': TimeInput,
+                            'configs': {
+                                'inButton': true,
+                                'outButton': true,
+                                'clearButton': true
+                            }
+                        }
+                    }
+                }
+            },
+            'position': {
+                'group': true,
+                'items': {
+                    'x': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X'),
+                        'input': {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal'
+                            }
+                        }
+                    },
+                    'y': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y'),
+                        'input': {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'flipSpinButtons': true
+                            }
+                        }
+                    }
+                }
+            },
+            'dimension': {
+                'group': true,
+                'items': {
+                    'width': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width'),
+                        'input': {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal'
+                            }
+                        }
+                    },
+                    'height': {
+                        'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height'),
+                        'input': {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true
+                            }
+                        }
+                    }
+                }
+            }
+        }
     };
 
     /**
@@ -68,7 +212,24 @@ export default class ComponentForm extends Dom {
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
             .appendTo(this);
 
-        this.setupFields();
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
+
+        // Setup the fields.
+        Object.entries(this.configs.fields).forEach(([id, configs]) => {
+            if ('group' in configs && configs.group === true){
+                const group = this.addFieldGroup(id, configs);
+                Object.entries(configs.items).forEach(([field_id, field_configs]) => {
+                    this.addField(field_id, field_configs, group);
+                });
+            }
+            else {
+                this.addField(id, configs);
+            }
+        });
     }
 
     /**
@@ -155,39 +316,6 @@ export default class ComponentForm extends Dom {
      */
     getComponents(){
         return this.components;
-    }
-
-    /**
-     * The fields' valuechange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onFieldValueChange(evt){
-        const name = evt.detail.field.data('property');
-        const value = evt.detail.value;
-        const components = clone(this.components);
-        const previous_values = {};
-
-        components.forEach((component) => {
-            previous_values[component.getId()] = component.getPropertyValue(name);
-            component.setPropertyValue(name, value);
-        });
-
-        this.editor.getHistory().add({
-            'undo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, previous_values[component.getId()]);
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, value);
-                });
-            }
-        });
-
-        this.toggleMultival(evt.detail.field, false);
     }
 
     /**
@@ -430,215 +558,93 @@ export default class ComponentForm extends Dom {
         delete this._before_resize_values;
     }
 
-    setupFields(){
-        /**
-         * The list of fields
-         * @type {Object}
-         */
-        this.fields = {};
+    /**
+     * Add a field.
+     *
+     * @protected
+     * @param {String} id The field's id.
+     * @param {Object} configs The field's configs.
+     * @property {String} [label] The field's label.
+     * @property {Object} [attributes] A list of attributes to set on the field.
+     * @param {Dom} [group] An optional field group.
+     * @return {Field} The field.
+     */
+    addField(id, configs, group=null){
+        const input = new configs.input.type(configs.input.configs);
 
-        this.configs.fields.forEach((name) => {
-            this.addField(name);
-        });
+        if ('attributes' in configs.input){
+            Object.entries(configs.input.attributes).forEach(([key, value]) => {
+                input.attr(key, value);
+            });
+        }
 
-        return this;
+        const field = new Field(input, {'label': configs.label})
+            .data('property', id)
+            .appendTo(group ?? this.fields_wrapper);
+
+        if ('attributes' in configs){
+            Object.entries(configs.attributes).forEach(([key, value]) => {
+                field.attr(key, value);
+            });
+        }
+
+        this.fields[id] = field;
+
+        return field;
     }
 
     /**
-     * Add a field by name.
+     * Add a field group.
      *
-     * @param {string} name The field's name.
-     * @param {this}
+     * @protected
+     * @param {String} id The field group's id.
+     * @param {Object} [configs] The field group's configs.
+     * @property {String} [label] The field group's label.
+     * @return {Dom} The group's Dom instance.
      */
-    addField(name){
-        switch(name){
-            case 'name':
-                this.fields[name] = new Field(
-                    new TextInput(),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.name.label', 'Name')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
+    addFieldGroup(id, configs={}) {
+        const wrapper = new Dom('<div/>', {'class': `field-group ${id}`})
+            .appendTo(this.fields_wrapper);
 
-            case 'hidden':
-                this.fields[name] = new Field(
-                    new CheckboxInput({
-                        'checked': false
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.hidden.label', 'Hidden on start')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'background':
-                this.fields['background-image'] = new Field(
-                    new SelectInput(),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background image')
-                    })
-                    .data('property', 'background-image')
-                    .appendTo(this.fields_wrapper);
-
-                this.fields['background-color'] = new Field(
-                    new ColorInput({'format': 'css'}),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color')
-                    })
-                    .data('property', 'background-color')
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'border': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group border'})
-                        .appendTo(this.fields_wrapper);
-
-                    const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border')})
-                        .appendTo(wrapper);
-
-                    this.fields['border-color'] = new Field(
-                        new ColorInput({'format': 'css'}),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
-                        })
-                        .data('property', 'border-color')
-                        .appendTo(wrapper);
-
-                    border_fields_label.attr('for', this.fields['border-color'].getInput().getId());
-
-                    this.fields['border-width'] = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width')
-                        })
-                        .data('property', 'border-width')
-                        .appendTo(wrapper);
-
-                    this.fields['border-radius'] = new Field(
-                        new BorderRadiusInput({
-                            'overlay': {
-                                'parent': this.editor
-                            }
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius')
-                        })
-                        .data('property', 'border-radius')
-                        .appendTo(wrapper);
-                }
-                break;
-
-            case 'opacity':
-                this.fields.opacity = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'max': 1,
-                        'step': 0.1,
-                        'spinButtons': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity')
-                    })
-                    .data('property', 'opacity')
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'time': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group time'})
-                        .appendTo(this.fields_wrapper);
-
-                    this.fields['start-time'] = new Field(
-                        new TimeInput({
-                            'inButton': true,
-                            'outButton': true,
-                            'clearButton': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start')
-                        })
-                        .data('property', 'start-time')
-                        .appendTo(wrapper);
-
-                    this.fields['end-time'] = new Field(
-                        new TimeInput({
-                            'inButton': true,
-                            'outButton': true,
-                            'clearButton': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End')
-                        })
-                        .data('property', 'end-time')
-                        .appendTo(wrapper);
-                }
-                break;
-
-            case 'position': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group position'})
-                    .appendTo(this.fields_wrapper);
-
-                    this.fields.x = new Field(
-                        new NumberInput({
-                            'spinButtons': true,
-                            'spinDirection': 'horizontal'
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X')
-                        })
-                        .data('property', 'x')
-                        .appendTo(wrapper);
-
-                    // Y
-                    this.fields.y = new Field(
-                        new NumberInput({
-                            'spinButtons': true,
-                            'flipSpinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y')
-                        })
-                        .data('property', 'y')
-                        .appendTo(wrapper);
-                }
-                break;
-
-            case 'dimension': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group dimension'})
-                    .appendTo(this.fields_wrapper);
-
-                    this.fields.width = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true,
-                            'spinDirection': 'horizontal'
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width')
-                        })
-                        .data('property', 'width')
-                        .appendTo(wrapper);
-
-                    this.fields.height = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height')
-                        })
-                        .data('property', 'height')
-                        .appendTo(wrapper);
-                }
-                break;
+        if('label' in configs){
+            new Dom('<label/>', {'text': configs.label})
+                .appendTo(wrapper);
         }
 
-        return this;
+        return wrapper;
+    }
+
+    /**
+     * The fields' valuechange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onFieldValueChange(evt){
+        const name = evt.detail.field.data('property');
+        const value = evt.detail.value;
+        const components = clone(this.components);
+        const previous_values = {};
+
+        components.forEach((component) => {
+            previous_values[component.getId()] = component.getPropertyValue(name);
+            component.setPropertyValue(name, value);
+        });
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValue(name, previous_values[component.getId()]);
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValue(name, value);
+                });
+            }
+        });
+
+        this.toggleMultival(evt.detail.field, false);
     }
 
     /**
@@ -847,25 +853,28 @@ export default class ComponentForm extends Dom {
     updateColorInputEmptyValue(input, name) {
         const master_component = this.getMasterComponent();
         const property = master_component.getProperty(name);
-        let empty_value = null;
 
-        if('default' in property){
-            empty_value = property.default;
+        if(typeof property !== 'undefined') {
+            let empty_value = null;
+
+            if('default' in property){
+                empty_value = property.default;
+            }
+            else {
+                // Get current value.
+                const value = master_component.getPropertyValue(name);
+
+                // Get default value.
+                master_component.setPropertyValue(name, null, true);
+                empty_value = master_component.css(name);
+
+                // Revert to current value.
+                master_component.setPropertyValue(name, value, true);
+            }
+
+            // Update input's empty value.
+            input.setEmptyValue(empty_value);
         }
-        else {
-            // Get current value.
-            const value = master_component.getPropertyValue(name);
-
-            // Get default value.
-            master_component.setPropertyValue(name, null, true);
-            empty_value = master_component.css(name);
-
-            // Revert to current value.
-            master_component.setPropertyValue(name, value, true);
-        }
-
-        // Update input's empty value.
-        input.setEmptyValue(empty_value);
 
         return this;
     }

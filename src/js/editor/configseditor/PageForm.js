@@ -9,10 +9,11 @@ export default class PageForm extends ComponentForm {
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.PageForm.title.single', 'Attributes of page'),
         'title_plural': Locale.t('editor.configseditor.PageForm.title.plural', 'Attributes of @count pages'),
-        'fields': [
-            'background',
-            'time'
-        ]
+        'fields': {
+            'background-color': super.defaults.fields['background-color'],
+            'background-image': super.defaults.fields['background-image'],
+            'time': super.defaults.fields['time']
+        }
     });
 
     /**

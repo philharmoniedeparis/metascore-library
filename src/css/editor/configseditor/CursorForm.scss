@@ -1,6 +1,12 @@
 @import '../../theme';
 
 :local(.class-name) {
+    .field[data-property='start-time'] {
+        button[data-action='clear'] {
+            display: none;
+        }
+    }
+
     @keyframes pulse {
         0%,
         100% {
@@ -12,39 +18,37 @@
         }
     }
 
-    .fields {
-        .keyframes-toggle {
-            flex: 100%;
-            margin: 0.5em 0;
+    .field[data-property='keyframes'] {
+        flex: 100%;
+        margin: 0.5em 0;
 
-            input {
-                + .state label {
-                    padding-left: 1.75em;
-                    color: #000;
-                    background: #fff;
-                    border: 0;
+        input {
+            + .state label {
+                padding-left: 1.75em;
+                color: #000;
+                background: #fff;
+                border: 0;
 
-                    &::before {
-                        content: '';
-                        position: absolute;
-                        display: block;
-                        height: 1em;
-                        width: 1em;
-                        top: 50%;
-                        left: 0.5em;
-                        margin-top: -0.5em;
-                        background: #ff4e00;
-                        border-radius: 50%;
-                    }
+                &::before {
+                    content: '';
+                    position: absolute;
+                    display: block;
+                    height: 1em;
+                    width: 1em;
+                    top: 50%;
+                    left: 0.5em;
+                    margin-top: -0.5em;
+                    background: #ff4e00;
+                    border-radius: 50%;
                 }
+            }
 
-                &:checked + .state label {
-                    color: #fff;
-                    background: $darkgray;
+            &:checked + .state label {
+                color: #fff;
+                background: $darkgray;
 
-                    &::before {
-                        animation: pulse 1s ease infinite;
-                    }
+                &::before {
+                    animation: pulse 1s ease infinite;
                 }
             }
         }

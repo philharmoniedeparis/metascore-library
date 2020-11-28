@@ -1,29 +1,27 @@
 @import '../../theme';
 
 :local(.class-name) {
-    .fields {
-        .contents-toggle {
-            flex: 100%;
-            margin: 0.5em 0;
+    .field[data-property='contents-toggle'] {
+        flex: 100%;
+        margin: 0.5em 0;
 
-            input {
-                + .state label {
-                    color: #000;
-                    background: #fff;
-                    border: 0;
-                }
+        input {
+            + .state label {
+                color: #000;
+                background: #fff;
+                border: 0;
+            }
 
-                &:checked + .state label {
-                    color: #fff;
-                    background: $darkgray;
-                }
+            &:checked + .state label {
+                color: #fff;
+                background: $darkgray;
             }
         }
     }
 
     &.contents-unlocked {
         .fields {
-            > .field,
+            > .field:not([data-property='contents-toggle']),
             > .field-group {
                 display: none;
             }

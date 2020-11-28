@@ -9,16 +9,6 @@ export default class ElementForm extends ComponentForm {
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.ElementForm.title.single', 'Attributes of element'),
         'title_plural': Locale.t('editor.configseditor.ElementForm.title.plural', 'Attributes of @count elements'),
-        'fields': [
-            'name',
-            'hidden',
-            'background',
-            'border',
-            'opacity',
-            'time',
-            'position',
-            'dimension'
-        ]
     });
 
     /**
