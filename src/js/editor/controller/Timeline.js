@@ -265,9 +265,7 @@ export default class Timeline extends Dom {
 
         if(renderer){
             const duration = renderer.getDuration();
-            Object.values(this.component_tracks).forEach((track) => {
-                track.setDuration(duration);
-            });
+            this.tracks_container.css('--timeline-duration', duration);
         }
 
         this.updateSize();
@@ -292,7 +290,6 @@ export default class Timeline extends Dom {
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
         const parent_track = parent_component ? this.getComponentTrack(parent_component.getId()) : null;
-        const renderer = MasterClock.getRenderer();
 
         if(parent_component && !parent_track){
             return this;
@@ -306,10 +303,6 @@ export default class Timeline extends Dom {
                 'snapGuideContainer': this.tracks_container
             },
         });
-
-        if(renderer){
-            track.setDuration(renderer.getDuration());
-        }
 
         if(parent_component){
             const index = parent_component.getChildIndex(component);
@@ -416,8 +409,8 @@ export default class Timeline extends Dom {
             this.zoom = duration / (end - start);
             this.offset = start / (end - start);
 
-            this.tracks_container.css('--timline-zoom', `${this.zoom * 100}%`);
-            this.tracks_container.css('--timline-offert', this.offset);
+            this.tracks_container.css('--timeline-zoom', `${this.zoom * 100}%`);
+            this.tracks_container.css('--timeline-offset', this.offset);
 
             this.updatePlayhead();
 

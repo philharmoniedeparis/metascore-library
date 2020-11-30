@@ -26,8 +26,8 @@ $handles-margin: 0.5em;
     > .time-wrapper {
         position: relative;
         height: 100%;
-        width: var(--timline-zoom);
-        margin-left: calc(var(--timline-offert) * -100%);
+        width: var(--timeline-zoom);
+        margin-left: calc(var(--timeline-offset) * -100%);
         grid-column: 2;
         background: $mediumgray;
         border-bottom: 1px solid $darkgray;
@@ -38,7 +38,7 @@ $handles-margin: 0.5em;
             top: 0.5em;
             bottom: 0.5em;
             left: 0;
-            width: 100%;
+            right: 0;
             background-color: #555;
             box-sizing: border-box;
             box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
@@ -52,6 +52,22 @@ $handles-margin: 0.5em;
                 background: #fff;
                 border-radius: 50%;
                 z-index: 1;
+            }
+        }
+    }
+
+    &.has-start-time {
+        > .time-wrapper {
+            .time {
+                left: calc(var(--track-start-time)/var(--timeline-duration) * 100%);
+            }
+        }
+    }
+
+    &.has-end-time {
+        > .time-wrapper {
+            .time {
+                right: calc(100% - (var(--track-end-time)/var(--timeline-duration) * 100%));
             }
         }
     }

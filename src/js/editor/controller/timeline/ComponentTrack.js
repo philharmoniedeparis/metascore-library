@@ -39,8 +39,6 @@ export default class ComponentTrack extends Dom {
         const component_id = component.getId();
         const component_type = component.getType();
 
-        this.duration = 0;
-
         this.component = component
             .addListener('selected', this.onComponentSelected.bind(this), true)
             .addListener('deselected', this.onComponentDeselected.bind(this))
@@ -220,12 +218,11 @@ export default class ComponentTrack extends Dom {
      * @private
      */
     onTimeDragStart(evt){
+        const duration = parseFloat(this.css('--timeline-duration'));
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
-        this._drag_multiplier = this.duration / width;
+        this._drag_multiplier = duration / width;
 
         this.triggerEvent('dragstart', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -250,8 +247,6 @@ export default class ComponentTrack extends Dom {
         });
 
         this.triggerEvent('drag', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -263,8 +258,6 @@ export default class ComponentTrack extends Dom {
         delete this._drag_multiplier;
 
         this.triggerEvent('dragend', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -273,12 +266,11 @@ export default class ComponentTrack extends Dom {
      * @private
      */
     onTimeResizeStart(evt){
+        const duration = parseFloat(this.css('--timeline-duration'));
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
-        this._resize_multiplier = this.duration / width;
+        this._resize_multiplier = duration / width;
 
         this.triggerEvent('resizestart', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -309,8 +301,6 @@ export default class ComponentTrack extends Dom {
         component.setPropertyValue(property, new_value);
 
         this.triggerEvent('resize', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -322,8 +312,6 @@ export default class ComponentTrack extends Dom {
         delete this._resize_multiplier;
 
         this.triggerEvent('resizeend', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -384,20 +372,6 @@ export default class ComponentTrack extends Dom {
         }
 
         evt.stopPropagation();
-    }
-
-    /**
-     * Set the media's duration variable
-     *
-     * @param {Number} duration The media's duration in centiseconds
-     * @return {this}
-     */
-    setDuration(duration){
-        this.duration = duration;
-
-        this.updateSize();
-
-        return this;
     }
 
     /**
@@ -520,28 +494,24 @@ export default class ComponentTrack extends Dom {
     }
 
     /**
-     * Update size and classes according to associated component time values
+     * Update CSS size variables according to associated component time values
      *
      * @private
      * @return {this}
      */
     updateSize(){
         const component = this.getComponent();
+        const properties = ['start-time', 'end-time'];
 
-        const start_time = component.getPropertyValue('start-time');
-        const end_time = component.getPropertyValue('end-time');
+        properties.forEach((name) => {
+            const value = component.getPropertyValue(name);
 
-        const left = start_time === null ? 0 : start_time / this.duration;
-        const right = end_time === null ? 1 : end_time / this.duration;
-        const width = right - left;
+            console.log(name, value);
 
-        this
-            .toggleClass('has-start-time', start_time !== null)
-            .toggleClass('has-end-time', end_time !== null);
-
-        this.time
-            .css('left', `${left * 100}%`)
-            .css('width', `${width * 100}%`);
+            this
+                .toggleClass(`has-${name}`, value !== null)
+                .css(`--track-${name}`, value);
+        });
 
         return this;
     }
