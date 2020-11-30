@@ -147,7 +147,7 @@ export default class CursorForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    onComponentOwnPropChange(evt){
+    onComponentPropChange(evt){
         const component = evt.detail.component;
 
         const form = component.getPropertyValue('form');
@@ -163,7 +163,7 @@ export default class CursorForm extends ElementForm {
             }
         }
 
-        super.onComponentOwnPropChange(evt);
+        super.onComponentPropChange(evt);
     }
 
     /**

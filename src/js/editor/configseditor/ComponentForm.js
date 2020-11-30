@@ -325,15 +325,6 @@ export default class ComponentForm extends Dom {
      * @param {Event} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
-        this.onComponentOwnPropChange(evt);
-    }
-
-    onComponentOwnPropChange(evt){
         const component = evt.detail.component;
         const property = evt.detail.property;
 

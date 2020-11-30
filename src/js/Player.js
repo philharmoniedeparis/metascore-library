@@ -576,7 +576,7 @@ export class Player extends Dom {
         // Set media.
         this.setSource(this.data.media);
 
-        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true);
 
         // Add components.
         if(this.data.components){

@@ -67,6 +67,7 @@ export default class CursorKeyframesEditor extends Dom {
             resizable.disable();
         }
 
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         const component_el = this.component.get(0);
         const component_dom = new Dom(component_el);
 
@@ -81,7 +82,6 @@ export default class CursorKeyframesEditor extends Dom {
             .resizeCanvas()
             .draw();
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         component_dom
             .addListener('propchange', this.onComponentPropChange)
             .addListener('resizeend', this.onComponentResizeEnd);

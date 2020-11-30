@@ -137,7 +137,7 @@ export default class ScenarioSelector extends Dom {
             .addListener('componentadd', this.onPlayerComponentAdd.bind(this))
             .addListener('componentremove', this.onPlayerComponentRemove.bind(this))
             .addListener('scenariochange', this.onPlayerScenarioChange.bind(this))
-            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+            .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true);
     }
 
     /**

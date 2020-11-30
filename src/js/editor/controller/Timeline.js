@@ -394,7 +394,6 @@ export default class Timeline extends Dom {
             const {left, right} = track.time.get(0).getBoundingClientRect();
             behavior.addSnapGuide('x', left);
             behavior.addSnapGuide('x', right);
-            console.log('x', left, 'x', right);
         });
 
         return this;

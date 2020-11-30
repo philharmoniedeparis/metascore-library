@@ -1509,7 +1509,6 @@ export class Editor extends Dom {
     onTimelineComponentTrackClick(evt) {
         const el = Dom.closest(evt.target, '.component-track');
         const component_id = Dom.data(el, 'component');
-        console.log(el, component_id);
         const track = this.controller.getTimeline().getComponentTrack(component_id);
         const component = track.getComponent();
 
@@ -1755,7 +1754,7 @@ export class Editor extends Dom {
 
         if (this.isLatestRevision()) {
             this.player
-                .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
+                .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true)
                 .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
                 .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)

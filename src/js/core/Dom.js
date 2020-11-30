@@ -1051,7 +1051,7 @@ export default class Dom {
      * @param {Boolean} [cancelable=true] Whether the event is cancelable
      * @return {Boolean} Whether no event was cancelled
      */
-    triggerEvent(type, data, bubbles, cancelable){
+    triggerEvent(type, data, bubbles=true, cancelable=true){
         let return_value = true;
 
         this.forEach((element) => {

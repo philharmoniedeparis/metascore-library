@@ -167,11 +167,6 @@ export default class ComponentTrack extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
         const property = evt.detail.property;
         const value = evt.detail.value;
 

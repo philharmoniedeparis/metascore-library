@@ -303,7 +303,7 @@ export default class Component extends Dom {
                 this.updatePropertyValue(name, new_value);
 
                 if(supressEvent !== true){
-                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': new_value, 'previous': previous_value});
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': new_value, 'previous': previous_value}, false);
                 }
             }
         }
