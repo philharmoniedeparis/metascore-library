@@ -1,3 +1,5 @@
+import {round} from './core/utils/Math';
+
 /**
  * The value of the targetOrigin parameter sent with each postMessage
  * See https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
@@ -174,7 +176,7 @@ export class API{
     play(inTime, outTime, scenario){
         if(!isNaN(scenario)){
             // This is likely a v1 call, alter the parameters for backward compatibility.
-            this.postMessage('play', {'inTime': (inTime/100).toFixed(2), 'outTime': (outTime/100).toFixed(2), 'scenario': `scenario-${scenario}`});
+            this.postMessage('play', {'inTime': round(inTime/100, 2), 'outTime': round(outTime/100, 2), 'scenario': `scenario-${scenario}`});
             return this;
         }
 

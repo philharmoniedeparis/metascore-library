@@ -2,6 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
+import {round} from '../../utils/Math';
 import {getDecimalPlaces} from '../../utils/Number';
 
 import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down.svg?svg-sprite';
@@ -194,7 +195,7 @@ export default class NumberInput extends Input {
             let value = this.getValue() + (this.configs.step * delta);
 
             // work around the well-known floating point issue
-            value = parseFloat(value.toFixed(decimals));
+            value = round(value, decimals);
 
             this.setValue(value);
 
@@ -250,7 +251,7 @@ export default class NumberInput extends Input {
         let value = this.getValue() + step * (direction === 'down' ? -1 : 1);
 
         // work around the well-known floating point issue
-        value = parseFloat(value.toFixed(decimals));
+        value = round(value, decimals);
 
         this.setValue(value);
 
