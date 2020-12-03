@@ -10,6 +10,7 @@ import CuePoint from './player/CuePoint';
 import Component from './player/Component';
 import Scenario from './player/component/Scenario';
 import {getRendererForMime} from './core/utils/Media';
+import { isEmpty } from './core/utils/Var';
 
 import {className} from '../css/Player.scss';
 
@@ -989,12 +990,15 @@ export class Player extends Dom {
      */
     updateBlockToggler(block_toggler) {
         const ids = block_toggler.getPropertyValue('blocks');
-        const scenario = block_toggler.getParent();
-        const components = scenario.getChildren().filter((component) => {
-            return ids.includes(component.getId());
-        });
 
-        block_toggler.update(components);
+        if (!isEmpty(ids)) {
+            const scenario = block_toggler.getParent();
+            const components = scenario.getChildren().filter((component) => {
+                return ids.includes(component.getId());
+            });
+
+            block_toggler.update(components);
+        }
 
         return this;
     }
