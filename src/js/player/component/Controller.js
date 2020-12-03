@@ -3,6 +3,7 @@ import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {formatTime} from '../../core/utils/Media';
 import {MasterClock} from '../../core/media/MediaClock';
+import {pick} from '../../core/utils/Object';
 
 /**
  * A controller component
@@ -11,27 +12,30 @@ export default class Controller extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
         'resizable': false,
-        'properties': Object.assign({}, super.defaults.properties, {
-            'hidden': {
-                'type': 'boolean'
-            },
-            'x': {
-                'type': 'number'
-            },
-            'y': {
-                'type': 'number'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            }
-        })
+        'name': 'Controller'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = pick(super.getProperties(), [
+                'id',
+                'type',
+                'name',
+                'hidden',
+                'x',
+                'y',
+                'border-width',
+                'border-color',
+                'border-radius',
+                'editor.locked',
+            ]);
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -101,15 +105,6 @@ export default class Controller extends Component{
             .appendTo(this);
 
         return this;
-    }
-
-    /**
-     * Get the value of the controller's name property
-     *
-     * @return {String} The name
-     */
-    getName() {
-        return '[controller]';
     }
 
     /**

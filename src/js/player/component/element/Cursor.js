@@ -1,4 +1,5 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 import Dom from '../../../core/Dom';
 import {MasterClock} from '../../../core/media/MediaClock';
 import {map, radians} from '../../../core/utils/Math';
@@ -15,68 +16,81 @@ import {isEmpty} from '../../../core/utils/Var';
 export default class Cursor extends Element {
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'border-radius': {
-                'type': 'string',
-                'applies': function(){
-                    return this.getPropertyValue('form') !== 'circular';
-                }
-            },
-            'form': {
-                'type': 'string',
-                'default': 'linear'
-            },
-            'keyframes': {
-                'type': 'array',
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'linear';
-                }
-            },
-            'direction': {
-                'type': 'string',
-                'default': 'right'
-            },
-            'start-angle': {
-                'type': 'number',
-                'default': 0,
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'circular';
-                }
-            },
-            'loop-duration': {
-                'type': 'time',
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'circular';
-                }
-            },
-            'acceleration': {
-                'type': 'number',
-                'default': 1,
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
-                }
-            },
-            'cursor-width': {
-                'type': 'number',
-                'default': 1
-            },
-            'cursor-color': {
-                'type': 'color',
-                'default': '#000000'
-            },
-            'start-time': {
-                'type': 'time',
-                'sanitize': function(value){
-                    // Start time cannot be null for Cursor elements.
-                    if (value === null) {
-                        return 0;
-                    }
-
-                    return Element.defaults.properties['start-time'].sanitize.call(this, value);
-                }
-            },
-        })
+        'form': 'linear',
+        'direction': 'right',
+        'start-angle': 0,
+        'acceleration': 1,
+        'cursor-width': 1,
+        'cursor-color': '#000000'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'form': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Cursor.properties.form.label', 'Form')
+                },
+                'keyframes': {
+                    'type': 'array',
+                    'label': Locale.t('component.element.Cursor.properties.keyframes.label', 'Keyframes'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear';
+                    }
+                },
+                'direction': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Cursor.properties.direction.label', 'Direction')
+                },
+                'start-angle': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.start-angle.label', 'Start angle'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'circular';
+                    }
+                },
+                'loop-duration': {
+                    'type': 'time',
+                    'label': Locale.t('component.element.Cursor.properties.loop-duration.label', 'Loop-duration'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'circular';
+                    }
+                },
+                'acceleration': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.acceleration.label', 'Acceleration'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
+                    }
+                },
+                'cursor-width': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.cursor-width.label', 'Cursor width')
+                },
+                'cursor-color': {
+                    'type': 'color',
+                    'label': Locale.t('component.element.Cursor.properties.cursor-color.label', 'Cursor color')
+                }
+            });
+
+            this.properties['border-radius'].applies = function(){
+                return this.getPropertyValue('form') !== 'circular';
+            };
+
+            const sanitize = this.properties['start-time'].sanitize;
+            this.properties['start-time'].sanitize = function(value){
+                // Start time cannot be null for Cursor elements.
+                if (value === null) {return 0;}
+
+                return sanitize.call(this, value);
+            };
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc

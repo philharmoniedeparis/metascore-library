@@ -1,5 +1,7 @@
 import Component from '../Component';
+import Locale from '../../core/Locale';
 import Dom from '../../core/Dom';
+import {pick} from '../../core/utils/Object';
 
 /**
  * A block toggler component
@@ -7,52 +9,39 @@ import Dom from '../../core/Dom';
 export default class BlockToggler extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'name': {
-                'type': 'string'
-            },
-            'hidden': {
-                'type': 'boolean'
-            },
-            'blocks': {
-                'type': 'array'
-            },
-            'x': {
-                'type': 'number'
-            },
-            'y': {
-                'type': 'number'
-            },
-            'width': {
-                'type': 'number',
-                'default': 100,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('width'), 10);
-                }
-            },
-            'height': {
-                'type': 'number',
-                'default': 20,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('height'), 10);
-                }
-            },
-            'background-color': {
-                'type': 'color'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            }
-        })
+        'width': 100,
+        'height': 20
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(pick(super.getProperties(), [
+                'id',
+                'type',
+                'name',
+                'hidden',
+                'x',
+                'y',
+                'width',
+                'height',
+                'background-color',
+                'border-width',
+                'border-color',
+                'border-radius',
+                'editor.locked',
+            ]), {
+                'blocks': {
+                    'type': 'array',
+                    'label': Locale.t('component.BlockToggler.properties.blocks.label', 'Blocks')
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc

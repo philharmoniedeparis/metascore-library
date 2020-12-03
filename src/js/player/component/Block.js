@@ -1,10 +1,12 @@
 import Component from '../Component';
+import Locale from '../../core/Locale';
 import {MasterClock} from '../../core/media/MediaClock';
 import Dom from '../../core/Dom';
 import Pager from './block/Pager';
 import Page from './Page';
 import {isNumber} from '../../core/utils/Var';
 import Hammer from 'hammerjs';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A block component
@@ -16,74 +18,47 @@ import Hammer from 'hammerjs';
 export default class Block extends Component {
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'name': {
-                'type': 'string'
-            },
-            'hidden': {
-                'type': 'boolean'
-            },
-            'x': {
-                'type': 'number',
-                'default': 0
-            },
-            'y': {
-                'type': 'number',
-                'default': 0
-            },
-            'width': {
-                'type': 'number',
-                'default': 200,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('width'), 10);
-                }
-            },
-            'height': {
-                'type': 'number',
-                'default': 200,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('height'), 10);
-                }
-            },
-            'background-color': {
-                'type': 'color'
-            },
-            'background-image': {
-                'type': 'image'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            },
-            'synched': {
-                'type': 'boolean',
-                'default': false
-            },
-            'pager-visibility': {
-                'type': 'string',
-                'default': 'auto'
-            },
-            'pages': {
-                'type': 'array',
-                'getter': function(skipID){
-                    const pages = [];
-
-                    this.getChildren().forEach((page) => {
-                        pages.push(page.getPropertyValues(skipID));
-                    });
-
-                    return pages;
-                }
-            }
-        })
+        'width': 200,
+        'height': 200,
+        'synched': false,
+        'pager-visibility': 'auto'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(omit(super.getProperties(), [
+                'opacity',
+                'start-time',
+                'end-time'
+            ]), {
+                'synched': {
+                    'type': 'boolean',
+                    'label': Locale.t('component.Block.properties.synched.label', 'Synched')
+                },
+                'pager-visibility': {
+                    'type': 'string',
+                    'label': Locale.t('component.Block.properties.pager-visibility.label', 'Pager visibility')                },
+                'pages': {
+                    'type': 'array',
+                    'label': Locale.t('component.Block.properties.pages.label', 'Pages'),
+                    'getter': function(skipID){
+                        const pages = [];
+
+                        this.getChildren().forEach((page) => {
+                            pages.push(page.getPropertyValues(skipID));
+                        });
+
+                        return pages;
+                    }
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc

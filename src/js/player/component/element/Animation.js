@@ -1,4 +1,5 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 import {MasterClock} from '../../../core/media/MediaClock';
 import Lottie from 'lottie-web';
 
@@ -11,35 +12,50 @@ import Lottie from 'lottie-web';
 export default class Animation extends Element{
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'src': {
-                'type': 'string'
-            },
-            'start-frame': {
-                'type': 'number',
-                'default': 1
-            },
-            'loop-duration': {
-                'type': 'time',
-                'sanitize': function(value) {
-                    if (this.isLoaded() && !value) {
-                        return this.animation.getDuration();
-                    }
-                    return value;
-                }
-            },
-            'reversed': {
-                'type': 'boolean',
-                'default': false
-            },
-            'colors': {
-                'type': 'array',
-                'applies': function(){
-                    return this.contents.find(`[class^='color'] path, [class*=' color'] path`).count() > 0;
-                }
-            }
-        })
+        'start-frame': 1,
+        'reversed': false
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'src': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Animation.properties.src.label', 'Source')
+                },
+                'start-frame': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Animation.properties.start-frame.label', 'Start frame')
+                },
+                'loop-duration': {
+                    'type': 'time',
+                    'label': Locale.t('component.element.Animation.properties.loop-duration.label', 'Loop duration'),
+                    'sanitize': function(value) {
+                        if (this.isLoaded() && !value) {
+                            return this.animation.getDuration();
+                        }
+                        return value;
+                    }
+                },
+                'reversed': {
+                    'type': 'boolean',
+                    'label': Locale.t('component.element.Animation.properties.reversed.label', 'Reversed')
+                },
+                'colors': {
+                    'type': 'array',
+                    'label': Locale.t('component.element.Animation.properties.colors.label', 'Colors'),
+                    'applies': function(){
+                        return this.contents.find(`[class^='color'] path, [class*=' color'] path`).count() > 0;
+                    }
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc

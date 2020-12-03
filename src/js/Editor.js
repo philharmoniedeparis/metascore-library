@@ -2700,10 +2700,7 @@ export class Editor extends Dom {
                 const components = [];
 
                 configs.forEach((block_config) => {
-                    const component = scenario.addComponent(Object.assign({
-                        'name': Locale.t('editor.addPlayerComponents.block.name', 'untitled')
-                    }, block_config));
-
+                    const component = scenario.addComponent(block_config);
                     components.push(component);
                 });
 

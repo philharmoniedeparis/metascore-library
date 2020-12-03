@@ -29,21 +29,112 @@ export default class Component extends Dom {
     static defaults = {
         'draggable': true,
         'resizable': true,
-        'properties': {
-            'type': {
-                'type': 'string',
-                'getter': function(){
-                    return this.constructor.getType();
-                }
-            },
-            'id': {
-                'type': 'string',
-            },
-            'editor.locked': {
-                'type': 'boolean'
-            }
-        }
+        'name': 'untitled',
+        'x': 0,
+        'y': 0,
+        'width': 50,
+        'height': 50,
+        'opacity': 1
     };
+
+    /**
+     * Get all properties
+     *
+     * @return {Object[]} The properties
+     */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = {
+                'type': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.type.label', 'Type'),
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
+                'id': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.id.label', 'ID')
+                },
+                'name': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.name.label', 'Name')
+                },
+                'hidden': {
+                    'type': 'boolean',
+                    'label': Locale.t('Component.properties.hidden.label', 'Hidden')
+                },
+                'x': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.x.label', 'X')
+                },
+                'y': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.y.label', 'Y')
+                },
+                'width': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.width.label', 'Width'),
+                    'getter': function () {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('width'), 10);
+                    }
+                },
+                'height': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.height.label', 'Height'),
+                    'getter': function () {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('height'), 10);
+                    }
+                },
+                'background-color': {
+                    'type': 'color',
+                    'label': Locale.t('Component.properties.background-color.label', 'Background color')
+                },
+                'background-image': {
+                    'type': 'image',
+                    'label': Locale.t('Component.properties.background-image.label', 'Background image')
+                },
+                'border-width': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.border-width.label', 'Border width')
+                },
+                'border-color': {
+                    'type': 'color',
+                    'label': Locale.t('Component.properties.border-color.label', 'Border color')
+                },
+                'border-radius': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.border-radius.label', 'Border radius')
+                },
+                'opacity': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.opacity.label', 'Opacity')
+                },
+                'start-time': {
+                    'type': 'time',
+                    'label': Locale.t('Component.properties.start-time.label', 'Start time'),
+                    'sanitize': function (value) {
+                        return value ? round(value, 2) : value;
+                    }
+                },
+                'end-time': {
+                    'type': 'time',
+                    'label': Locale.t('Component.properties.end-time.label', 'End time'),
+                    'sanitize': function (value) {
+                        return value ? round(value, 2) : value;
+                    }
+                },
+                'editor.locked': {
+                    'type': 'boolean',
+                    'label': Locale.t('Component.properties.editor-locked.label', 'Locked')
+                }
+            };
+        }
+
+        return this.properties;
+    }
 
     /**
     * Get the component's type
@@ -113,21 +204,11 @@ export default class Component extends Dom {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
-        // Get a clone of default configs.
-        const defaults = {...this.constructor.defaults};
-
-        // Add default property values.
-        Object.entries(defaults.properties).forEach(([name, property]) => {
-            if('default' in property){
-                defaults[name] = property.default;
-            }
-        });
-
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({'id': `component-${uuid(10)}`}, defaults, configs);
+        this.configs = Object.assign({'id': `component-${uuid(10)}`}, this.constructor.defaults, configs);
 
         /**
          * The property values store
@@ -212,7 +293,7 @@ export default class Component extends Dom {
      * @return {Mixed} The property
      */
     getProperty(name){
-        return this.getProperties()[name];
+        return this.constructor.getProperties()[name];
     }
 
     /**
@@ -221,7 +302,7 @@ export default class Component extends Dom {
      * @return {Object[]} The properties
      */
     getProperties(){
-        return this.configs.properties;
+        return this.constructor.getProperties();
     }
 
     /**

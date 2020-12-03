@@ -1,7 +1,7 @@
 import Component from '../Component';
 import Element from './Element';
 import Locale from '../../core/Locale';
-import {round} from '../../core/utils/Math';
+import {pick} from '../../core/utils/Object';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
@@ -32,40 +32,41 @@ export default class Page extends Component {
 
     static defaults = Object.assign({}, super.defaults, {
         'draggable': false,
-        'resizable': false,
-        'properties': Object.assign({}, super.defaults.properties, {
-            'background-color': {
-                'type': 'color'
-            },
-            'background-image': {
-                'type': 'image'
-            },
-            'start-time': {
-                'type': 'time',
-                'sanitize': function(value) {
-                    return value ? round(value, 2) : value;
-                }
-            },
-            'end-time': {
-                'type': 'time',
-                'sanitize': function(value) {
-                    return value ? round(value, 2) : value;
-                }
-            },
-            'elements': {
-                'type': 'array',
-                'getter': function(skipID){
-                    const elements = [];
-
-                    this.getChildren().forEach((element) => {
-                        elements.push(element.getPropertyValues(skipID));
-                    });
-
-                    return elements;
-                }
-            }
-        })
+        'resizable': false
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(pick(super.getProperties(), [
+                'type',
+                'id',
+                'background-color',
+                'background-image',
+                'start-time',
+                'end-time',
+                'editor.locked'
+            ]), {
+                'elements': {
+                    'type': 'array',
+                    'label': Locale.t('component.Page.properties.elements.label', 'Elements'),
+                    'getter': function(skipID){
+                        const elements = [];
+
+                        this.getChildren().forEach((element) => {
+                            elements.push(element.getPropertyValues(skipID));
+                        });
+
+                        return elements;
+                    }
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
