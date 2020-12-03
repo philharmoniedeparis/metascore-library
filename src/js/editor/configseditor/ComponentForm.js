@@ -37,7 +37,7 @@ export default class ComponentForm extends Dom {
                 }
             },
             'background-color': {
-                'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background color'),
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color'),
                 'input': {
                     'type': ColorInput,
                     'configs': {'format': 'css'}
