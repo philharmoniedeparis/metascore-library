@@ -204,7 +204,9 @@
     }
 
     &.assetbrowser-expanded {
-        grid-template-columns: auto 0 minmax(0, min-content);
+        grid-template-columns: auto;
+        grid-template-rows: min-content 1fr;
+        grid-template-areas: 'top' 'left';
 
         .pane {
             &.tools-pane {
@@ -217,7 +219,9 @@
                 }
             }
 
-            &.center-pane {
+            &.center-pane,
+            &.configs-pane,
+            &.bottom-pane, {
                 display: none;
             }
         }
