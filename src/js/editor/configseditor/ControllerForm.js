@@ -10,6 +10,7 @@ export default class ControllerForm extends ComponentForm {
         'title': Locale.t('editor.configseditor.ControllerForm.title.single', 'Attributes of controller'),
         'title_plural': Locale.t('editor.configseditor.ControllerForm.title.plural', 'Attributes of @count controllers'),
         'fields': {
+            'name': super.defaults.fields.name,
             'border': super.defaults.fields.border,
             'position': super.defaults.fields.position,
         }
