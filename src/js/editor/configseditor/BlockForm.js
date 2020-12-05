@@ -37,14 +37,4 @@ export default class BlockForm extends ComponentForm {
             },
         }
     });
-
-    /**
-     * @inheritdoc
-     */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`block-form`);
-    }
 }

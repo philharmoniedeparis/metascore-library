@@ -14,16 +14,6 @@ export default class ElementForm extends ComponentForm {
     /**
      * @inheritdoc
      */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`element-form`);
-    }
-
-    /**
-     * @inheritdoc
-     */
     updateColorInputEmptyValue(input, name) {
         if (!['backgroud-color', 'border-color'].includes(name)) {
             return super.updateColorInputEmptyValue(input, name);

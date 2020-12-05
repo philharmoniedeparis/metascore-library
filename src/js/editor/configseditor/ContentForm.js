@@ -35,6 +35,8 @@ export default class ContentForm extends ElementForm {
         // call parent constructor
         super(...args);
 
+        this.addClass(className);
+
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
         this.onComponentContentsClick = this.onComponentContentsClick.bind(this);
@@ -43,8 +45,6 @@ export default class ContentForm extends ElementForm {
         this.onComponentContentsKey = this.onComponentContentsKey.bind(this);
 
         this.editor.addListener('previewmode', this.onEditorPreviewMode.bind(this));
-
-        this.addClass(`content-form ${className}`);
 
         this.wysiwyg_container = new Dom('<div/>', {'class': 'wysiwyg-container'})
             .appendTo(this.fields_wrapper);

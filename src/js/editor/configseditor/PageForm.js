@@ -19,16 +19,6 @@ export default class PageForm extends ComponentForm {
     /**
      * @inheritdoc
      */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`page-form`);
-    }
-
-    /**
-     * @inheritdoc
-     */
     updateFieldValues(supressEvent){
         if(this.components){
             if(this.hasField('start-time')){

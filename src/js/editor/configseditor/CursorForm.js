@@ -101,7 +101,7 @@ export default class CursorForm extends ElementForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(`cursor-form ${className}`);
+        this.addClass(className);
 
         this.direction_options = {
             'linear': {
@@ -124,10 +124,10 @@ export default class CursorForm extends ElementForm {
         super.setComponents(components);
 
         if(this.components.length === 1){
-            this.fields.keyframes.show();
+            this.getField('keyframes').show();
         }
         else{
-            this.fields.keyframes.hide();
+            this.getField('keyframes').hide();
         }
 
         return this;
@@ -137,7 +137,7 @@ export default class CursorForm extends ElementForm {
      * @inheritdoc
      */
     unsetComponents(){
-        this.fields.keyframes.setValue(false);
+        this.getField('keyframes').getInput().setValue(false);
 
         super.unsetComponents();
 

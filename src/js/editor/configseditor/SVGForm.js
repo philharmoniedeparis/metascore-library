@@ -111,10 +111,10 @@ export default class SVGForm extends ElementForm {
         // call parent constructor
         super(...args);
 
+        this.addClass(className);
+
         // fix event handlers scope
         this.onComponentLoad = this.onComponentLoad.bind(this);
-
-        this.addClass(`svg-form ${className}`);
     }
 
     /**

@@ -28,16 +28,6 @@ export default class BlockTogglerForm extends BlockForm {
         }
     });
 
-    /**
-     * @inheritdoc
-     */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`blocktoggler-form`);
-    }
-
     updateComponentFields(components){
         const input = this.getField('blocks').getInput();
 

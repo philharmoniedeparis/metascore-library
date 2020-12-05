@@ -101,7 +101,7 @@ export default class AnimationForm extends ElementForm {
         // fix event handlers scope
         this.onComponentLoad = this.onComponentLoad.bind(this);
 
-        this.addClass(`animation-form ${className}`);
+        this.addClass(className);
     }
 
     /**

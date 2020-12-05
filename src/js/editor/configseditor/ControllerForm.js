@@ -14,14 +14,4 @@ export default class ControllerForm extends ComponentForm {
             'position': super.defaults.fields.position,
         }
     });
-
-    /**
-     * @inheritdoc
-     */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`controller-form`);
-    }
 }

@@ -19,14 +19,4 @@ export default class VideoRendererForm extends ComponentForm {
             'dimension': super.defaults.fields.dimension
         }
     });
-
-    /**
-     * @inheritdoc
-     */
-    constructor(...args) {
-        // call parent constructor
-        super(...args);
-
-        this.addClass(`video-renderer-form`);
-    }
 }
