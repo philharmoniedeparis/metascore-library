@@ -55,6 +55,10 @@ export default class Element extends Component {
      * @inheritdoc
      */
     updatePropertyValue(name, value) {
+        if(this.isPropertyAnimated(name, value)) {
+            return this.updateAnimatedPropertyValue(name, value);
+        }
+
         switch (name) {
             case 'background-color':
             case 'border-color':

@@ -1,8 +1,11 @@
 import Dom from '../core/Dom';
+import Locale from '../core/Locale';
 import Draggable from '../core/ui/Draggable';
 import Resizable from '../core/ui/Resizable';
 import {isArray, isFunction, isString} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
+import {map, round} from '../core/utils/Math';
+import {MasterClock} from '../core/media/MediaClock';
 import CuePoint from './CuePoint';
 
 /**
@@ -66,11 +69,13 @@ export default class Component extends Dom {
                 },
                 'x': {
                     'type': 'number',
-                    'label': Locale.t('Component.properties.x.label', 'X')
+                    'label': Locale.t('Component.properties.x.label', 'X'),
+                    'animatable': true
                 },
                 'y': {
                     'type': 'number',
-                    'label': Locale.t('Component.properties.y.label', 'Y')
+                    'label': Locale.t('Component.properties.y.label', 'Y'),
+                    'animatable': true
                 },
                 'width': {
                     'type': 'number',
@@ -78,7 +83,8 @@ export default class Component extends Dom {
                     'getter': function () {
                         // Get value from CSS to honor CSS min and max values.
                         return parseInt(this.css('width'), 10);
-                    }
+                    },
+                    'animatable': true
                 },
                 'height': {
                     'type': 'number',
@@ -86,7 +92,8 @@ export default class Component extends Dom {
                     'getter': function () {
                         // Get value from CSS to honor CSS min and max values.
                         return parseInt(this.css('height'), 10);
-                    }
+                    },
+                    'animatable': true
                 },
                 'background-color': {
                     'type': 'color',
@@ -110,7 +117,8 @@ export default class Component extends Dom {
                 },
                 'opacity': {
                     'type': 'number',
-                    'label': Locale.t('Component.properties.opacity.label', 'Opacity')
+                    'label': Locale.t('Component.properties.opacity.label', 'Opacity'),
+                    'animatable': true
                 },
                 'start-time': {
                     'type': 'time',
@@ -215,6 +223,12 @@ export default class Component extends Dom {
          * @type {Object}
          */
         this.property_values = {};
+
+        /**
+         * The animatable properties cuepoints
+         * @type {Object}
+         */
+        this.property_cuepoints = {};
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -356,6 +370,48 @@ export default class Component extends Dom {
     }
 
     /**
+     * Get the value of an animated property at a specific time.
+     *
+     * @param {String} name The name of the property
+     * @param {number} time The time in seconds
+     * @return {Mixed} The value of the property
+     */
+    getPropertyValueAtTime(name, time){
+        const values = this.getPropertyValue(name).sort((a, b) => {
+            return a[0] - b[0];
+        });
+
+        // Find the index of the value with the smallest time
+        // greater than the desired time.
+        const index = values.findIndex((value) => {
+            return value[0] >= time;
+        });
+
+        if (index === -1) {
+            // No value found after desired time,
+            // return the last value.
+            return values[values.length-1][1];
+        }
+
+        if (index === 0) {
+            // No value found before desired time,
+            // return first value.
+            return values[index][1];
+        }
+
+        if (time === values[index][0]) {
+            // Desired time matches a value's time,
+            // return that value.
+            return values[index][1];
+        }
+
+        // Claculate the intermediate.
+        const start = values[index-1];
+        const end = values[index];
+        return map(time, start[0], end[0], start[1], end[1]);
+    }
+
+    /**
      * Set the value of a given property
      *
      * @param {String} name The name of the property
@@ -369,8 +425,23 @@ export default class Component extends Dom {
             const previous_value = this.getPropertyValue(name);
             let new_value = value;
 
+            const animatable = this.isPropertyAnimatable(name);
+            const animated = animatable && this.isPropertyAnimated(name, new_value);
+
+            if (animated) {
+                new_value.sort((a, b) => a[0] - b[0]);
+            }
+
             if(('sanitize' in prop) && isFunction(prop.sanitize)){
-                new_value = prop.sanitize.call(this, new_value);
+                if (animated) {
+                    // Sanitize each value.
+                    new_value.forEach((v) => {
+                        v[1] = prop.sanitize.call(this, v[1]);
+                    });
+                }
+                else {
+                    new_value = prop.sanitize.call(this, new_value);
+                }
             }
 
             if(previous_value !== new_value){
@@ -381,6 +452,9 @@ export default class Component extends Dom {
                     this.property_values[name] = new_value;
                 }
 
+                if (animatable){
+                    this.removePropertyCuepoint(name);
+                }
                 this.updatePropertyValue(name, new_value);
 
                 if(supressEvent !== true){
@@ -395,16 +469,40 @@ export default class Component extends Dom {
     /**
      * Set property values
      *
-     * @param {Object} properties The list of properties to set as name/value pairs
+     * @param {Object} names The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @return {this}
      */
-    setPropertyValues(properties, supressEvent){
-        Object.entries(properties).forEach(([key, value]) => {
-            this.setPropertyValue(key, value, supressEvent);
+    setPropertyValues(names, supressEvent){
+        Object.entries(names).forEach(([name, value]) => {
+            this.setPropertyValue(name, value, supressEvent);
         });
 
         return this;
+    }
+
+    /**
+     * Check if a property is animatable.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {Boolean} Whether the property is animatable.
+     */
+    isPropertyAnimatable(name){
+        const prop = this.getProperty(name);
+        return prop && prop.animatable;
+    }
+
+    /**
+     * Check if a property is animated.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @param {Mixed} value The value to set
+     * @return {Boolean} Whether the property is animated.
+     */
+    isPropertyAnimated(name, value){
+        return isArray(value) && this.isPropertyAnimatable(name);
     }
 
     /**
@@ -416,6 +514,10 @@ export default class Component extends Dom {
      * @return {this}
      */
     updatePropertyValue(name, value){
+        if(this.isPropertyAnimated(name, value)) {
+            return this.updateAnimatedPropertyValue(name);
+        }
+
         switch(name){
             case 'id':
                 this.attr('id', value);
@@ -465,6 +567,64 @@ export default class Component extends Dom {
                 this.toggleClass('editor-locked', value);
                 break;
         }
+
+        return this;
+    }
+
+    /**
+     * Remove an animated propoerty's cuepoint.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {this}
+     */
+    removePropertyCuepoint(name) {
+        if(name in this.property_cuepoints) {
+            this.property_cuepoints[name].deactivate();
+            delete this.property_cuepoints[name];
+        }
+
+        return this;
+    }
+
+    /**
+     * Update an animated property value
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @param {Array} values The values to set
+     * @return {this}
+     */
+    updateAnimatedPropertyValue(name) {
+        const values = this.getPropertyValue(name);
+
+        this.removePropertyCuepoint(name);
+
+        // The values are empty.
+        if(values.length === 0){
+            return this.updatePropertyValue(name, null);
+        }
+
+        // Only one value is provided.
+        if(values.length === 1){
+            return this.updatePropertyValue(name, values[0][1]);
+        }
+
+        // There's no need for inTime and outTime
+        // as the cuepoint is (de)activated
+        // with the (de)activation of the component.
+        const cuepoint = new CuePoint()
+            .addListener('update', () => {
+                const time = MasterClock.getTime();
+                const value = this.getPropertyValueAtTime(name, time);
+                this.updatePropertyValue(name, value);
+            });
+
+        if(this.isActive()){
+            cuepoint.activate();
+        }
+
+        this.property_cuepoints[name] = cuepoint;
 
         return this;
     }
@@ -741,6 +901,10 @@ export default class Component extends Dom {
         this.active = true;
         this.addClass('active');
 
+        Object.values(this.property_cuepoints).forEach((cuepoint) => {
+            cuepoint.activate();
+        });
+
         this.getChildren().forEach((child) => {
             child.activate();
         });
@@ -773,6 +937,10 @@ export default class Component extends Dom {
     doDeactivate(supressEvent){
         delete this.active;
         this.removeClass('active');
+
+        Object.values(this.property_cuepoints).forEach((cuepoint) => {
+            cuepoint.deactivate();
+        });
 
         this.getChildren().forEach((child) => {
             child.deactivate();

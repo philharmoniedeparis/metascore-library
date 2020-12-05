@@ -131,6 +131,10 @@ export default class Block extends Component {
      * @inheritdoc
      */
     updatePropertyValue(name, value){
+        if(this.isPropertyAnimated(name, value)) {
+            return this.updateAnimatedPropertyValue(name, value);
+        }
+
         switch(name){
             case 'pager-visibility':
                 this.data(name, value);

@@ -15,6 +15,7 @@ body {
     font: normal 11px Verdana, Arial, Helvetica, sans-serif;
 }
 
+::backdrop,
 :fullscreen body,
 body.fullscreen {
     background: #fff;

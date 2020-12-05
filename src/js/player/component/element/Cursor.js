@@ -138,6 +138,10 @@ export default class Cursor extends Element {
      * @inheritdoc
      */
     updatePropertyValue(name, value){
+        if(this.isPropertyAnimated(name, value)) {
+            return this.updateAnimatedPropertyValue(name, value);
+        }
+
         switch(name){
             case 'form':
                 this.data('form', value);
