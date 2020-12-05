@@ -54,17 +54,21 @@ export default class ComponentForm extends Dom {
                 'label': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border'),
                 'items': {
                     'border-color': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color'),
                         'input': {
                             'type': ColorInput,
                             'configs': {'format': 'css'}
+                        },
+                        'attributes': {
+                            'title': Locale.t('editor.configseditor.ComponentForm.fields.border-color.title', 'Color')
                         }
                     },
                     'border-width': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width'),
                         'input': {
                             'type': NumberInput,
                             'configs': {'min': 0, 'spinButtons': true}
+                        },
+                        'attributes': {
+                            'title': Locale.t('editor.configseditor.ComponentForm.fields.border-width.title', 'Width')
                         }
                     },
                     'border-radius': {
@@ -591,6 +595,7 @@ export default class ComponentForm extends Dom {
      * @param {String} id The field group's id.
      * @param {Object} [configs] The field group's configs.
      * @property {String} [label] The field group's label.
+     * @property {Object} [attributes] A list of attributes to set on the group.
      * @return {Dom} The group's Dom instance.
      */
     addFieldGroup(id, configs={}) {
@@ -600,6 +605,12 @@ export default class ComponentForm extends Dom {
         if('label' in configs){
             new Dom('<label/>', {'text': configs.label})
                 .appendTo(wrapper);
+        }
+
+        if ('attributes' in configs){
+            Object.entries(configs.attributes).forEach(([key, value]) => {
+                wrapper.attr(key, value);
+            });
         }
 
         return wrapper;
