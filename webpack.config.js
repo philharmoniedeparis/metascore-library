@@ -114,7 +114,7 @@ const getConfigs = (entry_id, env, argv) => {
                             options: {
                                 modules: {
                                     mode: 'global',
-                                    localIdentName: LIB_NAME + '-[path][name]--[hash:base64:5]',
+                                    localIdentName: '[name]--[hash:base64:5]',
                                     localIdentContext: path.resolve(__dirname, './src/css'),
                                     namedExport: true
                                 },
