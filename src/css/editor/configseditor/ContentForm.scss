@@ -3,7 +3,7 @@
 :local(.class-name) {
     .field[data-property='contents-toggle'] {
         flex: 100%;
-        margin: 0.5em 0;
+        padding: 0.5em 0;
 
         input {
             + .state label {

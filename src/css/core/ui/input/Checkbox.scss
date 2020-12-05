@@ -47,15 +47,19 @@
                 label {
                     width: auto;
                     height: auto;
-                    padding: 0.25em 0.5em;
+                    padding: 0.25em 0.75em;
                     color: #fff;
                     background: none;
                     border: 1px solid #fff;
                     border-radius: 1.5em;
-                    cursor: pointer;
                     user-select: none;
                     outline: 0;
                     transition: all 0.4s ease;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 0.75;
+                    }
                 }
 
                 .icon {
