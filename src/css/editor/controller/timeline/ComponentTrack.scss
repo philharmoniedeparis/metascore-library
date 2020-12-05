@@ -8,7 +8,6 @@ $handles-margin: 0.5em;
 
 :local(.class-name) {
     display: contents;
-    height: 2em;
     user-select: none;
     cursor: pointer;
 
@@ -17,10 +16,18 @@ $handles-margin: 0.5em;
         @for $j from 1 through $i {
             $selector: $selector #{&};
         }
-        #{$selector} > .handle {
+        #{$selector} .handle {
             border-left: $handles-margin * ($i - $handles-initial-level + 1) solid $darkgray;
             background: scale-color($mediumgray, $lightness: $handles-lighten-scale * ($i - $handles-initial-level + 1));
         }
+    }
+
+    > .handle,
+    > .time-wrapper {
+        height: 2em;
+        border-top: 1px solid $darkgray;
+        border-bottom: 1px solid $darkgray;
+        box-sizing: border-box;
     }
 
     > .time-wrapper {
@@ -30,8 +37,6 @@ $handles-margin: 0.5em;
         margin-left: calc(var(--timeline-offset) * -100%);
         grid-column: 2;
         background: $mediumgray;
-        border-bottom: 1px solid $darkgray;
-        box-sizing: border-box;
 
         .time {
             position: absolute;
@@ -59,7 +64,7 @@ $handles-margin: 0.5em;
     &.has-start-time {
         > .time-wrapper {
             .time {
-                left: calc(var(--track-start-time)/var(--timeline-duration) * 100%);
+                left: calc(var(--component-start-time)/var(--timeline-duration) * 100%);
             }
         }
     }
@@ -67,7 +72,7 @@ $handles-margin: 0.5em;
     &.has-end-time {
         > .time-wrapper {
             .time {
-                right: calc(100% - (var(--track-end-time)/var(--timeline-duration) * 100%));
+                right: calc(100% - (var(--component-end-time)/var(--timeline-duration) * 100%));
             }
         }
     }
@@ -105,14 +110,23 @@ $handles-margin: 0.5em;
         display: none;
     }
 
-    &.selected > .time-wrapper {
-        background: $lightgray;
+    > .properties {
+        display: contents;
+    }
 
-        .time {
-            opacity: 1;
+    &.selected {
+        > .handle,
+        > .time-wrapper {
+            background: $lightgray !important;
+        }
 
-            .resize-handle {
-                display: block;
+        > .time-wrapper {
+            .time {
+                opacity: 1;
+
+                .resize-handle {
+                    display: block;
+                }
             }
         }
     }

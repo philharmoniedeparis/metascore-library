@@ -6,6 +6,7 @@ import Draggable from '../../../core/ui/Draggable';
 import ComponentIcons from '../../ComponentIcons';
 import {clamp} from '../../../core/utils/Math';
 import {MasterClock} from '../../../core/media/MediaClock';
+import PropertyTrack from './PropertyTrack';
 
 import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
 
@@ -92,6 +93,38 @@ export default class ComponentTrack extends Dom {
             .addListener('resizeend', this.onTimeResizeEnd.bind(this))
             .appendTo(this.time_wrapper);
 
+        /**
+         * The descendents DOM wrapper.
+         * @type {Dom}
+         */
+        this.descendents_wrapper = new Dom('<div/>', {'class': 'descendents'})
+            .addListener('childremove', this.onDescendentsChildRemove.bind(this))
+            .appendTo(this);
+
+        /**
+         * The property tracks DOM wrapper.
+         * @type {Dom}
+         */
+        this.properties_wrapper = new Dom('<div/>', {'class': 'properties'})
+            .addListener('childremove', this.onPropertiesChildRemove.bind(this))
+            .appendTo(this);
+
+        /**
+         * The list of property tracks.
+         * @type {Map}
+         */
+        this.property_tracks = new Map();
+
+        // Add property tracks.
+        Object.keys(this.component.getProperties()).forEach((name) => {
+            if (this.component.isPropertyAnimatable(name)){
+                const value = this.component.getPropertyValue(name);
+                if (this.component.isPropertyAnimated(name, value)){
+                    this.addPropertyTrack(name);
+                }
+            }
+        });
+
         this
             .data('component', component_id)
             .data('type', component_type)
@@ -111,13 +144,10 @@ export default class ComponentTrack extends Dom {
             // This is applied first, as the listener is registered on the capturing phase
 
             // Expand the parent
-            this.addClass('auto-expanded')
-                .getHandle().addClass('auto-expanded');
+            this.addClass('auto-expanded');
         }
         else{
             this.component.addListener('propchange', this.onSelectedComponentPropChange.bind(this));
-
-            this.getHandle().addClass('selected');
 
             this
                 .setDraggable(true)
@@ -138,17 +168,14 @@ export default class ComponentTrack extends Dom {
             // Caught a bubbled event, this is a parent component
 
             // Check if a desendent is selected in the parent
-            const expanded_descendents = this.descendents.find('.selected');
+            const expanded_descendents = this.descendents_wrapper.find('.selected');
             if(expanded_descendents.count() === 0){
                 // Shrik the parent
-                this.removeClass('auto-expanded')
-                    .getHandle().removeClass('auto-expanded');
+                this.removeClass('auto-expanded');
             }
         }
         else{
             this.component.removeListener('propchange', this.onSelectedComponentPropChange.bind(this));
-
-            this.getHandle().removeClass('selected');
 
             this
                 .setDraggable(false)
@@ -175,13 +202,16 @@ export default class ComponentTrack extends Dom {
                 break;
 
             case 'name':
-                this.getHandle().setLabel(value);
-                this.attr('title', value);
+                this.updateLabel();
                 break;
 
             case 'editor.locked':
                 this.getHandle().getToggler('lock').setValue(value, true);
                 break;
+        }
+
+        if (this.getComponent().isPropertyAnimated(property, value)) {
+            this.addPropertyTrack(property);
         }
     }
 
@@ -216,13 +246,14 @@ export default class ComponentTrack extends Dom {
      * Time dragstart event callback
      *
      * @private
+     * @param {CustomEvent} evt The event object
      */
     onTimeDragStart(evt){
         const duration = parseFloat(this.css('--timeline-duration'));
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._drag_multiplier = duration / width;
 
-        this.triggerEvent('dragstart', evt.detail, false, true);
+        this.triggerEvent('timedragstart', evt.detail, false, true);
     }
 
     /**
@@ -246,18 +277,19 @@ export default class ComponentTrack extends Dom {
             'end-time': end_time + diff
         });
 
-        this.triggerEvent('drag', evt.detail, false, true);
+        this.triggerEvent('timedrag', evt.detail, false, true);
     }
 
     /**
      * Time dragend event callback
      *
      * @private
+     * @param {CustomEvent} evt The event object
      */
     onTimeDragEnd(evt){
         delete this._drag_multiplier;
 
-        this.triggerEvent('dragend', evt.detail, false, true);
+        this.triggerEvent('timedragend', evt.detail, false, true);
     }
 
     /**
@@ -270,7 +302,7 @@ export default class ComponentTrack extends Dom {
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._resize_multiplier = duration / width;
 
-        this.triggerEvent('resizestart', evt.detail, false, true);
+        this.triggerEvent('timeresizestart', evt.detail, false, true);
     }
 
     /**
@@ -300,7 +332,7 @@ export default class ComponentTrack extends Dom {
 
         component.setPropertyValue(property, new_value);
 
-        this.triggerEvent('resize', evt.detail, false, true);
+        this.triggerEvent('timeresize', evt.detail, false, true);
     }
 
     /**
@@ -311,7 +343,7 @@ export default class ComponentTrack extends Dom {
     onTimeResizeEnd(evt){
         delete this._resize_multiplier;
 
-        this.triggerEvent('resizeend', evt.detail, false, true);
+        this.triggerEvent('timeresizeend', evt.detail, false, true);
     }
 
     /**
@@ -326,7 +358,7 @@ export default class ComponentTrack extends Dom {
             return;
         }
 
-        this.toggleClass('has-descendents', !this.descendents.is(':empty'));
+        this.toggleClass('has-descendents', !this.descendents_wrapper.is(':empty'));
     }
 
     /**
@@ -335,8 +367,15 @@ export default class ComponentTrack extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onPropertiesChildRemove() {
+    onPropertiesChildRemove(evt) {
+        const child = evt.detail.child;
+        if(!Dom.is(child, '.property-track')){
+            return;
+        }
 
+        this.property_tracks.delete(child.data('property'));
+
+        this.toggleClass('has-properties', this.property_tracks.size > 0);
     }
 
     /**
@@ -506,11 +545,9 @@ export default class ComponentTrack extends Dom {
         properties.forEach((name) => {
             const value = component.getPropertyValue(name);
 
-            console.log(name, value);
-
             this
                 .toggleClass(`has-${name}`, value !== null)
-                .css(`--track-${name}`, value);
+                .css(`--component-${name}`, value);
         });
 
         return this;
@@ -542,17 +579,45 @@ export default class ComponentTrack extends Dom {
      * @return {this}
      */
     addDescendent(track, index){
-        if(!this.descendents){
-            this.descendents = new Dom('<div/>', {'class': 'descendents'})
-                .addListener('childremove', this.onDescendentsChildRemove.bind(this))
-                .appendTo(this);
-        }
-
-        track.insertAt(this.descendents, index);
+        track.insertAt(this.descendents_wrapper, index);
 
         this.addClass('has-descendents');
 
         return this;
+    }
+
+    /**
+     * Add an animated property track.
+     *
+     * @param {string} name The property's name.
+     * @return {PropertyTrack} The property track.
+     */
+    addPropertyTrack(name){
+        if (this.property_tracks.has(name)) {
+            return this.property_tracks.get(name);
+        }
+
+        const track = new PropertyTrack(this.getComponent(), name, {
+                'keyframe': {
+                    'draggableConfigs': this.configs.draggableConfigs
+                }
+            })
+            .appendTo(this.properties_wrapper);
+
+        this.addClass('has-properties');
+
+        this.property_tracks.set(name, track);
+
+        return track;
+    }
+
+    /**
+     * Get the list of property tracks.
+     *
+     * @return {Map} The property tracks.
+     */
+    getPropertyTracks() {
+        return this.property_tracks;
     }
 
     /**

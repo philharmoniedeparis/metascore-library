@@ -1,0 +1,22 @@
+@import '../../../../theme';
+
+:local(.class-name) {
+    position: absolute;
+    top: 0;
+    left: calc(var(--keyframe-time)/var(--timeline-duration) * 100%);
+    width: 1em;
+    height: 1.5em;
+    margin-left: -0.5em;
+
+    &::after {
+        content: '';
+        display: block;
+        width: 0.7em;
+        height: 0.7em;
+        margin-top: 0.4em;
+        margin-left: 0.15em;
+        background: #fff;
+        transform: rotate(45deg);
+    }
+
+}

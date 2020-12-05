@@ -48,15 +48,17 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .addDelegate('.component-track', 'dragstart', this.onComponentTrackDragStart.bind(this), true)
-            .addDelegate('.component-track', 'dragend', this.onComponentTrackDragEnd.bind(this), true)
-            .addDelegate('.component-track', 'resizestart', this.onComponentTrackResizeStart.bind(this), true)
-            .addDelegate('.component-track', 'resizeend', this.onComponentTrackResizeEnd.bind(this), true)
-            .addDelegate('.component-track .handle', 'dragstart', this.onHandleDragStart.bind(this), true)
-            .addDelegate('.component-track .handle', 'dragover', this.onHandleDragOver.bind(this), true)
-            .addDelegate('.component-track .handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
-            .addDelegate('.component-track .handle', 'drop', this.onHandleDrop.bind(this), true)
-            .addDelegate('.component-track .handle', 'dragend', this.onHandleDragEnd.bind(this), true)
+            .addDelegate('.component-track', 'timedragstart', this.onComponentTrackTimeDragStart.bind(this))
+            .addDelegate('.component-track', 'timedragend', this.onComponentTrackTimeDragEnd.bind(this))
+            .addDelegate('.component-track', 'timeresizestart', this.onComponentTrackTimeResizeStart.bind(this))
+            .addDelegate('.component-track', 'timeresizeend', this.onComponentTrackTimeResizeEnd.bind(this))
+            .addDelegate('.component-track .handle', 'dragstart', this.onComponentTrackHandleDragStart.bind(this))
+            .addDelegate('.component-track .handle', 'dragover', this.onComponentTrackHandleDragOver.bind(this))
+            .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
+            .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
+            .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
+            .addDelegate('.property-track', 'keyframedragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
+            .addDelegate('.property-track', 'keyframedragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
@@ -87,12 +89,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragstart event callback
+     * ComponentTrack Handle dragstart event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragStart(evt){
+    onComponentTrackHandleDragStart(evt){
         const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
         const track = this.getComponentTrack(component_id);
 
@@ -113,12 +115,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragover event callback
+     * ComponentTrack Handle dragover event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragOver(evt) {
+    onComponentTrackHandleDragOver(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
             const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
@@ -140,12 +142,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragleave event callback
+     * ComponentTrack Handle dragleave event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragLeave(evt) {
+    onComponentTrackHandleDragLeave(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
             const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
@@ -160,12 +162,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle drop event callback
+     * ComponentTrack Handle drop event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDrop(evt){
+    onComponentTrackHandleDrop(evt){
         if(evt.dataTransfer.types.includes('metascore/timeline')){
             const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
             const track = this.getComponentTrack(component_id);
@@ -189,12 +191,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragend event callback
+     * ComponentTrack Handle dragend event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragEnd(evt){
+    onComponentTrackHandleDragEnd(evt){
         const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
         const track = this.getComponentTrack(component_id);
 
@@ -207,12 +209,12 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack dragstart event callback
+     * ComponentTrack timedragstart event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentTrackDragStart(evt){
+    onComponentTrackTimeDragStart(evt){
         const behavior = evt.detail.behavior;
         const component_id = Dom.data(evt.target, 'component');
 
@@ -220,23 +222,23 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack dragend event callback
+     * ComponentTrack timedragend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentTrackDragEnd(evt){
-        const draggable = evt.detail.behavior;
-        draggable.clearSnapGudies();
+    onComponentTrackTimeDragEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
     }
 
     /**
-     * ComponentTrack resizestart event callback
+     * ComponentTrack timeresizestart event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentTrackResizeStart(evt){
+    onComponentTrackTimeResizeStart(evt){
         const behavior = evt.detail.behavior;
         const component_id = Dom.data(evt.target, 'component');
 
@@ -244,14 +246,38 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack resizeend event callback
+     * ComponentTrack timeresizeend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentTrackResizeEnd(evt){
-        const resizable = evt.detail.behavior;
-        resizable.clearSnapGudies();
+    onComponentTrackTimeResizeEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
+    }
+
+    /**
+     * PropertyTrack dragstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPropertyTrackKeyframeDragStart(evt){
+        const behavior = evt.detail.behavior;
+        const component_id = Dom.data(evt.target, 'component');
+
+        this.setupTrackSnapGuides(component_id, behavior);
+    }
+
+    /**
+     * PropertyTrack dragend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPropertyTrackKeyframeDragEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
     }
 
     /**
@@ -378,15 +404,25 @@ export default class Timeline extends Dom {
         const {left: playhead_left} = this.playhead.get(0).getBoundingClientRect();
         behavior.addSnapGuide('x', this.playhead_position + playhead_left);
 
-        // Add snapping to other tracks
         Object.entries(this.component_tracks).forEach(([component_id, track]) => {
-            if(component_id === id ||track.time.hidden()){
+            if(track.time.hidden()){
                 return;
             }
 
-            const {left, right} = track.time.get(0).getBoundingClientRect();
-            behavior.addSnapGuide('x', left);
-            behavior.addSnapGuide('x', right);
+            // Add snapping to other tracks.
+            if(component_id !== id) {
+                const {left, right} = track.time.get(0).getBoundingClientRect();
+                behavior.addSnapGuide('x', left);
+                behavior.addSnapGuide('x', right);
+            }
+
+            // Add snapping to property keyframes.
+            track.getPropertyTracks().forEach((property_track) => {
+                property_track.getKeyframes().forEach((keyframe) => {
+                    const {left} = keyframe.get(0).getBoundingClientRect();
+                    behavior.addSnapGuide('x', left);
+                });
+            });
         });
 
         return this;

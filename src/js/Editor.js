@@ -403,9 +403,11 @@ export class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller(this)
-            .addDelegate('.timeline .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this))
-            .addDelegate('.timeline', 'componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
+
+        this.controller.getTimeline()
+            .addDelegate('.handle, .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this))
+            .addListener('componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this));
 
         /**
          * The auto-save indicator
