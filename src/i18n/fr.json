@@ -368,6 +368,8 @@
 	"editor.onXHRError.msg": "L'erreur suivante est survenue&nbsp;:<br/><strong><em>@code @error</em></strong><br/>Veuillez ré-essayer.",
 	"editor.onXHRError.ok": "OK",
 	"editor.overlay.BorderRadius.title": "Rayon de bordure",
+	"editor.pastePlayerComponents.multiple-targets.msg": "Des éléments copiés ne peuvent être collés que dans une seule page à la fois.<br/>Veuillez sélectionner une seule page pour y coller le(s) élément(s).",
+	"editor.pastePlayerComponents.multiple-targets.ok": "OK",
 	"editor.save.LoadMask.text": "Sauvegarde en cours&nbsp;...",
 	"media.getFileDuration.no-mime.error": "Le type de média du fichier n'a pas pu être déterminé pour !url",
 	"media.getFileDuration.no-renderer.error": "Aucun moteur de rendu compatible n'a été trouvé pour le type de média !mime",
