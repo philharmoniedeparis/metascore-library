@@ -181,6 +181,39 @@ export default class ComponentForm extends Dom {
                         ]
                     }
                 }
+            },
+            'scale': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.scale.label', 'Scale'),
+                'input': {
+                    'type': CombinedInputs,
+                    'configs': {
+                        'inputs': [
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'step': 0.01,
+                                    'spinButtons': true,
+                                    'spinDirection': 'horizontal',
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.scale.0.title', 'X'),
+                                    }
+                                }
+                            },
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'step': 0.01,
+                                    'spinButtons': true,
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.scale.1.title', 'Y'),
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
             }
         }
     };

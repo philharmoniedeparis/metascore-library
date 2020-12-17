@@ -16,6 +16,11 @@ $selected-shadow: 0 0 0.5em 0;
             background: #fff;
             border: 1px solid rgba(0, 0, 0, 0.5);
             border-radius: 50%;
+
+            // Compensate for component scale.
+            transform:
+                scaleX(calc(1/var(--transform-scaleX, 1)))
+                scaleY(calc(1/var(--transform-scaleY, 1)));
         }
     }
 

@@ -35,6 +35,7 @@ export default class Component extends Dom {
         'name': 'untitled',
         'position': [0, 0],
         'dimension': [50,50],
+        'scale': [1,1],
         'opacity': 1
     };
 
@@ -78,6 +79,14 @@ export default class Component extends Dom {
                             parseInt(this.css('width'), 10),
                             parseInt(this.css('height'), 10),
                         ];
+                    }
+                },
+                'scale': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.scale.label', 'Scale'),
+                    'animatable': true,
+                    'animated': function (value) {
+                        return isArray(value[1]);
                     }
                 },
                 'background-color': {
@@ -536,6 +545,11 @@ export default class Component extends Dom {
             case 'dimension':
                 this.css('width', `${value[0]}px`);
                 this.css('height', `${value[1]}px`);
+                break;
+
+            case 'scale':
+                this.css(`--transform-${name}X`, value[0]);
+                this.css(`--transform-${name}Y`, value[1]);
                 break;
 
             case 'background-color':

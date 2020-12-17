@@ -43,6 +43,8 @@ body.fullscreen {
         left: 0;
         min-width: 1px;
         min-height: 1px;
+        transform-style: preserve-3d;
+        transform: scaleX(var(--transform-scaleX, 1)) scaleY(var(--transform-scaleY, 1));
 
         &.video-renderer {
             min-width: 10px;
