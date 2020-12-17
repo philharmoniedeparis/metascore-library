@@ -1,0 +1,10 @@
+@import '../../../theme';
+
+:local(.class-name) {
+    display: flex;
+    flex-direction: row;
+
+    > .input:not(:last-of-type) {
+        margin-right: 0.5em;
+    }
+}
