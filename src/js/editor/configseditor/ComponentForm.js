@@ -81,18 +81,6 @@ export default class ComponentForm extends Dom {
                     }
                 }
             },
-            'opacity': {
-                'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity'),
-                'input': {
-                    'type': NumberInput,
-                    'configs': {
-                        'min': 0,
-                        'max': 1,
-                        'step': 0.1,
-                        'spinButtons': true
-                    }
-                }
-            },
             'time': {
                 'group': true,
                 'items': {
@@ -179,6 +167,18 @@ export default class ComponentForm extends Dom {
                                 }
                             }
                         ]
+                    }
+                }
+            },
+            'opacity': {
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity'),
+                'input': {
+                    'type': NumberInput,
+                    'configs': {
+                        'min': 0,
+                        'max': 1,
+                        'step': 0.1,
+                        'spinButtons': true
                     }
                 }
             },
@@ -408,7 +408,7 @@ export default class ComponentForm extends Dom {
         this._before_drag_values = {};
 
         this.components.forEach((component) => {
-            this._before_drag_values[component.getId()] = component.getPropertyValue('position');
+            this._before_drag_values[component.getId()] = clone(component.getPropertyValue('position'));
         });
     }
 
@@ -512,8 +512,8 @@ export default class ComponentForm extends Dom {
         * @type {Object}
         */
         this._before_resize_values = {
-            'position': component.getPropertyValue('position'),
-            'dimension': component.getPropertyValue('dimension')
+            'position': clone(component.getPropertyValue('position')),
+            'dimension': clone(component.getPropertyValue('dimension'))
         };
     }
 
@@ -531,7 +531,7 @@ export default class ComponentForm extends Dom {
                 case 'left':
                 case 'top':
                     {
-                        const position = component.getPropertyValue('position');
+                        const position = clone(component.getPropertyValue('position'));
                         const index = key === 'top' ? 1 : 0;
                         position[index] = value;
                         component.setPropertyValue('position', position, true);
@@ -542,7 +542,7 @@ export default class ComponentForm extends Dom {
                 case 'width':
                 case 'height':
                     {
-                        const dimension = component.getPropertyValue('dimension');
+                        const dimension = clone(component.getPropertyValue('dimension'));
                         const index = key === 'height' ? 1 : 0;
                         dimension[index] = value;
                         component.setPropertyValue('dimension', dimension, true);
