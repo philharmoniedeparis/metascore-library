@@ -1899,8 +1899,7 @@ export class Editor extends Dom {
         if (evt.dataTransfer.types.includes('metascore/block')) {
             const configs = JSON.parse(evt.dataTransfer.getData('metascore/block'));
             this.addPlayerComponents('block', Object.assign({
-                'x': evt.clientX,
-                'y': evt.clientY
+                'position': [evt.clientX, evt.clientY]
             }, configs));
 
             evt.preventDefault();
@@ -1931,8 +1930,10 @@ export class Editor extends Dom {
                 const page_rect = page_dom.getBoundingClientRect();
 
                 this.addPlayerComponents('element', Object.assign({
-                    'x': evt.clientX - page_rect.left,
-                    'y': evt.clientY - page_rect.top
+                    'position': [
+                        evt.clientX - page_rect.left,
+                        evt.clientY - page_rect.top
+                    ]
                 }, configs), page);
             }
 
@@ -1951,8 +1952,10 @@ export class Editor extends Dom {
 
                 const configs = {
                     'name': asset.name,
-                    'x': evt.clientX - page_rect.left,
-                    'y': evt.clientY - page_rect.top,
+                    'position': [
+                        evt.clientX - page_rect.left,
+                        evt.clientY - page_rect.top
+                    ]
                 };
 
                 if ('shared' in asset && asset.shared) {
