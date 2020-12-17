@@ -91,7 +91,7 @@ export default class TimeInput extends Input {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Number} [value=0] The default value
+     * @property {Number} [value=null] The default value
      * @property {Number} [min=0] The minimum allowed value
      * @property {Number} [max=null] The maximum allowed value
      * @property {Boolean} [inButton=false] Whether to show the in button
@@ -253,7 +253,7 @@ export default class TimeInput extends Input {
 
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.formatted_input.val()), true);
+            this.setValue(TimeInput.getNumericalValue(this.formatted_input.val()), true);
         }
 
         this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'previous': this.previous_value}, true, false);
@@ -690,7 +690,7 @@ export default class TimeInput extends Input {
 
         this.native_input.val(this.value);
 
-        this.formatted_input.val(this.constructor.getTextualValue(_value));
+        this.formatted_input.val(TimeInput.getTextualValue(_value));
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');

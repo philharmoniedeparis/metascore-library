@@ -18,10 +18,10 @@ export default class ContentForm extends ElementForm {
                 'input': {
                     'type': CheckboxInput,
                     'configs': {
-                        'label': Locale.t('editor.configseditor.ContentForm.contents-toggle.label', 'Edit the content')
-                    },
-                    'attributes': {
-                        'class': 'toggle-button',
+                        'label': Locale.t('editor.configseditor.ContentForm.contents-toggle.label', 'Edit the content'),
+                        'attributes': {
+                            'class': 'toggle-button',
+                        }
                     }
                 }
             },

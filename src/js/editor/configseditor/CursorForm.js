@@ -57,10 +57,10 @@ export default class CursorForm extends ElementForm {
                 'input': {
                     'type': CheckboxInput,
                     'configs': {
-                        'label': Locale.t('editor.configseditor.CursorForm.keyframes-toggle.label', 'Record positions')
-                    },
-                    'attributes': {
-                        'class': 'toggle-button'
+                        'label': Locale.t('editor.configseditor.CursorForm.keyframes-toggle.label', 'Record positions'),
+                        'attributes': {
+                            'class': 'toggle-button'
+                        }
                     }
                 }
             },

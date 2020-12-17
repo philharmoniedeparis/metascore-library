@@ -18,7 +18,8 @@ export default class Input extends Dom {
         'placeholder': null,
         'required': false,
         'disabled': false,
-        'readonly': false
+        'readonly': false,
+        'attributes': {}
     };
 
     /**
@@ -46,6 +47,10 @@ export default class Input extends Dom {
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
+
+        Object.entries(this.configs.attributes).forEach(([key, value]) => {
+            this.attr(key, value);
+        });
 
         this.setupUI();
 
