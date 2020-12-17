@@ -9,8 +9,7 @@ import {omit} from '../../core/utils/Object';
 export default class VideoRenderer extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
-        'width': 320,
-        'height': 240
+        'dimension': [320, 240]
     });
 
     /**

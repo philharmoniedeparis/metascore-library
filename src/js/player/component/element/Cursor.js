@@ -156,8 +156,7 @@ export default class Cursor extends Element {
                 }
                 break;
 
-            case 'width':
-            case 'height':
+            case 'dimension':
             case 'border-width':
                 super.updatePropertyValue(name, value);
                 this.resizeCanvas();

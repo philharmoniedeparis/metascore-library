@@ -10,6 +10,7 @@ import ColorInput from '../../core/ui/input/ColorInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
+import CombinedInputs from '../../core/ui/input/CombinedInputs';
 import {MasterClock} from '../../core/media/MediaClock';
 
 import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
@@ -120,53 +121,64 @@ export default class ComponentForm extends Dom {
                 }
             },
             'position': {
-                'group': true,
-                'items': {
-                    'x': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X'),
-                        'input': {
-                            'type': NumberInput,
-                            'configs': {
-                                'spinButtons': true,
-                                'spinDirection': 'horizontal'
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.position.label', 'Position'),
+                'input': {
+                    'type': CombinedInputs,
+                    'configs': {
+                        'inputs': [
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'spinButtons': true,
+                                    'spinDirection': 'horizontal',
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.position.0.title', 'X'),
+                                    }
+                                }
+                            },
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'spinButtons': true,
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.position.1.title', 'Y'),
+                                    }
+                                }
                             }
-                        }
-                    },
-                    'y': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y'),
-                        'input': {
-                            'type': NumberInput,
-                            'configs': {
-                                'spinButtons': true,
-                                'flipSpinButtons': true
-                            }
-                        }
+                        ]
                     }
                 }
             },
             'dimension': {
-                'group': true,
-                'items': {
-                    'width': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width'),
-                        'input': {
-                            'type': NumberInput,
-                            'configs': {
-                                'min': 0,
-                                'spinButtons': true,
-                                'spinDirection': 'horizontal'
+                'label': Locale.t('editor.configseditor.ComponentForm.fields.dimension.label', 'Dimension'),
+                'input': {
+                    'type': CombinedInputs,
+                    'configs': {
+                        'inputs': [
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'spinButtons': true,
+                                    'spinDirection': 'horizontal',
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.dimension.0.title', 'Width'),
+                                    }
+                                }
+                            },
+                            {
+                                'type': NumberInput,
+                                'configs': {
+                                    'min': 0,
+                                    'spinButtons': true,
+                                    'attributes': {
+                                        'title': Locale.t('editor.configseditor.ComponentForm.fields.dimension.1.title', 'Height'),
+                                    }
+                                }
                             }
-                        }
-                    },
-                    'height': {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height'),
-                        'input': {
-                            'type': NumberInput,
-                            'configs': {
-                                'min': 0,
-                                'spinButtons': true
-                            }
-                        }
+                        ]
                     }
                 }
             }
@@ -363,10 +375,7 @@ export default class ComponentForm extends Dom {
         this._before_drag_values = {};
 
         this.components.forEach((component) => {
-            this._before_drag_values[component.getId()] = {
-                'x': component.getPropertyValue('x'),
-                'y': component.getPropertyValue('y')
-            };
+            this._before_drag_values[component.getId()] = component.getPropertyValue('position');
         });
     }
 
@@ -398,13 +407,10 @@ export default class ComponentForm extends Dom {
             const x = parseInt(component.css('left'), 10) + offsetX;
             const y = parseInt(component.css('top'), 10) + offsetY;
 
-            component.setPropertyValues({'x': x, 'y': y}, true);
+            component.setPropertyValue('position', [x, y], true);
         });
 
-        const fields = ['x', 'y'];
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
-        });
+        this.updateFieldValue('position', true);
     }
 
     /**
@@ -469,14 +475,12 @@ export default class ComponentForm extends Dom {
         const component = evt.target._metaScore;
 
         /**
-        * Values of x, y, width and height when resizing starts
-        * @type {Array}
+        * Values of position and dimension when resizing starts
+        * @type {Object}
         */
         this._before_resize_values = {
-            'x': component.getPropertyValue('x'),
-            'y': component.getPropertyValue('y'),
-            'width': component.getPropertyValue('width'),
-            'height': component.getPropertyValue('height'),
+            'position': component.getPropertyValue('position'),
+            'dimension': component.getPropertyValue('dimension')
         };
     }
 
@@ -492,23 +496,27 @@ export default class ComponentForm extends Dom {
         Object.entries(state.new_values).forEach(([key, value]) => {
             switch(key){
                 case 'left':
-                    component.setPropertyValue('x', value, true);
-                    break;
-
                 case 'top':
-                    component.setPropertyValue('y', value, true);
+                    {
+                        const position = component.getPropertyValue('position');
+                        const index = key === 'top' ? 1 : 0;
+                        position[index] = value;
+                        component.setPropertyValue('position', position, true);
+                        this.updateFieldValue('position', true);
+                    }
                     break;
 
                 case 'width':
                 case 'height':
-                    component.setPropertyValue(key, value, true);
+                    {
+                        const dimension = component.getPropertyValue('dimension');
+                        const index = key === 'height' ? 1 : 0;
+                        dimension[index] = value;
+                        component.setPropertyValue('dimension', dimension, true);
+                        this.updateFieldValue('dimension', true);
+                    }
                     break;
             }
-        });
-
-        const fields = ['x', 'y', 'width', 'height'];
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
         });
     }
 
@@ -560,18 +568,13 @@ export default class ComponentForm extends Dom {
      * @param {String} id The field's id.
      * @param {Object} configs The field's configs.
      * @property {String} [label] The field's label.
+     * @property {Input} [input] The field's input.
      * @property {Object} [attributes] A list of attributes to set on the field.
      * @param {Dom} [group] An optional field group.
      * @return {Field} The field.
      */
     addField(id, configs, group=null){
         const input = new configs.input.type(configs.input.configs);
-
-        if ('attributes' in configs.input){
-            Object.entries(configs.input.attributes).forEach(([key, value]) => {
-                input.attr(key, value);
-            });
-        }
 
         const field = new Field(input, {'label': configs.label})
             .data('property', id)
@@ -893,10 +896,8 @@ export default class ComponentForm extends Dom {
 
         this
             .toggleClass('locked', locked)
-            .toggleField('x', !locked)
-            .toggleField('y', !locked)
-            .toggleField('width', !locked)
-            .toggleField('height', !locked);
+            .toggleField('position', !locked)
+            .toggleField('dimension', !locked);
 
         component
             .setDraggable(!locked)

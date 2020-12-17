@@ -138,8 +138,7 @@ export default class CursorKeyframesEditor extends Dom {
         }
 
         switch(evt.detail.property){
-            case 'width':
-            case 'height':
+            case 'dimension':
             case 'border-width':
                 this.resizeCanvas();
                 break;

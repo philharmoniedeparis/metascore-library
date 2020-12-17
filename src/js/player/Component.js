@@ -33,10 +33,8 @@ export default class Component extends Dom {
         'draggable': true,
         'resizable': true,
         'name': 'untitled',
-        'x': 0,
-        'y': 0,
-        'width': 50,
-        'height': 50,
+        'position': [0, 0],
+        'dimension': [50,50],
         'opacity': 1
     };
 
@@ -67,33 +65,20 @@ export default class Component extends Dom {
                     'type': 'boolean',
                     'label': Locale.t('Component.properties.hidden.label', 'Hidden')
                 },
-                'x': {
-                    'type': 'number',
-                    'label': Locale.t('Component.properties.x.label', 'X'),
-                    'animatable': true
+                'position': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.position.label', 'Position')
                 },
-                'y': {
-                    'type': 'number',
-                    'label': Locale.t('Component.properties.y.label', 'Y'),
-                    'animatable': true
-                },
-                'width': {
-                    'type': 'number',
-                    'label': Locale.t('Component.properties.width.label', 'Width'),
+                'dimension': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.dimension.label', 'Dimension'),
                     'getter': function () {
                         // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('width'), 10);
-                    },
-                    'animatable': true
-                },
-                'height': {
-                    'type': 'number',
-                    'label': Locale.t('Component.properties.height.label', 'Height'),
-                    'getter': function () {
-                        // Get value from CSS to honor CSS min and max values.
-                        return parseInt(this.css('height'), 10);
-                    },
-                    'animatable': true
+                        return [
+                            parseInt(this.css('width'), 10),
+                            parseInt(this.css('height'), 10),
+                        ];
+                    }
                 },
                 'background-color': {
                     'type': 'color',
@@ -408,6 +393,13 @@ export default class Component extends Dom {
         // Claculate the intermediate.
         const start = values[index-1];
         const end = values[index];
+
+        if (isArray(start[1])) {
+            return start[1].map((v, index) => {
+                return map(time, start[0], end[0], start[1][index], end[1][index]);
+            });
+        }
+
         return map(time, start[0], end[0], start[1], end[1]);
     }
 
@@ -502,6 +494,11 @@ export default class Component extends Dom {
      * @return {Boolean} Whether the property is animated.
      */
     isPropertyAnimated(name, value){
+        const prop = this.getProperty(name);
+        if(prop && ('animated' in prop) && isFunction(prop.animated)){
+            return prop.animated.call(this, value);
+        }
+
         return isArray(value) && this.isPropertyAnimatable(name);
     }
 
@@ -531,24 +528,24 @@ export default class Component extends Dom {
                 this.toggleClass(name, value);
                 break;
 
-            case 'x':
-                this.css('left', `${value}px`);
+            case 'position':
+                this.css('left', `${value[0]}px`);
+                this.css('top', `${value[1]}px`);
                 break;
 
-            case 'y':
-                this.css('top', `${value}px`);
-                break;
-
-            case 'width':
-            case 'height':
-            case 'border-width':
-                this.css(name, `${value}px`);
+            case 'dimension':
+                this.css('width', `${value[0]}px`);
+                this.css('height', `${value[1]}px`);
                 break;
 
             case 'background-color':
             case 'border-color':
             case 'border-radius':
                 this.css(name, value);
+                break;
+
+            case 'border-width':
+                this.css(name, `${value}px`);
                 break;
 
             case 'background-image':

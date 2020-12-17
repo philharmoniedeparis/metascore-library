@@ -1321,9 +1321,10 @@ export class Editor extends Dom {
 
         if (configs_form) {
             const component = configs_form.getMasterComponent();
+            const dimension = component.getPropertyValue('dimension');
             const defaults = {
-                'width': component.getPropertyValue('width'),
-                'height': component.getPropertyValue('height'),
+                'width': dimension[0],
+                'height': dimension[1],
                 'start_time': component.getPropertyValue('start-time'),
                 'end_time': component.getPropertyValue('end-time'),
             };
@@ -1348,9 +1349,10 @@ export class Editor extends Dom {
 
         if (configs_form) {
             const component = configs_form.getMasterComponent();
+            const dimension = component.getPropertyValue('dimension');
             const defaults = {
-                'width': component.getPropertyValue('width'),
-                'height': component.getPropertyValue('height'),
+                'width': dimension[0],
+                'height': dimension[1],
                 'start': component.getPropertyValue('start-time'),
                 'end': component.getPropertyValue('end-time'),
             };
@@ -2053,7 +2055,7 @@ export class Editor extends Dom {
         const property = evt.detail.property;
 
         if (component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
-            if (['x', 'y', 'width', 'height', 'blocks'].includes(property)) {
+            if (['position', 'dimension', 'blocks'].includes(property)) {
                 this.getPlayer().updateBlockTogglers();
             }
             else if (property === 'name') {

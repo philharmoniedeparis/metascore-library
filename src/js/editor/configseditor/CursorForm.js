@@ -158,8 +158,9 @@ export default class CursorForm extends ElementForm {
             const direction = component.getPropertyValue('direction');
             const vertical = direction === 'top' || direction === 'bottom';
 
-            if((property === 'width' && !vertical) || (property === 'height' && vertical)){
-                this.repositionCursorKeyframes(component, evt.detail.value / evt.detail.previous);
+            if(property === 'dimension'){
+                const index = vertical ? 1 : 0;
+                this.repositionCursorKeyframes(component, evt.detail.value[index] / evt.detail.previous[index]);
             }
         }
 
@@ -175,9 +176,10 @@ export default class CursorForm extends ElementForm {
 
         if(advanced){
             const direction = component.getPropertyValue('direction');
+            const dimension = component.getPropertyValue('dimension');
             const vertical = direction === 'top' || direction === 'bottom';
             const old_value = vertical ? evt.detail.start_state.h : evt.detail.start_state.w;
-            const new_value = vertical ? component.getPropertyValue('height') : component.getPropertyValue('width');
+            const new_value = vertical ? dimension[1] : dimension[0];
 
             this.repositionCursorKeyframes(component, new_value / old_value);
         }

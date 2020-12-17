@@ -18,8 +18,7 @@ import {omit} from '../../core/utils/Object';
 export default class Block extends Component {
 
     static defaults = Object.assign({}, super.defaults, {
-        'width': 200,
-        'height': 200,
+        'dimension': [200, 200],
         'synched': false,
         'pager-visibility': 'auto'
     });
