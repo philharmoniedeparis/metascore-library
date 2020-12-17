@@ -166,7 +166,7 @@ export default class PropertyTrack extends Dom {
         const values = this.component.getPropertyValue(this.property);
 
         // Remove keyframes of no-longer existing values.
-        const times = values.map(([time]) => {return time});
+        const times = values.map(([time]) => time);
         this.keyframes = this.keyframes.filter((keyframe) => {
             const time = keyframe.getTime();
             if(!times.includes(time)){

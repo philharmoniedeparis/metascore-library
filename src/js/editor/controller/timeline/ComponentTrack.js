@@ -373,7 +373,7 @@ export default class ComponentTrack extends Dom {
             return;
         }
 
-        this.property_tracks.delete(child.data('property'));
+        this.property_tracks.delete(Dom.data(child, 'property'));
 
         this.toggleClass('has-properties', this.property_tracks.size > 0);
     }
