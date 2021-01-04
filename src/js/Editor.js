@@ -3269,5 +3269,5 @@ export class Editor extends Dom {
     }
 }
 
-// Export the TimeInput class to be used in CKEditor plugins
-export { TimeInput };
+// Export utility classes to be used from outside.
+export { TimeInput, LoadMask };
