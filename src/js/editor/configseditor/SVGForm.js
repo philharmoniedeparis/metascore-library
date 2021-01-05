@@ -7,7 +7,7 @@ import NumberInput from '../../core/ui/input/NumberInput';
 import ColorInput from '../../core/ui/input/ColorInput';
 import HiddenInput from '../../core/ui/input/HiddenInput';
 
-import {className} from '../../../css/editor/configseditor/SVGForm.scss';
+import { className } from '../../../css/editor/configseditor/SVGForm.scss';
 
 /**
  * An svg component form class
@@ -16,92 +16,93 @@ export default class SVGForm extends ElementForm {
 
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.SVGForm.title.single', 'Attributes of vector graphic'),
-        'title_plural': Locale.t('editor.configseditor.SVGForm.title.plural', 'Attributes of @count vector graphics'),
-        'fields': Object.assign({}, super.defaults.fields, {
-            'stroke': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.stroke.label', 'Stroke color'),
-                'input': {
-                    'type': ColorInput,
-                    'configs': {'format': 'css'}
-                }
-            },
-            'stroke-width': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.stroke-width.label', 'Stroke width'),
-                'input': {
-                    'type': NumberInput,
-                    'configs': {'min': 0}
-                }
-            },
-            'stroke-dasharray': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.stroke-dasharray.label', 'Stroke style'),
-                'input': {
-                    'type': SelectInput,
-                    'configs': {
-                        'emptyLabel': '—',
-                        'options': {
-                            '2,2': '···',
-                            '5,5': '- -',
-                            '5,2,2,2': '-·-',
-                            '5,2,2,2,2,2': '-··-'
-                        }
-                    }
-                }
-            },
-            'fill': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.fill.label', 'Fill color'),
-                'input': {
-                    'type': ColorInput,
-                    'configs': {'format': 'css'}
-                }
-            },
-            'marker-start': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.marker-start.label', 'Marker start'),
-                'input': {
-                    'type': SelectInput
-                }
-            },
-            'marker-mid': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.marker-mid.label', 'Marker mid'),
-                'input': {
-                    'type': SelectInput
-                }
-            },
-            'marker-end': {
-                'label': Locale.t('editor.configseditor.SVGForm.fields.marker-end.label', 'Marker end'),
-                'input': {
-                    'type': SelectInput
-                }
-            },
-            'colors': {
-                'group': true,
-                'items': {
-                    'colors': {
-                        'label': Locale.t('editor.configseditor.SVGForm.fields.colors.label', 'Colors'),
-                        'input': {
-                            'type': HiddenInput
-                        }
-                    },
-                    'color1': {
-                        'input': {
-                            'type': ColorInput,
-                            'configs': {'format': 'css', 'picker': false}
-                        },
-                        'attributes': {
-                            'class': 'colors-subfield'
-                        }
-                    },
-                    'color2': {
-                        'input': {
-                            'type': ColorInput,
-                            'configs': {'format': 'css', 'picker': false}
-                        },
-                        'attributes': {
-                            'class': 'colors-subfield'
-                        }
+        'title_plural': Locale.t('editor.configseditor.SVGForm.title.plural', 'Attributes of @count vector graphics')
+    });
+
+    static field_definitions = Object.assign({}, super.field_definitions, {
+        'stroke': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.stroke.label', 'Stroke color'),
+            'input': {
+                'type': ColorInput,
+                'configs': { 'format': 'css' }
+            }
+        },
+        'stroke-width': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.stroke-width.label', 'Stroke width'),
+            'input': {
+                'type': NumberInput,
+                'configs': { 'min': 0 }
+            }
+        },
+        'stroke-dasharray': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.stroke-dasharray.label', 'Stroke style'),
+            'input': {
+                'type': SelectInput,
+                'configs': {
+                    'emptyLabel': '—',
+                    'options': {
+                        '2,2': '···',
+                        '5,5': '- -',
+                        '5,2,2,2': '-·-',
+                        '5,2,2,2,2,2': '-··-'
                     }
                 }
             }
-        })
+        },
+        'fill': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.fill.label', 'Fill color'),
+            'input': {
+                'type': ColorInput,
+                'configs': { 'format': 'css' }
+            }
+        },
+        'marker-start': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.marker-start.label', 'Marker start'),
+            'input': {
+                'type': SelectInput
+            }
+        },
+        'marker-mid': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.marker-mid.label', 'Marker mid'),
+            'input': {
+                'type': SelectInput
+            }
+        },
+        'marker-end': {
+            'label': Locale.t('editor.configseditor.SVGForm.fields.marker-end.label', 'Marker end'),
+            'input': {
+                'type': SelectInput
+            }
+        },
+        'colors': {
+            'group': true,
+            'items': {
+                'colors': {
+                    'label': Locale.t('editor.configseditor.SVGForm.fields.colors.label', 'Colors'),
+                    'input': {
+                        'type': HiddenInput
+                    }
+                },
+                'color1': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                },
+                'color2': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                }
+            }
+        }
     });
 
     /**
@@ -120,7 +121,7 @@ export default class SVGForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    setComponents(components){
+    setComponents(components) {
         super.setComponents(components);
 
         this
@@ -128,7 +129,7 @@ export default class SVGForm extends ElementForm {
             .updateColorsSubInputEmptyValue();
 
         this.getComponents().forEach((component) => {
-            if(!component.isLoaded()){
+            if (!component.isLoaded()) {
                 component.addListener('contentload', this.onComponentLoad);
             }
         });
@@ -139,8 +140,8 @@ export default class SVGForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    unsetComponents(supressEvent){
-        if(this.components){
+    unsetComponents(supressEvent) {
+        if (this.components) {
             this.components.forEach((component) => {
                 component.removeListener('contentload', this.onComponentLoad);
             });
@@ -160,7 +161,7 @@ export default class SVGForm extends ElementForm {
      *
      * @private
      */
-    onComponentLoad(){
+    onComponentLoad() {
         this
             .updateFieldsVisibility()
             .updateInputs()
@@ -174,7 +175,7 @@ export default class SVGForm extends ElementForm {
         const name = evt.detail.field.data('property');
         const value = evt.detail.value;
 
-        switch(name) {
+        switch (name) {
             case 'color1':
             case 'color2':
                 {
@@ -202,11 +203,11 @@ export default class SVGForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    updateFieldValue(name, supressEvent){
+    updateFieldValue(name, supressEvent) {
         super.updateFieldValue(name, supressEvent);
 
         // Update colors sub-inputs values.
-        if(name === 'colors' && this.components){
+        if (name === 'colors' && this.components) {
             const master_component = this.getMasterComponent();
             const value = master_component.getPropertyValue(name);
 
@@ -242,26 +243,26 @@ export default class SVGForm extends ElementForm {
      * @private
      * @return {this}
      */
-    updateInputs(){
+    updateInputs() {
         const marker_start_input = this.getField('marker-start').getInput().clear().disable();
         const marker_mid_input = this.getField('marker-mid').getInput().clear().disable();
         const marker_end_input = this.getField('marker-end').getInput().clear().disable();
 
         const components = this.getComponents();
-        if(components){
+        if (components) {
             const master_component = this.getMasterComponent();
             let same_src = true;
 
-            if(components.length > 1){
+            if (components.length > 1) {
                 const src = master_component.getPropertyValue('src');
                 same_src = components.every((component) => {
                     return component.getPropertyValue('src') === src;
                 });
             }
 
-            if(same_src){
+            if (same_src) {
                 const markers = Object.entries(master_component.getMarkers());
-                if(markers.length > 0){
+                if (markers.length > 0) {
                     markers.forEach(([id, marker]) => {
                         const name = Dom.data(marker, 'name');
 
@@ -308,7 +309,7 @@ export default class SVGForm extends ElementForm {
             master_component.setPropertyValue('colors', null, true);
 
             this.getColorsSubFields().forEach((subfield, index) => {
-                const empty_value = master_component.svg_dom.find(`.color${index+1}`).css('fill');
+                const empty_value = master_component.svg_dom.find(`.color${index + 1}`).css('fill');
 
                 // Update input's empty value.
                 subfield.getInput().setEmptyValue(empty_value);

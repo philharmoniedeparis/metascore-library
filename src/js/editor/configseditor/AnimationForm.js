@@ -9,7 +9,7 @@ import HiddenInput from '../../core/ui/input/HiddenInput';
 
 import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
 
-import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
+import { className } from '../../../css/editor/configseditor/AnimationForm.scss';
 
 /**
  * An animation component form class
@@ -18,78 +18,79 @@ export default class AnimationForm extends ElementForm {
 
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
-        'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
-        'fields': {
-            'name': super.defaults.fields.name,
-            'hidden': super.defaults.fields.hidden,
-            'start-frame': {
-                'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame'),
-                'input': {
-                    'type': NumberInput,
-                    'configs': {
-                        'min': 1
-                    }
-                }
-            },
-            'loop-duration': {
-                'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration'),
-                'input': {
-                    'type': TimeInput,
-                    'configs': {
-                        'min': 0.01,
-                        'clearButton': true,
-                        'clearButtonIcon': loop_duration_clear_icon,
-                        'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
-                    }
-                }
-            },
-            'reversed': {
-                'label': Locale.t('editor.configseditor.AnimationForm.fields.reversed.label', 'Reversed'),
-                'input': {
-                    'type': CheckboxInput,
-                    'configs': {
-                        'checked': false
-                    }
-                }
-            },
-            'colors': {
-                'group': true,
-                'items': {
-                    'colors': {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.colors.label', 'Colors'),
-                        'input': {
-                            'type': HiddenInput
-                        }
-                    },
-                    'color1': {
-                        'input': {
-                            'type': ColorInput,
-                            'configs': {'format': 'css', 'picker': false}
-                        },
-                        'attributes': {
-                            'class': 'colors-subfield'
-                        }
-                    },
-                    'color2': {
-                        'input': {
-                            'type': ColorInput,
-                            'configs': {'format': 'css', 'picker': false}
-                        },
-                        'attributes': {
-                            'class': 'colors-subfield'
-                        }
-                    }
-                }
-            },
-            'background-color': super.defaults.fields['background-color'],
-            'background-image': super.defaults.fields['background-image'],
-            'border': super.defaults.fields.border,
-            'opacity': super.defaults.fields.opacity,
-            'time': super.defaults.fields.time,
-            'position': super.defaults.fields.position,
-            'dimension': super.defaults.fields.dimension,
-        }
+        'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations')
     });
+
+    static field_definitions = {
+        'name': super.field_definitions.name,
+        'hidden': super.field_definitions.hidden,
+        'start-frame': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame'),
+            'input': {
+                'type': NumberInput,
+                'configs': {
+                    'min': 1
+                }
+            }
+        },
+        'loop-duration': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration'),
+            'input': {
+                'type': TimeInput,
+                'configs': {
+                    'min': 0.01,
+                    'clearButton': true,
+                    'clearButtonIcon': loop_duration_clear_icon,
+                    'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
+                }
+            }
+        },
+        'reversed': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.reversed.label', 'Reversed'),
+            'input': {
+                'type': CheckboxInput,
+                'configs': {
+                    'checked': false
+                }
+            }
+        },
+        'colors': {
+            'group': true,
+            'items': {
+                'colors': {
+                    'label': Locale.t('editor.configseditor.AnimationForm.fields.colors.label', 'Colors'),
+                    'input': {
+                        'type': HiddenInput
+                    }
+                },
+                'color1': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                },
+                'color2': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                }
+            }
+        },
+        'background-color': super.field_definitions['background-color'],
+        'background-image': super.field_definitions['background-image'],
+        'border': super.field_definitions.border,
+        'opacity': super.field_definitions.opacity,
+        'time': super.field_definitions.time,
+        'position': super.field_definitions.position,
+        'dimension': super.field_definitions.dimension,
+    };
 
     /**
      * @inheritdoc
@@ -107,7 +108,7 @@ export default class AnimationForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    setComponents(components){
+    setComponents(components) {
         super.setComponents(components);
 
         this
@@ -115,7 +116,7 @@ export default class AnimationForm extends ElementForm {
             .updateColorsSubInputEmptyValue();
 
         this.getComponents().forEach((component) => {
-            if(!component.isLoaded()){
+            if (!component.isLoaded()) {
                 component.addListener('contentload', this.onComponentLoad);
             }
         });
@@ -126,8 +127,8 @@ export default class AnimationForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    unsetComponents(supressEvent){
-        if(this.components){
+    unsetComponents(supressEvent) {
+        if (this.components) {
             this.components.forEach((component) => {
                 component.removeListener('contentload', this.onComponentLoad);
             });
@@ -147,7 +148,7 @@ export default class AnimationForm extends ElementForm {
      *
      * @private
      */
-    onComponentLoad(){
+    onComponentLoad() {
         this
             .updateFieldsVisibility()
             .updateInputs()
@@ -161,7 +162,7 @@ export default class AnimationForm extends ElementForm {
         const name = evt.detail.field.data('property');
         const value = evt.detail.value;
 
-        switch(name) {
+        switch (name) {
             case 'color1':
             case 'color2':
                 {
@@ -189,11 +190,11 @@ export default class AnimationForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    updateFieldValue(name, supressEvent){
+    updateFieldValue(name, supressEvent) {
         super.updateFieldValue(name, supressEvent);
 
         // Update colors sub-inputs values.
-        if(name === 'colors' && this.components){
+        if (name === 'colors' && this.components) {
             const master_component = this.getMasterComponent();
             const value = master_component.getPropertyValue(name);
 
@@ -229,7 +230,7 @@ export default class AnimationForm extends ElementForm {
      * @private
      * @return {this}
      */
-    updateInputs(){
+    updateInputs() {
         // Update start-frame max value.
         const frames = [];
         this.components.forEach((component) => {
@@ -269,7 +270,7 @@ export default class AnimationForm extends ElementForm {
             master_component.setPropertyValue('colors', null, true);
 
             this.getColorsSubFields().forEach((subfield, index) => {
-                const empty_value = master_component.contents.find(`.color${index+1} path`).css('fill');
+                const empty_value = master_component.contents.find(`.color${index + 1} path`).css('fill');
 
                 // Update input's empty value.
                 subfield.getInput().setEmptyValue(empty_value);

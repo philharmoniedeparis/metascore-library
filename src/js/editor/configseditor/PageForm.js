@@ -8,64 +8,65 @@ export default class PageForm extends ComponentForm {
 
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.PageForm.title.single', 'Attributes of page'),
-        'title_plural': Locale.t('editor.configseditor.PageForm.title.plural', 'Attributes of @count pages'),
-        'fields': {
-            'background-color': super.defaults.fields['background-color'],
-            'background-image': super.defaults.fields['background-image'],
-            'time': super.defaults.fields['time']
-        }
+        'title_plural': Locale.t('editor.configseditor.PageForm.title.plural', 'Attributes of @count pages')
     });
+
+    static field_definitions = {
+        'background-color': super.field_definitions['background-color'],
+        'background-image': super.field_definitions['background-image'],
+        'time': super.field_definitions['time']
+    };
 
     /**
      * @inheritdoc
      */
-    updateFieldValues(supressEvent){
-        if(this.components){
-            if(this.hasField('start-time')){
+    updateFieldValues(supressEvent) {
+        if (this.components) {
+            if (this.hasField('start-time')) {
                 const input = this.getField('start-time').getInput();
                 input.readonly(false).setMin(null).enable();
 
                 this.components.forEach((page) => {
                     const block = page.getParent();
 
-                    if(block.getPropertyValue('synched')){
+                    if (block.getPropertyValue('synched')) {
                         const index = block.getChildIndex(page);
-                        const previous_page = block.getChild(index-1);
+                        const previous_page = block.getChild(index - 1);
 
-                        if(previous_page){
+                        if (previous_page) {
                             const min = previous_page.getPropertyValue('end-time');
                             input.setMin(min);
                         }
-                        else{
+                        else {
                             input.readonly(true);
                         }
                     }
-                    else{
+                    else {
                         input.disable();
                     }
                 });
             }
 
-            if(this.hasField('end-time')){
+            if (this.hasField('end-time')) {
                 const input = this.getField('end-time').getInput();
                 input.readonly(false).setMax(null).enable();
 
                 this.components.forEach((page) => {
                     const block = page.getParent();
 
-                    if(block.getPropertyValue('synched')){
+                    if (block.getPropertyValue('synched')) {
                         const index = block.getChildIndex(page);
-                        const next_page = block.getChild(index+1);
+                        const next_page = block.getChild(index + 1);
 
-                        if(next_page){
+                        if (next_page) {
                             const max = next_page.getPropertyValue('end-time');
                             input.setMax(max);
                         }
-                        else{
+                        else {
                             input.readonly(true);
                         }
                     }
-                    else{
+                    else {
                         input.disable();
                     }
                 });
