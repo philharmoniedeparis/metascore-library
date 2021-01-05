@@ -182,7 +182,8 @@ export default class ComponentForm extends Dom {
                     'step': 0.1,
                     'spinButtons': true
                 }
-            }
+            },
+            'animated': true
         },
         'scale': {
             'label': Locale.t('editor.configseditor.ComponentForm.fields.scale.label', 'Scale'),
@@ -215,7 +216,8 @@ export default class ComponentForm extends Dom {
                         }
                     ]
                 }
-            }
+            },
+            'animated': true
         }
     };
 
@@ -259,6 +261,10 @@ export default class ComponentForm extends Dom {
          * @type {Dom}
          */
         this.fields_wrapper = new Dom('<div/>', { 'class': 'fields' })
+            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+            .appendTo(this);
+
+        this.animated_fields_wrapper = new Dom('<div/>', { 'class': 'fields animated' })
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
             .appendTo(this);
 
@@ -612,7 +618,7 @@ export default class ComponentForm extends Dom {
 
         const field = new Field(input, { 'label': configs.label })
             .data('property', id)
-            .appendTo(group ?? this.fields_wrapper);
+            .appendTo(group ?? (configs.animated ? this.animated_fields_wrapper : this.fields_wrapper));
 
         if ('attributes' in configs) {
             Object.entries(configs.attributes).forEach(([key, value]) => {
@@ -637,7 +643,7 @@ export default class ComponentForm extends Dom {
      */
     addFieldGroup(id, configs = {}) {
         const wrapper = new Dom('<div/>', { 'class': `field-group ${id}` })
-            .appendTo(this.fields_wrapper);
+            .appendTo(configs.animated ? this.animated_fields_wrapper : this.fields_wrapper);
 
         if ('label' in configs) {
             new Dom('<label/>', { 'text': configs.label })
