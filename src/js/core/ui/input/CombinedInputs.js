@@ -1,7 +1,7 @@
 import Input from '../Input';
 import { isArray } from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/input/Combined.scss';
+import { className } from '../../../../css/core/ui/input/Combined.scss';
 
 /**
  * An input than combines multiple sub-inputs.
@@ -48,15 +48,30 @@ export default class CombinedInputs extends Input {
     }
 
     /**
+     * Get the input's id.
+     * For use with labels.
+     *
+     * @param {boolean} from_input Whether to return the id of the first sub-input, or the combined input's id.
+     * @return {string} The id.
+     */
+    getId(from_input = true) {
+        if (from_input && this.inputs.length > 0) {
+            return this.inputs[0].getId();
+        }
+
+        return this.id;
+    }
+
+    /**
      * Sub-input valuechange event handler
      *
      * @private
      * @param {Event} evt The event object
      */
-    onInputValueChange(evt){
+    onInputValueChange(evt) {
         this.value = this.getValue();
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.getValue(), 'previous': this.previous_value}, true, false);
+        this.triggerEvent('valuechange', { 'input': this, 'value': this.getValue(), 'previous': this.previous_value }, true, false);
 
         this.previous_value = this.value;
 
@@ -75,7 +90,7 @@ export default class CombinedInputs extends Input {
     /**
      * @inheritdoc
      */
-    setValue(value, supressEvent){
+    setValue(value, supressEvent) {
         const inputs = this.getInputs();
 
         if (isArray(value)) {
@@ -123,13 +138,13 @@ export default class CombinedInputs extends Input {
             input.enable();
         });
 
-        return  super.enable();
+        return super.enable();
     }
 
     /**
      * @inheritdoc
      */
-    readonly(readonly){
+    readonly(readonly) {
         this.getInputs().forEach((input) => {
             input.readonly(readonly);
         });
@@ -142,9 +157,9 @@ export default class CombinedInputs extends Input {
      *
      * @return {this}
      */
-    focus(){
+    focus() {
         const input = this.getInputs()[0];
-        if(input) {
+        if (input) {
             input.focus();
         }
 
@@ -157,7 +172,7 @@ export default class CombinedInputs extends Input {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    reset(supressEvent){
+    reset(supressEvent) {
         this.getInputs().forEach((input) => {
             input.reset(supressEvent);
         });
@@ -168,7 +183,7 @@ export default class CombinedInputs extends Input {
     /**
      * Report the validity of all sub-inputs.
      */
-    reportValidity(){
+    reportValidity() {
         let valid = true;
 
         this.getInputs().forEach((input) => {

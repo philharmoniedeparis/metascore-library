@@ -1,7 +1,7 @@
 import Dom from '../Dom';
-import {uuid} from '../utils/String';
+import { uuid } from '../utils/String';
 
-import {className} from '../../../css/core/ui/Input.scss';
+import { className } from '../../../css/core/ui/Input.scss';
 
 /**
  * A generic input based on an HTML input element
@@ -35,13 +35,13 @@ export default class Input extends Dom {
      */
     constructor(configs) {
         // call the super constructor.
-        super('<div/>', {'class': `input ${className}`, 'tabindex': -1});
+        super('<div/>', { 'class': `input ${className}`, 'tabindex': -1 });
 
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({'name': `input-${uuid(5)}`}, this.constructor.defaults, configs);
+        this.configs = Object.assign({ 'name': `input-${uuid(5)}` }, this.constructor.defaults, configs);
 
         this.id = `input-${uuid(5)}`;
 
@@ -54,21 +54,21 @@ export default class Input extends Dom {
 
         this.setupUI();
 
-        if(this.native_input){
-            if(this.configs.name){
+        if (this.native_input) {
+            if (this.configs.name) {
                 this.native_input.attr('name', this.configs.name);
             }
 
-            if(this.configs.placeholder){
+            if (this.configs.placeholder) {
                 this.native_input.attr('placeholder', this.configs.placeholder);
             }
 
-            if(this.configs.required){
+            if (this.configs.required) {
                 this.native_input.attr('required', '');
             }
         }
 
-        if(this.configs.required){
+        if (this.configs.required) {
             this.addClass('required');
         }
 
@@ -85,14 +85,20 @@ export default class Input extends Dom {
          * The <input> element
          * @type {Dom}
          */
-        this.native_input = new Dom('<input/>', {'id': this.getId()})
+        this.native_input = new Dom('<input/>', { 'id': this.getId() })
             .addListener('input', this.onInput.bind(this))
             .addListener('change', this.onChange.bind(this))
             .addListener('keypress', this.onKeypress.bind(this))
             .appendTo(this);
     }
 
-    getId(){
+    /**
+     * Get the input's id.
+     * For use with labels.
+     *
+     * @return {string} The id.
+     */
+    getId() {
         return this.id;
     }
 
@@ -101,11 +107,11 @@ export default class Input extends Dom {
     *
     * @return {String} The input type
     */
-    getType(){
+    getType() {
         return this.constructor.name;
     }
 
-    getName(){
+    getName() {
         return this.configs.name;
     }
 
@@ -114,7 +120,7 @@ export default class Input extends Dom {
      *
      * @private
      */
-    onInput(){
+    onInput() {
         /**
          * The current value
          * @type {String}
@@ -127,10 +133,10 @@ export default class Input extends Dom {
      *
      * @private
      */
-    onChange(){
+    onChange() {
         this.value = this.native_input.val();
 
-        this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'previous': this.previous_value}, true, false);
+        this.triggerEvent('valuechange', { 'input': this, 'value': this.value, 'previous': this.previous_value }, true, false);
 
         this.previous_value = this.value;
     }
@@ -141,8 +147,8 @@ export default class Input extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onKeypress(evt){
-        if(evt.key === "Enter") {
+    onKeypress(evt) {
+        if (evt.key === "Enter") {
             this.native_input.triggerEvent('change');
         }
     }
@@ -154,11 +160,11 @@ export default class Input extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    setValue(value, supressEvent){
+    setValue(value, supressEvent) {
         this.native_input.val(value);
         this.value = value;
 
-        if(supressEvent !== true){
+        if (supressEvent !== true) {
             this.native_input.triggerEvent('change');
         }
 
@@ -190,7 +196,7 @@ export default class Input extends Dom {
 
         this.addClass('disabled');
 
-        if(this.native_input){
+        if (this.native_input) {
             this.native_input.attr('disabled', 'true');
         }
 
@@ -207,7 +213,7 @@ export default class Input extends Dom {
 
         this.removeClass('disabled');
 
-        if(this.native_input){
+        if (this.native_input) {
             this.native_input.attr('disabled', null);
         }
 
@@ -220,7 +226,7 @@ export default class Input extends Dom {
      * @param {Boolean} [readonly] Whether the input should be readonly, the current state is toggled if not provided
      * @return {this}
      */
-    readonly(readonly){
+    readonly(readonly) {
         /**
          * Whether the input is in a readonly state
          * @type {Boolean}
@@ -229,15 +235,15 @@ export default class Input extends Dom {
 
         this.toggleClass('readonly', this.is_readonly);
 
-        if(this.native_input){
+        if (this.native_input) {
             this.native_input.attr('readonly', this.is_readonly ? "readonly" : null);
         }
 
         return this;
     }
 
-    focus(){
-        if(this.native_input){
+    focus() {
+        if (this.native_input) {
             this.native_input.focus();
         }
 
@@ -250,11 +256,11 @@ export default class Input extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    reset(supressEvent){
-        if(this.configs.disabled){
+    reset(supressEvent) {
+        if (this.configs.disabled) {
             this.disable();
         }
-        else{
+        else {
             this.enable();
         }
 
@@ -265,8 +271,8 @@ export default class Input extends Dom {
         return this;
     }
 
-    reportValidity(){
-        if(this.native_input){
+    reportValidity() {
+        if (this.native_input) {
             return this.native_input.get(0).reportValidity();
         }
 
