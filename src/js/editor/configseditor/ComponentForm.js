@@ -179,11 +179,11 @@ export default class ComponentForm extends Dom {
                 'configs': {
                     'min': 0,
                     'max': 1,
-                    'step': 0.1,
+                    'step': 0.01,
                     'spinButtons': true
                 }
             },
-            'animated': true
+            'animatable': true
         },
         'scale': {
             'label': Locale.t('editor.configseditor.ComponentForm.fields.scale.label', 'Scale'),
@@ -217,7 +217,7 @@ export default class ComponentForm extends Dom {
                     ]
                 }
             },
-            'animated': true
+            'animatable': true
         }
     };
 
@@ -261,12 +261,18 @@ export default class ComponentForm extends Dom {
          * @type {Dom}
          */
         this.fields_wrapper = new Dom('<div/>', { 'class': 'fields' })
-            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
             .appendTo(this);
 
-        this.animated_fields_wrapper = new Dom('<div/>', { 'class': 'fields animated' })
-            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+        /**
+         * The animatable fields container
+         * @type {Dom}
+         */
+        this.animatable_fields_wrapper = new Dom('<div/>', { 'class': 'fields animatable' })
             .appendTo(this);
+
+        this
+            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+            .addDelegate('.input.animated', 'valuechange', this.onAnimatedValueChange.bind(this));
 
         /**
          * The list of fields
@@ -618,7 +624,18 @@ export default class ComponentForm extends Dom {
 
         const field = new Field(input, { 'label': configs.label })
             .data('property', id)
-            .appendTo(group ?? (configs.animated ? this.animated_fields_wrapper : this.fields_wrapper));
+            .appendTo(group ?? (configs.animatable ? this.animatable_fields_wrapper : this.fields_wrapper));
+
+        if (configs.animatable) {
+            new CheckboxInput({
+                    'checked': false,
+                    'name': 'animated'
+                })
+                .attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.title', 'Animated'))
+                .data('property', id)
+                .addClass('animated')
+                .insertAt(field, 1);
+        }
 
         if ('attributes' in configs) {
             Object.entries(configs.attributes).forEach(([key, value]) => {
@@ -643,7 +660,7 @@ export default class ComponentForm extends Dom {
      */
     addFieldGroup(id, configs = {}) {
         const wrapper = new Dom('<div/>', { 'class': `field-group ${id}` })
-            .appendTo(configs.animated ? this.animated_fields_wrapper : this.fields_wrapper);
+            .appendTo(configs.animatable ? this.animatable_fields_wrapper : this.fields_wrapper);
 
         if ('label' in configs) {
             new Dom('<label/>', { 'text': configs.label })
@@ -690,6 +707,59 @@ export default class ComponentForm extends Dom {
         });
 
         this.toggleMultival(evt.detail.field, false);
+    }
+
+    /**
+     * Animated checkbox valuechange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onAnimatedValueChange(evt) {
+        const name = evt.detail.input.data('property');
+        const value = evt.detail.value;
+        const components = clone(this.components);
+        const previous_values = {};
+        const new_values = {};
+
+        components.forEach((component) => {
+            const id = component.getId();
+            const prop_value = component.getPropertyValue(name);
+            const animated_value = component.getPropertyValue('animated') ?? [];
+
+            const previous_value = {
+                [name]: prop_value,
+                'animated': animated_value
+            }
+
+            const new_value = {};
+            if (value === true) {
+                new_value[name] = [MasterClock.getTime(), prop_value];
+                new_value.animated = animated_value.concat(name);
+            }
+            else {
+                new_value[name] = prop_value.pop()[1];
+                new_value.animated = animated_value.filter(item => item !== name);
+            }
+
+            previous_values[id] = previous_value;
+            new_values[id] = new_value;
+
+            component.setPropertyValues(new_value);
+        });
+
+        this.editor.getHistory().add({
+            'undo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValues(previous_values[component.getId()]);
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValues(new_values[component.getId()]);
+                });
+            }
+        });
     }
 
     /**

@@ -5,7 +5,6 @@
     height: 100%;
     flex-direction: column;
     overflow: auto;
-    background: $mediumgray;
 
     h2.title {
         position: sticky;
@@ -26,14 +25,32 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-content: flex-start;
-        padding: 0.5em 0;
-        background: $lightgray;
 
-        &.animated {
-            background: none;
+        &:not(:empty) {
+            padding: 0.5em 0;
+        }
 
-            input:not(:focus) {
-                background: $lightgray;
+        &.animatable {
+            display: grid;
+            grid-template-columns: max-content max-content auto;
+            grid-gap: 0.5em;
+            align-items: center;
+            background: $mediumgray;
+
+            &:not(:empty) {
+                padding: 0.5em;
+            }
+
+            > .field {
+                display: contents;
+
+                .input.checkbox.animated {
+                    margin-right: 0.5em;
+                }
+
+                input:not(:focus) {
+                    background: $lightgray;
+                }
             }
         }
 
@@ -45,6 +62,12 @@
                     width: 100%;
                     padding: 0.25em 0.5em;
                     box-sizing: border-box;
+                    border-radius: 0;
+                }
+            }
+
+            &.time {
+                input {
                     border-radius: 0;
                 }
             }
