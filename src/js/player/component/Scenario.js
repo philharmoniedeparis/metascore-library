@@ -80,10 +80,8 @@ export default class Scenario extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value){
-        if(this.isPropertyAnimated(name, value)) {
-            return this.updateAnimatedPropertyValue(name, value);
-        }
+    updatePropertyValue(name, value, skip_animated_check = false){
+        super.updatePropertyValue(name, value, skip_animated_check);
 
         switch(name){
             case 'components':
@@ -92,9 +90,6 @@ export default class Scenario extends Component {
                     this.addComponent(configs);
                 });
                 break;
-
-            default:
-                super.updatePropertyValue(name, value);
         }
 
         return this;

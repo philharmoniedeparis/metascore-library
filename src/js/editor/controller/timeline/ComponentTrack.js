@@ -70,7 +70,7 @@ export default class ComponentTrack extends Dom {
                 'icon': icon,
                 'expander': true,
             })
-            .addToggler('lock', locked_icon, Locale.t('togglers.lock', 'Toggle lock'))
+            .addToggler('lock', locked_icon, Locale.t('togglers.lock', 'Lock/Unlock'))
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
             .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
             .appendTo(this);
@@ -117,11 +117,8 @@ export default class ComponentTrack extends Dom {
 
         // Add property tracks.
         Object.keys(this.component.getProperties()).forEach((name) => {
-            if (this.component.isPropertyAnimatable(name)){
-                const value = this.component.getPropertyValue(name);
-                if (this.component.isPropertyAnimated(name, value)){
-                    this.addPropertyTrack(name);
-                }
+            if (this.component.isPropertyAnimated(name)){
+                this.addPropertyTrack(name);
             }
         });
 

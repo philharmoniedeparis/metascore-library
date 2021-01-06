@@ -90,8 +90,8 @@ export default class VideoRenderer extends Component{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value){
-        super.updatePropertyValue(name, value);
+    updatePropertyValue(name, value, skip_animated_check = false){
+        super.updatePropertyValue(name, value, skip_animated_check);
 
         this.draw();
 

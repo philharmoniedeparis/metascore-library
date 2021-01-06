@@ -149,12 +149,8 @@ export default class SVG extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value){
-        if(this.isPropertyAnimated(name, value)) {
-            return this.updateAnimatedPropertyValue(name, value);
-        }
-
-        super.updatePropertyValue(name, value);
+    updatePropertyValue(name, value, skip_animated_check = false){
+        super.updatePropertyValue(name, value, skip_animated_check);
 
         switch(name){
             case 'src':

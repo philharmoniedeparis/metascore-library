@@ -90,16 +90,12 @@ export default class Page extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value){
-        if(this.isPropertyAnimated(name, value)) {
-            return this.updateAnimatedPropertyValue(name, value);
-        }
+    updatePropertyValue(name, value, skip_animated_check = false){
+        super.updatePropertyValue(name, value, skip_animated_check);
 
         switch(name){
             case 'start-time':
             case 'end-time':
-                super.updatePropertyValue(name, value);
-
                 {
                     const block = this.getParent();
 
@@ -119,9 +115,6 @@ export default class Page extends Component {
                     this.addElement(configs);
                 });
                 break;
-
-            default:
-                super.updatePropertyValue(name, value);
         }
 
         return this;

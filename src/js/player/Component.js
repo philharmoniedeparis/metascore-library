@@ -35,8 +35,8 @@ export default class Component extends Dom {
         'name': 'untitled',
         'position': [0, 0],
         'dimension': [50,50],
-        'scale': [1,1],
-        'opacity': 1
+        'opacity': 1,
+        'scale': [1,1]
     };
 
     /**
@@ -81,14 +81,6 @@ export default class Component extends Dom {
                         ];
                     }
                 },
-                'scale': {
-                    'type': 'array',
-                    'label': Locale.t('Component.properties.scale.label', 'Scale'),
-                    'animatable': true,
-                    'animated': function (value) {
-                        return isArray(value[1]);
-                    }
-                },
                 'background-color': {
                     'type': 'color',
                     'label': Locale.t('Component.properties.background-color.label', 'Background color')
@@ -109,11 +101,6 @@ export default class Component extends Dom {
                     'type': 'string',
                     'label': Locale.t('Component.properties.border-radius.label', 'Border radius')
                 },
-                'opacity': {
-                    'type': 'number',
-                    'label': Locale.t('Component.properties.opacity.label', 'Opacity'),
-                    'animatable': true
-                },
                 'start-time': {
                     'type': 'time',
                     'label': Locale.t('Component.properties.start-time.label', 'Start time'),
@@ -127,6 +114,20 @@ export default class Component extends Dom {
                     'sanitize': function (value) {
                         return value ? round(value, 2) : value;
                     }
+                },
+                'opacity': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.opacity.label', 'Opacity'),
+                    'animatable': true
+                },
+                'scale': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.scale.label', 'Scale'),
+                    'animatable': true
+                },
+                'animated': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.animated.label', 'Animated')
                 },
                 'editor.locked': {
                     'type': 'boolean',
@@ -426,8 +427,8 @@ export default class Component extends Dom {
             const previous_value = this.getPropertyValue(name);
             let new_value = value;
 
-            const animatable = this.isPropertyAnimatable(name);
-            const animated = animatable && this.isPropertyAnimated(name, new_value);
+            const animated = this.isPropertyAnimated(name);
+            const animatable = animated || this.isPropertyAnimatable(name);
 
             if (animated) {
                 new_value.sort((a, b) => a[0] - b[0]);
@@ -470,13 +471,21 @@ export default class Component extends Dom {
     /**
      * Set property values
      *
-     * @param {Object} names The list of properties to set as name/value pairs
+     * @param {Object} values The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @return {this}
      */
-    setPropertyValues(names, supressEvent){
-        Object.entries(names).forEach(([name, value]) => {
-            this.setPropertyValue(name, value, supressEvent);
+    setPropertyValues(values, supressEvent){
+        // Sort properties;
+        // the animatable properties should be processed latest.
+        const names = Object.keys(values).sort((a, b) => {
+            if (this.isPropertyAnimatable(a)) return 1;
+            if (this.isPropertyAnimatable(b)) return -1;
+            return 0;
+        });
+
+        names.forEach((name) => {
+            this.setPropertyValue(name, values[name], supressEvent);
         });
 
         return this;
@@ -502,13 +511,13 @@ export default class Component extends Dom {
      * @param {Mixed} value The value to set
      * @return {Boolean} Whether the property is animated.
      */
-    isPropertyAnimated(name, value){
-        const prop = this.getProperty(name);
-        if(prop && ('animated' in prop) && isFunction(prop.animated)){
-            return prop.animated.call(this, value);
+    isPropertyAnimated(name){
+        if (!this.isPropertyAnimatable(name)) {
+            return false;
         }
 
-        return isArray(value) && this.isPropertyAnimatable(name);
+        const animated = this.getPropertyValue('animated');
+        return isArray(animated) && animated.includes(name);
     }
 
     /**
@@ -517,10 +526,11 @@ export default class Component extends Dom {
      * @protected
      * @param {String} name The name of the property
      * @param {Mixed} value The value to set
+     * @param {Boolean} skip_animated_check Whether to skip checking if this is an animated property
      * @return {this}
      */
-    updatePropertyValue(name, value){
-        if(this.isPropertyAnimated(name, value)) {
+    updatePropertyValue(name, value, skip_animated_check = false){
+        if((skip_animated_check !== true) && this.isPropertyAnimated(name)) {
             return this.updateAnimatedPropertyValue(name);
         }
 
@@ -613,12 +623,12 @@ export default class Component extends Dom {
 
         // The values are empty.
         if(values.length === 0){
-            return this.updatePropertyValue(name, null);
+            return this.updatePropertyValue(name, null, true);
         }
 
         // Only one value is provided.
         if(values.length === 1){
-            return this.updatePropertyValue(name, values[0][1]);
+            return this.updatePropertyValue(name, values[0][1], true);
         }
 
         // There's no need for inTime and outTime
@@ -628,7 +638,7 @@ export default class Component extends Dom {
             .addListener('update', () => {
                 const time = MasterClock.getTime();
                 const value = this.getPropertyValueAtTime(name, time);
-                this.updatePropertyValue(name, value);
+                this.updatePropertyValue(name, value, true);
             });
 
         if(this.isActive()){
