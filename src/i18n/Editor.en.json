@@ -365,6 +365,8 @@
 	"editor.onXHRError.msg": "The following error occured:<br/><strong><em>@code @error</em></strong><br/>Please try again.",
 	"editor.onXHRError.ok": "OK",
 	"editor.overlay.BorderRadius.title": "Border Radius",
+	"editor.pastePlayerComponents.multiple-targets.msg": "Copied elements can only be pasted into one page at a time.<br/>Please select a single page to paste the element(s) into.",
+	"editor.pastePlayerComponents.multiple-targets.ok": "OK",
 	"editor.save.LoadMask.text": "Saving...",
 	"media.getFileDuration.no-mime.error": "The file's mime type could not be determined for !url",
 	"media.getFileDuration.no-renderer.error": "No compatible renderer found for the mime type !mime",

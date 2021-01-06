@@ -2748,7 +2748,7 @@ export class Editor extends Dom {
             let type = null;
 
             if(master_component.instanceOf('Element')) {
-                type = 'Element';
+                type = 'element';
             }
             else if(master_component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
                 type = 'block';
@@ -2778,18 +2778,42 @@ export class Editor extends Dom {
      * Paste player components from internal clipbaord to specified component.
      *
      * @private
-     * @param {Component} parent The component to paste into.
+     * @param {Component} [parent] The component to paste into.
      * @returns {this}
      */
-    pastePlayerComponents(parent=null) {
+    pastePlayerComponents(parent) {
         if (this.clipboard.getDataType() === 'element') {
-            if (parent === null) {
-                this.configs_editor.getComponents('Page').forEach((page) => {
-                    this.addPlayerComponents('element', this.clipboard.getData(), page);
-                });
-            }
-            else if (parent.instanceOf('Page')) {
+            if (parent && parent.instanceOf('Page')) {
                 this.addPlayerComponents('element', this.clipboard.getData(), parent);
+            }
+            else {
+                let pages = [];
+
+                // Get the currently selected pages.
+                pages = this.configs_editor.getComponents('Page');
+
+                if (pages.length === 0) {
+                    // If no pages are selected, get the pages from the selected elements.
+                    pages = unique(this.configs_editor.getComponents('Element').map((element) => element.getParent()));
+                }
+
+                if (pages.length === 0) {
+                    // If no elements are selected, get the pages from the selected blocks.
+                    pages = this.configs_editor.getComponents('Block').map((block) => block.getActivePage());
+                }
+
+                if (pages.length > 1) {
+                    new Overlay({
+                        'text': Locale.t('editor.pastePlayerComponents.multiple-targets.msg', 'Copied elements can only be pasted into one page at a time.<br/>Please select a single page to paste the element(s) into.'),
+                        'buttons': {
+                            'ok': Locale.t('editor.pastePlayerComponents.multiple-targets.ok', 'OK'),
+                        },
+                        'parent': this
+                    });
+                }
+                else if (pages.length === 1) {
+                    this.addPlayerComponents('element', this.clipboard.getData(), pages[0]);
+                }
             }
         }
         else if (this.clipboard.getDataType() === 'block') {
@@ -3249,5 +3273,5 @@ export class Editor extends Dom {
     }
 }
 
-// Export the TimeInput class to be used in CKEditor plugins
-export { TimeInput };
+// Export utility classes to be used from outside.
+export { TimeInput, LoadMask };
