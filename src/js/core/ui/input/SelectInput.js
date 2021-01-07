@@ -16,7 +16,8 @@ export default class SelectInput extends Input {
     static defaults = Object.assign({}, super.defaults, {
         'options': {},
         'multiple': false,
-        'emptyLabel': Locale.t('core.input.SelectInput.emptyLabel', '')
+        'emptyLabel': Locale.t('core.input.SelectInput.emptyLabel', ''),
+        'noEmptyOption': false
     });
 
     /**
@@ -57,9 +58,8 @@ export default class SelectInput extends Input {
                 .attr('multiple', '')
                 .addDelegate('option', 'mousedown', this.onOptionMouseDown.bind(this));
         }
-        else if(!this.configs.required){
-            this.addOption('', this.configs.emptyLabel);
-        }
+
+        this.clear();
 
         Object.entries(this.configs.options).forEach(([value, text]) => {
             this.addOption(value, text);
@@ -162,7 +162,7 @@ export default class SelectInput extends Input {
     clear() {
         this.native_input.empty();
 
-        if(!this.configs.required && !this.configs.multiple){
+        if(!this.configs.noEmptyOption && !this.configs.required && !this.configs.multiple){
             this.addOption('', this.configs.emptyLabel);
         }
 
