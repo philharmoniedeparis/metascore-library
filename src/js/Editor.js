@@ -2245,7 +2245,7 @@ export class Editor extends Dom {
      * @private
      */
     onWindowUnload() {
-        if (this.configs.autosave && this.configs.autosave.url) {
+        if (this.isDirty() && this.configs.autosave && this.configs.autosave.url) {
             // Delete auto-save data using the fetch API as Ajax doesn't support keepalive.
             fetch(this.configs.autosave.url, Object.assign({}, this.configs.xhr, {
                 'method': 'DELETE',
