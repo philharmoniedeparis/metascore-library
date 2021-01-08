@@ -452,77 +452,78 @@ export class Player extends Dom {
             link = Dom.closest(link, 'a');
         }
 
-        const href = Dom.attr(link, 'href');
+        if(/^#/.test(link.hash)){
+            const actions = link.hash.replace(/^#/, '').split('&');
 
-        if((/^#/.test(href))){
-            let matches = null;
-            // play link.
-            if((matches = link.hash.match(/^#play$/))){
-                this.play();
-                evt.preventDefault();
-            }
-            // play excerpt link.
-            if((matches = link.hash.match(/^#play=(\d*\.?\d+)?,(\d*\.?\d+)?,(.+)$/))){
-                const inTime = matches[1];
-                const outTime = matches[2];
-                const scenario = decodeURIComponent(matches[3]);
-                this.play(inTime, outTime, scenario);
-                evt.preventDefault();
-            }
-            // pause link.
-            else if((matches = link.hash.match(/^#pause$/))){
-                this.getRenderer().pause();
-                evt.preventDefault();
-            }
-            // stop link.
-            else if((matches = link.hash.match(/^#stop$/))){
-                this.getRenderer().stop();
-                evt.preventDefault();
-            }
-            // seek link.
-            else if((matches = link.hash.match(/^#seek=(\d*\.?\d+)$/))){
-                const seconds = parseFloat(matches[1]);
-                this.getRenderer().setTime(seconds);
-                evt.preventDefault();
-            }
-            // page link.
-            else if((matches = link.hash.match(/^#page=([^,]*),(\d+)$/))){
-                const block = this.getBlockByName(decodeURIComponent(matches[1]));
-                const index = parseInt(matches[2], 10)-1;
-                block.setActivePage(index);
-                evt.preventDefault();
-            }
-            // show/hide/toggleBlock link.
-            else if((matches = link.hash.match(/^#(show|hide|toggle)Block=(.*)$/))){
-                const action = matches[1];
-                const block = this.getBlockByName(decodeURIComponent(matches[2]));
-                if(block){
-                    const show = action === 'toggle' ? void 0 : action !== 'hide';
-                    block.toggleVisibility(show);
+            actions.forEach((action) => {
+                let matches = null;
+
+                // play link.
+                if(action === 'play'){
+                    this.play();
+                    evt.preventDefault();
                 }
-                evt.preventDefault();
-            }
-            // scenario link.
-            else if((matches = link.hash.match(/^#scenario=(.+)$/))){
-                const scenario_id = decodeURIComponent(matches[1]);
-                const scenario = this.getScenarios().find((s) => s.getId() === scenario_id);
-                if(scenario){
-                    this.setActiveScenario(scenario);
+                // play excerpt link.
+                else if((matches = action.match(/^play=(\d*\.?\d+)?,(\d*\.?\d+)?,(.+)$/))){
+                    const inTime = matches[1];
+                    const outTime = matches[2];
+                    const scenario = decodeURIComponent(matches[3]);
+                    this.play(inTime, outTime, scenario);
+                    evt.preventDefault();
                 }
-                evt.preventDefault();
-            }
-            // fullscreen link.
-            else if((matches = link.hash.match(/^#(enter|exit|toggle)Fullscreen$/))){
-                const action = matches[1];
-                const enter = action === 'toggle' ? !document.fullscreenElement : action !== 'exit';
-                if (enter) {
-                    document.documentElement.requestFullscreen();
+                // pause link.
+                else if(action === 'pause'){
+                    this.getRenderer().pause();
+                    evt.preventDefault();
                 }
-                else {
-                    document.exitFullscreen();
+                // stop link.
+                else if(action === 'stop'){
+                    this.getRenderer().stop();
+                    evt.preventDefault();
                 }
-                evt.preventDefault();
-            }
+                // seek link.
+                else if((matches = action.match(/^seek=(\d*\.?\d+)$/))){
+                    const seconds = parseFloat(matches[1]);
+                    this.getRenderer().setTime(seconds);
+                    evt.preventDefault();
+                }
+                // page link.
+                else if((matches = action.match(/^page=([^,]*),(\d+)$/))){
+                    const block = this.getBlockByName(decodeURIComponent(matches[1]));
+                    const index = parseInt(matches[2], 10)-1;
+                    block.setActivePage(index);
+                    evt.preventDefault();
+                }
+                // show/hide/toggleBlock link.
+                else if((matches = action.match(/^(show|hide|toggle)Block=(.*)$/))){
+                    const block = this.getBlockByName(decodeURIComponent(matches[2]));
+                    if(block){
+                        const show = matches[1] === 'toggle' ? void 0 : matches[1] !== 'hide';
+                        block.toggleVisibility(show);
+                    }
+                    evt.preventDefault();
+                }
+                // scenario link.
+                else if((matches = action.match(/^scenario=(.+)$/))){
+                    const scenario_id = decodeURIComponent(matches[1]);
+                    const scenario = this.getScenarios().find((s) => s.getId() === scenario_id);
+                    if(scenario){
+                        this.setActiveScenario(scenario);
+                    }
+                    evt.preventDefault();
+                }
+                // enter/exit/toggleFullscreen.
+                else if((matches = action.match(/^(enter|exit|toggle)Fullscreen$/))){
+                    const enter = matches[1] === 'toggle' ? !document.fullscreenElement : matches[1] !== 'exit';
+                    if (enter) {
+                        document.documentElement.requestFullscreen();
+                    }
+                    else {
+                        document.exitFullscreen();
+                    }
+                    evt.preventDefault();
+                }
+            });
         }
         else{
             window.open(link.href, '_blank');
