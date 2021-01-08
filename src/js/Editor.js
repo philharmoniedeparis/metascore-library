@@ -2760,8 +2760,8 @@ export class Editor extends Dom {
 
                     if(this.configs.component_copy_displacement){
                         // Slightly move the copy to prevent exact overlap.
-                        config.x += this.configs.component_copy_displacement;
-                        config.y += this.configs.component_copy_displacement;
+                        config.position[0] += this.configs.component_copy_displacement;
+                        config.position[1] += this.configs.component_copy_displacement;
                     }
 
                     configs.push(config);
@@ -2837,25 +2837,23 @@ export class Editor extends Dom {
         const history = this.getHistory().startGroup();
 
         components.forEach((component) => {
-            const previous_values = {};
-            const new_values = {};
+            const previous_value = component.getPropertyValue('position');
+            const new_value = clone(previous_value);
 
             if (!relative || x) {
-                previous_values.x = parseInt(component.css('left'), 10);
-                new_values.x = relative ? previous_values.x + x : x;
+                new_value[0] = relative ? previous_value[0] + x : x;
             }
             if (!relative || y) {
-                previous_values.y = parseInt(component.css('top'), 10);
-                new_values.y = relative ? previous_values.y + y : y;
+                new_value[1] = relative ? previous_value[1] + y : y;
             }
-            component.setPropertyValues(new_values);
+            component.setPropertyValue('position', new_value);
 
             history.add({
                 'undo': () => {
-                    component.setPropertyValues(previous_values);
+                    component.setPropertyValue('position', previous_value);
                 },
                 'redo': () => {
-                    component.setPropertyValues(new_values);
+                    component.setPropertyValue('position', new_value);
                 }
             });
         });
