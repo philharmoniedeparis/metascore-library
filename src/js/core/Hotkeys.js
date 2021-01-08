@@ -105,10 +105,10 @@ export default class Hotkeys {
      * Attach this hotkeys instance to an element.
      *
      * @param {Dom} element The element to attach to.
-     * @param {String|null} [selector] A selector to filter event targets against.
+     * @param {String|null} [selector=':not(input):not(textarea):not([contenteditable])'] A selector to filter event targets against.
      * @returns {this}
      */
-    attachTo(element, selector = null) {
+    attachTo(element, selector = ':not(input):not(textarea):not([contenteditable="true"])') {
         let handler = this.handleEvent;
 
         if (selector) {

@@ -6,6 +6,7 @@ import TextInput from '../core/ui/input/TextInput';
 import CheckboxInput from '../core/ui/input/CheckboxInput';
 import SelectInput from '../core/ui/input/SelectInput';
 import NumberInput from '../core/ui/input/NumberInput';
+import { escapeHTML } from '../core/utils/String';
 
 import logo_icon from '../../img/core/logo.svg?svg-sprite';
 import save_icon from '../../img/editor/mainmenu/save.svg?svg-sprite';
@@ -171,7 +172,7 @@ export default class MainMenu extends Dom {
 
         this.items.revisions = new SelectInput({
                 'name': 'revisions',
-                'required' : true
+                'noEmptyOption': true
             })
             .data('name', 'revisions')
             .appendTo(this);
@@ -238,13 +239,15 @@ export default class MainMenu extends Dom {
                 '@id': revision.vid,
                 '@date': date_formatter.format(new Date(revision.created * 1000))
             });
-            input.addOption(revision.vid, text);
+            const option = input.addOption(revision.vid, text);
+            option.attr('title', escapeHTML(revision.log_message));
+
+            if (revision.vid === current) {
+                option.attr('disabled', 'true');
+            }
         });
 
-        input
-            .setValue(current, true)
-            .getOption(current)
-                .attr('disabled', 'true');
+        input.setValue(current, true);
 
         return this;
     }
