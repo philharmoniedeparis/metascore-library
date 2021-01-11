@@ -393,7 +393,12 @@ export default class Component extends Dom {
      * @return {this}
      */
     toggleVisibility(show){
-        this.setPropertyValue('hidden', !(typeof show === 'undefined' ? this.getPropertyValue('hidden') : show));
+        let do_show = show;
+        if (typeof do_show === 'undefined') {
+            do_show = this.css('display') === 'none';
+        }
+
+        this.css('display', do_show ? 'block' : 'none');
 
         return this;
     }
