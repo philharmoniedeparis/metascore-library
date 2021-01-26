@@ -436,7 +436,7 @@ export default class Zoom extends Dom {
      *
      * Credit: peaks.js (see src/main/waveform/waveform.axis.js:getAxisLabelScale)
      *
-     * @returns {Number} The number of centiseconds for each axis tick
+     * @return {Number} The number of centiseconds for each axis tick
      */
     getAxisStep() {
         const min_spacing = 60;

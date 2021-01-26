@@ -353,7 +353,7 @@ export default class CursorKeyframesEditor extends Dom {
      * @private
      * @param {Number} position The keyframe's position
      * @param {Number} time The keyframe's time
-     * @returns {this}
+     * @return {this}
      */
     addKeyframe(position, time){
         this.keyframes.push({
@@ -377,7 +377,7 @@ export default class CursorKeyframesEditor extends Dom {
      *
      * @private
      * @param {Number} index The keyframe's index
-     * @returns {this}
+     * @return {this}
      */
     removeKeyframe(index){
         const keyframe = this.keyframes[index];

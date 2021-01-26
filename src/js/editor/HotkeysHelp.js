@@ -93,7 +93,7 @@ export default class HotkeysInfo extends Overlay {
      * Get a key's pretty name.
      *
      * @param {string} key The key.
-     * @returns {string} The pretty name.
+     * @return {string} The pretty name.
      */
     getKeyName(key) {
         switch (key){

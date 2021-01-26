@@ -2739,7 +2739,7 @@ export class Editor extends Dom {
      *
      * @private
      * @param {Array} components The list of components.
-     * @returns {this}
+     * @return {this}
      */
     copyPlayerComponents(components) {
         if (components.length > 0) {
@@ -2779,7 +2779,7 @@ export class Editor extends Dom {
      *
      * @private
      * @param {Component} [parent] The component to paste into.
-     * @returns {this}
+     * @return {this}
      */
     pastePlayerComponents(parent) {
         if (this.clipboard.getDataType() === 'element') {
@@ -2831,7 +2831,7 @@ export class Editor extends Dom {
      * @param {Number} x The number of pixels to move to the right.
      * @param {Number} y The number of pixels to move to the bottom.
      * @param {Boolean} relative Whether the values are relative to the actual position.
-     * @returns {this}
+     * @return {this}
      */
     movePlayerComponents(components, x = 0, y = 0, relative = true) {
         const history = this.getHistory().startGroup();
@@ -3250,7 +3250,7 @@ export class Editor extends Dom {
      * Revert the player to its last saved state.
      *
      * @param {Boolean} confirm Whether to display a confirmation dialog
-     * @returns {this}
+     * @return {this}
      */
     revert(confirm = true) {
         if (confirm !== false) {

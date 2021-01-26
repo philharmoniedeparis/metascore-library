@@ -359,7 +359,7 @@ export default class GuideAssets extends Dom {
      *
      * @private
      * @param {Object} asset The asset.
-     * @returns {this}
+     * @return {this}
      */
     createAssetItem(asset) {
         const name = escapeHTML(asset.name);
@@ -458,7 +458,7 @@ export default class GuideAssets extends Dom {
      * Get an asset by id.
      *
      * @param {string} id The asset's identifier.
-     * @returns {Object|undefined} The asset.
+     * @return {Object|undefined} The asset.
      */
     getAsset(id) {
         return this.asset_items[id].asset;
@@ -467,7 +467,7 @@ export default class GuideAssets extends Dom {
     /**
      * Get the lists of available assets.
      *
-     * @returns {Array} The assets.
+     * @return {Array} The assets.
      */
     getAssets() {
         return Object.values(this.asset_items).map((item) => {
