@@ -168,13 +168,15 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * The keypress event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
     onKeypress(evt){
-        if(isNumeric(evt.key) || ((evt.key === '.') && this.configs.step < 1) || (evt.key === "Enter")){
+        if(
+            isNumeric(evt.key) ||
+            ((evt.key === '.') && this.configs.step < 1) ||
+            ((evt.key === '-') && (this.min === null || this.min < 0)) ||
+            (evt.key === "Enter")
+        ){
             // do nothing, to allow the triggering of the input event
             return;
         }
