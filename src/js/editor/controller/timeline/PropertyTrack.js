@@ -1,8 +1,8 @@
 import Dom from '../../../core/Dom';
+import Locale from '../../../core/Locale'
 import Handle from './track/Handle';
 import Keyframe from './track/Keyframe';
 import {MasterClock} from '../../../core/media/MediaClock';
-import {clone} from '../../../core/utils/Array';
 
 import animated_icon from '../../../../img/editor/controller/timeline/handle/animated.svg?svg-sprite';
 
@@ -31,6 +31,12 @@ export default class PropertyTrack extends Dom {
         // call parent constructor
         super('<div/>', {'class': `property-track ${className}`});
 
+        // fix event handlers scope
+        this.onComponentSelected = this.onComponentSelected.bind(this);
+        this.onComponentDeselected = this.onComponentDeselected.bind(this);
+        this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onKeyframesWrapperClick = this.onKeyframesWrapperClick.bind(this);
+
         /**
          * The configuration values
          * @type {Object}
@@ -42,7 +48,9 @@ export default class PropertyTrack extends Dom {
          * @type {Component}
          */
         this.component = component
-            .addListener('propchange', this.onComponentPropChange.bind(this));
+            .addListener('selected', this.onComponentSelected, true)
+            .addListener('deselected', this.onComponentDeselected)
+            .addListener('propchange', this.onComponentPropChange);
 
         /**
          * The associated property name.
@@ -73,16 +81,39 @@ export default class PropertyTrack extends Dom {
          * @type {Dom}
          */
         this.keyframes_wrapper = new Dom('<div/>', {'class': 'keyframes-wrapper'})
-            .addDelegate('.keyframe', 'click', this.onKeyframeClick.bind(this))
             .appendTo(this);
 
         this
-            .addDelegate('.keyframes-wrapper', 'click', this.onKeyframesWrapperClick.bind(this))
             .data('component', component.getId())
             .data('property', this.property)
             .attr('title', this.property);
 
         this.updateKeyframes();
+    }
+
+    /**
+     * Component selected event callback
+     *
+     * @private
+     */
+    onComponentSelected(){
+        this.keyframes_wrapper
+            .addListener('click', this.onKeyframesWrapperClick)
+            .attr('title', Locale.t(
+                'editor.controller.timeline.PropertyTrack.keyframes-wrapper.title',
+                'Add keyframe'
+            ));
+    }
+
+    /**
+     * Component deselected event callback
+     *
+     * @private
+     */
+    onComponentDeselected(){
+        this.keyframes_wrapper
+            .removeListener('click', this.onKeyframesWrapperClick)
+            .attr('title', null);
     }
 
     /**
@@ -93,13 +124,12 @@ export default class PropertyTrack extends Dom {
      */
     onComponentPropChange(evt){
         const property = evt.detail.property;
-        const value = evt.detail.value;
 
         if (property !== this.property) {
             return;
         }
 
-        if (!this.getComponent().isPropertyAnimated(property, value)) {
+        if (!this.getComponent().isPropertyAnimated(property)) {
             this.remove();
         }
         else{
@@ -114,28 +144,27 @@ export default class PropertyTrack extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onKeyframesWrapperClick(evt) {
+        if(!Dom.is(evt.target, '.keyframes-wrapper')) {
+            return;
+        }
+
         const component = this.getComponent();
         const duration = parseFloat(this.css('--timeline-duration'));
         const {width, left} = evt.target.getBoundingClientRect();
         const x = evt.pageX - left;
         const time = (x / width) * duration;
-        const values = clone(component.getPropertyValue(this.property));
-        const value = component.getPropertyValueAtTime(this.property, time);
+        const value = component.getAnimatedPropertyValueAtTime(this.property, time);
 
-        values.push([time, value]);
+        this.addKeyframe(time, value).select();
+
+        const values = this.getKeyframes().map((keyframe) => {
+            return [
+                keyframe.getTime(),
+                keyframe.getValue()
+            ];
+        });
 
         component.setPropertyValue(this.property, values);
-    }
-
-    /**
-     * Keyframe click event handler.
-     *
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onKeyframeClick(evt) {
-        const time = Dom.css(evt.target, '--keyframe-time');
-        MasterClock.setTime(time);
     }
 
     /**
@@ -163,34 +192,37 @@ export default class PropertyTrack extends Dom {
      * @return {this}
      */
     updateKeyframes(){
-        const values = this.component.getPropertyValue(this.property);
+        const values = new Map(this.component.getPropertyValue(this.property));
+        let added = false;
 
         // Remove keyframes of no-longer existing values.
-        const times = values.map(([time]) => time);
         this.keyframes = this.keyframes.filter((keyframe) => {
-            const time = keyframe.getTime();
-            if(!times.includes(time)){
+            if(!values.has(keyframe.getTime())){
                 keyframe.remove();
                 return false;
             }
             return true;
         });
 
-        // Add keyframes for new values.
-        values.forEach(([time, value]) => {
-            const index = this.keyframes.findIndex((k) => k.getTime() === time);
-            if(index === -1){
-                const keyframe = new Keyframe(time, value, this.configs.keyframe)
-                    .addListener('dragstart', this.onKeyframeDragStart.bind(this))
-                    .addListener('drag', this.onKeyframeDrag.bind(this))
-                    .addListener('dragend', this.onKeyframeDragEnd.bind(this))
-                    .appendTo(this.keyframes_wrapper);
+        values.forEach((value, time) => {
+            let keyframe = this.keyframes.find((k) => k.getTime() === Keyframe.normalizeTime(time));
 
-                this.keyframes.push(keyframe);
+            if(keyframe){
+                // Update existing keyframe.
+                keyframe.setValue(value);
+            }
+            else {
+                // Add new keyframe.
+                keyframe = this.addKeyframe(time, value);
+                added = true;
             }
         });
 
-        this.keyframes.sort((a, b) => a.getTime() - b.getTime());
+        if (added) {
+            this.keyframes.sort((a, b) => a.getTime() - b.getTime());
+        }
+
+        return this;
     }
 
     /**
@@ -212,6 +244,54 @@ export default class PropertyTrack extends Dom {
         return this.keyframes.find((keyframe) => {
             return keyframe.getTime() === time;
         });
+    }
+
+    /**
+     * Add a new keyframe.
+     *
+     * @private
+     * @param {Number} time The associated time.
+     * @param {Mixed} value The associated value.
+     * @return {Keyframe} The keyframe.
+     */
+    addKeyframe(time, value) {
+        const keyframe = new Keyframe(this.property, time, value, this.configs.keyframe)
+            .addListener('beforeselect', this.onKeyframeBeforeSelect.bind(this))
+            .addListener('select', this.onKeyframeSelect.bind(this))
+            .addListener('dragstart', this.onKeyframeDragStart.bind(this))
+            .addListener('drag', this.onKeyframeDrag.bind(this))
+            .addListener('dragend', this.onKeyframeDragEnd.bind(this))
+            .appendTo(this.keyframes_wrapper);
+
+        this.keyframes.push(keyframe);
+
+        return keyframe;
+    }
+
+    /**
+     * Keyframe beforeselect event handler.
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onKeyframeBeforeSelect(evt) {
+        const keyframe = evt.detail.keyframe;
+        const selected = this.getSelectedKeyframe();
+
+        if (selected && selected !== keyframe) {
+            selected.deselect();
+        }
+    }
+
+    /**
+     * Keyframe select event handler.
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onKeyframeSelect(evt) {
+        const keyframe = evt.detail.keyframe;
+        MasterClock.setTime(keyframe.getTime());
     }
 
     /**
@@ -250,5 +330,28 @@ export default class PropertyTrack extends Dom {
      */
     onKeyframeDragEnd(evt) {
         this.triggerEvent('keyframedragend', evt.detail, false, true);
+    }
+
+    /**
+     * Get the currently selected keyframe if any.
+     *
+     * @return {Keyframe?} The selected keyframe.
+     */
+    getSelectedKeyframe() {
+        return this.keyframes.find((keyframe) => {
+            return keyframe.isSelected();
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    remove() {
+        this.component
+            .removeListener('selected', this.onComponentSelected, true)
+            .removeListener('deselected', this.onComponentDeselected)
+            .removeListener('propchange', this.onComponentPropChange);
+
+        super.remove();
     }
 }

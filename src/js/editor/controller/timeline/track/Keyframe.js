@@ -7,6 +7,16 @@ import {className} from '../../../../../css/editor/controller/timeline/track/Key
 
 /**
  * A track keyframe.
+ *
+ * @emits {beforeselect} Fired before marked as selected.
+ * The select can be canceled by invoking preventDefault.
+ * @param {Object} keyframe The keyframe instance
+ *
+ * @emits {select} Fired when marked as selected
+ * @param {Object} keyframe The keyframe instance
+ *
+ * @emits {deselect} Fired when unmarked as selected
+ * @param {Object} keyframe The keyframe instance
  */
 export default class Keyframe extends Dom {
 
@@ -17,10 +27,11 @@ export default class Keyframe extends Dom {
     /**
      * Instantiate
      *
+     * @param {string} property The associated property's name
      * @param {number} time The keyframe time.
      * @param {Mixed} value The assocaited value.
      */
-    constructor(time, value, configs) {
+    constructor(property, time, value, configs) {
         // call parent constructor
         super('<div/>', {'class': `keyframe ${className}`});
 
@@ -30,22 +41,38 @@ export default class Keyframe extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
 
+        /**
+         * The associated property
+         * @type {String}
+         */
+        this.property = property;
+
         this
             .setTime(time)
             .setValue(value)
-            .updateTitle()
+            .addListener('click', this.onClick.bind(this))
             .addListener('dragstart', this.onDragStart.bind(this))
             .addListener('drag', this.onDrag.bind(this))
             .addListener('dragend', this.onDragEnd.bind(this));
+    }
 
-        this._draggable = new Draggable(Object.assign({}, this.configs.draggableConfigs, {
-            'target': this,
-            'handle': this,
-            'autoUpdate': false,
-            'snapPositions': {
-                'x': [0, 1]
-            }
-        }));
+    /**
+     * Normalize a time value.
+     *
+     * @param {number} time The time.
+     * @return {number} The normalized value.
+     */
+    static normalizeTime(time) {
+        return round(time, 2);
+    }
+
+    /**
+     * Get the associated property name.
+     *
+     * @return {string} The property's name.
+     */
+    getProperty() {
+        return this.property;
     }
 
     /**
@@ -59,9 +86,12 @@ export default class Keyframe extends Dom {
          * The assocaited time.
          * @type {number}
          */
-        this.time = round(time, 2);
+        this.time = this.constructor.normalizeTime(time);
 
-        this.css('--keyframe-time', this.time);
+        this
+            .css('--keyframe-time', this.time)
+            .updateTitle();
+
 
         return this;
     }
@@ -88,6 +118,8 @@ export default class Keyframe extends Dom {
          */
         this.value = value;
 
+        this.updateTitle();
+
         return this;
     }
 
@@ -98,6 +130,30 @@ export default class Keyframe extends Dom {
      */
     getValue() {
         return this.value;
+    }
+
+    /**
+     * Get the draggable behaviour
+     *
+     * @return {Draggable} The draggable behaviour
+     */
+    getDraggable() {
+        if (!this._draggable){
+            /**
+             * The draggable behavior
+             * @type {Draggable}
+             */
+            this._draggable = new Draggable(Object.assign({}, this.configs.draggableConfigs, {
+                'target': this,
+                'handle': this,
+                'autoUpdate': false,
+                'snapPositions': {
+                    'x': [0, 1]
+                }
+            }));
+        }
+
+        return this._draggable;
     }
 
     /**
@@ -116,7 +172,65 @@ export default class Keyframe extends Dom {
     }
 
     /**
-     * Keyframe dragstart event callback
+     * Mark as selected.
+     *
+     * @param {Boolean} [supressEvent=false] Whether to supress the select event
+     * @return {this}
+     */
+    select(supressEvent=false) {
+        if (!this.isSelected()) {
+            if(this.triggerEvent('beforeselect', {'keyframe': this}) !== false){
+                this.addClass('selected');
+                this.getDraggable().enable();
+
+                if(supressEvent !== true){
+                    this.triggerEvent('select', {'keyframe': this});
+                }
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Unmark as selected.
+     *
+     * @param {Boolean} [supressEvent=false] Whether to supress the select event
+     * @return {this}
+     */
+    deselect(supressEvent=false) {
+        if (this.isSelected()) {
+            this.removeClass('selected');
+            this.getDraggable().disable();
+
+            if(supressEvent !== true){
+                this.triggerEvent('deselect', {'keyframe': this});
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Check if marked as selected.
+     *
+     * @return {Boolean} True if marked as selected, false otherwise.
+     */
+    isSelected() {
+        return this.hasClass('selected');
+    }
+
+    /**
+     * Click event callback
+     *
+     * @private
+     */
+    onClick(){
+        this.select();
+    }
+
+    /**
+     * Dragstart event callback
      *
      * @private
      */
@@ -127,7 +241,7 @@ export default class Keyframe extends Dom {
     }
 
     /**
-     * Keyframe drag event callback
+     * Drag event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -141,11 +255,11 @@ export default class Keyframe extends Dom {
         // Adjust diff to prevent time from going below 0 and above duration.
         const new_time = clamp(prev_time + diff, 0, duration);
 
-        this.setTime(new_time).updateTitle();
+        this.setTime(new_time);
     }
 
     /**
-     * Keyframe dragend event callback
+     * Dragend event callback
      *
      * @private
      */

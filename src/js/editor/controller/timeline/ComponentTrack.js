@@ -70,7 +70,7 @@ export default class ComponentTrack extends Dom {
                 'icon': icon,
                 'expander': true,
             })
-            .addToggler('lock', locked_icon, Locale.t('togglers.lock', 'Lock/Unlock'))
+            .addToggler('lock', locked_icon, Locale.t('editor.controller.timeline.ComponentTrack.handle.lock.title', 'Lock/Unlock'))
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
             .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
             .appendTo(this);
@@ -111,7 +111,7 @@ export default class ComponentTrack extends Dom {
 
         /**
          * The list of property tracks.
-         * @type {Map}
+         * @type {Map<String, PropertyTrack>}
          */
         this.property_tracks = new Map();
 
@@ -207,8 +207,11 @@ export default class ComponentTrack extends Dom {
                 break;
         }
 
-        if (this.getComponent().isPropertyAnimated(property, value)) {
-            this.addPropertyTrack(property);
+        if (this.getComponent().isPropertyAnimated(property)) {
+            if (!this.hasPropertyTrack(property)) {
+                const track = this.addPropertyTrack(property);
+                track.getKeyframes()[0].select();
+            }
         }
     }
 
@@ -370,9 +373,9 @@ export default class ComponentTrack extends Dom {
             return;
         }
 
-        this.property_tracks.delete(Dom.data(child, 'property'));
-
-        this.toggleClass('has-properties', this.property_tracks.size > 0);
+        const tracks = this.getPropertyTracks();
+        tracks.delete(Dom.data(child, 'property'));
+        this.toggleClass('has-properties', tracks.size > 0);
     }
 
     /**
@@ -584,37 +587,62 @@ export default class ComponentTrack extends Dom {
     }
 
     /**
+     * Get the list of property tracks.
+     *
+     * @return {Map<String, PropertyTrack>} The property tracks.
+     */
+    getPropertyTracks() {
+        return this.property_tracks;
+    }
+
+    /**
+     * Check if a track exists for a property.
+     *
+     * @param {String} name The property's name.
+     * @return {Boolean} True if a track exists, false otherwise.
+     */
+    hasPropertyTrack(name) {
+        return this.getPropertyTracks().has(name);
+    }
+
+    /**
+     * Get a track assocaited to a property.
+     *
+     * @param {String} property The property's name.
+     * @return {PropertyTrack?} The corresponding track.
+     */
+    getPropertyTrack(property) {
+        const tracks = this.getPropertyTracks();
+        if (tracks.has(property)) {
+            return tracks.get(property);
+        }
+
+        return null;
+    }
+
+    /**
      * Add an animated property track.
      *
      * @param {string} name The property's name.
      * @return {PropertyTrack} The property track.
      */
     addPropertyTrack(name){
-        if (this.property_tracks.has(name)) {
-            return this.property_tracks.get(name);
+        let track = this.getPropertyTrack(name);
+
+        if (!track) {
+            track = new PropertyTrack(this.getComponent(), name, {
+                    'keyframe': {
+                        'draggableConfigs': this.configs.draggableConfigs
+                    }
+                })
+                .appendTo(this.properties_wrapper);
+
+            this.addClass('has-properties');
+
+            this.getPropertyTracks().set(name, track);
         }
 
-        const track = new PropertyTrack(this.getComponent(), name, {
-                'keyframe': {
-                    'draggableConfigs': this.configs.draggableConfigs
-                }
-            })
-            .appendTo(this.properties_wrapper);
-
-        this.addClass('has-properties');
-
-        this.property_tracks.set(name, track);
-
         return track;
-    }
-
-    /**
-     * Get the list of property tracks.
-     *
-     * @return {Map} The property tracks.
-     */
-    getPropertyTracks() {
-        return this.property_tracks;
     }
 
     /**

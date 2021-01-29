@@ -39,7 +39,11 @@ export default class Timeline extends Dom {
 
         this.playhead_position = 0;
 
-        this.component_tracks = {};
+        /**
+         * The list of component tracks.
+         * @type {Map<String, ComponentTrack>}
+         */
+        this.component_tracks = new Map();
 
         this.offset = 0;
 
@@ -57,6 +61,7 @@ export default class Timeline extends Dom {
             .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
             .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
             .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
+            .addDelegate('.component-track', 'select', this.onComponentTrackSelect.bind(this))
             .addDelegate('.property-track', 'keyframedragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
             .addDelegate('.property-track', 'keyframedragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
             .appendTo(this);
@@ -86,6 +91,54 @@ export default class Timeline extends Dom {
      */
     onResize() {
         this.updateSize();
+    }
+
+    /**
+     * ComponentTrack timedragstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeDragStart(evt){
+        const behavior = evt.detail.behavior;
+        const component_id = Dom.data(evt.target, 'component');
+
+        this.setupTrackSnapGuides(component_id, behavior);
+    }
+
+    /**
+     * ComponentTrack timedragend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeDragEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
+    }
+
+    /**
+     * ComponentTrack timeresizestart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeResizeStart(evt){
+        const behavior = evt.detail.behavior;
+        const component_id = Dom.data(evt.target, 'component');
+
+        this.setupTrackSnapGuides(component_id, behavior);
+    }
+
+    /**
+     * ComponentTrack timeresizeend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeResizeEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
     }
 
     /**
@@ -209,51 +262,20 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack timedragstart event callback
+     * ComponentTrack select event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
      */
-    onComponentTrackTimeDragStart(evt){
-        const behavior = evt.detail.behavior;
-        const component_id = Dom.data(evt.target, 'component');
-
-        this.setupTrackSnapGuides(component_id, behavior);
-    }
-
-    /**
-     * ComponentTrack timedragend event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onComponentTrackTimeDragEnd(evt){
-        const behavior = evt.detail.behavior;
-        behavior.clearSnapGudies();
-    }
-
-    /**
-     * ComponentTrack timeresizestart event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onComponentTrackTimeResizeStart(evt){
-        const behavior = evt.detail.behavior;
-        const component_id = Dom.data(evt.target, 'component');
-
-        this.setupTrackSnapGuides(component_id, behavior);
-    }
-
-    /**
-     * ComponentTrack timeresizeend event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onComponentTrackTimeResizeEnd(evt){
-        const behavior = evt.detail.behavior;
-        behavior.clearSnapGudies();
+    onComponentTrackSelect() {
+        // Deselect previously selected property keyframes.
+        this.getComponentTracks().forEach((track) => {
+            track.getPropertyTracks().forEach((property_track) => {
+                const selected_keyframe = property_track.getSelectedKeyframe();
+                if (selected_keyframe) {
+                    selected_keyframe.deselect();
+                }
+            });
+        });
     }
 
     /**
@@ -339,7 +361,7 @@ export default class Timeline extends Dom {
             track.insertAt(this.tracks_container, index);
         }
 
-        this.component_tracks[component.getId()] = track;
+        this.getComponentTracks().set(component.getId(), track);
 
         if(supressEvent !== true){
             this.triggerEvent('trackadd', {'track': track});
@@ -353,14 +375,24 @@ export default class Timeline extends Dom {
     }
 
     /**
+     * Get all component tracks.
+     *
+     * @return {Map<String, ComponentTrack>} The list of tracks.
+     */
+    getComponentTracks(){
+        return this.component_tracks;
+    }
+
+    /**
      * Get a track for a corresponding component
      *
      * @param {String} component_id The component id associated with the track
      * @return {ComponentTrack} The associated track, or null if not found
      */
     getComponentTrack(component_id){
-        if(component_id in this.component_tracks){
-            return this.component_tracks[component_id];
+        const tracks = this.getComponentTracks();
+        if (tracks.has(component_id)) {
+            return tracks.get(component_id);
         }
 
         return null;
@@ -374,14 +406,13 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     removeComponentTrack(component, supressEvent){
-        const id = component.getId();
+        const component_id = component.getId();
+        const track = this.getComponentTrack(component_id);
 
-        if(id in this.component_tracks){
-            const track = this.component_tracks[id];
-
+        if(track){
             track.remove();
 
-            delete this.component_tracks[id];
+            this.getComponentTracks().delete(component_id);
 
             if(supressEvent !== true){
                 this.triggerEvent('trackremove', {'track': track});
@@ -404,20 +435,20 @@ export default class Timeline extends Dom {
         const {left: playhead_left} = this.playhead.get(0).getBoundingClientRect();
         behavior.addSnapGuide('x', this.playhead_position + playhead_left);
 
-        Object.entries(this.component_tracks).forEach(([component_id, track]) => {
-            if(track.time.hidden()){
+        this.getComponentTracks().forEach((component_track, component_id) => {
+            if(component_track.time.hidden()){
                 return;
             }
 
             // Add snapping to other tracks.
             if(component_id !== id) {
-                const {left, right} = track.time.get(0).getBoundingClientRect();
+                const {left, right} = component_track.time.get(0).getBoundingClientRect();
                 behavior.addSnapGuide('x', left);
                 behavior.addSnapGuide('x', right);
             }
 
             // Add snapping to property keyframes.
-            track.getPropertyTracks().forEach((property_track) => {
+            component_track.getPropertyTracks().forEach((property_track) => {
                 property_track.getKeyframes().forEach((keyframe) => {
                     const {left} = keyframe.get(0).getBoundingClientRect();
                     behavior.addSnapGuide('x', left);
@@ -534,9 +565,9 @@ export default class Timeline extends Dom {
             context.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        Object.entries(this.component_tracks).forEach(([id, track]) => {
+        this.getComponentTracks().forEach((track, component_id, list) => {
             track.remove();
-            delete this.component_tracks[id];
+            delete list[component_id];
         });
 
         return this;

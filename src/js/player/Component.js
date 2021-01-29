@@ -221,15 +221,15 @@ export default class Component extends Dom {
 
         /**
          * The property values store
-         * @type {Object}
+         * @type {Map<String, Mixed}
          */
-        this.property_values = {};
+        this.property_values = new Map();
 
         /**
          * The animatable properties cuepoints
-         * @type {Object}
+         * @type {Map<String, CuePoint}
          */
-        this.property_cuepoints = {};
+        this.property_cuepoints = new Map();
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -337,8 +337,8 @@ export default class Component extends Dom {
                 }
 
                 // Return the stored value
-                if(name in this.property_values){
-                    return this.property_values[name];
+                if(this.property_values.has(name)){
+                    return this.property_values.get(name);
                 }
             }
         }
@@ -374,10 +374,14 @@ export default class Component extends Dom {
      * Get the value of an animated property at a specific time.
      *
      * @param {String} name The name of the property
-     * @param {number} time The time in seconds
+     * @param {number} [time] The time in seconds, defaults to the current media time
      * @return {Mixed} The value of the property
      */
-    getPropertyValueAtTime(name, time){
+    getAnimatedPropertyValueAtTime(name, time){
+        if (typeof time === 'undefined') {
+            time = MasterClock.getTime();
+        }
+
         const values = this.getPropertyValue(name).sort((a, b) => {
             return a[0] - b[0];
         });
@@ -454,10 +458,10 @@ export default class Component extends Dom {
 
             if(previous_value !== new_value){
                 if(new_value === null){
-                    delete this.property_values[name];
+                    this.property_values.delete(name);
                 }
                 else{
-                    this.property_values[name] = new_value;
+                    this.property_values.set(name, new_value);
                 }
 
                 if (animatable){
@@ -607,9 +611,9 @@ export default class Component extends Dom {
      * @return {this}
      */
     removePropertyCuepoint(name) {
-        if(name in this.property_cuepoints) {
-            this.property_cuepoints[name].deactivate();
-            delete this.property_cuepoints[name];
+        if(this.property_cuepoints.has(name)) {
+            this.property_cuepoints.get(name).deactivate();
+            this.property_cuepoints.delete(name);
         }
 
         return this;
@@ -626,33 +630,37 @@ export default class Component extends Dom {
     updateAnimatedPropertyValue(name) {
         const values = this.getPropertyValue(name);
 
-        this.removePropertyCuepoint(name);
-
         // The values are empty.
         if(values.length === 0){
+            this.removePropertyCuepoint(name);
             return this.updatePropertyValue(name, null, true);
         }
 
         // Only one value is provided.
         if(values.length === 1){
+            this.removePropertyCuepoint(name);
             return this.updatePropertyValue(name, values[0][1], true);
         }
 
-        // There's no need for inTime and outTime
-        // as the cuepoint is (de)activated
-        // with the (de)activation of the component.
-        const cuepoint = new CuePoint()
-            .addListener('update', () => {
-                const time = MasterClock.getTime();
-                const value = this.getPropertyValueAtTime(name, time);
-                this.updatePropertyValue(name, value, true);
-            });
-
-        if(this.isActive()){
-            cuepoint.activate();
+        if(this.property_cuepoints.has(name)) {
+            this.property_cuepoints.get(name).update();
         }
+        else{
+            // There's no need for inTime and outTime
+            // as the cuepoint is (de)activated
+            // with the (de)activation of the component.
+            const cuepoint = new CuePoint()
+                .addListener('update', () => {
+                    const value = this.getAnimatedPropertyValueAtTime(name);
+                    this.updatePropertyValue(name, value, true);
+                });
 
-        this.property_cuepoints[name] = cuepoint;
+            if(this.isActive()){
+                cuepoint.activate();
+            }
+
+            this.property_cuepoints.set(name, cuepoint);
+        }
 
         return this;
     }
@@ -929,7 +937,7 @@ export default class Component extends Dom {
         this.active = true;
         this.addClass('active');
 
-        Object.values(this.property_cuepoints).forEach((cuepoint) => {
+        this.property_cuepoints.forEach((cuepoint) => {
             cuepoint.activate();
         });
 
@@ -966,7 +974,7 @@ export default class Component extends Dom {
         delete this.active;
         this.removeClass('active');
 
-        Object.values(this.property_cuepoints).forEach((cuepoint) => {
+        this.property_cuepoints.forEach((cuepoint) => {
             cuepoint.deactivate();
         });
 

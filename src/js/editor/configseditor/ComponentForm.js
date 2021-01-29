@@ -300,13 +300,19 @@ export default class ComponentForm extends Dom {
 
         this
             .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
-            .addDelegate('.input.animated', 'valuechange', this.onAnimatedValueChange.bind(this));
+            .addDelegate('.input.animated', 'valuechange', this.onAnimatedCheckboxValueChange.bind(this));
 
         /**
          * The list of fields
          * @type {Object}
          */
         this.fields = {};
+
+        /**
+         * The list of checkboxes for animated properties
+         * @type {Map<String, CheckboxInput>}
+         */
+        this.animated_checkboxes = new Map();
 
         // Setup the fields.
         Object.entries(this.constructor.field_definitions).forEach(([id, configs]) => {
@@ -655,7 +661,7 @@ export default class ComponentForm extends Dom {
             .appendTo(group ?? (configs.animatable ? this.animatable_fields_wrapper : this.fields_wrapper));
 
         if (configs.animatable) {
-            new CheckboxInput({
+            const checkbox = new CheckboxInput({
                     'checked': false,
                     'name': 'animated'
                 })
@@ -663,6 +669,10 @@ export default class ComponentForm extends Dom {
                 .data('property', id)
                 .addClass('animated')
                 .insertAt(field, 1);
+
+            this.getAnimatedPropertyCheckboxes().set(id, checkbox);
+
+            input.disable();
         }
 
         if ('attributes' in configs) {
@@ -705,6 +715,28 @@ export default class ComponentForm extends Dom {
     }
 
     /**
+     * Get the list of checkboxes for animated properties.
+     *
+     * @return {Map<String, CheckboxInput>} The list of checkboxes.
+     */
+    getAnimatedPropertyCheckboxes() {
+        return this.animated_checkboxes;
+    }
+
+    /**
+     * Get the checkbox corresponding to an animated property.
+     * @param {String} name The property's name.
+     */
+    getAnimatedPropertyCheckbox(name) {
+        const checkboxes = this.getAnimatedPropertyCheckboxes();
+        if (checkboxes.has(name)) {
+            return checkboxes.get(name);
+        }
+
+        return null;
+    }
+
+    /**
      * The fields' valuechange event handler
      *
      * @private
@@ -712,9 +744,19 @@ export default class ComponentForm extends Dom {
      */
     onFieldValueChange(evt) {
         const name = evt.detail.field.data('property');
-        const value = evt.detail.value;
+        let value = evt.detail.value;
+
         const components = clone(this.components);
         const previous_values = {};
+        const keyframe = this.editor.getSelectedPropertyKeyframe();
+
+        if (keyframe && keyframe.getProperty() === name) {
+            if (this.getMasterComponent().isPropertyAnimated(name)) {
+                const values = new Map(this.getMasterComponent().getPropertyValue(name));
+                values.set(keyframe.getTime(), value);
+                value = Array.from(values);
+            }
+        }
 
         components.forEach((component) => {
             previous_values[component.getId()] = component.getPropertyValue(name);
@@ -743,7 +785,7 @@ export default class ComponentForm extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onAnimatedValueChange(evt) {
+    onAnimatedCheckboxValueChange(evt) {
         const name = evt.detail.input.data('property');
         const value = evt.detail.value;
         const components = clone(this.components);
@@ -756,18 +798,18 @@ export default class ComponentForm extends Dom {
             const animated_value = component.getPropertyValue('animated') ?? [];
 
             const previous_value = {
-                [name]: prop_value,
-                'animated': animated_value
+                'animated': animated_value,
+                [name]: prop_value
             }
 
             const new_value = {};
             if (value === true) {
-                new_value[name] = [MasterClock.getTime(), prop_value];
                 new_value.animated = animated_value.concat(name);
+                new_value[name] = [[MasterClock.getTime(), prop_value]];
             }
             else {
-                new_value[name] = prop_value.pop()[1];
                 new_value.animated = animated_value.filter(item => item !== name);
+                new_value[name] = prop_value[0][1];
             }
 
             previous_values[id] = previous_value;
@@ -824,16 +866,28 @@ export default class ComponentForm extends Dom {
 
             if (field && field instanceof Field) {
                 const input = field.getInput();
-                const multival = this.components.length > 1 && this.components.some((component) => {
-                    return component.getPropertyValue(name) !== value;
-                });
-
-                input.setValue(value, supressEvent);
+                let animated = false;
 
                 if (input instanceof ColorInput) {
                     this.updateColorInputEmptyValue(input, name);
                 }
 
+                const checkbox = this.getAnimatedPropertyCheckbox(name);
+                if (checkbox && master_component.isPropertyAnimatable(name)) {
+                    animated = master_component.isPropertyAnimated(name);
+                    checkbox.setValue(animated, supressEvent);
+                }
+
+                if (animated) {
+                    input.setValue(master_component.getAnimatedPropertyValueAtTime(name), supressEvent);
+                }
+                else {
+                    input.setValue(value, supressEvent);
+                }
+
+                const multival = this.components.length > 1 && this.components.some((component) => {
+                    return component.getPropertyValue(name) !== value;
+                });
                 this.toggleMultival(field, multival);
             }
 

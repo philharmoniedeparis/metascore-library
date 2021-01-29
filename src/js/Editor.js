@@ -406,7 +406,9 @@ export class Editor extends Dom {
             .appendTo(bottom_pane.getContents());
 
         this.controller.getTimeline()
-            .addDelegate('.handle, .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this))
+            .addDelegate('.handle, .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+            .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
+            .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
             .addListener('componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this));
 
         /**
@@ -1518,6 +1520,55 @@ export class Editor extends Dom {
 
         this.selectPlayerComponent(component, evt.shiftKey);
         this.player_frame.focus();
+    }
+
+    /**
+     * Timeline PropertyTrack Keyframe select event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelinePropertyKeyframeSelect(evt) {
+        const keyframe = evt.detail.keyframe;
+        const property = keyframe.getProperty();
+        const field = this.configs_editor.getForm().getField(property);
+
+        if (field) {
+            field.getInput().enable().setValue(keyframe.getValue(), true);
+        }
+
+        /**
+         * The selected property keyframe
+         * @type {Keyframe}
+         */
+        this._selected_property_keyframe = keyframe;
+    }
+
+    /**
+     * Timeline PropertyTrack Keyframe deselect event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelinePropertyKeyframeDeselect(evt) {
+        const keyframe = evt.detail.keyframe;
+        const property = keyframe.getProperty();
+        const field = this.configs_editor.getForm().getField(property);
+
+        if (field) {
+            field.getInput().disable();
+        }
+
+        delete this._selected_property_keyframe;
+    }
+
+    /**
+     * Get the selected property track keyframe, if any.
+     *
+     * @return {Keyframe?} The selected keyframe.
+     */
+    getSelectedPropertyKeyframe() {
+        return this._selected_property_keyframe ?? null;
     }
 
     /**

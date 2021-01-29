@@ -7,6 +7,8 @@
     width: 1em;
     height: 1.5em;
     margin-left: -0.5em;
+    opacity: 0.5;
+    cursor: pointer;
 
     &::after {
         content: '';
@@ -19,4 +21,11 @@
         transform: rotate(45deg);
     }
 
+    &.selected {
+        opacity: 1;
+
+        &::after {
+            box-shadow: 0 0 0.2em $darkgray;
+        }
+    }
 }
