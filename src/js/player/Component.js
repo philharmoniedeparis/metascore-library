@@ -11,19 +11,26 @@ import CuePoint from './CuePoint';
 /**
  * A generic component class
  *
- * @emits {propchange} Fired when a property changed
+ * @emits {propchange} Fired when a property changed.
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
  * @param {Mixed} previous The previous value of the property
  *
- * @emits {activate} Fired when the component is activated
+ * @emits {propupdate} Fired when a property is updated.
+ * This differs from  propchange in that it is fired when a value is applied to
+ * the component, and can thus fire multiple times for animated properties.
+ * @param {Component} component The component instance
+ * @param {String} property The name of the property
+ * @param {Mixed} value The current value of the property
+ *
+ * @emits {activate} Fired when the component is activated.
  * @param {Component} component The component instance
  *
- * @emits {deactivate} Fired when the component is deactivated
+ * @emits {deactivate} Fired when the component is deactivated.
  * @param {Component} component The component instance
  *
- * @emits {cuepointset} Fired when a cue point is set
+ * @emits {cuepointset} Fired when a cue point is set.
  * @param {Component} component The component instance
  * @param {CuePoint} cuepoint The cuepoint
  */
@@ -568,9 +575,11 @@ export default class Component extends Dom {
                 break;
 
             case 'scale':
+                this.updateCSSTransform(name, `${value[0]},${value[1]}`);
+                break;
+
             case 'translate':
-                this.css(`--transform-${name}X`, value[0]);
-                this.css(`--transform-${name}Y`, value[1]);
+                this.updateCSSTransform(name, `${value[0]}px,${value[1]}px`);
                 break;
 
             case 'background-color':
@@ -599,6 +608,8 @@ export default class Component extends Dom {
                 this.toggleClass('editor-locked', value);
                 break;
         }
+
+        this.triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
 
         return this;
     }
@@ -999,6 +1010,40 @@ export default class Component extends Dom {
 
         const cuepoint = this.getCuePoint();
         return cuepoint && cuepoint.isActive();
+    }
+
+    /**
+     * Update CSS transform from a single property
+     *
+     * @param {String} property The CSS transform property.
+     * @param {Mixed} value The value to set.
+     * @return {this}
+     */
+    updateCSSTransform(property, value) {
+        if (!('_css_transforms' in this)) {
+            this._css_transforms = new Map();
+        }
+
+        if (value === null) {
+            this._css_transforms.delete(property);
+        }
+        else {
+            this._css_transforms.set(property, value);
+        }
+
+        if (this._css_transforms.size === 0) {
+            this.css('transform', null);
+        }
+        else {
+            const css = [];
+            this._css_transforms.forEach((value, property) => {
+                css.push(`${property}(${value})`);
+            });
+            this.css('transform', css.join(' '));
+        }
+
+
+        return this;
     }
 
 }

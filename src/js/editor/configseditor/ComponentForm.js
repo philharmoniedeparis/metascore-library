@@ -268,6 +268,7 @@ export default class ComponentForm extends Dom {
 
         // fix event handlers scope
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onComponentPropUpdate = this.onComponentPropUpdate.bind(this);
         this.onComponentDragStart = this.onComponentDragStart.bind(this);
         this.onComponentDrag = this.onComponentDrag.bind(this);
         this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
@@ -347,6 +348,7 @@ export default class ComponentForm extends Dom {
             // Create a new Dom instance to workaround the different JS contexts of the player and editor.
             new Dom(component.get(0))
                 .addListener('propchange', this.onComponentPropChange)
+                .addListener('propupdate', this.onComponentPropUpdate)
                 .addListener('dragstart', this.onComponentDragStart)
                 .addListener('drag', this.onComponentDrag)
                 .addListener('dragend', this.onComponentDragEnd)
@@ -381,6 +383,7 @@ export default class ComponentForm extends Dom {
                 // Create a new Dom instance to workaround the different JS contexts of the player and editor.
                 new Dom(component.get(0))
                     .removeListener('propchange', this.onComponentPropChange)
+                    .removeListener('propupdate', this.onComponentPropUpdate)
                     .removeListener('dragstart', this.onComponentDragStart)
                     .removeListener('drag', this.onComponentDrag)
                     .removeListener('dragend', this.onComponentDragEnd)
@@ -439,6 +442,26 @@ export default class ComponentForm extends Dom {
         // refresh the field value.
         if (component === this.master_component) {
             this.updateFieldValue(property, true);
+        }
+    }
+
+    /**
+     * The component's propupdate event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentPropUpdate(evt) {
+        const component = evt.detail.component;
+        const property = evt.detail.property;
+        const value = evt.detail.value;
+
+        switch (property) {
+            case 'scale':
+                // Add CSS vars to allow compensating scale on resize handles.
+                component.css(`--transform-${property}X`, value[0]);
+                component.css(`--transform-${property}Y`, value[1]);
+                break;
         }
     }
 
