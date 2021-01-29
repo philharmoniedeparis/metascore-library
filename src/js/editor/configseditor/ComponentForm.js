@@ -218,6 +218,36 @@ export default class ComponentForm extends Dom {
                 }
             },
             'animatable': true
+        },
+        'translate': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.translate.label', 'Translation'),
+            'input': {
+                'type': CombinedInputs,
+                'configs': {
+                    'inputs': [
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal',
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.translate.0.title', 'X'),
+                                }
+                            }
+                        },
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.translate.1.title', 'Y'),
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            'animatable': true
         }
     };
 

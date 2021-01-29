@@ -27,6 +27,7 @@ export default class Controller extends Component{
                 'hidden',
                 'position',
                 'scale',
+                'translate',
                 'border-width',
                 'border-color',
                 'border-radius',

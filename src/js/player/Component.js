@@ -36,7 +36,8 @@ export default class Component extends Dom {
         'position': [0, 0],
         'dimension': [50,50],
         'opacity': 1,
-        'scale': [1,1]
+        'scale': [1,1],
+        'translate': [0,0]
     };
 
     /**
@@ -123,6 +124,11 @@ export default class Component extends Dom {
                 'scale': {
                     'type': 'array',
                     'label': Locale.t('Component.properties.scale.label', 'Scale'),
+                    'animatable': true
+                },
+                'translate': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.translate.label', 'Translate'),
                     'animatable': true
                 },
                 'animated': {
@@ -558,6 +564,7 @@ export default class Component extends Dom {
                 break;
 
             case 'scale':
+            case 'translate':
                 this.css(`--transform-${name}X`, value[0]);
                 this.css(`--transform-${name}Y`, value[1]);
                 break;

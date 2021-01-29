@@ -26,7 +26,6 @@ body.fullscreen {
     width: 100%;
     height: 100%;
     overflow: auto;
-    transform-origin: left top;
 
     &:focus {
         outline: none;
@@ -44,7 +43,11 @@ body.fullscreen {
         min-width: 1px;
         min-height: 1px;
         transform-style: preserve-3d;
-        transform: scaleX(var(--transform-scaleX, 1)) scaleY(var(--transform-scaleY, 1));
+        transform:
+            scaleX(var(--transform-scaleX, 1))
+            scaleY(var(--transform-scaleY, 1))
+            translateX(calc(var(--transform-translateX, 0) * 1px))
+            translateY(calc(var(--transform-translateY, 0) * 1px));
 
         &.video-renderer {
             min-width: 10px;

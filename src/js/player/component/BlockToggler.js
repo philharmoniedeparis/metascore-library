@@ -25,6 +25,7 @@ export default class BlockToggler extends Component{
                 'position',
                 'dimension',
                 'scale',
+                'translate',
                 'background-color',
                 'border-width',
                 'border-color',
