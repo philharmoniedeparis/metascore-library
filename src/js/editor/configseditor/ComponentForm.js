@@ -194,7 +194,6 @@ export default class ComponentForm extends Dom {
                         {
                             'type': NumberInput,
                             'configs': {
-                                'min': 0,
                                 'step': 0.01,
                                 'spinButtons': true,
                                 'spinDirection': 'horizontal',
@@ -206,7 +205,6 @@ export default class ComponentForm extends Dom {
                         {
                             'type': NumberInput,
                             'configs': {
-                                'min': 0,
                                 'step': 0.01,
                                 'spinButtons': true,
                                 'attributes': {
