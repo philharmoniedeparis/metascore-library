@@ -1,6 +1,9 @@
 [Player]
 defaults
 Safari >= 9
+not OperaMini all
+not UCAndroid > 0
+not Baidu > 0
 
 [Editor]
 last 2 Chrome major versions

@@ -217,14 +217,6 @@ const getConfigs = (entry_id, env, argv) => {
                             "browsers": browsers,
                             "ignorePartialSupport": true,
                             "ignore": [
-                                // Not supported in "Opera Mini all"
-                                "border-radius",
-                                "css-boxshadow",
-                                "css-fixed",
-                                "outline",
-                                "pointer-events",
-                                "user-select-none",
-                                "viewport-units",
                                 // Partially supported in "IE 11"
                                 "flexbox",
                             ]
