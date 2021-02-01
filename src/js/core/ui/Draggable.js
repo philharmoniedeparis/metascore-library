@@ -15,7 +15,6 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Dra
 export default class Draggable {
 
     static defaults = {
-        'target': null,
         'handle': null,
         'autoUpdate': true,
         'snapThreshold': 5,
@@ -29,19 +28,31 @@ export default class Draggable {
     /**
      * Instantiate
      *
+     * @param {Dom} target The Dom object to add the behavior to
      * @param {Object} configs Custom configs to override defaults
-     * @property {Dom} target The Dom object to add the behavior to
-     * @property {Dom} handle The Dom object to use as a drag handle
+     * @property {Dom} [handle=null] The Dom object to use as a drag handle
      * @property {Boolean} [autoUpdate=true] Whether to update the size of the target automatically
      * @property {Dom} [snapGuideContainer=body] The Dom object to add snap guides to
      * @property {Number} [snapThreshold=5] The distance at which a snap guide attracts
      */
-    constructor(configs) {
+    constructor(target, configs) {
         /**
          * The configuration values
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
+
+        /**
+         * The target element.
+         * @type {Dom}
+         */
+        this.target = target;
+
+        /**
+         * The target element.
+         * @type {Dom}
+         */
+        this.handle = this.configs.handle ?? target;
 
         /**
          * Snap guides
@@ -69,7 +80,7 @@ export default class Draggable {
              * The target's owner document
              * @type {Dom}
              */
-            this.doc = new Dom(Dom.getElementDocument(this.configs.target.get(0)));
+            this.doc = new Dom(Dom.getElementDocument(this.target.get(0)));
         }
 
         this.doc
@@ -85,7 +96,7 @@ export default class Draggable {
      */
     onMouseMove(evt){
         if(!this._dragging){
-            if(!this.configs.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
+            if(!this.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
                 return;
             }
 
@@ -95,8 +106,8 @@ export default class Draggable {
              */
             this._dragging = true;
 
-            const left = parseInt(this.configs.target.css('left'), 10);
-            const top = parseInt(this.configs.target.css('top'), 10);
+            const left = parseInt(this.target.css('left'), 10);
+            const top = parseInt(this.target.css('top'), 10);
 
             /**
              * State data needed during drag
@@ -119,7 +130,7 @@ export default class Draggable {
 
             Dom.addClass(this.doc.get(0).body, bodyClassName);
 
-            this.configs.target
+            this.target
                 .addClass('dragging')
                 .triggerEvent('dragstart', {'behavior': this}, false, true);
 
@@ -143,11 +154,11 @@ export default class Draggable {
 
         if(this.configs.autoUpdate){
             Object.entries(this._state.new_values).forEach(([key, value]) => {
-                this.configs.target.css(key, `${value}px`);
+                this.target.css(key, `${value}px`);
             });
         }
 
-        this.configs.target.triggerEvent('drag', {'behavior': this}, false, true);
+        this.target.triggerEvent('drag', {'behavior': this}, false, true);
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -170,7 +181,7 @@ export default class Draggable {
 
             Dom.removeClass(this.doc.get(0).body, bodyClassName);
 
-            this.configs.target
+            this.target
                 .removeClass('dragging')
                 .triggerEvent('dragend', {'behavior': this}, false, true);
 
@@ -265,7 +276,7 @@ export default class Draggable {
         const state = this.getState();
         const min_distances = {};
         const closest = {};
-        const rect = this.configs.target.get(0).getBoundingClientRect();
+        const rect = this.target.get(0).getBoundingClientRect();
         const positions = {'x': [], 'y': []};
 
         Object.entries(this.configs.snapPositions).forEach(([axis, values]) => {
@@ -336,9 +347,9 @@ export default class Draggable {
      * @return {this}
      */
     enable(){
-        this.configs.target.addClass(`draggable ${className}`);
+        this.target.addClass(`draggable ${className}`);
 
-        this.configs.handle
+        this.handle
             .addClass('drag-handle')
             .addListener('mousedown', this.onMouseDown);
 
@@ -351,9 +362,9 @@ export default class Draggable {
      * @return {this}
      */
     disable(){
-        this.configs.target.removeClass(`draggable ${className}`);
+        this.target.removeClass(`draggable ${className}`);
 
-        this.configs.handle
+        this.handle
             .removeClass('drag-handle')
             .removeListener('mousedown', this.onMouseDown);
 
@@ -370,7 +381,7 @@ export default class Draggable {
             .clearSnapGudies()
             .disable();
 
-        this.configs.handle.removeListener('mousedown', this.onMouseDown);
+        this.handle.removeListener('mousedown', this.onMouseDown);
 
         return this;
     }

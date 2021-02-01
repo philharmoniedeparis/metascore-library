@@ -440,8 +440,6 @@ export default class ComponentTrack extends Dom {
 
             if(!this._draggable){
                 const configs = Object.assign({}, this.configs.draggableConfigs, {
-                    'target': this.time,
-                    'handle': this.time,
                     'autoUpdate': false,
                     'snapPositions': {
                         'x': [0, 1]
@@ -452,7 +450,7 @@ export default class ComponentTrack extends Dom {
                  * The draggable behavior
                  * @type {Draggable}
                  */
-                this._draggable = new Draggable(configs);
+                this._draggable = new Draggable(this.time, configs);
             }
         }
         else if(!draggable && this._draggable){
@@ -502,7 +500,6 @@ export default class ComponentTrack extends Dom {
                 }
                 if(directions.length > 0){
                     const configs = Object.assign({}, this.configs.resizableConfigs, {
-                        'target': this.time,
                         'directions': directions,
                         'autoUpdate': false
                     });
@@ -511,7 +508,7 @@ export default class ComponentTrack extends Dom {
                      * The resizable behavior
                      * @type {Resizable}
                      */
-                    this._resizable = new Resizable(configs);
+                    this._resizable = new Resizable(this.time, configs);
                 }
             }
         }

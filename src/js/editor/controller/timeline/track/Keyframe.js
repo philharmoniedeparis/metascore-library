@@ -143,9 +143,7 @@ export default class Keyframe extends Dom {
              * The draggable behavior
              * @type {Draggable}
              */
-            this._draggable = new Draggable(Object.assign({}, this.configs.draggableConfigs, {
-                'target': this,
-                'handle': this,
+            this._draggable = new Draggable(this, Object.assign({}, this.configs.draggableConfigs, {
                 'autoUpdate': false,
                 'snapPositions': {
                     'x': [0, 1]

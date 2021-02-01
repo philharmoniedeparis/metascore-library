@@ -31,7 +31,7 @@ export default class Pane extends Dom {
         this.addClass(this.configs.axis);
 
         if(this.configs.resizable){
-            this.resizable = new Resizable(Object.assign({'target': this}, this.configs.resizable));
+            this.resizable = new Resizable(this, this.configs.resizable);
 
             Object.entries(this.resizable.getHandles()).forEach(([direction, handle]) => {
                 handle.addListener('dblclick', this.onResizeHandleDblclick.bind(this));

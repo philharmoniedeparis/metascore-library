@@ -776,7 +776,7 @@ export default class Component extends Dom {
              * The draggable behavior
              * @type {Draggable}
              */
-            this._draggable = new Draggable(this.getDraggableConfigs());
+            this._draggable = new Draggable(this, this.getDraggableConfigs());
         }
         else if(!draggable && this._draggable){
             this._draggable.destroy();
@@ -788,8 +788,6 @@ export default class Component extends Dom {
 
     getDraggableConfigs(){
         return {
-            'target': this,
-            'handle': this,
             'autoUpdate': false
         };
     }
@@ -823,8 +821,7 @@ export default class Component extends Dom {
              * The resizable behavior
              * @type {Resizable}
              */
-            this._resizable = new Resizable({
-                'target': this,
+            this._resizable = new Resizable(this, {
                 'autoUpdate': false
             });
         }
