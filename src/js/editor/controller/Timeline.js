@@ -438,8 +438,7 @@ export default class Timeline extends Dom {
      */
     setupTrackSnapGuides(id, behavior){
         // Add snapping to playhead
-        const {left: playhead_left} = this.playhead.get(0).getBoundingClientRect();
-        behavior.addSnapGuide('x', this.playhead_position + playhead_left);
+        behavior.addSnapGuide('x', this.getPositionAt(MasterClock.getTime()));
 
         this.getComponentTracks().forEach((component_track, component_id) => {
             if(component_track.time.hidden()){
@@ -448,16 +447,24 @@ export default class Timeline extends Dom {
 
             // Add snapping to other tracks.
             if(component_id !== id) {
-                const {left, right} = component_track.time.get(0).getBoundingClientRect();
-                behavior.addSnapGuide('x', left);
-                behavior.addSnapGuide('x', right);
+                const component = component_track.getComponent();
+
+                const start_time = component.getPropertyValue('start-time');
+                if (start_time !== null) {
+                    behavior.addSnapGuide('x', this.getPositionAt(start_time));
+                }
+
+                const end_time = component.getPropertyValue('end-time');
+                if (end_time !== null) {
+                    behavior.addSnapGuide('x', this.getPositionAt(end_time));
+                }
             }
 
             // Add snapping to property keyframes.
             component_track.getPropertyTracks().forEach((property_track) => {
                 property_track.getKeyframes().forEach((keyframe) => {
-                    const {left} = keyframe.get(0).getBoundingClientRect();
-                    behavior.addSnapGuide('x', left);
+                    const x = this.getPositionAt(keyframe.getTime());
+                    behavior.addSnapGuide('x', x);
                 });
             });
         });
@@ -514,18 +521,9 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updatePlayhead(){
-        const renderer = MasterClock.getRenderer();
         const canvas = this.playhead.get(0);
-        const {width} = canvas.getBoundingClientRect();
-
-        if(renderer){
-            const time = MasterClock.getTime();
-            const duration = renderer.getDuration();
-            this.playhead_position = Math.floor(((time / duration * this.zoom) - this.offset) * width);
-        }
-        else{
-            this.playhead_position = 0;
-        }
+        const {left} = canvas.getBoundingClientRect();
+        this.playhead_position = this.getPositionAt(MasterClock.getTime()) - left;
 
         if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
@@ -541,6 +539,24 @@ export default class Timeline extends Dom {
         }
 
         return this;
+    }
+
+    /**
+     * Get the x position in pixels corresponding to a time in seconds
+     *
+     * @param {Number} time The time in seconds
+     * @return {Number} The corresponding x position
+     */
+    getPositionAt(time){
+        const renderer = MasterClock.getRenderer();
+        if(renderer){
+            const duration = renderer.getDuration();
+            const {left, width} = this.playhead.get(0).getBoundingClientRect();
+
+            return Math.round(((time / duration * this.zoom) - this.offset) * width) + left;
+        }
+
+        return 0;
     }
 
     /**

@@ -142,7 +142,7 @@ export default class Keyframe extends Dom {
             this._draggable = new Draggable(this, Object.assign({}, this.configs.draggableConfigs, {
                 'autoUpdate': false,
                 'snapPositions': {
-                    'x': [0, 1]
+                    'x': [0.5],
                 }
             }));
         }
