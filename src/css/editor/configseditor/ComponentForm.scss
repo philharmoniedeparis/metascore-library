@@ -45,7 +45,25 @@
                 display: contents;
 
                 .input.checkbox.animated {
-                    margin-right: 0.5em;
+                    margin: 0 0.5em;
+
+                    input {
+                        + .state {
+                            font-size: 0.75em;
+                            transform: rotate(45deg);
+                            opacity: 0.25;
+
+                            &:hover {
+                                opacity: 0.5;
+                            }
+                        }
+
+                        &:checked {
+                            + .state {
+                                opacity: 1;
+                            }
+                        }
+                    }
                 }
 
                 input:not(:focus) {

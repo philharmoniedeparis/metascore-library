@@ -686,13 +686,14 @@ export default class ComponentForm extends Dom {
         if (configs.animatable) {
             const checkbox = new CheckboxInput({
                     'checked': false,
+                    'icon': false,
                     'name': 'animated'
                 })
-                .attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.title', 'Animated'))
                 .data('property', id)
                 .addClass('animated')
-                .insertAt(field, 1);
+                .insertAt(field, 0);
 
+            this.updateAnimatedCheckboxTitle(checkbox);
             this.getAnimatedPropertyCheckboxes().set(id, checkbox);
 
             input.disable();
@@ -748,7 +749,9 @@ export default class ComponentForm extends Dom {
 
     /**
      * Get the checkbox corresponding to an animated property.
+     *
      * @param {String} name The property's name.
+     * @return {CheckboxInput?} The checkbox.
      */
     getAnimatedPropertyCheckbox(name) {
         const checkboxes = this.getAnimatedPropertyCheckboxes();
@@ -757,6 +760,22 @@ export default class ComponentForm extends Dom {
         }
 
         return null;
+    }
+
+    /**
+     * Uopdate an animated checkbox's title attribute.
+     *
+     * @param {CheckboxInput} checkbox A property's aniamted checkbox.
+     */
+    updateAnimatedCheckboxTitle(checkbox) {
+        if (checkbox.getValue() !== true) {
+            checkbox.attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.unchecked.title', 'Animate property'));
+        }
+        else {
+            checkbox.attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.checked.title', 'Remove animation'));
+        }
+
+        return this;
     }
 
     /**
@@ -809,11 +828,14 @@ export default class ComponentForm extends Dom {
      * @param {Event} evt The event object
      */
     onAnimatedCheckboxValueChange(evt) {
-        const name = evt.detail.input.data('property');
+        const input = evt.detail.input;
+        const name = input.data('property');
         const value = evt.detail.value;
         const components = clone(this.components);
         const previous_values = {};
         const new_values = {};
+
+        this.updateAnimatedCheckboxTitle(input);
 
         components.forEach((component) => {
             const id = component.getId();
@@ -899,6 +921,7 @@ export default class ComponentForm extends Dom {
                 if (checkbox && master_component.isPropertyAnimatable(name)) {
                     animated = master_component.isPropertyAnimated(name);
                     checkbox.setValue(animated, supressEvent);
+                    this.updateAnimatedCheckboxTitle(checkbox);
                 }
 
                 if (animated) {
