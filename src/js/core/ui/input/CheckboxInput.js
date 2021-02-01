@@ -110,7 +110,14 @@ export default class CheckboxInput extends Input{
      * @return {this}
      */
     setValue(value, supressEvent){
-        this.native_input.get(0).checked = value === this.configs.checked_value;
+        if (value === this.configs.checked_value) {
+            this.native_input.get(0).checked = true;
+            this.value = this.configs.checked_value;
+        }
+        else {
+            this.native_input.get(0).checked = false;
+            this.value = this.configs.unchecked_value;
+        }
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');
