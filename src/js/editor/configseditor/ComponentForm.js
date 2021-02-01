@@ -349,12 +349,12 @@ export default class ComponentForm extends Dom {
             new Dom(component.get(0))
                 .addListener('propchange', this.onComponentPropChange)
                 .addListener('propupdate', this.onComponentPropUpdate)
-                .addListener('dragstart', this.onComponentDragStart)
-                .addListener('drag', this.onComponentDrag)
-                .addListener('dragend', this.onComponentDragEnd)
-                .addListener('resizestart', this.onComponentResizeStart)
-                .addListener('resize', this.onComponentResize)
-                .addListener('resizeend', this.onComponentResizeEnd);
+                .addListener('dragstart', this.onComponentDragStart, true)
+                .addListener('drag', this.onComponentDrag, true)
+                .addListener('dragend', this.onComponentDragEnd, true)
+                .addListener('resizestart', this.onComponentResizeStart, true)
+                .addListener('resize', this.onComponentResize, true)
+                .addListener('resizeend', this.onComponentResizeEnd, true);
 
             this.updateComponentLockedState(component);
         });
@@ -384,12 +384,12 @@ export default class ComponentForm extends Dom {
                 new Dom(component.get(0))
                     .removeListener('propchange', this.onComponentPropChange)
                     .removeListener('propupdate', this.onComponentPropUpdate)
-                    .removeListener('dragstart', this.onComponentDragStart)
-                    .removeListener('drag', this.onComponentDrag)
-                    .removeListener('dragend', this.onComponentDragEnd)
-                    .removeListener('resizestart', this.onComponentResizeStart)
-                    .removeListener('resize', this.onComponentResize)
-                    .removeListener('resizeend', this.onComponentResizeEnd);
+                    .removeListener('dragstart', this.onComponentDragStart, true)
+                    .removeListener('drag', this.onComponentDrag, true)
+                    .removeListener('dragend', this.onComponentDragEnd, true)
+                    .removeListener('resizestart', this.onComponentResizeStart, true)
+                    .removeListener('resize', this.onComponentResize, true)
+                    .removeListener('resizeend', this.onComponentResizeEnd, true);
             });
         }
 

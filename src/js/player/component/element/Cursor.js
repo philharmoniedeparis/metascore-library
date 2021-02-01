@@ -110,7 +110,7 @@ export default class Cursor extends Element {
 
         this
             .addListener('activate', this.onActivate.bind(this))
-            .addListener('resizeend', this.onResizeEnd.bind(this))
+            .addListener('resizeend', this.onResizeEnd.bind(this), true)
             .addListener('click', this.onClick.bind(this));
     }
 

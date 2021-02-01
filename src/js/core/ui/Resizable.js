@@ -5,7 +5,8 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Res
 /**
  * A class for adding resizable behaviors
  *
- * @emits {beforeresize} Fired before the resize starts. The event bubbles allowing the resize to be canceled by invoking preventDefault
+ * @emits {beforeresize} Fired before the resize starts.
+ * The resize can be canceled by invoking preventDefault.
  * @emits {resizestart} Fired when a resize started
  * @emits {resize} Fired when a resize occured
  * @emits {resizeend} Fired when a resize ended
@@ -85,7 +86,7 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseDown(evt){
-        if(!this.target.triggerEvent('beforeresize', {'behavior': this}, true, true)){
+        if(!this.target.triggerEvent('beforeresize', {'behavior': this})){
             return;
         }
 
@@ -125,7 +126,7 @@ export default class Resizable {
 
         this.target
             .addClass('resizing')
-            .triggerEvent('resizestart', {'behavior': this}, false, true);
+            .triggerEvent('resizestart', {'behavior': this});
 
         evt.stopPropagation();
     }
@@ -200,7 +201,7 @@ export default class Resizable {
          */
         this._resized = true;
 
-        this.target.triggerEvent('resize', {'behavior': this}, false, true);
+        this.target.triggerEvent('resize', {'behavior': this});
 
         evt.stopPropagation();
     }
@@ -226,7 +227,7 @@ export default class Resizable {
 
         this.target
             .removeClass('resizing')
-            .triggerEvent('resizeend', {'behavior': this}, false, true);
+            .triggerEvent('resizeend', {'behavior': this});
 
         delete this._state;
 

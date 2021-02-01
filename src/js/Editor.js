@@ -1810,10 +1810,10 @@ export class Editor extends Dom {
         if (this.isLatestRevision()) {
             this.player
                 .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true)
-                .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+                .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this), true)
                 .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
-                .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
+                .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this), true)
                 .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
                 .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))

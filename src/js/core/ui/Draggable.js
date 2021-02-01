@@ -5,7 +5,8 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Dra
 /**
  * A class for adding draggable behaviors
  *
- * @emits {beforedrag} Fired before the drag starts. The event bubbles allowing the drag to be canceled by invoking preventDefault
+ * @emits {beforedrag} Fired before the drag starts.
+ * The drag can be canceled by invoking preventDefault.
  * @emits {dragstart} Fired when the drag started
  * @emits {drag} Fired when a drag occured
  * @emits {dragend} Fired when the drag ended
@@ -96,7 +97,7 @@ export default class Draggable {
      */
     onMouseMove(evt){
         if(!this._dragging){
-            if(!this.target.triggerEvent('beforedrag', {'behavior': this}, true, true)){
+            if(!this.target.triggerEvent('beforedrag', {'behavior': this})){
                 return;
             }
 
@@ -132,7 +133,7 @@ export default class Draggable {
 
             this.target
                 .addClass('dragging')
-                .triggerEvent('dragstart', {'behavior': this}, false, true);
+                .triggerEvent('dragstart', {'behavior': this});
 
             return;
         }
@@ -158,7 +159,7 @@ export default class Draggable {
             });
         }
 
-        this.target.triggerEvent('drag', {'behavior': this}, false, true);
+        this.target.triggerEvent('drag', {'behavior': this});
 
         evt.stopPropagation();
         evt.preventDefault();
@@ -183,7 +184,7 @@ export default class Draggable {
 
             this.target
                 .removeClass('dragging')
-                .triggerEvent('dragend', {'behavior': this}, false, true);
+                .triggerEvent('dragend', {'behavior': this});
 
             delete this._dragging;
             delete this._state;

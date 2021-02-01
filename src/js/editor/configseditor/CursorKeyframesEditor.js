@@ -83,8 +83,8 @@ export default class CursorKeyframesEditor extends Dom {
             .draw();
 
         component_dom
-            .addListener('propchange', this.onComponentPropChange)
-            .addListener('resizeend', this.onComponentResizeEnd);
+            .addListener('propchange', this.onComponentPropChange, true)
+            .addListener('resizeend', this.onComponentResizeEnd, true);
 
         /**
          * The context menu
@@ -132,11 +132,6 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
         switch(evt.detail.property){
             case 'dimension':
             case 'border-width':
@@ -638,8 +633,8 @@ export default class CursorKeyframesEditor extends Dom {
     remove() {
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(this.component.get(0))
-            .removeListener('propchange', this.onComponentPropChange)
-            .removeListener('resizeend', this.onComponentResizeEnd);
+            .removeListener('propchange', this.onComponentPropChange, true)
+            .removeListener('resizeend', this.onComponentResizeEnd, true);
 
         // Re-enable the draggable behaviour
         const draggable = this.component.getDraggable();

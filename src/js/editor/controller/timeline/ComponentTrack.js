@@ -85,12 +85,12 @@ export default class ComponentTrack extends Dom {
             .appendTo(this);
 
         this.time = new Dom('<div/>', {'class': 'time'})
-            .addListener('dragstart', this.onTimeDragStart.bind(this))
-            .addListener('drag', this.onTimeDrag.bind(this))
-            .addListener('dragend', this.onTimeDragEnd.bind(this))
-            .addListener('resizestart', this.onTimeResizeStart.bind(this))
-            .addListener('resize', this.onTimeResize.bind(this))
-            .addListener('resizeend', this.onTimeResizeEnd.bind(this))
+            .addListener('dragstart', this.onTimeDragStart.bind(this), true)
+            .addListener('drag', this.onTimeDrag.bind(this), true)
+            .addListener('dragend', this.onTimeDragEnd.bind(this), true)
+            .addListener('resizestart', this.onTimeResizeStart.bind(this), true)
+            .addListener('resize', this.onTimeResize.bind(this), true)
+            .addListener('resizeend', this.onTimeResizeEnd.bind(this), true)
             .appendTo(this.time_wrapper);
 
         /**
@@ -246,14 +246,11 @@ export default class ComponentTrack extends Dom {
      * Time dragstart event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
      */
-    onTimeDragStart(evt){
+    onTimeDragStart(){
         const duration = parseFloat(this.css('--timeline-duration'));
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._drag_multiplier = duration / width;
-
-        this.triggerEvent('timedragstart', evt.detail, false, true);
     }
 
     /**
@@ -276,8 +273,6 @@ export default class ComponentTrack extends Dom {
             'start-time': start_time + diff,
             'end-time': end_time + diff
         });
-
-        this.triggerEvent('timedrag', evt.detail, false, true);
     }
 
     /**
@@ -286,10 +281,8 @@ export default class ComponentTrack extends Dom {
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTimeDragEnd(evt){
+    onTimeDragEnd(){
         delete this._drag_multiplier;
-
-        this.triggerEvent('timedragend', evt.detail, false, true);
     }
 
     /**
@@ -297,12 +290,10 @@ export default class ComponentTrack extends Dom {
      *
      * @private
      */
-    onTimeResizeStart(evt){
+    onTimeResizeStart(){
         const duration = parseFloat(this.css('--timeline-duration'));
         const {width} = this.time_wrapper.get(0).getBoundingClientRect();
         this._resize_multiplier = duration / width;
-
-        this.triggerEvent('timeresizestart', evt.detail, false, true);
     }
 
     /**
@@ -331,8 +322,6 @@ export default class ComponentTrack extends Dom {
         new_value = clamp(new_value, 0, MasterClock.getRenderer().getDuration());
 
         component.setPropertyValue(property, new_value);
-
-        this.triggerEvent('timeresize', evt.detail, false, true);
     }
 
     /**
@@ -340,10 +329,8 @@ export default class ComponentTrack extends Dom {
      *
      * @private
      */
-    onTimeResizeEnd(evt){
+    onTimeResizeEnd(){
         delete this._resize_multiplier;
-
-        this.triggerEvent('timeresizeend', evt.detail, false, true);
     }
 
     /**

@@ -52,18 +52,18 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .addDelegate('.component-track', 'timedragstart', this.onComponentTrackTimeDragStart.bind(this))
-            .addDelegate('.component-track', 'timedragend', this.onComponentTrackTimeDragEnd.bind(this))
-            .addDelegate('.component-track', 'timeresizestart', this.onComponentTrackTimeResizeStart.bind(this))
-            .addDelegate('.component-track', 'timeresizeend', this.onComponentTrackTimeResizeEnd.bind(this))
+            .addDelegate('.component-track .time', 'dragstart', this.onComponentTrackTimeDragStart.bind(this))
+            .addDelegate('.component-track .time', 'dragend', this.onComponentTrackTimeDragEnd.bind(this))
+            .addDelegate('.component-track .time', 'resizestart', this.onComponentTrackTimeResizeStart.bind(this))
+            .addDelegate('.component-track .time', 'resizeend', this.onComponentTrackTimeResizeEnd.bind(this))
             .addDelegate('.component-track .handle', 'dragstart', this.onComponentTrackHandleDragStart.bind(this))
             .addDelegate('.component-track .handle', 'dragover', this.onComponentTrackHandleDragOver.bind(this))
             .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
             .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
             .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
-            .addDelegate('.component-track', 'select', this.onComponentTrackSelect.bind(this))
-            .addDelegate('.property-track', 'keyframedragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
-            .addDelegate('.property-track', 'keyframedragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
+            .addDelegate('.property-track .keyframe', 'dragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
+            .addDelegate('.property-track .keyframe', 'dragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
+            .addDelegate('.property-track .keyframe', 'select', this.onComponentTrackSelect.bind(this))
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
@@ -94,7 +94,7 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack timedragstart event callback
+     * ComponentTrack time dragstart event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -107,7 +107,7 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack timedragend event callback
+     * ComponentTrack time dragend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -118,7 +118,7 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack timeresizestart event callback
+     * ComponentTrack time resizestart event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
@@ -131,7 +131,7 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack timeresizeend event callback
+     * ComponentTrack time resizeend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object

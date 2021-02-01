@@ -258,9 +258,7 @@ export default class PropertyTrack extends Dom {
         const keyframe = new Keyframe(this.property, time, value, this.configs.keyframe)
             .addListener('beforeselect', this.onKeyframeBeforeSelect.bind(this))
             .addListener('select', this.onKeyframeSelect.bind(this))
-            .addListener('dragstart', this.onKeyframeDragStart.bind(this))
             .addListener('drag', this.onKeyframeDrag.bind(this))
-            .addListener('dragend', this.onKeyframeDragEnd.bind(this))
             .appendTo(this.keyframes_wrapper);
 
         this.keyframes.push(keyframe);
@@ -295,22 +293,12 @@ export default class PropertyTrack extends Dom {
     }
 
     /**
-     * Keyframe dragstart event handler.
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onKeyframeDragStart(evt) {
-        this.triggerEvent('keyframedragstart', evt.detail, false, true);
-    }
-
-    /**
      * Keyframe drag event handler.
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onKeyframeDrag(evt) {
+    onKeyframeDrag() {
         const component = this.getComponent();
 
         const values = this.keyframes.map((keyframe) => {
@@ -318,18 +306,6 @@ export default class PropertyTrack extends Dom {
         });
 
         component.setPropertyValue(this.property, values);
-
-        this.triggerEvent('keyframedrag', evt.detail, false, true);
-    }
-
-    /**
-     * Keyframe dragend event handler.
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onKeyframeDragEnd(evt) {
-        this.triggerEvent('keyframedragend', evt.detail, false, true);
     }
 
     /**
