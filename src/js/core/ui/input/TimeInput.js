@@ -663,7 +663,7 @@ export default class TimeInput extends Input {
     /**
      * Set the input's value
      *
-     * @param {Number} value The new value in centiseconds
+     * @param {Number} value The new value in seconds
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */

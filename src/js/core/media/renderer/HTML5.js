@@ -433,7 +433,7 @@ export default class HTML5 extends Dom {
     /**
      * Set the media time
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @return {this}
      */
     setTime(time) {
@@ -445,7 +445,7 @@ export default class HTML5 extends Dom {
     /**
      * Get the current media time
      *
-     * @return {Number} The time in centiseconds
+     * @return {Number} The time in seconds
      */
     getTime() {
         return this.dom.currentTime;
@@ -454,7 +454,7 @@ export default class HTML5 extends Dom {
     /**
      * Get the media's duration
      *
-     * @return {Number} The duration in centiseconds
+     * @return {Number} The duration in seconds
      */
     getDuration() {
         return this.dom.duration;

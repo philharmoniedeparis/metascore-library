@@ -118,7 +118,7 @@ export default class MediaClock extends Clock {
     /**
      * Set the current time
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @param {Boolean} [supressEvent=false] Whether to supress the timeupdate event
      */
     setTime(time, supressEvent) {
@@ -136,7 +136,7 @@ export default class MediaClock extends Clock {
     /**
      * Get the current time
      *
-     * @return {Number} The time in centiseconds
+     * @return {Number} The time in seconds
      */
     getTime() {
         const renderer = this.getRenderer();

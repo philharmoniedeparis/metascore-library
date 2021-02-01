@@ -14,8 +14,8 @@ import {className, handleDragGhostClassName} from '../../../css/editor/controlle
  * @param {ComponentTrack} track The track
  *
  * @emits {offsetupdate} Fired when the offset is updated
- * @param {Number} start The start time of the offset in centiseconds
- * @param {Number} end The end time of the offset in centiseconds
+ * @param {Number} start The start time of the offset in seconds
+ * @param {Number} end The end time of the offset in seconds
  */
 export default class Timeline extends Dom {
 

@@ -330,7 +330,7 @@ export default class Cursor extends Element {
      * Helper function to get a position on a linear cursor corresponding to a media time
      *
      * @private
-     * @param {Number} time The media time in centiseconds
+     * @param {Number} time The media time in seconds
      * @returns {Object} The x and y position
      */
     getLinearPositionFromTime(time){
@@ -543,7 +543,7 @@ export default class Cursor extends Element {
      * Helper function to get an angle on a circular cursor corresponding to a media time
      *
      * @private
-     * @param {Number} time The media time in centiseconds
+     * @param {Number} time The media time in seconds
      * @returns {Number} The angle in radians
      */
     getCircularAngleFromTime(time){

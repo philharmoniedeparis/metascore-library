@@ -36,7 +36,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#play=20,500,scenario-2" rel="metascore" data-guide="guide-93">PLAY EXTRACT</a>
  *         <a href="#pause" rel="metascore" data-guide="guide-93">PAUSE</a>
  *         <a href="#stop" rel="metascore" data-guide="guide-93">PAUSE</a>
- *         <a href="#seek=500" rel="metascore" data-guide="guide-93">SEEk TO 500 CENTISECONDS</a>
+ *         <a href="#seek=1.5" rel="metascore" data-guide="guide-93">SEEk TO 1.5 SECONDS</a>
  *         <a href="#page=permanentText,3" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK</a>
  *         <a href="#scenario=scenario-2" rel="metascore" data-guide="guide-93">SET THE SCENARIO TO scenario-2</a>
  *         <a href="#showBlock=block1" rel="metascore" data-guide="guide-93">SHOW BLOCK 1</a>
@@ -45,7 +45,7 @@ const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedepari
  *         <a href="#enterFullscreen" rel="metascore" data-guide="guide-93">ENTER FULLSCREEN</a>
  *         <a href="#exitFullscreen" rel="metascore" data-guide="guide-93">EXIT FULLSCREEN</a>
  *         <a href="#toggleFullscreen" rel="metascore" data-guide="guide-93">TOGGLE FULLSCREEN</a>
- *         <a href="#page=permanentText,3&scenario=2&seek=500" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 500 CENTISECONDS</a>
+ *         <a href="#page=permanentText,3&scenario=2&seek=1.5" rel="metascore" data-guide="guide-93">GOT TO PAGE 3 OF THE PERMANENTTEXT BLOCK AND SET THE SCENARIO TO 2 AND SEEK TO 1.5 SECONDS</a>
  */
 export class API{
 

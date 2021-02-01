@@ -34,7 +34,7 @@ export function getRendererForMime(mime){
 }
 
 /**
- * Get a media file's duration in centiseconds
+ * Get a media file's duration in seconds
  *
  * @private
  * @param {Object} file A file descriptor

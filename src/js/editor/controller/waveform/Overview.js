@@ -7,7 +7,7 @@ import {className} from '../../../../css/editor/controller/WaveformOverview.scss
  * A waveform overview
  *
  * @emits {playheadclick} Fired when the playhead is clicked
- * @param {Number} time The time in centiseconds corresponding to click position
+ * @param {Number} time The time in seconds corresponding to click position
  */
 export default class Overview extends Dom {
 
@@ -333,8 +333,8 @@ export default class Overview extends Dom {
     /**
      * Set the highlight rectangle
      *
-     * @param {Number} start The start time in centiseconds
-     * @param {Number} end The end time in centiseconds
+     * @param {Number} start The start time in seconds
+     * @param {Number} end The end time in seconds
      * @return {this}
      */
     setHighlight(start, end){
@@ -352,10 +352,10 @@ export default class Overview extends Dom {
     }
 
     /**
-     * Get the time in centiseconds corresponding to an x position in pixels
+     * Get the time in seconds corresponding to an x position in pixels
      *
      * @param {Number} x The x position
-     * @return {Number} The corresponding time in centiseconds
+     * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x){
         if(this.resampled_data){
@@ -371,9 +371,9 @@ export default class Overview extends Dom {
     }
 
     /**
-     * Get the x position in pixels corresponding to a time in centiseconds
+     * Get the x position in pixels corresponding to a time in seconds
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @return {Number} The corresponding x position
      */
     getPositionAt(time){

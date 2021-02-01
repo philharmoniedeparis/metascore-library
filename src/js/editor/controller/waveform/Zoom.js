@@ -13,15 +13,15 @@ import {className, controlsClassName} from '../../../../css/editor/controller/Wa
  * A waveform zoomable view
  *
  * @emits {playheadupdate} Fired when the playhead is updated
- * @param {Number} time The time in centiseconds corresponding to playhead position
+ * @param {Number} time The time in seconds corresponding to playhead position
  * @param {Number} position The playhead's position in pixels
  *
  * @emits {playheadclick} Fired when the playhead is clicked
- * @param {Number} time The time in centiseconds corresponding to the click position
+ * @param {Number} time The time in seconds corresponding to the click position
  *
  * @emits {offsetupdate} Fired when the offset is updated
- * @param {Number} start The start time of the offset in centiseconds
- * @param {Number} end The end time of the offset in centiseconds
+ * @param {Number} start The start time of the offset in seconds
+ * @param {Number} end The end time of the offset in seconds
  */
 export default class Zoom extends Dom {
 
@@ -428,7 +428,7 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Returns number of centiseconds for each axis tick, appropriate for the
+     * Returns number of seconds for each axis tick, appropriate for the
      * current zoom level, ensuring that ticks are not too close together
      * and that ticks are placed at intuitive time intervals (i.e., every 1,
      * 2, 5, 10, 20, 30 seconds, then every 1, 2, 5, 10, 20, 30 minutes, then
@@ -436,7 +436,7 @@ export default class Zoom extends Dom {
      *
      * Credit: peaks.js (see src/main/waveform/waveform.axis.js:getAxisLabelScale)
      *
-     * @return {Number} The number of centiseconds for each axis tick
+     * @return {Number} The number of seconds for each axis tick
      */
     getAxisStep() {
         const min_spacing = 60;
@@ -711,7 +711,7 @@ export default class Zoom extends Dom {
     /**
      * Update the offset in order to put the playhead's position at the center
      *
-     * @param {Number} time The time in centiseconds to center to
+     * @param {Number} time The time in seconds to center to
      * @param {Boolean} [supressEvent=false] Whether to supress the offsetupdate event
      * @return {this}
      */
@@ -725,10 +725,10 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Get the time in centiseconds corresponding to an x position in pixels
+     * Get the time in seconds corresponding to an x position in pixels
      *
      * @param {Number} x The x position
-     * @return {Number} The corresponding time in centiseconds
+     * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x){
         if(this.resampled_data){
@@ -744,9 +744,9 @@ export default class Zoom extends Dom {
     }
 
     /**
-     * Get the x position in pixels corresponding to a time in centiseconds
+     * Get the x position in pixels corresponding to a time in seconds
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @return {Number} The corresponding x position
      */
     getPositionAt(time){
@@ -765,7 +765,7 @@ export default class Zoom extends Dom {
     /**
      * Get number of pixels corresponding to a period of time
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @return {Number} The corresponding pixel size
      */
     timeToPixels(time){

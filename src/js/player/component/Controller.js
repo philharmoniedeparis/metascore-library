@@ -111,7 +111,7 @@ export default class Controller extends Component{
     /**
      * Update the displayed time
      *
-     * @param {Integer} time The time value in centiseconds
+     * @param {Integer} time The time value in seconds
      * @return {this}
      */
     updateTime(time){

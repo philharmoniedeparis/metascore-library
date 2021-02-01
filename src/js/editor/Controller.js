@@ -22,7 +22,7 @@ import {className} from '../../css/editor/Controller.scss';
  *
  * @emits {timeset} Fired when the time is set
  * @param {Object} controller The Controller instance
- * @param {Number} time The time in centiseconds
+ * @param {Number} time The time in seconds
  */
 export default class Controller extends Dom {
 
