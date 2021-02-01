@@ -8,10 +8,6 @@ import {className} from '../../../../../css/editor/controller/timeline/track/Key
 /**
  * A track keyframe.
  *
- * @emits {beforeselect} Fired before marked as selected.
- * The select can be canceled by invoking preventDefault.
- * @param {Object} keyframe The keyframe instance
- *
  * @emits {select} Fired when marked as selected
  * @param {Object} keyframe The keyframe instance
  *
@@ -177,13 +173,11 @@ export default class Keyframe extends Dom {
      */
     select(supressEvent=false) {
         if (!this.isSelected()) {
-            if(this.triggerEvent('beforeselect', {'keyframe': this}) !== false){
-                this.addClass('selected');
-                this.getDraggable().enable();
+            this.addClass('selected');
+            this.getDraggable().enable();
 
-                if(supressEvent !== true){
-                    this.triggerEvent('select', {'keyframe': this});
-                }
+            if(supressEvent !== true){
+                this.triggerEvent('select', {'keyframe': this});
             }
         }
 

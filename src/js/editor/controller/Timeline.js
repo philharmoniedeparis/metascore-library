@@ -265,17 +265,23 @@ export default class Timeline extends Dom {
      * ComponentTrack select event callback
      *
      * @private
+     * @param {CustomEvent} evt The event object
      */
-    onComponentTrackSelect() {
+    onComponentTrackSelect(evt) {
+        const selected = evt.detail.keyframe;
+
         // Deselect previously selected property keyframes.
         this.getComponentTracks().forEach((track) => {
             track.getPropertyTracks().forEach((property_track) => {
-                const selected_keyframe = property_track.getSelectedKeyframe();
-                if (selected_keyframe) {
-                    selected_keyframe.deselect();
-                }
+                property_track.getKeyframes().forEach((keyframe) => {
+                    if (keyframe !== selected) {
+                        keyframe.deselect();
+                    }
+                });
             });
         });
+
+        MasterClock.setTime(selected.getTime());
     }
 
     /**

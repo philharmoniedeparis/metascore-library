@@ -2,7 +2,6 @@ import Dom from '../../../core/Dom';
 import Locale from '../../../core/Locale'
 import Handle from './track/Handle';
 import Keyframe from './track/Keyframe';
-import {MasterClock} from '../../../core/media/MediaClock';
 
 import animated_icon from '../../../../img/editor/controller/timeline/handle/animated.svg?svg-sprite';
 
@@ -256,40 +255,12 @@ export default class PropertyTrack extends Dom {
      */
     addKeyframe(time, value) {
         const keyframe = new Keyframe(this.property, time, value, this.configs.keyframe)
-            .addListener('beforeselect', this.onKeyframeBeforeSelect.bind(this))
-            .addListener('select', this.onKeyframeSelect.bind(this))
             .addListener('drag', this.onKeyframeDrag.bind(this))
             .appendTo(this.keyframes_wrapper);
 
         this.keyframes.push(keyframe);
 
         return keyframe;
-    }
-
-    /**
-     * Keyframe beforeselect event handler.
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onKeyframeBeforeSelect(evt) {
-        const keyframe = evt.detail.keyframe;
-        const selected = this.getSelectedKeyframe();
-
-        if (selected && selected !== keyframe) {
-            selected.deselect();
-        }
-    }
-
-    /**
-     * Keyframe select event handler.
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onKeyframeSelect(evt) {
-        const keyframe = evt.detail.keyframe;
-        MasterClock.setTime(keyframe.getTime());
     }
 
     /**
