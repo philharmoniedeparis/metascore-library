@@ -12,6 +12,7 @@ import SpectrogramForm from './guideassets/SpectrogramForm';
 import AudioWaveformForm from './guideassets/AudioWaveformForm';
 import { isValidMimeType } from '../../core/utils/Media';
 import { escapeHTML } from '../../core/utils/String';
+import { History } from '../UndoRedo';
 import Lottie from 'lottie-web';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
@@ -282,7 +283,7 @@ export default class GuideAssets extends Dom {
 
         this.addAssets(assets);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 assets.forEach((asset) => {
                     this.removeAsset(asset.id);
@@ -645,7 +646,7 @@ export default class GuideAssets extends Dom {
 
         this.addAsset(asset);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 this.removeAsset(asset.id);
             },
@@ -671,7 +672,7 @@ export default class GuideAssets extends Dom {
 
         this.addAsset(asset);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 this.removeAsset(asset.id);
             },

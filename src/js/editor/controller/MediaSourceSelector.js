@@ -10,6 +10,7 @@ import TextInput from '../../core/ui/input/TextInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 import {getFileDuration, getMimeTypeFromURL} from '../../core/utils/Media';
 import {formatFileSize} from '../../core/utils/Number';
+import { History } from '../UndoRedo';
 
 import {className} from '../../../css/editor/controller/MediaSourceSelector.scss';
 
@@ -264,7 +265,7 @@ export default class MediaSourceSelector extends Overlay {
 
         player.setSource(source);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 player.setSource(previous_source);
             },

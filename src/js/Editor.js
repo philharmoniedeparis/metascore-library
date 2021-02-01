@@ -1,5 +1,6 @@
 import Dom from './core/Dom';
 import { MasterClock } from './core/media/MediaClock';
+import { History } from './editor/UndoRedo';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
 import { clone, unique } from './core/utils/Array';
@@ -9,7 +10,6 @@ import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
 import ConfigsEditor from './editor/ConfigsEditor';
-import UndoRedo from './editor/UndoRedo';
 import Overlay from './core/ui/Overlay';
 import Confirm from './core/ui/overlay/Confirm';
 import LoadMask from './core/ui/overlay/LoadMask';
@@ -58,9 +58,6 @@ export class Editor extends Dom {
         'asset_browser': {},
         'color_swatches': [],
         'xhr': {},
-        'history': {
-            'grouping_timeout': 100
-        },
         'component_copy_displacement': 10,
         'hotkeys': {
             'global': {
@@ -227,8 +224,6 @@ export class Editor extends Dom {
      * @property {Object} asset_browser Options to pass to the asset browser
      * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
-     * @property {Object} [history] Options for the history
-     * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
      */
     constructor(configs) {
         // call parent constructor
@@ -280,6 +275,12 @@ export class Editor extends Dom {
     init() {
         // Set the banner for ContextMenus
         ContextMenu.setBannerText(Locale.t('Editor.contextmenu.banner', 'metaScore Editor v.!version r.!revision', { '!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision() }));
+
+        // Listen to undo/redo changes.
+        History
+            .addListener('add', this.onHistoryAdd.bind(this))
+            .addListener('undo', this.onHistoryUndo.bind(this))
+            .addListener('redo', this.onHistoryRedo.bind(this));
 
         // Top pane ////////////////////////
         const top_pane = new Pane({
@@ -421,15 +422,6 @@ export class Editor extends Dom {
             .appendTo(this);
 
         /**
-         * The undo/redo handler
-         * @type {UndoRedo}
-         */
-        this.history = new UndoRedo()
-            .addListener('add', this.onHistoryAdd.bind(this))
-            .addListener('undo', this.onHistoryUndo.bind(this))
-            .addListener('redo', this.onHistoryRedo.bind(this));
-
-        /**
          * The clipboard handler
          * @type {Clipboard}
          */
@@ -537,10 +529,10 @@ export class Editor extends Dom {
                 this.revert();
                 break;
             case 'undo':
-                this.history.undo();
+                History.undo();
                 break;
             case 'redo':
-                this.history.redo();
+                History.redo();
                 break;
             case 'preview':
             case 'preview-tmp':
@@ -1421,11 +1413,11 @@ export class Editor extends Dom {
                 break;
 
             case 'undo':
-                this.history.undo();
+                History.undo();
                 break;
 
             case 'redo':
-                this.history.redo();
+                History.redo();
                 break;
 
             case 'restore':
@@ -1470,7 +1462,7 @@ export class Editor extends Dom {
                     );
                 }
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         this.mainmenu.getItem(name).setValue(previous_value, true);
                     },
@@ -2402,8 +2394,8 @@ export class Editor extends Dom {
             .toggleItem('publish', is_latest_revision && !is_dirty)
             .toggleItem('title', is_latest_revision)
             .toggleItem('preview-toggle', is_latest_revision)
-            .toggleItem('undo', this.history.hasUndo())
-            .toggleItem('redo', this.history.hasRedo())
+            .toggleItem('undo', History.hasUndo())
+            .toggleItem('redo', History.hasRedo())
             .toggleItem('revert', is_dirty)
             .toggleItem('restore', !is_latest_revision);
 
@@ -2419,15 +2411,6 @@ export class Editor extends Dom {
     isLatestRevision() {
         const player = this.getPlayer();
         return player && this.player.getGuideData('latest_revision') === this.player.getGuideRevision();
-    }
-
-    /**
-     * Get the undo/redo instance
-     *
-     * @return {UndoRedo} The undo/redo instance
-     */
-    getHistory() {
-        return this.history;
     }
 
     /**
@@ -2605,6 +2588,8 @@ export class Editor extends Dom {
             delete this._autosave_interval;
         }
 
+        History.clear();
+
         this.configs_editor.unsetComponents();
 
         this.player_contextmenu.disable();
@@ -2614,8 +2599,6 @@ export class Editor extends Dom {
         this.controller.getTimeline().clear();
 
         this.asset_browser.getTabContent('guide-assets').clearAssets();
-
-        this.history.clear();
 
         this.getHotkeys('global').detachFrom(this.player);
         this.getHotkeys('player').detachFrom(this.player);
@@ -2665,7 +2648,7 @@ export class Editor extends Dom {
                     components.push(component);
                 });
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2729,7 +2712,7 @@ export class Editor extends Dom {
                 timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         if (block.getPropertyValue('synched')) {
                             const adjacent_page = block.getChild(before ? index + 1 : index);
@@ -2762,7 +2745,7 @@ export class Editor extends Dom {
                     components.push(component);
                 });
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2885,7 +2868,7 @@ export class Editor extends Dom {
      * @return {this}
      */
     movePlayerComponents(components, x = 0, y = 0, relative = true) {
-        const history = this.getHistory().startGroup();
+        History.startGroup();
 
         components.forEach((component) => {
             const previous_value = component.getPropertyValue('position');
@@ -2899,7 +2882,7 @@ export class Editor extends Dom {
             }
             component.setPropertyValue('position', new_value);
 
-            history.add({
+            History.add({
                 'undo': () => {
                     component.setPropertyValue('position', previous_value);
                 },
@@ -2909,7 +2892,7 @@ export class Editor extends Dom {
             });
         });
 
-        history.endGroup();
+        History.endGroup();
 
         return this;
     }
@@ -2991,7 +2974,7 @@ export class Editor extends Dom {
                 .addClass('delete-player-component');
         }
         else {
-            const history = this.getHistory().startGroup();
+            History.startGroup();
 
             _components.forEach((component) => {
                 let undo = null;
@@ -3078,13 +3061,13 @@ export class Editor extends Dom {
                 }
 
                 redo();
-                history.add({
+                History.add({
                     'undo': undo,
                     'redo': redo
                 });
             });
 
-            history.endGroup();
+            History.endGroup();
 
             this.setDirty('components');
 

@@ -7,6 +7,7 @@ import Confirm from '../../core/ui/overlay/Confirm';
 import ContextMenu from '../../core/ui/ContextMenu';
 import ResizeObserver from 'resize-observer-polyfill';
 import {escapeHTML} from '../../core/utils/String';
+import { History } from '../UndoRedo';
 
 import arrow_icon from '../../../img/editor/controller/scenarioselector/arrow.svg?svg-sprite';
 import add_icon from '../../../img/editor/controller/scenarioselector/add.svg?svg-sprite';
@@ -261,7 +262,7 @@ export default class ScenarioSelector extends Dom {
             else{
                 scenario.setPropertyValue('name', name);
 
-                this.editor.getHistory().add({
+                History.add({
                     'undo': () => {
                         scenario.setPropertyValue('name', previous_name);
                     },
@@ -316,7 +317,7 @@ export default class ScenarioSelector extends Dom {
             const clone = player.addScenario(Object.assign(scenario.getPropertyValues(true), {'name': name}));
             player.setActiveScenario(clone);
 
-            this.editor.getHistory().add({
+            History.add({
                 'undo': () => {
                     player.setActiveScenario(previous_scenario);
                     clone.remove();
@@ -358,7 +359,7 @@ export default class ScenarioSelector extends Dom {
             player.setActiveScenario(null);
         }
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 player.addScenario(scenario);
                 if(active){
@@ -402,7 +403,7 @@ export default class ScenarioSelector extends Dom {
                 const scenario = player.addScenario({'name': name});
                 player.setActiveScenario(scenario);
 
-                this.editor.getHistory().add({
+                History.add({
                     'undo': () => {
                         scenario.remove();
                         player.setActiveScenario(previous_scenario);
@@ -444,7 +445,7 @@ export default class ScenarioSelector extends Dom {
 
         player.setActiveScenario(scenario);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 player.setActiveScenario(previous_scenario);
             },

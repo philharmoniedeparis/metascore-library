@@ -228,3 +228,5 @@ export default class UndoRedo extends EventEmitter {
     }
 
 }
+
+export const History = new UndoRedo();

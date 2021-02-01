@@ -4,6 +4,7 @@ import Button from '../core/ui/Button';
 import ComponentLinks from './assetbrowser/ComponentLinks';
 import GuideAssets from './assetbrowser/GuideAssets';
 import SharedAssets from './assetbrowser/SharedAssets';
+import { History } from './UndoRedo';
 
 import {className} from '../../css/editor/AssetBrowser.scss';
 
@@ -138,7 +139,7 @@ export default class AssetBrowser extends Dom {
 
         guide_assets.addAsset(asset);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 guide_assets.removeAsset(asset.id);
             },

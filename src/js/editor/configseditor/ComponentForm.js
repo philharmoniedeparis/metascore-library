@@ -12,6 +12,7 @@ import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 import CombinedInputs from '../../core/ui/input/CombinedInputs';
 import { MasterClock } from '../../core/media/MediaClock';
+import { History } from '../UndoRedo';
 
 import { className } from '../../../css/editor/configseditor/ComponentForm.scss';
 
@@ -524,45 +525,32 @@ export default class ComponentForm extends Dom {
     onComponentDragEnd() {
         const components = clone(this.components);
         const previous_values = this._before_drag_values;
-        const new_values = {};
+
+        History.startGroup();
 
         components.forEach((component) => {
             const id = component.getId();
+            const value = component.getPropertyValue('position');
+            const previous = previous_values[id];
 
-            new_values[id] = {};
+            component.triggerEvent('propchange', {
+                'component': component,
+                'property': 'position',
+                'value': value,
+                'previous': previous
+            });
 
-            Object.entries(previous_values[id]).forEach(([field, previous_value]) => {
-                const value = component.getPropertyValue(field);
-
-                new_values[id][field] = value;
-
-                component.triggerEvent('propchange', {
-                    'component': component,
-                    'property': field,
-                    'value': value,
-                    'previous': previous_value
-                });
+            History.add({
+                'undo': () => {
+                    component.setPropertyValue('position', previous);
+                },
+                'redo': () => {
+                    component.setPropertyValue('position', value);
+                }
             });
         });
 
-        this.editor.getHistory().add({
-            'undo': () => {
-                components.forEach((component) => {
-                    const id = component.getId();
-                    Object.entries(previous_values[id]).forEach(([field, value]) => {
-                        component.setPropertyValue(field, value);
-                    });
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    const id = component.getId();
-                    Object.entries(new_values[id]).forEach(([field, value]) => {
-                        component.setPropertyValue(field, value);
-                    });
-                });
-            }
-        });
+        History.endGroup();
 
         this.editor.setDirty('components');
 
@@ -631,12 +619,11 @@ export default class ComponentForm extends Dom {
     onComponentResizeEnd(evt) {
         const component = evt.target._metaScore;
         const previous_values = this._before_resize_values;
-        const new_values = {};
+
+        History.startGroup();
 
         Object.entries(previous_values).forEach(([field, previous_value]) => {
             const value = component.getPropertyValue(field);
-
-            new_values[field] = value;
 
             component.triggerEvent('propchange', {
                 'component': component,
@@ -644,20 +631,18 @@ export default class ComponentForm extends Dom {
                 'value': value,
                 'previous': previous_value
             });
+
+            History.add({
+                'undo': () => {
+                    component.setPropertyValue(field, previous_value);
+                },
+                'redo': () => {
+                    component.setPropertyValue(field, value);
+                }
+            });
         });
 
-        this.editor.getHistory().add({
-            'undo': () => {
-                Object.entries(previous_values).forEach(([field, value]) => {
-                    component.setPropertyValue(field, value);
-                });
-            },
-            'redo': () => {
-                Object.entries(new_values).forEach(([field, value]) => {
-                    component.setPropertyValue(field, value);
-                });
-            }
-        });
+        History.endGroup();
 
         this.editor.setDirty('components');
 
@@ -805,7 +790,7 @@ export default class ComponentForm extends Dom {
             component.setPropertyValue(name, value);
         });
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 components.forEach((component) => {
                     component.setPropertyValue(name, previous_values[component.getId()]);
@@ -863,7 +848,7 @@ export default class ComponentForm extends Dom {
             component.setPropertyValues(new_value);
         });
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 components.forEach((component) => {
                     component.setPropertyValues(previous_values[component.getId()]);
