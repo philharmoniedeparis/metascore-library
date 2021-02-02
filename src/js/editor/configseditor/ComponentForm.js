@@ -79,7 +79,7 @@ export default class ComponentForm extends Dom {
                     'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius'),
                     'input': {
                         'type': BorderRadiusInput,
-                        'configs': { 'overlay': { 'parent': this.editor } }
+                        'configs': { 'overlay': { 'parent': '.metaScore-editor' } }
                     }
                 }
             }
