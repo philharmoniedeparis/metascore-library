@@ -229,8 +229,11 @@ export default class HTML5 extends Dom {
                         }
 
                         if(from_web_audio){
-                            const context = new AudioContext();
-                            WaveformData.createFromAudio(context, response, (err, waveform) => {
+                            const options = {
+                                audio_context: new AudioContext(),
+                                array_buffer: response,
+                            };
+                            WaveformData.createFromAudio(options, (err, waveform) => {
                                 this.waveformdata = err ? null : waveform;
                                 this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                                 delete this._waveformdata_ajax;
