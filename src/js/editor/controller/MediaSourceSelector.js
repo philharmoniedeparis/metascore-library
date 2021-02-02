@@ -6,7 +6,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Field from '../Field';
 import FileInput from '../../core/ui/input/FileInput';
-import TextInput from '../../core/ui/input/TextInput';
+import UrlInput from '../../core/ui/input/UrlInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 import {getFileDuration, getMimeTypeFromURL} from '../../core/utils/Media';
 import {formatFileSize} from '../../core/utils/Number';
@@ -57,9 +57,7 @@ export default class MediaSourceSelector extends Overlay {
     }
 
     /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method
@@ -96,7 +94,7 @@ export default class MediaSourceSelector extends Overlay {
             .appendTo(separator);
 
         this.fields.url = new Field(
-            new TextInput({
+            new UrlInput({
                 'name': 'url',
             }),
             {
@@ -159,8 +157,9 @@ export default class MediaSourceSelector extends Overlay {
             };
         }
         else if(url){
+            const pathname = new URL(url).pathname;
             source = {
-                'name': url,
+                'name': pathname.split('/').pop(),
                 'url': url,
                 'mime': getMimeTypeFromURL(url),
                 'source': 'url'
