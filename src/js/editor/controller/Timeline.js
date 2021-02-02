@@ -45,6 +45,16 @@ export default class Timeline extends Dom {
          */
         this.component_tracks = new Map();
 
+        /**
+         * The current zoom level.
+         * @type {Number}
+         */
+        this.zoom = 1;
+
+        /**
+         * The current horizontal offset.
+         * @type {Number}
+         */
         this.offset = 0;
 
         /**
