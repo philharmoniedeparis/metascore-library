@@ -21,9 +21,7 @@ export default class AnimationForm extends ElementForm {
         'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations')
     });
 
-    static field_definitions = {
-        'name': super.field_definitions.name,
-        'hidden': super.field_definitions.hidden,
+    static field_definitions = Object.assign({}, super.field_definitions, {
         'start-frame': {
             'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame'),
             'input': {
@@ -82,15 +80,8 @@ export default class AnimationForm extends ElementForm {
                     }
                 }
             }
-        },
-        'background-color': super.field_definitions['background-color'],
-        'background-image': super.field_definitions['background-image'],
-        'border': super.field_definitions.border,
-        'opacity': super.field_definitions.opacity,
-        'time': super.field_definitions.time,
-        'position': super.field_definitions.position,
-        'dimension': super.field_definitions.dimension,
-    };
+        }
+    });
 
     /**
      * @inheritdoc
