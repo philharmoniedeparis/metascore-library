@@ -1554,18 +1554,23 @@ export class Editor extends Dom {
      */
     onTimelinePropertyKeyframeSelect(evt) {
         const keyframe = evt.detail.keyframe;
-        const property = keyframe.getProperty();
-        const field = this.configs_editor.getForm().getField(property);
+        const property_track = keyframe.getTrack();
+        const component = property_track.getComponent();
 
-        if (field) {
-            field.getInput().enable().setValue(keyframe.getValue(), true);
+        // Select the componment if not selected already.
+        if (!component.hasClass('selected')) {
+            this.selectPlayerComponent(component, evt.shiftKey);
         }
 
-        /**
-         * The selected property keyframe
-         * @type {Keyframe}
-         */
-        this._selected_property_keyframe = keyframe;
+        const configs_form = this.configs_editor.getForm();
+        if (configs_form && component === configs_form.getMasterComponent()) {
+            const property = property_track.getProperty();
+            const field = configs_form.getField(property);
+
+            if (field) {
+                field.getInput().enable().setValue(keyframe.getValue(), true);
+            }
+        }
     }
 
     /**
@@ -1576,23 +1581,30 @@ export class Editor extends Dom {
      */
     onTimelinePropertyKeyframeDeselect(evt) {
         const keyframe = evt.detail.keyframe;
-        const property = keyframe.getProperty();
-        const field = this.configs_editor.getForm().getField(property);
+        const property_track = keyframe.getTrack();
+        const component = property_track.getComponent();
 
-        if (field) {
-            field.getInput().disable();
+        if (property_track.getSelectedKeyframes().length === 0) {
+            const configs_form = this.configs_editor.getForm();
+            if (configs_form && component === configs_form.getMasterComponent()) {
+                const property = property_track.getProperty();
+                const field = configs_form.getField(property);
+
+                if (field) {
+                    field.getInput().disable();
+                }
+            }
         }
-
-        delete this._selected_property_keyframe;
     }
 
     /**
-     * Get the selected property track keyframe, if any.
+     * Get the list of selected property track keyframes.
      *
-     * @return {Keyframe?} The selected keyframe.
+     * @return {[Keyframe]} The selected keyframes.
      */
-    getSelectedPropertyKeyframe() {
-        return this._selected_property_keyframe ?? null;
+    getSelectedPropertyKeyframes() {
+        return this.controller.getTimeline().getPropertyKeyfames()
+            .filter(k => k.isSelected());
     }
 
     /**

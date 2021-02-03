@@ -25,7 +25,16 @@
         opacity: 1;
 
         &::after {
-            box-shadow: 0 0 0.2em $darkgray;
+            outline: 1px solid $metascore-color;
+        }
+    }
+
+    &:focus {
+        outline: none;
+
+        &::after {
+            outline: 1px solid $metascore-color;
+            box-shadow: 0 0 0.5em $metascore-color;
         }
     }
 }

@@ -1,7 +1,9 @@
 import Dom from '../../../core/Dom';
 import Locale from '../../../core/Locale'
+import { History } from '../../UndoRedo';
 import Handle from './track/Handle';
 import Keyframe from './track/Keyframe';
+import { clone } from '../../../core/utils/Array';
 
 import animated_icon from '../../../../img/editor/controller/timeline/handle/animated.svg?svg-sprite';
 
@@ -83,11 +85,11 @@ export default class PropertyTrack extends Dom {
             .appendTo(this);
 
         this
-            .data('component', component.getId())
+            .addDelegate('.keyframes-wrapper', 'click', this.onKeyframesWrapperClick)
             .data('property', this.property)
-            .attr('title', this.property);
-
-        this.updateKeyframes();
+            .attr('title', this.property)
+            .updateKeyframes()
+            .updateKeyframesWrapperTitle();
     }
 
     /**
@@ -96,12 +98,7 @@ export default class PropertyTrack extends Dom {
      * @private
      */
     onComponentSelected(){
-        this.keyframes_wrapper
-            .addListener('click', this.onKeyframesWrapperClick)
-            .attr('title', Locale.t(
-                'editor.controller.timeline.PropertyTrack.keyframes-wrapper.title',
-                'Add keyframe'
-            ));
+        this.updateKeyframesWrapperTitle();
     }
 
     /**
@@ -110,9 +107,7 @@ export default class PropertyTrack extends Dom {
      * @private
      */
     onComponentDeselected(){
-        this.keyframes_wrapper
-            .removeListener('click', this.onKeyframesWrapperClick)
-            .attr('title', null);
+        this.updateKeyframesWrapperTitle();
     }
 
     /**
@@ -143,11 +138,13 @@ export default class PropertyTrack extends Dom {
      * @param {MouseEvent} evt The event object
      */
     onKeyframesWrapperClick(evt) {
-        if(!Dom.is(evt.target, '.keyframes-wrapper')) {
+        const component = this.getComponent();
+        if (!component.hasClass('selected')) {
             return;
         }
 
-        const component = this.getComponent();
+        const property = this.getProperty();
+        const previous = clone(component.getPropertyValue(property));
         const duration = parseFloat(this.css('--timeline-duration'));
         const {width, left} = evt.target.getBoundingClientRect();
         const x = evt.pageX - left;
@@ -163,7 +160,16 @@ export default class PropertyTrack extends Dom {
             ];
         });
 
-        component.setPropertyValue(this.property, values);
+        component.setPropertyValue(property, values);
+
+        History.add({
+            'undo': () => {
+                component.setPropertyValue(property, previous);
+            },
+            'redo': () => {
+                component.setPropertyValue(property, values);
+            }
+        });
     }
 
     /**
@@ -173,6 +179,15 @@ export default class PropertyTrack extends Dom {
      */
     getComponent(){
         return this.component;
+    }
+
+    /**
+     * Get the associated property
+     *
+     * @return {string} The associated property
+     */
+    getProperty(){
+        return this.property;
     }
 
     /**
@@ -254,8 +269,10 @@ export default class PropertyTrack extends Dom {
      * @return {Keyframe} The keyframe.
      */
     addKeyframe(time, value) {
-        const keyframe = new Keyframe(this.property, time, value, this.configs.keyframe)
+        const keyframe = new Keyframe(this, time, value, this.configs.keyframe)
+            .addListener('dragstart', this.onKeyframeDragStart.bind(this))
             .addListener('drag', this.onKeyframeDrag.bind(this))
+            .addListener('dragend', this.onKeyframeDragEnd.bind(this))
             .appendTo(this.keyframes_wrapper);
 
         this.keyframes.push(keyframe);
@@ -264,30 +281,89 @@ export default class PropertyTrack extends Dom {
     }
 
     /**
+     * Keyframe dragstart event handler.
+     *
+     * @private
+     */
+    onKeyframeDragStart() {
+        const component = this.getComponent();
+        const property = this.getProperty();
+
+        /**
+        * Values of x and y when dragging starts
+        * @type {Array}
+        */
+        this._before_drag_values = clone(component.getPropertyValue(property));
+    }
+
+    /**
      * Keyframe drag event handler.
      *
      * @private
-     * @param {CustomEvent} evt The event object
      */
     onKeyframeDrag() {
         const component = this.getComponent();
+        const property = this.getProperty();
 
         const values = this.keyframes.map((keyframe) => {
             return [keyframe.getTime() , keyframe.getValue()];
         });
 
-        component.setPropertyValue(this.property, values);
+        component.setPropertyValue(property, values);
     }
 
     /**
-     * Get the currently selected keyframe if any.
+     * Keyframe dragend event handler.
      *
-     * @return {Keyframe?} The selected keyframe.
+     * @private
      */
-    getSelectedKeyframe() {
-        return this.keyframes.find((keyframe) => {
-            return keyframe.isSelected();
+    onKeyframeDragEnd() {
+        const component = this.getComponent();
+        const property = this.getProperty();
+
+        const previous_values = this._before_drag_values;
+        const new_values = clone(component.getPropertyValue(property));
+
+        History.add({
+            'undo': () => {
+                component.setPropertyValue(property, previous_values);
+            },
+            'redo': () => {
+                component.setPropertyValue(property, new_values);
+            }
         });
+
+        delete this._before_drag_values;
+    }
+
+    /**
+     * Get the currently selected keyframes.
+     *
+     * @return {[Keyframe]} The selected keyframes.
+     */
+    getSelectedKeyframes() {
+        return this.keyframes.filter(k => k.isSelected());
+    }
+
+    /**
+     * Update the keyframes wrapper's title attribute.
+     *
+     * @private
+     * @return {this}
+     */
+    updateKeyframesWrapperTitle() {
+        let title = null;
+
+        if (this.component.hasClass('selected')) {
+            title =  Locale.t(
+                'editor.controller.timeline.PropertyTrack.keyframes-wrapper.title',
+                'Add keyframe'
+            );
+        }
+
+        this.keyframes_wrapper.attr('title', title);
+
+        return this;
     }
 
     /**

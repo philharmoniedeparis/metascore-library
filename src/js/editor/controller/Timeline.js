@@ -29,7 +29,7 @@ export default class Timeline extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `timeline ${className}`});
+        super('<div/>', {'class': `timeline ${className}`, 'tabindex': 0});
 
         /**
          * The configuration values
@@ -73,7 +73,8 @@ export default class Timeline extends Dom {
             .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
             .addDelegate('.property-track .keyframe', 'dragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
             .addDelegate('.property-track .keyframe', 'dragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
-            .addDelegate('.property-track .keyframe', 'select', this.onComponentTrackSelect.bind(this))
+            .addDelegate('.property-track .keyframe', 'mousedown', this.onComponentTrackKeyframeMouseDown.bind(this))
+            .addDelegate('.property-track .keyframe', 'focusin', this.onComponentTrackKeyframeFocusin.bind(this))
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
@@ -272,26 +273,93 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * ComponentTrack select event callback
+     * ComponentTrack Keyframe click event callback
      *
      * @private
-     * @param {CustomEvent} evt The event object
+     * @param {MouseEvent} evt The event object
      */
-    onComponentTrackSelect(evt) {
-        const selected = evt.detail.keyframe;
+    onComponentTrackKeyframeMouseDown(evt) {
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
 
-        // Deselect previously selected property keyframes.
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const time =  Dom.data(evt.target, 'time');
+        const keyframe = property_track.getKeyframes().find(k => k.data('time') === time);
+
+        this.selectPropertyTrackKeyframe(keyframe, evt.shiftKey);
+    }
+
+    /**
+     * ComponentTrack Keyframe focusin event callback
+     *
+     * @private
+     * @param {FocusEvent} evt The event object
+     */
+    onComponentTrackKeyframeFocusin(evt) {
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
+
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const time = Dom.data(evt.target, 'time');
+        const keyframe = property_track.getKeyframes().find(k => k.data('time') === time);
+
+        if (keyframe.isSelected()) {
+            return;
+        }
+
+        this.selectPropertyTrackKeyframe(keyframe);
+    }
+
+    /**
+     * Select a property track keyframe.
+     *
+     * @private
+     * @param {Keyframe} keyframe The keyframe to select.
+     * @param {Boolean} keepExisting True to keep the existing selection, false otherwise.
+     * @return {this}
+     */
+    selectPropertyTrackKeyframe(keyframe, keepExisting=false) {
+        if (!keepExisting) {
+            // Deselect previously selected property keyframes.
+            this.getPropertyKeyfames()
+                .filter(k => k.isSelected() && k !== keyframe)
+                .forEach(k => k.deselect());
+        }
+
+        if (keyframe.isSelected() && keepExisting) {
+            keyframe.deselect();
+        }
+        else {
+            keyframe.select();
+            MasterClock.setTime(keyframe.getTime());
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the list of property keyframes.
+     *
+     * @return {[Keyframe]} The keyframes.
+     */
+    getPropertyKeyfames() {
+        let keyframes = [];
+
         this.getComponentTracks().forEach((track) => {
             track.getPropertyTracks().forEach((property_track) => {
-                property_track.getKeyframes().forEach((keyframe) => {
-                    if (keyframe !== selected) {
-                        keyframe.deselect();
-                    }
-                });
+                keyframes = keyframes.concat(property_track.getKeyframes());
             });
         });
 
-        MasterClock.setTime(selected.getTime());
+        return keyframes;
     }
 
     /**

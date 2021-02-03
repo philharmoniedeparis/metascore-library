@@ -472,7 +472,7 @@ export default class Component extends Dom {
                 }
 
                 if (animatable){
-                    this.removePropertyCuepoint(name);
+                    this.removeAnimatedPropertyCuepoint(name);
                 }
                 this.updatePropertyValue(name, new_value);
 
@@ -546,8 +546,8 @@ export default class Component extends Dom {
      * @param {Boolean} skip_animated_check Whether to skip checking if this is an animated property
      * @return {this}
      */
-    updatePropertyValue(name, value, skip_animated_check = false){
-        if((skip_animated_check !== true) && this.isPropertyAnimated(name)) {
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        if((skipAnimatedCheck !== true) && this.isPropertyAnimated(name)) {
             return this.updateAnimatedPropertyValue(name);
         }
 
@@ -615,22 +615,6 @@ export default class Component extends Dom {
     }
 
     /**
-     * Remove an animated propoerty's cuepoint.
-     *
-     * @protected
-     * @param {String} name The name of the property
-     * @return {this}
-     */
-    removePropertyCuepoint(name) {
-        if(this.property_cuepoints.has(name)) {
-            this.property_cuepoints.get(name).deactivate();
-            this.property_cuepoints.delete(name);
-        }
-
-        return this;
-    }
-
-    /**
      * Update an animated property value
      *
      * @protected
@@ -641,18 +625,28 @@ export default class Component extends Dom {
     updateAnimatedPropertyValue(name) {
         const values = this.getPropertyValue(name);
 
-        // The values are empty.
-        if(values.length === 0){
-            this.removePropertyCuepoint(name);
-            return this.updatePropertyValue(name, null, true);
+        // The values are empty, or only one value is available.
+        if(values.length <= 1){
+            const value = values.length === 0 ? null : values[0][1];
+            return this
+                .removeAnimatedPropertyCuepoint(name)
+                .updatePropertyValue(name, value, true)
+                .triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
         }
 
-        // Only one value is provided.
-        if(values.length === 1){
-            this.removePropertyCuepoint(name);
-            return this.updatePropertyValue(name, values[0][1], true);
-        }
+        this.setAnimatedPropertyCuepoint(name);
 
+        return this;
+    }
+
+    /**
+     * Add or update an animated propoerty's cuepoint.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {this}
+     */
+    setAnimatedPropertyCuepoint(name) {
         if(this.property_cuepoints.has(name)) {
             this.property_cuepoints.get(name).update();
         }
@@ -663,7 +657,10 @@ export default class Component extends Dom {
             const cuepoint = new CuePoint()
                 .addListener('update', () => {
                     const value = this.getAnimatedPropertyValueAtTime(name);
-                    this.updatePropertyValue(name, value, true);
+
+                    this
+                        .updatePropertyValue(name, value, true)
+                        .triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
                 });
 
             if(this.isActive()){
@@ -671,6 +668,22 @@ export default class Component extends Dom {
             }
 
             this.property_cuepoints.set(name, cuepoint);
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove an animated propoerty's cuepoint.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {this}
+     */
+    removeAnimatedPropertyCuepoint(name) {
+        if(this.property_cuepoints.has(name)) {
+            this.property_cuepoints.get(name).deactivate();
+            this.property_cuepoints.delete(name);
         }
 
         return this;

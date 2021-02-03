@@ -438,12 +438,6 @@ export default class ComponentForm extends Dom {
                 this.updateTimeFieldLimits();
                 break;
         }
-
-        // If this is the only component or the master one,
-        // refresh the field value.
-        if (component === this.master_component) {
-            this.updateFieldValue(property, true);
-        }
     }
 
     /**
@@ -463,6 +457,11 @@ export default class ComponentForm extends Dom {
                 component.css(`--transform-${property}X`, value[0]);
                 component.css(`--transform-${property}Y`, value[1]);
                 break;
+        }
+
+        // Refresh field value.
+        if (component === this.getMasterComponent()) {
+            this.updateFieldValue(property, true);
         }
     }
 
@@ -676,8 +675,6 @@ export default class ComponentForm extends Dom {
 
             this.updateAnimatedCheckboxTitle(checkbox);
             this.getAnimatedPropertyCheckboxes().set(id, checkbox);
-
-            input.disable();
         }
 
         if ('attributes' in configs) {
@@ -771,14 +768,17 @@ export default class ComponentForm extends Dom {
 
         const components = clone(this.components);
         const previous_values = {};
-        const keyframe = this.editor.getSelectedPropertyKeyframe();
 
-        if (keyframe && keyframe.getProperty() === name) {
-            if (this.getMasterComponent().isPropertyAnimated(name)) {
-                const values = new Map(this.getMasterComponent().getPropertyValue(name));
-                values.set(keyframe.getTime(), value);
-                value = Array.from(values);
-            }
+        if (this.getMasterComponent().isPropertyAnimated(name)) {
+            const values = new Map(this.getMasterComponent().getPropertyValue(name));
+
+            this.editor.getSelectedPropertyKeyframes()
+                .filter(keyframe => keyframe.getTrack().getProperty() === name)
+                .forEach((keyframe) => {
+                    values.set(keyframe.getTime(), value);
+                });
+
+            value = Array.from(values);
         }
 
         components.forEach((component) => {
@@ -901,8 +901,11 @@ export default class ComponentForm extends Dom {
                 const checkbox = this.getAnimatedPropertyCheckbox(name);
                 if (checkbox && master_component.isPropertyAnimatable(name)) {
                     animated = master_component.isPropertyAnimated(name);
-                    checkbox.setValue(animated, supressEvent);
-                    this.updateAnimatedCheckboxTitle(checkbox);
+                    if (checkbox.getValue() !== animated) {
+                        checkbox.setValue(animated, supressEvent);
+                        this.updateAnimatedCheckboxTitle(checkbox);
+                        input[animated ? 'disable' : 'enable']();
+                    }
                 }
 
                 if (animated) {

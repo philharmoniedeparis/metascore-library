@@ -48,6 +48,7 @@ $handles-margin: 0.5em;
             box-sizing: border-box;
             box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
             opacity: 0.5;
+            pointer-events: none;
 
             .resize-handle {
                 display: none;
@@ -57,6 +58,7 @@ $handles-margin: 0.5em;
                 background: #fff;
                 border-radius: 50%;
                 z-index: 1;
+                pointer-events: all;
             }
         }
     }

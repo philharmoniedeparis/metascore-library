@@ -23,13 +23,13 @@ export default class Keyframe extends Dom {
     /**
      * Instantiate
      *
-     * @param {string} property The associated property's name
+     * @param {PropertyTrack} track The parent property track
      * @param {number} time The keyframe time.
      * @param {Mixed} value The assocaited value.
      */
-    constructor(property, time, value, configs) {
+    constructor(track, time, value, configs) {
         // call parent constructor
-        super('<div/>', {'class': `keyframe ${className}`});
+        super('<div/>', {'class': `keyframe ${className}`, 'tabindex': 0});
 
         /**
          * The configuration values
@@ -38,15 +38,14 @@ export default class Keyframe extends Dom {
         this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
-         * The associated property
-         * @type {String}
+         * The parent property track
+         * @type {PropertyTrack}
          */
-        this.property = property;
+        this.track = track;
 
         this
             .setTime(time)
             .setValue(value)
-            .addListener('click', this.onClick.bind(this))
             .addListener('dragstart', this.onDragStart.bind(this))
             .addListener('drag', this.onDrag.bind(this))
             .addListener('dragend', this.onDragEnd.bind(this));
@@ -63,12 +62,12 @@ export default class Keyframe extends Dom {
     }
 
     /**
-     * Get the associated property name.
+     * Get the parent track.
      *
-     * @return {string} The property's name.
+     * @return {PropertyTrack} The property track.
      */
-    getProperty() {
-        return this.property;
+    getTrack() {
+        return this.track;
     }
 
     /**
@@ -85,6 +84,7 @@ export default class Keyframe extends Dom {
         this.time = this.constructor.normalizeTime(time);
 
         this
+            .data('time', this.time)
             .css('--keyframe-time', this.time)
             .updateTitle();
 
@@ -173,8 +173,9 @@ export default class Keyframe extends Dom {
      */
     select(supressEvent=false) {
         if (!this.isSelected()) {
-            this.addClass('selected');
-            this.getDraggable().enable();
+            this
+                .addClass('selected')
+                .getDraggable().enable();
 
             if(supressEvent !== true){
                 this.triggerEvent('select', {'keyframe': this});
@@ -192,8 +193,9 @@ export default class Keyframe extends Dom {
      */
     deselect(supressEvent=false) {
         if (this.isSelected()) {
-            this.removeClass('selected');
-            this.getDraggable().disable();
+            this
+                .removeClass('selected')
+                .getDraggable().disable();
 
             if(supressEvent !== true){
                 this.triggerEvent('deselect', {'keyframe': this});
@@ -210,15 +212,6 @@ export default class Keyframe extends Dom {
      */
     isSelected() {
         return this.hasClass('selected');
-    }
-
-    /**
-     * Click event callback
-     *
-     * @private
-     */
-    onClick(){
-        this.select();
     }
 
     /**
