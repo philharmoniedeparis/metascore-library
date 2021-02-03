@@ -54,7 +54,7 @@ export default class CursorForm extends ElementForm {
                 }
             }
         },
-        // TODO: re-add aceleration?
+        // @todo: re-add aceleration?
         'keyframes': {
             'input': {
                 'type': CheckboxInput,

@@ -3090,7 +3090,7 @@ export class Editor extends Dom {
                     };
 
                     undo = () => {
-                        // @TODO: keep order.
+                        // @todo: keep order.
                         const scenario = this.getPlayer().getActiveScenario();
                         scenario.addComponent(component);
                     }
