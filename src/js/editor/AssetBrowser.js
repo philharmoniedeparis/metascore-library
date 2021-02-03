@@ -147,8 +147,6 @@ export default class AssetBrowser extends Dom {
                 guide_assets.addAsset(asset);
             }
         });
-
-        this.editor.setDirty('assets');
     }
 
     onSharedAssetToolbarButtonClick(evt){

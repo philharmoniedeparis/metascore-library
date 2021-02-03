@@ -16,6 +16,9 @@ import {className} from '../../../css/editor/controller/MediaSourceSelector.scss
 
 /**
  * An overlay displaying a form to select a media file
+ *
+ * @emits {sourceset} Fired when the player's source is set
+ * @param {Object} source The new source
  */
 export default class MediaSourceSelector extends Overlay {
 
@@ -239,14 +242,14 @@ export default class MediaSourceSelector extends Overlay {
                 new Confirm({
                     'text': msg,
                     'onConfirm': () => {
-                        this.setPlayerSource(source);
+                        this.setSource(source);
                         this.hide();
                     },
                     'parent': this
                 });
             }
             else{
-                this.setPlayerSource(source);
+                this.setSource(source);
                 this.hide();
             }
         });
@@ -258,7 +261,7 @@ export default class MediaSourceSelector extends Overlay {
      * @private
      * @param {Object} source The source
      */
-    setPlayerSource(source){
+    setSource(source){
         const player = this.editor.getPlayer();
         const previous_source = player.getRenderer().getSource();
 
@@ -273,6 +276,6 @@ export default class MediaSourceSelector extends Overlay {
             }
         });
 
-        this.editor.setDirty('media');
+        this.triggerEvent('sourceset', {'source': source});
     }
 }

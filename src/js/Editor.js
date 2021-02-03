@@ -387,6 +387,8 @@ export class Editor extends Dom {
          */
         this.configs_editor = new ConfigsEditor(this)
             .addListener('componentset', this.onConfigEditorComponentSet.bind(this))
+            .addDelegate('.content-form', 'contentsunlock', this.onConfigEditorContentsUnlock.bind(this))
+            .addDelegate('.content-form', 'contentslock', this.onConfigEditorContentsLock.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -432,12 +434,12 @@ export class Editor extends Dom {
             evt.stopImmediatePropagation();
         });
 
-        this.addDelegate('.contextmenu', 'beforeshow', this.onContextMenuBeforeShow.bind(this));
-
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
         Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
         this
+            .addDelegate('.contextmenu', 'beforeshow', this.onContextMenuBeforeShow.bind(this))
+            .addDelegate('.media-source-selector', 'sourceset', this.onMediaSourceSelectorSourceSet.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
             .setClean()
@@ -1224,6 +1226,15 @@ export class Editor extends Dom {
     }
 
     /**
+     * MediaSourceSelector sourceset event callback
+     *
+     * @private
+     */
+    onMediaSourceSelectorSourceSet() {
+        this.setDirty('media');
+    }
+
+    /**
      * AssetBrowser tabchange event callback
      *
      * @private
@@ -1240,6 +1251,7 @@ export class Editor extends Dom {
      */
     onAssetBrowserAssetAdd() {
         this.updateConfigEditorImageFields();
+        this.setDirty('assets');
     }
 
     /**
@@ -1299,8 +1311,8 @@ export class Editor extends Dom {
      * @private
      */
     onAssetBrowserAssetRemove() {
-        this.setDirty('assets');
         this.updateConfigEditorImageFields();
+        this.setDirty('assets');
     }
 
     /**
@@ -1389,6 +1401,26 @@ export class Editor extends Dom {
                 }
             }
         }
+    }
+
+    /**
+     * ConfigEditor Content component unlock event callback.
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onConfigEditorContentsUnlock() {
+        this.addClass('contents-unlocked');
+    }
+
+    /**
+     * ConfigEditor Content component lock event callback.
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onConfigEditorContentsLock() {
+        this.removeClass('contents-unlocked');
     }
 
     /**
@@ -1705,6 +1737,8 @@ export class Editor extends Dom {
         this.selectPlayerComponent(component);
 
         this.updateConfigEditorComponentFields();
+
+        this.setDirty('components');
     }
 
     /**
@@ -1725,6 +1759,8 @@ export class Editor extends Dom {
         }
 
         this.updateConfigEditorComponentFields();
+
+        this.setDirty('components');
     }
 
     /**

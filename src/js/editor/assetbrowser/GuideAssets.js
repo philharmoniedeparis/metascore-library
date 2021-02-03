@@ -294,8 +294,6 @@ export default class GuideAssets extends Dom {
             }
         });
 
-        this.editor.setDirty('assets');
-
         loadmask.hide();
     }
 
@@ -655,8 +653,6 @@ export default class GuideAssets extends Dom {
             }
         });
 
-        this.editor.setDirty('assets');
-
         form.hide();
     }
 
@@ -680,8 +676,6 @@ export default class GuideAssets extends Dom {
                 this.addAsset(asset);
             }
         });
-
-        this.editor.setDirty('assets');
 
         form.hide();
     }

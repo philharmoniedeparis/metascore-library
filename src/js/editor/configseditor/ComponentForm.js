@@ -552,8 +552,6 @@ export default class ComponentForm extends Dom {
 
         History.endGroup();
 
-        this.editor.setDirty('components');
-
         delete this._before_drag_values;
     }
 
@@ -643,8 +641,6 @@ export default class ComponentForm extends Dom {
         });
 
         History.endGroup();
-
-        this.editor.setDirty('components');
 
         delete this._before_resize_values;
     }

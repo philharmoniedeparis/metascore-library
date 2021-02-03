@@ -271,8 +271,6 @@ export default class ScenarioSelector extends Dom {
                     }
                 });
 
-                this.editor.setDirty('components');
-
                 overlay.hide();
             }
         }
@@ -328,8 +326,6 @@ export default class ScenarioSelector extends Dom {
                 }
             });
 
-            this.editor.setDirty('components');
-
             overlay.hide();
         }
     }
@@ -373,8 +369,6 @@ export default class ScenarioSelector extends Dom {
                 }
             }
         });
-
-        this.editor.setDirty('components');
     }
 
     /**
@@ -413,8 +407,6 @@ export default class ScenarioSelector extends Dom {
                         player.setActiveScenario(scenario);
                     }
                 });
-
-                this.editor.setDirty('components');
 
                 overlay.hide();
             }
