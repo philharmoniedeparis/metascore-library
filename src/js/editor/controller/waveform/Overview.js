@@ -92,20 +92,22 @@ export default class Overview extends Dom {
          */
         this.height = this.get(0).clientHeight;
 
-        this.find('canvas').forEach((canvas) => {
-            canvas.width = this.width;
-            canvas.height = this.height;
-        });
+        if (this.width !== 0 && this.height !== 0) {
+            this.find('canvas').forEach((canvas) => {
+                canvas.width = this.width;
+                canvas.height = this.height;
+            });
 
-        if(this.waveformdata){
-            /**
-             * The resampled waveform data
-             * @type {WaveformData}
-             */
-            this.resampled_data = this.waveformdata.resample({'width': this.width});
+            if(this.waveformdata){
+                /**
+                 * The resampled waveform data
+                 * @type {WaveformData}
+                 */
+                this.resampled_data = this.waveformdata.resample({'width': this.width});
+            }
+
+            this.update();
         }
-
-        this.update();
 
         return this;
     }
