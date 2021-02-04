@@ -14,9 +14,12 @@ export default class ElementForm extends ComponentForm {
     /**
      * @inheritdoc
      */
-    updateColorInputEmptyValue(input, name) {
+    updateColorFieldsEmptyValue(input, name) {
+        // Element background-color and border-color are applied to contents.
+        // @todo: uniform this
+
         if (!['backgroud-color', 'border-color'].includes(name)) {
-            return super.updateColorInputEmptyValue(input, name);
+            return super.updateColorFieldsEmptyValue(input, name);
         }
 
         const master_component = this.getMasterComponent();
@@ -26,7 +29,7 @@ export default class ElementForm extends ComponentForm {
 
         // Get default value.
         master_component.setPropertyValue(name, null, true);
-        // Element background-color and border-color are applied to contents.
+
         const empty_value = master_component.contents.css(name);
 
         // Revert to current value.

@@ -361,6 +361,7 @@ export default class ComponentForm extends Dom {
         });
 
 
+        // Update the form's title
         if (this.components.length > 1) {
             this.title.text(Locale.formatString(this.configs.title_plural, { '@count': this.components.length }));
         }
@@ -368,7 +369,11 @@ export default class ComponentForm extends Dom {
             this.title.text(this.configs.title);
         }
 
-        this.updateFieldValues(true);
+        // Update fields.
+        this
+            .updateColorFieldsEmptyValue()
+            .updateTimeFieldsLimits()
+            .updateFieldValues(true);
 
         return this;
     }
@@ -435,7 +440,7 @@ export default class ComponentForm extends Dom {
 
             case 'start-time':
             case 'end-time':
-                this.updateTimeFieldLimits();
+                this.updateTimeFieldsLimits();
                 break;
         }
     }
@@ -866,8 +871,6 @@ export default class ComponentForm extends Dom {
      */
     updateFieldValues(supressEvent) {
         if (this.components) {
-            this.updateTimeFieldLimits();
-
             // Update all field values.
             Object.keys(this.getFields()).forEach((name) => {
                 this.updateFieldValue(name, supressEvent);
@@ -893,10 +896,6 @@ export default class ComponentForm extends Dom {
             if (field && field instanceof Field) {
                 const input = field.getInput();
                 let animated = false;
-
-                if (input instanceof ColorInput) {
-                    this.updateColorInputEmptyValue(input, name);
-                }
 
                 const checkbox = this.getAnimatedPropertyCheckbox(name);
                 if (checkbox && master_component.isPropertyAnimatable(name)) {
@@ -1040,7 +1039,7 @@ export default class ComponentForm extends Dom {
      *
      * @return {this}
      */
-    updateTimeFieldLimits() {
+    updateTimeFieldsLimits() {
         if (this.components && this.hasField('start-time') && this.hasField('end-time')) {
             const start_values = [];
             const end_values = [];
@@ -1070,38 +1069,45 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Update a color input's empty value
+     * Update color fields' empty value
      * depending on the default value of the component's corresponding propoerty.
      *
-     * @param {ColorInput} input The color input
-     * @param {String} name The propoerty's name
      * @return {this}
      */
-    updateColorInputEmptyValue(input, name) {
+    updateColorFieldsEmptyValue() {
         const master_component = this.getMasterComponent();
-        const property = master_component.getProperty(name);
 
-        if (typeof property !== 'undefined') {
-            let empty_value = null;
+        Object.keys(this.getFields()).forEach((name) => {
+            const field = this.getField(name);
+            if (field && field instanceof Field) {
+                const input = field.getInput();
+                if (input instanceof ColorInput) {
+                    const property = master_component.getProperty(name);
 
-            if ('default' in property) {
-                empty_value = property.default;
+                    if (typeof property !== 'undefined') {
+                        let empty_value = null;
+
+                        if ('default' in property) {
+                            empty_value = property.default;
+                        }
+                        else {
+                            // Get current value.
+                            const value = master_component.getPropertyValue(name);
+
+                            // Get default value.
+                            master_component.setPropertyValue(name, null, true);
+                            empty_value = master_component.css(name);
+
+                            // Revert to current value.
+                            master_component.setPropertyValue(name, value, true);
+                        }
+
+                        // Update input's empty value.
+                        input.setEmptyValue(empty_value);
+                    }
+                }
             }
-            else {
-                // Get current value.
-                const value = master_component.getPropertyValue(name);
-
-                // Get default value.
-                master_component.setPropertyValue(name, null, true);
-                empty_value = master_component.css(name);
-
-                // Revert to current value.
-                master_component.setPropertyValue(name, value, true);
-            }
-
-            // Update input's empty value.
-            input.setEmptyValue(empty_value);
-        }
+        });
 
         return this;
     }

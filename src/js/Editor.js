@@ -2491,9 +2491,7 @@ export class Editor extends Dom {
         const images = this.getImageAssets();
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
-            if ('updateImageFields' in form) {
-                form.updateImageFields(images);
-            }
+            form.updateImageFields(images);
         });
 
         return this;

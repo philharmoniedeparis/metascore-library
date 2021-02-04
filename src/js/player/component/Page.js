@@ -90,8 +90,8 @@ export default class Page extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value, skip_animated_check = false){
-        super.updatePropertyValue(name, value, skip_animated_check);
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
 
         switch(name){
             case 'start-time':

@@ -41,8 +41,8 @@ export default class Media extends Element{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value, skip_animated_check = false){
-        super.updatePropertyValue(name, value, skip_animated_check);
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
 
         switch(name){
             case 'tag':

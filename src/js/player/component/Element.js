@@ -54,8 +54,8 @@ export default class Element extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(name, value, skip_animated_check = false){
-        if((skip_animated_check !== true) && this.isPropertyAnimated(name)) {
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        if((skipAnimatedCheck !== true) && this.isPropertyAnimated(name)) {
             return this.updateAnimatedPropertyValue(name);
         }
 
@@ -80,7 +80,7 @@ export default class Element extends Component {
 
 
             default:
-                super.updatePropertyValue(name, value, skip_animated_check);
+                super.updatePropertyValue(name, value, skipAnimatedCheck);
         }
 
         return this;

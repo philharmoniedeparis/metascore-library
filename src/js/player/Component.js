@@ -438,7 +438,7 @@ export default class Component extends Dom {
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @return {this}
      */
-    setPropertyValue(name, value, supressEvent){
+    setPropertyValue(name, value, supressEvent = false){
         const prop = this.getProperty(name);
         if(prop){
             const previous_value = this.getPropertyValue(name);
