@@ -78,7 +78,7 @@ export default class Timeline extends Dom {
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
-            .appendTo(this);
+            .appendTo(this.tracks_container);
 
         /**
          * The playhead <canvas> element
