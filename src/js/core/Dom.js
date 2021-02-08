@@ -718,30 +718,27 @@ export default class Dom {
     }
 
     /**
-     * Allow mouse event of a specified type to bubble up from an iframe to its parent
+     * Allow an event of a specified type to bubble up from an iframe to its parent
      *
      * @param {HTMLElement} iframe The iframe element
-     * @param {String} type The mouse event type
+     * @param {String} type The event type
      */
-    static bubbleIframeMouseEvent(iframe, type){
+    static bubbleIframeEvent(iframe, type){
         iframe.contentWindow.addEventListener(type, (original_evt) => {
-            const rect = iframe.getBoundingClientRect();
-            const init = {
-                'screenX': original_evt.screenX,
-                'screenY': original_evt.screenY,
-                'clientX': original_evt.clientX + rect.left,
-                'clientY': original_evt.clientY + rect.top,
-                'ctrlKey': original_evt.ctrlKey,
-                'shiftKey': original_evt.shiftKey,
-                'altKey': original_evt.altKey,
-                'metaKey': original_evt.metaKey,
-                'button': original_evt.button,
-                'buttons': original_evt.buttons,
-                'relatedTarget': original_evt.relatedTarget,
-                'region': original_evt.region
-            };
+            const init = {};
+            for (let prop in original_evt) {
+                init[prop] = original_evt[prop];
+            }
 
-            iframe.dispatchEvent(new MouseEvent(type, init));
+            if (original_evt instanceof MouseEvent) {
+                const {left, top} = iframe.getBoundingClientRect();
+                init['clientX'] += left;
+                init['clientY'] += top;
+            }
+
+            const new_evt = new original_evt.constructor(original_evt.type, init);
+
+            iframe.dispatchEvent(new_evt);
         });
     }
 

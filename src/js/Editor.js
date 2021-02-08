@@ -1785,7 +1785,7 @@ export class Editor extends Dom {
         const iframe = this.player_frame.get(0);
         const player = iframe.contentWindow.player;
 
-        Dom.bubbleIframeMouseEvent(iframe, 'mousemove');
+        Dom.bubbleIframeEvent(iframe, 'mousemove');
 
         if (player) {
             this.addClass('has-player');
