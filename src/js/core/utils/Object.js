@@ -25,7 +25,7 @@ export function pick(source, properties){
  * @return {Object} The new object
  */
 export function omit(source, properties){
-    const obj = Object.assign(source);
+    const obj = Object.assign({}, source);
 
     properties.forEach((key) => {
         delete obj[key];
