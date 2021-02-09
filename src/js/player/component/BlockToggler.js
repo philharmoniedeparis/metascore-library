@@ -1,7 +1,7 @@
 import Component from '../Component';
 import Locale from '../../core/Locale';
 import Dom from '../../core/Dom';
-import {pick} from '../../core/utils/Object';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A block toggler component
@@ -17,20 +17,9 @@ export default class BlockToggler extends Component{
     */
     static getProperties() {
         if (!this.properties) {
-            this.properties = Object.assign(pick(super.getProperties(), [
-                'id',
-                'type',
-                'name',
-                'hidden',
-                'position',
-                'dimension',
-                'scale',
-                'translate',
-                'background-color',
-                'border-width',
-                'border-color',
-                'border-radius',
-                'editor.locked',
+            this.properties = Object.assign(omit(super.getProperties(), [
+                'start-time',
+                'end-time',
             ]), {
                 'blocks': {
                     'type': 'array',

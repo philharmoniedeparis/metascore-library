@@ -37,7 +37,6 @@ export default class Scenario extends Component {
                 'type',
                 'id',
                 'name',
-                'editor.locked'
             ]), {
                 'components': {
                     'type': 'array',

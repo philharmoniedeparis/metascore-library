@@ -29,7 +29,6 @@ export default class Block extends Component {
     static getProperties() {
         if (!this.properties) {
             this.properties = Object.assign(omit(super.getProperties(), [
-                'opacity',
                 'start-time',
                 'end-time'
             ]), {

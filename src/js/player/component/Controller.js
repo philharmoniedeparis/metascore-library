@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {formatTime} from '../../core/utils/Media';
 import {MasterClock} from '../../core/media/MediaClock';
-import {pick} from '../../core/utils/Object';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A controller component
@@ -20,18 +20,15 @@ export default class Controller extends Component{
     */
     static getProperties() {
         if (!this.properties) {
-            this.properties = pick(super.getProperties(), [
-                'id',
-                'type',
-                'name',
-                'hidden',
-                'position',
-                'scale',
-                'translate',
+            this.properties = omit(super.getProperties(), [
+                'dimension',
+                'background-color',
+                'background-image',
                 'border-width',
                 'border-color',
                 'border-radius',
-                'editor.locked',
+                'start-time',
+                'end-time',
             ]);
         }
 

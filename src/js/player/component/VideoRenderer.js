@@ -18,7 +18,6 @@ export default class VideoRenderer extends Component{
     static getProperties() {
         if (!this.properties) {
             this.properties = omit(super.getProperties(), [
-                'opacity',
                 'start-time',
                 'end-time',
             ]);
