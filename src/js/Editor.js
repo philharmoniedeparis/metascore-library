@@ -1543,7 +1543,6 @@ export class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
-        this.player_frame.focus();
     }
 
     /**
@@ -2809,8 +2808,6 @@ export class Editor extends Dom {
 
         this.setDirty('components');
 
-        this.player_frame.focus();
-
         return this;
     }
 
@@ -3116,8 +3113,6 @@ export class Editor extends Dom {
             History.endGroup();
 
             this.setDirty('components');
-
-            this.player_frame.focus();
         }
 
         return this;
