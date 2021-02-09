@@ -410,6 +410,7 @@ export class Editor extends Dom {
 
         this.controller.getTimeline()
             .addDelegate('.handle, .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+            .addDelegate('.handle, .component-track .time', 'focusin', this.onTimelineComponentTrackFocusin.bind(this), true)
             .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
             .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
             .addListener('componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this));
@@ -1543,6 +1544,16 @@ export class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
+    }
+
+    /**
+     * Timeline ComponentTrack focusin event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineComponentTrackFocusin(evt) {
+        this.onTimelineComponentTrackClick(evt);
     }
 
     /**

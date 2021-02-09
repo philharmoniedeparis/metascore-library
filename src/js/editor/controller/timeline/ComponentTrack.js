@@ -84,7 +84,7 @@ export default class ComponentTrack extends Dom {
         this.time_wrapper = new Dom('<div/>', {'class': 'time-wrapper'})
             .appendTo(this);
 
-        this.time = new Dom('<div/>', {'class': 'time'})
+        this.time = new Dom('<div/>', {'class': 'time', 'tabindex': 0})
             .addListener('dragstart', this.onTimeDragStart.bind(this), true)
             .addListener('drag', this.onTimeDrag.bind(this), true)
             .addListener('dragend', this.onTimeDragEnd.bind(this), true)
