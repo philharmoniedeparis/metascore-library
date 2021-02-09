@@ -193,11 +193,7 @@ export default class NumberInput extends Input {
     onMouseWheel(evt){
         if(this.native_input.is(':focus')){
             const delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
-            const decimals = getDecimalPlaces(this.configs.step);
             let value = this.getValue() + (this.configs.step * delta);
-
-            // work around the well-known floating point issue
-            value = round(value, decimals);
 
             this.setValue(value);
 
@@ -249,11 +245,7 @@ export default class NumberInput extends Input {
      */
     spin(direction, loop) {
         const step = this.configs.step * this.getSpinIncrement();
-        const decimals = getDecimalPlaces(step);
         let value = this.getValue() + step * (direction === 'down' ? -1 : 1);
-
-        // work around the well-known floating point issue
-        value = round(value, decimals);
 
         this.setValue(value);
 
@@ -302,6 +294,10 @@ export default class NumberInput extends Input {
         if(isNaN(val)){
             val = 0;
         }
+
+        // Round to match step decimal places.
+        const decimals = getDecimalPlaces(this.configs.step);
+        val = round(val, decimals);
 
         if(this.min !== null){
             val = Math.max(val, this.min);
