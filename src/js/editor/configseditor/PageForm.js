@@ -1,5 +1,6 @@
 import ComponentForm from './ComponentForm';
 import Locale from '../../core/Locale';
+import { pick } from '../../core/utils/Object';
 
 /**
  * A page component form class
@@ -11,11 +12,11 @@ export default class PageForm extends ComponentForm {
         'title_plural': Locale.t('editor.configseditor.PageForm.title.plural', 'Attributes of @count pages')
     });
 
-    static field_definitions = {
-        'background-color': super.field_definitions['background-color'],
-        'background-image': super.field_definitions['background-image'],
-        'time': super.field_definitions['time']
-    };
+    static field_definitions = pick(super.field_definitions, [
+        'background-color',
+        'background-image',
+        'time'
+    ]);
 
     /**
      * @inheritdoc
