@@ -4,37 +4,24 @@
     position: absolute;
     top: 0;
     left: calc(var(--keyframe-time)/var(--timeline-duration) * 100%);
-    width: 1em;
-    height: 1.5em;
-    margin-left: -0.5em;
+    width: 0.7em;
+    height: 0.7em;
+    margin-left: -0.35em;
+    margin-top: 0.35em;
+    background: #fff;
+    transform: rotate(45deg);
     opacity: 0.5;
     cursor: pointer;
 
-    &::after {
-        content: '';
-        display: block;
-        width: 0.7em;
-        height: 0.7em;
-        margin-top: 0.4em;
-        margin-left: 0.15em;
-        background: #fff;
-        transform: rotate(45deg);
-    }
-
     &.selected {
+        background: #ffd800;
         opacity: 1;
-
-        &::after {
-            outline: 1px solid $metascore-color;
-        }
+        z-index: 1;
     }
 
-    &:focus {
-        outline: none;
-
-        &::after {
-            outline: 1px solid $metascore-color;
-            box-shadow: 0 0 0.5em $metascore-color;
-        }
+    &:focus-visible {
+        outline-offset: 0.1em;
+        outline-style: dashed;
+        outline-width: 1px;
     }
 }
