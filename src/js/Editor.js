@@ -1582,8 +1582,9 @@ export class Editor extends Dom {
         const keyframe = evt.detail.keyframe;
         const property_track = keyframe.getTrack();
         const component = property_track.getComponent();
+        const keyframes = property_track.getKeyfames().filter(k => k.isSelected());
 
-        if (property_track.getSelectedKeyframes().length === 0) {
+        if (keyframes.length === 0) {
             const configs_form = this.configs_editor.getForm();
             if (configs_form && component === configs_form.getMasterComponent()) {
                 const property = property_track.getProperty();
@@ -1594,16 +1595,6 @@ export class Editor extends Dom {
                 }
             }
         }
-    }
-
-    /**
-     * Get the list of selected property track keyframes.
-     *
-     * @return {[Keyframe]} The selected keyframes.
-     */
-    getSelectedPropertyKeyframes() {
-        return this.controller.getTimeline().getPropertyKeyfames()
-            .filter(k => k.isSelected());
     }
 
     /**

@@ -290,7 +290,7 @@ export default class Timeline extends Dom {
         const time =  Dom.data(evt.target, 'time');
         const keyframe = property_track.getKeyframes().find(k => k.data('time') === time);
 
-        this.selectPropertyTrackKeyframe(keyframe, evt.shiftKey);
+        this.selectPropertyKeyframe(keyframe, evt.shiftKey);
     }
 
     /**
@@ -315,18 +315,18 @@ export default class Timeline extends Dom {
             return;
         }
 
-        this.selectPropertyTrackKeyframe(keyframe);
+        this.selectPropertyKeyframe(keyframe);
     }
 
     /**
-     * Select a property track keyframe.
+     * Select a property keyframe.
      *
      * @private
      * @param {Keyframe} keyframe The keyframe to select.
      * @param {Boolean} keepExisting True to keep the existing selection, false otherwise.
      * @return {this}
      */
-    selectPropertyTrackKeyframe(keyframe, keepExisting=false) {
+    selectPropertyKeyframe(keyframe, keepExisting=false) {
         if (!keepExisting) {
             // Deselect previously selected property keyframes.
             this.getPropertyKeyfames()

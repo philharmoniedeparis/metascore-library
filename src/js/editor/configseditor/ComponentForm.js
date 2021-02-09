@@ -777,8 +777,8 @@ export default class ComponentForm extends Dom {
         if (this.getMasterComponent().isPropertyAnimated(name)) {
             const values = new Map(this.getMasterComponent().getPropertyValue(name));
 
-            this.editor.getSelectedPropertyKeyframes()
-                .filter(keyframe => keyframe.getTrack().getProperty() === name)
+            this.editor.controller.getTimeline().getPropertyKeyfames()
+                .filter(k => k.getTrack().getProperty() === name && k.isSelected())
                 .forEach((keyframe) => {
                     values.set(keyframe.getTime(), value);
                 });

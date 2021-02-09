@@ -207,7 +207,7 @@ export default class PropertyTrack extends Dom {
      */
     updateKeyframes(){
         const values = new Map(this.component.getPropertyValue(this.property));
-        let added = false;
+        let reorder = false;
 
         // Remove keyframes of no-longer existing values.
         this.keyframes = this.keyframes.filter((keyframe) => {
@@ -228,11 +228,11 @@ export default class PropertyTrack extends Dom {
             else {
                 // Add new keyframe.
                 keyframe = this.addKeyframe(time, value);
-                added = true;
+                reorder = true;
             }
         });
 
-        if (added) {
+        if (reorder) {
             this.keyframes.sort((a, b) => a.getTime() - b.getTime());
         }
 
@@ -334,15 +334,6 @@ export default class PropertyTrack extends Dom {
         });
 
         delete this._before_drag_values;
-    }
-
-    /**
-     * Get the currently selected keyframes.
-     *
-     * @return {[Keyframe]} The selected keyframes.
-     */
-    getSelectedKeyframes() {
-        return this.keyframes.filter(k => k.isSelected());
     }
 
     /**
