@@ -42,9 +42,11 @@ export default class HotkeysInfo extends Overlay {
                 .text(h.title)
                 .appendTo(title);
 
-            new Dom('<p/>')
-                .text(h.description)
-                .appendTo(title);
+            if (h.description) {
+                new Dom('<p/>')
+                    .text(h.description)
+                    .appendTo(title);
+            }
 
             new Dom('<div/>', {'class': 'header'})
                 .text(Locale.t('editor.HotkeysInfo.hotkeys.header.shortcut', 'Key combination'))
