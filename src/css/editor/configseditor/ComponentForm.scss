@@ -51,9 +51,19 @@
 
                     input {
                         + .state {
-                            font-size: 0.75em;
-                            transform: rotate(45deg);
                             opacity: 0.25;
+
+                            label {
+                                background: none;
+
+                                .icon {
+                                    display: block;
+                                    position: relative;
+                                    top: auto;
+                                    left: auto;
+                                    color: #fff;
+                                }
+                            }
 
                             &:hover {
                                 opacity: 0.5;

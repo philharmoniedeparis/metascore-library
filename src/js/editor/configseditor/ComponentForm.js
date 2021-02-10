@@ -14,6 +14,8 @@ import CombinedInputs from '../../core/ui/input/CombinedInputs';
 import { MasterClock } from '../../core/media/MediaClock';
 import { History } from '../UndoRedo';
 
+import animated_icon from '../../../img/editor/controller/timeline/handle/animated.svg?svg-sprite';
+
 import { className } from '../../../css/editor/configseditor/ComponentForm.scss';
 
 /**
@@ -671,7 +673,7 @@ export default class ComponentForm extends Dom {
         if (configs.animatable) {
             const checkbox = new CheckboxInput({
                     'checked': false,
-                    'icon': false,
+                    'icon': animated_icon,
                     'name': 'animated'
                 })
                 .data('property', id)
