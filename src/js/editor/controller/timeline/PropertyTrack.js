@@ -154,10 +154,7 @@ export default class PropertyTrack extends Dom {
         this.addKeyframe(time, value).select();
 
         const values = this.getKeyframes().map((keyframe) => {
-            return [
-                keyframe.getTime(),
-                keyframe.getValue()
-            ];
+            return [keyframe.getTime(), keyframe.getValue()];
         });
 
         component.setPropertyValue(property, values);
@@ -278,6 +275,39 @@ export default class PropertyTrack extends Dom {
         this.keyframes.push(keyframe);
 
         return keyframe;
+    }
+
+    /**
+     * Remove a keyframe.
+     *
+     * @param {Keyframe} keyframe The keyframe.
+     * @return {this}
+     */
+    removeKeyframe(keyframe) {
+        const component = this.getComponent();
+        const property = this.getProperty();
+        const previous = clone(component.getPropertyValue(property));
+
+        keyframe.remove();
+
+        this.keyframes = this.keyframes.filter(k => k !== keyframe);
+
+        const values = this.keyframes.map((keyframe) => {
+            return [keyframe.getTime(), keyframe.getValue()];
+        });
+
+        component.setPropertyValue(property, values);
+
+        History.add({
+            'undo': () => {
+                component.setPropertyValue(property, previous);
+            },
+            'redo': () => {
+                component.setPropertyValue(property, values);
+            }
+        });
+
+        return this;
     }
 
     /**

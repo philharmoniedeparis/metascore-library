@@ -44,7 +44,7 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  */
 export class Editor extends Dom {
 
-    static defaults =  {
+    static defaults = {
         'container': 'body',
         'player': {
             'url': null,
@@ -58,154 +58,165 @@ export class Editor extends Dom {
         'asset_browser': {},
         'color_swatches': [],
         'xhr': {},
-        'component_copy_displacement': 10,
-        'hotkeys': {
-            'global': {
-                'title': Locale.t('editor.hotkeys.global.title', 'General'),
-                'description': Locale.t('editor.hotkeys.global.description', 'Shortcuts available throughout the editor'),
-                'items': {
-                    'save': {
-                        'combo': 'Control+s',
-                        'description': Locale.t('editor.hotkeys.global.save.description', 'Save')
-                    },
-                    'revert': {
-                        'combo': 'Control+r',
-                        'description': Locale.t('editor.hotkeys.global.revert.description', 'Revert')
-                    },
-                    'undo': {
-                        'combo': 'Control+z',
-                        'description': Locale.t('editor.hotkeys.global.undo.description', 'Undo')
-                    },
-                    'redo': {
-                        'combo': 'Control+y',
-                        'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
-                    },
-                    'preview-tmp': {
-                        'combo': 'Control+e',
-                        'description': Locale.t('editor.hotkeys.global.preview-tmp.description', 'Toggle preview mode temporarily'),
-                        'configs': {
-                            'keyup': true,
-                            'preventRepeat': true
-                        }
-                    },
-                    'preview': {
-                        'combo': 'Control+Shift+e',
-                        'description': Locale.t('editor.hotkeys.global.preview.description', 'Toggle preview mode'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'toggle-play': {
-                        'combo': ' ',
-                        'description': Locale.t('editor.hotkeys.global.toggle-play.description', 'Play/pause'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'hotkeys-help': {
-                        'combo': '?',
-                        'description': Locale.t('editor.hotkeys.global.hotkeys-help.description', 'Show keyboard shortcuts')
+        'component_copy_displacement': 10
+    };
+
+    static hotkeys = {
+        'global': {
+            'title': Locale.t('editor.hotkeys.global.title', 'General'),
+            'items': {
+                'save': {
+                    'combo': 'Control+s',
+                    'description': Locale.t('editor.hotkeys.global.save.description', 'Save')
+                },
+                'revert': {
+                    'combo': 'Control+r',
+                    'description': Locale.t('editor.hotkeys.global.revert.description', 'Revert')
+                },
+                'undo': {
+                    'combo': 'Control+z',
+                    'description': Locale.t('editor.hotkeys.global.undo.description', 'Undo')
+                },
+                'redo': {
+                    'combo': 'Control+y',
+                    'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
+                },
+                'preview-tmp': {
+                    'combo': 'Control+e',
+                    'description': Locale.t('editor.hotkeys.global.preview-tmp.description', 'Toggle preview mode temporarily'),
+                    'configs': {
+                        'keyup': true,
+                        'preventRepeat': true
+                    }
+                },
+                'preview': {
+                    'combo': 'Control+Shift+e',
+                    'description': Locale.t('editor.hotkeys.global.preview.description', 'Toggle preview mode'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'toggle-play': {
+                    'combo': ' ',
+                    'description': Locale.t('editor.hotkeys.global.toggle-play.description', 'Play/pause'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'hotkeys-help': {
+                    'combo': '?',
+                    'description': Locale.t('editor.hotkeys.global.hotkeys-help.description', 'Show keyboard shortcuts')
+                }
+            }
+        },
+        'player': {
+            'title': Locale.t('editor.hotkeys.player.title', 'Scene'),
+            'items': {
+                'right': {
+                    'combo': 'ArrowRight',
+                    'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
+                },
+                'right-10': {
+                    'combo': 'Shift+ArrowRight',
+                    'description': Locale.t('editor.hotkeys.player.right-10.description', 'Move selected component(s) by 10 pixel to the right')
+                },
+                'left': {
+                    'combo': 'ArrowLeft',
+                    'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
+                },
+                'left-10': {
+                    'combo': 'Shift+ArrowLeft',
+                    'description': Locale.t('editor.hotkeys.player.left-10.description', 'Move selected component(s) by 10 pixels to the left'),
+                },
+                'up': {
+                    'combo': 'ArrowUp',
+                    'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
+                },
+                'up-10': {
+                    'combo': 'Shift+ArrowUp',
+                    'description': Locale.t('editor.hotkeys.player.up-10.description', 'Move selected component(s) by 10 pixels upwards'),
+                },
+                'down': {
+                    'combo': 'ArrowDown',
+                    'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
+                },
+                'down-10': {
+                    'combo': 'Shift+ArrowDown',
+                    'description': Locale.t('editor.hotkeys.player.down-10.description', 'Move selected component(s) by 10 pixels downwards'),
+                },
+                'select-all': {
+                    'combo': 'Control+a',
+                    'description': Locale.t('editor.hotkeys.player.select-all.description', 'Select all components of the same level as the already selected ones, or all blocks if no components are already selected'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'select-next': {
+                    'combo': 'Tab',
+                    'description': Locale.t('editor.hotkeys.player.select-next.description', 'Select the next component'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'select-previous': {
+                    'combo': 'Shift+Tab',
+                    'description': Locale.t('editor.hotkeys.player.select-previous.description', 'Select the previous component'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'copy': {
+                    'combo': 'Control+c',
+                    'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'paste': {
+                    'combo': 'Control+v',
+                    'description': Locale.t('editor.hotkeys.player.paste.description', 'Paste component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'cut': {
+                    'combo': 'Control+x',
+                    'description': Locale.t('editor.hotkeys.player.cut.description', 'Cut selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'duplicate': {
+                    'combo': 'Control+d',
+                    'description': Locale.t('editor.hotkeys.player.duplicate.description', 'Duplicate selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'lock': {
+                    'combo': 'Control+l',
+                    'description': Locale.t('editor.hotkeys.player.lock.description', 'Lock/unlock selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'delete': {
+                    'combo': ['Delete', 'Backspace'],
+                    'description': Locale.t('editor.hotkeys.player.delete.description', 'Delete selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
                     }
                 }
-            },
-            'player': {
-                'title': Locale.t('editor.hotkeys.player.title', 'Workspace'),
-                'description': Locale.t('editor.hotkeys.player.description', 'Shortcuts available in the workspace (central zone)'),
-                'items': {
-                    'right': {
-                        'combo': 'ArrowRight',
-                        'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
-                    },
-                    'right-10': {
-                        'combo': 'Shift+ArrowRight',
-                        'description': Locale.t('editor.hotkeys.player.right-10.description', 'Move selected component(s) by 10 pixel to the right')
-                    },
-                    'left': {
-                        'combo': 'ArrowLeft',
-                        'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
-                    },
-                    'left-10': {
-                        'combo': 'Shift+ArrowLeft',
-                        'description': Locale.t('editor.hotkeys.player.left-10.description', 'Move selected component(s) by 10 pixels to the left'),
-                    },
-                    'up': {
-                        'combo': 'ArrowUp',
-                        'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
-                    },
-                    'up-10': {
-                        'combo': 'Shift+ArrowUp',
-                        'description': Locale.t('editor.hotkeys.player.up-10.description', 'Move selected component(s) by 10 pixels upwards'),
-                    },
-                    'down': {
-                        'combo': 'ArrowDown',
-                        'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
-                    },
-                    'down-10': {
-                        'combo': 'Shift+ArrowDown',
-                        'description': Locale.t('editor.hotkeys.player.down-10.description', 'Move selected component(s) by 10 pixels downwards'),
-                    },
-                    'select-all': {
-                        'combo': 'Control+a',
-                        'description': Locale.t('editor.hotkeys.player.select-all.description', 'Select all components of the same level as the already selected ones, or all blocks if no components are already selected'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'select-next': {
-                        'combo': 'Tab',
-                        'description': Locale.t('editor.hotkeys.player.select-next.description', 'Select the next component'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'select-previous': {
-                        'combo': 'Shift+Tab',
-                        'description': Locale.t('editor.hotkeys.player.select-previous.description', 'Select the previous component'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'copy': {
-                        'combo': 'Control+c',
-                        'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'paste': {
-                        'combo': 'Control+v',
-                        'description': Locale.t('editor.hotkeys.player.paste.description', 'Paste component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'cut': {
-                        'combo': 'Control+x',
-                        'description': Locale.t('editor.hotkeys.player.cut.description', 'Cut selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'duplicate': {
-                        'combo': 'Control+d',
-                        'description': Locale.t('editor.hotkeys.player.duplicate.description', 'Duplicate selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'lock': {
-                        'combo': 'Control+l',
-                        'description': Locale.t('editor.hotkeys.player.lock.description', 'Lock/unlock selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'delete': {
-                        'combo': ['Delete', 'Backspace'],
-                        'description': Locale.t('editor.hotkeys.player.delete.description', 'Delete selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
+            }
+        },
+        'timeline': {
+            'title': Locale.t('editor.hotkeys.timeline.title', 'Timeline'),
+            'items': {
+                'delete': {
+                    'combo': ['Delete', 'Backspace'],
+                    'description': Locale.t('editor.hotkeys.timeline.delete.description', 'Delete selected keyframe(s) or track(s)'),
+                    'configs': {
+                        'preventRepeat': true
                     }
                 }
             }
@@ -408,12 +419,14 @@ export class Editor extends Dom {
         this.controller = new Controller(this)
             .appendTo(bottom_pane.getContents());
 
-        this.controller.getTimeline()
-            .addDelegate('.handle, .component-track *', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+        const timeline = this.controller.getTimeline()
+            .addDelegate('.handle, .component-track .time-wrapper', 'click', this.onTimelineComponentTrackClick.bind(this), true)
             .addDelegate('.handle, .component-track .time', 'focusin', this.onTimelineComponentTrackFocusin.bind(this), true)
             .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
             .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
             .addListener('componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this));
+
+        this.getHotkeys('timeline').attachTo(timeline);
 
         /**
          * The auto-save indicator
@@ -499,8 +512,8 @@ export class Editor extends Dom {
         if(!(context in this.hotkeys)){
             const hotkeys = new Hotkeys();
 
-            if (this.configs.hotkeys && this.configs.hotkeys[context] && this.configs.hotkeys[context].items) {
-                Object.entries(this.configs.hotkeys[context].items).forEach(([key, value]) => {
+            if (this.constructor.hotkeys && this.constructor.hotkeys[context] && this.constructor.hotkeys[context].items) {
+                Object.entries(this.constructor.hotkeys[context].items).forEach(([key, value]) => {
                     hotkeys.bind(value.combo,
                         (evt) => {
                             this.handleHotkey(context, key, evt);
@@ -548,12 +561,7 @@ export class Editor extends Dom {
                 }
                 break;
             case 'hotkeys-help':
-                new HotkeysHelp(
-                    this.configs.hotkeys,
-                    {
-                        'parent': this,
-                    }
-                );
+                new HotkeysHelp(this.constructor.hotkeys, { 'parent': this});
                 break;
             case 'select-all':
                 {
@@ -660,6 +668,25 @@ export class Editor extends Dom {
                 }
                 break;
             case 'delete':
+                if (context === 'timeline') {
+                    const focused = new Dom(document.activeElement);
+                    if (focused.is('.keyframe')) {
+                        // Delete selected keyframes.
+                        History.startGroup();
+
+                        this.controller.getTimeline().getPropertyKeyfames()
+                            .filter(k => k.isSelected())
+                            .forEach((keyframe) => {
+                                keyframe.getTrack().removeKeyframe(keyframe);
+                            });
+
+                        History.endGroup();
+
+                        return;
+                    }
+                }
+
+                // Delete selected components.
                 this.deletePlayerComponents(this.configs_editor.getComponents());
                 break;
         }
@@ -1593,7 +1620,7 @@ export class Editor extends Dom {
         const keyframe = evt.detail.keyframe;
         const property_track = keyframe.getTrack();
         const component = property_track.getComponent();
-        const keyframes = property_track.getKeyfames().filter(k => k.isSelected());
+        const keyframes = property_track.getKeyframes().filter(k => k.isSelected());
 
         if (keyframes.length === 0) {
             const configs_form = this.configs_editor.getForm();
