@@ -54,7 +54,7 @@ export default class Cursor extends Element {
                 },
                 'loop-duration': {
                     'type': 'time',
-                    'label': Locale.t('component.element.Cursor.properties.loop-duration.label', 'Loop-duration'),
+                    'label': Locale.t('component.element.Cursor.properties.loop-duration.label', 'Loop duration'),
                     'applies': function(){
                         return this.getPropertyValue('form') === 'circular';
                     }
