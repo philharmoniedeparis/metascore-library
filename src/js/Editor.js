@@ -421,6 +421,7 @@ export class Editor extends Dom {
 
         const timeline = this.controller.getTimeline()
             .addDelegate('.handle, .component-track .time-wrapper', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+            .addDelegate('.component-track .time', 'dblclick', this.onTimelineComponentTrackDblClick.bind(this), true)
             .addDelegate('.handle, .component-track .time', 'focusin', this.onTimelineComponentTrackFocusin.bind(this), true)
             .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
             .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
@@ -1414,18 +1415,19 @@ export class Editor extends Dom {
                 if (block) {
                     // Set page as active page.
                     block.setActivePage(component);
-
-                    if (block.getPropertyValue('synched')) {
-                        // Goto page's start-time.
-                        const start_time = component.getPropertyValue('start-time');
-                        MasterClock.setTime(start_time !== null ? start_time : 0);
-                    }
                 }
             }
-            else if (component.hasProperty('start-time')) {
-                const start_time = component.getPropertyValue('start-time');
-                if (start_time !== null) {
-                    MasterClock.setTime(start_time);
+            else {
+                // Make sure current time is between start- and end-time
+                const current_time = MasterClock.getTime();
+                const start_time = component.hasProperty('start-time') ? component.getPropertyValue('start-time') : null;
+                const end_time = component.hasProperty('end-time') ? component.getPropertyValue('end-time') : null;
+
+                if (
+                    (start_time !== null && current_time < start_time) ||
+                    (end_time !== null && current_time > end_time)
+                ) {
+                    MasterClock.setTime(start_time ?? 0);
                 }
             }
         }
@@ -1571,6 +1573,24 @@ export class Editor extends Dom {
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
+    }
+
+    /**
+     * Timeline ComponentTrack dblclick event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineComponentTrackDblClick(evt) {
+        const el = Dom.closest(evt.target, '.component-track');
+        const component_id = Dom.data(el, 'component');
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
+        const component = track.getComponent();
+
+        if (component.hasProperty('start-time')) {
+            const start_time = component.getPropertyValue('start-time');
+            MasterClock.setTime(start_time ?? 0);
+        }
     }
 
     /**
