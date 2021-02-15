@@ -1,5 +1,5 @@
 import Dom from '../../core/Dom';
-import { clone } from '../../core/utils/Array';
+import { clone, unique } from '../../core/utils/Array';
 import { isFunction } from '../../core/utils/Var';
 import Locale from '../../core/Locale';
 import Field from '../Field';
@@ -773,38 +773,79 @@ export default class ComponentForm extends Dom {
         const name = evt.detail.field.data('property');
         let value = evt.detail.value;
 
-        const components = clone(this.components);
-        const previous_values = {};
-
         if (this.getMasterComponent().isPropertyAnimated(name)) {
-            const values = new Map(this.getMasterComponent().getPropertyValue(name));
+            const values = {};
+            const previous_values = {};
 
-            this.editor.controller.getTimeline().getPropertyKeyfames()
-                .filter(k => k.getTrack().getProperty() === name && k.isSelected())
-                .forEach((keyframe) => {
-                    values.set(keyframe.getTime(), value);
+            // Get selected keyframes matching the property.
+            const keyframes = this.editor.controller.getTimeline().getPropertyKeyfames()
+                .filter(k => k.getTrack().getProperty() === name && k.isSelected());
+
+            // Get tracks of selected keyframes.
+            const tracks = unique(keyframes.map(k => k.getTrack()));
+
+            // Get components of selected keyframes.
+            const components = tracks.map(t => t.getComponent());
+
+            // Get previous values.
+            tracks.forEach((track) => {
+                const component = track.getComponent();
+                previous_values[component.getId()] = component.getPropertyValue(name);
+            });
+
+            // Update keyframe values.
+            keyframes.forEach((keyframe) => {
+                keyframe.setValue(value);
+            });
+
+            // Get new values and update components' property.
+            tracks.forEach((track) => {
+                const component = track.getComponent();
+                const value = track.getKeyframes().map((keyframe) => {
+                    return [keyframe.getTime(), keyframe.getValue()];
                 });
 
-            value = Array.from(values);
+                values[component.getId()] = value;
+                component.setPropertyValue(name, value);
+            });
+
+            History.add({
+                'undo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, previous_values[component.getId()]);
+                    });
+                },
+                'redo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, values[component.getId()]);
+                    });
+                }
+            });
+
+        }
+        else {
+            const components = clone(this.components);
+            const previous_values = {};
+
+            components.forEach((component) => {
+                previous_values[component.getId()] = component.getPropertyValue(name);
+                component.setPropertyValue(name, value);
+            });
+
+            History.add({
+                'undo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, previous_values[component.getId()]);
+                    });
+                },
+                'redo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, value);
+                    });
+                }
+            });
         }
 
-        components.forEach((component) => {
-            previous_values[component.getId()] = component.getPropertyValue(name);
-            component.setPropertyValue(name, value);
-        });
-
-        History.add({
-            'undo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, previous_values[component.getId()]);
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, value);
-                });
-            }
-        });
 
         this.toggleMultival(evt.detail.field, false);
     }
