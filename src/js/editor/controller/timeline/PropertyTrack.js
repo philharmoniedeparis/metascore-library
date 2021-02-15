@@ -33,8 +33,8 @@ export default class PropertyTrack extends Dom {
         super('<div/>', {'class': `property-track ${className}`});
 
         // fix event handlers scope
-        this.onComponentSelected = this.onComponentSelected.bind(this);
-        this.onComponentDeselected = this.onComponentDeselected.bind(this);
+        this.onComponentSelect = this.onComponentSelect.bind(this);
+        this.onComponentDeselect = this.onComponentDeselect.bind(this);
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
         this.onKeyframesWrapperClick = this.onKeyframesWrapperClick.bind(this);
 
@@ -49,8 +49,8 @@ export default class PropertyTrack extends Dom {
          * @type {Component}
          */
         this.component = component
-            .addListener('selected', this.onComponentSelected, true)
-            .addListener('deselected', this.onComponentDeselected)
+            .addListener('select', this.onComponentSelect, true)
+            .addListener('deselect', this.onComponentDeselect)
             .addListener('propchange', this.onComponentPropChange);
 
         /**
@@ -93,20 +93,20 @@ export default class PropertyTrack extends Dom {
     }
 
     /**
-     * Component selected event callback
+     * Component select event callback
      *
      * @private
      */
-    onComponentSelected(){
+    onComponentSelect(){
         this.updateKeyframesWrapperTitle();
     }
 
     /**
-     * Component deselected event callback
+     * Component deselect event callback
      *
      * @private
      */
-    onComponentDeselected(){
+    onComponentDeselect(){
         this.updateKeyframesWrapperTitle();
     }
 
@@ -392,8 +392,8 @@ export default class PropertyTrack extends Dom {
      */
     remove() {
         this.component
-            .removeListener('selected', this.onComponentSelected, true)
-            .removeListener('deselected', this.onComponentDeselected)
+            .removeListener('select', this.onComponentSelect, true)
+            .removeListener('deselect', this.onComponentDeselect)
             .removeListener('propchange', this.onComponentPropChange);
 
         super.remove();

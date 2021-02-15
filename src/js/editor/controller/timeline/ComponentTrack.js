@@ -41,8 +41,8 @@ export default class ComponentTrack extends Dom {
         const component_type = component.getType();
 
         this.component = component
-            .addListener('selected', this.onComponentSelected.bind(this), true)
-            .addListener('deselected', this.onComponentDeselected.bind(this))
+            .addListener('select', this.onComponentSelect.bind(this), true)
+            .addListener('deselect', this.onComponentDeselect.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
 
         let icon = null;
@@ -130,12 +130,12 @@ export default class ComponentTrack extends Dom {
     }
 
     /**
-     * Component selected event callback
+     * Component select event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentSelected(evt){
+    onComponentSelect(evt){
         if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, this is a parent component
             // This is applied first, as the listener is registered on the capturing phase
@@ -155,12 +155,12 @@ export default class ComponentTrack extends Dom {
     }
 
     /**
-     * Component deselected event callback
+     * Component deselect event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentDeselected(evt){
+    onComponentDeselect(evt){
         if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, this is a parent component
 

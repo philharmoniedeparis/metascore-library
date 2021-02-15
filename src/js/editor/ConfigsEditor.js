@@ -240,7 +240,7 @@ export default class ConfigsEditor extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentset', {'component': component, 'count': this.components.length}, false);
-            component.triggerEvent('selected', {'component': component});
+            component.triggerEvent('select', {'component': component});
         }
 
         return this;
@@ -275,7 +275,7 @@ export default class ConfigsEditor extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
-            component.triggerEvent('deselected', {'component': component});
+            component.triggerEvent('deselect', {'component': component});
         }
 
         return this;
