@@ -420,8 +420,10 @@ export class Editor extends Dom {
             .appendTo(bottom_pane.getContents());
 
         const timeline = this.controller.getTimeline()
-            .addDelegate('.handle, .component-track .time-wrapper', 'click', this.onTimelineComponentTrackClick.bind(this), true)
-            .addDelegate('.component-track .time', 'dblclick', this.onTimelineComponentTrackDblClick.bind(this), true)
+            .addDelegate('.handle, .component-track .time-wrapper, .component-track .time, .component-track .keyframes-wrapper', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+            .addDelegate('.component-track .time', 'dblclick', this.onTimelineComponentTrackDblClick.bind(this))
+            .addDelegate('.handle, .component-track .time', 'mousedown', this.onTimelineComponentTrackMousedown.bind(this), true)
+            .addDelegate('.handle, .component-track .time', 'mouseup', this.onTimelineComponentTrackMouseup.bind(this), true)
             .addDelegate('.handle, .component-track .time', 'focusin', this.onTimelineComponentTrackFocusin.bind(this), true)
             .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
             .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
@@ -1594,13 +1596,45 @@ export class Editor extends Dom {
     }
 
     /**
+     * Timeline ComponentTrack mousedown event callback
+     *
+     * @private
+     */
+    onTimelineComponentTrackMousedown() {
+        /**
+         * Used to differentiate focus from click.
+         * See onTimelineComponentTrackFocusin.
+         * @type {Boolean}
+         */
+        this._timeline_componenttrack_mousedown = true;
+    }
+
+    /**
+     * Timeline ComponentTrack mouseup event callback
+     *
+     * @private
+     */
+    onTimelineComponentTrackMouseup() {
+        delete this._timeline_componenttrack_mousedown;
+    }
+
+    /**
      * Timeline ComponentTrack focusin event callback
      *
      * @private
      * @param {Event} evt The event object
      */
     onTimelineComponentTrackFocusin(evt) {
-        this.onTimelineComponentTrackClick(evt);
+        if (this._timeline_componenttrack_mousedown) {
+            return;
+        }
+
+        const el = Dom.closest(evt.target, '.component-track');
+        const component_id = Dom.data(el, 'component');
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
+        const component = track.getComponent();
+
+        this.selectPlayerComponent(component);
     }
 
     /**
@@ -1614,10 +1648,8 @@ export class Editor extends Dom {
         const property_track = keyframe.getTrack();
         const component = property_track.getComponent();
 
-        // Select the componment if not selected already.
-        if (!component.hasClass('selected')) {
-            this.selectPlayerComponent(component, evt.shiftKey);
-        }
+        // Select component.
+        this.configs_editor.setComponent(component, true);
 
         const configs_form = this.configs_editor.getForm();
         if (configs_form && component === configs_form.getMasterComponent()) {

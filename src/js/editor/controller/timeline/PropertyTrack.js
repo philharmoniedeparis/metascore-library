@@ -36,7 +36,6 @@ export default class PropertyTrack extends Dom {
         this.onComponentSelect = this.onComponentSelect.bind(this);
         this.onComponentDeselect = this.onComponentDeselect.bind(this);
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
-        this.onKeyframesWrapperClick = this.onKeyframesWrapperClick.bind(this);
 
         /**
          * The configuration values
@@ -85,7 +84,6 @@ export default class PropertyTrack extends Dom {
             .appendTo(this);
 
         this
-            .addDelegate('.keyframes-wrapper', 'click', this.onKeyframesWrapperClick)
             .data('property', this.property)
             .attr('title', this.property)
             .updateKeyframes()
@@ -107,6 +105,10 @@ export default class PropertyTrack extends Dom {
      * @private
      */
     onComponentDeselect(){
+        this.getKeyframes()
+            .filter(k => k.isSelected())
+            .forEach(k => k.deselect());
+
         this.updateKeyframesWrapperTitle();
     }
 
@@ -129,44 +131,6 @@ export default class PropertyTrack extends Dom {
         else{
             this.updateKeyframes();
         }
-    }
-
-    /**
-     * Keyframes wrapper click event handler.
-     *
-     * @private
-     * @param {MouseEvent} evt The event object
-     */
-    onKeyframesWrapperClick(evt) {
-        const component = this.getComponent();
-        if (!component.hasClass('selected')) {
-            return;
-        }
-
-        const property = this.getProperty();
-        const previous = clone(component.getPropertyValue(property));
-        const duration = parseFloat(this.css('--timeline-duration'));
-        const {width, left} = evt.target.getBoundingClientRect();
-        const x = evt.pageX - left;
-        const time = (x / width) * duration;
-        const value = component.getAnimatedPropertyValueAtTime(this.property, time);
-
-        this.addKeyframe(time, value).select();
-
-        const values = this.getKeyframes().map((keyframe) => {
-            return [keyframe.getTime(), keyframe.getValue()];
-        });
-
-        component.setPropertyValue(property, values);
-
-        History.add({
-            'undo': () => {
-                component.setPropertyValue(property, previous);
-            },
-            'redo': () => {
-                component.setPropertyValue(property, values);
-            }
-        });
     }
 
     /**

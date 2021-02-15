@@ -1,4 +1,6 @@
 import Dom from '../../core/Dom';
+import { clone } from '../../core/utils/Array';
+import { History } from '../UndoRedo';
 import {MasterClock} from '../../core/media/MediaClock';
 import ComponentTrack from './timeline/ComponentTrack';
 import ResizeObserver from 'resize-observer-polyfill';
@@ -62,19 +64,6 @@ export default class Timeline extends Dom {
          * @type {Dom}
          */
         this.tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .addDelegate('.component-track .time', 'dragstart', this.onComponentTrackTimeDragStart.bind(this))
-            .addDelegate('.component-track .time', 'dragend', this.onComponentTrackTimeDragEnd.bind(this))
-            .addDelegate('.component-track .time', 'resizestart', this.onComponentTrackTimeResizeStart.bind(this))
-            .addDelegate('.component-track .time', 'resizeend', this.onComponentTrackTimeResizeEnd.bind(this))
-            .addDelegate('.component-track .handle', 'dragstart', this.onComponentTrackHandleDragStart.bind(this))
-            .addDelegate('.component-track .handle', 'dragover', this.onComponentTrackHandleDragOver.bind(this))
-            .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
-            .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
-            .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
-            .addDelegate('.property-track .keyframe', 'dragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
-            .addDelegate('.property-track .keyframe', 'dragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
-            .addDelegate('.property-track .keyframe', 'mousedown', this.onComponentTrackKeyframeMouseDown.bind(this))
-            .addDelegate('.property-track .keyframe', 'focusin', this.onComponentTrackKeyframeFocusin.bind(this))
             .appendTo(this);
 
         const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
@@ -93,6 +82,24 @@ export default class Timeline extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
+
+        this
+            .addDelegate('.component-track .time', 'dragstart', this.onComponentTrackTimeDragStart.bind(this))
+            .addDelegate('.component-track .time', 'dragend', this.onComponentTrackTimeDragEnd.bind(this))
+            .addDelegate('.component-track .time', 'resizestart', this.onComponentTrackTimeResizeStart.bind(this))
+            .addDelegate('.component-track .time', 'resizeend', this.onComponentTrackTimeResizeEnd.bind(this))
+            .addDelegate('.component-track .handle', 'dragstart', this.onComponentTrackHandleDragStart.bind(this))
+            .addDelegate('.component-track .handle', 'dragover', this.onComponentTrackHandleDragOver.bind(this))
+            .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
+            .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
+            .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
+            .addDelegate('.property-track .keyframes-wrapper', 'click', this.onPropertyTrackKeyframesWrapperClick.bind(this), true)
+            .addDelegate('.property-track .keyframe', 'dragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
+            .addDelegate('.property-track .keyframe', 'dragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
+            .addDelegate('.property-track .keyframe', 'click', this.onComponentTrackKeyframeClick.bind(this))
+            .addDelegate('.property-track .keyframe', 'mousedown', this.onComponentTrackKeyframeMousedown.bind(this))
+            .addDelegate('.property-track .keyframe', 'mouseup', this.onComponentTrackKeyframeMouseup.bind(this))
+            .addDelegate('.property-track .keyframe', 'focusin', this.onComponentTrackKeyframeFocusin.bind(this));
     }
 
     /**
@@ -278,7 +285,7 @@ export default class Timeline extends Dom {
      * @private
      * @param {MouseEvent} evt The event object
      */
-    onComponentTrackKeyframeMouseDown(evt) {
+    onComponentTrackKeyframeClick(evt) {
         const property_track_el = Dom.closest(evt.target, '.property-track');
         const component_track_el = Dom.closest(property_track_el, '.component-track');
         const component_id = Dom.data(component_track_el, 'component');
@@ -294,12 +301,39 @@ export default class Timeline extends Dom {
     }
 
     /**
+     * ComponentTrack Keyframe mousedown event callback
+     *
+     * @private
+     */
+    onComponentTrackKeyframeMousedown() {
+        /**
+         * Used to differentiate focus from click.
+         * See onComponentTrackKeyframeFocusin.
+         * @type {Boolean}
+         */
+        this._componenttrack_keyframe_mousedown = true;
+    }
+
+    /**
+     * ComponentTrack Keyframe mousedown event callback
+     *
+     * @private
+     */
+    onComponentTrackKeyframeMouseup() {
+        delete this._componenttrack_keyframe_mousedown;
+    }
+
+    /**
      * ComponentTrack Keyframe focusin event callback
      *
      * @private
      * @param {FocusEvent} evt The event object
      */
     onComponentTrackKeyframeFocusin(evt) {
+        if (this._componenttrack_keyframe_mousedown) {
+            return;
+        }
+
         const property_track_el = Dom.closest(evt.target, '.property-track');
         const component_track_el = Dom.closest(property_track_el, '.component-track');
         const component_id = Dom.data(component_track_el, 'component');
@@ -360,6 +394,53 @@ export default class Timeline extends Dom {
         });
 
         return keyframes;
+    }
+
+    /**
+     * Keyframes wrapper click event handler.
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onPropertyTrackKeyframesWrapperClick(evt) {
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
+
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const component = component_track.getComponent();
+        if (!component.hasClass('selected')) {
+            return;
+        }
+
+        const previous = clone(component.getPropertyValue(property));
+        const duration = parseFloat(property_track.css('--timeline-duration'));
+        const {width, left} = evt.target.getBoundingClientRect();
+        const x = evt.pageX - left;
+        const time = (x / width) * duration;
+        const value = component.getAnimatedPropertyValueAtTime(property, time);
+
+        const keyframe = property_track.addKeyframe(time, value);
+
+        this.selectPropertyKeyframe(keyframe);
+
+        const values = property_track.getKeyframes().map((keyframe) => {
+            return [keyframe.getTime(), keyframe.getValue()];
+        });
+
+        component.setPropertyValue(property, values);
+
+        History.add({
+            'undo': () => {
+                component.setPropertyValue(property, previous);
+            },
+            'redo': () => {
+                component.setPropertyValue(property, values);
+            }
+        });
     }
 
     /**
