@@ -49,6 +49,16 @@ $handles-margin: 0.5em;
             box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
             opacity: 0.5;
 
+            &:focus {
+                outline: none;
+            }
+
+            &:focus-visible {
+                outline-offset: 0.1em;
+                outline-style: dashed;
+                outline-width: 1px;
+            }
+
             .resize-handle {
                 display: none;
                 width: 6px;
