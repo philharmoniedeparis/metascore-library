@@ -1,5 +1,5 @@
 import Dom from '../core/Dom';
-import {MasterClock} from '../core/media/Clock';
+import {MasterClock} from '../core/media/MediaClock';
 import Button from '../core/ui/Button';
 import TimeInput from '../core/ui/input/TimeInput';
 import BufferIndicator from './controller/BufferIndicator';
@@ -22,7 +22,7 @@ import {className} from '../../css/editor/Controller.scss';
  *
  * @emits {timeset} Fired when the time is set
  * @param {Object} controller The Controller instance
- * @param {Number} time The time in centiseconds
+ * @param {Number} time The time in seconds
  */
 export default class Controller extends Dom {
 
@@ -155,7 +155,7 @@ export default class Controller extends Dom {
          * @type {Timeline}
          */
         this.timeline = new Timeline()
-            .addDelegate('.track', 'select', this.onTimelineTrackSelect.bind(this))
+            .addDelegate('.component-track', 'select', this.onTimelineComponentTrackSelect.bind(this))
             .appendTo(this.middle);
 
         const bottom = new Dom('<div/>', {'class': 'bottom'})
@@ -179,14 +179,10 @@ export default class Controller extends Dom {
         const position = evt.detail.position;
 
         const component_id = component.getId();
-        const track = this.getTimeline().getTrack(component_id);
+        const track = this.getTimeline().getComponentTrack(component_id);
         const track_parent = track.parents();
 
-        const handle = track.getHandle();
-        const handle_parent = handle.parents();
-
         track.insertAt(track_parent, position);
-        handle.insertAt(handle_parent, position);
     }
 
     /**
@@ -345,24 +341,26 @@ export default class Controller extends Dom {
     }
 
     /**
-     * Timeline Track select event callback
+     * Timeline ComponentTrack select event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTimelineTrackSelect(evt){
+    onTimelineComponentTrackSelect(evt){
         const scroll_el = this.middle.get(0);
         const scroll_el_rect = scroll_el.getBoundingClientRect();
 
         const sticky_top_el = this.sticky_top.get(0);
         const sticky_top_el_rect = sticky_top_el.getBoundingClientRect();
 
-        const track_rect = evt.target.getBoundingClientRect();
+        const track = this.getTimeline().getComponentTrack(Dom.data(evt.target, 'component'));
+        const handle = track.getHandle();
+        const handle_rect = handle.get(0).getBoundingClientRect();
 
-        if(track_rect.top < sticky_top_el_rect.bottom || track_rect.bottom > scroll_el_rect.bottom){
+        if(handle_rect.top < sticky_top_el_rect.bottom || handle_rect.bottom > scroll_el_rect.bottom){
             window.requestAnimationFrame(() => {
                 // Scroll track into view
-                scroll_el.scrollTop += track_rect.top - sticky_top_el_rect.bottom;
+                scroll_el.scrollTop += handle_rect.top - sticky_top_el_rect.bottom;
             });
         }
     }

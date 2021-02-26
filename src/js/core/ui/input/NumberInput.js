@@ -2,6 +2,7 @@ import Input from '../Input';
 import Dom from '../../Dom';
 import Button from '../Button';
 import {isNumeric, isFunction} from '../../utils/Var';
+import {round} from '../../utils/Math';
 import {getDecimalPlaces} from '../../utils/Number';
 
 import chevron_down_icon from '../../../../img/core/ui/input/number/chevron-down.svg?svg-sprite';
@@ -56,9 +57,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
@@ -107,9 +106,7 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * The change event handler
-     *
-     * @private
+     * @inheritdoc
      */
     onChange(){
         if(this.dirty){
@@ -171,13 +168,15 @@ export default class NumberInput extends Input {
     }
 
     /**
-     * The keypress event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
     onKeypress(evt){
-        if(isNumeric(evt.key) || ((evt.key === '.') && this.configs.step < 1) || (evt.key === "Enter")){
+        if(
+            isNumeric(evt.key) ||
+            ((evt.key === '.') && this.configs.step < 1) ||
+            ((evt.key === '-') && (this.min === null || this.min < 0)) ||
+            (evt.key === "Enter")
+        ){
             // do nothing, to allow the triggering of the input event
             return;
         }
@@ -194,11 +193,7 @@ export default class NumberInput extends Input {
     onMouseWheel(evt){
         if(this.native_input.is(':focus')){
             const delta = Math.max(-1, Math.min(1, (evt.wheelDelta || -evt.detail)));
-            const decimals = getDecimalPlaces(this.configs.step);
             let value = this.getValue() + (this.configs.step * delta);
-
-            // work around the well-known floating point issue
-            value = parseFloat(value.toFixed(decimals));
 
             this.setValue(value);
 
@@ -250,11 +245,7 @@ export default class NumberInput extends Input {
      */
     spin(direction, loop) {
         const step = this.configs.step * this.getSpinIncrement();
-        const decimals = getDecimalPlaces(step);
         let value = this.getValue() + step * (direction === 'down' ? -1 : 1);
-
-        // work around the well-known floating point issue
-        value = parseFloat(value.toFixed(decimals));
 
         this.setValue(value);
 
@@ -303,6 +294,10 @@ export default class NumberInput extends Input {
         if(isNaN(val)){
             val = 0;
         }
+
+        // Round to match step decimal places.
+        const decimals = getDecimalPlaces(this.configs.step);
+        val = round(val, decimals);
 
         if(this.min !== null){
             val = Math.max(val, this.min);

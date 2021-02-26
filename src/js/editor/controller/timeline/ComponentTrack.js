@@ -1,17 +1,21 @@
 import Dom from '../../../core/Dom';
-import Handle from './Handle';
+import Locale from '../../../core/Locale'
+import Handle from './track/Handle';
 import Resizable from '../../../core/ui/Resizable';
 import Draggable from '../../../core/ui/Draggable';
 import ComponentIcons from '../../ComponentIcons';
 import {clamp} from '../../../core/utils/Math';
-import {MasterClock} from '../../../core/media/Clock';
+import {MasterClock} from '../../../core/media/MediaClock';
+import PropertyTrack from './PropertyTrack';
 
-import {className} from '../../../../css/editor/controller/timeline/Track.scss';
+import locked_icon from '../../../../img/editor/controller/timeline/handle/locked.svg?svg-sprite';
+
+import {className} from '../../../../css/editor/controller/timeline/ComponentTrack.scss';
 
 /**
- * A timeline track
+ * A timeline track for components
  */
-export default class Track extends Dom {
+export default class ComponentTrack extends Dom {
 
     static defaults = {
         'draggableConfigs': null,
@@ -25,7 +29,7 @@ export default class Track extends Dom {
      */
     constructor(component, configs) {
         // call parent constructor
-        super('<div/>', {'class': `track ${className}`});
+        super('<div/>', {'class': `component-track ${className}`});
 
         /**
          * The configuration values
@@ -36,24 +40,10 @@ export default class Track extends Dom {
         const component_id = component.getId();
         const component_type = component.getType();
 
-        this.duration = 0;
-
         this.component = component
-            .addListener('selected', this.onComponentSelected.bind(this), true)
-            .addListener('deselected', this.onComponentDeselected.bind(this))
+            .addListener('select', this.onComponentSelect.bind(this), true)
+            .addListener('deselect', this.onComponentDeselect.bind(this))
             .addListener('propchange', this.onComponentPropChange.bind(this));
-
-        const inner = new Dom('<div/>', {'class': 'inner'})
-            .appendTo(this);
-
-        this.info = new Dom('<div/>', {'class': 'info'})
-            .addListener('dragstart', this.onInfoDragStart.bind(this))
-            .addListener('drag', this.onInfoDrag.bind(this))
-            .addListener('dragend', this.onInfoDragEnd.bind(this))
-            .addListener('resizestart', this.onInfoResizeStart.bind(this))
-            .addListener('resize', this.onInfoResize.bind(this))
-            .addListener('resizeend', this.onInfoResizeEnd.bind(this))
-            .appendTo(inner);
 
         let icon = null;
         switch(component_type){
@@ -77,18 +67,60 @@ export default class Track extends Dom {
         }
 
         this.handle = new Handle({
-                'icon': icon
+                'icon': icon,
+                'expander': true,
             })
-            .data('component', component_id)
-            .data('type', component_type)
+            .addToggler('lock', locked_icon, Locale.t('editor.controller.timeline.ComponentTrack.handle.lock.title', 'Lock/Unlock'))
             .addDelegate('button[data-action="expander"]', 'click', this.onHandleExpanderClick.bind(this))
-            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this));
+            .addDelegate('.togglers .input', 'valuechange', this.onHandleToggleValueChange.bind(this))
+            .appendTo(this);
 
         if(component_type !== 'Page'){
             this.handle.attr('draggable', 'true');
         }
 
         this.handle.getToggler('lock').setValue(component.getPropertyValue('editor.locked'), true);
+
+        this.time_wrapper = new Dom('<div/>', {'class': 'time-wrapper'})
+            .appendTo(this);
+
+        this.time = new Dom('<div/>', {'class': 'time', 'tabindex': 0})
+            .addListener('dragstart', this.onTimeDragStart.bind(this), true)
+            .addListener('drag', this.onTimeDrag.bind(this), true)
+            .addListener('dragend', this.onTimeDragEnd.bind(this), true)
+            .addListener('resizestart', this.onTimeResizeStart.bind(this), true)
+            .addListener('resize', this.onTimeResize.bind(this), true)
+            .addListener('resizeend', this.onTimeResizeEnd.bind(this), true)
+            .appendTo(this.time_wrapper);
+
+        /**
+         * The descendents DOM wrapper.
+         * @type {Dom}
+         */
+        this.descendents_wrapper = new Dom('<div/>', {'class': 'descendents'})
+            .addListener('childremove', this.onDescendentsChildRemove.bind(this))
+            .appendTo(this);
+
+        /**
+         * The property tracks DOM wrapper.
+         * @type {Dom}
+         */
+        this.properties_wrapper = new Dom('<div/>', {'class': 'properties'})
+            .addListener('childremove', this.onPropertiesChildRemove.bind(this))
+            .appendTo(this);
+
+        /**
+         * The list of property tracks.
+         * @type {Map<String, PropertyTrack>}
+         */
+        this.property_tracks = new Map();
+
+        // Add property tracks.
+        Object.keys(this.component.getProperties()).forEach((name) => {
+            if (this.component.isPropertyAnimated(name)){
+                this.addPropertyTrack(name);
+            }
+        });
 
         this
             .data('component', component_id)
@@ -98,24 +130,21 @@ export default class Track extends Dom {
     }
 
     /**
-     * Component selected event callback
+     * Component select event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentSelected(evt){
+    onComponentSelect(evt){
         if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, this is a parent component
             // This is applied first, as the listener is registered on the capturing phase
 
             // Expand the parent
-            this.addClass('auto-expanded')
-                .getHandle().addClass('auto-expanded');
+            this.addClass('auto-expanded');
         }
         else{
             this.component.addListener('propchange', this.onSelectedComponentPropChange.bind(this));
-
-            this.getHandle().addClass('selected');
 
             this
                 .setDraggable(true)
@@ -126,27 +155,24 @@ export default class Track extends Dom {
     }
 
     /**
-     * Component deselected event callback
+     * Component deselect event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onComponentDeselected(evt){
+    onComponentDeselect(evt){
         if(evt.target !== evt.currentTarget){
             // Caught a bubbled event, this is a parent component
 
             // Check if a desendent is selected in the parent
-            const expanded_descendents = this.descendents.find('.selected');
+            const expanded_descendents = this.descendents_wrapper.find('.selected');
             if(expanded_descendents.count() === 0){
                 // Shrik the parent
-                this.removeClass('auto-expanded')
-                    .getHandle().removeClass('auto-expanded');
+                this.removeClass('auto-expanded');
             }
         }
         else{
             this.component.removeListener('propchange', this.onSelectedComponentPropChange.bind(this));
-
-            this.getHandle().removeClass('selected');
 
             this
                 .setDraggable(false)
@@ -163,11 +189,6 @@ export default class Track extends Dom {
      * @param {CustomEvent} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
         const property = evt.detail.property;
         const value = evt.detail.value;
 
@@ -178,13 +199,19 @@ export default class Track extends Dom {
                 break;
 
             case 'name':
-                this.getHandle().setLabel(value);
-                this.attr('title', value);
+                this.updateLabel();
                 break;
 
             case 'editor.locked':
                 this.getHandle().getToggler('lock').setValue(value, true);
                 break;
+        }
+
+        if (this.getComponent().isPropertyAnimated(property)) {
+            if (!this.hasPropertyTrack(property)) {
+                const track = this.addPropertyTrack(property);
+                track.getKeyframes()[0].select();
+            }
         }
     }
 
@@ -216,26 +243,23 @@ export default class Track extends Dom {
     }
 
     /**
-     * Info dragstart event callback
+     * Time dragstart event callback
      *
      * @private
      */
-    onInfoDragStart(evt){
-        const {width} = this.get(0).getBoundingClientRect();
-        this._drag_multiplier = this.duration / width;
-
-        this.triggerEvent('dragstart', evt.detail, false, true);
-
-        evt.stopPropagation();
+    onTimeDragStart(){
+        const duration = parseFloat(this.css('--timeline-duration'));
+        const {width} = this.time_wrapper.get(0).getBoundingClientRect();
+        this._drag_multiplier = duration / width;
     }
 
     /**
-     * Info drag event callback
+     * Time drag event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onInfoDrag(evt){
+    onTimeDrag(evt){
         const component = this.getComponent();
         const state = evt.detail.behavior.getState();
         const start_time = component.getPropertyValue('start-time');
@@ -249,46 +273,36 @@ export default class Track extends Dom {
             'start-time': start_time + diff,
             'end-time': end_time + diff
         });
-
-        this.triggerEvent('drag', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
-     * Info dragend event callback
-     *
-     * @private
-     */
-    onInfoDragEnd(evt){
-        delete this._drag_multiplier;
-
-        this.triggerEvent('dragend', evt.detail, false, true);
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Info resizestart event callback
-     *
-     * @private
-     */
-    onInfoResizeStart(evt){
-        const {width} = this.get(0).getBoundingClientRect();
-        this._resize_multiplier = this.duration / width;
-
-        this.triggerEvent('resizestart', evt.detail, false, true);
-
-        evt.stopPropagation();
-    }
-
-    /**
-     * Info resize event callback
+     * Time dragend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onInfoResize(evt){
+    onTimeDragEnd(){
+        delete this._drag_multiplier;
+    }
+
+    /**
+     * Time resizestart event callback
+     *
+     * @private
+     */
+    onTimeResizeStart(){
+        const duration = parseFloat(this.css('--timeline-duration'));
+        const {width} = this.time_wrapper.get(0).getBoundingClientRect();
+        this._resize_multiplier = duration / width;
+    }
+
+    /**
+     * Time resize event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onTimeResize(evt){
         const component = this.getComponent();
         const state = evt.detail.behavior.getState();
         const property = state.direction === 'left' ? 'start-time' : 'end-time';
@@ -308,23 +322,15 @@ export default class Track extends Dom {
         new_value = clamp(new_value, 0, MasterClock.getRenderer().getDuration());
 
         component.setPropertyValue(property, new_value);
-
-        this.triggerEvent('resize', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
-     * Info resizeend event callback
+     * Time resizeend event callback
      *
      * @private
      */
-    onInfoResizeEnd(evt){
+    onTimeResizeEnd(){
         delete this._resize_multiplier;
-
-        this.triggerEvent('resizeend', evt.detail, false, true);
-
-        evt.stopPropagation();
     }
 
     /**
@@ -339,7 +345,24 @@ export default class Track extends Dom {
             return;
         }
 
-        this.toggleClass('has-descendents', !this.descendents.is(':empty'));
+        this.toggleClass('has-descendents', !this.descendents_wrapper.is(':empty'));
+    }
+
+    /**
+     * Properties childremove event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onPropertiesChildRemove(evt) {
+        const child = evt.detail.child;
+        if(!Dom.is(child, '.property-track')){
+            return;
+        }
+
+        const tracks = this.getPropertyTracks();
+        tracks.delete(Dom.data(child, 'property'));
+        this.toggleClass('has-properties', tracks.size > 0);
     }
 
     /**
@@ -350,19 +373,15 @@ export default class Track extends Dom {
      */
     onHandleExpanderClick(evt){
         const expand = !(this.hasClass('user-expanded') || this.hasClass('auto-expanded'));
-        const handle = this.getHandle();
 
         this.toggleClass('user-expanded', expand);
-        handle.toggleClass('user-expanded', expand);
 
         if(!expand){
             // Force shrink
             this.removeClass('auto-expanded');
-            handle.removeClass('auto-expanded');
 
             // Shrink children
             this.find('.user-expanded').removeClass('user-expanded');
-            handle.find('.user-expanded').removeClass('user-expanded');
         }
 
         evt.stopPropagation();
@@ -379,20 +398,6 @@ export default class Track extends Dom {
         }
 
         evt.stopPropagation();
-    }
-
-    /**
-     * Set the media's duration variable
-     *
-     * @param {Number} duration The media's duration in centiseconds
-     * @return {this}
-     */
-    setDuration(duration){
-        this.duration = duration;
-
-        this.updateSize();
-
-        return this;
     }
 
     /**
@@ -422,8 +427,6 @@ export default class Track extends Dom {
 
             if(!this._draggable){
                 const configs = Object.assign({}, this.configs.draggableConfigs, {
-                    'target': this.info,
-                    'handle': this.info,
                     'autoUpdate': false,
                     'snapPositions': {
                         'x': [0, 1]
@@ -434,7 +437,7 @@ export default class Track extends Dom {
                  * The draggable behavior
                  * @type {Draggable}
                  */
-                this._draggable = new Draggable(configs);
+                this._draggable = new Draggable(this.time, configs);
             }
         }
         else if(!draggable && this._draggable){
@@ -484,7 +487,6 @@ export default class Track extends Dom {
                 }
                 if(directions.length > 0){
                     const configs = Object.assign({}, this.configs.resizableConfigs, {
-                        'target': this.info,
                         'directions': directions,
                         'autoUpdate': false
                     });
@@ -493,7 +495,7 @@ export default class Track extends Dom {
                      * The resizable behavior
                      * @type {Resizable}
                      */
-                    this._resizable = new Resizable(configs);
+                    this._resizable = new Resizable(this.time, configs);
                 }
             }
         }
@@ -515,28 +517,22 @@ export default class Track extends Dom {
     }
 
     /**
-     * Update size and classes according to associated component time values
+     * Update CSS size variables according to associated component time values
      *
      * @private
      * @return {this}
      */
     updateSize(){
         const component = this.getComponent();
+        const properties = ['start-time', 'end-time'];
 
-        const start_time = component.getPropertyValue('start-time');
-        const end_time = component.getPropertyValue('end-time');
+        properties.forEach((name) => {
+            const value = component.getPropertyValue(name);
 
-        const left = start_time === null ? 0 : start_time / this.duration;
-        const right = end_time === null ? 1 : end_time / this.duration;
-        const width = right - left;
-
-        this
-            .toggleClass('has-start-time', start_time !== null)
-            .toggleClass('has-end-time', end_time !== null);
-
-        this.info
-            .css('left', `${left * 100}%`)
-            .css('width', `${width * 100}%`);
+            this
+                .toggleClass(`has-${name}`, value !== null)
+                .css(`--component-${name}`, value);
+        });
 
         return this;
     }
@@ -567,17 +563,70 @@ export default class Track extends Dom {
      * @return {this}
      */
     addDescendent(track, index){
-        if(!this.descendents){
-            this.descendents = new Dom('<div/>', {'class': 'descendents'})
-                .addListener('childremove', this.onDescendentsChildRemove.bind(this))
-                .appendTo(this);
-        }
-
-        track.insertAt(this.descendents, index);
+        track.insertAt(this.descendents_wrapper, index);
 
         this.addClass('has-descendents');
 
         return this;
+    }
+
+    /**
+     * Get the list of property tracks.
+     *
+     * @return {Map<String, PropertyTrack>} The property tracks.
+     */
+    getPropertyTracks() {
+        return this.property_tracks;
+    }
+
+    /**
+     * Check if a track exists for a property.
+     *
+     * @param {String} name The property's name.
+     * @return {Boolean} True if a track exists, false otherwise.
+     */
+    hasPropertyTrack(name) {
+        return this.getPropertyTracks().has(name);
+    }
+
+    /**
+     * Get a track assocaited to a property.
+     *
+     * @param {String} property The property's name.
+     * @return {PropertyTrack?} The corresponding track.
+     */
+    getPropertyTrack(property) {
+        const tracks = this.getPropertyTracks();
+        if (tracks.has(property)) {
+            return tracks.get(property);
+        }
+
+        return null;
+    }
+
+    /**
+     * Add an animated property track.
+     *
+     * @param {string} name The property's name.
+     * @return {PropertyTrack} The property track.
+     */
+    addPropertyTrack(name){
+        let track = this.getPropertyTrack(name);
+
+        if (!track) {
+            track = new PropertyTrack(this.getComponent(), name, {
+                    'keyframe': {
+                        'draggableConfigs': this.configs.draggableConfigs
+                    }
+                })
+                .appendTo(this.properties_wrapper);
+
+            this.addClass('has-properties');
+
+            this.getPropertyTracks().set(name, track);
+        }
+
+        return track;
     }
 
     /**
@@ -592,30 +641,6 @@ export default class Track extends Dom {
         this.getHandle().setLabel(component_name);
 
         return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    show(){
-        this.getHandle().show();
-        super.show();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    hide(){
-        this.getHandle().hide();
-        super.hide();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    remove(){
-        this.getHandle().remove();
-        return super.remove();
     }
 
 }

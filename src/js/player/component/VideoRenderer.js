@@ -1,6 +1,7 @@
 import Component from '../Component';
 import Dom from '../../core/Dom';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A video renderer component
@@ -8,51 +9,22 @@ import {MasterClock} from '../../core/media/Clock';
 export default class VideoRenderer extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'name': {
-                'type': 'string'
-            },
-            'hidden': {
-                'type': 'boolean'
-            },
-            'x': {
-                'type': 'number',
-                'default': 0
-            },
-            'y': {
-                'type': 'number',
-                'default': 0
-            },
-            'width': {
-                'type': 'number',
-                'default': 320,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('width'), 10);
-                }
-            },
-            'height': {
-                'type': 'number',
-                'default': 240,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('height'), 10);
-                }
-            },
-            'background-color': {
-                'type': 'color'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            },
-        })
+        'dimension': [320, 240]
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = omit(super.getProperties(), [
+                'start-time',
+                'end-time',
+            ]);
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -117,10 +89,12 @@ export default class VideoRenderer extends Component{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        super.updatePropertyValue(property, value);
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
 
         this.draw();
+
+        return this;
     }
 
     /**

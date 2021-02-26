@@ -1,7 +1,6 @@
 import ElementForm from './ElementForm';
 import Locale from '../../core/Locale';
 import { isString } from '../../core/utils/Var';
-import Field from '../Field';
 import NumberInput from '../../core/ui/input/NumberInput';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 import TimeInput from '../../core/ui/input/TimeInput';
@@ -10,7 +9,7 @@ import HiddenInput from '../../core/ui/input/HiddenInput';
 
 import loop_duration_clear_icon from '../../../img/editor/configseditor/animationform/reset.svg?svg-sprite';
 
-import {className} from '../../../css/editor/configseditor/AnimationForm.scss';
+import { className } from '../../../css/editor/configseditor/AnimationForm.scss';
 
 /**
  * An animation component form class
@@ -19,21 +18,69 @@ export default class AnimationForm extends ElementForm {
 
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.AnimationForm.title.single', 'Attributes of animation'),
-        'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations'),
-        'fields': [
-            'name',
-            'hidden',
-            'start-frame',
-            'loop-duration',
-            'reversed',
-            'colors',
-            'background',
-            'border',
-            'opacity',
-            'time',
-            'position',
-            'dimension'
-        ]
+        'title_plural': Locale.t('editor.configseditor.AnimationForm.title.plural', 'Attributes of @count animations')
+    });
+
+    static field_definitions = Object.assign({}, super.field_definitions, {
+        'start-frame': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame'),
+            'input': {
+                'type': NumberInput,
+                'configs': {
+                    'min': 1
+                }
+            }
+        },
+        'loop-duration': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration'),
+            'input': {
+                'type': TimeInput,
+                'configs': {
+                    'min': 0.01,
+                    'clearButton': true,
+                    'clearButtonIcon': loop_duration_clear_icon,
+                    'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
+                }
+            }
+        },
+        'reversed': {
+            'label': Locale.t('editor.configseditor.AnimationForm.fields.reversed.label', 'Reversed'),
+            'input': {
+                'type': CheckboxInput,
+                'configs': {
+                    'checked': false
+                }
+            }
+        },
+        'colors': {
+            'group': true,
+            'items': {
+                'colors': {
+                    'label': Locale.t('editor.configseditor.AnimationForm.fields.colors.label', 'Colors'),
+                    'input': {
+                        'type': HiddenInput
+                    }
+                },
+                'color1': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                },
+                'color2': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css', 'picker': false }
+                    },
+                    'attributes': {
+                        'class': 'colors-subfield'
+                    }
+                }
+            }
+        }
     });
 
     /**
@@ -46,91 +93,21 @@ export default class AnimationForm extends ElementForm {
         // fix event handlers scope
         this.onComponentLoad = this.onComponentLoad.bind(this);
 
-        this.addClass(`animation-form ${className}`);
+        this.addClass(className);
     }
 
     /**
      * @inheritdoc
      */
-    addField(name){
-        switch(name){
-            case 'start-frame':
-                this.fields[name] = new Field(
-                    new NumberInput({
-                        'min': 1
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.start-frame.label', 'Start frame')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'loop-duration':
-                this.fields[name] = new Field(
-                    new TimeInput({
-                        'min': 0.01,
-                        'clearButton': true,
-                        'clearButtonIcon': loop_duration_clear_icon,
-                        'clearButtonTitle': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.clear-button.title', 'Reset value')
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.loop-duration.label', 'Loop duration')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'reversed':
-                this.fields[name] = new Field(
-                    new CheckboxInput({
-                        'checked': false
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.reversed.label', 'Reversed')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
-
-            case 'colors':
-                this.fields.colors = new Field(
-                    new HiddenInput(),
-                    {
-                        'label': Locale.t('editor.configseditor.AnimationForm.fields.colors.label', 'Colors')
-                    })
-                    .data('property', 'colors')
-                    .appendTo(this.fields_wrapper);
-
-                this.colors_subinputs = [
-                    new ColorInput({'format': 'css', 'picker': false})
-                        .addListener('valuechange', this.onColorsInputValueChange.bind(this))
-                        .appendTo(this.fields.colors),
-                    new ColorInput({'format': 'css', 'picker': false})
-                        .addListener('valuechange', this.onColorsInputValueChange.bind(this))
-                        .appendTo(this.fields.colors),
-                ];
-                break;
-
-            default:
-                super.addField(name);
-        }
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    setComponents(components){
+    setComponents(components) {
         super.setComponents(components);
 
         this
             .updateInputs()
-            .updateColorsSubinputEmptyValue();
+            .updateColorsSubInputEmptyValue();
 
         this.getComponents().forEach((component) => {
-            if(!component.isLoaded()){
+            if (!component.isLoaded()) {
                 component.addListener('contentload', this.onComponentLoad);
             }
         });
@@ -141,8 +118,8 @@ export default class AnimationForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    unsetComponents(supressEvent){
-        if(this.components){
+    unsetComponents(supressEvent) {
+        if (this.components) {
             this.components.forEach((component) => {
                 component.removeListener('contentload', this.onComponentLoad);
             });
@@ -150,7 +127,7 @@ export default class AnimationForm extends ElementForm {
 
         this
             .updateInputs()
-            .updateColorsSubinputEmptyValue();
+            .updateColorsSubInputEmptyValue();
 
         super.unsetComponents(supressEvent);
 
@@ -162,26 +139,11 @@ export default class AnimationForm extends ElementForm {
      *
      * @private
      */
-    onComponentLoad(){
+    onComponentLoad() {
         this
             .updateFieldsVisibility()
             .updateInputs()
-            .updateColorsSubinputEmptyValue();
-    }
-
-    /**
-     * Colors sub-inputs valuechange event handler
-     *
-     * @private
-     */
-    onColorsInputValueChange(){
-        const colors = [];
-        this.colors_subinputs.forEach((input) => {
-            if (!input.disabled) {
-                colors.push(input.getValue());
-            }
-        });
-        this.getField('colors').getInput().setValue(colors);
+            .updateColorsSubInputEmptyValue();
     }
 
     /**
@@ -191,8 +153,26 @@ export default class AnimationForm extends ElementForm {
         const name = evt.detail.field.data('property');
         const value = evt.detail.value;
 
-        if (name === 'colors' && isString(value)) {
-            evt.detail.value = value.split(',');
+        switch (name) {
+            case 'color1':
+            case 'color2':
+                {
+                    const colors = [];
+                    this.getColorsSubFields().forEach((subfield) => {
+                        const input = subfield.getInput();
+                        if (!input.disabled) {
+                            colors.push(input.getValue());
+                        }
+                    });
+                    this.getField('colors').getInput().setValue(colors);
+                }
+                return;
+
+            case 'colors':
+                if (isString(value)) {
+                    evt.detail.value = value.split(',');
+                }
+                break;
         }
 
         super.onFieldValueChange(evt);
@@ -201,19 +181,19 @@ export default class AnimationForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    updateFieldValue(name, supressEvent){
+    updateFieldValue(name, supressEvent) {
         super.updateFieldValue(name, supressEvent);
 
         // Update colors sub-inputs values.
-        if(name === 'colors' && this.components){
+        if (name === 'colors' && this.components) {
             const master_component = this.getMasterComponent();
             const value = master_component.getPropertyValue(name);
 
-            this.colors_subinputs.forEach((input, index) => {
-                input.setValue(value ? value[index] : null, true);
+            this.getColorsSubFields().forEach((subfield, index) => {
+                subfield.getInput().setValue(value ? value[index] : null, true);
             });
 
-            this.updateColorsSubinputEmptyValue();
+            this.updateColorsSubInputEmptyValue();
         }
     }
 
@@ -224,11 +204,12 @@ export default class AnimationForm extends ElementForm {
         super.updateFieldsVisibility();
 
         // Hide/show colors inputs.
-        this.colors_subinputs.forEach((input, index) => {
+        this.getColorsSubFields().forEach((subfield) => {
+            const property = subfield.data('property');
             const toggle = this.components.every((component) => {
-                return component.contents.find(`.color${index+1}`).count() > 0;
+                return component.contents.find(`.${property}`).count() > 0;
             });
-            input[toggle ? 'show' : 'hide']();
+            subfield.getInput()[toggle ? 'show' : 'hide']();
         });
 
         return this;
@@ -240,7 +221,7 @@ export default class AnimationForm extends ElementForm {
      * @private
      * @return {this}
      */
-    updateInputs(){
+    updateInputs() {
         // Update start-frame max value.
         const frames = [];
         this.components.forEach((component) => {
@@ -253,12 +234,23 @@ export default class AnimationForm extends ElementForm {
     }
 
     /**
+     * Get the colors subfields
+     *
+     * @private
+     * @return {Field[]} The sub fields.
+     */
+    getColorsSubFields() {
+        return Object.values(this.getFields()).filter((field) => field.hasClass('colors-subfield'));
+    }
+
+    /**
      * Update colors subinputs' empty value
      * depending on the default value of the component's corresponding propoerty.
      *
+     * @private
      * @return {this}
      */
-    updateColorsSubinputEmptyValue() {
+    updateColorsSubInputEmptyValue() {
         const master_component = this.getMasterComponent();
 
         if (master_component && master_component.isLoaded()) {
@@ -268,11 +260,11 @@ export default class AnimationForm extends ElementForm {
             // Get default value.
             master_component.setPropertyValue('colors', null, true);
 
-            this.colors_subinputs.forEach((input, index) => {
-                const empty_value = master_component.contents.find(`.color${index+1} path`).css('fill');
+            this.getColorsSubFields().forEach((subfield, index) => {
+                const empty_value = master_component.contents.find(`.color${index + 1} path`).css('fill');
 
                 // Update input's empty value.
-                input.setEmptyValue(empty_value);
+                subfield.getInput().setEmptyValue(empty_value);
             });
 
             // Revert to current value.

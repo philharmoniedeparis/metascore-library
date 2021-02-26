@@ -1,7 +1,7 @@
 import Input from '../Input';
 import Icon from '../Icon';
 import Dom from '../../Dom';
-import {uuid} from '../../utils/String';
+import {uuid, escapeHTML} from '../../utils/String';
 
 import {className} from '../../../../css/core/ui/input/Radios.scss';
 
@@ -34,9 +34,7 @@ export default class RadiosInput extends Input{
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         Object.entries(this.configs.options).forEach(([value, text]) => {

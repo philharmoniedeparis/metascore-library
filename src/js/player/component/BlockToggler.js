@@ -1,5 +1,7 @@
 import Component from '../Component';
+import Locale from '../../core/Locale';
 import Dom from '../../core/Dom';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A block toggler component
@@ -7,52 +9,27 @@ import Dom from '../../core/Dom';
 export default class BlockToggler extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'name': {
-                'type': 'string'
-            },
-            'hidden': {
-                'type': 'boolean'
-            },
-            'blocks': {
-                'type': 'array'
-            },
-            'x': {
-                'type': 'number'
-            },
-            'y': {
-                'type': 'number'
-            },
-            'width': {
-                'type': 'number',
-                'default': 100,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('width'), 10);
-                }
-            },
-            'height': {
-                'type': 'number',
-                'default': 20,
-                'getter': function() {
-                    // Get value from CSS to honor CSS min and max values.
-                    return parseInt(this.css('height'), 10);
-                }
-            },
-            'background-color': {
-                'type': 'color'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            }
-        })
+        'dimension': [100, 20]
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(omit(super.getProperties(), [
+                'start-time',
+                'end-time',
+            ]), {
+                'blocks': {
+                    'type': 'array',
+                    'label': Locale.t('component.BlockToggler.properties.blocks.label', 'Blocks')
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -106,29 +83,25 @@ export default class BlockToggler extends Component{
 
         // Iterate through the list of components to retreive bounding box data.
         components.forEach((component) => {
-            const x = component.getPropertyValue('x') || 0;
-            const y = component.getPropertyValue('y') || 0;
-            const width = component.getPropertyValue('width') || 0;
-            const height = component.getPropertyValue('height') || 0;
+            const position = component.getPropertyValue('position') || [0,0];
+            const dimension = component.getPropertyValue('dimension') || [0,0];
 
             boxes.push({
                 'component': component,
-                'x': x,
-                'y': y,
-                'width': width,
-                'height': height
+                'position': position,
+                'dimension': dimension
             });
 
-            components_width = Math.max(x + width, components_width);
-            components_height = Math.max(y + height, components_height);
+            components_width = Math.max(position[0] + dimension[0], components_width);
+            components_height = Math.max(position[1] + dimension[1], components_height);
         });
 
         // Sort boxes by position from top-left to bottom-right.
         boxes.sort((a, b) => {
-            if(a.x > b.x) {return 1;}
-            if(a.x < b.x) {return -1;}
-            if(a.y > b.y) {return 1;}
-            if(a.y < b.y) {return -1;}
+            if(a.position[0] > b.position[0]) {return 1;}
+            if(a.position[0] < b.position[0]) {return -1;}
+            if(a.position[1] > b.position[1]) {return 1;}
+            if(a.position[1] < b.position[1]) {return -1;}
             return 0;
         });
 
@@ -145,10 +118,10 @@ export default class BlockToggler extends Component{
             button.get(0).appendChild(svg);
 
             boxes.forEach((box2, index2) => {
-                const x = box2.x;
-                const y = box2.y;
-                const width = box2.width;
-                const height = box2.height;
+                const x = box2.position[0];
+                const y = box2.position[1];
+                const width = box2.dimension[0];
+                const height = box2.dimension[1];
 
                 const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                 rect.setAttributeNS(null, "width", width);

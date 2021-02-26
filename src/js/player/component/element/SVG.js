@@ -1,4 +1,5 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 import Dom from '../../../core/Dom';
 import {isFunction, isEmpty} from '../../../core/utils/Var';
 
@@ -27,61 +28,77 @@ const svg_elements = [
  */
 export default class SVG extends Element {
 
-    static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'src': {
-                'type': 'string'
-            },
-            'stroke': {
-                'type': 'color',
-                'applies': function(){
-                    return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'src': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.SVG.properties.src.label', 'Source')
+                },
+                'stroke': {
+                    'type': 'color',
+                    'label': Locale.t('component.element.SVG.properties.stroke.label', 'Stroke'),
+                    'applies': function(){
+                        return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
+                    }
+                },
+                'stroke-width': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.SVG.properties.stroke-width.label', 'Stroke width'),
+                    'applies': function(){
+                        return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
+                    }
+                },
+                'stroke-dasharray': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.SVG.properties.stroke-dasharray.label', 'Stroke dasharray'),
+                    'applies': function(){
+                        return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
+                    }
+                },
+                'fill': {
+                    'type': 'color',
+                    'label': Locale.t('component.element.SVG.properties.fill.label', 'Fill'),
+                    'applies': function(){
+                        return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
+                    }
+                },
+                'marker-start': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.SVG.properties.marker-start.label', 'Marker start'),
+                    'applies': function(){
+                        return !isEmpty(this.markers);
+                    }
+                },
+                'marker-mid': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.SVG.properties.marker-mid.label', 'Marker mid'),
+                    'applies': function(){
+                        return !isEmpty(this.markers);
+                    }
+                },
+                'marker-end': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.SVG.properties.marker-end.label', 'Marker end'),
+                    'applies': function(){
+                        return !isEmpty(this.markers);
+                    }
+                },
+                'colors': {
+                    'type': 'array',
+                    'label': Locale.t('component.element.SVG.properties.colors.label', 'Colors'),
+                    'applies': function(){
+                        return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() > 0;
+                    }
                 }
-            },
-            'stroke-width': {
-                'type': 'number',
-                'applies': function(){
-                    return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
-                }
-            },
-            'stroke-dasharray': {
-                'type': 'string',
-                'applies': function(){
-                    return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
-                }
-            },
-            'fill': {
-                'type': 'color',
-                'applies': function(){
-                    return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() === 0;
-                }
-            },
-            'marker-start': {
-                'type': 'string',
-                'applies': function(){
-                    return !isEmpty(this.markers);
-                }
-            },
-            'marker-mid': {
-                'type': 'string',
-                'applies': function(){
-                    return !isEmpty(this.markers);
-                }
-            },
-            'marker-end': {
-                'type': 'string',
-                'applies': function(){
-                    return !isEmpty(this.markers);
-                }
-            },
-            'colors': {
-                'type': 'array',
-                'applies': function(){
-                    return this.isLoaded() && this.svg_dom.find(`[class^='color'], [class*=' color']`).count() > 0;
-                }
-            }
-        })
-    });
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -132,10 +149,10 @@ export default class SVG extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        super.updatePropertyValue(property, value);
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
 
-        switch(property){
+        switch(name){
             case 'src':
                 this.updateSrc(value);
                 break;
@@ -145,10 +162,12 @@ export default class SVG extends Element {
                 break;
 
             default:
-                if(svg_properties.includes(property)){
-                    this.updateSVGProperty(property, value);
+                if(svg_properties.includes(name)){
+                    this.updateSVGProperty(name, value);
                 }
         }
+
+        return this;
     }
 
     /**

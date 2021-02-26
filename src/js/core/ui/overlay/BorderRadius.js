@@ -2,6 +2,7 @@ import Overlay from '../Overlay';
 import Dom from '../../Dom';
 import Locale from '../../Locale';
 import NumberInput from '../input/NumberInput';
+import CombinedInputs from '../input/CombinedInputs';
 
 import {className} from '../../../../css/core/ui/overlay/BorderRadius.scss';
 
@@ -13,6 +14,13 @@ import {className} from '../../../../css/core/ui/overlay/BorderRadius.scss';
  * @param {String} value The border radius value in CSS format
  */
 export default class BorderRadius extends Overlay {
+
+    static properties = [
+        'top-left',
+        'top-right',
+        'bottom-right',
+        'bottom-left'
+    ];
 
     static defaults = Object.assign({}, super.defaults, {
         'toolbar': true,
@@ -36,9 +44,7 @@ export default class BorderRadius extends Overlay {
     }
 
     /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method
@@ -59,45 +65,19 @@ export default class BorderRadius extends Overlay {
          */
         this.inputs = {};
 
-        this.inputs.tlw = new NumberInput({'min': 0})
-            .addClass('tlw')
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .appendTo(this.preview);
+        this.constructor.properties.forEach((property) => {
+            this.inputs[property] = new CombinedInputs({
+                    'inputs': [
+                        {'type': NumberInput, 'configs': {'min': 0}},
+                        {'type': NumberInput, 'configs': {'min': 0}}
+                    ]
+                })
+                .data('property', property)
+                .appendTo(this.preview);
+        });
 
-        this.inputs.tlh = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('tlh')
-            .appendTo(this.preview);
 
-        this.inputs.trw = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('trw')
-            .appendTo(this.preview);
-
-        this.inputs.trh = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('trh')
-            .appendTo(this.preview);
-
-        this.inputs.brw = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('brw')
-            .appendTo(this.preview);
-
-        this.inputs.brh = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('brh')
-            .appendTo(this.preview);
-
-        this.inputs.blw = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('blw')
-            .appendTo(this.preview);
-
-        this.inputs.blh = new NumberInput({'min': 0})
-            .addListener('valuechange', this.onValueChange.bind(this))
-            .addClass('blh')
-            .appendTo(this.preview);
+        this.addListener('valuechange', this.onValueChange.bind(this));
 
         this.addButton('apply', 'Apply');
         this.addButton('cancel', 'Cancel');
@@ -109,17 +89,17 @@ export default class BorderRadius extends Overlay {
      * @private
      */
     onValueChange() {
-        let radius    = '';
+        const values = [[], []];
+        Object.values(this.inputs).forEach((input) => {
+            const value = input.getValue();
+            values[0].push(value[0]);
+            values[1].push(value[1]);
+        });
 
-        radius += `${this.inputs.tlw.getValue()}px `;
-        radius += `${this.inputs.trw.getValue()}px `;
-        radius += `${this.inputs.brw.getValue()}px `;
-        radius += `${this.inputs.blw.getValue()}px `;
+        let radius    = '';
+        radius += `${values[0].join('px ')}px`;
         radius += '/ ';
-        radius += `${this.inputs.tlh.getValue()}px `;
-        radius += `${this.inputs.trh.getValue()}px `;
-        radius += `${this.inputs.brh.getValue()}px `;
-        radius += `${this.inputs.blh.getValue()}px`;
+        radius += `${values[1].join('px ')}px`;
 
         this.preview.css('border-radius', radius);
     }
@@ -131,61 +111,27 @@ export default class BorderRadius extends Overlay {
      * @return {this}
      */
     setValue(val){
-        const values = {
-            tlw: 0, tlh: 0,
-            trw: 0, trh: 0,
-            blw: 0, blh: 0,
-            brw: 0, brh: 0
-        };
-
         this.preview.css('border-radius', val !== null ? val : 0);
 
-        let matches = this.preview.css('border-top-left-radius', void 0, true).match(/(\d*)px/g);
-        if(matches){
-            if(matches.length > 1){
-                values.tlw = matches[0];
-                values.tlh = matches[1];
-            }
-            else{
-                values.tlw = values.tlh = matches[0];
-            }
-        }
+        Object.entries(this.inputs).forEach(([property, input]) => {
+            const css = this.preview.css(`border-${property}-radius`, void 0, true);
+            const value = [0, 0];
 
-        matches = this.preview.css('border-top-right-radius', void 0, true).match(/(\d*)px/g);
-        if(matches){
-            if(matches.length > 1){
-                values.trw = matches[0];
-                values.trh = matches[1];
-            }
-            else{
-                values.trw = values.trh = matches[0];
-            }
-        }
+            if (css !== null) {
+                const matches = css.match(/(\d*)px/g);
 
-        matches = this.preview.css('border-bottom-left-radius', void 0, true).match(/(\d*)px/g);
-        if(matches){
-            if(matches.length > 1){
-                values.blw = matches[0];
-                values.blh = matches[1];
+                if(matches){
+                    if(matches.length > 1){
+                        value[0] = parseInt(matches[0], 10);
+                        value[1] = parseInt(matches[1], 10);
+                    }
+                    else{
+                        value[0] = value[1] = parseInt(matches[0], 10);
+                    }
+                }
             }
-            else{
-                values.blw = values.blh = matches[0];
-            }
-        }
 
-        matches = this.preview.css('border-bottom-right-radius', void 0, true).match(/(\d*)px/g);
-        if(matches){
-            if(matches.length > 1){
-                values.brw = matches[0];
-                values.brh = matches[1];
-            }
-            else{
-                values.brw = values.brh = matches[0];
-            }
-        }
-
-		Object.entries(this.inputs).forEach(([key, input]) => {
-            input.setValue(parseInt(values[key], 10), true);
+            input.setValue(value, true);
         });
 
         return this;
@@ -198,17 +144,13 @@ export default class BorderRadius extends Overlay {
      */
     getValue() {
         switch(this.configs.format){
-            case 'object':
-                return {
-                    tlw: this.inputs.tlw.getValue(),
-                    trw: this.inputs.trw.getValue(),
-                    brw: this.inputs.brw.getValue(),
-                    blw: this.inputs.blw.getValue(),
-                    tlh: this.inputs.tlh.getValue(),
-                    trh: this.inputs.trh.getValue(),
-                    brh: this.inputs.brh.getValue(),
-                    blh: this.inputs.blh.getValue()
-                };
+            case 'object': {
+                const value = {};
+                Object.entries(this.inputs).forEach(([property, input]) => {
+                    value[property] = input.getValue();
+                });
+                return value;
+            }
 
             default:
                 return this.preview.css('border-radius');

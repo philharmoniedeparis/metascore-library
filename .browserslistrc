@@ -1,0 +1,12 @@
+[Player]
+defaults
+Safari >= 9
+not OperaMini all
+not UCAndroid > 0
+not Baidu > 0
+
+[Editor]
+last 2 Chrome major versions
+last 2 Firefox major versions
+last 2 Safari major versions
+last 2 Edge major versions

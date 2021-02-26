@@ -1,13 +1,13 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
     flex-direction: column;
     position: relative;
     overflow-y: auto;
     background-color: $mediumgray;
 
-    .link{
+    .link {
         display: flex;
         flex: 0 0 2em;
         flex-direction: row;
@@ -17,14 +17,14 @@
         border-bottom: 1px solid $mediumgray;
         cursor: grab;
 
-        .icon{
+        .icon {
             flex: 0 0 2em;
             height: 1.5em;
             margin-right: 0.5em;
             pointer-events: none;
         }
 
-        .label{
+        .label {
             flex: 1 1 auto;
             white-space: nowrap;
             overflow: hidden;
@@ -33,7 +33,7 @@
             pointer-events: none;
         }
 
-        &::before{
+        &::before {
             content: '';
             display: inline-block;
             width: 1em;
@@ -45,7 +45,7 @@
         }
 
         &:focus,
-        &:hover{
+        &:hover {
             background: $mediumgray;
         }
 
@@ -53,16 +53,16 @@
         &.blocktoggler,
         &.synced-block,
         &.non-synced-block,
-        &.page{
-            .icon{
+        &.page {
+            .icon {
                 box-shadow: 1px 1px 0.25em rgba(0, 0, 0, 0.25);
             }
         }
 
-        &.controller{
+        &.controller {
             margin-top: 2px;
 
-            .icon{
+            .icon {
                 filter: drop-shadow(1px 1px 0.25em rgba(0, 0, 0, 0.25));
             }
         }

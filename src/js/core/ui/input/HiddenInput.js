@@ -1,4 +1,3 @@
-
 import Input from '../Input';
 
 /**
@@ -20,9 +19,7 @@ export default class HiddenInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();

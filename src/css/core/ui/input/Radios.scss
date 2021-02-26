@@ -1,17 +1,17 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
-    input{
+:local(.class-name) {
+    input {
         visibility: hidden;
         position: absolute;
     }
 
-    label{
+    label {
         position: relative;
         padding-left: 2em;
 
-        &::before{
-            content: "";
+        &::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
@@ -23,16 +23,16 @@
             box-sizing: border-box;
         }
 
-        &:hover{
-            &::before{
+        &:hover {
+            &::before {
                 border-color: $mediumgray;
             }
         }
     }
 
-    input:checked + label{
-        &::after{
-            content: "";
+    input:checked + label {
+        &::after {
+            content: '';
             position: absolute;
             top: 0.33em;
             left: 0.33em;

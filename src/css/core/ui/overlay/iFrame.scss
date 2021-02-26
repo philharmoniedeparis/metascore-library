@@ -1,15 +1,15 @@
-:local(.className){
-    > .inner{
-        > .body{
-            > .contents{
+:local(.class-name) {
+    > .inner {
+        > .body {
+            > .contents {
                 max-height: none;
 
-                iframe{
+                iframe {
                     width: 75vw;
                     height: 75vh;
                     min-width: 800px;
                     min-height: 500px;
-                    border: none;
+                    border: 0;
                 }
             }
         }

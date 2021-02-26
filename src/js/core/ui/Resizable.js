@@ -5,7 +5,8 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Res
 /**
  * A class for adding resizable behaviors
  *
- * @emits {beforeresize} Fired before the resize starts. The event bubbles allowing the resize to be canceled by invoking preventDefault
+ * @emits {beforeresize} Fired before the resize starts.
+ * The resize can be canceled by invoking preventDefault.
  * @emits {resizestart} Fired when a resize started
  * @emits {resize} Fired when a resize occured
  * @emits {resizeend} Fired when a resize ended
@@ -13,7 +14,6 @@ import {bodyClassName, className, guideClassName} from '../../../css/core/ui/Res
 export default class Resizable {
 
     static defaults = {
-        'target': null,
         'directions': [
             'top',
             'right',
@@ -32,19 +32,25 @@ export default class Resizable {
     /**
      * Instantiate
      *
+     * @param {Dom} target The Dom object to add the behavior to
      * @param {Object} configs Custom configs to override defaults
-     * @property {Dom} target The Dom object to add the behavior to
      * @property {Object} [directions={'top', 'right', 'bottom', 'left', 'top-left', 'top-right', 'bottom-left', 'bottom-right'}] The directions at which a resize is allowed
      * @property {Boolean} [autoUpdate=true] Whether to update the size of the target automatically
      * @property {Dom} [snapGuideContainer=body] The Dom object to add snap guides to
      * @property {Number} [snapThreshold=5] The distance at which a snap guide attracts
      */
-    constructor(configs) {
+    constructor(target, configs) {
         /**
          * The configuration values
          * @type {Object}
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
+
+        /**
+         * The target element.
+         * @type {Dom}
+         */
+        this.target = target;
 
         /**
          * Snap guides
@@ -67,7 +73,7 @@ export default class Resizable {
         this.configs.directions.forEach((direction) => {
             this.handles[direction] = new Dom('<div/>', {'class': 'resize-handle'})
                 .data('direction', direction)
-                .appendTo(this.configs.target);
+                .appendTo(this.target);
         });
 
         this.enable();
@@ -80,7 +86,7 @@ export default class Resizable {
      * @param {Event} evt The event object
      */
     onMouseDown(evt){
-        if(!this.configs.target.triggerEvent('beforeresize', {'behavior': this}, true, true)){
+        if(!this.target.triggerEvent('beforeresize', {'behavior': this})){
             return;
         }
 
@@ -90,16 +96,16 @@ export default class Resizable {
          */
         this._state = {
             'direction': Dom.data(evt.target, 'direction'),
-            'position': this.configs.target.css('position'),
+            'position': this.target.css('position'),
             'mouse': {
                 'x': evt.clientX,
                 'y': evt.clientY
             },
             'original_values': {
-                'left': parseInt(this.configs.target.css('left'), 10),
-                'top': parseInt(this.configs.target.css('top'), 10),
-                'width': parseInt(this.configs.target.css('width'), 10),
-                'height': parseInt(this.configs.target.css('height'), 10)
+                'left': parseInt(this.target.css('left'), 10),
+                'top': parseInt(this.target.css('top'), 10),
+                'width': parseInt(this.target.css('width'), 10),
+                'height': parseInt(this.target.css('height'), 10)
             },
             'new_values': {}
         };
@@ -109,7 +115,7 @@ export default class Resizable {
              * The target's owner document
              * @type {Dom}
              */
-            this.doc = new Dom(Dom.getElementDocument(this.configs.target.get(0)));
+            this.doc = new Dom(Dom.getElementDocument(this.target.get(0)));
         }
 
         this.doc
@@ -118,9 +124,9 @@ export default class Resizable {
 
         Dom.addClass(this.doc.get(0).body, bodyClassName);
 
-        this.configs.target
+        this.target
             .addClass('resizing')
-            .triggerEvent('resizestart', {'behavior': this}, false, true);
+            .triggerEvent('resizestart', {'behavior': this});
 
         evt.stopPropagation();
     }
@@ -185,7 +191,7 @@ export default class Resizable {
                     return;
                 }
 
-                this.configs.target.css(key, `${value}px`);
+                this.target.css(key, `${value}px`);
             });
         }
 
@@ -195,7 +201,7 @@ export default class Resizable {
          */
         this._resized = true;
 
-        this.configs.target.triggerEvent('resize', {'behavior': this}, false, true);
+        this.target.triggerEvent('resize', {'behavior': this});
 
         evt.stopPropagation();
     }
@@ -219,9 +225,9 @@ export default class Resizable {
 
         Dom.removeClass(this.doc.get(0).body, bodyClassName);
 
-        this.configs.target
+        this.target
             .removeClass('resizing')
-            .triggerEvent('resizeend', {'behavior': this}, false, true);
+            .triggerEvent('resizeend', {'behavior': this});
 
         delete this._state;
 
@@ -311,7 +317,7 @@ export default class Resizable {
         const state = this.getState();
         const min_distances = {};
         const closest = {};
-        const rect = this.configs.target.get(0).getBoundingClientRect();
+        const rect = this.target.get(0).getBoundingClientRect();
         const positions = {
             'x': [],
             'y': []
@@ -399,7 +405,7 @@ export default class Resizable {
      * @return {this}
      */
     enable() {
-        this.configs.target.addClass(`resizable ${className}`);
+        this.target.addClass(`resizable ${className}`);
 
         if(this.handles){
             Object.values(this.handles).forEach((handle) => {
@@ -416,7 +422,7 @@ export default class Resizable {
      * @return {this}
      */
     disable() {
-        this.configs.target.removeClass(`resizable ${className}`);
+        this.target.removeClass(`resizable ${className}`);
 
         if(this.handles){
             Object.values(this.handles).forEach((handle) => {

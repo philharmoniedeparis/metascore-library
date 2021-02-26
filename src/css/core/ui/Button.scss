@@ -1,8 +1,8 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     text-align: center;
-    border: none;
+    border: 0;
     background-color: transparent;
     background-position: center center;
     background-repeat: no-repeat;
@@ -14,58 +14,58 @@
         border: 0;
     }
 
-    *{
+    * {
         pointer-events: none;
     }
 
-    .label{
+    .label {
         display: inline-block;
         height: 100%;
         vertical-align: middle;
     }
 
-    .icon{
-        &::before{
+    .icon {
+        &::before {
             vertical-align: middle;
         }
     }
 
-    .label + .icon{
+    .label + .icon {
         margin-left: 0.5em;
     }
 
     &:hover,
-    &:focus{
+    &:focus {
         opacity: 1;
     }
 
-    &:active{
+    &:active {
         opacity: 0.25;
     }
 
-    &:focus{
+    &:focus {
         outline-width: 1px;
         outline-style: dotted;
         outline-offset: -1px;
     }
 
-    &[disabled]{
+    &[disabled] {
         pointer-events: none;
         opacity: 0.1;
         cursor: default;
     }
 
-    &.submit{
+    &.submit {
         background: #ccc;
 
-        &:hover{
+        &:hover {
             background: $metascore-color;
             color: #fff;
             opacity: 1;
         }
     }
 
-    &.cancel{
+    &.cancel {
         background: #eee;
     }
 }

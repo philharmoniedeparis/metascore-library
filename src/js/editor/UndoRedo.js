@@ -1,5 +1,6 @@
 import EventEmitter from '../core/EventEmitter';
 import {isArray} from '../core/utils/Var';
+import {clone} from '../core/utils/Array';
 
 /**
  * An undo/redo manager
@@ -65,7 +66,12 @@ export default class UndoRedo extends EventEmitter {
 
             // Check if this is a group of commands.
             if (isArray(command[action])) {
-                command[action].forEach((sub_command) => {
+                let commands = clone(command[action]);
+                if (action === 'undo') {
+                    commands.reverse();
+                }
+
+                commands.forEach((sub_command) => {
                     sub_command();
                 });
             }
@@ -228,3 +234,5 @@ export default class UndoRedo extends EventEmitter {
     }
 
 }
+
+export const History = new UndoRedo();

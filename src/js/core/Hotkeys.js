@@ -178,7 +178,7 @@ export default class Hotkeys {
 
         this.listeners = this.listeners.sort((a, b) => {
             if (isArray(a.keyCombo) || isArray(b.keyCombo)) {
-                // @TODO: sort.
+                // @todo: sort.
                 return 0;
             }
 

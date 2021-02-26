@@ -370,7 +370,7 @@ export default class SpectrogramForm extends Overlay {
      * Get a field by name
      *
      * @param {String} name The field's name
-     * @returns {Field|undefined} The corresponding field or undefined
+     * @return {Field|undefined} The corresponding field or undefined
      */
     getField(name){
         return this.fields[name];

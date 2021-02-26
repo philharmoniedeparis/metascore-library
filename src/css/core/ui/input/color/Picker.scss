@@ -1,15 +1,15 @@
-@import "../../../../theme";
+@import '../../../../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
     flex-direction: column;
 
-    .draggable-input{
+    .draggable-input {
         position: relative;
         border-radius: 0.5em;
         cursor: pointer;
 
-        .thumb{
+        .thumb {
             position: absolute;
             width: 1em;
             height: 1em;
@@ -17,30 +17,30 @@
             box-sizing: border-box;
             border: 2px solid #fff;
             border-radius: 50%;
-            box-shadow: 1px 1px 1px 0 rgba(0,0,0,0.5);
+            box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.5);
             cursor: grab;
         }
     }
 
-    .top{
-        .palette{
+    .top {
+        .palette {
             min-width: 220px;
             height: 130px;
             margin-bottom: 0.5em;
             border-radius: 0;
 
-            .thumb{
+            .thumb {
                 transform: translateX(-50%) translateY(50%);
             }
         }
     }
 
-    .middle{
+    .middle {
         display: flex;
         flex-direction: row;
         padding: 0.5em 1em;
 
-        .preview{
+        .preview {
             position: relative;
             width: 2em;
             height: 2em;
@@ -49,8 +49,8 @@
             overflow: hidden;
             box-shadow: 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
 
-            &::before{
-                content: "";
+            &::before {
+                content: '';
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -58,50 +58,50 @@
                 height: 100%;
                 background: url('../../../../../img/core/ui/input/color/transparency-grid.svg');
                 background-size: auto;
-                background-size: .5em;
+                background-size: 0.5em;
                 z-index: -1;
             }
         }
 
-        .sliders{
+        .sliders {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             flex: 1 1 auto;
 
-            .draggable-input{
+            .draggable-input {
                 height: 0.5em;
-                background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+                background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
 
-                .thumb{
+                .thumb {
                     top: 50%;
                     transform: translateX(-50%) translateY(-50%);
                 }
 
-                &.hue{
-                    background: linear-gradient(90deg, red, #ff0, #0f0, #0ff, #00f, #f0f, red);
+                &.hue {
+                    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
                 }
 
-                &.opacity{
+                &.opacity {
                     background: linear-gradient(90deg, transparent, #000), url('../../../../../img/core/ui/input/color/transparency-grid.svg');
                 }
             }
         }
     }
 
-    .bottom{
+    .bottom {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
         padding: 0.5em 0.75em;
 
-        button{
+        button {
             margin: 0 0.25em;
             padding: 0.25em 0.5em;
             color: #fff;
             background: $lightgray;
 
-            &[data-action="apply"]{
+            &[data-action='apply'] {
                 margin-right: auto;
                 background: $darkgray;
             }

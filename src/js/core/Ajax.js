@@ -10,7 +10,7 @@ import {isObject} from './utils/Var';
  *
  * @emits {error} Fired when the operation is complete but the status is not greater or equal to 200 and less than 300 or equal to 304
  *
- * @TODO swtich to using the fetch API with polyfill (see https://github.com/github/fetch)
+ * @todo swtich to using the fetch API with polyfill (see https://github.com/github/fetch)
  */
 export default class Ajax extends EventEmitter {
 

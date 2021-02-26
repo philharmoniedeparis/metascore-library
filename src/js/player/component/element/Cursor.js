@@ -1,6 +1,7 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 import Dom from '../../../core/Dom';
-import {MasterClock} from '../../../core/media/Clock';
+import {MasterClock} from '../../../core/media/MediaClock';
 import {map, radians} from '../../../core/utils/Math';
 import {isEmpty} from '../../../core/utils/Var';
 
@@ -15,68 +16,81 @@ import {isEmpty} from '../../../core/utils/Var';
 export default class Cursor extends Element {
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'border-radius': {
-                'type': 'string',
-                'applies': function(){
-                    return this.getPropertyValue('form') !== 'circular';
-                }
-            },
-            'form': {
-                'type': 'string',
-                'default': 'linear'
-            },
-            'keyframes': {
-                'type': 'array',
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'linear';
-                }
-            },
-            'direction': {
-                'type': 'string',
-                'default': 'right'
-            },
-            'start-angle': {
-                'type': 'number',
-                'default': 0,
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'circular';
-                }
-            },
-            'loop-duration': {
-                'type': 'time',
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'circular';
-                }
-            },
-            'acceleration': {
-                'type': 'number',
-                'default': 1,
-                'applies': function(){
-                    return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
-                }
-            },
-            'cursor-width': {
-                'type': 'number',
-                'default': 1
-            },
-            'cursor-color': {
-                'type': 'color',
-                'default': '#000000'
-            },
-            'start-time': {
-                'type': 'time',
-                'sanitize': function(value){
-                    // Start time cannot be null for Cursor elements.
-                    if (value === null) {
-                        return 0;
-                    }
-
-                    return Element.defaults.properties['start-time'].sanitize.call(this, value);
-                }
-            },
-        })
+        'form': 'linear',
+        'direction': 'right',
+        'start-angle': 0,
+        'acceleration': 1,
+        'cursor-width': 1,
+        'cursor-color': '#000000'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'form': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Cursor.properties.form.label', 'Form')
+                },
+                'keyframes': {
+                    'type': 'array',
+                    'label': Locale.t('component.element.Cursor.properties.keyframes.label', 'Keyframes'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear';
+                    }
+                },
+                'direction': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Cursor.properties.direction.label', 'Direction')
+                },
+                'start-angle': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.start-angle.label', 'Start angle'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'circular';
+                    }
+                },
+                'loop-duration': {
+                    'type': 'time',
+                    'label': Locale.t('component.element.Cursor.properties.loop-duration.label', 'Loop duration'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'circular';
+                    }
+                },
+                'acceleration': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.acceleration.label', 'Acceleration'),
+                    'applies': function(){
+                        return this.getPropertyValue('form') === 'linear' && isEmpty(this.getPropertyValue('keyframes'));
+                    }
+                },
+                'cursor-width': {
+                    'type': 'number',
+                    'label': Locale.t('component.element.Cursor.properties.cursor-width.label', 'Cursor width')
+                },
+                'cursor-color': {
+                    'type': 'color',
+                    'label': Locale.t('component.element.Cursor.properties.cursor-color.label', 'Cursor color')
+                }
+            });
+
+            this.properties['border-radius'].applies = function(){
+                return this.getPropertyValue('form') !== 'circular';
+            };
+
+            const sanitize = this.properties['start-time'].sanitize;
+            this.properties['start-time'].sanitize = function(value){
+                // Start time cannot be null for Cursor elements.
+                if (value === null) {return 0;}
+
+                return sanitize.call(this, value);
+            };
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -96,14 +110,12 @@ export default class Cursor extends Element {
 
         this
             .addListener('activate', this.onActivate.bind(this))
-            .addListener('resizeend', this.onResizeEnd.bind(this))
+            .addListener('resizeend', this.onResizeEnd.bind(this), true)
             .addListener('click', this.onClick.bind(this));
     }
 
     /**
-     * Setup the cursor's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI(){
         // call parent function
@@ -125,8 +137,10 @@ export default class Cursor extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
+
+        switch(name){
             case 'form':
                 this.data('form', value);
                 break;
@@ -140,18 +154,15 @@ export default class Cursor extends Element {
                 }
                 break;
 
-            case 'width':
-            case 'height':
+            case 'dimension':
             case 'border-width':
-                super.updatePropertyValue(property, value);
                 this.resizeCanvas();
                 break;
-
-            default:
-                super.updatePropertyValue(property, value);
         }
 
         this.draw();
+
+        return this;
     }
 
     /**
@@ -319,7 +330,7 @@ export default class Cursor extends Element {
      * Helper function to get a position on a linear cursor corresponding to a media time
      *
      * @private
-     * @param {Number} time The media time in centiseconds
+     * @param {Number} time The media time in seconds
      * @returns {Object} The x and y position
      */
     getLinearPositionFromTime(time){
@@ -532,7 +543,7 @@ export default class Cursor extends Element {
      * Helper function to get an angle on a circular cursor corresponding to a media time
      *
      * @private
-     * @param {Number} time The media time in centiseconds
+     * @param {Number} time The media time in seconds
      * @returns {Number} The angle in radians
      */
     getCircularAngleFromTime(time){

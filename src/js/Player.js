@@ -1,8 +1,6 @@
-import {className} from '../css/Player.scss';
-
 import Dom from './core/Dom';
 import Hotkeys from './core/Hotkeys';
-import {MasterClock} from './core/media/Clock';
+import {MasterClock} from './core/media/MediaClock';
 import Locale from './core/Locale';
 import Ajax from './core/Ajax';
 import ContextMenu from './core/ui/ContextMenu';
@@ -12,6 +10,9 @@ import CuePoint from './player/CuePoint';
 import Component from './player/Component';
 import Scenario from './player/component/Scenario';
 import {getRendererForMime} from './core/utils/Media';
+import { isEmpty } from './core/utils/Var';
+
+import {className} from '../css/Player.scss';
 
 /**
  * Provides the main Player class
@@ -577,7 +578,7 @@ export class Player extends Dom {
         // Set media.
         this.setSource(this.data.media);
 
-        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this));
+        this.addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true);
 
         // Add components.
         if(this.data.components){
@@ -930,10 +931,10 @@ export class Player extends Dom {
             this.cuepoint.deactivate();
         }
 
-        const _inTime = parseFloat(inTime);
-        const _outTime = parseFloat(outTime);
+        const _inTime = isNaN(inTime) ? null : parseFloat(inTime);
+        const _outTime = isNaN(outTime) ? null : parseFloat(outTime);
 
-        if(isNaN(_inTime) && isNaN(_outTime)){
+        if(_inTime === null && _outTime === null){
             renderer.play();
         }
         else{
@@ -942,8 +943,8 @@ export class Player extends Dom {
              * @type {CuePoint}
              */
             this.cuepoint = new CuePoint({
-                'inTime': !isNaN(_inTime) ? _inTime : null,
-                'outTime': !isNaN(_outTime) ? _outTime : null,
+                'inTime': _inTime,
+                'outTime': _outTime,
                 'considerError': true
             })
             .addListener('seekout', () => {
@@ -973,7 +974,7 @@ export class Player extends Dom {
 
             this.cuepoint.activate();
 
-            if (!isNaN(_inTime)) {
+            if (_inTime !== null) {
                 renderer.setTime(_inTime);
             }
 
@@ -990,12 +991,15 @@ export class Player extends Dom {
      */
     updateBlockToggler(block_toggler) {
         const ids = block_toggler.getPropertyValue('blocks');
-        const scenario = block_toggler.getParent();
-        const components = scenario.getChildren().filter((component) => {
-            return ids.includes(component.getId());
-        });
 
-        block_toggler.update(components);
+        if (!isEmpty(ids)) {
+            const scenario = block_toggler.getParent();
+            const components = scenario.getChildren().filter((component) => {
+                return ids.includes(component.getId());
+            });
+
+            block_toggler.update(components);
+        }
 
         return this;
     }

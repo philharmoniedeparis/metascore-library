@@ -4,6 +4,7 @@ import Button from '../Button';
 import Locale from '../../Locale';
 import {pad} from '../../utils/String';
 import {isNumeric} from '../../utils/Var';
+import {round} from '../../utils/Math';
 
 import in_icon from '../../../../img/core/ui/input/time/time-in.svg?svg-sprite';
 import out_icon from '../../../../img/core/ui/input/time/time-out.svg?svg-sprite';
@@ -90,7 +91,7 @@ export default class TimeInput extends Input {
      * Instantiate
      *
      * @param {Object} configs Custom configs to override defaults
-     * @property {Number} [value=0] The default value
+     * @property {Number} [value=null] The default value
      * @property {Number} [min=0] The minimum allowed value
      * @property {Number} [max=null] The maximum allowed value
      * @property {Boolean} [inButton=false] Whether to show the in button
@@ -170,9 +171,7 @@ export default class TimeInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
@@ -254,7 +253,7 @@ export default class TimeInput extends Input {
 
         if(this.dirty){
             delete this.dirty;
-            this.setValue(this.constructor.getNumericalValue(this.formatted_input.val()), true);
+            this.setValue(TimeInput.getNumericalValue(this.formatted_input.val()), true);
         }
 
         this.triggerEvent('valuechange', {'input': this, 'value': this.value, 'previous': this.previous_value}, true, false);
@@ -664,7 +663,7 @@ export default class TimeInput extends Input {
     /**
      * Set the input's value
      *
-     * @param {Number} value The new value in centiseconds
+     * @param {Number} value The new value in seconds
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
@@ -672,8 +671,7 @@ export default class TimeInput extends Input {
         let _value = value;
 
         if(_value !== null){
-            // work around floating-point arithmetic issues
-            _value = Math.round(parseFloat(_value) * 100) / 100;
+            _value = round(_value, 2);
 
             if(this.min !== null){
                 _value = Math.max(_value, this.min);
@@ -692,7 +690,7 @@ export default class TimeInput extends Input {
 
         this.native_input.val(this.value);
 
-        this.formatted_input.val(this.constructor.getTextualValue(_value));
+        this.formatted_input.val(TimeInput.getTextualValue(_value));
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');

@@ -1,6 +1,6 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -9,42 +9,42 @@
     font-size: 0.75em;
     overflow: hidden;
 
-    button{
+    button {
         padding: 0;
         color: #fff;
 
-        &[data-action="scroll-left"]{
-            .icon{
+        &[data-action='scroll-left'] {
+            .icon {
                 transform: rotate(180deg);
             }
         }
 
-        &[data-action="add"],
-        &[data-action="clone"]{
+        &[data-action='add'],
+        &[data-action='clone'] {
             display: flex;
             padding: 0.25em;
 
-            &:hover{
+            &:hover {
                 background: $darkgray;
             }
         }
     }
 
-    .nav-buttons{
+    .nav-buttons {
         display: flex;
         flex-direction: row;
         padding: 0 0.25em;
 
-        button{
+        button {
             font-size: 0.75em;
 
-            .icon{
+            .icon {
                 height: 1em;
             }
         }
     }
 
-    .list{
+    .list {
         list-style: none;
         display: flex;
         flex-direction: row;
@@ -53,7 +53,7 @@
         overflow: hidden;
         scroll-behavior: smooth;
 
-        .item{
+        .item {
             padding: 0 0.5em;
             opacity: 0.5;
             border-bottom: 1px solid transparent;
@@ -62,11 +62,11 @@
             white-space: nowrap;
             cursor: pointer;
 
-            &:hover{
+            &:hover {
                 opacity: 1;
             }
 
-            &.active{
+            &.active {
                 opacity: 1;
                 border-bottom-color: #fff;
                 cursor: default;

@@ -84,47 +84,6 @@ export default class ConfigsEditor extends Dom {
          * @type {Array}
          */
         this.components = [];
-
-        this
-            .addDelegate('.content-form', 'contentsunlock', this.onContentFormContentsUnlock.bind(this))
-            .addDelegate('.content-form', 'contentschange', this.onContentFormContentsChange.bind(this))
-            .addDelegate('.content-form', 'contentslock', this.onContentFormContentsLock.bind(this));
-    }
-    /**
-     * ContentForm contentsunlock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsUnlock(evt){
-        const component = evt.detail.component;
-        component.addClass('isolate');
-
-        this.editor.getPlayer().addClass('isolating');
-        this.editor.addClass('contents-unlocked');
-    }
-
-    /**
-     * ContentForm contentschange event callback
-     *
-     * @private
-     */
-    onContentFormContentsChange(){
-        this.editor.setDirty('components');
-    }
-
-    /**
-     * ContentForm contentslock event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onContentFormContentsLock(evt){
-        const component = evt.detail.component;
-        component.removeClass('isolate');
-
-        this.editor.getPlayer().removeClass('isolating');
-        this.editor.removeClass('contents-unlocked');
     }
 
     /**
@@ -281,7 +240,7 @@ export default class ConfigsEditor extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentset', {'component': component, 'count': this.components.length}, false);
-            component.triggerEvent('selected', {'component': component});
+            component.triggerEvent('select', {'component': component});
         }
 
         return this;
@@ -316,7 +275,7 @@ export default class ConfigsEditor extends Dom {
 
         if(supressEvent !== true){
             this.triggerEvent('componentunset', {'component': component, 'count': this.components.length}, false);
-            component.triggerEvent('deselected', {'component': component});
+            component.triggerEvent('deselect', {'component': component});
         }
 
         return this;

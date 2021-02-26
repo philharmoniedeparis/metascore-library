@@ -1,6 +1,6 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     position: fixed;
     left: 0;
     top: 0;
@@ -12,11 +12,11 @@
     justify-content: center;
     pointer-events: none;
 
-    > .inner{
+    > .inner {
         position: relative;
         background: $lightgray;
 
-        > .toolbar{
+        > .toolbar {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
@@ -25,19 +25,19 @@
             font-weight: 500;
             background-color: $darkgray;
 
-            button{
+            button {
                 color: #fff;
             }
         }
 
-        > .body{
-            > .contents{
+        > .body {
+            > .contents {
                 max-height: 75vh;
                 overflow: auto;
                 text-align: center;
                 padding: 1em;
 
-                .text-wrapper{
+                .text-wrapper {
                     max-width: 50vw;
                     max-height: 50vh;
                     color: #fff;
@@ -45,42 +45,42 @@
                     overflow-y: auto;
                 }
 
-                &:empty{
+                &:empty {
                     display: none;
                 }
             }
 
-            > .buttons{
+            > .buttons {
                 text-align: center;
-                padding: 0.5em 1em 1em 1em;
+                padding: 0.5em 1em 1em;
 
-                button{
+                button {
                     min-width: 60px;
                     margin: 0 0.5em;
                     padding: 0.5em;
                     background: #fff;
-                    border: none;
+                    border: 0;
                     opacity: 1;
                     cursor: pointer;
 
-                    &:hover{
+                    &:hover {
                         opacity: 0.75;
                     }
 
-                    &:active{
+                    &:active {
                         opacity: 0.5;
                     }
 
-                    &[data-action="cancel"]{
+                    &[data-action='cancel'] {
                         background: #aaa;
                     }
 
-                    .label{
+                    .label {
                         pointer-events: none;
                     }
                 }
 
-                &:empty{
+                &:empty {
                     display: none;
                 }
             }
@@ -91,15 +91,15 @@
         }
     }
 
-    &.modal{
+    &.modal {
         background: rgba(0, 0, 0, 0.6);
         pointer-events: auto;
 
-        > .inner{
+        > .inner {
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 0.25em;
-            box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+            box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
         }
     }
 }

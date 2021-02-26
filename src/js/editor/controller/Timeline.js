@@ -1,6 +1,8 @@
 import Dom from '../../core/Dom';
-import {MasterClock} from '../../core/media/Clock';
-import Track from './timeline/Track';
+import { clone } from '../../core/utils/Array';
+import { History } from '../UndoRedo';
+import {MasterClock} from '../../core/media/MediaClock';
+import ComponentTrack from './timeline/ComponentTrack';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import {className, handleDragGhostClassName} from '../../../css/editor/controller/Timeline.scss';
@@ -8,14 +10,14 @@ import {className, handleDragGhostClassName} from '../../../css/editor/controlle
 /**
  * The editor's timeline
  * @emits {trackadd} Fired when a track is added
- * @param {Track} track The track
+ * @param {ComponentTrack} track The track
  *
  * @emits {trackremove} Fired when a track is removed
- * @param {Track} track The track
+ * @param {ComponentTrack} track The track
  *
  * @emits {offsetupdate} Fired when the offset is updated
- * @param {Number} start The start time of the offset in centiseconds
- * @param {Number} end The end time of the offset in centiseconds
+ * @param {Number} start The start time of the offset in seconds
+ * @param {Number} end The end time of the offset in seconds
  */
 export default class Timeline extends Dom {
 
@@ -29,7 +31,7 @@ export default class Timeline extends Dom {
      */
     constructor(configs) {
         // call parent constructor
-        super('<div/>', {'class': `timeline ${className}`});
+        super('<div/>', {'class': `timeline ${className}`, 'tabindex': 0});
 
         /**
          * The configuration values
@@ -39,9 +41,40 @@ export default class Timeline extends Dom {
 
         this.playhead_position = 0;
 
-        this.tracks = {};
+        /**
+         * The list of component tracks.
+         * @type {Map<String, ComponentTrack>}
+         */
+        this.component_tracks = new Map();
 
-        this.setupUI();
+        /**
+         * The current zoom level.
+         * @type {Number}
+         */
+        this.zoom = 1;
+
+        /**
+         * The current horizontal offset.
+         * @type {Number}
+         */
+        this.offset = 0;
+
+        /**
+         * The tracks container
+         * @type {Dom}
+         */
+        this.tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
+            .appendTo(this);
+
+        const playhead_wrapper = new Dom('<div/>', {'class': 'playhead'})
+            .appendTo(this.tracks_container);
+
+        /**
+         * The playhead <canvas> element
+         * @type {Dom}
+         */
+        this.playhead = new Dom('<canvas/>')
+            .appendTo(playhead_wrapper);
 
         const resize_observer = new ResizeObserver(this.onResize.bind(this));
         resize_observer.observe(this.get(0));
@@ -49,53 +82,24 @@ export default class Timeline extends Dom {
         MasterClock
             .addListener('rendererchange', this.onMediaClockRendererChange.bind(this))
             .addListener('timeupdate', this.onMediaClockTimeUpdate.bind(this));
-    }
 
-    /**
-     * Setup the UI
-     *
-     * @private
-     */
-    setupUI() {
-        /**
-         * The handles container
-         * @type {Dom}
-         */
-        this.handles_container = new Dom('<div/>', {'class': 'handles-container'})
-            .addDelegate('.handle', 'dragstart', this.onHandleDragStart.bind(this), true)
-            .addDelegate('.handle', 'dragover', this.onHandleDragOver.bind(this), true)
-            .addDelegate('.handle', 'dragleave', this.onHandleDragLeave.bind(this), true)
-            .addDelegate('.handle', 'drop', this.onHandleDrop.bind(this), true)
-            .addDelegate('.handle', 'dragend', this.onHandleDragEnd.bind(this), true)
-            .appendTo(this);
-
-        const tracks_container = new Dom('<div/>', {'class': 'tracks-container'})
-            .appendTo(this);
-
-        /**
-         * The tracks outer container
-         * @type {Dom}
-         */
-        this.tracks_container_outer = new Dom('<div/>', {'class': 'tracks-container-outer'})
-            .appendTo(tracks_container);
-
-        /**
-         * The tracks inner container
-         * @type {Dom}
-         */
-        this.tracks_container_inner = new Dom('<div/>', {'class': 'tracks-container-inner'})
-            .addDelegate('.track', 'dragstart', this.onTrackDragStart.bind(this), true)
-            .addDelegate('.track', 'dragend', this.onTrackDragEnd.bind(this), true)
-            .addDelegate('.track', 'resizestart', this.onTrackResizeStart.bind(this), true)
-            .addDelegate('.track', 'resizeend', this.onTrackResizeEnd.bind(this), true)
-            .appendTo(this.tracks_container_outer);
-
-        /**
-         * The playhead <canvas> element
-         * @type {Dom}
-         */
-        this.playhead = new Dom('<canvas/>', {'class': 'playhead'})
-            .appendTo(tracks_container);
+        this
+            .addDelegate('.component-track .time', 'dragstart', this.onComponentTrackTimeDragStart.bind(this))
+            .addDelegate('.component-track .time', 'dragend', this.onComponentTrackTimeDragEnd.bind(this))
+            .addDelegate('.component-track .time', 'resizestart', this.onComponentTrackTimeResizeStart.bind(this))
+            .addDelegate('.component-track .time', 'resizeend', this.onComponentTrackTimeResizeEnd.bind(this))
+            .addDelegate('.component-track .handle', 'dragstart', this.onComponentTrackHandleDragStart.bind(this))
+            .addDelegate('.component-track .handle', 'dragover', this.onComponentTrackHandleDragOver.bind(this))
+            .addDelegate('.component-track .handle', 'dragleave', this.onComponentTrackHandleDragLeave.bind(this))
+            .addDelegate('.component-track .handle', 'drop', this.onComponentTrackHandleDrop.bind(this))
+            .addDelegate('.component-track .handle', 'dragend', this.onComponentTrackHandleDragEnd.bind(this))
+            .addDelegate('.property-track .keyframes-wrapper', 'click', this.onPropertyTrackKeyframesWrapperClick.bind(this), true)
+            .addDelegate('.property-track .keyframe', 'dragstart', this.onPropertyTrackKeyframeDragStart.bind(this))
+            .addDelegate('.property-track .keyframe', 'dragend', this.onPropertyTrackKeyframeDragEnd.bind(this))
+            .addDelegate('.property-track .keyframe', 'click', this.onComponentTrackKeyframeClick.bind(this))
+            .addDelegate('.property-track .keyframe', 'mousedown', this.onComponentTrackKeyframeMousedown.bind(this))
+            .addDelegate('.property-track .keyframe', 'mouseup', this.onComponentTrackKeyframeMouseup.bind(this))
+            .addDelegate('.property-track .keyframe', 'focusin', this.onComponentTrackKeyframeFocusin.bind(this));
     }
 
     /**
@@ -108,58 +112,97 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragstart event callback
+     * ComponentTrack time dragstart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeDragStart(evt){
+        const behavior = evt.detail.behavior;
+        const component_id = Dom.data(evt.target, 'component');
+
+        this.setupTrackSnapGuides(component_id, behavior);
+    }
+
+    /**
+     * ComponentTrack time dragend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeDragEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
+    }
+
+    /**
+     * ComponentTrack time resizestart event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeResizeStart(evt){
+        const behavior = evt.detail.behavior;
+        const component_id = Dom.data(evt.target, 'component');
+
+        this.setupTrackSnapGuides(component_id, behavior);
+    }
+
+    /**
+     * ComponentTrack time resizeend event callback
+     *
+     * @private
+     * @param {CustomEvent} evt The event object
+     */
+    onComponentTrackTimeResizeEnd(evt){
+        const behavior = evt.detail.behavior;
+        behavior.clearSnapGudies();
+    }
+
+    /**
+     * ComponentTrack Handle dragstart event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragStart(evt){
-        const component_id = Dom.data(evt.target, 'component');
-        const track = this.getTrack(component_id);
+    onComponentTrackHandleDragStart(evt){
+        const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
+        const track = this.getComponentTrack(component_id);
 
-        const handle = track.getHandle();
-
-        this._handle_drag_ghost = new Dom(evt.target.cloneNode(true))
+        this._handle_drag_ghost = new Dom(track.get(0).cloneNode(true))
             .addClass(handleDragGhostClassName)
-            .css('width', handle.css('width'))
-            .appendTo(this.handles_container);
+            .appendTo(this.tracks_container);
 
         evt.dataTransfer.effectAllowed = 'move';
         evt.dataTransfer.setData('metascore/timeline', component_id);
         evt.dataTransfer.setDragImage(this._handle_drag_ghost.get(0), 0, 0);
 
         // dragover does not have access to dataTransfer data
-        this._dragging_handle = handle;
+        this._handle_drag_track = track;
 
         track.addClass('dragging');
-        handle.addClass('dragging');
 
         evt.stopPropagation();
     }
 
     /**
-     * Handle dragover event callback
+     * ComponentTrack Handle dragover event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragOver(evt) {
+    onComponentTrackHandleDragOver(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
-            const track = this.getTrack(component_id);
-            const handle = track.getHandle();
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
+            const track = this.getComponentTrack(component_id);
 
-            if(handle.parents().get(0) === this._dragging_handle.parents().get(0)){
+            if(track.parents().get(0) === this._handle_drag_track.parents().get(0)){
+                const handle = track.getHandle();
                 const handle_rect = handle.get(0).getBoundingClientRect();
                 const y = evt.clientY - handle_rect.top;
                 const above = y < handle_rect.height/2;
 
                 track
-                    .addClass('dragover', above)
-                    .toggleClass('drag-above', above)
-                    .toggleClass('drag-below', !above);
-
-                handle
                     .addClass('dragover', above)
                     .toggleClass('drag-above', above)
                     .toggleClass('drag-below', !above);
@@ -170,23 +213,17 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragleave event callback
+     * ComponentTrack Handle dragleave event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragLeave(evt) {
+    onComponentTrackHandleDragLeave(evt) {
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
-            const track = this.getTrack(component_id);
-            const handle = track.getHandle();
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
+            const track = this.getComponentTrack(component_id);
 
             track
-                .removeClass('dragover')
-                .removeClass('drag-below')
-                .removeClass('drag-above');
-
-            handle
                 .removeClass('dragover')
                 .removeClass('drag-below')
                 .removeClass('drag-above');
@@ -196,33 +233,26 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle drop event callback
+     * ComponentTrack Handle drop event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDrop(evt){
+    onComponentTrackHandleDrop(evt){
         if(evt.dataTransfer.types.includes('metascore/timeline')){
-            const component_id = Dom.data(evt.target, 'component');
-            const track = this.getTrack(component_id);
-            const handle = track.getHandle();
-            const handle_parent = handle.parents();
+            const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
+            const track = this.getComponentTrack(component_id);
 
             const dragging_component_id = evt.dataTransfer.getData('metascore/timeline');
-            const dragging_track = this.getTrack(dragging_component_id);
+            const dragging_track = this.getComponentTrack(dragging_component_id);
 
-            const index = handle_parent.children('.handle').index('.dragover');
+            const index = track.parents().children('.component-track').index('.dragover');
             const above = track.hasClass('drag-above');
             const position = above ? index : index + 1;
 
-            this.triggerEvent('trackdrop', {'component': dragging_track.getComponent(), 'position': position});
+            this.triggerEvent('componenttrackdrop', {'component': dragging_track.getComponent(), 'position': position});
 
             track
-                .removeClass('dragover')
-                .removeClass('drag-below')
-                .removeClass('drag-above');
-
-            handle
                 .removeClass('dragover')
                 .removeClass('drag-below')
                 .removeClass('drag-above');
@@ -232,71 +262,209 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Handle dragend event callback
+     * ComponentTrack Handle dragend event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onHandleDragEnd(evt){
-        const component_id = Dom.data(evt.target, 'component');
-        const track = this.getTrack(component_id);
-        const handle = track.getHandle();
+    onComponentTrackHandleDragEnd(evt){
+        const component_id = Dom.data(Dom.closest(evt.target, '.component-track'), 'component');
+        const track = this.getComponentTrack(component_id);
 
         this._handle_drag_ghost.remove();
         delete this._handle_drag_ghost;
 
-        delete this._dragging_handle;
+        delete this._handle_drag_track;
 
         track.removeClass('dragging');
-        handle.removeClass('dragging');
     }
 
     /**
-     * Track dragstart event callback
+     * ComponentTrack Keyframe click event callback
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onComponentTrackKeyframeClick(evt) {
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
+
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const time =  Dom.data(evt.target, 'time');
+        const keyframe = property_track.getKeyframes().find(k => k.data('time') === time);
+
+        this.selectPropertyKeyframe(keyframe, evt.shiftKey);
+    }
+
+    /**
+     * ComponentTrack Keyframe mousedown event callback
+     *
+     * @private
+     */
+    onComponentTrackKeyframeMousedown() {
+        /**
+         * Used to differentiate focus from click.
+         * See onComponentTrackKeyframeFocusin.
+         * @type {Boolean}
+         */
+        this._componenttrack_keyframe_mousedown = true;
+    }
+
+    /**
+     * ComponentTrack Keyframe mousedown event callback
+     *
+     * @private
+     */
+    onComponentTrackKeyframeMouseup() {
+        delete this._componenttrack_keyframe_mousedown;
+    }
+
+    /**
+     * ComponentTrack Keyframe focusin event callback
+     *
+     * @private
+     * @param {FocusEvent} evt The event object
+     */
+    onComponentTrackKeyframeFocusin(evt) {
+        if (this._componenttrack_keyframe_mousedown) {
+            return;
+        }
+
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
+
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const time = Dom.data(evt.target, 'time');
+        const keyframe = property_track.getKeyframes().find(k => k.data('time') === time);
+
+        if (keyframe.isSelected()) {
+            return;
+        }
+
+        this.selectPropertyKeyframe(keyframe);
+    }
+
+    /**
+     * Select a property keyframe.
+     *
+     * @private
+     * @param {Keyframe} keyframe The keyframe to select.
+     * @param {Boolean} keepExisting True to keep the existing selection, false otherwise.
+     * @return {this}
+     */
+    selectPropertyKeyframe(keyframe, keepExisting=false) {
+        if (!keepExisting) {
+            // Deselect previously selected property keyframes.
+            this.getPropertyKeyfames()
+                .filter(k => k.isSelected() && k !== keyframe)
+                .forEach(k => k.deselect());
+        }
+
+        if (keyframe.isSelected() && keepExisting) {
+            keyframe.deselect();
+        }
+        else {
+            keyframe.select();
+            MasterClock.setTime(keyframe.getTime());
+        }
+
+        return this;
+    }
+
+    /**
+     * Get the list of property keyframes.
+     *
+     * @return {[Keyframe]} The keyframes.
+     */
+    getPropertyKeyfames() {
+        let keyframes = [];
+
+        this.getComponentTracks().forEach((track) => {
+            track.getPropertyTracks().forEach((property_track) => {
+                keyframes = keyframes.concat(property_track.getKeyframes());
+            });
+        });
+
+        return keyframes;
+    }
+
+    /**
+     * Keyframes wrapper click event handler.
+     *
+     * @private
+     * @param {MouseEvent} evt The event object
+     */
+    onPropertyTrackKeyframesWrapperClick(evt) {
+        const property_track_el = Dom.closest(evt.target, '.property-track');
+        const component_track_el = Dom.closest(property_track_el, '.component-track');
+        const component_id = Dom.data(component_track_el, 'component');
+        const property = Dom.data(property_track_el, 'property');
+
+        const component_track = this.getComponentTrack(component_id);
+        const property_track = component_track.getPropertyTrack(property);
+
+        const component = component_track.getComponent();
+        if (!component.hasClass('selected')) {
+            return;
+        }
+
+        const previous = clone(component.getPropertyValue(property));
+        const duration = parseFloat(property_track.css('--timeline-duration'));
+        const {width, left} = evt.target.getBoundingClientRect();
+        const x = evt.pageX - left;
+        const time = (x / width) * duration;
+        const value = component.getAnimatedPropertyValueAtTime(property, time);
+
+        const keyframe = property_track.addKeyframe(time, value);
+
+        this.selectPropertyKeyframe(keyframe);
+
+        const values = property_track.getKeyframes().map((keyframe) => {
+            return [keyframe.getTime(), keyframe.getValue()];
+        });
+
+        component.setPropertyValue(property, values);
+
+        History.add({
+            'undo': () => {
+                component.setPropertyValue(property, previous);
+            },
+            'redo': () => {
+                component.setPropertyValue(property, values);
+            }
+        });
+    }
+
+    /**
+     * PropertyTrack dragstart event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTrackDragStart(evt){
+    onPropertyTrackKeyframeDragStart(evt){
         const behavior = evt.detail.behavior;
-        const track_id = Dom.data(evt.target, 'component');
+        const component_id = Dom.data(evt.target, 'component');
 
-        this.setupTrackSnapGuides(track_id, behavior);
+        this.setupTrackSnapGuides(component_id, behavior);
     }
 
     /**
-     * Track dragend event callback
+     * PropertyTrack dragend event callback
      *
      * @private
      * @param {CustomEvent} evt The event object
      */
-    onTrackDragEnd(evt){
-        const draggable = evt.detail.behavior;
-        draggable.clearSnapGudies();
-    }
-
-    /**
-     * Track resizestart event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onTrackResizeStart(evt){
+    onPropertyTrackKeyframeDragEnd(evt){
         const behavior = evt.detail.behavior;
-        const track_id = Dom.data(evt.target, 'component');
-
-        this.setupTrackSnapGuides(track_id, behavior);
-    }
-
-    /**
-     * Track resizeend event callback
-     *
-     * @private
-     * @param {CustomEvent} evt The event object
-     */
-    onTrackResizeEnd(evt){
-        const resizable = evt.detail.behavior;
-        resizable.clearSnapGudies();
+        behavior.clearSnapGudies();
     }
 
     /**
@@ -310,9 +478,7 @@ export default class Timeline extends Dom {
 
         if(renderer){
             const duration = renderer.getDuration();
-            Object.values(this.tracks).forEach((track) => {
-                track.setDuration(duration);
-            });
+            this.tracks_container.css('--timeline-duration', duration);
         }
 
         this.updateSize();
@@ -332,44 +498,35 @@ export default class Timeline extends Dom {
      *
      * @param {Component} component The component to associate with the track
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
-     * @return {Track} The added track
+     * @return {ComponentTrack} The added track
      */
     addTrack(component, supressEvent){
         const parent_component = component.getParent();
-        const parent_track = parent_component ? this.getTrack(parent_component.getId()) : null;
-        const renderer = MasterClock.getRenderer();
+        const parent_track = parent_component ? this.getComponentTrack(parent_component.getId()) : null;
 
         if(parent_component && !parent_track){
             return this;
         }
 
-        const track = new Track(component, {
+        const track = new ComponentTrack(component, {
             'draggableConfigs': {
-                'snapGuideContainer': this.tracks_container_inner
+                'snapGuideContainer': this.tracks_container
             },
             'resizableConfigs': {
-                'snapGuideContainer': this.tracks_container_inner
+                'snapGuideContainer': this.tracks_container
             },
         });
-
-        if(renderer){
-            track.setDuration(renderer.getDuration());
-        }
-
-        const handle = track.getHandle();
 
         if(parent_component){
             const index = parent_component.getChildIndex(component);
             parent_track.addDescendent(track, index);
-            parent_track.getHandle().addDescendent(handle, index);
         }
         else{
             const index = component.parents().children().index(`#${component.getId()}`);
-            track.insertAt(this.tracks_container_inner, index);
-            handle.insertAt(this.handles_container, index);
+            track.insertAt(this.tracks_container, index);
         }
 
-        this.tracks[component.getId()] = track;
+        this.getComponentTracks().set(component.getId(), track);
 
         if(supressEvent !== true){
             this.triggerEvent('trackadd', {'track': track});
@@ -383,14 +540,24 @@ export default class Timeline extends Dom {
     }
 
     /**
+     * Get all component tracks.
+     *
+     * @return {Map<String, ComponentTrack>} The list of tracks.
+     */
+    getComponentTracks(){
+        return this.component_tracks;
+    }
+
+    /**
      * Get a track for a corresponding component
      *
      * @param {String} component_id The component id associated with the track
-     * @return {Track} The associated track, or null if not found
+     * @return {ComponentTrack} The associated track, or null if not found
      */
-    getTrack(component_id){
-        if(component_id in this.tracks){
-            return this.tracks[component_id];
+    getComponentTrack(component_id){
+        const tracks = this.getComponentTracks();
+        if (tracks.has(component_id)) {
+            return tracks.get(component_id);
         }
 
         return null;
@@ -403,15 +570,14 @@ export default class Timeline extends Dom {
      * @param {Boolean} [supressEvent=false] Whether to supress the trackremove event
      * @return {this}
      */
-    removeTrack(component, supressEvent){
-        const id = component.getId();
+    removeComponentTrack(component, supressEvent){
+        const component_id = component.getId();
+        const track = this.getComponentTrack(component_id);
 
-        if(id in this.tracks){
-            const track = this.tracks[id];
-
+        if(track){
             track.remove();
 
-            delete this.tracks[id];
+            this.getComponentTracks().delete(component_id);
 
             if(supressEvent !== true){
                 this.triggerEvent('trackremove', {'track': track});
@@ -431,18 +597,35 @@ export default class Timeline extends Dom {
      */
     setupTrackSnapGuides(id, behavior){
         // Add snapping to playhead
-        const container_rect = this.tracks_container_inner.get(0).getBoundingClientRect();
-        behavior.addSnapGuide('x', this.playhead_position + container_rect.left);
+        behavior.addSnapGuide('x', this.getPositionAt(MasterClock.getTime()));
 
-        // Add snapping to other tracks
-        Object.entries(this.tracks).forEach(([track_id, track]) => {
-            if(track.hidden() || track_id === id){
+        this.getComponentTracks().forEach((component_track, component_id) => {
+            if(component_track.time.hidden()){
                 return;
             }
 
-            const track_rect = track.info.get(0).getBoundingClientRect();
-            behavior.addSnapGuide('x', track_rect.left);
-            behavior.addSnapGuide('x', track_rect.right);
+            // Add snapping to other tracks.
+            if(component_id !== id) {
+                const component = component_track.getComponent();
+
+                const start_time = component.getPropertyValue('start-time');
+                if (start_time !== null) {
+                    behavior.addSnapGuide('x', this.getPositionAt(start_time));
+                }
+
+                const end_time = component.getPropertyValue('end-time');
+                if (end_time !== null) {
+                    behavior.addSnapGuide('x', this.getPositionAt(end_time));
+                }
+            }
+
+            // Add snapping to property keyframes.
+            component_track.getPropertyTracks().forEach((property_track) => {
+                property_track.getKeyframes().forEach((keyframe) => {
+                    const x = this.getPositionAt(keyframe.getTime());
+                    behavior.addSnapGuide('x', x);
+                });
+            });
         });
 
         return this;
@@ -461,15 +644,12 @@ export default class Timeline extends Dom {
 
         if(renderer){
             const duration = renderer.getDuration();
-            const zoom = duration / (end - start);
 
-            this.tracks_container_inner.css('width', `${zoom * 100}%`);
+            this.zoom = duration / (end - start);
+            this.offset = start / (end - start);
 
-            const container_dom = this.tracks_container_outer.get(0);
-            const scroll = container_dom.clientWidth * start / duration * zoom;
-            const max_scroll = container_dom.scrollWidth - container_dom.clientWidth;
-
-            container_dom.scrollLeft = Math.min(scroll, max_scroll);
+            this.tracks_container.css('--timeline-zoom', `${this.zoom * 100}%`);
+            this.tracks_container.css('--timeline-offset', this.offset);
 
             this.updatePlayhead();
 
@@ -485,18 +665,11 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updateSize(){
-        const container = this.tracks_container_outer.get(0);
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-
-        this.find('canvas').forEach((canvas) => {
-            canvas.width = width;
-            canvas.height = height;
-        });
+        const canvas = this.playhead.get(0);
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
 
         this.updatePlayhead();
-
-        this.tracks_container_outer.css('--tracks-container-width', `${width}px`);
 
         return this;
     }
@@ -507,23 +680,13 @@ export default class Timeline extends Dom {
      * @return {this}
      */
     updatePlayhead(){
-        const renderer = MasterClock.getRenderer();
-
-        if(renderer){
-            const time = MasterClock.getTime();
-            const rect = this.tracks_container_inner.get(0).getBoundingClientRect();
-            this.playhead_position = time / renderer.getDuration() * rect.width;
-        }
-        else{
-            this.playhead_position = 0;
-        }
-
-        const offset = this.tracks_container_outer.get(0).scrollLeft;
-        const x = Math.floor(this.playhead_position - offset) + 0.5;
         const canvas = this.playhead.get(0);
+        const {left} = canvas.getBoundingClientRect();
+        this.playhead_position = this.getPositionAt(MasterClock.getTime()) - left;
 
         if(canvas.width > 0 && canvas.height > 0){
             const context = canvas.getContext('2d');
+            const x = this.playhead_position + 0.5;
 
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.beginPath();
@@ -538,12 +701,21 @@ export default class Timeline extends Dom {
     }
 
     /**
-     * Get the handles container
+     * Get the x position in pixels corresponding to a time in seconds
      *
-     * @return {Dom}
+     * @param {Number} time The time in seconds
+     * @return {Number} The corresponding x position
      */
-    getHandlesContainer(){
-        return this.handles_container;
+    getPositionAt(time){
+        const renderer = MasterClock.getRenderer();
+        if(renderer){
+            const duration = renderer.getDuration();
+            const {left, width} = this.playhead.get(0).getBoundingClientRect();
+
+            return Math.round(((time / duration * this.zoom) - this.offset) * width) + left;
+        }
+
+        return 0;
     }
 
     /**
@@ -555,7 +727,7 @@ export default class Timeline extends Dom {
         // Update Timeline labels of sibling pages.
         block.getChildren().forEach((page, page_index) => {
             if(typeof index === 'undefined' || page_index >= index){
-                const track = this.getTrack(page.getId());
+                const track = this.getComponentTrack(page.getId());
                 if(track){
                     track.updateLabel();
                 }
@@ -574,9 +746,9 @@ export default class Timeline extends Dom {
             context.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        Object.entries(this.tracks).forEach(([id, track]) => {
+        this.getComponentTracks().forEach((track, component_id, list) => {
             track.remove();
-            delete this.tracks[id];
+            delete list[component_id];
         });
 
         return this;

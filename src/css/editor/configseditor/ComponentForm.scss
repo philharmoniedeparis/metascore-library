@@ -1,92 +1,161 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
     height: 100%;
     flex-direction: column;
+    background: $mediumgray;
+    overflow: auto;
 
-    h2{
+    h2.title {
+        position: sticky;
+        top: 0;
         flex: 0 0 auto;
         margin: 0;
         padding: 0.5em;
         font-size: 1em;
         font-weight: normal;
+        background: $lightgray;
         border-bottom: 0.25em solid $mediumgray;
+        z-index: 1;
     }
 
-    .fields{
-        flex: 1 1 auto;
+    .fields {
         display: flex;
-        overflow: auto;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: space-between;
         align-content: flex-start;
-        padding: 0.5em;
         background: $lightgray;
 
+        &:not(:empty) {
+            padding: 0.5em 0;
+        }
 
-        .input{
+        &.animatable {
+            display: grid;
+            grid-template-columns: max-content max-content auto;
+            grid-gap: 0.5em;
+            align-items: center;
+            background: none;
+
+            &:not(:empty) {
+                padding: 0.5em;
+            }
+
+            > .field {
+                display: contents;
+
+                .input.checkbox.animated {
+                    margin: 0 0.5em;
+
+                    input {
+                        + .state {
+                            opacity: 0.25;
+
+                            label {
+                                background: none;
+
+                                .icon {
+                                    display: block;
+                                    position: relative;
+                                    top: auto;
+                                    left: auto;
+                                    color: #fff;
+                                }
+                            }
+
+                            &:hover {
+                                opacity: 0.5;
+                            }
+                        }
+
+                        &:checked {
+                            + .state {
+                                opacity: 1;
+                            }
+                        }
+                    }
+                }
+
+                input:not(:focus) {
+                    background: $lightgray;
+                }
+            }
+        }
+
+        .input {
             &.text,
             &.number,
-            &.borderradius{
-                input{
+            &.borderradius {
+                input {
                     width: 100%;
                     padding: 0.25em 0.5em;
                     box-sizing: border-box;
                     border-radius: 0;
                 }
             }
+
+            &.time {
+                input {
+                    border-radius: 0;
+                }
+            }
         }
 
-        .field{
+        > .field,
+        > .field-group {
+            padding: 0 0.5em;
+        }
+
+        .field {
             margin: 0.25em 0;
             vertical-align: middle;
 
-            > label{
+            > label {
                 margin-right: 0.5em;
                 flex: 0 0 auto;
                 color: #fff;
                 white-space: nowrap;
             }
 
-            > .input{
+            > .input {
                 flex: 1;
             }
 
-            &[data-property="name"]{
+            &[data-property='name'] {
                 flex: 100%;
 
-                label{
+                label {
                     display: none;
                 }
 
-                input{
+                input {
                     border-radius: 0.25em;
                 }
             }
 
-            &[data-property="hidden"]{
+            &[data-property='hidden'] {
                 flex: 100%;
             }
 
-            &[data-property="x"],
-            &[data-property="y"],
-            &[data-property="width"],
-            &[data-property="height"]{
+            &[data-property='x'],
+            &[data-property='y'],
+            &[data-property='width'],
+            &[data-property='height'] {
                 display: flex;
                 flex-direction: row;
                 width: 45%;
             }
 
-            &[data-property="border-radius"]{
+            &[data-property='border-radius'] {
                 flex: 100%;
             }
 
-            &.warning{
-                label{
-                    &::after{
-                        content: "⚠";
+            &.warning {
+                > label {
+                    &::after {
+                        content: '⚠';
                         margin-left: 0.5em;
                         color: #ffbf00;
                     }
@@ -94,7 +163,7 @@
             }
         }
 
-        .field-group{
+        .field-group {
             display: flex;
             flex: 100%;
             flex-direction: row;
@@ -102,34 +171,34 @@
             align-items: center;
             justify-content: space-between;
 
-            &.border{
+            &.border {
                 justify-content: flex-start;
 
-                > label{
+                > label {
                     margin-right: 0.5em;
                     vertical-align: middle;
                 }
 
-                .field{
-                    &[data-property="border-color"],
-                    &[data-property="border-width"]{
-                        > label{
+                .field {
+                    &[data-property='border-color'],
+                    &[data-property='border-width'] {
+                        > label {
                             display: none;
                         }
                     }
 
-                    &[data-property="border-width"]{
+                    &[data-property='border-width'] {
                         width: 4em;
                         margin: 0 0.5em;
                     }
                 }
             }
-        }
 
-        .separator{
-            flex-basis: 100%;
-            height: 1px;
-            background: $darkgray;
+            &.time {
+                order: 1;
+                padding-top: 0.5em;
+                border-top: 1px solid $mediumgray;
+            }
         }
     }
 }

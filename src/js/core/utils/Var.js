@@ -63,7 +63,7 @@ export function isEmpty(value) {
         return true;
     }
 
-    if(value.hasOwnProperty('length')){
+    if(Object.prototype.hasOwnProperty.call(value, 'length')){
         return value.length === 0;
     }
 

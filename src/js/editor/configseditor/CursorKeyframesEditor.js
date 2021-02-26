@@ -4,7 +4,7 @@ import {clamp} from '../../core/utils/Math';
 import {clone} from '../../core/utils/Array';
 import ContextMenu from '../../core/ui/ContextMenu';
 import Locale from '../../core/Locale';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 
 /**
  * A helper class to manage a cursor component's keyframes
@@ -67,6 +67,7 @@ export default class CursorKeyframesEditor extends Dom {
             resizable.disable();
         }
 
+        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         const component_el = this.component.get(0);
         const component_dom = new Dom(component_el);
 
@@ -81,10 +82,9 @@ export default class CursorKeyframesEditor extends Dom {
             .resizeCanvas()
             .draw();
 
-        // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         component_dom
-            .addListener('propchange', this.onComponentPropChange)
-            .addListener('resizeend', this.onComponentResizeEnd);
+            .addListener('propchange', this.onComponentPropChange, true)
+            .addListener('resizeend', this.onComponentResizeEnd, true);
 
         /**
          * The context menu
@@ -132,14 +132,8 @@ export default class CursorKeyframesEditor extends Dom {
      * @param {Event} evt The event object
      */
     onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
         switch(evt.detail.property){
-            case 'width':
-            case 'height':
+            case 'dimension':
             case 'border-width':
                 this.resizeCanvas();
                 break;
@@ -354,7 +348,7 @@ export default class CursorKeyframesEditor extends Dom {
      * @private
      * @param {Number} position The keyframe's position
      * @param {Number} time The keyframe's time
-     * @returns {this}
+     * @return {this}
      */
     addKeyframe(position, time){
         this.keyframes.push({
@@ -378,7 +372,7 @@ export default class CursorKeyframesEditor extends Dom {
      *
      * @private
      * @param {Number} index The keyframe's index
-     * @returns {this}
+     * @return {this}
      */
     removeKeyframe(index){
         const keyframe = this.keyframes[index];
@@ -639,8 +633,8 @@ export default class CursorKeyframesEditor extends Dom {
     remove() {
         // Create a new Dom instance to workaround the different JS contexts of the player and editor.
         new Dom(this.component.get(0))
-            .removeListener('propchange', this.onComponentPropChange)
-            .removeListener('resizeend', this.onComponentResizeEnd);
+            .removeListener('propchange', this.onComponentPropChange, true)
+            .removeListener('resizeend', this.onComponentResizeEnd, true);
 
         // Re-enable the draggable behaviour
         const draggable = this.component.getDraggable();

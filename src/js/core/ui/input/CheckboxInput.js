@@ -42,9 +42,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();
@@ -78,10 +76,7 @@ export default class CheckboxInput extends Input{
     }
 
     /**
-     * The change event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
     onChange(evt){
         if(this.is_readonly){
@@ -115,7 +110,14 @@ export default class CheckboxInput extends Input{
      * @return {this}
      */
     setValue(value, supressEvent){
-        this.native_input.get(0).checked = value === this.configs.checked_value;
+        if (value === this.configs.checked_value) {
+            this.native_input.get(0).checked = true;
+            this.value = this.configs.checked_value;
+        }
+        else {
+            this.native_input.get(0).checked = false;
+            this.value = this.configs.unchecked_value;
+        }
 
         if(supressEvent !== true){
             this.native_input.triggerEvent('change');

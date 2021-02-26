@@ -3,8 +3,7 @@ import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
 import {escapeHTML} from '../../utils/String';
 import Ajax from '../../Ajax';
-import WaveformData from 'waveform-data/waveform-data';
-import WebAudioBuilder from 'waveform-data/webaudio';
+import WaveformData from 'waveform-data';
 
 /**
  * An HTML5 media renderer
@@ -230,8 +229,11 @@ export default class HTML5 extends Dom {
                         }
 
                         if(from_web_audio){
-                            const context = new AudioContext();
-                            WebAudioBuilder(context, response, (err, waveform) => {
+                            const options = {
+                                audio_context: new AudioContext(),
+                                array_buffer: response,
+                            };
+                            WaveformData.createFromAudio(options, (err, waveform) => {
                                 this.waveformdata = err ? null : waveform;
                                 this.triggerEvent('waveformdataloaded', {'renderer': this, 'data': this.waveformdata});
                                 delete this._waveformdata_ajax;
@@ -434,7 +436,7 @@ export default class HTML5 extends Dom {
     /**
      * Set the media time
      *
-     * @param {Number} time The time in centiseconds
+     * @param {Number} time The time in seconds
      * @return {this}
      */
     setTime(time) {
@@ -446,7 +448,7 @@ export default class HTML5 extends Dom {
     /**
      * Get the current media time
      *
-     * @return {Number} The time in centiseconds
+     * @return {Number} The time in seconds
      */
     getTime() {
         return this.dom.currentTime;
@@ -455,7 +457,7 @@ export default class HTML5 extends Dom {
     /**
      * Get the media's duration
      *
-     * @return {Number} The duration in centiseconds
+     * @return {Number} The duration in seconds
      */
     getDuration() {
         return this.dom.duration;

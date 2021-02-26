@@ -1,12 +1,12 @@
-:local(.className){
+:local(.class-name) {
     position: relative;
 
-    .layers{
+    .layers {
         overflow: hidden;
         position: relative;
         height: 25px;
 
-        .layer{
+        .layer {
             position: absolute;
             top: 0;
             left: 0;

@@ -1,45 +1,45 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     position: absolute;
     z-index: 999;
-    box-shadow: 0.25em 0.25em 0.5em 0 rgba(0,0,0,0.5);
+    box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
     background: $darkgray;
     border: 1px solid rgba(0, 0, 0, 0.1);
 
-    ul{
+    ul {
         min-width: 150px;
         margin: 0;
         padding: 0;
         list-style: none;
         background: $darkgray;
 
-        li{
+        li {
             position: relative;
             padding: 0.2em 0.5em;
             white-space: nowrap;
             color: #fff;
             cursor: pointer;
 
-            &:hover{
+            &:hover {
                 background: $mediumgray;
             }
 
-            &:active{
+            &:active {
                 color: #000;
                 background: $lightgray;
             }
 
-            &.no-callback{
+            &.no-callback {
                 cursor: default;
                 pointer-events: none;
             }
 
-            &.disabled{
+            &.disabled {
                 display: none;
             }
 
-            &.separator{
+            &.separator {
                 height: 1px;
                 margin: 0.25em;
                 padding: 0;
@@ -47,11 +47,11 @@
                 pointer-events: none;
             }
 
-            &.has-subitems{
+            &.has-subitems {
                 pointer-events: all;
 
                 &::after {
-                    content: "";
+                    content: '';
                     position: absolute;
                     top: 50%;
                     right: 1em;
@@ -65,7 +65,7 @@
                     opacity: 0.75;
                 }
 
-                ul{
+                ul {
                     display: none;
                     position: absolute;
                     top: 0;
@@ -73,15 +73,15 @@
                     z-index: 1;
                 }
 
-                &:hover{
+                &:hover {
                     &::after {
                         opacity: 1;
                     }
 
-                    > ul{
+                    > ul {
                         display: block;
 
-                        &.left{
+                        &.left {
                             left: auto;
                             right: 99%;
                         }
@@ -89,15 +89,15 @@
                 }
             }
 
-            &:last-child{
-                &.separator{
+            &:last-child {
+                &.separator {
                     display: none;
                 }
             }
         }
     }
 
-    .banner{
+    .banner {
         padding: 0.2em 0.5em;
         border-top: 1px solid rgba(0, 0, 0, 0.25);
         color: #fff;
