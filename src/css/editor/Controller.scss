@@ -1,12 +1,7 @@
-@import "../theme";
+@import '../theme';
+@import './variables';
 
-:local(.className){
-    $top-height: 2.5em;
-    $left-width: 12em;
-    $left-min-width: 8em;
-    $bottom-sticky-top-height: 8em;
-    $bottom-sticky-bottom-height: 1.5em;
-
+:local(.class-name) {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -16,29 +11,29 @@
     > .top {
         display: flex;
         flex-direction: row;
-        flex: 0 0 $top-height;
+        flex: 0 0 $controller-top-height;
         background: $mediumgray;
         border-bottom: 2px solid $darkgray;
         z-index: 1;
 
-        .time.input{
+        .time.input {
             display: flex;
-            flex: 0 0 $left-width;
+            flex: 0 0 $controller-left-width;
             box-sizing: border-box;
             border-right: 2px solid $darkgray;
 
-            button[data-action="play"]{
+            button[data-action='play'] {
                 display: none;
                 order: 0;
-                flex: 0 0 $top-height;
+                flex: 0 0 $controller-top-height;
                 background: #fff;
 
-                .icon{
+                .icon {
                     color: $darkgray;
                 }
             }
 
-            input{
+            input {
                 flex: 1 1 auto;
                 order: 1;
                 height: 100%;
@@ -46,7 +41,7 @@
                 text-align: center;
                 color: #fff;
                 border-radius: 0;
-                letter-spacing: .05em;
+                letter-spacing: 0.05em;
             }
         }
 
@@ -55,11 +50,11 @@
             flex-direction: column;
             flex: 1;
 
-            .buffer-indicator{
+            .buffer-indicator {
                 height: 15%;
             }
 
-            .waveform-overview{
+            .waveform-overview {
                 flex-grow: 1;
             }
 
@@ -73,29 +68,30 @@
         overflow-y: scroll;
         scroll-behavior: smooth;
 
-        > .sticky-top{
+        > .sticky-top {
             position: sticky;
             top: 0;
+            left: 0;
             width: 100%;
-            height: $bottom-sticky-top-height;
+            height: $controller-bottom-sticky-top-height;
             display: flex;
             flex-direction: row;
             background: $lightgray;
             border-bottom: 2px solid $darkgray;
             z-index: 4;
 
-            > .left{
+            > .left {
                 display: flex;
                 flex-direction: column;
                 flex-wrap: nowrap;
-                width: $left-width;
+                width: $controller-left-width;
                 flex: 0 0 auto;
                 box-sizing: border-box;
                 border-right: 2px solid $darkgray;
 
                 .controls {
                     display: flex;
-                    padding: 1em 0.5em 0 0.5em;
+                    padding: 1em 0.5em 0;
                     flex-direction: row;
                     justify-content: center;
                     align-content: space-evenly;
@@ -103,23 +99,23 @@
                     flex: 1 1 auto;
                     flex-wrap: wrap;
 
-                    button{
-                        border: none;
+                    button {
+                        border: 0;
                         outline: none;
                         background-color: transparent;
                         background-repeat: no-repeat;
 
-                        &[data-action="rewind"]{
+                        &[data-action='rewind'] {
                             flex: 0 0 2em;
                             margin-right: 0.5em;
 
-                            .icon{
+                            .icon {
                                 color: #fff;
-                                filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75))
+                                filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75));
                             }
                         }
 
-                        &[data-action="play"]{
+                        &[data-action='play'] {
                             flex: 0 0 4em;
                             height: 4em;
                             background: #fff;
@@ -127,22 +123,22 @@
                             box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
                             margin-right: 2.5em;
 
-                            .icon{
+                            .icon {
                                 height: 100%;
                                 color: $darkgray;
                             }
                         }
 
-                        &[data-action="file"]{
+                        &[data-action='file'] {
                             width: 100%;
                             margin-top: 1em;
-                            padding: 0 .5em;
+                            padding: 0 0.5em;
                             font-size: 0.8em;
-                            color:#fff;
+                            color: #fff;
                             overflow: hidden;
                             transition: none;
 
-                            .label{
+                            .label {
                                 width: 100%;
                                 white-space: nowrap;
                                 overflow: hidden;
@@ -154,49 +150,35 @@
                 }
             }
 
-            > .right{
+            > .right {
                 flex: 1 1 auto;
 
-                .waveform-zoom{
+                .waveform-zoom {
                     height: 100%;
                 }
             }
         }
-
-        .timeline{
-            background: $darkgray;
-            z-index: 0;
-
-            .handles-container{
-                width: $left-width;
-                flex: 0 0 auto;
-            }
-
-            .tracks-container {
-                flex: 1 1 auto;
-            }
-        }
     }
 
-    > .bottom{
+    > .bottom {
         display: flex;
         flex-direction: row;
-        flex: 0 0 $bottom-sticky-bottom-height;
+        flex: 0 0 $controller-bottom-sticky-bottom-height;
         background: $mediumgray;
         border-top: 1px solid $darkgray;
         z-index: 1;
 
-        .scenario-selector{
+        .scenario-selector {
             flex: 1 1 auto;
         }
 
-        .zoom-controls{
+        .zoom-controls {
             flex: 0 0 auto;
             background: $darkgray;
         }
     }
 
-    &.disabled{
+    &.disabled {
         opacity: 0.5;
         pointer-events: none;
     }

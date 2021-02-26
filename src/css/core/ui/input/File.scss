@@ -1,7 +1,7 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
-    input{
+:local(.class-name) {
+    input {
         width: 0.1px;
         height: 0.1px;
         opacity: 0;
@@ -9,34 +9,30 @@
         position: absolute;
         z-index: -1;
 
-        & + label {
-            padding: 0.25em 0.5em;
+        + label {
+            padding: 0 0.5em;
             color: #fff;
             background: $mediumgray;
             border-radius: 0.25em;
+            cursor: pointer;
 
             &:focus {
-                box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+                box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
                 outline: none;
             }
-
-            padding: 0 0.5em;
-            color: white;
-            background-color: $mediumgray;
-            cursor: pointer;
 
             * {
                 pointer-events: none;
             }
 
-            &:hover{
+            &:hover {
                 background-color: $darkgray;
             }
         }
 
         &:focus + label,
-        &.has-focus + label{
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+        &.has-focus + label {
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
             outline: none;
         }
     }

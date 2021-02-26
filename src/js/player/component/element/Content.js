@@ -1,4 +1,5 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 
 /**
  * A content element
@@ -9,16 +10,24 @@ import Element from '../Element';
  */
 export default class Content extends Element {
 
-    static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'text': {
-                'type': 'string',
-                'getter': function(){
-                    return this.contents.text();
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'text': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Content.properties.text.label', 'Text'),
+                    'getter': function(){
+                        return this.contents.text();
+                    }
                 }
-            }
-        })
-    });
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -30,15 +39,16 @@ export default class Content extends Element {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
+
+        switch(name){
             case 'text':
                 this.contents.text(value);
                 break;
-
-            default:
-                super.updatePropertyValue(property, value);
         }
+
+        return this;
     }
 
 }

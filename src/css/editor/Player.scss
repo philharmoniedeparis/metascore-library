@@ -1,89 +1,94 @@
-@import "../theme";
+@import '../theme';
 
 $selected-shadow: 0 0 0.5em 0;
 
-.metaScore-player{
-    .draggable{
+.metaScore-player {
+    .draggable {
         &.drag-handle,
-        .drag-handle{
+        .drag-handle {
             cursor: default;
         }
     }
 
-    .resizable{
-        .resize-handle{
+    .resizable {
+        .resize-handle {
             display: none;
             background: #fff;
             border: 1px solid rgba(0, 0, 0, 0.5);
             border-radius: 50%;
+
+            // Compensate for component scale.
+            transform:
+                scaleX(calc(1/var(--transform-scaleX, 1)))
+                scaleY(calc(1/var(--transform-scaleY, 1)));
         }
     }
 
-    &.editing{
-        .draggable{
+    &.editing {
+        .draggable {
             &.drag-handle,
-            .drag-handle{
+            .drag-handle {
                 cursor: move;
             }
         }
 
-        .resizable > .resize-handle{
+        .resizable > .resize-handle {
             display: block;
         }
 
-        .metaScore-component{
+        .metaScore-component {
             &.video-renderer,
             &.controller,
             &.block,
-            &.block-toggler{
-                &.selected{
+            &.block-toggler {
+                &.selected {
                     box-shadow: $block-color $selected-shadow;
                 }
             }
 
-            &.block{
+            &.block {
                 &:hover,
-                &.dragging{
-                    .pager{
+                &.dragging {
+                    .pager {
                         display: block !important;
                     }
                 }
             }
 
-            &.block-toggler{
-                .button{
+            &.block-toggler {
+                .button {
                     pointer-events: none;
                 }
             }
 
-            &.page{
-                &.selected{
+            &.page {
+                &.selected {
                     box-shadow: $page-color $selected-shadow;
                 }
             }
 
-            &.element{
+            &.element {
                 outline-width: 1px;
                 outline-style: dashed;
                 pointer-events: auto;
 
-                &.Cursor{
+                &.Cursor {
                     outline-color: $cursor-element-color;
                 }
 
-                &.Content{
+                &.Content {
                     outline-color: $content-element-color;
 
-                    .contents{
+                    .contents {
                         user-select: none;
 
-                        a{
+                        a {
                             pointer-events: none;
                         }
                     }
 
-                    &.text-unlocked{
-                        .contents{
+                    &.text-unlocked {
+                        .contents {
                             visibility: visible;
                             pointer-events: auto;
                             user-select: auto;
@@ -91,37 +96,37 @@ $selected-shadow: 0 0 0.5em 0;
                     }
                 }
 
-                &.Media{
+                &.Media {
                     audio,
-                    video{
+                    video {
                         pointer-events: none;
                     }
                 }
 
-                &.SVG{
+                &.SVG {
                     outline-color: $svg-element-color;
                 }
 
-                &.Animation{
+                &.Animation {
                     outline-color: $animation-element-color;
                 }
 
-                &.selected{
-                    &.Cursor{
+                &.selected {
+                    &.Cursor {
                         box-shadow: $cursor-element-color $selected-shadow;
 
-                        &.resizing{
-                            canvas{
+                        &.resizing {
+                            canvas {
                                 opacity: 0.25;
                             }
                         }
                     }
 
-                    &.Content{
+                    &.Content {
                         box-shadow: $content-element-color $selected-shadow;
 
-                        .contents{
-                            &[contenteditable]{
+                        .contents {
+                            &[contenteditable] {
                                 outline-color: $content-element-color;
                                 outline-width: 2px;
                                 outline-style: solid;
@@ -129,26 +134,26 @@ $selected-shadow: 0 0 0.5em 0;
                         }
                     }
 
-                    &.Media{
+                    &.Media {
                         box-shadow: $media-element-color $selected-shadow;
                     }
 
-                    &.SVG{
+                    &.SVG {
                         box-shadow: $svg-element-color $selected-shadow;
                     }
 
-                    &.Animation{
+                    &.Animation {
                         box-shadow: $animation-element-color $selected-shadow;
                     }
                 }
             }
 
             &.dragging,
-            &.resizing{
+            &.resizing {
                 z-index: 999;
             }
 
-            &.editor-locked{
+            &.editor-locked {
                 pointer-events: none;
             }
         }

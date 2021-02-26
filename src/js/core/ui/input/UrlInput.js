@@ -1,6 +1,4 @@
-
 import Input from '../Input';
-
 
 /**
  * A single-line text input based on an HTML input[type=text] element
@@ -25,9 +23,7 @@ export default class UrlInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         super.setupUI();

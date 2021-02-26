@@ -1,9 +1,9 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.class-name) {
     position: relative;
 
-    > input{
+    > input {
         position: absolute;
         width: 0;
         overflow: hidden;
@@ -11,19 +11,19 @@
         pointer-events: none;
     }
 
-    > button{
+    > button {
         position: relative;
         width: 1.5em;
         height: 1.5em;
         padding: 0;
         vertical-align: middle;
         border-radius: 0.25em;
-        box-shadow: 0.05em 0.05em 0.5em 0.1em rgba(0,0,0,.25);
+        box-shadow: 0.05em 0.05em 0.5em 0.1em rgba(0, 0, 0, 0.25);
         opacity: 1;
         transition: none;
         overflow: hidden;
 
-        .icon{
+        .icon {
             display: block;
             visibility: hidden;
             width: 100%;
@@ -32,8 +32,8 @@
             background: $darkgray;
         }
 
-        &::before{
-            content: "";
+        &::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
@@ -41,11 +41,11 @@
             height: 100%;
             background: url('../../../../img/core/ui/input/color/transparency-grid.svg');
             background-size: auto;
-            background-size: .5em;
+            background-size: 0.5em;
         }
 
-        &::after{
-            content: "";
+        &::after {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
@@ -60,19 +60,19 @@
         }
 
         &:focus {
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
             outline: none;
         }
     }
 
-    .overlay{
+    .overlay {
         position: fixed;
         display: flex;
         flex-wrap: wrap;
         justify-content: stretch;
         width: 20em;
         background: $lightgray;
-        box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.5);
+        box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
         z-index: 999;
 
         .tab-label {
@@ -118,14 +118,14 @@
         }
     }
 
-    &.empty:not(.has-empty-value){
-        > button{
-            .icon{
+    &.empty:not(.has-empty-value) {
+        > button {
+            .icon {
                 visibility: visible;
             }
 
             &::before,
-            &::after{
+            &::after {
                 display: none;
             }
         }

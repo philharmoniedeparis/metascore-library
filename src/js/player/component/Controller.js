@@ -2,7 +2,8 @@ import Component from '../Component';
 import Dom from '../../core/Dom';
 import Button from '../../core/ui/Button';
 import {formatTime} from '../../core/utils/Media';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
+import {omit} from '../../core/utils/Object';
 
 /**
  * A controller component
@@ -11,27 +12,28 @@ export default class Controller extends Component{
 
     static defaults = Object.assign({}, super.defaults, {
         'resizable': false,
-        'properties': Object.assign({}, super.defaults.properties, {
-            'hidden': {
-                'type': 'boolean'
-            },
-            'x': {
-                'type': 'number'
-            },
-            'y': {
-                'type': 'number'
-            },
-            'border-width': {
-                'type': 'number'
-            },
-            'border-color': {
-                'type': 'color'
-            },
-            'border-radius': {
-                'type': 'string'
-            }
-        })
+        'name': 'Controller'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = omit(super.getProperties(), [
+                'dimension',
+                'background-color',
+                'background-image',
+                'border-width',
+                'border-color',
+                'border-radius',
+                'start-time',
+                'end-time',
+            ]);
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -104,18 +106,9 @@ export default class Controller extends Component{
     }
 
     /**
-     * Get the value of the controller's name property
-     *
-     * @return {String} The name
-     */
-    getName() {
-        return '[controller]';
-    }
-
-    /**
      * Update the displayed time
      *
-     * @param {Integer} time The time value in centiseconds
+     * @param {Integer} time The time value in seconds
      * @return {this}
      */
     updateTime(time){

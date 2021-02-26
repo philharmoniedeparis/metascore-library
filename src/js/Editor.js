@@ -1,5 +1,6 @@
 import Dom from './core/Dom';
-import { MasterClock } from './core/media/Clock';
+import { MasterClock } from './core/media/MediaClock';
+import { History } from './editor/UndoRedo';
 import { isArray } from './core/utils/Var';
 import { escapeHTML } from './core/utils/String';
 import { clone, unique } from './core/utils/Array';
@@ -9,7 +10,6 @@ import Locale from './core/Locale';
 import StyleSheet from './core/StyleSheet';
 import MainMenu from './editor/MainMenu';
 import ConfigsEditor from './editor/ConfigsEditor';
-import UndoRedo from './editor/UndoRedo';
 import Overlay from './core/ui/Overlay';
 import Confirm from './core/ui/overlay/Confirm';
 import LoadMask from './core/ui/overlay/LoadMask';
@@ -44,7 +44,7 @@ import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Pl
  */
 export class Editor extends Dom {
 
-    static defaults =  {
+    static defaults = {
         'container': 'body',
         'player': {
             'url': null,
@@ -58,157 +58,165 @@ export class Editor extends Dom {
         'asset_browser': {},
         'color_swatches': [],
         'xhr': {},
-        'history': {
-            'grouping_timeout': 100
+        'component_copy_displacement': 10
+    };
+
+    static hotkeys = {
+        'global': {
+            'title': Locale.t('editor.hotkeys.global.title', 'General'),
+            'items': {
+                'save': {
+                    'combo': 'Control+s',
+                    'description': Locale.t('editor.hotkeys.global.save.description', 'Save')
+                },
+                'revert': {
+                    'combo': 'Control+r',
+                    'description': Locale.t('editor.hotkeys.global.revert.description', 'Revert')
+                },
+                'undo': {
+                    'combo': 'Control+z',
+                    'description': Locale.t('editor.hotkeys.global.undo.description', 'Undo')
+                },
+                'redo': {
+                    'combo': 'Control+y',
+                    'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
+                },
+                'preview-tmp': {
+                    'combo': 'Control+e',
+                    'description': Locale.t('editor.hotkeys.global.preview-tmp.description', 'Toggle preview mode temporarily'),
+                    'configs': {
+                        'keyup': true,
+                        'preventRepeat': true
+                    }
+                },
+                'preview': {
+                    'combo': 'Control+Shift+e',
+                    'description': Locale.t('editor.hotkeys.global.preview.description', 'Toggle preview mode'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'toggle-play': {
+                    'combo': ' ',
+                    'description': Locale.t('editor.hotkeys.global.toggle-play.description', 'Play/pause'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'hotkeys-help': {
+                    'combo': '?',
+                    'description': Locale.t('editor.hotkeys.global.hotkeys-help.description', 'Show keyboard shortcuts')
+                }
+            }
         },
-        'component_copy_displacement': 10,
-        'hotkeys': {
-            'global': {
-                'title': Locale.t('editor.hotkeys.global.title', 'General'),
-                'description': Locale.t('editor.hotkeys.global.description', 'Shortcuts available throughout the editor'),
-                'items': {
-                    'save': {
-                        'combo': 'Control+s',
-                        'description': Locale.t('editor.hotkeys.global.save.description', 'Save')
-                    },
-                    'revert': {
-                        'combo': 'Control+r',
-                        'description': Locale.t('editor.hotkeys.global.revert.description', 'Revert')
-                    },
-                    'undo': {
-                        'combo': 'Control+z',
-                        'description': Locale.t('editor.hotkeys.global.undo.description', 'Undo')
-                    },
-                    'redo': {
-                        'combo': 'Control+y',
-                        'description': Locale.t('editor.hotkeys.global.redo.description', 'Redo')
-                    },
-                    'preview-tmp': {
-                        'combo': 'Control+e',
-                        'description': Locale.t('editor.hotkeys.global.preview-tmp.description', 'Toggle preview mode temporarily'),
-                        'configs': {
-                            'keyup': true,
-                            'preventRepeat': true
-                        }
-                    },
-                    'preview': {
-                        'combo': 'Control+Shift+e',
-                        'description': Locale.t('editor.hotkeys.global.preview.description', 'Toggle preview mode'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'toggle-play': {
-                        'combo': ' ',
-                        'description': Locale.t('editor.hotkeys.global.toggle-play.description', 'Play/pause'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'hotkeys-help': {
-                        'combo': '?',
-                        'description': Locale.t('editor.hotkeys.global.hotkeys-help.description', 'Show keyboard shortcuts')
+        'player': {
+            'title': Locale.t('editor.hotkeys.player.title', 'Scene'),
+            'items': {
+                'right': {
+                    'combo': 'ArrowRight',
+                    'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
+                },
+                'right-10': {
+                    'combo': 'Shift+ArrowRight',
+                    'description': Locale.t('editor.hotkeys.player.right-10.description', 'Move selected component(s) by 10 pixel to the right')
+                },
+                'left': {
+                    'combo': 'ArrowLeft',
+                    'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
+                },
+                'left-10': {
+                    'combo': 'Shift+ArrowLeft',
+                    'description': Locale.t('editor.hotkeys.player.left-10.description', 'Move selected component(s) by 10 pixels to the left'),
+                },
+                'up': {
+                    'combo': 'ArrowUp',
+                    'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
+                },
+                'up-10': {
+                    'combo': 'Shift+ArrowUp',
+                    'description': Locale.t('editor.hotkeys.player.up-10.description', 'Move selected component(s) by 10 pixels upwards'),
+                },
+                'down': {
+                    'combo': 'ArrowDown',
+                    'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
+                },
+                'down-10': {
+                    'combo': 'Shift+ArrowDown',
+                    'description': Locale.t('editor.hotkeys.player.down-10.description', 'Move selected component(s) by 10 pixels downwards'),
+                },
+                'select-all': {
+                    'combo': 'Control+a',
+                    'description': Locale.t('editor.hotkeys.player.select-all.description', 'Select all components of the same level as the already selected ones, or all blocks if no components are already selected'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'select-next': {
+                    'combo': 'Tab',
+                    'description': Locale.t('editor.hotkeys.player.select-next.description', 'Select the next component'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'select-previous': {
+                    'combo': 'Shift+Tab',
+                    'description': Locale.t('editor.hotkeys.player.select-previous.description', 'Select the previous component'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'copy': {
+                    'combo': 'Control+c',
+                    'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'paste': {
+                    'combo': 'Control+v',
+                    'description': Locale.t('editor.hotkeys.player.paste.description', 'Paste component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'cut': {
+                    'combo': 'Control+x',
+                    'description': Locale.t('editor.hotkeys.player.cut.description', 'Cut selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'duplicate': {
+                    'combo': 'Control+d',
+                    'description': Locale.t('editor.hotkeys.player.duplicate.description', 'Duplicate selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'lock': {
+                    'combo': 'Control+l',
+                    'description': Locale.t('editor.hotkeys.player.lock.description', 'Lock/unlock selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
+                    }
+                },
+                'delete': {
+                    'combo': ['Delete', 'Backspace'],
+                    'description': Locale.t('editor.hotkeys.player.delete.description', 'Delete selected component(s)'),
+                    'configs': {
+                        'preventRepeat': true
                     }
                 }
-            },
-            'player': {
-                'title': Locale.t('editor.hotkeys.player.title', 'Workspace'),
-                'description': Locale.t('editor.hotkeys.player.description', 'Shortcuts available in the workspace (central zone)'),
-                'items': {
-                    'right': {
-                        'combo': 'ArrowRight',
-                        'description': Locale.t('editor.hotkeys.player.right.description', 'Move selected component(s) by 1 pixel to the right')
-                    },
-                    'right-10': {
-                        'combo': 'Shift+ArrowRight',
-                        'description': Locale.t('editor.hotkeys.player.right-10.description', 'Move selected component(s) by 10 pixel to the right')
-                    },
-                    'left': {
-                        'combo': 'ArrowLeft',
-                        'description': Locale.t('editor.hotkeys.player.left.description', 'Move selected component(s) by 1 pixel to the left'),
-                    },
-                    'left-10': {
-                        'combo': 'Shift+ArrowLeft',
-                        'description': Locale.t('editor.hotkeys.player.left-10.description', 'Move selected component(s) by 10 pixels to the left'),
-                    },
-                    'up': {
-                        'combo': 'ArrowUp',
-                        'description': Locale.t('editor.hotkeys.player.up.description', 'Move selected component(s) by 1 pixels upwards'),
-                    },
-                    'up-10': {
-                        'combo': 'Shift+ArrowUp',
-                        'description': Locale.t('editor.hotkeys.player.up-10.description', 'Move selected component(s) by 10 pixels upwards'),
-                    },
-                    'down': {
-                        'combo': 'ArrowDown',
-                        'description': Locale.t('editor.hotkeys.player.down.description', 'Move selected component(s) by 1 pixel downwards'),
-                    },
-                    'down-10': {
-                        'combo': 'Shift+ArrowDown',
-                        'description': Locale.t('editor.hotkeys.player.down-10.description', 'Move selected component(s) by 10 pixels downwards'),
-                    },
-                    'select-all': {
-                        'combo': 'Control+a',
-                        'description': Locale.t('editor.hotkeys.player.select-all.description', 'Select all components of the same level as the already selected ones, or all blocks if no components are already selected'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'select-next': {
-                        'combo': 'Tab',
-                        'description': Locale.t('editor.hotkeys.player.select-next.description', 'Select the next component'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'select-previous': {
-                        'combo': 'Shift+Tab',
-                        'description': Locale.t('editor.hotkeys.player.select-previous.description', 'Select the previous component'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'copy': {
-                        'combo': 'Control+c',
-                        'description': Locale.t('editor.hotkeys.player.copy.description', 'Copy selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'paste': {
-                        'combo': 'Control+v',
-                        'description': Locale.t('editor.hotkeys.player.paste.description', 'Paste component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'cut': {
-                        'combo': 'Control+x',
-                        'description': Locale.t('editor.hotkeys.player.cut.description', 'Cut selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'duplicate': {
-                        'combo': 'Control+d',
-                        'description': Locale.t('editor.hotkeys.player.duplicate.description', 'Duplicate selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'lock': {
-                        'combo': 'Control+l',
-                        'description': Locale.t('editor.hotkeys.player.lock.description', 'Lock/unlock selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
-                    },
-                    'delete': {
-                        'combo': ['Delete', 'Backspace'],
-                        'description': Locale.t('editor.hotkeys.player.delete.description', 'Delete selected component(s)'),
-                        'configs': {
-                            'preventRepeat': true
-                        }
+            }
+        },
+        'timeline': {
+            'title': Locale.t('editor.hotkeys.timeline.title', 'Timeline'),
+            'items': {
+                'delete': {
+                    'combo': ['Delete', 'Backspace'],
+                    'description': Locale.t('editor.hotkeys.timeline.delete.description', 'Delete selected keyframe(s) or track(s)'),
+                    'configs': {
+                        'preventRepeat': true
                     }
                 }
             }
@@ -227,8 +235,6 @@ export class Editor extends Dom {
      * @property {Object} asset_browser Options to pass to the asset browser
      * @property {Array} color_swatches An array of HEX color codes to use for swatches in color inputs
      * @property {Object} [xhr={}] Options to send with each XHR request. See {@link Ajax.send} for available options
-     * @property {Object} [history] Options for the history
-     * @property {Number} [history.grouping_timeout=100] The period of time in ms in which undo/redo operations are grouped into a single operation
      */
     constructor(configs) {
         // call parent constructor
@@ -280,6 +286,12 @@ export class Editor extends Dom {
     init() {
         // Set the banner for ContextMenus
         ContextMenu.setBannerText(Locale.t('Editor.contextmenu.banner', 'metaScore Editor v.!version r.!revision', { '!version': this.constructor.getVersion(), '!revision': this.constructor.getRevision() }));
+
+        // Listen to undo/redo changes.
+        History
+            .addListener('add', this.onHistoryAdd.bind(this))
+            .addListener('undo', this.onHistoryUndo.bind(this))
+            .addListener('redo', this.onHistoryRedo.bind(this));
 
         // Top pane ////////////////////////
         const top_pane = new Pane({
@@ -386,6 +398,8 @@ export class Editor extends Dom {
          */
         this.configs_editor = new ConfigsEditor(this)
             .addListener('componentset', this.onConfigEditorComponentSet.bind(this))
+            .addDelegate('.content-form', 'contentsunlock', this.onConfigEditorContentsUnlock.bind(this))
+            .addDelegate('.content-form', 'contentslock', this.onConfigEditorContentsLock.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -403,9 +417,19 @@ export class Editor extends Dom {
          * @type {Controller}
          */
         this.controller = new Controller(this)
-            .addDelegate('.timeline .track *, .timeline .handle *', 'click', this.onTimelineTrackClick.bind(this))
-            .addDelegate('.timeline', 'trackdrop', this.onTimelineTrackDrop.bind(this))
             .appendTo(bottom_pane.getContents());
+
+        const timeline = this.controller.getTimeline()
+            .addDelegate('.handle, .component-track .time-wrapper, .component-track .time, .component-track .keyframes-wrapper', 'click', this.onTimelineComponentTrackClick.bind(this), true)
+            .addDelegate('.component-track .time', 'dblclick', this.onTimelineComponentTrackDblClick.bind(this))
+            .addDelegate('.handle, .component-track .time', 'mousedown', this.onTimelineComponentTrackMousedown.bind(this), true)
+            .addDelegate('.handle, .component-track .time', 'mouseup', this.onTimelineComponentTrackMouseup.bind(this), true)
+            .addDelegate('.handle, .component-track .time', 'focusin', this.onTimelineComponentTrackFocusin.bind(this), true)
+            .addDelegate('.property-track .keyframe', 'select', this.onTimelinePropertyKeyframeSelect.bind(this))
+            .addDelegate('.property-track .keyframe', 'deselect', this.onTimelinePropertyKeyframeDeselect.bind(this))
+            .addListener('componenttrackdrop', this.onTimelineComponentTrackDrop.bind(this));
+
+        this.getHotkeys('timeline').attachTo(timeline);
 
         /**
          * The auto-save indicator
@@ -415,15 +439,6 @@ export class Editor extends Dom {
             .text(Locale.t('Editor.autosaveIndicator.text', 'Saving auto-recovery data...'))
             .hide()
             .appendTo(this);
-
-        /**
-         * The undo/redo handler
-         * @type {UndoRedo}
-         */
-        this.history = new UndoRedo()
-            .addListener('add', this.onHistoryAdd.bind(this))
-            .addListener('undo', this.onHistoryUndo.bind(this))
-            .addListener('redo', this.onHistoryRedo.bind(this));
 
         /**
          * The clipboard handler
@@ -436,12 +451,12 @@ export class Editor extends Dom {
             evt.stopImmediatePropagation();
         });
 
-        this.addDelegate('.contextmenu', 'beforeshow', this.onContextMenuBeforeShow.bind(this));
-
         Dom.addListener(window, 'beforeunload', this.onWindowBeforeUnload.bind(this));
         Dom.addListener(window, 'unload', this.onWindowUnload.bind(this));
 
         this
+            .addDelegate('.contextmenu', 'beforeshow', this.onContextMenuBeforeShow.bind(this))
+            .addDelegate('.media-source-selector', 'sourceset', this.onMediaSourceSelectorSourceSet.bind(this))
             .addDelegate('.time.input', 'valuein', this.onTimeInputValueIn.bind(this))
             .addDelegate('.time.input', 'valueout', this.onTimeInputValueOut.bind(this))
             .setClean()
@@ -500,8 +515,8 @@ export class Editor extends Dom {
         if(!(context in this.hotkeys)){
             const hotkeys = new Hotkeys();
 
-            if (this.configs.hotkeys && this.configs.hotkeys[context] && this.configs.hotkeys[context].items) {
-                Object.entries(this.configs.hotkeys[context].items).forEach(([key, value]) => {
+            if (this.constructor.hotkeys && this.constructor.hotkeys[context] && this.constructor.hotkeys[context].items) {
+                Object.entries(this.constructor.hotkeys[context].items).forEach(([key, value]) => {
                     hotkeys.bind(value.combo,
                         (evt) => {
                             this.handleHotkey(context, key, evt);
@@ -533,10 +548,10 @@ export class Editor extends Dom {
                 this.revert();
                 break;
             case 'undo':
-                this.history.undo();
+                History.undo();
                 break;
             case 'redo':
-                this.history.redo();
+                History.redo();
                 break;
             case 'preview':
             case 'preview-tmp':
@@ -549,12 +564,7 @@ export class Editor extends Dom {
                 }
                 break;
             case 'hotkeys-help':
-                new HotkeysHelp(
-                    this.configs.hotkeys,
-                    {
-                        'parent': this,
-                    }
-                );
+                new HotkeysHelp(this.constructor.hotkeys, { 'parent': this});
                 break;
             case 'select-all':
                 {
@@ -661,6 +671,25 @@ export class Editor extends Dom {
                 }
                 break;
             case 'delete':
+                if (context === 'timeline') {
+                    const focused = new Dom(document.activeElement);
+                    if (focused.is('.keyframe')) {
+                        // Delete selected keyframes.
+                        History.startGroup();
+
+                        this.controller.getTimeline().getPropertyKeyfames()
+                            .filter(k => k.isSelected())
+                            .forEach((keyframe) => {
+                                keyframe.getTrack().removeKeyframe(keyframe);
+                            });
+
+                        History.endGroup();
+
+                        return;
+                    }
+                }
+
+                // Delete selected components.
                 this.deletePlayerComponents(this.configs_editor.getComponents());
                 break;
         }
@@ -1228,6 +1257,15 @@ export class Editor extends Dom {
     }
 
     /**
+     * MediaSourceSelector sourceset event callback
+     *
+     * @private
+     */
+    onMediaSourceSelectorSourceSet() {
+        this.setDirty('media');
+    }
+
+    /**
      * AssetBrowser tabchange event callback
      *
      * @private
@@ -1244,6 +1282,7 @@ export class Editor extends Dom {
      */
     onAssetBrowserAssetAdd() {
         this.updateConfigEditorImageFields();
+        this.setDirty('assets');
     }
 
     /**
@@ -1303,8 +1342,8 @@ export class Editor extends Dom {
      * @private
      */
     onAssetBrowserAssetRemove() {
-        this.setDirty('assets');
         this.updateConfigEditorImageFields();
+        this.setDirty('assets');
     }
 
     /**
@@ -1319,9 +1358,10 @@ export class Editor extends Dom {
 
         if (configs_form) {
             const component = configs_form.getMasterComponent();
+            const dimension = component.getPropertyValue('dimension');
             const defaults = {
-                'width': component.getPropertyValue('width'),
-                'height': component.getPropertyValue('height'),
+                'width': dimension[0],
+                'height': dimension[1],
                 'start_time': component.getPropertyValue('start-time'),
                 'end_time': component.getPropertyValue('end-time'),
             };
@@ -1346,9 +1386,10 @@ export class Editor extends Dom {
 
         if (configs_form) {
             const component = configs_form.getMasterComponent();
+            const dimension = component.getPropertyValue('dimension');
             const defaults = {
-                'width': component.getPropertyValue('width'),
-                'height': component.getPropertyValue('height'),
+                'width': dimension[0],
+                'height': dimension[1],
                 'start': component.getPropertyValue('start-time'),
                 'end': component.getPropertyValue('end-time'),
             };
@@ -1376,21 +1417,42 @@ export class Editor extends Dom {
                 if (block) {
                     // Set page as active page.
                     block.setActivePage(component);
-
-                    if (block.getPropertyValue('synched')) {
-                        // Goto page's start-time.
-                        const start_time = component.getPropertyValue('start-time');
-                        MasterClock.setTime(start_time !== null ? start_time : 0);
-                    }
                 }
             }
-            else if (component.hasProperty('start-time')) {
-                const start_time = component.getPropertyValue('start-time');
-                if (start_time !== null) {
-                    MasterClock.setTime(start_time);
+            else {
+                // Make sure current time is between start- and end-time
+                const current_time = MasterClock.getTime();
+                const start_time = component.hasProperty('start-time') ? component.getPropertyValue('start-time') : null;
+                const end_time = component.hasProperty('end-time') ? component.getPropertyValue('end-time') : null;
+
+                if (
+                    (start_time !== null && current_time < start_time) ||
+                    (end_time !== null && current_time > end_time)
+                ) {
+                    MasterClock.setTime(start_time ?? 0);
                 }
             }
         }
+    }
+
+    /**
+     * ConfigEditor Content component unlock event callback.
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onConfigEditorContentsUnlock() {
+        this.addClass('contents-unlocked');
+    }
+
+    /**
+     * ConfigEditor Content component lock event callback.
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onConfigEditorContentsLock() {
+        this.removeClass('contents-unlocked');
     }
 
     /**
@@ -1415,11 +1477,11 @@ export class Editor extends Dom {
                 break;
 
             case 'undo':
-                this.history.undo();
+                History.undo();
                 break;
 
             case 'redo':
-                this.history.redo();
+                History.redo();
                 break;
 
             case 'restore':
@@ -1464,7 +1526,7 @@ export class Editor extends Dom {
                     );
                 }
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         this.mainmenu.getItem(name).setValue(previous_value, true);
                     },
@@ -1501,28 +1563,137 @@ export class Editor extends Dom {
     }
 
     /**
-     * Timeline track click event callback
+     * Timeline ComponentTrack click event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackClick(evt) {
-        const el = Dom.is(evt.target, '.track, .handle') ? evt.target : Dom.closest(evt.target, '.track, .handle');
+    onTimelineComponentTrackClick(evt) {
+        const el = Dom.closest(evt.target, '.component-track');
         const component_id = Dom.data(el, 'component');
-        const track = this.controller.getTimeline().getTrack(component_id);
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
         const component = track.getComponent();
 
         this.selectPlayerComponent(component, evt.shiftKey);
-        this.player_frame.focus();
     }
 
     /**
-     * Timeline trackdrop event callback
+     * Timeline ComponentTrack dblclick event callback
      *
      * @private
      * @param {Event} evt The event object
      */
-    onTimelineTrackDrop(evt) {
+    onTimelineComponentTrackDblClick(evt) {
+        const el = Dom.closest(evt.target, '.component-track');
+        const component_id = Dom.data(el, 'component');
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
+        const component = track.getComponent();
+
+        if (component.hasProperty('start-time')) {
+            const start_time = component.getPropertyValue('start-time');
+            MasterClock.setTime(start_time ?? 0);
+        }
+    }
+
+    /**
+     * Timeline ComponentTrack mousedown event callback
+     *
+     * @private
+     */
+    onTimelineComponentTrackMousedown() {
+        /**
+         * Used to differentiate focus from click.
+         * See onTimelineComponentTrackFocusin.
+         * @type {Boolean}
+         */
+        this._timeline_componenttrack_mousedown = true;
+    }
+
+    /**
+     * Timeline ComponentTrack mouseup event callback
+     *
+     * @private
+     */
+    onTimelineComponentTrackMouseup() {
+        delete this._timeline_componenttrack_mousedown;
+    }
+
+    /**
+     * Timeline ComponentTrack focusin event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineComponentTrackFocusin(evt) {
+        if (this._timeline_componenttrack_mousedown) {
+            return;
+        }
+
+        const el = Dom.closest(evt.target, '.component-track');
+        const component_id = Dom.data(el, 'component');
+        const track = this.controller.getTimeline().getComponentTrack(component_id);
+        const component = track.getComponent();
+
+        this.selectPlayerComponent(component);
+    }
+
+    /**
+     * Timeline PropertyTrack Keyframe select event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelinePropertyKeyframeSelect(evt) {
+        const keyframe = evt.detail.keyframe;
+        const property_track = keyframe.getTrack();
+        const component = property_track.getComponent();
+
+        // Select component.
+        this.configs_editor.setComponent(component, true);
+
+        const configs_form = this.configs_editor.getForm();
+        if (configs_form && component === configs_form.getMasterComponent()) {
+            const property = property_track.getProperty();
+            const field = configs_form.getField(property);
+
+            if (field) {
+                field.getInput().enable().setValue(keyframe.getValue(), true);
+            }
+        }
+    }
+
+    /**
+     * Timeline PropertyTrack Keyframe deselect event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelinePropertyKeyframeDeselect(evt) {
+        const keyframe = evt.detail.keyframe;
+        const property_track = keyframe.getTrack();
+        const component = property_track.getComponent();
+        const keyframes = property_track.getKeyframes().filter(k => k.isSelected());
+
+        if (keyframes.length === 0) {
+            const configs_form = this.configs_editor.getForm();
+            if (configs_form && component === configs_form.getMasterComponent()) {
+                const property = property_track.getProperty();
+                const field = configs_form.getField(property);
+
+                if (field) {
+                    field.getInput().disable();
+                }
+            }
+        }
+    }
+
+    /**
+     * Timeline componenttrackdrop event callback
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onTimelineComponentTrackDrop(evt) {
         const component = evt.detail.component;
         const position = evt.detail.position;
 
@@ -1630,11 +1801,11 @@ export class Editor extends Dom {
 
         if (previous) {
             // Hide previous scenario in Tinmeline
-            this.controller.getTimeline().getTrack(previous.getId()).hide();
+            this.controller.getTimeline().getComponentTrack(previous.getId()).hide();
         }
         if (scenario) {
             // Show scenario in Tinmeline
-            this.controller.getTimeline().getTrack(scenario.getId()).show();
+            this.controller.getTimeline().getComponentTrack(scenario.getId()).show();
         }
 
         // Update ConfigEditor component fields
@@ -1658,6 +1829,8 @@ export class Editor extends Dom {
         this.selectPlayerComponent(component);
 
         this.updateConfigEditorComponentFields();
+
+        this.setDirty('components');
     }
 
     /**
@@ -1671,13 +1844,15 @@ export class Editor extends Dom {
 
         this.configs_editor.unsetComponent(component, true);
 
-        this.controller.getTimeline().removeTrack(component);
+        this.controller.getTimeline().removeComponentTrack(component);
 
         if (component.instanceOf(['Block', 'Controller', 'VideoRenderer'])) {
             this.getPlayer().updateBlockTogglers();
         }
 
         this.updateConfigEditorComponentFields();
+
+        this.setDirty('components');
     }
 
     /**
@@ -1690,7 +1865,7 @@ export class Editor extends Dom {
         const iframe = this.player_frame.get(0);
         const player = iframe.contentWindow.player;
 
-        Dom.bubbleIframeMouseEvent(iframe, 'mousemove');
+        Dom.bubbleIframeEvent(iframe, 'mousemove');
 
         if (player) {
             this.addClass('has-player');
@@ -1754,11 +1929,11 @@ export class Editor extends Dom {
 
         if (this.isLatestRevision()) {
             this.player
-                .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this))
-                .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this))
+                .addDelegate('.metaScore-component', 'propchange', this.onComponentPropChange.bind(this), true)
+                .addDelegate('.metaScore-component', 'beforedrag', this.onComponentBeforeDrag.bind(this), true)
                 .addDelegate('.metaScore-component', 'dragstart', this.onComponentDragStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'dragend', this.onComponentDragEnd.bind(this), true)
-                .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this))
+                .addDelegate('.metaScore-component', 'beforeresize', this.onComponentBeforeResize.bind(this), true)
                 .addDelegate('.metaScore-component', 'resizestart', this.onComponentResizeStart.bind(this), true)
                 .addDelegate('.metaScore-component', 'resizeend', this.onComponentResizeEnd.bind(this), true)
                 .addDelegate('.metaScore-component, .metaScore-component *', 'click', this.onComponentClick.bind(this))
@@ -1895,8 +2070,7 @@ export class Editor extends Dom {
         if (evt.dataTransfer.types.includes('metascore/block')) {
             const configs = JSON.parse(evt.dataTransfer.getData('metascore/block'));
             this.addPlayerComponents('block', Object.assign({
-                'x': evt.clientX,
-                'y': evt.clientY
+                'position': [evt.clientX, evt.clientY]
             }, configs));
 
             evt.preventDefault();
@@ -1927,8 +2101,10 @@ export class Editor extends Dom {
                 const page_rect = page_dom.getBoundingClientRect();
 
                 this.addPlayerComponents('element', Object.assign({
-                    'x': evt.clientX - page_rect.left,
-                    'y': evt.clientY - page_rect.top
+                    'position': [
+                        evt.clientX - page_rect.left,
+                        evt.clientY - page_rect.top
+                    ]
                 }, configs), page);
             }
 
@@ -1947,8 +2123,10 @@ export class Editor extends Dom {
 
                 const configs = {
                     'name': asset.name,
-                    'x': evt.clientX - page_rect.left,
-                    'y': evt.clientY - page_rect.top,
+                    'position': [
+                        evt.clientX - page_rect.left,
+                        evt.clientY - page_rect.top
+                    ]
                 };
 
                 if ('shared' in asset && asset.shared) {
@@ -2051,7 +2229,7 @@ export class Editor extends Dom {
         const property = evt.detail.property;
 
         if (component.instanceOf(['Block', 'Controller', 'VideoRenderer', 'BlockToggler'])) {
-            if (['x', 'y', 'width', 'height', 'blocks'].includes(property)) {
+            if (['position', 'dimension', 'blocks'].includes(property)) {
                 this.getPlayer().updateBlockTogglers();
             }
             else if (property === 'name') {
@@ -2344,8 +2522,8 @@ export class Editor extends Dom {
             .toggleItem('publish', is_latest_revision && !is_dirty)
             .toggleItem('title', is_latest_revision)
             .toggleItem('preview-toggle', is_latest_revision)
-            .toggleItem('undo', this.history.hasUndo())
-            .toggleItem('redo', this.history.hasRedo())
+            .toggleItem('undo', History.hasUndo())
+            .toggleItem('redo', History.hasRedo())
             .toggleItem('revert', is_dirty)
             .toggleItem('restore', !is_latest_revision);
 
@@ -2361,15 +2539,6 @@ export class Editor extends Dom {
     isLatestRevision() {
         const player = this.getPlayer();
         return player && this.player.getGuideData('latest_revision') === this.player.getGuideRevision();
-    }
-
-    /**
-     * Get the undo/redo instance
-     *
-     * @return {UndoRedo} The undo/redo instance
-     */
-    getHistory() {
-        return this.history;
     }
 
     /**
@@ -2402,9 +2571,7 @@ export class Editor extends Dom {
         const images = this.getImageAssets();
 
         Object.values(this.configs_editor.getForms()).forEach((form) => {
-            if ('updateImageFields' in form) {
-                form.updateImageFields(images);
-            }
+            form.updateImageFields(images);
         });
 
         return this;
@@ -2547,6 +2714,8 @@ export class Editor extends Dom {
             delete this._autosave_interval;
         }
 
+        History.clear();
+
         this.configs_editor.unsetComponents();
 
         this.player_contextmenu.disable();
@@ -2556,8 +2725,6 @@ export class Editor extends Dom {
         this.controller.getTimeline().clear();
 
         this.asset_browser.getTabContent('guide-assets').clearAssets();
-
-        this.history.clear();
 
         this.getHotkeys('global').detachFrom(this.player);
         this.getHotkeys('player').detachFrom(this.player);
@@ -2607,7 +2774,7 @@ export class Editor extends Dom {
                     components.push(component);
                 });
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2671,7 +2838,7 @@ export class Editor extends Dom {
                 timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         if (block.getPropertyValue('synched')) {
                             const adjacent_page = block.getChild(before ? index + 1 : index);
@@ -2700,14 +2867,11 @@ export class Editor extends Dom {
                 const components = [];
 
                 configs.forEach((block_config) => {
-                    const component = scenario.addComponent(Object.assign({
-                        'name': Locale.t('editor.addPlayerComponents.block.name', 'untitled')
-                    }, block_config));
-
+                    const component = scenario.addComponent(block_config);
                     components.push(component);
                 });
 
-                this.getHistory().add({
+                History.add({
                     'undo': () => {
                         components.forEach((component) => {
                             component.remove();
@@ -2725,8 +2889,6 @@ export class Editor extends Dom {
 
         this.setDirty('components');
 
-        this.player_frame.focus();
-
         return this;
     }
 
@@ -2735,7 +2897,7 @@ export class Editor extends Dom {
      *
      * @private
      * @param {Array} components The list of components.
-     * @returns {this}
+     * @return {this}
      */
     copyPlayerComponents(components) {
         if (components.length > 0) {
@@ -2756,8 +2918,8 @@ export class Editor extends Dom {
 
                     if(this.configs.component_copy_displacement){
                         // Slightly move the copy to prevent exact overlap.
-                        config.x += this.configs.component_copy_displacement;
-                        config.y += this.configs.component_copy_displacement;
+                        config.position[0] += this.configs.component_copy_displacement;
+                        config.position[1] += this.configs.component_copy_displacement;
                     }
 
                     configs.push(config);
@@ -2775,7 +2937,7 @@ export class Editor extends Dom {
      *
      * @private
      * @param {Component} [parent] The component to paste into.
-     * @returns {this}
+     * @return {this}
      */
     pastePlayerComponents(parent) {
         if (this.clipboard.getDataType() === 'element') {
@@ -2827,36 +2989,34 @@ export class Editor extends Dom {
      * @param {Number} x The number of pixels to move to the right.
      * @param {Number} y The number of pixels to move to the bottom.
      * @param {Boolean} relative Whether the values are relative to the actual position.
-     * @returns {this}
+     * @return {this}
      */
     movePlayerComponents(components, x = 0, y = 0, relative = true) {
-        const history = this.getHistory().startGroup();
+        History.startGroup();
 
         components.forEach((component) => {
-            const previous_values = {};
-            const new_values = {};
+            const previous_value = component.getPropertyValue('position');
+            const new_value = clone(previous_value);
 
             if (!relative || x) {
-                previous_values.x = parseInt(component.css('left'), 10);
-                new_values.x = relative ? previous_values.x + x : x;
+                new_value[0] = relative ? previous_value[0] + x : x;
             }
             if (!relative || y) {
-                previous_values.y = parseInt(component.css('top'), 10);
-                new_values.y = relative ? previous_values.y + y : y;
+                new_value[1] = relative ? previous_value[1] + y : y;
             }
-            component.setPropertyValues(new_values);
+            component.setPropertyValue('position', new_value);
 
-            history.add({
+            History.add({
                 'undo': () => {
-                    component.setPropertyValues(previous_values);
+                    component.setPropertyValue('position', previous_value);
                 },
                 'redo': () => {
-                    component.setPropertyValues(new_values);
+                    component.setPropertyValue('position', new_value);
                 }
             });
         });
 
-        history.endGroup();
+        History.endGroup();
 
         return this;
     }
@@ -2938,7 +3098,7 @@ export class Editor extends Dom {
                 .addClass('delete-player-component');
         }
         else {
-            const history = this.getHistory().startGroup();
+            History.startGroup();
 
             _components.forEach((component) => {
                 let undo = null;
@@ -3018,24 +3178,22 @@ export class Editor extends Dom {
                     };
 
                     undo = () => {
-                        // @TODO: keep order.
+                        // @todo: keep order.
                         const scenario = this.getPlayer().getActiveScenario();
                         scenario.addComponent(component);
                     }
                 }
 
                 redo();
-                history.add({
+                History.add({
                     'undo': undo,
                     'redo': redo
                 });
             });
 
-            history.endGroup();
+            History.endGroup();
 
             this.setDirty('components');
-
-            this.player_frame.focus();
         }
 
         return this;
@@ -3248,7 +3406,7 @@ export class Editor extends Dom {
      * Revert the player to its last saved state.
      *
      * @param {Boolean} confirm Whether to display a confirmation dialog
-     * @returns {this}
+     * @return {this}
      */
     revert(confirm = true) {
         if (confirm !== false) {

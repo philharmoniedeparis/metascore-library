@@ -28,9 +28,7 @@ export default class ButtonsInput extends Input{
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         /**

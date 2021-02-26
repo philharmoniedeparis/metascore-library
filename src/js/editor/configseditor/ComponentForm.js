@@ -1,6 +1,6 @@
 import Dom from '../../core/Dom';
-import {clone} from '../../core/utils/Array';
-import {isFunction} from '../../core/utils/Var';
+import { clone, unique } from '../../core/utils/Array';
+import { isFunction } from '../../core/utils/Var';
 import Locale from '../../core/Locale';
 import Field from '../Field';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
@@ -10,9 +10,13 @@ import ColorInput from '../../core/ui/input/ColorInput';
 import NumberInput from '../../core/ui/input/NumberInput';
 import BorderRadiusInput from '../../core/ui/input/BorderRadiusInput';
 import TimeInput from '../../core/ui/input/TimeInput';
-import {MasterClock} from '../../core/media/Clock';
+import CombinedInputs from '../../core/ui/input/CombinedInputs';
+import { MasterClock } from '../../core/media/MediaClock';
+import { History } from '../UndoRedo';
 
-import {className} from '../../../css/editor/configseditor/ComponentForm.scss';
+import animated_icon from '../../../img/editor/controller/timeline/handle/animated.svg?svg-sprite';
+
+import { className } from '../../../css/editor/configseditor/ComponentForm.scss';
 
 /**
  * A component form class
@@ -21,8 +25,231 @@ export default class ComponentForm extends Dom {
 
     static defaults = {
         'title': Locale.t('editor.configseditor.ComponentForm.title.single', 'Attributes of component'),
-        'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components'),
-        'fields': []
+        'title_plural': Locale.t('editor.configseditor.ComponentForm.title.plural', 'Attributes of @count components')
+    };
+
+    static field_definitions = {
+        'name': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.name.label', 'Name'),
+            'input': {
+                'type': TextInput
+            }
+        },
+        'hidden': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.hidden.label', 'Hidden on start'),
+            'input': {
+                'type': CheckboxInput,
+                'configs': { 'checked': false }
+            }
+        },
+        'background-color': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color'),
+            'input': {
+                'type': ColorInput,
+                'configs': { 'format': 'css' }
+            }
+        },
+        'background-image': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background image'),
+            'input': {
+                'type': SelectInput
+            }
+        },
+        'border': {
+            'group': true,
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border'),
+            'items': {
+                'border-color': {
+                    'input': {
+                        'type': ColorInput,
+                        'configs': { 'format': 'css' }
+                    },
+                    'attributes': {
+                        'title': Locale.t('editor.configseditor.ComponentForm.fields.border-color.title', 'Color')
+                    }
+                },
+                'border-width': {
+                    'input': {
+                        'type': NumberInput,
+                        'configs': { 'min': 0, 'spinButtons': true }
+                    },
+                    'attributes': {
+                        'title': Locale.t('editor.configseditor.ComponentForm.fields.border-width.title', 'Width')
+                    }
+                },
+                'border-radius': {
+                    'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius'),
+                    'input': {
+                        'type': BorderRadiusInput,
+                        'configs': { 'overlay': { 'parent': '.metaScore-editor' } }
+                    }
+                }
+            }
+        },
+        'time': {
+            'group': true,
+            'items': {
+                'start-time': {
+                    'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start'),
+                    'input': {
+                        'type': TimeInput,
+                        'configs': {
+                            'inButton': true,
+                            'outButton': true,
+                            'clearButton': true
+                        }
+                    }
+                },
+                'end-time': {
+                    'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End'),
+                    'input': {
+                        'type': TimeInput,
+                        'configs': {
+                            'inButton': true,
+                            'outButton': true,
+                            'clearButton': true
+                        }
+                    }
+                }
+            }
+        },
+        'position': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.position.label', 'Position'),
+            'input': {
+                'type': CombinedInputs,
+                'configs': {
+                    'inputs': [
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal',
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.position.0.title', 'X'),
+                                }
+                            }
+                        },
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true,
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.position.1.title', 'Y'),
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        'dimension': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.dimension.label', 'Dimension'),
+            'input': {
+                'type': CombinedInputs,
+                'configs': {
+                    'inputs': [
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal',
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.dimension.0.title', 'Width'),
+                                }
+                            }
+                        },
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'min': 0,
+                                'spinButtons': true,
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.dimension.1.title', 'Height'),
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        'opacity': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity'),
+            'input': {
+                'type': NumberInput,
+                'configs': {
+                    'min': 0,
+                    'max': 1,
+                    'step': 0.01,
+                    'spinButtons': true
+                }
+            },
+            'animatable': true
+        },
+        'scale': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.scale.label', 'Scale'),
+            'input': {
+                'type': CombinedInputs,
+                'configs': {
+                    'inputs': [
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'step': 0.01,
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal',
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.scale.0.title', 'X'),
+                                }
+                            }
+                        },
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'step': 0.01,
+                                'spinButtons': true,
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.scale.1.title', 'Y'),
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            'animatable': true
+        },
+        'translate': {
+            'label': Locale.t('editor.configseditor.ComponentForm.fields.translate.label', 'Translation'),
+            'input': {
+                'type': CombinedInputs,
+                'configs': {
+                    'inputs': [
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'spinDirection': 'horizontal',
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.translate.0.title', 'X'),
+                                }
+                            }
+                        },
+                        {
+                            'type': NumberInput,
+                            'configs': {
+                                'spinButtons': true,
+                                'attributes': {
+                                    'title': Locale.t('editor.configseditor.ComponentForm.fields.translate.1.title', 'Y'),
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            'animatable': true
+        }
     };
 
     /**
@@ -34,7 +261,7 @@ export default class ComponentForm extends Dom {
      */
     constructor(editor, configs) {
         // call parent constructor
-        super('<div/>', {'class': `component-form ${className}`});
+        super('<div/>', { 'class': `component-form ${className}` });
 
         /**
          * A reference to the Editor instance
@@ -44,6 +271,7 @@ export default class ComponentForm extends Dom {
 
         // fix event handlers scope
         this.onComponentPropChange = this.onComponentPropChange.bind(this);
+        this.onComponentPropUpdate = this.onComponentPropUpdate.bind(this);
         this.onComponentDragStart = this.onComponentDragStart.bind(this);
         this.onComponentDrag = this.onComponentDrag.bind(this);
         this.onComponentDragEnd = this.onComponentDragEnd.bind(this);
@@ -57,18 +285,51 @@ export default class ComponentForm extends Dom {
          */
         this.configs = Object.assign({}, this.constructor.defaults, configs);
 
-        this.title = new Dom('<h2/>', {'class': 'title'})
+        this.title = new Dom('<h2/>', { 'class': 'title' })
             .appendTo(this);
 
         /**
          * The fields container
          * @type {Dom}
          */
-        this.fields_wrapper = new Dom('<div/>', {'class': 'fields'})
-            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+        this.fields_wrapper = new Dom('<div/>', { 'class': 'fields' })
             .appendTo(this);
 
-        this.setupFields();
+        /**
+         * The animatable fields container
+         * @type {Dom}
+         */
+        this.animatable_fields_wrapper = new Dom('<div/>', { 'class': 'fields animatable' })
+            .appendTo(this);
+
+        this
+            .addDelegate('.field', 'valuechange', this.onFieldValueChange.bind(this))
+            .addDelegate('.input.animated', 'valuechange', this.onAnimatedCheckboxValueChange.bind(this));
+
+        /**
+         * The list of fields
+         * @type {Object}
+         */
+        this.fields = {};
+
+        /**
+         * The list of checkboxes for animated properties
+         * @type {Map<String, CheckboxInput>}
+         */
+        this.animated_checkboxes = new Map();
+
+        // Setup the fields.
+        Object.entries(this.constructor.field_definitions).forEach(([id, configs]) => {
+            if ('group' in configs && configs.group === true) {
+                const group = this.addFieldGroup(id, configs);
+                Object.entries(configs.items).forEach(([field_id, field_configs]) => {
+                    this.addField(field_id, field_configs, group);
+                });
+            }
+            else {
+                this.addField(id, configs);
+            }
+        });
     }
 
     /**
@@ -77,7 +338,7 @@ export default class ComponentForm extends Dom {
      * @param {Component[]} components The list of components.
      * @return {this}
      */
-    setComponents(components){
+    setComponents(components) {
         /**
          * The components
          * @type {Array}
@@ -90,25 +351,31 @@ export default class ComponentForm extends Dom {
             // Create a new Dom instance to workaround the different JS contexts of the player and editor.
             new Dom(component.get(0))
                 .addListener('propchange', this.onComponentPropChange)
-                .addListener('dragstart', this.onComponentDragStart)
-                .addListener('drag', this.onComponentDrag)
-                .addListener('dragend', this.onComponentDragEnd)
-                .addListener('resizestart', this.onComponentResizeStart)
-                .addListener('resize', this.onComponentResize)
-                .addListener('resizeend', this.onComponentResizeEnd);
+                .addListener('propupdate', this.onComponentPropUpdate)
+                .addListener('dragstart', this.onComponentDragStart, true)
+                .addListener('drag', this.onComponentDrag, true)
+                .addListener('dragend', this.onComponentDragEnd, true)
+                .addListener('resizestart', this.onComponentResizeStart, true)
+                .addListener('resize', this.onComponentResize, true)
+                .addListener('resizeend', this.onComponentResizeEnd, true);
 
             this.updateComponentLockedState(component);
         });
 
 
-        if(this.components.length > 1){
-            this.title.text(Locale.formatString(this.configs.title_plural, {'@count': this.components.length}));
+        // Update the form's title
+        if (this.components.length > 1) {
+            this.title.text(Locale.formatString(this.configs.title_plural, { '@count': this.components.length }));
         }
-        else{
+        else {
             this.title.text(this.configs.title);
         }
 
-        this.updateFieldValues(true);
+        // Update fields.
+        this
+            .updateColorFieldsEmptyValue()
+            .updateTimeFieldsLimits()
+            .updateFieldValues(true);
 
         return this;
     }
@@ -118,18 +385,19 @@ export default class ComponentForm extends Dom {
      *
      * @return {this}
      */
-    unsetComponents(){
-        if(this.components){
+    unsetComponents() {
+        if (this.components) {
             this.components.forEach((component) => {
                 // Create a new Dom instance to workaround the different JS contexts of the player and editor.
                 new Dom(component.get(0))
                     .removeListener('propchange', this.onComponentPropChange)
-                    .removeListener('dragstart', this.onComponentDragStart)
-                    .removeListener('drag', this.onComponentDrag)
-                    .removeListener('dragend', this.onComponentDragEnd)
-                    .removeListener('resizestart', this.onComponentResizeStart)
-                    .removeListener('resize', this.onComponentResize)
-                    .removeListener('resizeend', this.onComponentResizeEnd);
+                    .removeListener('propupdate', this.onComponentPropUpdate)
+                    .removeListener('dragstart', this.onComponentDragStart, true)
+                    .removeListener('drag', this.onComponentDrag, true)
+                    .removeListener('dragend', this.onComponentDragEnd, true)
+                    .removeListener('resizestart', this.onComponentResizeStart, true)
+                    .removeListener('resize', this.onComponentResize, true)
+                    .removeListener('resizeend', this.onComponentResizeEnd, true);
             });
         }
 
@@ -144,7 +412,7 @@ export default class ComponentForm extends Dom {
      *
      * @return {Component} The component.
      */
-    getMasterComponent(){
+    getMasterComponent() {
         return this.master_component;
     }
 
@@ -153,41 +421,8 @@ export default class ComponentForm extends Dom {
      *
      * @return {Component[]} The components.
      */
-    getComponents(){
+    getComponents() {
         return this.components;
-    }
-
-    /**
-     * The fields' valuechange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
-     */
-    onFieldValueChange(evt){
-        const name = evt.detail.field.data('property');
-        const value = evt.detail.value;
-        const components = clone(this.components);
-        const previous_values = {};
-
-        components.forEach((component) => {
-            previous_values[component.getId()] = component.getPropertyValue(name);
-            component.setPropertyValue(name, value);
-        });
-
-        this.editor.getHistory().add({
-            'undo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, previous_values[component.getId()]);
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    component.setPropertyValue(name, value);
-                });
-            }
-        });
-
-        this.toggleMultival(evt.detail.field, false);
     }
 
     /**
@@ -196,33 +431,43 @@ export default class ComponentForm extends Dom {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentPropChange(evt){
-        if(evt.target !== evt.currentTarget){
-            // Caught a bubbled event, skip
-            return;
-        }
-
-        this.onComponentOwnPropChange(evt);
-    }
-
-    onComponentOwnPropChange(evt){
+    onComponentPropChange(evt) {
         const component = evt.detail.component;
         const property = evt.detail.property;
 
-        switch(property) {
+        switch (property) {
             case 'editor.locked':
                 this.updateComponentLockedState(component);
                 break;
 
             case 'start-time':
             case 'end-time':
-                this.updateTimeFieldLimits();
+                this.updateTimeFieldsLimits();
+                break;
+        }
+    }
+
+    /**
+     * The component's propupdate event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onComponentPropUpdate(evt) {
+        const component = evt.detail.component;
+        const property = evt.detail.property;
+        const value = evt.detail.value;
+
+        switch (property) {
+            case 'scale':
+                // Add CSS vars to allow compensating scale on resize handles.
+                component.css(`--transform-${property}X`, value[0]);
+                component.css(`--transform-${property}Y`, value[1]);
                 break;
         }
 
-        // If this is the only component or the master one,
-        // refresh the field value.
-        if(component === this.master_component){
+        // Refresh field value.
+        if (component === this.getMasterComponent()) {
             this.updateFieldValue(property, true);
         }
     }
@@ -232,7 +477,7 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentDragStart(){
+    onComponentDragStart() {
         /**
         * Values of x and y when dragging starts
         * @type {Array}
@@ -240,10 +485,7 @@ export default class ComponentForm extends Dom {
         this._before_drag_values = {};
 
         this.components.forEach((component) => {
-            this._before_drag_values[component.getId()] = {
-                'x': component.getPropertyValue('x'),
-                'y': component.getPropertyValue('y')
-            };
+            this._before_drag_values[component.getId()] = clone(component.getPropertyValue('position'));
         });
     }
 
@@ -252,7 +494,7 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentDrag(evt){
+    onComponentDrag(evt) {
         const state = evt.detail.behavior.getState();
 
         let offsetX = state.offsetX;
@@ -262,11 +504,11 @@ export default class ComponentForm extends Dom {
             const left = parseInt(component.css('left'), 10);
             const top = parseInt(component.css('top'), 10);
 
-            if(left + offsetX < 0){
+            if (left + offsetX < 0) {
                 offsetX = left * -1;
             }
 
-            if(top + offsetY < 0){
+            if (top + offsetY < 0) {
                 offsetY = top * -1;
             }
         });
@@ -275,13 +517,10 @@ export default class ComponentForm extends Dom {
             const x = parseInt(component.css('left'), 10) + offsetX;
             const y = parseInt(component.css('top'), 10) + offsetY;
 
-            component.setPropertyValues({'x': x, 'y': y}, true);
+            component.setPropertyValue('position', [x, y], true);
         });
 
-        const fields = ['x', 'y'];
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
-        });
+        this.updateFieldValue('position', true);
     }
 
     /**
@@ -289,50 +528,35 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentDragEnd(){
+    onComponentDragEnd() {
         const components = clone(this.components);
         const previous_values = this._before_drag_values;
-        const new_values = {};
+
+        History.startGroup();
 
         components.forEach((component) => {
             const id = component.getId();
+            const value = component.getPropertyValue('position');
+            const previous = previous_values[id];
 
-            new_values[id] = {};
+            component.triggerEvent('propchange', {
+                'component': component,
+                'property': 'position',
+                'value': value,
+                'previous': previous
+            });
 
-            Object.entries(previous_values[id]).forEach(([field, previous_value]) => {
-                const value = component.getPropertyValue(field);
-
-                new_values[id][field] = value;
-
-                component.triggerEvent('propchange', {
-                    'component': component,
-                    'property': field,
-                    'value': value,
-                    'previous': previous_value
-                });
+            History.add({
+                'undo': () => {
+                    component.setPropertyValue('position', previous);
+                },
+                'redo': () => {
+                    component.setPropertyValue('position', value);
+                }
             });
         });
 
-        this.editor.getHistory().add({
-            'undo': () => {
-                components.forEach((component) => {
-                    const id = component.getId();
-                    Object.entries(previous_values[id]).forEach(([field, value]) => {
-                        component.setPropertyValue(field, value);
-                    });
-                });
-            },
-            'redo': () => {
-                components.forEach((component) => {
-                    const id = component.getId();
-                    Object.entries(new_values[id]).forEach(([field, value]) => {
-                        component.setPropertyValue(field, value);
-                    });
-                });
-            }
-        });
-
-        this.editor.setDirty('components');
+        History.endGroup();
 
         delete this._before_drag_values;
     }
@@ -342,18 +566,16 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentResizeStart(evt){
+    onComponentResizeStart(evt) {
         const component = evt.target._metaScore;
 
         /**
-        * Values of x, y, width and height when resizing starts
-        * @type {Array}
+        * Values of position and dimension when resizing starts
+        * @type {Object}
         */
         this._before_resize_values = {
-            'x': component.getPropertyValue('x'),
-            'y': component.getPropertyValue('y'),
-            'width': component.getPropertyValue('width'),
-            'height': component.getPropertyValue('height'),
+            'position': clone(component.getPropertyValue('position')),
+            'dimension': clone(component.getPropertyValue('dimension'))
         };
     }
 
@@ -362,30 +584,34 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentResize(evt){
+    onComponentResize(evt) {
         const component = evt.target._metaScore;
         const state = evt.detail.behavior.getState();
 
         Object.entries(state.new_values).forEach(([key, value]) => {
-            switch(key){
+            switch (key) {
                 case 'left':
-                    component.setPropertyValue('x', value, true);
-                    break;
-
                 case 'top':
-                    component.setPropertyValue('y', value, true);
+                    {
+                        const position = clone(component.getPropertyValue('position'));
+                        const index = key === 'top' ? 1 : 0;
+                        position[index] = value;
+                        component.setPropertyValue('position', position, true);
+                        this.updateFieldValue('position', true);
+                    }
                     break;
 
                 case 'width':
                 case 'height':
-                    component.setPropertyValue(key, value, true);
+                    {
+                        const dimension = clone(component.getPropertyValue('dimension'));
+                        const index = key === 'height' ? 1 : 0;
+                        dimension[index] = value;
+                        component.setPropertyValue('dimension', dimension, true);
+                        this.updateFieldValue('dimension', true);
+                    }
                     break;
             }
-        });
-
-        const fields = ['x', 'y', 'width', 'height'];
-        fields.forEach((field) => {
-            this.updateFieldValue(field, true);
         });
     }
 
@@ -394,15 +620,14 @@ export default class ComponentForm extends Dom {
      *
      * @private
      */
-    onComponentResizeEnd(evt){
+    onComponentResizeEnd(evt) {
         const component = evt.target._metaScore;
         const previous_values = this._before_resize_values;
-        const new_values = {};
+
+        History.startGroup();
 
         Object.entries(previous_values).forEach(([field, previous_value]) => {
             const value = component.getPropertyValue(field);
-
-            new_values[field] = value;
 
             component.triggerEvent('propchange', {
                 'component': component,
@@ -410,235 +635,275 @@ export default class ComponentForm extends Dom {
                 'value': value,
                 'previous': previous_value
             });
+
+            History.add({
+                'undo': () => {
+                    component.setPropertyValue(field, previous_value);
+                },
+                'redo': () => {
+                    component.setPropertyValue(field, value);
+                }
+            });
         });
 
-        this.editor.getHistory().add({
-            'undo': () => {
-                Object.entries(previous_values).forEach(([field, value]) => {
-                    component.setPropertyValue(field, value);
-                });
-            },
-            'redo': () => {
-                Object.entries(new_values).forEach(([field, value]) => {
-                    component.setPropertyValue(field, value);
-                });
-            }
-        });
-
-        this.editor.setDirty('components');
+        History.endGroup();
 
         delete this._before_resize_values;
     }
 
-    setupFields(){
-        /**
-         * The list of fields
-         * @type {Object}
-         */
-        this.fields = {};
+    /**
+     * Add a field.
+     *
+     * @protected
+     * @param {String} id The field's id.
+     * @param {Object} configs The field's configs.
+     * @property {String} [label] The field's label.
+     * @property {Input} [input] The field's input.
+     * @property {Object} [attributes] A list of attributes to set on the field.
+     * @param {Dom} [group] An optional field group.
+     * @return {Field} The field.
+     */
+    addField(id, configs, group = null) {
+        const input = new configs.input.type(configs.input.configs);
 
-        this.configs.fields.forEach((name) => {
-            this.addField(name);
-        });
+        const field = new Field(input, { 'label': configs.label })
+            .data('property', id)
+            .appendTo(group ?? (configs.animatable ? this.animatable_fields_wrapper : this.fields_wrapper));
+
+        if (configs.animatable) {
+            const checkbox = new CheckboxInput({
+                    'checked': false,
+                    'icon': animated_icon,
+                    'name': 'animated'
+                })
+                .data('property', id)
+                .addClass('animated')
+                .insertAt(field, 0);
+
+            this.updateAnimatedCheckboxTitle(checkbox);
+            this.getAnimatedPropertyCheckboxes().set(id, checkbox);
+        }
+
+        if ('attributes' in configs) {
+            Object.entries(configs.attributes).forEach(([key, value]) => {
+                field.attr(key, value);
+            });
+        }
+
+        this.fields[id] = field;
+
+        return field;
+    }
+
+    /**
+     * Add a field group.
+     *
+     * @protected
+     * @param {String} id The field group's id.
+     * @param {Object} [configs] The field group's configs.
+     * @property {String} [label] The field group's label.
+     * @property {Object} [attributes] A list of attributes to set on the group.
+     * @return {Dom} The group's Dom instance.
+     */
+    addFieldGroup(id, configs = {}) {
+        const wrapper = new Dom('<div/>', { 'class': `field-group ${id}` })
+            .appendTo(configs.animatable ? this.animatable_fields_wrapper : this.fields_wrapper);
+
+        if ('label' in configs) {
+            new Dom('<label/>', { 'text': configs.label })
+                .appendTo(wrapper);
+        }
+
+        if ('attributes' in configs) {
+            Object.entries(configs.attributes).forEach(([key, value]) => {
+                wrapper.attr(key, value);
+            });
+        }
+
+        return wrapper;
+    }
+
+    /**
+     * Get the list of checkboxes for animated properties.
+     *
+     * @return {Map<String, CheckboxInput>} The list of checkboxes.
+     */
+    getAnimatedPropertyCheckboxes() {
+        return this.animated_checkboxes;
+    }
+
+    /**
+     * Get the checkbox corresponding to an animated property.
+     *
+     * @param {String} name The property's name.
+     * @return {CheckboxInput?} The checkbox.
+     */
+    getAnimatedPropertyCheckbox(name) {
+        const checkboxes = this.getAnimatedPropertyCheckboxes();
+        if (checkboxes.has(name)) {
+            return checkboxes.get(name);
+        }
+
+        return null;
+    }
+
+    /**
+     * Uopdate an animated checkbox's title attribute.
+     *
+     * @param {CheckboxInput} checkbox A property's aniamted checkbox.
+     */
+    updateAnimatedCheckboxTitle(checkbox) {
+        if (checkbox.getValue() !== true) {
+            checkbox.attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.unchecked.title', 'Animate property'));
+        }
+        else {
+            checkbox.attr('title', Locale.t('editor.configseditor.ComponentForm.fields.animated.checked.title', 'Remove animation'));
+        }
 
         return this;
     }
 
     /**
-     * Add a field by name.
+     * The fields' valuechange event handler
      *
-     * @param {string} name The field's name.
-     * @param {this}
+     * @private
+     * @param {Event} evt The event object
      */
-    addField(name){
-        switch(name){
-            case 'name':
-                this.fields[name] = new Field(
-                    new TextInput(),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.name.label', 'Name')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
+    onFieldValueChange(evt) {
+        const name = evt.detail.field.data('property');
+        let value = evt.detail.value;
 
-            case 'hidden':
-                this.fields[name] = new Field(
-                    new CheckboxInput({
-                        'checked': false
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.hidden.label', 'Hidden on start')
-                    })
-                    .data('property', name)
-                    .appendTo(this.fields_wrapper);
-                break;
+        if (this.getMasterComponent().isPropertyAnimated(name)) {
+            const values = {};
+            const previous_values = {};
 
-            case 'background':
-                this.fields['background-image'] = new Field(
-                    new SelectInput(),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-image.label', 'Background image')
-                    })
-                    .data('property', 'background-image')
-                    .appendTo(this.fields_wrapper);
+            // Get selected keyframes matching the property.
+            const keyframes = this.editor.controller.getTimeline().getPropertyKeyfames()
+                .filter(k => k.getTrack().getProperty() === name && k.isSelected());
 
-                this.fields['background-color'] = new Field(
-                    new ColorInput({'format': 'css'}),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.background-color.label', 'Background color')
-                    })
-                    .data('property', 'background-color')
-                    .appendTo(this.fields_wrapper);
-                break;
+            // Get tracks of selected keyframes.
+            const tracks = unique(keyframes.map(k => k.getTrack()));
 
-            case 'border': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group border'})
-                        .appendTo(this.fields_wrapper);
+            // Get components of selected keyframes.
+            const components = tracks.map(t => t.getComponent());
 
-                    const border_fields_label = new Dom('<label/>', {'text': Locale.t('editor.configseditor.ComponentForm.fields.border-fields.label', 'Border')})
-                        .appendTo(wrapper);
+            // Get previous values.
+            tracks.forEach((track) => {
+                const component = track.getComponent();
+                previous_values[component.getId()] = component.getPropertyValue(name);
+            });
 
-                    this.fields['border-color'] = new Field(
-                        new ColorInput({'format': 'css'}),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-color.label', 'Border color')
-                        })
-                        .data('property', 'border-color')
-                        .appendTo(wrapper);
+            // Update keyframe values.
+            keyframes.forEach((keyframe) => {
+                keyframe.setValue(value);
+            });
 
-                    border_fields_label.attr('for', this.fields['border-color'].getInput().getId());
+            // Get new values and update components' property.
+            tracks.forEach((track) => {
+                const component = track.getComponent();
+                const value = track.getKeyframes().map((keyframe) => {
+                    return [keyframe.getTime(), keyframe.getValue()];
+                });
 
-                    this.fields['border-width'] = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-width.label', 'Border width')
-                        })
-                        .data('property', 'border-width')
-                        .appendTo(wrapper);
+                values[component.getId()] = value;
+                component.setPropertyValue(name, value);
+            });
 
-                    this.fields['border-radius'] = new Field(
-                        new BorderRadiusInput({
-                            'overlay': {
-                                'parent': this.editor
-                            }
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.border-radius.label', 'Radius')
-                        })
-                        .data('property', 'border-radius')
-                        .appendTo(wrapper);
+            History.add({
+                'undo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, previous_values[component.getId()]);
+                    });
+                },
+                'redo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, values[component.getId()]);
+                    });
                 }
-                break;
+            });
 
-            case 'opacity':
-                this.fields.opacity = new Field(
-                    new NumberInput({
-                        'min': 0,
-                        'max': 1,
-                        'step': 0.1,
-                        'spinButtons': true
-                    }),
-                    {
-                        'label': Locale.t('editor.configseditor.ComponentForm.fields.opacity.label', 'Opacity')
-                    })
-                    .data('property', 'opacity')
-                    .appendTo(this.fields_wrapper);
-                break;
+        }
+        else {
+            const components = clone(this.components);
+            const previous_values = {};
 
-            case 'time': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group time'})
-                        .appendTo(this.fields_wrapper);
+            components.forEach((component) => {
+                previous_values[component.getId()] = component.getPropertyValue(name);
+                component.setPropertyValue(name, value);
+            });
 
-                    this.fields['start-time'] = new Field(
-                        new TimeInput({
-                            'inButton': true,
-                            'outButton': true,
-                            'clearButton': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.start-time.label', 'Start')
-                        })
-                        .data('property', 'start-time')
-                        .appendTo(wrapper);
-
-                    this.fields['end-time'] = new Field(
-                        new TimeInput({
-                            'inButton': true,
-                            'outButton': true,
-                            'clearButton': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.end-time.label', 'End')
-                        })
-                        .data('property', 'end-time')
-                        .appendTo(wrapper);
+            History.add({
+                'undo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, previous_values[component.getId()]);
+                    });
+                },
+                'redo': () => {
+                    components.forEach((component) => {
+                        component.setPropertyValue(name, value);
+                    });
                 }
-                break;
-
-            case 'position': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group position'})
-                    .appendTo(this.fields_wrapper);
-
-                    this.fields.x = new Field(
-                        new NumberInput({
-                            'spinButtons': true,
-                            'spinDirection': 'horizontal'
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.x.label', 'X')
-                        })
-                        .data('property', 'x')
-                        .appendTo(wrapper);
-
-                    // Y
-                    this.fields.y = new Field(
-                        new NumberInput({
-                            'spinButtons': true,
-                            'flipSpinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.y.label', 'Y')
-                        })
-                        .data('property', 'y')
-                        .appendTo(wrapper);
-                }
-                break;
-
-            case 'dimension': {
-                    const wrapper = new Dom('<div/>', {'class': 'field-group dimension'})
-                    .appendTo(this.fields_wrapper);
-
-                    this.fields.width = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true,
-                            'spinDirection': 'horizontal'
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.width.label', 'Width')
-                        })
-                        .data('property', 'width')
-                        .appendTo(wrapper);
-
-                    this.fields.height = new Field(
-                        new NumberInput({
-                            'min': 0,
-                            'spinButtons': true
-                        }),
-                        {
-                            'label': Locale.t('editor.configseditor.ComponentForm.fields.height.label', 'Height')
-                        })
-                        .data('property', 'height')
-                        .appendTo(wrapper);
-                }
-                break;
+            });
         }
 
-        return this;
+
+        this.toggleMultival(evt.detail.field, false);
+    }
+
+    /**
+     * Animated checkbox valuechange event handler
+     *
+     * @private
+     * @param {Event} evt The event object
+     */
+    onAnimatedCheckboxValueChange(evt) {
+        const input = evt.detail.input;
+        const name = input.data('property');
+        const value = evt.detail.value;
+        const components = clone(this.components);
+        const previous_values = {};
+        const new_values = {};
+
+        this.updateAnimatedCheckboxTitle(input);
+
+        components.forEach((component) => {
+            const id = component.getId();
+            const prop_value = component.getPropertyValue(name);
+            const animated_value = component.getPropertyValue('animated') ?? [];
+
+            const previous_value = {
+                'animated': animated_value,
+                [name]: prop_value
+            }
+
+            const new_value = {};
+            if (value === true) {
+                new_value.animated = animated_value.concat(name);
+                new_value[name] = [[MasterClock.getTime(), prop_value]];
+            }
+            else {
+                new_value.animated = animated_value.filter(item => item !== name);
+                new_value[name] = prop_value[0][1];
+            }
+
+            previous_values[id] = previous_value;
+            new_values[id] = new_value;
+
+            component.setPropertyValues(new_value);
+        });
+
+        History.add({
+            'undo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValues(previous_values[component.getId()]);
+                });
+            },
+            'redo': () => {
+                components.forEach((component) => {
+                    component.setPropertyValues(new_values[component.getId()]);
+                });
+            }
+        });
     }
 
     /**
@@ -647,10 +912,8 @@ export default class ComponentForm extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    updateFieldValues(supressEvent){
-        if(this.components){
-            this.updateTimeFieldLimits();
-
+    updateFieldValues(supressEvent) {
+        if (this.components) {
             // Update all field values.
             Object.keys(this.getFields()).forEach((name) => {
                 this.updateFieldValue(name, supressEvent);
@@ -667,24 +930,36 @@ export default class ComponentForm extends Dom {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    updateFieldValue(name, supressEvent){
-        if(this.components){
+    updateFieldValue(name, supressEvent) {
+        if (this.components) {
             const master_component = this.getMasterComponent();
             const value = master_component.getPropertyValue(name);
             const field = this.getField(name);
 
-            if(field && field instanceof Field){
+            if (field && field instanceof Field) {
                 const input = field.getInput();
+                let animated = false;
+
+                const checkbox = this.getAnimatedPropertyCheckbox(name);
+                if (checkbox && master_component.isPropertyAnimatable(name)) {
+                    animated = master_component.isPropertyAnimated(name);
+                    if (checkbox.getValue() !== animated) {
+                        checkbox.setValue(animated, supressEvent);
+                        this.updateAnimatedCheckboxTitle(checkbox);
+                        input[animated ? 'disable' : 'enable']();
+                    }
+                }
+
+                if (animated) {
+                    input.setValue(master_component.getAnimatedPropertyValueAtTime(name), supressEvent);
+                }
+                else {
+                    input.setValue(value, supressEvent);
+                }
+
                 const multival = this.components.length > 1 && this.components.some((component) => {
                     return component.getPropertyValue(name) !== value;
                 });
-
-                input.setValue(value, supressEvent);
-
-                if (input instanceof ColorInput) {
-                    this.updateColorInputEmptyValue(input, name);
-                }
-
                 this.toggleMultival(field, multival);
             }
 
@@ -700,7 +975,7 @@ export default class ComponentForm extends Dom {
      * @param {String} name The name of the field
      * @return {Boolean} Whether the field exists or not
      */
-    hasField(name){
+    hasField(name) {
         return name in this.fields;
     }
 
@@ -710,7 +985,7 @@ export default class ComponentForm extends Dom {
      * @param {String} name The name of the field
      * @return {Field} The field
      */
-    getField(name){
+    getField(name) {
         return this.fields[name];
     }
 
@@ -719,7 +994,7 @@ export default class ComponentForm extends Dom {
      *
      * @return {Object} The fields
      */
-    getFields(){
+    getFields() {
         return this.fields;
     }
 
@@ -729,12 +1004,12 @@ export default class ComponentForm extends Dom {
      * @return {this}
      */
     updateFieldsVisibility() {
-        if(this.components){
+        if (this.components) {
             const master_component = this.getMasterComponent();
 
             Object.entries(master_component.getProperties()).forEach(([name, prop]) => {
                 const prop_field = this.getField(name);
-                if(prop_field){
+                if (prop_field) {
                     const toggle = !('applies' in prop) || !isFunction(prop.applies) || prop.applies.call(master_component);
                     prop_field[toggle ? 'show' : 'hide']();
                 }
@@ -751,14 +1026,14 @@ export default class ComponentForm extends Dom {
      * @param {Boolean} toggle Whether the field should be enabled or disabled
      * @return {this}
      */
-    toggleField(name, toggle){
+    toggleField(name, toggle) {
         const field = this.getField(name);
 
-        if(field){
-            if(toggle){
+        if (field) {
+            if (toggle) {
                 field.getInput().enable();
             }
-            else{
+            else {
                 field.getInput().disable();
             }
         }
@@ -773,7 +1048,7 @@ export default class ComponentForm extends Dom {
      * @param {Boolean} toggle Whether the warning is to be shown or hidden
      * @return {this}
      */
-    toggleMultival(field, toggle){
+    toggleMultival(field, toggle) {
         field.toggleClass('warning', toggle);
         field.getLabel().attr('title', toggle ? Locale.t('editor.ComponentForm.multivalWarning', 'The value corresponds to that of the first selected component') : null);
 
@@ -786,8 +1061,8 @@ export default class ComponentForm extends Dom {
      * @param {Object} images The list of available images.
      * @return {this}
      */
-    updateImageFields(images){
-        if(this.hasField('background-image')){
+    updateImageFields(images) {
+        if (this.hasField('background-image')) {
             const input = this.getField('background-image').getInput();
 
             input.clear();
@@ -807,19 +1082,19 @@ export default class ComponentForm extends Dom {
      *
      * @return {this}
      */
-    updateTimeFieldLimits() {
-        if(this.components && this.hasField('start-time') && this.hasField('end-time')){
+    updateTimeFieldsLimits() {
+        if (this.components && this.hasField('start-time') && this.hasField('end-time')) {
             const start_values = [];
             const end_values = [];
 
             this.components.forEach((component) => {
                 const start_value = component.getPropertyValue('start-time');
-                if(start_value !== null){
+                if (start_value !== null) {
                     start_values.push(start_value);
                 }
 
                 const end_value = component.getPropertyValue('end-time');
-                if(end_value !== null){
+                if (end_value !== null) {
                     end_values.push(end_value);
                 }
             });
@@ -837,35 +1112,45 @@ export default class ComponentForm extends Dom {
     }
 
     /**
-     * Update a color input's empty value
+     * Update color fields' empty value
      * depending on the default value of the component's corresponding propoerty.
      *
-     * @param {ColorInput} input The color input
-     * @param {String} name The propoerty's name
      * @return {this}
      */
-    updateColorInputEmptyValue(input, name) {
+    updateColorFieldsEmptyValue() {
         const master_component = this.getMasterComponent();
-        const property = master_component.getProperty(name);
-        let empty_value = null;
 
-        if('default' in property){
-            empty_value = property.default;
-        }
-        else {
-            // Get current value.
-            const value = master_component.getPropertyValue(name);
+        Object.keys(this.getFields()).forEach((name) => {
+            const field = this.getField(name);
+            if (field && field instanceof Field) {
+                const input = field.getInput();
+                if (input instanceof ColorInput) {
+                    const property = master_component.getProperty(name);
 
-            // Get default value.
-            master_component.setPropertyValue(name, null, true);
-            empty_value = master_component.css(name);
+                    if (typeof property !== 'undefined') {
+                        let empty_value = null;
 
-            // Revert to current value.
-            master_component.setPropertyValue(name, value, true);
-        }
+                        if ('default' in property) {
+                            empty_value = property.default;
+                        }
+                        else {
+                            // Get current value.
+                            const value = master_component.getPropertyValue(name);
 
-        // Update input's empty value.
-        input.setEmptyValue(empty_value);
+                            // Get default value.
+                            master_component.setPropertyValue(name, null, true);
+                            empty_value = master_component.css(name);
+
+                            // Revert to current value.
+                            master_component.setPropertyValue(name, value, true);
+                        }
+
+                        // Update input's empty value.
+                        input.setEmptyValue(empty_value);
+                    }
+                }
+            }
+        });
 
         return this;
     }
@@ -877,15 +1162,13 @@ export default class ComponentForm extends Dom {
      * @param {Component} component
      * @return {this}
      */
-    updateComponentLockedState(component){
+    updateComponentLockedState(component) {
         const locked = component.getPropertyValue('editor.locked');
 
         this
             .toggleClass('locked', locked)
-            .toggleField('x', !locked)
-            .toggleField('y', !locked)
-            .toggleField('width', !locked)
-            .toggleField('height', !locked);
+            .toggleField('position', !locked)
+            .toggleField('dimension', !locked);
 
         component
             .setDraggable(!locked)
@@ -897,7 +1180,7 @@ export default class ComponentForm extends Dom {
     /**
      * @inheritdoc
      */
-    remove(){
+    remove() {
         this.unsetComponents();
         super.remove();
     }

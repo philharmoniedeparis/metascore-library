@@ -1,4 +1,5 @@
 import Element from '../Element';
+import Locale from '../../../core/Locale';
 import Dom from '../../../core/Dom';
 
 /**
@@ -7,16 +8,28 @@ import Dom from '../../../core/Dom';
 export default class Media extends Element{
 
     static defaults = Object.assign({}, super.defaults, {
-        'properties': Object.assign({}, super.defaults.properties, {
-            'tag': {
-                'type': 'string',
-                'default': 'audio'
-            },
-            'src': {
-                'type': 'string'
-            }
-        })
+        'tag': 'audio'
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign({}, super.getProperties(), {
+                'tag': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Media.properties.tag.label', 'Tag')
+                },
+                'src': {
+                    'type': 'string',
+                    'label': Locale.t('component.element.Media.properties.src.label', 'Source')
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -28,8 +41,10 @@ export default class Media extends Element{
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
+
+        switch(name){
             case 'tag':
                 if(this.media){
                     this.media.remove();
@@ -49,10 +64,9 @@ export default class Media extends Element{
                     this.media.attr('src', value);
                 }
                 break;
-
-            default:
-                super.updatePropertyValue(property, value);
         }
+
+        return this;
     }
 
 }

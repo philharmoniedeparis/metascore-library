@@ -1,9 +1,11 @@
 import Component from '../Component';
+import Locale from '../../core/Locale';
 import VideoRenderer from './VideoRenderer';
 import Controller from './Controller';
 import Block from './Block';
 import BlockToggler from './BlockToggler';
 import {isNumber} from '../../core/utils/Var';
+import {pick} from '../../core/utils/Object';
 
 const component_types = {
     'VideoRenderer': VideoRenderer,
@@ -23,25 +25,37 @@ export default class Scenario extends Component {
 
     static defaults = Object.assign({}, super.defaults, {
         'draggable': false,
-        'resizable': false,
-        'properties': Object.assign({}, super.defaults.properties, {
-            'name': {
-                'type': 'string'
-            },
-            'components': {
-                'type': 'array',
-                'getter': function(skipID){
-                    const components = [];
-
-                    this.getChildren().forEach((component) => {
-                        components.push(component.getPropertyValues(skipID));
-                    });
-
-                    return components;
-                }
-            }
-        })
+        'resizable': false
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(pick(super.getProperties(), [
+                'type',
+                'id',
+                'name',
+            ]), {
+                'components': {
+                    'type': 'array',
+                    'label': Locale.t('component.Scenario.properties.components.label', 'Components'),
+                    'getter': function(skipID){
+                        const components = [];
+
+                        this.getChildren().forEach((component) => {
+                            components.push(component.getPropertyValues(skipID));
+                        });
+
+                        return components;
+                    }
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -65,18 +79,19 @@ export default class Scenario extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
+
+        switch(name){
             case 'components':
                 this.removeAllChildren();
                 value.forEach((configs) => {
                     this.addComponent(configs);
                 });
                 break;
-
-            default:
-                super.updatePropertyValue(property, value);
         }
+
+        return this;
     }
 
     /**

@@ -24,9 +24,7 @@ export default class TextareaInput extends Input {
     }
 
     /**
-     * Setup the input's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         const id = this.getId();

@@ -1,40 +1,40 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
-    > .inner{
+:local(.class-name) {
+    > .inner {
         background: $lightgray;
 
-        > .body{
-            > .contents{
+        > .body {
+            > .contents {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
 
                 form {
-                    fieldset{
+                    fieldset {
                         margin-bottom: 0.5em;
                         border: 1px solid $darkgray;
 
-                        > legend{
+                        > legend {
                             padding: 0 0.5em;
-                            color:#fff;
+                            color: #fff;
                             background: $lightgray;
                             text-align: left;
                         }
 
-                        > .fields-wrapper{
+                        > .fields-wrapper {
                             display: grid;
                             grid-template-columns: 1fr 1fr;
                             grid-gap: 0.5em 1em;
 
-                            .field{
-                                > label{
+                            .field {
+                                > label {
                                     margin-right: 0.5em;
                                     color: #fff;
                                 }
 
-                                .input.number{
-                                    input{
+                                .input.number {
+                                    input {
                                         width: 4em;
                                     }
                                 }

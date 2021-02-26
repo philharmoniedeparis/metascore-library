@@ -1,0 +1,94 @@
+@import '../../../../theme';
+
+:local(.class-name) {
+    display: flex;
+    position: sticky;
+    left: 0;
+    grid-column: 1;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    background: $mediumgray;
+    border-right: 2px solid $darkgray;
+    z-index: 2;
+
+    > .icon {
+        width: 1.5em;
+        flex: 0 0 auto;
+        margin: 0 0.25em;
+    }
+
+    > button {
+        padding: 0;
+        color: #fff;
+        align-self: stretch;
+
+        &[data-action='expander'] {
+            width: 2em;
+            font-size: 0.75em;
+            box-sizing: border-box;
+
+            .icon {
+                height: 1em;
+                transition: rotate 0.2s;
+            }
+
+            &:hover {
+                opacity: 0.25;
+            }
+        }
+    }
+
+    > .label {
+        flex: 1 1 auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    > .togglers {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        padding: 0 0.25em;
+
+        .input {
+            margin-left: 1px;
+            pointer-events: auto;
+
+            input {
+                + .state {
+                    label {
+                        padding: 0.1em;
+                        background: $darkgray;
+                        cursor: pointer;
+
+                        .icon {
+                            position: relative;
+                            display: block;
+                            top: 0;
+                            left: 0;
+                            width: 0.8em;
+                            height: 0.8em;
+                            margin: 0.1em;
+                            color: #fff;
+                            opacity: 0.25;
+                        }
+                    }
+                }
+
+                &:checked {
+                    + .state {
+                        .icon {
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}

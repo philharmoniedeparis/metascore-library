@@ -1,28 +1,7 @@
-@import "./theme";
-@import "../fonts/source-sans-pro/source-sans-variable.css";
+@import './theme';
+@import '../fonts/source-sans-pro/source-sans-variable.css';
 
-:local(.className){
-    &, * {
-        ::-webkit-scrollbar{
-            -webkit-appearance: none;
-            background-color: $scrollbar-track-color;
-            width: $scrollbar-width;
-            height: $scrollbar-thumb-min-height;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 0;
-            background-color: $scrollbar-thumb-color;
-
-            &:active,
-            &:hover{
-                background-color: $scrollbar-thumb-active-color;
-            }
-        }
-
-        scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
-        scrollbar-width: thin;
-    }
-
+:local(.class-name) {
     font-size: 14px;
     font-family: 'Source Sans Variable', sans-serif;
     display: grid;
@@ -31,36 +10,60 @@
     padding: 0;
     grid-template-columns: auto 1fr auto;
     grid-template-rows: min-content 1fr auto;
-    grid-template-areas: "top top top" "left center right" "bottom bottom bottom";
+    grid-template-areas: 'top top top' 'left center right' 'bottom bottom bottom';
     align-items: stretch;
     flex-wrap: nowrap;
 
-    .pane{
-        &.top-pane{
+    &,
+    * {
+
+        scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
+        scrollbar-width: thin;
+
+        ::-webkit-scrollbar {
+            appearance: none;
+            background-color: $scrollbar-track-color;
+            width: $scrollbar-width;
+            height: $scrollbar-thumb-min-height;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 0;
+            background-color: $scrollbar-thumb-color;
+
+            &:active,
+            &:hover {
+                background-color: $scrollbar-thumb-active-color;
+            }
+        }
+    }
+
+    .pane {
+        &.top-pane {
             grid-area: top;
             height: 2.5em;
             background: $darkgray;
 
-            .main-menu{
+            .main-menu {
                 flex: 0 0 auto;
                 height: 100%;
             }
         }
 
-        &.tools-pane{
+        &.tools-pane {
             grid-area: left;
 
-            &:not(.collapsed){
+            &:not(.collapsed) {
                 width: 20em;
                 min-width: min-content;
                 max-width: 25vw;
             }
         }
 
-        &.center-pane{
+        &.center-pane {
             grid-area: center;
 
-            > .contents{
+            > .contents {
                 $ruler-width: 20px;
 
                 display: grid;
@@ -101,42 +104,42 @@
                     z-index: 2;
                 }
 
-                .ruler{
+                .ruler {
                     position: absolute;
 
-                    &[data-axis="x"]{
+                    &[data-axis='x'] {
                         bottom: 0;
                         height: $ruler-width;
                     }
 
-                    &[data-axis="y"]{
+                    &[data-axis='y'] {
                         right: 0;
                         width: $ruler-width;
                     }
                 }
 
                 /* top-left ruler corner */
-                &::after{
+                &::after {
+                    content: '';
                     position: absolute;
                     top: 0;
                     left: 0;
-                    content: "";
-                    width:  $ruler-width;
-                    height:  $ruler-width;
+                    width: $ruler-width;
+                    height: $ruler-width;
                     background: $mediumgray;
                     z-index: 3;
                 }
 
-                .workspace{
+                .workspace {
                     grid-area: 3 / 3 / 4 / 4;
                     overflow: hidden;
 
-                    .player-wrapper{
+                    .player-wrapper {
                         transform-origin: 0 0;
                         transition: all 0.25s;
-                        box-shadow: 0 0 1em 0.25em rgba(0,0,0,.75);
+                        box-shadow: 0 0 1em 0.25em rgba(0, 0, 0, 0.75);
 
-                        .grid{
+                        .grid {
                             position: absolute;
                             width: 100%;
                             height: 100%;
@@ -148,21 +151,21 @@
                             z-index: 1;
                         }
 
-                        .player-frame{
+                        .player-frame {
                             display: block;
                             width: 100%;
                             height: 100%;
                             margin: 0;
                             padding: 0;
-                            border: none;
-                            background: #FFF;
+                            border: 0;
+                            background: #fff;
                         }
                     }
                 }
             }
         }
 
-        &.configs-pane{
+        &.configs-pane {
             grid-area: right;
 
             width: 20em;
@@ -170,28 +173,28 @@
             max-width: 25vw;
         }
 
-        &.bottom-pane{
+        &.bottom-pane {
             grid-area: bottom;
 
             height: 300px;
             min-height: 150px;
             max-height: 75vh;
 
-            &.collapsed{
-                > .contents{
+            &.collapsed {
+                > .contents {
                     display: block;
 
-                    > .controller{
-                        > .top{
-                            .time.input{
-                                button[data-action="play"]{
+                    > .controller {
+                        > .top {
+                            .time.input {
+                                button[data-action='play'] {
                                     display: block;
                                 }
                             }
                         }
 
                         > .middle,
-                        > .bottom{
+                        > .bottom {
                             display: none;
                         }
                     }
@@ -200,33 +203,37 @@
         }
     }
 
-    &.assetbrowser-expanded{
-        grid-template-columns: auto 0 minmax(0, min-content);
+    &.assetbrowser-expanded {
+        grid-template-columns: auto;
+        grid-template-rows: min-content 1fr;
+        grid-template-areas: 'top' 'left';
 
-        .pane{
-            &.tools-pane{
+        .pane {
+            &.tools-pane {
                 width: auto !important;
                 max-width: none;
                 padding: 0;
 
-                > .resize-handle{
+                > .resize-handle {
                     display: none;
                 }
             }
 
-            &.center-pane{
+            &.center-pane,
+            &.configs-pane,
+            &.bottom-pane, {
                 display: none;
             }
         }
     }
 
-    .autosave-indicator{
+    .autosave-indicator {
         position: absolute;
         left: 50%;
         bottom: 0;
         z-index: 1;
         font-size: 0.9em;
-        color: #FFF;
+        color: #fff;
         background: $darkgray;
         padding: 0 0.5em;
         box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
@@ -235,55 +242,55 @@
         pointer-events: none;
     }
 
-    &:not(.has-player){
-        .player-frame{
+    &:not(.has-player) {
+        .player-frame {
             display: none;
         }
     }
 
-    &.preview{
-        .pane{
-            &.tools-pane{
+    &.preview {
+        .pane {
+            &.tools-pane {
                 display: none;
             }
 
-            &.configs-pane{
+            &.configs-pane {
                 display: none;
             }
 
-            &.center-pane{
-                .workspace{
+            &.center-pane {
+                .workspace {
                     padding: 0;
 
-                    .ruler{
+                    .ruler {
                         display: none;
                     }
 
-                    .grid{
+                    .grid {
                         display: none;
                     }
                 }
             }
 
-            &.bottom-pane{
+            &.bottom-pane {
                 height: auto !important;
                 min-height: 0;
 
-                > .resize-handle{
+                > .resize-handle {
                     pointer-events: none;
                 }
 
-                .controller{
-                    > .top{
-                        .time.input{
-                            button[data-action="play"]{
+                .controller {
+                    > .top {
+                        .time.input {
+                            button[data-action='play'] {
                                 display: block;
                             }
                         }
                     }
 
                     > .middle,
-                    > .bottom{
+                    > .bottom {
                         display: none;
                     }
                 }
@@ -291,8 +298,8 @@
         }
     }
 
-    &:not(.player-ready){
-        .workspace{
+    &:not(.player-ready) {
+        .workspace {
             visibility: hidden;
         }
     }

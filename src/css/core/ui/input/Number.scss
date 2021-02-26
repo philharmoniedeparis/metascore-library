@@ -1,9 +1,9 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
+:local(.class-name) {
     position: relative;
 
-    .buttons{
+    .buttons {
         display: none;
         position: absolute;
         top: 0;
@@ -15,33 +15,33 @@
         justify-content: center;
         background-color: $darkgray;
 
-        button{
+        button {
             color: #fff;
             padding: 0;
 
-            .icon{
+            .icon {
                 display: block;
                 margin: auto;
             }
         }
     }
 
-    &.flip-buttons{
-        .buttons{
+    &.flip-buttons {
+        .buttons {
             transform-origin: center;
             transform: rotate(180deg);
         }
     }
 
-    &.vertical{
-        .buttons{
+    &.vertical {
+        .buttons {
             width: 1em;
             flex-direction: column-reverse;
         }
     }
 
-    &:hover{
-        .buttons{
+    &:hover {
+        .buttons {
             display: flex;
         }
     }

@@ -1,34 +1,32 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
-    .fields{
-        .contents-toggle{
-            flex: 100%;
-            margin: 0.5em 0;
+:local(.class-name) {
+    .field[data-property='contents-toggle'] {
+        flex: 100%;
+        padding: 0.5em 0;
 
-            input{
-                + .state label{
-                    color: #000;
-                    background: #fff;
-                    border: 0;
-                }
+        input {
+            + .state label {
+                color: #000;
+                background: #fff;
+                border: 0;
+            }
 
-                &:checked + .state label{
-                    color: #fff;
-                    background: $darkgray;
-                }
+            &:checked + .state label {
+                color: #fff;
+                background: $darkgray;
             }
         }
     }
 
-    &.contents-unlocked{
-        .fields{
-            > .field,
-            > .field-group{
+    &.contents-unlocked {
+        .fields {
+            > .field:not([data-property='contents-toggle']),
+            > .field-group {
                 display: none;
             }
 
-            .wysiwyg-container{
+            .wysiwyg-container {
                 display: block;
             }
         }

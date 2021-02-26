@@ -2,8 +2,6 @@ import Overlay from '../Overlay';
 import Locale from '../../Locale';
 import {isFunction} from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/overlay/Confirm.scss';
-
 /**
  * A confirm overlay to show a simple message with yes/no buttons
  */
@@ -26,7 +24,7 @@ export default class Confirm extends Overlay{
     constructor(configs){
         super(configs);
 
-        this.addClass(`confirm ${className}`);
+        this.addClass(`confirm`);
     }
 
     setupUI(){

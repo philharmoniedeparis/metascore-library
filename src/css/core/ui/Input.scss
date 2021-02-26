@@ -1,36 +1,36 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
 
-    input{
+    input {
         margin: 0;
         padding: 0.25em 0.5em;
-        border: none;
+        border: 0;
         font-family: inherit;
         color: #fff;
         background: $mediumgray;
         border-radius: 0.25em;
         box-sizing: border-box;
 
-        &:focus{
+        &:focus {
             background: $darkgray;
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, .5);
+            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
             outline: none;
         }
     }
 
-    &:focus{
+    &:focus {
         outline: none;
     }
 
-    &.readonly{
+    &.readonly {
         pointer-events: none;
         opacity: 0.75;
         cursor: default;
     }
 
-    &.disabled{
+    &.disabled {
         pointer-events: none;
         opacity: 0.25;
         cursor: default;

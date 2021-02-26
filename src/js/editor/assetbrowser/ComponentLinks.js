@@ -130,7 +130,7 @@ export default class ComponentLinks extends Dom {
      * Get a link by id
      *
      * @param {String} id The link's id
-     * @returns {Dom} The corresponding link if found, undefined otherwise
+     * @return {Dom} The corresponding link if found, undefined otherwise
      */
     getLink(id){
         return this.links[id];

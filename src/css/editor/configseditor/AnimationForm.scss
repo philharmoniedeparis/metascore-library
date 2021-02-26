@@ -1,20 +1,12 @@
-@import "../../theme";
+@import '../../theme';
 
-:local(.className){
-    .fields{
-        .field{
-            &[data-property="colors"]{
-                width: 100%;
-                justify-content: flex-start;
+:local(.class-name) {
+    .field-group.colors {
+        width: 100%;
+        justify-content: flex-start;
 
-                .input {
-                    flex: 0;
-
-                    &.color {
-                        margin-right: 0.5em;
-                    }
-                }
-            }
+        .field {
+            flex: 0;
         }
     }
 }

@@ -1,0 +1,31 @@
+@import '../../../../theme';
+
+:local(.class-name) {
+    position: absolute;
+    top: 0;
+    left: calc(var(--keyframe-time)/var(--timeline-duration) * 100%);
+    width: 0.7em;
+    height: 0.7em;
+    margin-left: -0.35em;
+    margin-top: 0.35em;
+    background: #fff;
+    transform: rotate(45deg);
+    opacity: 0.5;
+    cursor: pointer;
+
+    &.selected {
+        background: #ffd800;
+        opacity: 1;
+        z-index: 1;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible {
+        outline-offset: 0.1em;
+        outline-style: dashed;
+        outline-width: 1px;
+    }
+}

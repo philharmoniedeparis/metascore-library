@@ -1,26 +1,36 @@
 import Dom from '../core/Dom';
+import Locale from '../core/Locale';
 import Draggable from '../core/ui/Draggable';
 import Resizable from '../core/ui/Resizable';
 import {isArray, isFunction, isString} from '../core/utils/Var';
 import {uuid} from '../core/utils/String';
+import {map, round} from '../core/utils/Math';
+import {MasterClock} from '../core/media/MediaClock';
 import CuePoint from './CuePoint';
 
 /**
  * A generic component class
  *
- * @emits {propchange} Fired when a property changed
+ * @emits {propchange} Fired when a property changed.
  * @param {Component} component The component instance
  * @param {String} property The name of the property
  * @param {Mixed} value The new value of the property
  * @param {Mixed} previous The previous value of the property
  *
- * @emits {activate} Fired when the component is activated
+ * @emits {propupdate} Fired when a property is updated.
+ * This differs from  propchange in that it is fired when a value is applied to
+ * the component, and can thus fire multiple times for animated properties.
+ * @param {Component} component The component instance
+ * @param {String} property The name of the property
+ * @param {Mixed} value The current value of the property
+ *
+ * @emits {activate} Fired when the component is activated.
  * @param {Component} component The component instance
  *
- * @emits {deactivate} Fired when the component is deactivated
+ * @emits {deactivate} Fired when the component is deactivated.
  * @param {Component} component The component instance
  *
- * @emits {cuepointset} Fired when a cue point is set
+ * @emits {cuepointset} Fired when a cue point is set.
  * @param {Component} component The component instance
  * @param {CuePoint} cuepoint The cuepoint
  */
@@ -29,21 +39,118 @@ export default class Component extends Dom {
     static defaults = {
         'draggable': true,
         'resizable': true,
-        'properties': {
-            'type': {
-                'type': 'string',
-                'getter': function(){
-                    return this.constructor.getType();
-                }
-            },
-            'id': {
-                'type': 'string',
-            },
-            'editor.locked': {
-                'type': 'boolean'
-            }
-        }
+        'name': 'untitled',
+        'position': [0, 0],
+        'dimension': [50,50],
+        'opacity': 1,
+        'scale': [1,1],
+        'translate': [0,0]
     };
+
+    /**
+     * Get all properties
+     *
+     * @return {Object[]} The properties
+     */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = {
+                'type': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.type.label', 'Type'),
+                    'getter': function(){
+                        return this.constructor.getType();
+                    }
+                },
+                'id': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.id.label', 'ID')
+                },
+                'name': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.name.label', 'Name')
+                },
+                'hidden': {
+                    'type': 'boolean',
+                    'label': Locale.t('Component.properties.hidden.label', 'Hidden')
+                },
+                'position': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.position.label', 'Position')
+                },
+                'dimension': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.dimension.label', 'Dimension'),
+                    'getter': function () {
+                        // Get value from CSS to honor CSS min and max values.
+                        return [
+                            parseInt(this.css('width'), 10),
+                            parseInt(this.css('height'), 10),
+                        ];
+                    }
+                },
+                'background-color': {
+                    'type': 'color',
+                    'label': Locale.t('Component.properties.background-color.label', 'Background color')
+                },
+                'background-image': {
+                    'type': 'image',
+                    'label': Locale.t('Component.properties.background-image.label', 'Background image')
+                },
+                'border-width': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.border-width.label', 'Border width')
+                },
+                'border-color': {
+                    'type': 'color',
+                    'label': Locale.t('Component.properties.border-color.label', 'Border color')
+                },
+                'border-radius': {
+                    'type': 'string',
+                    'label': Locale.t('Component.properties.border-radius.label', 'Border radius')
+                },
+                'start-time': {
+                    'type': 'time',
+                    'label': Locale.t('Component.properties.start-time.label', 'Start time'),
+                    'sanitize': function (value) {
+                        return value ? round(value, 2) : value;
+                    }
+                },
+                'end-time': {
+                    'type': 'time',
+                    'label': Locale.t('Component.properties.end-time.label', 'End time'),
+                    'sanitize': function (value) {
+                        return value ? round(value, 2) : value;
+                    }
+                },
+                'opacity': {
+                    'type': 'number',
+                    'label': Locale.t('Component.properties.opacity.label', 'Opacity'),
+                    'animatable': true
+                },
+                'scale': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.scale.label', 'Scale'),
+                    'animatable': true
+                },
+                'translate': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.translate.label', 'Translate'),
+                    'animatable': true
+                },
+                'animated': {
+                    'type': 'array',
+                    'label': Locale.t('Component.properties.animated.label', 'Animated')
+                },
+                'editor.locked': {
+                    'type': 'boolean',
+                    'label': Locale.t('Component.properties.editor-locked.label', 'Locked')
+                }
+            };
+        }
+
+        return this.properties;
+    }
 
     /**
     * Get the component's type
@@ -113,27 +220,23 @@ export default class Component extends Dom {
         // call parent constructor
         super('<div/>', {'class': 'metaScore-component'});
 
-        // Get a clone of default configs.
-        const defaults = {...this.constructor.defaults};
-
-        // Add default property values.
-        Object.entries(defaults.properties).forEach(([name, property]) => {
-            if('default' in property){
-                defaults[name] = property.default;
-            }
-        });
-
         /**
          * The configuration values
          * @type {Object}
          */
-        this.configs = Object.assign({'id': `component-${uuid(10)}`}, defaults, configs);
+        this.configs = Object.assign({'id': `component-${uuid(10)}`}, this.constructor.defaults, configs);
 
         /**
          * The property values store
-         * @type {Object}
+         * @type {Map<String, Mixed}
          */
-        this.property_values = {};
+        this.property_values = new Map();
+
+        /**
+         * The animatable properties cuepoints
+         * @type {Map<String, CuePoint}
+         */
+        this.property_cuepoints = new Map();
 
         // keep a reference to this class instance in the DOM node
         this.get(0)._metaScore = this;
@@ -212,7 +315,7 @@ export default class Component extends Dom {
      * @return {Mixed} The property
      */
     getProperty(name){
-        return this.getProperties()[name];
+        return this.constructor.getProperties()[name];
     }
 
     /**
@@ -221,7 +324,7 @@ export default class Component extends Dom {
      * @return {Object[]} The properties
      */
     getProperties(){
-        return this.configs.properties;
+        return this.constructor.getProperties();
     }
 
     /**
@@ -241,8 +344,8 @@ export default class Component extends Dom {
                 }
 
                 // Return the stored value
-                if(name in this.property_values){
-                    return this.property_values[name];
+                if(this.property_values.has(name)){
+                    return this.property_values.get(name);
                 }
             }
         }
@@ -275,6 +378,59 @@ export default class Component extends Dom {
     }
 
     /**
+     * Get the value of an animated property at a specific time.
+     *
+     * @param {String} name The name of the property
+     * @param {number} [time] The time in seconds, defaults to the current media time
+     * @return {Mixed} The value of the property
+     */
+    getAnimatedPropertyValueAtTime(name, time){
+        if (typeof time === 'undefined') {
+            time = MasterClock.getTime();
+        }
+
+        const values = this.getPropertyValue(name).sort((a, b) => {
+            return a[0] - b[0];
+        });
+
+        // Find the index of the value with the smallest time
+        // greater than the desired time.
+        const index = values.findIndex((value) => {
+            return value[0] >= time;
+        });
+
+        if (index === -1) {
+            // No value found after desired time,
+            // return the last value.
+            return values[values.length-1][1];
+        }
+
+        if (index === 0) {
+            // No value found before desired time,
+            // return first value.
+            return values[index][1];
+        }
+
+        if (time === values[index][0]) {
+            // Desired time matches a value's time,
+            // return that value.
+            return values[index][1];
+        }
+
+        // Claculate the intermediate.
+        const start = values[index-1];
+        const end = values[index];
+
+        if (isArray(start[1])) {
+            return start[1].map((v, index) => {
+                return map(time, start[0], end[0], start[1][index], end[1][index]);
+            });
+        }
+
+        return map(time, start[0], end[0], start[1], end[1]);
+    }
+
+    /**
      * Set the value of a given property
      *
      * @param {String} name The name of the property
@@ -282,28 +438,46 @@ export default class Component extends Dom {
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @return {this}
      */
-    setPropertyValue(name, value, supressEvent){
+    setPropertyValue(name, value, supressEvent = false){
         const prop = this.getProperty(name);
         if(prop){
             const previous_value = this.getPropertyValue(name);
             let new_value = value;
 
+            const animated = this.isPropertyAnimated(name);
+            const animatable = animated || this.isPropertyAnimatable(name);
+
+            if (animated) {
+                new_value.sort((a, b) => a[0] - b[0]);
+            }
+
             if(('sanitize' in prop) && isFunction(prop.sanitize)){
-                new_value = prop.sanitize.call(this, new_value);
+                if (animated) {
+                    // Sanitize each value.
+                    new_value.forEach((v) => {
+                        v[1] = prop.sanitize.call(this, v[1]);
+                    });
+                }
+                else {
+                    new_value = prop.sanitize.call(this, new_value);
+                }
             }
 
             if(previous_value !== new_value){
                 if(new_value === null){
-                    delete this.property_values[name];
+                    this.property_values.delete(name);
                 }
                 else{
-                    this.property_values[name] = new_value;
+                    this.property_values.set(name, new_value);
                 }
 
+                if (animatable){
+                    this.removeAnimatedPropertyCuepoint(name);
+                }
                 this.updatePropertyValue(name, new_value);
 
                 if(supressEvent !== true){
-                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': new_value, 'previous': previous_value});
+                    this.triggerEvent('propchange', {'component': this, 'property': name, 'value': new_value, 'previous': previous_value}, false);
                 }
             }
         }
@@ -314,58 +488,108 @@ export default class Component extends Dom {
     /**
      * Set property values
      *
-     * @param {Object} properties The list of properties to set as name/value pairs
+     * @param {Object} values The list of properties to set as name/value pairs
      * @param {Boolean} [supressEvent=false] Whether to supress the propchange event
      * @return {this}
      */
-    setPropertyValues(properties, supressEvent){
-        Object.entries(properties).forEach(([key, value]) => {
-            this.setPropertyValue(key, value, supressEvent);
+    setPropertyValues(values, supressEvent){
+        // Sort properties;
+        // the animatable properties should be processed latest.
+        const names = Object.keys(values).sort((a, b) => {
+            if (this.isPropertyAnimatable(a)) return 1;
+            if (this.isPropertyAnimatable(b)) return -1;
+            return 0;
+        });
+
+        names.forEach((name) => {
+            this.setPropertyValue(name, values[name], supressEvent);
         });
 
         return this;
     }
 
     /**
+     * Check if a property is animatable.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {Boolean} Whether the property is animatable.
+     */
+    isPropertyAnimatable(name){
+        const prop = this.getProperty(name);
+        return prop && prop.animatable;
+    }
+
+    /**
+     * Check if a property is animated.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @param {Mixed} value The value to set
+     * @return {Boolean} Whether the property is animated.
+     */
+    isPropertyAnimated(name){
+        if (!this.isPropertyAnimatable(name)) {
+            return false;
+        }
+
+        const animated = this.getPropertyValue('animated');
+        return isArray(animated) && animated.includes(name);
+    }
+
+    /**
      * Update a property value
      *
-     * @private
-     * @param {String} property The name of the property
+     * @protected
+     * @param {String} name The name of the property
      * @param {Mixed} value The value to set
+     * @param {Boolean} skip_animated_check Whether to skip checking if this is an animated property
      * @return {this}
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        if((skipAnimatedCheck !== true) && this.isPropertyAnimated(name)) {
+            return this.updateAnimatedPropertyValue(name);
+        }
+
+        switch(name){
             case 'id':
                 this.attr('id', value);
                 break;
 
             case 'name':
-                this.data(property, value);
+                this.data(name, value);
                 break;
 
             case 'hidden':
-                this.toggleClass(property, value);
+                this.toggleClass(name, value);
                 break;
 
-            case 'x':
-                this.css('left', `${value}px`);
+            case 'position':
+                this.css('left', `${value[0]}px`);
+                this.css('top', `${value[1]}px`);
                 break;
 
-            case 'y':
-                this.css('top', `${value}px`);
+            case 'dimension':
+                this.css('width', `${value[0]}px`);
+                this.css('height', `${value[1]}px`);
                 break;
 
-            case 'width':
-            case 'height':
-            case 'border-width':
-                this.css(property, `${value}px`);
+            case 'scale':
+                this.updateCSSTransform(name, `${value[0]},${value[1]}`);
+                break;
+
+            case 'translate':
+                this.updateCSSTransform(name, `${value[0]}px,${value[1]}px`);
                 break;
 
             case 'background-color':
             case 'border-color':
             case 'border-radius':
-                this.css(property, value);
+                this.css(name, value);
+                break;
+
+            case 'border-width':
+                this.css(name, `${value}px`);
                 break;
 
             case 'background-image':
@@ -384,6 +608,85 @@ export default class Component extends Dom {
                 this.toggleClass('editor-locked', value);
                 break;
         }
+
+        this.triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
+
+        return this;
+    }
+
+    /**
+     * Update an animated property value
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @param {Array} values The values to set
+     * @return {this}
+     */
+    updateAnimatedPropertyValue(name) {
+        const values = this.getPropertyValue(name);
+
+        // The values are empty, or only one value is available.
+        if(values.length <= 1){
+            const value = values.length === 0 ? null : values[0][1];
+            return this
+                .removeAnimatedPropertyCuepoint(name)
+                .updatePropertyValue(name, value, true)
+                .triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
+        }
+
+        this.setAnimatedPropertyCuepoint(name);
+
+        return this;
+    }
+
+    /**
+     * Add or update an animated propoerty's cuepoint.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {this}
+     */
+    setAnimatedPropertyCuepoint(name) {
+        if(this.property_cuepoints.has(name)) {
+            this.property_cuepoints.get(name).update();
+        }
+        else{
+            // There's no need for inTime and outTime
+            // as the cuepoint is (de)activated
+            // with the (de)activation of the component.
+            const cuepoint = new CuePoint()
+                .addListener('update', () => {
+                    const value = this.getAnimatedPropertyValueAtTime(name);
+
+                    this
+                        .updatePropertyValue(name, value, true)
+                        .triggerEvent('propupdate', {'component': this, 'property': name, 'value': value}, false);
+                });
+
+            if(this.isActive()){
+                cuepoint.activate();
+            }
+
+            this.property_cuepoints.set(name, cuepoint);
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove an animated propoerty's cuepoint.
+     *
+     * @protected
+     * @param {String} name The name of the property
+     * @return {this}
+     */
+    removeAnimatedPropertyCuepoint(name) {
+        if(this.property_cuepoints.has(name)) {
+            this.property_cuepoints.get(name).deactivate();
+            this.property_cuepoints.delete(name);
+        }
+
+        return this;
     }
 
     /**
@@ -491,7 +794,7 @@ export default class Component extends Dom {
              * The draggable behavior
              * @type {Draggable}
              */
-            this._draggable = new Draggable(this.getDraggableConfigs());
+            this._draggable = new Draggable(this, this.getDraggableConfigs());
         }
         else if(!draggable && this._draggable){
             this._draggable.destroy();
@@ -503,8 +806,6 @@ export default class Component extends Dom {
 
     getDraggableConfigs(){
         return {
-            'target': this,
-            'handle': this,
             'autoUpdate': false
         };
     }
@@ -538,8 +839,7 @@ export default class Component extends Dom {
              * The resizable behavior
              * @type {Resizable}
              */
-            this._resizable = new Resizable({
-                'target': this,
+            this._resizable = new Resizable(this, {
                 'autoUpdate': false
             });
         }
@@ -625,7 +925,9 @@ export default class Component extends Dom {
      * @abstract
      * @protected
      */
-    onCuePointUpdate(){}
+    onCuePointUpdate(){
+        // This is an abstract callback.
+    }
 
     /**
      * The cuepoint stop event handler
@@ -661,6 +963,10 @@ export default class Component extends Dom {
         this.active = true;
         this.addClass('active');
 
+        this.property_cuepoints.forEach((cuepoint) => {
+            cuepoint.activate();
+        });
+
         this.getChildren().forEach((child) => {
             child.activate();
         });
@@ -694,6 +1000,10 @@ export default class Component extends Dom {
         delete this.active;
         this.removeClass('active');
 
+        this.property_cuepoints.forEach((cuepoint) => {
+            cuepoint.deactivate();
+        });
+
         this.getChildren().forEach((child) => {
             child.deactivate();
         });
@@ -715,6 +1025,40 @@ export default class Component extends Dom {
 
         const cuepoint = this.getCuePoint();
         return cuepoint && cuepoint.isActive();
+    }
+
+    /**
+     * Update CSS transform from a single property
+     *
+     * @param {String} property The CSS transform property.
+     * @param {Mixed} value The value to set.
+     * @return {this}
+     */
+    updateCSSTransform(property, value) {
+        if (!('_css_transforms' in this)) {
+            this._css_transforms = new Map();
+        }
+
+        if (value === null) {
+            this._css_transforms.delete(property);
+        }
+        else {
+            this._css_transforms.set(property, value);
+        }
+
+        if (this._css_transforms.size === 0) {
+            this.css('transform', null);
+        }
+        else {
+            const css = [];
+            this._css_transforms.forEach((value, property) => {
+                css.push(`${property}(${value})`);
+            });
+            this.css('transform', css.join(' '));
+        }
+
+
+        return this;
     }
 
 }

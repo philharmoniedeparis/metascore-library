@@ -1,5 +1,5 @@
 import EventEmitter from '../core/EventEmitter';
-import {MasterClock} from '../core/media/Clock';
+import {MasterClock} from '../core/media/MediaClock';
 import {uuid} from '../core/utils/String';
 
 /**
@@ -118,12 +118,10 @@ export default class CuePoint extends EventEmitter{
      */
     activate() {
         if(!this.isActive()){
-            if((this.configs.inTime !== null) || (this.configs.outTime !== null)){
-                this.active = true;
+            this.active = true;
 
-                MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
-                this.update();
-            }
+            MasterClock.addListener('timeupdate', this.onMediaClockTimeUpdate);
+            this.update();
         }
 
         return this;

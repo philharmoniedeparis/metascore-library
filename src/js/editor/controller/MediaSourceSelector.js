@@ -1,20 +1,24 @@
 import Overlay from '../../core/ui/Overlay';
 import LoadMask from '../../core/ui/overlay/LoadMask';
 import Confirm from '../../core/ui/overlay/Confirm';
-import {MasterClock} from '../../core/media/Clock';
+import {MasterClock} from '../../core/media/MediaClock';
 import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import Field from '../Field';
 import FileInput from '../../core/ui/input/FileInput';
-import TextInput from '../../core/ui/input/TextInput';
+import UrlInput from '../../core/ui/input/UrlInput';
 import TimeInput from '../../core/ui/input/TimeInput';
 import {getFileDuration, getMimeTypeFromURL} from '../../core/utils/Media';
 import {formatFileSize} from '../../core/utils/Number';
+import { History } from '../UndoRedo';
 
 import {className} from '../../../css/editor/controller/MediaSourceSelector.scss';
 
 /**
  * An overlay displaying a form to select a media file
+ *
+ * @emits {sourceset} Fired when the player's source is set
+ * @param {Object} source The new source
  */
 export default class MediaSourceSelector extends Overlay {
 
@@ -56,9 +60,7 @@ export default class MediaSourceSelector extends Overlay {
     }
 
     /**
-     * Setup the overlay's UI
-     *
-     * @private
+     * @inheritdoc
      */
     setupUI() {
         // call parent method
@@ -95,7 +97,7 @@ export default class MediaSourceSelector extends Overlay {
             .appendTo(separator);
 
         this.fields.url = new Field(
-            new TextInput({
+            new UrlInput({
                 'name': 'url',
             }),
             {
@@ -158,8 +160,9 @@ export default class MediaSourceSelector extends Overlay {
             };
         }
         else if(url){
+            const pathname = new URL(url).pathname;
             source = {
-                'name': url,
+                'name': pathname.split('/').pop(),
                 'url': url,
                 'mime': getMimeTypeFromURL(url),
                 'source': 'url'
@@ -239,14 +242,14 @@ export default class MediaSourceSelector extends Overlay {
                 new Confirm({
                     'text': msg,
                     'onConfirm': () => {
-                        this.setPlayerSource(source);
+                        this.setSource(source);
                         this.hide();
                     },
                     'parent': this
                 });
             }
             else{
-                this.setPlayerSource(source);
+                this.setSource(source);
                 this.hide();
             }
         });
@@ -258,13 +261,13 @@ export default class MediaSourceSelector extends Overlay {
      * @private
      * @param {Object} source The source
      */
-    setPlayerSource(source){
+    setSource(source){
         const player = this.editor.getPlayer();
         const previous_source = player.getRenderer().getSource();
 
         player.setSource(source);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 player.setSource(previous_source);
             },
@@ -273,6 +276,6 @@ export default class MediaSourceSelector extends Overlay {
             }
         });
 
-        this.editor.setDirty('media');
+        this.triggerEvent('sourceset', {'source': source});
     }
 }

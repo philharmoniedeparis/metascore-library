@@ -1,73 +1,80 @@
-@import "../theme";
+@import '../theme';
 
 $resize-handle-size: 0.5em;
 
-:local(.className){
+:local(.class-name) {
     position: relative;
     overflow: hidden;
     background: $lightgray;
-    color: #FFF;
+    color: #fff;
 
-    > .contents{
+    > .contents {
         height: 100%;
     }
 
-    &.resize-top{
+    &.resize-top {
         padding-top: $resize-handle-size;
     }
-    &.resize-right{
+
+    &.resize-right {
         padding-right: $resize-handle-size;
     }
-    &.resize-bottom{
+
+    &.resize-bottom {
         padding-bottom: $resize-handle-size;
     }
-    &.resize-left{
+
+    &.resize-left {
         padding-left: $resize-handle-size;
     }
 
-    &.collapsed{
-        > .contents{
+    &.collapsed {
+        > .contents {
             display: none;
         }
 
-        &.vertical{
+        &.vertical {
             width: auto !important;
             min-width: 0 !important;
             max-width: auto !important;
         }
-        &.horizontal{
+
+        &.horizontal {
             height: auto !important;
             min-height: 0 !important;
             max-height: auto !important;
         }
     }
 
-    &.resizable{
-        > .resize-handle{
+    &.resizable {
+        > .resize-handle {
             position: absolute;
             background: $darkgray;
             flex: 0 0 $resize-handle-size;
             margin: 0;
 
-            &[data-direction="top"]{
+            &[data-direction='top'] {
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: $resize-handle-size;
             }
-            &[data-direction="bottom"]{
+
+            &[data-direction='bottom'] {
                 bottom: 0;
                 left: 0;
                 width: 100%;
                 height: $resize-handle-size;
             }
-            &[data-direction="left"]{
+
+            &[data-direction='left'] {
                 top: 0;
                 left: 0;
                 width: $resize-handle-size;
                 height: 100%;
             }
-            &[data-direction="right"]{
+
+            &[data-direction='right'] {
                 top: 0;
                 right: 0;
                 width: $resize-handle-size;

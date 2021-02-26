@@ -3,7 +3,7 @@ import Dom from '../../core/Dom';
 import Locale from '../../core/Locale';
 import CheckboxInput from '../../core/ui/input/CheckboxInput';
 
-import {className} from '../../../css/editor/configseditor/ContentForm.scss';
+import { className } from '../../../css/editor/configseditor/ContentForm.scss';
 
 /**
  * A content component form class
@@ -12,18 +12,21 @@ export default class ContentForm extends ElementForm {
 
     static defaults = Object.assign({}, super.defaults, {
         'title': Locale.t('editor.configseditor.ContentForm.title.single', 'Attributes of content'),
-        'title_plural': Locale.t('editor.configseditor.ContentForm.title.plural', 'Attributes of @count contents'),
-        'fields': [
-            'name',
-            'hidden',
-            'contents',
-            'background',
-            'border',
-            'opacity',
-            'time',
-            'position',
-            'dimension'
-        ]
+        'title_plural': Locale.t('editor.configseditor.ContentForm.title.plural', 'Attributes of @count contents')
+    });
+
+    static field_definitions = Object.assign({}, super.field_definitions, {
+        'contents-toggle': {
+            'input': {
+                'type': CheckboxInput,
+                'configs': {
+                    'label': Locale.t('editor.configseditor.ContentForm.contents-toggle.label', 'Edit the content'),
+                    'attributes': {
+                        'class': 'toggle-button',
+                    }
+                }
+            }
+        },
     });
 
     /**
@@ -32,6 +35,8 @@ export default class ContentForm extends ElementForm {
     constructor(...args) {
         // call parent constructor
         super(...args);
+
+        this.addClass(className);
 
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
@@ -42,23 +47,30 @@ export default class ContentForm extends ElementForm {
 
         this.editor.addListener('previewmode', this.onEditorPreviewMode.bind(this));
 
-        this.addClass(`content-form ${className}`);
+        this.wysiwyg_container = new Dom('<div/>', { 'class': 'wysiwyg-container' })
+            .appendTo(this.fields_wrapper);
+
+        new Dom('<div/>', { 'id': 'wysiwyg-top' })
+            .appendTo(this.wysiwyg_container);
+
+        new Dom('<div/>', { 'id': 'wysiwyg-bottom' })
+            .appendTo(this.wysiwyg_container);
     }
 
     /**
      * @inheritdoc
      */
-    setComponents(components){
+    setComponents(components) {
         super.setComponents(components);
 
-        if(this.components.length === 1){
-            this.contents_toggle.show();
+        if (this.components.length === 1) {
+            this.getField('contents-toggle').show();
 
             const component = this.getMasterComponent();
             new Dom(component.get(0)).addListener('dblclick', this.onComponentDblClick);
         }
-        else{
-            this.contents_toggle.hide();
+        else {
+            this.getField('contents-toggle').hide();
         }
 
         return this;
@@ -67,44 +79,13 @@ export default class ContentForm extends ElementForm {
     /**
      * @inheritdoc
      */
-    unsetComponents(){
-        this.contents_toggle.setValue(false);
+    unsetComponents() {
+        this.getField('contents-toggle').getInput().setValue(false);
 
         const component = this.getMasterComponent();
         new Dom(component.get(0)).removeListener('dblclick', this.onComponentDblClick);
 
         super.unsetComponents();
-
-        return this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    addField(name){
-        switch(name){
-            case 'contents':
-                this.contents_toggle = new CheckboxInput({
-                        'label': Locale.t('editor.configseditor.ContentForm.contents-toggle.label', 'Edit the content')
-                    })
-                    .addClass('toggle-button')
-                    .addClass('contents-toggle')
-                    .addListener('valuechange', this.onContentsToggleValueChange.bind(this))
-                    .appendTo(this.fields_wrapper);
-
-                this.wysiwyg_container = new Dom('<div/>', {'class': 'wysiwyg-container'})
-                    .appendTo(this.fields_wrapper);
-
-                new Dom('<div/>', {'id': 'wysiwyg-top'})
-                    .appendTo(this.wysiwyg_container);
-
-                new Dom('<div/>', {'id': 'wysiwyg-bottom'})
-                    .appendTo(this.wysiwyg_container);
-                break;
-
-            default:
-                super.addField(name);
-        }
 
         return this;
     }
@@ -116,24 +97,29 @@ export default class ContentForm extends ElementForm {
      * @param {Event} evt The event object
      */
     onEditorPreviewMode(evt) {
-        if(evt.detail.preview){
+        if (evt.detail.preview) {
             this.exitContentsEditMode();
         }
     }
 
     /**
-     * The content toggle valuechange event handler
-     *
-     * @private
-     * @param {Event} evt The event object
+     * @inheritdoc
      */
-    onContentsToggleValueChange(evt){
-        if(evt.detail.value){
-            this.enterContentsEditMode();
+    onFieldValueChange(evt) {
+        const name = evt.detail.field.data('property');
+        const value = evt.detail.value;
+
+        if (name === 'contents-toggle') {
+            if (value) {
+                this.enterContentsEditMode();
+            }
+            else {
+                this.exitContentsEditMode();
+            }
+            return;
         }
-        else{
-            this.exitContentsEditMode();
-        }
+
+        super.onFieldValueChange(evt);
     }
 
     /**
@@ -141,9 +127,9 @@ export default class ContentForm extends ElementForm {
      *
      * @private
      */
-    onComponentDblClick(){
+    onComponentDblClick() {
         if (!this.editor.inPreviewMode()) {
-            this.contents_toggle.setValue(true);
+            this.getField('contents-toggle').getInput().setValue(true);
         }
     }
 
@@ -153,7 +139,7 @@ export default class ContentForm extends ElementForm {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentContentsClick(evt){
+    onComponentContentsClick(evt) {
         evt.stopPropagation();
     }
 
@@ -163,9 +149,9 @@ export default class ContentForm extends ElementForm {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentContentsInput(evt){
+    onComponentContentsInput(evt) {
         const component = Dom.closest(evt.target, '.metaScore-component.Content')._metaScore;
-        this.triggerEvent('contentschange', {'component': component});
+        this.triggerEvent('contentschange', { 'component': component });
     }
 
     /**
@@ -174,7 +160,7 @@ export default class ContentForm extends ElementForm {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentDragOver(evt){
+    onComponentDragOver(evt) {
         evt.currentTarget.focus();
     }
 
@@ -184,7 +170,7 @@ export default class ContentForm extends ElementForm {
      * @private
      * @param {Event} evt The event object
      */
-    onComponentContentsKey(evt){
+    onComponentContentsKey(evt) {
         evt.stopPropagation();
     }
 
@@ -194,19 +180,19 @@ export default class ContentForm extends ElementForm {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    enterContentsEditMode(supressEvent){
-        if(!this.hasClass('contents-unlocked')){
+    enterContentsEditMode(supressEvent) {
+        if (!this.hasClass('contents-unlocked')) {
             const component = this.getMasterComponent();
 
-            this.contents_toggle.setValue(true, true);
+            this.getField('contents-toggle').getInput().setValue(true, true);
 
             const draggable = component.getDraggable();
-            if(draggable){
+            if (draggable) {
                 draggable.disable();
             }
 
             const resizable = component.getResizable();
-            if(resizable){
+            if (resizable) {
                 resizable.disable();
             }
 
@@ -225,8 +211,8 @@ export default class ContentForm extends ElementForm {
 
             this.addClass('contents-unlocked');
 
-            if(supressEvent !== true){
-                this.triggerEvent('contentsunlock', {'component': component});
+            if (supressEvent !== true) {
+                this.triggerEvent('contentsunlock', { 'component': component });
             }
         }
 
@@ -239,19 +225,19 @@ export default class ContentForm extends ElementForm {
      * @param {Boolean} supressEvent Whether to prevent the custom event from firing
      * @return {this}
      */
-    exitContentsEditMode(supressEvent){
-        if(this.hasClass('contents-unlocked')){
+    exitContentsEditMode(supressEvent) {
+        if (this.hasClass('contents-unlocked')) {
             const component = this.getMasterComponent();
 
-            this.contents_toggle.setValue(false, true);
+            this.getField('contents-toggle').getInput().setValue(false, true);
 
             const draggable = component.getDraggable();
-            if(draggable){
+            if (draggable) {
                 draggable.enable();
             }
 
             const resizable = component.getResizable();
-            if(resizable){
+            if (resizable) {
                 resizable.enable();
             }
 
@@ -270,8 +256,8 @@ export default class ContentForm extends ElementForm {
 
             this.removeClass('contents-unlocked');
 
-            if(supressEvent !== true){
-                this.triggerEvent('contentslock', {'component': component});
+            if (supressEvent !== true) {
+                this.triggerEvent('contentslock', { 'component': component });
             }
         }
 

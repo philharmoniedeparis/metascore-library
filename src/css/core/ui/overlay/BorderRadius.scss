@@ -1,10 +1,10 @@
-@import "../../../theme";
+@import '../../../theme';
 
-:local(.className){
-    > .inner{
-        > .body{
-            > .contents{
-                .preview{
+:local(.class-name) {
+    > .inner {
+        > .body {
+            > .contents {
+                .preview {
                     position: relative;
                     width: 14em;
                     height: 12em;
@@ -13,40 +13,62 @@
                     border: 2px solid #fff;
                 }
 
-                .input{
+                .input {
                     position: absolute;
+                    margin: 0;
 
-                    input{
-                        width: 3em;
-                    }
+                    &.combined {
+                        input {
+                            width: 3em;
+                        }
 
-                    &.tlw,
-                    &.trw{
-                        bottom: 100%;
-                        margin-bottom: 1em;
-                    }
-                    &.tlh,
-                    &.blh{
-                        right: 100%;
-                        margin-right: 1em;
-                    }
-                    &.trw,
-                    &.brw{
-                        right: 0;
-                    }
-                    &.trh,
-                    &.brh{
-                        left: 100%;
-                        margin-left: 1em;
-                    }
-                    &.brw,
-                    &.blw{
-                        top: 100%;
-                        margin-top: 1em;
-                    }
-                    &.brh,
-                    &.blh{
-                        bottom: 0;
+                        &[data-property^='top'] {
+                            bottom: 100%;
+
+                            .input:first-child {
+                                bottom: 1em;
+                            }
+
+                            .input:last-child {
+                                top: 0;
+                            }
+                        }
+
+                        &[data-property^='bottom'] {
+                            top: 100%;
+
+                            .input:first-child {
+                                top: 1em;
+                            }
+
+                            .input:last-child {
+                                bottom: 0;
+                            }
+                        }
+
+                        &[data-property$='left'] {
+                            right: 100%;
+
+                            .input:first-child {
+                                left: 0;
+                            }
+
+                            .input:last-child {
+                                left: -4em;
+                            }
+                        }
+
+                        &[data-property$='right'] {
+                            left: 100%;
+
+                            .input:first-child {
+                                right: 0;
+                            }
+
+                            .input:last-child {
+                                right: -4em;
+                            }
+                        }
                     }
                 }
             }

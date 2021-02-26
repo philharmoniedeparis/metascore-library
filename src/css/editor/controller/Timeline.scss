@@ -1,63 +1,44 @@
-@import "../../theme";
+@import '../../theme';
+@import '../variables';
 
-:local(.className){
+:local(.class-name) {
+    position: relative;
     display: flex;
     flex-direction: row;
-    background: $mediumgray;
+    background: $darkgray;
+    z-index: 0;
 
     .tracks-container {
+        display: grid;
         position: relative;
+        grid-template-columns: $controller-left-width auto;
+        flex: 1;
 
-        .tracks-container-outer{
+        .playhead {
             position: absolute;
+            grid-area: 1/2;
             width: 100%;
-            min-height: 100%;
-            overflow: hidden;
-
-            --tracks-container-width: 100%;
-
-            .snap-guide{
-                margin-top: 0;
-            }
-
-            .tracks-container-inner{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                padding-bottom: 2px;
-            }
-        }
-
-        .playhead{
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 3;
+            height: 100%;
+            box-sizing: border-box;
             pointer-events: none;
-        }
-    }
+            z-index: 10;
 
-    .handles-container{
-        background: $mediumgray;
-        padding-bottom: 2px;
-
-        > .handle{
-            border-right: 2px solid $darkgray;
+            canvas {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
         }
     }
 }
 
-:local(.handleDragGhostClassName){
+:local(.handle-drag-ghost-class-name) {
     position: absolute;
     top: 0;
     right: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: $controller-left-width auto;
     background: $mediumgray;
     z-index: 99;
-
-    > .inner{
-        > .togglers{
-            display: none;
-        }
-    }
 }

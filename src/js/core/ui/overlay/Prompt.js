@@ -3,8 +3,6 @@ import Locale from '../../Locale'
 import TextInput from '../input/TextInput';
 import {isFunction} from '../../utils/Var';
 
-import {className} from '../../../../css/core/ui/overlay/Prompt.scss';
-
 /**
  * An overlay to prompt use for input
  */
@@ -25,7 +23,7 @@ export default class Prompt extends Confirm{
     constructor(configs){
         super(configs);
 
-        this.addClass(`prompt ${className}`);
+        this.addClass(`prompt`);
     }
 
     /**

@@ -12,6 +12,7 @@ import SpectrogramForm from './guideassets/SpectrogramForm';
 import AudioWaveformForm from './guideassets/AudioWaveformForm';
 import { isValidMimeType } from '../../core/utils/Media';
 import { escapeHTML } from '../../core/utils/String';
+import { History } from '../UndoRedo';
 import Lottie from 'lottie-web';
 
 import import_icon from '../../../img/editor/assetbrowser/guideassets/import.svg?svg-sprite';
@@ -282,7 +283,7 @@ export default class GuideAssets extends Dom {
 
         this.addAssets(assets);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 assets.forEach((asset) => {
                     this.removeAsset(asset.id);
@@ -292,8 +293,6 @@ export default class GuideAssets extends Dom {
                 this.addAssets(assets);
             }
         });
-
-        this.editor.setDirty('assets');
 
         loadmask.hide();
     }
@@ -359,7 +358,7 @@ export default class GuideAssets extends Dom {
      *
      * @private
      * @param {Object} asset The asset.
-     * @returns {this}
+     * @return {this}
      */
     createAssetItem(asset) {
         const name = escapeHTML(asset.name);
@@ -458,7 +457,7 @@ export default class GuideAssets extends Dom {
      * Get an asset by id.
      *
      * @param {string} id The asset's identifier.
-     * @returns {Object|undefined} The asset.
+     * @return {Object|undefined} The asset.
      */
     getAsset(id) {
         return this.asset_items[id].asset;
@@ -467,7 +466,7 @@ export default class GuideAssets extends Dom {
     /**
      * Get the lists of available assets.
      *
-     * @returns {Array} The assets.
+     * @return {Array} The assets.
      */
     getAssets() {
         return Object.values(this.asset_items).map((item) => {
@@ -645,7 +644,7 @@ export default class GuideAssets extends Dom {
 
         this.addAsset(asset);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 this.removeAsset(asset.id);
             },
@@ -653,8 +652,6 @@ export default class GuideAssets extends Dom {
                 this.addAsset(asset);
             }
         });
-
-        this.editor.setDirty('assets');
 
         form.hide();
     }
@@ -671,7 +668,7 @@ export default class GuideAssets extends Dom {
 
         this.addAsset(asset);
 
-        this.editor.getHistory().add({
+        History.add({
             'undo': () => {
                 this.removeAsset(asset.id);
             },
@@ -679,8 +676,6 @@ export default class GuideAssets extends Dom {
                 this.addAsset(asset);
             }
         });
-
-        this.editor.setDirty('assets');
 
         form.hide();
     }

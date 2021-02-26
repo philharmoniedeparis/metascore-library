@@ -1,26 +1,26 @@
-@import "../theme";
+@import '../theme';
 
-:local(.className){
+:local(.class-name) {
     display: flex;
     height: 100%;
     flex-direction: column;
     flex-wrap: nowrap;
     background: $lightgray;
 
-    .top{
+    .top {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         flex: 0 0 auto;
 
-        .tabs{
+        .tabs {
             display: flex;
             width: 100%;
             flex-direction: row;
             flex-wrap: nowrap;
             flex: 0 0 auto;
 
-            button{
+            button {
                 flex: 1 1 auto;
                 padding: 0.25em 0.5em;
                 color: #fff;
@@ -30,7 +30,7 @@
                 overflow: hidden;
                 opacity: 1;
 
-                .label{
+                .label {
                     width: 100%;
                     white-space: nowrap;
                     overflow: hidden;
@@ -38,16 +38,16 @@
                     user-select: none;
                 }
 
-                &[data-for="component-links"],
-                &[data-for="guide-assets"]{
+                &[data-for='component-links'],
+                &[data-for='guide-assets'] {
                     border-bottom: 2px solid $mediumgray;
                 }
 
-                &:hover{
+                &:hover {
                     opacity: 0.75;
                 }
 
-                &.active{
+                &.active {
                     pointer-events: none;
                     background: $lightgray;
                     outline: none;
@@ -55,16 +55,16 @@
             }
         }
 
-        .toolbar{
+        .toolbar {
             flex: 1 1 auto;
         }
     }
 
-    .shared-assets{
+    .shared-assets {
         flex: 1 1 auto;
     }
 
-    .guide-assets{
+    .guide-assets {
         flex: 1 1 auto;
     }
 }

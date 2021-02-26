@@ -1,7 +1,7 @@
 import Component from '../Component';
 import Element from './Element';
 import Locale from '../../core/Locale';
-import {round} from '../../core/utils/Math';
+import {pick} from '../../core/utils/Object';
 
 import CursorElement from './element/Cursor';
 import ContentElement from './element/Content';
@@ -32,40 +32,41 @@ export default class Page extends Component {
 
     static defaults = Object.assign({}, super.defaults, {
         'draggable': false,
-        'resizable': false,
-        'properties': Object.assign({}, super.defaults.properties, {
-            'background-color': {
-                'type': 'color'
-            },
-            'background-image': {
-                'type': 'image'
-            },
-            'start-time': {
-                'type': 'time',
-                'sanitize': function(value) {
-                    return value ? round(value, 2) : value;
-                }
-            },
-            'end-time': {
-                'type': 'time',
-                'sanitize': function(value) {
-                    return value ? round(value, 2) : value;
-                }
-            },
-            'elements': {
-                'type': 'array',
-                'getter': function(skipID){
-                    const elements = [];
-
-                    this.getChildren().forEach((element) => {
-                        elements.push(element.getPropertyValues(skipID));
-                    });
-
-                    return elements;
-                }
-            }
-        })
+        'resizable': false
     });
+
+    /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = Object.assign(pick(super.getProperties(), [
+                'type',
+                'id',
+                'background-color',
+                'background-image',
+                'start-time',
+                'end-time',
+                'editor.locked'
+            ]), {
+                'elements': {
+                    'type': 'array',
+                    'label': Locale.t('component.Page.properties.elements.label', 'Elements'),
+                    'getter': function(skipID){
+                        const elements = [];
+
+                        this.getChildren().forEach((element) => {
+                            elements.push(element.getPropertyValues(skipID));
+                        });
+
+                        return elements;
+                    }
+                }
+            });
+        }
+
+        return this.properties;
+    }
 
     /**
      * @inheritdoc
@@ -89,21 +90,21 @@ export default class Page extends Component {
     /**
      * @inheritdoc
      */
-    updatePropertyValue(property, value){
-        switch(property){
+    updatePropertyValue(name, value, skipAnimatedCheck = false){
+        super.updatePropertyValue(name, value, skipAnimatedCheck);
+
+        switch(name){
             case 'start-time':
             case 'end-time':
-                super.updatePropertyValue(property, value);
-
                 {
                     const block = this.getParent();
 
                     if(block.getPropertyValue('synched')){
                         const index = block.getChildIndex(this);
-                        const sibling_page = property === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
+                        const sibling_page = name === 'start-time' ? block.getChild(index - 1) : block.getChild(index + 1);
 
                         if(sibling_page){
-                            sibling_page.setPropertyValue(property === 'start-time' ? 'end-time' : 'start-time', value);
+                            sibling_page.setPropertyValue(name === 'start-time' ? 'end-time' : 'start-time', value);
                         }
                     }
                 }
@@ -114,10 +115,9 @@ export default class Page extends Component {
                     this.addElement(configs);
                 });
                 break;
-
-            default:
-                super.updatePropertyValue(property, value);
         }
+
+        return this;
     }
 
     getName(){
