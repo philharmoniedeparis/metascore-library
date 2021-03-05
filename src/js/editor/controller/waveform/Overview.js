@@ -99,11 +99,12 @@ export default class Overview extends Dom {
             });
 
             if(this.waveformdata){
+                const width = Math.min(this.width, this.waveformdata.length);
                 /**
                  * The resampled waveform data
                  * @type {WaveformData}
                  */
-                this.resampled_data = this.waveformdata.resample({'width': this.width});
+                this.resampled_data = this.waveformdata.resample({'width': width});
             }
 
             this.update();
@@ -132,7 +133,8 @@ export default class Overview extends Dom {
          */
         this._wave_range = range;
 
-        this.resampled_data = this.waveformdata.resample({'width': this.width});
+        const width = Math.min(this.width, this.waveformdata.length);
+        this.resampled_data = this.waveformdata.resample({'width': width});
 
         this.update();
 
@@ -176,12 +178,12 @@ export default class Overview extends Dom {
 
             context.beginPath();
 
-            for(let index = 0; index < this.width; index++) {
+            for(let index = 0; index < this.resampled_data.length; index++) {
                 const val = channel.min_sample(index);
                 context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
             }
 
-            for(let index = this.width - 1; index >= 0; index--) {
+            for(let index = this.resampled_data.length - 1; index >= 0; index--) {
                 const val = channel.max_sample(index);
                 context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
             }
