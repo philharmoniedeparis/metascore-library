@@ -245,11 +245,12 @@ export default class Zoom extends Dom {
 
     resampleData(){
         if(this.waveformdata && this.width > 0 && this.height > 0){
+            const width = Math.min(this.width, this.waveformdata.length);
             /**
              * The resampled waveform data
              * @type {WaveformData}
              */
-            this.resampled_data = this.waveformdata.resample({'width': this.width});
+            this.resampled_data = this.waveformdata.resample({'width': width});
 
             /**
              * The maximum zoom scale
@@ -310,7 +311,7 @@ export default class Zoom extends Dom {
                 const margin = this.configs.waveMargin;
                 const height = this.height - (margin * 2);
                 const startX = this.offset;
-                const endX = startX + this.width;
+                const endX = startX + this.resampled_data.length;
 
                 for(let index = startX; index < endX; index++) {
                     const val = channel.min_sample(index);

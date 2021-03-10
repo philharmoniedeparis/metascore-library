@@ -1052,8 +1052,17 @@ export default class Component extends Dom {
         else {
             const css = [];
             this._css_transforms.forEach((value, property) => {
-                css.push(`${property}(${value})`);
+                const css_value = `${property}(${value})`;
+
+                // Make sure scale is applied last.
+                if (property === 'scale') {
+                    css.push(css_value);
+                }
+                else {
+                    css.unshift(css_value);
+                }
             });
+
             this.css('transform', css.join(' '));
         }
 

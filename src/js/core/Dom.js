@@ -1329,7 +1329,10 @@ export default class Dom {
             this.forEach((element) => {
                 const parent = element.parentElement;
                 Dom.remove(element);
-                Dom.triggerEvent(parent, 'childremove', {'child': element});
+
+                if (parent) {
+                    Dom.triggerEvent(parent, 'childremove', {'child': element});
+                }
             });
         }
 
