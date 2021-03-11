@@ -61,7 +61,7 @@ export default class Locale{
     static t(key, str, args){
         let translated = str;
 
-        if(translations.hasOwnProperty(key)){
+        if(key in translations){
             translated = translations[key];
         }
 

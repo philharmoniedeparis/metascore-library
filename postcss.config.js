@@ -1,7 +1,7 @@
-module.exports = {
-    plugins: [
-      require('autoprefixer')({
-        browsers: ['last 4 versions']
-      })
-    ]
-  }
+module.exports = ({ file, options, env }) => ({
+  plugins: {
+      'postcss-normalize': {},
+      'postcss-preset-env': {},
+      'cssnano': {}
+    }
+});

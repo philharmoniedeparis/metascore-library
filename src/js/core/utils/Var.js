@@ -63,7 +63,7 @@ export function isEmpty(value) {
         return true;
     }
 
-    if(value.hasOwnProperty('length')){
+    if(length in value){
         return value.length === 0;
     }
 

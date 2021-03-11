@@ -9,6 +9,7 @@ const pckg = require('./package.json');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const LIB_NAME = pckg.name;
 const DIST_DIR = path.join(__dirname, "dist");
@@ -76,7 +77,7 @@ class ShellPlugin{
 module.exports = (env, argv) => {
   const configs = {
     mode: 'production',
-    bail: true,
+    bail: !argv.watch,
     entry: {
         Player: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Player'],
         Editor: ['@babel/polyfill', 'classlist-polyfill', './src/js/polyfills', './src/js/Editor'],
@@ -88,22 +89,12 @@ module.exports = (env, argv) => {
         path: DIST_DIR,
         library: [LIB_NAME, "[name]"],
         libraryTarget: 'var',
-        libraryExport: 'default'
+        libraryExport: 'default',
+        devtoolNamespace: LIB_NAME
     },
+    target: 'browserslist',
     watchOptions: {
       ignored: /src\/i18n/
-    },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          styles: {
-            name: 'styles',
-            test: /\.css$/,
-            chunks: 'all',
-            enforce: true
-          }
-        }
-      }
     },
     module: {
       rules: [
@@ -111,20 +102,13 @@ module.exports = (env, argv) => {
           // Lint JS files.
           test: /\.js$/,
           include: [
-            path.resolve(__dirname, "src"),
-            path.resolve(__dirname, "node_modules/geometry-polyfill"),
-            path.resolve(__dirname, "node_modules/waveform-data"),
+            path.resolve(__dirname, "./src"),
+            path.resolve(__dirname, "./node_modules/geometry-polyfill"),
+            path.resolve(__dirname, "./node_modules/waveform-data"),
           ],
           use: [
             {
-              loader: "babel-loader",
-            },
-            {
-              loader: "eslint-loader",
-              options: {
-                failOnWarning: false,
-                failOnError: true,
-              },
+                loader: "babel-loader"
             },
             {
               loader: 'string-replace-loader',
@@ -147,17 +131,36 @@ module.exports = (env, argv) => {
           // Compiles Less to CSS.
           test: /\.less$/,
           use: [
-              MiniCssExtractPlugin.loader,
+              {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                      publicPath: './',
+                      modules: {
+                          namedExport: true
+                      }
+                  }
+              },
               {
                 loader: 'css-loader',
                 options: {
-                  modules: 'global',
-                  importLoaders: 2,
-                  context: './src/css',
-                  localIdentName: '[path][name]--[hash:base64:5]'
+                    modules: {
+                        mode: 'global',
+                        localIdentName: '[name]--[hash:base64:5]',
+                        localIdentContext: path.resolve(__dirname, './src/css'),
+                        namedExport: true
+                    },
                 }
               },
-              'postcss-loader',
+              {
+                  loader: 'postcss-loader',
+                  options: {
+                      postcssOptions: {
+                          plugins: [
+                              ['postcss-preset-env'],
+                          ],
+                      },
+                  },
+              },
               'less-loader'
             ]
         },
@@ -168,8 +171,8 @@ module.exports = (env, argv) => {
             {
               loader: 'file-loader',
               options: {
-                context: './src',
-                name: '[path][name].[ext]?[hash]'
+                context: path.resolve(__dirname, './src'),
+                name: '[path][name].[ext]?[contenthash]'
               }
             },
             {
@@ -184,6 +187,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new webpack.BannerPlugin(`${pckg.name} - v${pckg.version} r${git.short()}`),
+      new ESLintPlugin(),
       new MiniCssExtractPlugin({
         filename: LIB_NAME +'.[name].css'
       }),
@@ -201,19 +205,15 @@ module.exports = (env, argv) => {
     ]
   };
 
-  switch(argv.mode){
-    case 'development':
-      if('copy' in argv) {
-        configs.plugins.push(
-          new ShellPlugin({
-            onBuildExit: [
-              `copyfiles -u 1 dist/**/* ${argv.copy} && echo "Copyied files to ${argv.copy}"`
-            ]
-          })
-        );
-      }
-      break;
-  }
+    if (env && 'copy' in env) {
+      configs.plugins.push(
+        new ShellPlugin({
+          onBuildExit: [
+            `copyfiles -u 1 "dist/**/*" ${env.copy} && echo "Copyied files to ${env.copy}"`
+          ]
+        })
+      );
+    }
 
   return configs;
 };

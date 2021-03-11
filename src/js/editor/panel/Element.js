@@ -4,6 +4,8 @@ import Locale from '../../core/Locale';
 import {getImageMetadata} from '../../core/utils/Media';
 import CursorKeyframesEditor from './element/CursorKeyframesEditor';
 
+/* eslint compat/compat: 0 */
+
 /**
  * A panel for Element components
  *
