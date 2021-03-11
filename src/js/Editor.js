@@ -2918,8 +2918,10 @@ export class Editor extends Dom {
 
                     if(this.configs.component_copy_displacement){
                         // Slightly move the copy to prevent exact overlap.
-                        config.position[0] += this.configs.component_copy_displacement;
-                        config.position[1] += this.configs.component_copy_displacement;
+                        config.position = [
+                            config.position[0] + this.configs.component_copy_displacement,
+                            config.position[1] + this.configs.component_copy_displacement,
+                        ];
                     }
 
                     configs.push(config);
