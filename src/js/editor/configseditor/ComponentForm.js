@@ -122,7 +122,6 @@ export default class ComponentForm extends Dom {
                         {
                             'type': NumberInput,
                             'configs': {
-                                'min': 0,
                                 'spinButtons': true,
                                 'spinDirection': 'horizontal',
                                 'attributes': {
@@ -133,7 +132,6 @@ export default class ComponentForm extends Dom {
                         {
                             'type': NumberInput,
                             'configs': {
-                                'min': 0,
                                 'spinButtons': true,
                                 'attributes': {
                                     'title': Locale.t('editor.configseditor.ComponentForm.fields.position.1.title', 'Y'),
