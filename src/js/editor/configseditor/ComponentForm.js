@@ -133,6 +133,7 @@ export default class ComponentForm extends Dom {
                             'type': NumberInput,
                             'configs': {
                                 'spinButtons': true,
+                                'flipSpinButtons': true,
                                 'attributes': {
                                     'title': Locale.t('editor.configseditor.ComponentForm.fields.position.1.title', 'Y'),
                                 }
@@ -164,6 +165,7 @@ export default class ComponentForm extends Dom {
                             'configs': {
                                 'min': 0,
                                 'spinButtons': true,
+                                'flipSpinButtons': true,
                                 'attributes': {
                                     'title': Locale.t('editor.configseditor.ComponentForm.fields.dimension.1.title', 'Height'),
                                 }
@@ -238,6 +240,7 @@ export default class ComponentForm extends Dom {
                             'type': NumberInput,
                             'configs': {
                                 'spinButtons': true,
+                                'flipSpinButtons': true,
                                 'attributes': {
                                     'title': Locale.t('editor.configseditor.ComponentForm.fields.translate.1.title', 'Y'),
                                 }
