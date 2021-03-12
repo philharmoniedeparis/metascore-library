@@ -2135,8 +2135,7 @@ export class Editor extends Dom {
                             Object.assign(configs, {
                                 'type': 'Content',
                                 'background-image': asset.file.url,
-                                'width': asset.file.width,
-                                'height': asset.file.height
+                                'dimension': [asset.file.width, asset.file.height]
                             });
                             break;
 
@@ -2158,8 +2157,7 @@ export class Editor extends Dom {
                                 Object.assign(configs, {
                                     'type': 'Content',
                                     'background-image': asset.url,
-                                    'width': asset.width,
-                                    'height': asset.height
+                                    'dimension': [asset.width, asset.height]
                                 });
                                 break;
 
@@ -2169,8 +2167,7 @@ export class Editor extends Dom {
                                     'type': 'Media',
                                     'tag': type,
                                     'src': asset.url,
-                                    'width': asset.width,
-                                    'height': asset.height
+                                    'dimension': [asset.width, asset.height]
                                 });
                                 break;
                         }
