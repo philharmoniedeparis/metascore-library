@@ -63,7 +63,7 @@ export function isEmpty(value) {
         return true;
     }
 
-    if(length in value){
+    if(isArray(value) || isString(value)){
         return value.length === 0;
     }
 
