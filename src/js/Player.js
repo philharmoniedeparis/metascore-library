@@ -66,6 +66,9 @@ export class Player extends Dom {
         // call parent constructor
         super('<div/>', {'class': `metaScore-player ${className}`, 'tabindex': 0});
 
+        // fix event handlers scope
+        this.adaptScale = this.adaptScale.bind(this);
+
         /**
          * The configuration values
          * @type {Object}
@@ -609,7 +612,8 @@ export class Player extends Dom {
 
         // Make the player rescale to fit available space.
         if(this.configs.responsive){
-            this.adaptScale = this.adaptScale.bind(this);
+            this.css('transform-origin', 'top left');
+
             Dom.addListener(window, 'resize', this.adaptScale);
             Dom.addListener(window, 'orientationchange', this.adaptScale);
             this.adaptScale();
