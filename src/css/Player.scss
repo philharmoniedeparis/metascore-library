@@ -21,6 +21,15 @@ body.fullscreen {
     background: #fff;
 }
 
+a {
+    color: rgb(0, 0, 238);
+
+    &:active {
+        color: rgb(238, 0, 0);
+        text-decoration: none;
+    }
+}
+
 :local(.class-name) {
     position: relative;
     width: 100%;
@@ -378,6 +387,11 @@ body.fullscreen {
             &.Content {
                 .contents {
                     overflow: auto;
+
+                    a.highlight {
+                        color: rgb(238, 0, 0);
+                        text-decoration: none;
+                    }
                 }
             }
 
