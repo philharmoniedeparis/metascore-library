@@ -22,6 +22,7 @@ import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import AssetBrowser from './editor/AssetBrowser';
+import SelectInput from './core/ui/input/SelectInput';
 
 import { className } from '../css/Editor.scss';
 import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
@@ -1365,6 +1366,25 @@ export class Editor extends Dom {
                 'start_time': component.getPropertyValue('start-time'),
                 'end_time': component.getPropertyValue('end-time'),
             };
+
+            // Find the closest height option
+            const height_input = form.getField('height').getInput();
+            if (height_input instanceof SelectInput) {
+                const possible_heights = [];
+                height_input.getOptions().forEach((option) => {
+                    possible_heights.push(new Dom(option).val());
+                });
+                defaults.height = possible_heights.reduce((a, b) => {
+                    const a_diff = Math.abs(a - defaults.height);
+                    const b_diff = Math.abs(b - defaults.height);
+
+                    if (a_diff == b_diff) {
+                        // Return the highest option if the difference is the same
+                        return a > b ? a : b;
+                    }
+                    return b_diff < a_diff ? b : a;
+                });
+            }
 
             Object.entries(defaults).forEach(([key, value]) => {
                 if (value !== null) {
