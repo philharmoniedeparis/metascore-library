@@ -259,6 +259,8 @@ export default class ContentForm extends ElementForm {
             if (supressEvent !== true) {
                 this.triggerEvent('contentslock', { 'component': component });
             }
+
+            component.updateLinksAutoHighlighting();
         }
 
         return this;
