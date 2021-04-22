@@ -22,6 +22,7 @@ import Controller from './editor/Controller';
 import Pane from './editor/Pane';
 import Ruler from './editor/Ruler';
 import AssetBrowser from './editor/AssetBrowser';
+import SelectInput from './core/ui/input/SelectInput';
 
 import { className } from '../css/Editor.scss';
 import player_css from '!!raw-loader!postcss-loader!sass-loader!../css/editor/Player.scss';
@@ -400,6 +401,7 @@ export class Editor extends Dom {
             .addListener('componentset', this.onConfigEditorComponentSet.bind(this))
             .addDelegate('.content-form', 'contentsunlock', this.onConfigEditorContentsUnlock.bind(this))
             .addDelegate('.content-form', 'contentslock', this.onConfigEditorContentsLock.bind(this))
+            .addDelegate('.content-form', 'contentschange', this.onConfigEditorContentsChange.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -1366,6 +1368,25 @@ export class Editor extends Dom {
                 'end_time': component.getPropertyValue('end-time'),
             };
 
+            // Find the closest height option
+            const height_input = form.getField('height').getInput();
+            if (height_input instanceof SelectInput) {
+                const possible_heights = [];
+                height_input.getOptions().forEach((option) => {
+                    possible_heights.push(new Dom(option).val());
+                });
+                defaults.height = possible_heights.reduce((a, b) => {
+                    const a_diff = Math.abs(a - defaults.height);
+                    const b_diff = Math.abs(b - defaults.height);
+
+                    if (a_diff == b_diff) {
+                        // Return the highest option if the difference is the same
+                        return a > b ? a : b;
+                    }
+                    return b_diff < a_diff ? b : a;
+                });
+            }
+
             Object.entries(defaults).forEach(([key, value]) => {
                 if (value !== null) {
                     form.getField(key).getInput().setValue(value, true);
@@ -1439,7 +1460,6 @@ export class Editor extends Dom {
      * ConfigEditor Content component unlock event callback.
      *
      * @private
-     * @param {Event} evt The event object
      */
     onConfigEditorContentsUnlock() {
         this.addClass('contents-unlocked');
@@ -1449,10 +1469,18 @@ export class Editor extends Dom {
      * ConfigEditor Content component lock event callback.
      *
      * @private
-     * @param {Event} evt The event object
      */
     onConfigEditorContentsLock() {
         this.removeClass('contents-unlocked');
+    }
+
+    /**
+     * ConfigEditor Content component contentschange event callback.
+     *
+     * @private
+     */
+    onConfigEditorContentsChange() {
+        this.setDirty('components');
     }
 
     /**
