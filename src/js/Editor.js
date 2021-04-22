@@ -401,6 +401,7 @@ export class Editor extends Dom {
             .addListener('componentset', this.onConfigEditorComponentSet.bind(this))
             .addDelegate('.content-form', 'contentsunlock', this.onConfigEditorContentsUnlock.bind(this))
             .addDelegate('.content-form', 'contentslock', this.onConfigEditorContentsLock.bind(this))
+            .addDelegate('.content-form', 'contentschange', this.onConfigEditorContentsChange.bind(this))
             .appendTo(config_pane.getContents());
 
         // Bottom pane ////////////////////////
@@ -1459,7 +1460,6 @@ export class Editor extends Dom {
      * ConfigEditor Content component unlock event callback.
      *
      * @private
-     * @param {Event} evt The event object
      */
     onConfigEditorContentsUnlock() {
         this.addClass('contents-unlocked');
@@ -1469,10 +1469,18 @@ export class Editor extends Dom {
      * ConfigEditor Content component lock event callback.
      *
      * @private
-     * @param {Event} evt The event object
      */
     onConfigEditorContentsLock() {
         this.removeClass('contents-unlocked');
+    }
+
+    /**
+     * ConfigEditor Content component contentschange event callback.
+     *
+     * @private
+     */
+    onConfigEditorContentsChange() {
+        this.setDirty('components');
     }
 
     /**
