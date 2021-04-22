@@ -36,7 +36,7 @@ export default class ContentForm extends ElementForm {
         // call parent constructor
         super(...args);
 
-        this.addClass(className);
+        this.addClass(`${className} content-form`);
 
         // fix event handlers scope
         this.onComponentDblClick = this.onComponentDblClick.bind(this);
