@@ -1,6 +1,6 @@
 {
   "name": "metascore",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "metaScore",
   "homepage": "http://metascore.philharmoniedeparis.fr",
   "author": "Oussama Mubarak",
@@ -66,6 +66,6 @@
     "hammerjs": "^2.0.8",
     "lottie-web": "^5.7.4",
     "resize-observer-polyfill": "^1.5.1",
-    "waveform-data": "^3.3.4"
+    "waveform-data": "^4.1.0"
   }
 }
