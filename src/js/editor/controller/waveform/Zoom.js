@@ -311,7 +311,7 @@ export default class Zoom extends Dom {
                 const margin = this.configs.waveMargin;
                 const height = this.height - (margin * 2);
                 const startX = this.offset;
-                const endX = startX + this.resampled_data.length;
+                const endX = Math.max(startX + this.width, this.resampled_data.length);
 
                 for(let index = startX; index < endX; index++) {
                     const val = channel.min_sample(index);
