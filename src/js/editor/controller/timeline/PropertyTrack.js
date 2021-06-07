@@ -250,24 +250,37 @@ export default class PropertyTrack extends Dom {
     removeKeyframe(keyframe) {
         const component = this.getComponent();
         const property = this.getProperty();
-        const previous = clone(component.getPropertyValue(property));
+        const previous = {
+            [property]: clone(component.getPropertyValue(property))
+        };
+        const values = {};
 
-        keyframe.remove();
+        if (this.keyframes.length === 1) {
+            // If deleting the last keyframe, remove animation
+            const animated = component.getPropertyValue('animated');
 
-        this.keyframes = this.keyframes.filter(k => k !== keyframe);
+            previous.animated = animated;
 
-        const values = this.keyframes.map((keyframe) => {
-            return [keyframe.getTime(), keyframe.getValue()];
-        });
+            values.animated = animated.filter(p => p !== property),
+            values[property] = keyframe.getValue();
+        }
+        else {
+            keyframe.remove();
+            this.keyframes = this.keyframes.filter(k => k !== keyframe);
 
-        component.setPropertyValue(property, values);
+            values.property = this.keyframes.map((keyframe) => {
+                return [keyframe.getTime(), keyframe.getValue()];
+            });
+        }
+
+        component.setPropertyValues(values);
 
         History.add({
             'undo': () => {
-                component.setPropertyValue(property, previous);
+                component.setPropertyValues(previous);
             },
             'redo': () => {
-                component.setPropertyValue(property, values);
+                component.setPropertyValues(values);
             }
         });
 
