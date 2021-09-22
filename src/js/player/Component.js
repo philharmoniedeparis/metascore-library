@@ -99,7 +99,11 @@ export default class Component extends Dom {
                 },
                 'border-width': {
                     'type': 'number',
-                    'label': Locale.t('Component.properties.border-width.label', 'Border width')
+                    'label': Locale.t('Component.properties.border-width.label', 'Border width'),
+                    'getter': function () {
+                        // Get value from CSS to honor CSS min and max values.
+                        return parseInt(this.css('border-width'), 10);
+                    }
                 },
                 'border-color': {
                     'type': 'color',
