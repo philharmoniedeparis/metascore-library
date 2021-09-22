@@ -2778,14 +2778,15 @@ export class Editor extends Dom {
      * @param {String} type The components' type
      * @param {Mixed} config A config or an array of configs to use when creating the component(s)
      * @param {Mixed} [parent] The components' parent
-     * @return {this}
+     * @return {Component[]} The list of added components
      */
     addPlayerComponents(type, config, parent) {
+        const components = [];
+
         switch (type) {
             case 'element': {
                 const configs = isArray(config) ? config : [config];
                 const page = parent;
-                const components = [];
 
                 configs.forEach((element_config) => {
                     const el_index = page.children(`.element.${element_config.type}`).count() + 1;
@@ -2860,6 +2861,8 @@ export class Editor extends Dom {
                 }
 
                 const component = block.addPage(config, before ? index : index + 1);
+                components.push(component);
+
                 timeline.updateBlockPagesTrackLabels(block);
                 block.setActivePage(index);
 
@@ -2889,7 +2892,6 @@ export class Editor extends Dom {
             case 'block': {
                 const scenario = this.getPlayer().getActiveScenario();
                 const configs = isArray(config) ? config : [config];
-                const components = [];
 
                 configs.forEach((block_config) => {
                     const component = scenario.addComponent(block_config);
@@ -2914,7 +2916,7 @@ export class Editor extends Dom {
 
         this.setDirty('components');
 
-        return this;
+        return components;
     }
 
     /**
@@ -2967,9 +2969,12 @@ export class Editor extends Dom {
      * @return {this}
      */
     pastePlayerComponents(parent) {
+        let components = [];
+
         if (this.clipboard.getDataType() === 'element') {
+            let page = null;
             if (parent && parent.instanceOf('Page')) {
-                this.addPlayerComponents('element', this.clipboard.getData(), parent);
+                page = parent;
             }
             else {
                 let pages = [];
@@ -2997,13 +3002,20 @@ export class Editor extends Dom {
                     });
                 }
                 else if (pages.length === 1) {
-                    this.addPlayerComponents('element', this.clipboard.getData(), pages[0]);
+                    page = pages[0];
                 }
             }
+
+            components = this.addPlayerComponents('element', this.clipboard.getData(), page);
         }
         else if (this.clipboard.getDataType() === 'block') {
-            this.addPlayerComponents('block', this.clipboard.getData(), parent ? parent : this.player.getActiveScenario());
+            components = this.addPlayerComponents('block', this.clipboard.getData(), parent ? parent : this.player.getActiveScenario());
         }
+
+        // Select newly added components
+        components.forEach((component, index) => {
+            this.selectPlayerComponent(component, index > 0);
+        });
 
         return this;
     }
