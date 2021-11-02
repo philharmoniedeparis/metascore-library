@@ -15,6 +15,21 @@ export default class Element extends Component {
     }
 
     /**
+     * @inheritdoc
+    */
+    static getProperties() {
+        if (!this.properties) {
+            this.properties = super.getProperties();
+            this.properties['border-width'].getter = function () {
+                // Get value from CSS to honor CSS min and max values.
+                return parseInt(this.contents.css('border-width'), 10);
+            };
+        }
+
+        return this.properties;
+    }
+
+    /**
      * Instantiate
      *
      * @abstract
