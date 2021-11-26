@@ -1,14 +1,9 @@
 import { AbstractComponent } from "@/player/models/ComponentHierarchy";
-import {
-  createTimeField,
-  createBooleanField,
-  createEnumField,
-  createRelationField,
-} from "@/core/models/Helpers.js";
+import { createTimeField } from "@/core/models/Helpers.js";
 import { merge } from "@/core/utils/Object";
 
-export class Block extends AbstractComponent {
-  static entity = "Block";
+export class Page extends AbstractComponent {
+  static entity = "Page";
 
   static baseEntity = "Component";
 
@@ -27,20 +22,6 @@ export class Block extends AbstractComponent {
           title: "End time",
           default: null,
         }),
-        synched: createBooleanField({
-          title: "Synched",
-        }),
-        "pager-visibility": createEnumField({
-          title: "Pager visibility",
-          allowd_values: ["auto", "hidden", "visible"],
-          default: "auto",
-        }),
-        pages: createRelationField({
-          ajv,
-          type: "hasManyBy",
-          model: AbstractComponent,
-          foreign_key: "pages_ids",
-        }),
       },
     });
   }
@@ -51,7 +32,7 @@ export class Block extends AbstractComponent {
   static fields() {
     return {
       ...super.fields(),
-      pages_ids: this.attr([]),
+      children_ids: this.attr([]),
     };
   }
 
@@ -60,10 +41,10 @@ export class Block extends AbstractComponent {
    */
   $toJson() {
     const json = super.$toJson();
-    delete json.pages_ids;
+    delete json.children_ids;
 
     return json;
   }
 }
 
-export default Block;
+export default Page;

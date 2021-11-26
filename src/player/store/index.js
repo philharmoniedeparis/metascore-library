@@ -1,5 +1,6 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import VuexORM from "@vuex-orm/core";
+import createMediaModule from "@/player/store/modules/media";
 import createComponentsModule from "@/player/store/modules/components";
 
 export function createStore({ debug = false }) {
@@ -14,6 +15,7 @@ export function createStore({ debug = false }) {
   return createVuexStore({
     plugins,
     modules: {
+      media: createMediaModule(),
       components: createComponentsModule({ database }),
     },
     state: {},

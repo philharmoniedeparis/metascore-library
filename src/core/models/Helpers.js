@@ -3,7 +3,7 @@ import urlRegex from "url-regex";
 export const createStringField = ({
   title = "",
   description = "",
-  default_value = "",
+  default: default_value = "",
 } = {}) => {
   return {
     type: "string",
@@ -16,7 +16,7 @@ export const createStringField = ({
 export const createNumberField = ({
   title = "",
   description = "",
-  default_value = 0,
+  default: default_value = 0,
   multipleOf = 0.01,
   minimum = null,
   maximum = null,
@@ -42,7 +42,7 @@ export const createNumberField = ({
 export const createIntegerField = ({
   title = "",
   description = "",
-  default_value = 0,
+  default: default_value = 0,
   minimum = null,
   maximum = null,
 } = {}) => {
@@ -59,7 +59,7 @@ export const createIntegerField = ({
 export const createBooleanField = ({
   title = "",
   description = "",
-  default_value = false,
+  default: default_value = false,
 } = {}) => {
   return {
     type: "boolean",
@@ -72,7 +72,7 @@ export const createBooleanField = ({
 export const create2DPointField = ({
   title = "",
   description = "",
-  default_value = [0, 0],
+  default: default_value = [0, 0],
 } = {}) => {
   return {
     type: "array",
@@ -87,11 +87,11 @@ export const create2DPointField = ({
 export const createEnumField = ({
   title = "",
   description = "",
-  default_value = null,
+  default: default_value = null,
   allowed_values,
 } = {}) => {
   return {
-    ...createStringField({ title, description, default_value }),
+    ...createStringField({ title, description, default: default_value }),
     enum: allowed_values,
   };
 };
@@ -100,12 +100,12 @@ export const createUuidField = ({
   ajv,
   title = "",
   description = "",
-  default_value = "",
+  default: default_value = "",
 } = {}) => {
   ajv.addFormat("uuid", { validate: () => true });
 
   return {
-    ...createStringField({ title, description, default_value }),
+    ...createStringField({ title, description, default: default_value }),
     format: "uuid",
   };
 };
@@ -144,12 +144,11 @@ export const createTimeField = ({
   ajv,
   title = "",
   description = "",
-  default_value = 0,
+  default: default_value = 0,
 } = {}) => {
   ajv.addFormat("time", { validate: () => true });
-
   return {
-    ...createNumberField({ title, description, default_value }),
+    ...createNumberField({ title, description, default: default_value }),
     format: "time",
   };
 };
@@ -158,7 +157,7 @@ export const createColorField = ({
   ajv,
   title = "",
   description = "",
-  default_value = null,
+  default: default_value = null,
 } = {}) => {
   ajv.addFormat(
     "color",
@@ -178,16 +177,12 @@ export const createImageField = ({
   ajv,
   title = "",
   description = "",
-  default_value = null,
+  default: default_value = null,
 } = {}) => {
   ajv.addFormat("image", urlRegex);
-
   return {
-    type: "string",
+    ...createStringField({ title, description, default: default_value }),
     format: "image",
-    title,
-    description,
-    default: default_value,
   };
 };
 
@@ -195,7 +190,7 @@ export const createAngleField = ({
   ajv,
   title = "",
   description = "",
-  default_value = 0,
+  default: default_value = 0,
 } = {}) => {
   ajv.addFormat("angle", { validate: () => true });
 
@@ -203,7 +198,7 @@ export const createAngleField = ({
     ...createIntegerField({
       title,
       description,
-      default_value,
+      default: default_value,
       minimum: 0,
       maximum: 359,
     }),
@@ -215,27 +210,23 @@ export const createBorderRadiusField = ({
   ajv,
   title = "",
   description = "",
-  default_value = 0,
+  default: default_value = 0,
 } = {}) => {
   ajv.addFormat("border-radius", { validate: () => true });
-
   return {
-    type: "string",
+    ...createStringField({ title, description, default: default_value }),
     format: "border-radius",
-    title,
-    description,
-    default: default_value,
   };
 };
 
 export const createAnimatedField = ({ sub_field } = {}) => {
   const title = sub_field.title ?? "";
   const description = sub_field.description ?? "";
-  const default_value = sub_field.default_value ?? null;
+  const default_value = sub_field.default ?? null;
 
   delete sub_field.description;
   delete sub_field.title;
-  delete sub_field.default_value;
+  delete sub_field.default;
 
   return {
     type: "array",

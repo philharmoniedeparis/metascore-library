@@ -3,8 +3,8 @@ import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "@/player/store";
-import { createRouter } from "@/player/router";
 import App from "@/player/App.vue";
+import "@/tailwind.css";
 
 export class Player {
   /**
@@ -13,19 +13,13 @@ export class Player {
   static version = packageInfo.version;
 
   constructor({ el = null, locale = "fr", debug = false } = {}) {
-    this.events = new Emitter();
-
+    const i18n = createI18n({ locale });
     const store = createStore({
       debug,
     });
 
-    const router = createRouter({
-      debug,
-    });
-
-    const i18n = createI18n({ locale });
-
-    this._app = createApp(App, {}).use(i18n).use(store).use(router);
+    this._events = new Emitter();
+    this._app = createApp(App, {}).use(i18n).use(store);
 
     if (el) {
       this.mount(el);
@@ -53,7 +47,7 @@ export class Player {
    * @returns {this}
    */
   on(event, callback) {
-    this.events.on(event, callback);
+    this._events.on(event, callback);
     return this;
   }
 
@@ -65,7 +59,7 @@ export class Player {
    * @returns {this}
    */
   once(event, callback) {
-    this.events.once(event, callback);
+    this._events.once(event, callback);
     return this;
   }
 
@@ -77,7 +71,7 @@ export class Player {
    * @returns {this}
    */
   off(event, callback) {
-    this.events.off(event, callback);
+    this._events.off(event, callback);
     return this;
   }
 }

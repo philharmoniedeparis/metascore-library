@@ -81,6 +81,15 @@ export default class AbstractModel extends Model {
   }
 
   /**
+   * Get the list of required properties from the schema.
+   *
+   * @returns {string[]} The list of required properties
+   */
+  static get requiredProperties() {
+    return this.schema.required;
+  }
+
+  /**
    * @inheritdoc
    */
   static fields() {
@@ -128,6 +137,10 @@ export default class AbstractModel extends Model {
         default:
           fields[key] = this.attr(schema.default);
       }
+
+      if (!this.requiredProperties.includes(key)) {
+        fields[key].nullable();
+      }
     }
 
     return fields;
@@ -171,6 +184,12 @@ export default class AbstractModel extends Model {
 
   get errors() {
     return this.validator.errors;
+  }
+
+  $toJson() {
+    return omitBy(super.$toJson(), (value) => {
+      return value === null;
+    });
   }
 
   /**

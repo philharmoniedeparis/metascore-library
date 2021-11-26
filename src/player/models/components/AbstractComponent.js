@@ -47,6 +47,7 @@ export class AbstractComponent extends AbstractModel {
           additionalProperties: false,
         },
       },
+      required: ["type", "id"],
     });
   }
 }
