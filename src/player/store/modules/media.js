@@ -2,9 +2,9 @@ export default function () {
   return {
     namespaced: true,
     state: {
-      time: 0,
       ready: false,
       playing: false,
+      time: 0,
     },
     getters: {},
     mutations: {

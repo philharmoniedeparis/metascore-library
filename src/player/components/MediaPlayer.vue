@@ -6,9 +6,11 @@
     :loop="loop"
     :controls="controls"
     class="media-player"
-    @play="onPlay"
-    @pause="onPause"
-    @stop="onStop"
+    @timeupdate="_onTimeupdate"
+    @play="_onPlay"
+    @pause="_onPause"
+    @stop="_onStop"
+    @seeked="_onSeeked"
   >
     <source
       v-for="(source, index) in sources"
@@ -36,6 +38,9 @@ const hls_types = [
 
 export default {
   props: {
+    /**
+     * The media type; audio|video
+     */
     type: {
       type: String,
       validator(value) {
@@ -43,22 +48,42 @@ export default {
       },
       default: "audio",
     },
+
+    /**
+     * The media sources
+     */
     sources: {
       type: Array,
       required: true,
     },
+
+    /**
+     * Whether to autoplay
+     */
     autoplay: {
       type: Boolean,
       default: false,
     },
+
+    /**
+     * Whether to loop playback
+     */
     loop: {
       type: Boolean,
       default: false,
     },
+
+    /**
+     * Whether to display controls
+     */
     controls: {
       type: Boolean,
       default: true,
     },
+
+    /**
+     * Indicate what data should be preloaded
+     */
     preload: {
       type: String,
       validator(value) {
@@ -66,8 +91,16 @@ export default {
       },
       default: null,
     },
+
+    /**
+     * Whether to use requestAnimationFrame for more timeupdate precision
+     */
+    useRequestAnimationFrame: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ["ready"],
+  emits: ["ready", "timeupdate"],
   data() {
     return {
       playing: false,
@@ -86,11 +119,11 @@ export default {
   },
   watch: {
     sources() {
-      this.setupMedia();
+      this._setupMedia();
     },
   },
   mounted() {
-    this.setupMedia();
+    this._setupMedia();
   },
   methods: {
     /**
@@ -99,82 +132,6 @@ export default {
      */
     getElement() {
       return this.$refs.media;
-    },
-
-    /**
-     * Setup the media
-     */
-    async setupMedia() {
-      if (this.dash) {
-        this.dash.destroy();
-        this.dash = null;
-      }
-      if (this.hls) {
-        this.hls.detachMedia();
-        this.hls = null;
-      }
-
-      for (const source of this.sources) {
-        const renderer = this.getRendererFromType(source.type);
-        await this.setupRenderer(renderer, source.src);
-
-        if (renderer) {
-          break;
-        }
-      }
-
-      this.$emit("ready");
-    },
-
-    /**
-     * Get a renderer type from a source's mime type
-     * @param {String} mime The mime type
-     * @return {String?} A matching renderer type
-     */
-    getRendererFromType(mime) {
-      let renderer = null;
-
-      if (new Audio().canPlayType(mime)) {
-        renderer = "html5";
-      } else if (dash_types.includes(mime)) {
-        renderer = "dashjs";
-      } else if (hls_types.includes(mime)) {
-        renderer = "hls.js";
-      }
-
-      return renderer;
-    },
-
-    /**
-     * Setup a renderer
-     * @param {String} type The renderer type
-     * @param {String} url The media url
-     */
-    async setupRenderer(type, url) {
-      switch (type) {
-        case "dashjs":
-          {
-            const { default: DashJS } = await import(
-              /* webpackChunkName: "vendors/dashjs.bundle" */ "dashjs"
-            );
-            this.dash = DashJS.MediaPlayer().create();
-            this.dash.initialize(this.el, url, true);
-          }
-          return;
-
-        case "hls.js":
-          {
-            const { default: Hls } = await import(
-              /* webpackChunkName: "vendors/hls.js.bundle" */ "hls.js"
-            );
-            if (Hls.isSupported()) {
-              this.hls = new Hls();
-              this.hls.loadSource(url);
-              this.hls.attachMedia(this.el);
-            }
-          }
-          return;
-      }
     },
 
     /**
@@ -266,24 +223,145 @@ export default {
     },
 
     /**
-     * The 'play' event handler
+     * Get a renderer type from a source's mime type
+     * @param {String} mime The mime type
+     * @return {String?} A matching renderer type
      */
-    onPlay() {
+    getRendererFromType(mime) {
+      let renderer = null;
+
+      if (new Audio().canPlayType(mime)) {
+        renderer = "html5";
+      } else if (dash_types.includes(mime)) {
+        renderer = "dashjs";
+      } else if (hls_types.includes(mime)) {
+        renderer = "hls.js";
+      }
+
+      return renderer;
+    },
+
+    /**
+     * Setup the media
+     * @private
+     */
+    async _setupMedia() {
+      if (this.dash) {
+        this.dash.destroy();
+        this.dash = null;
+      }
+      if (this.hls) {
+        this.hls.detachMedia();
+        this.hls = null;
+      }
+
+      for (const source of this.sources) {
+        const renderer = this.getRendererFromType(source.type);
+        await this._setupRenderer(renderer, source.src);
+
+        if (renderer) {
+          break;
+        }
+      }
+
+      this.$emit("ready");
+    },
+
+    /**
+     * Setup a renderer
+     * @private
+     * @param {String} type The renderer type
+     * @param {String} url The media url
+     */
+    async _setupRenderer(type, url) {
+      switch (type) {
+        case "dashjs":
+          {
+            const { default: DashJS } = await import(
+              /* webpackChunkName: "vendors/dashjs.bundle" */ "dashjs"
+            );
+            this.dash = DashJS.MediaPlayer().create();
+            this.dash.initialize(this.el, url, true);
+          }
+          return;
+
+        case "hls.js":
+          {
+            const { default: Hls } = await import(
+              /* webpackChunkName: "vendors/hls.js.bundle" */ "hls.js"
+            );
+            if (Hls.isSupported()) {
+              this.hls = new Hls();
+              this.hls.loadSource(url);
+              this.hls.attachMedia(this.el);
+            }
+          }
+          return;
+      }
+    },
+
+    /**
+     * The 'timeupdate' event handler
+     * @private
+     */
+    _onTimeupdate(evt) {
+      if (this.useRequestAnimationFrame) {
+        evt.stopImmediatePropagation();
+      }
+    },
+
+    /**
+     * The 'play' event handler
+     * @private
+     */
+    _onPlay() {
       this.playing = true;
+      this.triggerTimeUpdate();
     },
 
     /**
      * The 'pasue' event handler
+     * @private
      */
-    onPause() {
+    _onPause() {
       this.playing = false;
+      this.triggerTimeUpdate(false);
     },
 
     /**
      * The 'stop' event handler
+     * @private
      */
-    onStop() {
+    _onStop() {
       this.playing = false;
+      this.triggerTimeUpdate(false);
+    },
+
+    /**
+     * The 'seeked' event handler
+     * @private
+     */
+    _onSeeked() {
+      if (!this.playing) {
+        this.triggerTimeUpdate(false);
+      }
+    },
+
+    /**
+     * Trigger a manual 'timeupdate' event
+     * @private
+     * @param {boolean} repeat Whether to repeatedly execute using requestAnimationFrame
+     */
+    _triggerTimeUpdate(repeat = true) {
+      if (!this.useRequestAnimationFrame) {
+        return;
+      }
+
+      if (repeat !== false && this.playing) {
+        window.requestAnimationFrame(this.triggerTimeUpdate);
+      }
+
+      this.$emit("timeupdate");
     },
   },
 };

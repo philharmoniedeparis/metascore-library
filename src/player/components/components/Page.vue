@@ -10,32 +10,25 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { computed } from "vue";
+import useCuePoint from "@/player/composables/useCuePoint";
 
 export default {
   props: {
+    /**
+     * The associated vuex-orm model
+     */
     model: {
       type: Object,
       required: true,
     },
   },
-  computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-    }),
-    startTime() {
-      return this.model["start-time"];
-    },
-    endTime() {
-      return this.model["end-time"];
-    },
-    active() {
-      if (this.startTime === null && this.endTime === null) {
-        return true;
-      }
-
-      return this.mediaTime >= this.startTime && this.mediaTime <= this.endTime;
-    },
+  setup(props) {
+    const startTime = computed(() => props.model["start-time"]);
+    const endTime = computed(() => props.model["end-time"]);
+    return {
+      ...useCuePoint(startTime, endTime),
+    };
   },
 };
 </script>

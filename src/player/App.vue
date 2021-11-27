@@ -4,11 +4,12 @@
       ref="media-player"
       :sources="sources"
       type="video"
-      @ready="onMediaReady"
-      @play="onMediaPlay"
-      @pause="onMediaPause"
-      @stop="onMediaStop"
-      @seeked="onMediaSeeked"
+      :use-request-animation-frame="true"
+      @ready="_onMediaReady"
+      @play="_onMediaPlay"
+      @pause="_onMediaPause"
+      @stop="_onMediaStop"
+      @timeupdate="_onMediaTimeupdate"
     />
 
     <div>{{ mediaTime }}</div>
@@ -66,38 +67,51 @@ export default {
   },
   methods: {
     ...mapMutations("media", {
-      setMediaReady: "setReady",
-      setMediaPlaying: "setPlaying",
-      setMediaTime: "setTime",
+      _setMediaReady: "setReady",
+      _setMediaPlaying: "setPlaying",
+      _setMediaTime: "setTime",
     }),
     ...mapGetters("components", ["getScenarios"]),
     ...mapActions("components", ["load"]),
-    onMediaReady() {
-      this.setMediaReady(true);
-    },
-    onMediaPlay() {
-      this.setMediaPlaying(true);
-      this.triggerMediaTimeUpdate();
-    },
-    onMediaPause() {
-      this.setMediaPlaying(false);
-      this.triggerMediaTimeUpdate(false);
-    },
-    onMediaStop() {
-      this.setMediaPlaying(false);
-      this.triggerMediaTimeUpdate(false);
-    },
-    onMediaSeeked() {
-      if (!this.mediaPlaying) {
-        this.triggerMediaTimeUpdate(false);
-      }
-    },
-    triggerMediaTimeUpdate(loop) {
-      if (loop !== false && this.mediaPlaying) {
-        window.requestAnimationFrame(this.triggerMediaTimeUpdate);
-      }
 
-      this.setMediaTime(this.mediaPlayer.getTime());
+    /**
+     * The media's 'ready' event handler
+     * @private
+     */
+    _onMediaReady() {
+      this._setMediaReady(true);
+    },
+
+    /**
+     * The media's 'play' event handler
+     * @private
+     */
+    _onMediaPlay() {
+      this._setMediaPlaying(true);
+    },
+
+    /**
+     * The media's 'pause' event handler
+     * @private
+     */
+    _onMediaPause() {
+      this._setMediaPlaying(false);
+    },
+
+    /**
+     * The media's 'stop' event handler
+     * @private
+     */
+    _onMediaStop() {
+      this._setMediaPlaying(false);
+    },
+
+    /**
+     * The media's 'timeupdate' event handler
+     * @private
+     */
+    _onMediaTimeupdate() {
+      this._setMediaTime(this.mediaPlayer.getTime());
     },
   },
 };
