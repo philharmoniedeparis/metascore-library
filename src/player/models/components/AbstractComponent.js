@@ -1,5 +1,10 @@
 import AbstractModel from "@/core/models/AbstractModel";
-import { Scenario, Block } from "@/player/models/ComponentHierarchy";
+import {
+  Scenario,
+  Block,
+  Page,
+  VideoRenderer,
+} from "@/player/models/ComponentHierarchy";
 import {
   createStringField,
   createUuidField,
@@ -8,12 +13,14 @@ import {
 import { merge } from "@/core/utils/Object";
 
 export class AbstractComponent extends AbstractModel {
-  static entity = "Component";
+  static entity = "AbstractComponent";
 
   static types() {
     return {
       Scenario,
       Block,
+      Page,
+      VideoRenderer,
     };
   }
 

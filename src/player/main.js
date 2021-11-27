@@ -13,13 +13,16 @@ export class Player {
   static version = packageInfo.version;
 
   constructor({ el = null, locale = "fr", debug = false } = {}) {
+    this._events = new Emitter();
+    this._app = createApp(App, {});
+
     const i18n = createI18n({ locale });
+    this._app.use(i18n);
+
     const store = createStore({
       debug,
     });
-
-    this._events = new Emitter();
-    this._app = createApp(App, {}).use(i18n).use(store);
+    this._app.use(store);
 
     if (el) {
       this.mount(el);

@@ -5,7 +5,7 @@
       :sources="sources"
       type="video"
       :use-request-animation-frame="true"
-      @ready="_onMediaReady"
+      @loadedmetadata="_onMediaLoadedmetadata"
       @play="_onMediaPlay"
       @pause="_onMediaPause"
       @stop="_onMediaStop"
@@ -29,6 +29,16 @@ export default {
   components: {
     MediaPlayer,
     Scenario,
+  },
+  provide() {
+    return {
+      setMediaTime: (time) => {
+        this.setMediaTime(time);
+      },
+      getMedia: () => {
+        return this.mediaPlayer;
+      },
+    };
   },
   data() {
     return {
@@ -74,11 +84,15 @@ export default {
     ...mapGetters("components", ["getScenarios"]),
     ...mapActions("components", ["load"]),
 
+    setMediaTime(time) {
+      this.mediaPlayer.setTime(time);
+    },
+
     /**
      * The media's 'ready' event handler
      * @private
      */
-    _onMediaReady() {
+    _onMediaLoadedmetadata() {
       this._setMediaReady(true);
     },
 
@@ -119,8 +133,12 @@ export default {
 
 <style lang="scss" scoped>
 .metaScore-player {
-  > .media-player {
-    //display: none;
+  ::v-deep(& > .media-player) {
+    display: none;
+  }
+
+  ::v-deep(.metaScore-component) {
+    position: absolute;
   }
 }
 </style>

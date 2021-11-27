@@ -1,11 +1,11 @@
-import { AbstractComponent, Block } from "@/player/models/ComponentHierarchy";
+import { AbstractComponent } from "@/player/models/ComponentHierarchy";
 import { createRelationField } from "@/core/models/Helpers.js";
 import { merge } from "@/core/utils/Object";
 
 export class Scenario extends AbstractComponent {
   static entity = "Scenario";
 
-  static baseEntity = "Component";
+  static baseEntity = "AbstractComponent";
 
   static get schema() {
     const ajv = super.ajv;
@@ -15,7 +15,7 @@ export class Scenario extends AbstractComponent {
         children: createRelationField({
           ajv,
           type: "hasManyBy",
-          model: Block,
+          model: AbstractComponent,
           foreign_key: "children_ids",
         }),
       },

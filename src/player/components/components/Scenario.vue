@@ -9,10 +9,12 @@
 <script>
 import { mapState } from "vuex";
 import Block from "./Block";
+import VideoRenderer from "./VideoRenderer";
 
 export default {
   components: {
     Block,
+    VideoRenderer,
   },
   props: {
     model: {

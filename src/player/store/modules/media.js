@@ -3,19 +3,19 @@ export default function () {
     namespaced: true,
     state: {
       ready: false,
-      playing: false,
       time: 0,
+      playing: false,
     },
     getters: {},
     mutations: {
       setReady(state, ready) {
         state.ready = ready;
       },
-      setPlaying(state, playing) {
-        state.playing = playing;
-      },
       setTime(state, time) {
         state.time = time;
+      },
+      setPlaying(state, playing) {
+        state.playing = playing;
       },
     },
     actions: {},

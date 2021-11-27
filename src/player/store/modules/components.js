@@ -1,14 +1,10 @@
-import {
-  AbstractComponent,
-  Scenario,
-  Block,
-} from "@/player/models/ComponentHierarchy";
+import * as component_models from "@/player/models/ComponentHierarchy";
 
 export default function ({ database } = {}) {
   // Register models in ORM database
-  database.register(AbstractComponent);
-  database.register(Block);
-  database.register(Scenario);
+  Object.values(component_models).forEach((model) => {
+    database.register(model);
+  });
 
   return {
     namespaced: true,
@@ -35,36 +31,39 @@ export default function ({ database } = {}) {
             children: [
               {
                 type: "Block",
-                id: "component-ikECn8trII",
+                id: "component-1",
                 name: "Block 1",
                 "pager-visibility": "visible",
                 pages: [
                   {
                     type: "page",
-                    id: "component-bBwuGf7KgU",
+                    id: "component-2",
                   },
                   {
                     type: "page",
-                    id: "component-myfiIS90PZ",
+                    id: "component-3",
                   },
                 ],
               },
               {
+                type: "VideoRenderer",
+                id: "component-5",
+                name: "Video Renderer",
+                "start-time": 0,
+                "end-time": 20,
+              },
+              {
                 type: "Block",
-                id: "component-skECn8trII",
+                id: "component-4",
                 name: "Block 2",
                 "start-time": 2,
                 "end-time": 10,
               },
             ],
           },
-          {
-            type: "Block",
-            id: "component-akECn8trII",
-            name: "Block 3",
-          },
         ];
-        Scenario.insert({ data });
+
+        component_models.Scenario.insert({ data });
 
         commit("setActiveScenario", "scenario-1");
       },

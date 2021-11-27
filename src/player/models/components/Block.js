@@ -10,7 +10,7 @@ import { merge } from "@/core/utils/Object";
 export class Block extends AbstractComponent {
   static entity = "Block";
 
-  static baseEntity = "Component";
+  static baseEntity = "AbstractComponent";
 
   static get schema() {
     const ajv = this.ajv;

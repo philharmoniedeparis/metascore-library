@@ -4,3 +4,5 @@
 export * from "./components/AbstractComponent";
 export * from "./components/Scenario";
 export * from "./components/Block";
+export * from "./components/Page";
+export * from "./components/VideoRenderer";

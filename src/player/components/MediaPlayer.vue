@@ -100,7 +100,7 @@ export default {
       default: false,
     },
   },
-  emits: ["ready", "timeupdate"],
+  emits: ["timeupdate"],
   data() {
     return {
       playing: false,
@@ -263,8 +263,6 @@ export default {
           break;
         }
       }
-
-      this.$emit("ready");
     },
 
     /**
@@ -316,7 +314,7 @@ export default {
      */
     _onPlay() {
       this.playing = true;
-      this.triggerTimeUpdate();
+      this._triggerTimeUpdate();
     },
 
     /**
@@ -325,7 +323,7 @@ export default {
      */
     _onPause() {
       this.playing = false;
-      this.triggerTimeUpdate(false);
+      this._triggerTimeUpdate(false);
     },
 
     /**
@@ -334,7 +332,7 @@ export default {
      */
     _onStop() {
       this.playing = false;
-      this.triggerTimeUpdate(false);
+      this._triggerTimeUpdate(false);
     },
 
     /**
@@ -343,7 +341,7 @@ export default {
      */
     _onSeeked() {
       if (!this.playing) {
-        this.triggerTimeUpdate(false);
+        this._triggerTimeUpdate(false);
       }
     },
 
@@ -358,7 +356,7 @@ export default {
       }
 
       if (repeat !== false && this.playing) {
-        window.requestAnimationFrame(this.triggerTimeUpdate);
+        window.requestAnimationFrame(this._triggerTimeUpdate);
       }
 
       this.$emit("timeupdate");

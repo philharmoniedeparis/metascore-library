@@ -73,11 +73,7 @@ export default class AbstractModel extends Model {
    * @returns {object} The list of properties in JSON schema format
    */
   static get properties() {
-    if (!this._properties) {
-      this._properties = getProperties(this.schema);
-    }
-
-    return this._properties;
+    return getProperties(this.schema);
   }
 
   /**

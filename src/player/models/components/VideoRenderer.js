@@ -2,8 +2,8 @@ import { AbstractComponent } from "@/player/models/ComponentHierarchy";
 import { createTimeField } from "@/core/models/Helpers.js";
 import { merge } from "@/core/utils/Object";
 
-export class Page extends AbstractComponent {
-  static entity = "Page";
+export class VideoRenderer extends AbstractComponent {
+  static entity = "VideoRenderer";
 
   static baseEntity = "AbstractComponent";
 
@@ -32,19 +32,8 @@ export class Page extends AbstractComponent {
   static fields() {
     return {
       ...super.fields(),
-      children_ids: this.attr([]),
     };
-  }
-
-  /**
-   * @inheritdoc
-   */
-  $toJson() {
-    const json = super.$toJson();
-    delete json.children_ids;
-
-    return json;
   }
 }
 
-export default Page;
+export default VideoRenderer;
