@@ -6,7 +6,9 @@
 <template>
   <div
     v-show="active"
+    :id="model.id"
     :class="['metaScore-component', 'block', { active }]"
+    :style="{ ...position, ...size }"
     @mouseenter="_onMouseEnter"
     @mouseleave="_onMouseLeave"
   >
@@ -34,6 +36,7 @@
       </ul>
     </nav>
     <div class="pages">
+      {{ model.name }}
       <template v-for="page in model.pages" :key="page.id">
         <page :model="page" />
       </template>
@@ -42,8 +45,10 @@
 </template>
 
 <script>
-import { computed } from "vue";
-import useCuePoint from "@/player/composables/useCuePoint";
+import { toRef } from "vue";
+import useTime from "@/player/composables/useTime";
+import usePosition from "@/player/composables/usePosition";
+import useSize from "@/player/composables/useSize";
 import Page from "./Page";
 
 export default {
@@ -60,10 +65,12 @@ export default {
     },
   },
   setup(props) {
-    const startTime = computed(() => props.model["start-time"]);
-    const endTime = computed(() => props.model["end-time"]);
+    const model = toRef(props, "model");
+
     return {
-      ...useCuePoint(startTime, endTime),
+      ...useTime(model),
+      ...usePosition(model),
+      ...useSize(model),
     };
   },
   data() {
@@ -123,4 +130,48 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.block {
+  min-width: 10px;
+  min-height: 10px;
+  width: 200px;
+  height: 200px;
+  color: rgb(66, 66, 66);
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: contain;
+  background-color: rgb(238, 238, 238);
+  border: 1px solid rgb(204, 204, 204);
+  font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
+  border-radius: 10px;
+  overflow: hidden;
+
+  .pager {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: rgba(214, 214, 214, 0.6);
+    text-align: right;
+    user-select: none;
+
+    .count {
+      display: inline-block;
+      margin-right: 10px;
+      color: rgb(99, 99, 99);
+      font-size: 10px;
+      font-weight: bold;
+      vertical-align: middle;
+      cursor: default;
+    }
+
+    .links {
+      display: flex;
+      margin-right: 2px;
+      flex-direction: row;
+      vertical-align: middle;
+    }
+  }
+}
+</style>

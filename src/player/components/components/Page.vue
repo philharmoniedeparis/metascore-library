@@ -4,14 +4,17 @@
 </i18n>
 
 <template>
-  <div v-show="active" :class="['metaScore-component', 'page', { active }]">
+  <div
+    v-show="active"
+    :id="model.id"
+    :class="['metaScore-component', 'page', { active }]"
+  >
     Page
   </div>
 </template>
 
 <script>
-import { computed } from "vue";
-import useCuePoint from "@/player/composables/useCuePoint";
+import useTime from "@/player/composables/useTime";
 
 export default {
   props: {
@@ -24,10 +27,8 @@ export default {
     },
   },
   setup(props) {
-    const startTime = computed(() => props.model["start-time"]);
-    const endTime = computed(() => props.model["end-time"]);
     return {
-      ...useCuePoint(startTime, endTime),
+      ...useTime(props.model),
     };
   },
 };

@@ -6,6 +6,7 @@
 <template>
   <div
     v-show="active"
+    :id="model.id"
     :class="['metaScore-component', 'video-renderer', { active }]"
   >
     <canvas ref="canvas" />
@@ -13,12 +14,11 @@
 </template>
 
 <script>
-import { computed } from "vue";
 import { mapState } from "vuex";
-import useCuePoint from "@/player/composables/useCuePoint";
+import useTime from "@/player/composables/useTime";
 
 export default {
-  inject: ["getMedia"],
+  inject: ["getMediaElement"],
   props: {
     /**
      * The associated vuex-orm model
@@ -29,10 +29,8 @@ export default {
     },
   },
   setup(props) {
-    const startTime = computed(() => props.model["start-time"]);
-    const endTime = computed(() => props.model["end-time"]);
     return {
-      ...useCuePoint(startTime, endTime),
+      ...useTime(props.model),
     };
   },
   computed: {
@@ -67,7 +65,7 @@ export default {
         return;
       }
 
-      const media_el = this.getMedia().getElement();
+      const media_el = this.getMediaElement();
       if (media_el instanceof HTMLVideoElement) {
         try {
           this.canvas.width = media_el.videoWidth;
@@ -83,4 +81,17 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.video-renderer {
+  background-color: rgb(0, 0, 0);
+  border: 0 solid rgb(0, 0, 0);
+  border-radius: 10px;
+  overflow: hidden;
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+</style>

@@ -20,6 +20,7 @@
     "dashjs": "^4.1.0",
     "hls.js": "^1.1.1",
     "lodash": "^4.17.21",
+    "mixwith": "^0.1.1",
     "tiny-emitter": "^2.1.0",
     "url-regex": "^5.0.0",
     "uuid": "^8.3.2",

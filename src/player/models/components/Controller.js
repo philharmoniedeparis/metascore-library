@@ -2,16 +2,14 @@ import { AbstractComponent } from "@/player/models/ComponentHierarchy";
 import { mix } from "mixwith";
 import TimedComponent from "./mixins/TimedComponent";
 import PositionableComponent from "./mixins/PositionableComponent";
-import ResizableComponent from "./mixins/ResizableComponent";
 
-export class VideoRenderer extends mix(
+export class Controller extends mix(
   AbstractComponent,
-  PositionableComponent,
-  ResizableComponent
+  PositionableComponent
 ).with(TimedComponent) {
-  static entity = "VideoRenderer";
+  static entity = "Controller";
 
   static baseEntity = "AbstractComponent";
 }
 
-export default VideoRenderer;
+export default Controller;

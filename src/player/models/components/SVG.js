@@ -4,14 +4,14 @@ import TimedComponent from "./mixins/TimedComponent";
 import PositionableComponent from "./mixins/PositionableComponent";
 import ResizableComponent from "./mixins/ResizableComponent";
 
-export class VideoRenderer extends mix(
+export class SVG extends mix(
   AbstractComponent,
   PositionableComponent,
   ResizableComponent
 ).with(TimedComponent) {
-  static entity = "VideoRenderer";
+  static entity = "SVG";
 
   static baseEntity = "AbstractComponent";
 }
 
-export default VideoRenderer;
+export default SVG;

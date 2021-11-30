@@ -1,71 +1,4 @@
-import { pad, escapeHTML } from "./String";
-import { isEmpty } from "./Var";
-import Locale from "../Locale";
-import HTML5 from "../media/renderer/HTML5";
-import HLS from "../media/renderer/HLS";
-import Dash from "../media/renderer/Dash";
-
-/**
- * @type {Array} The list of renderers to use in order of priority
- */
-const RENDERERS = [HTML5, HLS, Dash];
-
-/**
- * Get a renderer class from a mime type
- *
- * @param {string} mime The mime type
- * @returns {AbstractRenderer} The matched renderer, or null
- */
-export function getRendererForMime(mime) {
-  const index = RENDERERS.findIndex((renderer) => {
-    return renderer.canPlayType(mime);
-  });
-
-  if (index > -1) {
-    return RENDERERS[index];
-  }
-
-  return null;
-}
-
-/**
- * Get a media file's duration in seconds
- *
- * @private
- * @param {object} file A file descriptor
- * @property {string} mime The file's mime type
- * @property {string} url The file's url
- * @param {Function} callback A callback function to call with an eventual error and the duration
- */
-export function getFileDuration(file, callback) {
-  if (isEmpty(file.mime)) {
-    const message = Locale.t(
-      "media.getFileDuration.no-mime.error",
-      "The file's mime type could not be determined for !url",
-      { "!url": escapeHTML(file.url) }
-    );
-    callback(new Error(message));
-  } else {
-    const renderer = getRendererForMime(file.mime);
-    if (renderer) {
-      renderer.getDurationFromURI(file.url, (error, duration) => {
-        if (error) {
-          callback(error);
-          return;
-        }
-
-        callback(null, parseFloat(duration));
-      });
-    } else {
-      const message = Locale.t(
-        "media.getFileDuration.no-renderer.error",
-        "No compatible renderer found for the mime type !mime",
-        { "!mine": file.mine }
-      );
-      callback(new Error(message));
-    }
-  }
-}
+import { padStart } from "lodash";
 
 /**
  * Get an image's metadata (name, width, and height)
@@ -181,9 +114,9 @@ export function isValidMimeType(mimetype, accepted_mimetypes) {
  * @returns {string} The string represetation
  */
 export function formatTime(time) {
-  const centiseconds = pad(parseInt((time * 100) % 100, 10), 2, "0", "left");
-  const seconds = pad(parseInt(time % 60, 10), 2, "0", "left");
-  const minutes = pad(parseInt(time / 60, 10), 2, "0", "left");
+  const centiseconds = padStart(parseInt((time * 100) % 100, 10), 2, "0");
+  const seconds = padStart(parseInt(time % 60, 10), 2, "0");
+  const minutes = padStart(parseInt(time / 60, 10), 2, "0");
 
   return `${minutes}:${seconds}.${centiseconds}`;
 }

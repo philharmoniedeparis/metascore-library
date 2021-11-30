@@ -1,15 +1,4 @@
 /**
- * Generate a random number between two values
- *
- * @param {number} from The lowest value to return
- * @param {number} to The highest value to return
- * @returns {number} The random value
- */
-export function randomFromTo(from, to) {
-  return Math.random() * (to - from) + from;
-}
-
-/**
  * Linearly interpolate between start and stop by amount.
  * Mathematically the opposite of normalize.
  *
@@ -83,16 +72,4 @@ export function radians(value) {
  */
 export function degrees(value) {
   return (value * 180) / Math.PI;
-}
-
-/**
- * Round a value to a specified precision
- *
- * @param {number} value The value
- * @param {number} [precision=0] The number of decimal digits to round to
- * @returns {number} The rounded value
- */
-export function round(value, precision = 0) {
-  const multiplier = precision > 0 ? Math.pow(10, precision) : 1;
-  return +Math.round((value + Number.EPSILON) * multiplier) / multiplier;
 }

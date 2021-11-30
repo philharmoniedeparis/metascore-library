@@ -1,8 +1,10 @@
 import { AbstractComponent } from "@/player/models/ComponentHierarchy";
-import { createTimeField } from "@/core/models/Helpers.js";
-import { merge } from "@/core/utils/Object";
+import { mix } from "mixwith";
+import TimedComponent from "./mixins/TimedComponent";
+import { createCollectionField } from "@/core/models/Helpers.js";
+import { merge } from "lodash";
 
-export class Page extends AbstractComponent {
+export class Page extends mix(AbstractComponent).with(TimedComponent) {
   static entity = "Page";
 
   static baseEntity = "AbstractComponent";
@@ -12,38 +14,13 @@ export class Page extends AbstractComponent {
 
     return merge(super.schema, {
       properties: {
-        "start-time": createTimeField({
+        children: createCollectionField({
           ajv,
-          title: "Start time",
-          default: null,
-        }),
-        "end-time": createTimeField({
-          ajv,
-          title: "End time",
-          default: null,
+          model: AbstractComponent,
+          foreign_key: "children_ids",
         }),
       },
     });
-  }
-
-  /**
-   * @inheritdoc
-   */
-  static fields() {
-    return {
-      ...super.fields(),
-      children_ids: this.attr([]),
-    };
-  }
-
-  /**
-   * @inheritdoc
-   */
-  $toJson() {
-    const json = super.$toJson();
-    delete json.children_ids;
-
-    return json;
   }
 }
 

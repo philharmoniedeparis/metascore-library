@@ -1,13 +1,20 @@
-import { AbstractComponent } from "@/player/models/ComponentHierarchy";
+import { AbstractComponent, Page } from "@/player/models/ComponentHierarchy";
+import { mix } from "mixwith";
+import TimedComponent from "./mixins/TimedComponent";
+import PositionableComponent from "./mixins/PositionableComponent";
+import ResizableComponent from "./mixins/ResizableComponent";
 import {
-  createTimeField,
   createBooleanField,
   createEnumField,
-  createRelationField,
+  createCollectionField,
 } from "@/core/models/Helpers.js";
-import { merge } from "@/core/utils/Object";
+import { merge } from "lodash";
 
-export class Block extends AbstractComponent {
+export class Block extends mix(AbstractComponent).with(
+  TimedComponent,
+  PositionableComponent,
+  ResizableComponent
+) {
   static entity = "Block";
 
   static baseEntity = "AbstractComponent";
@@ -17,16 +24,6 @@ export class Block extends AbstractComponent {
 
     return merge(super.schema, {
       properties: {
-        "start-time": createTimeField({
-          ajv,
-          title: "Start time",
-          default: null,
-        }),
-        "end-time": createTimeField({
-          ajv,
-          title: "End time",
-          default: null,
-        }),
         synched: createBooleanField({
           title: "Synched",
         }),
@@ -35,34 +32,13 @@ export class Block extends AbstractComponent {
           allowd_values: ["auto", "hidden", "visible"],
           default: "auto",
         }),
-        pages: createRelationField({
+        pages: createCollectionField({
           ajv,
-          type: "hasManyBy",
-          model: AbstractComponent,
+          model: Page,
           foreign_key: "pages_ids",
         }),
       },
     });
-  }
-
-  /**
-   * @inheritdoc
-   */
-  static fields() {
-    return {
-      ...super.fields(),
-      pages_ids: this.attr([]),
-    };
-  }
-
-  /**
-   * @inheritdoc
-   */
-  $toJson() {
-    const json = super.$toJson();
-    delete json.pages_ids;
-
-    return json;
   }
 }
 

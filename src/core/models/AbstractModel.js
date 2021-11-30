@@ -1,7 +1,7 @@
 import Ajv from "ajv";
 import { Model } from "@vuex-orm/core";
 import { clone } from "@/core/utils/Var";
-import { merge, omitBy } from "@/core/utils/Object";
+import { merge, omitBy } from "lodash";
 
 /**
  * Helper function to get retreive properties from a JSON schema.
@@ -92,32 +92,18 @@ export default class AbstractModel extends Model {
     const fields = {};
 
     for (const [key, schema] of Object.entries(this.properties)) {
-      if (schema.relation) {
-        switch (schema.relation.type) {
-          case "hasMany":
-            {
-              const model = schema.relation.model;
-              const foreign_key = schema.relation.foreign_key;
-              fields[key] = this.hasMany(model, foreign_key);
-            }
-            break;
-
-          case "hasManyBy":
-            {
-              const model = schema.relation.model;
-              const foreign_key = schema.relation.foreign_key;
-              fields[key] = this.hasManyBy(model, foreign_key);
-            }
-            break;
-
-          case "morphMany":
-            // @TODO
-            break;
-        }
-        continue;
-      }
-
       switch (schema.type) {
+        case "array":
+          if (schema.format === "collection") {
+            const model = schema.model;
+            const foreign_key = schema.foreign_key;
+            fields[key] = this.hasManyBy(model, foreign_key);
+            fields[foreign_key] = this.attr([]);
+          } else {
+            fields[key] = this.attr(schema.default);
+          }
+          break;
+
         case "boolean":
           fields[key] = this.boolean(schema.default);
           break;
@@ -134,7 +120,7 @@ export default class AbstractModel extends Model {
           fields[key] = this.attr(schema.default);
       }
 
-      if (!this.requiredProperties.includes(key)) {
+      if (fields[key].nullable && !this.requiredProperties.includes(key)) {
         fields[key].nullable();
       }
     }
@@ -183,8 +169,19 @@ export default class AbstractModel extends Model {
   }
 
   $toJson() {
-    return omitBy(super.$toJson(), (value) => {
-      return value === null;
+    const internal_fields = [];
+    for (const schema of Object.values(this.properties)) {
+      if (
+        schema.type === "array" &&
+        schema.format === "collection" &&
+        "foreign_key" in schema
+      ) {
+        internal_fields.push(schema.foreign_key);
+      }
+    }
+
+    return omitBy(super.$toJson(), (value, key) => {
+      return value === null || internal_fields.includes(key);
     });
   }
 

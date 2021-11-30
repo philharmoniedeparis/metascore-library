@@ -4,14 +4,14 @@ import TimedComponent from "./mixins/TimedComponent";
 import PositionableComponent from "./mixins/PositionableComponent";
 import ResizableComponent from "./mixins/ResizableComponent";
 
-export class VideoRenderer extends mix(
+export class Media extends mix(
   AbstractComponent,
   PositionableComponent,
   ResizableComponent
 ).with(TimedComponent) {
-  static entity = "VideoRenderer";
+  static entity = "Media";
 
   static baseEntity = "AbstractComponent";
 }
 
-export default VideoRenderer;
+export default Media;

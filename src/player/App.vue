@@ -35,8 +35,8 @@ export default {
       setMediaTime: (time) => {
         this.setMediaTime(time);
       },
-      getMedia: () => {
-        return this.mediaPlayer;
+      getMediaElement: () => {
+        return this.mediaPlayer.getElement();
       },
     };
   },
@@ -139,6 +139,9 @@ export default {
 
   ::v-deep(.metaScore-component) {
     position: absolute;
+    min-width: 1px;
+    min-height: 1px;
+    transform-style: preserve-3d;
   }
 }
 </style>

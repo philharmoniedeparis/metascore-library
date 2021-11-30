@@ -21,25 +21,3 @@ export function naturalSortSensitive() {
     return naturalCompare(a, b, false);
   };
 }
-
-/**
- * Clone an array.
- *
- * @param {Array} array The array to clone
- * @returns {Array} The new array
- */
-export function clone(array) {
-  return [...array];
-}
-
-/**
- * Get unique array values
- *
- * @param {Array} array The original array
- * @returns {Array} The array of unique values
- */
-export function unique(array) {
-  return array.filter((el, index, arr) => {
-    return arr.indexOf(el) === index;
-  });
-}

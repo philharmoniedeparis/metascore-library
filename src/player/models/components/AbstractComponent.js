@@ -10,7 +10,7 @@ import {
   createUuidField,
   createBooleanField,
 } from "@/core/models/Helpers.js";
-import { merge } from "@/core/utils/Object";
+import { merge } from "lodash";
 
 export class AbstractComponent extends AbstractModel {
   static entity = "AbstractComponent";

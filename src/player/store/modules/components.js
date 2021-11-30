@@ -44,6 +44,9 @@ export default function ({ database } = {}) {
                     id: "component-3",
                   },
                 ],
+                position: [10, 30],
+                dimension: [200, 200],
+                translate: [[0, [0, 0]]],
               },
               {
                 type: "VideoRenderer",
@@ -58,6 +61,9 @@ export default function ({ database } = {}) {
                 name: "Block 2",
                 "start-time": 2,
                 "end-time": 10,
+                position: [100, 300],
+                dimension: [100, 200],
+                translate: [[0, [0, 0]]],
               },
             ],
           },
@@ -66,6 +72,17 @@ export default function ({ database } = {}) {
         component_models.Scenario.insert({ data });
 
         commit("setActiveScenario", "scenario-1");
+
+        setTimeout(() => {
+          console.log("setTimeout");
+          component_models.AbstractComponent.update({
+            where: "component-1",
+            data: {
+              name: "New name",
+              position: [0, 0],
+            },
+          });
+        }, 2000);
       },
     },
   };

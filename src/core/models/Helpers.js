@@ -46,14 +46,21 @@ export const createIntegerField = ({
   minimum = null,
   maximum = null,
 } = {}) => {
-  return {
+  const field = {
     type: "integer",
     title,
     description,
     default: default_value,
-    minimum,
-    maximum,
   };
+
+  if (minimum !== null) {
+    field.minimum = minimum;
+  }
+  if (maximum !== null) {
+    field.maximum = maximum;
+  }
+
+  return field;
 };
 
 export const createBooleanField = ({
@@ -69,19 +76,32 @@ export const createBooleanField = ({
   };
 };
 
-export const create2DPointField = ({
+export const createArrayField = ({
   title = "",
   description = "",
-  default: default_value = [0, 0],
+  default: default_value = [],
+  minItems = null,
+  maxItems = null,
+  items = null,
 } = {}) => {
-  return {
+  const field = {
     type: "array",
-    items: [{ type: "number" }, { type: "number" }],
-    minItems: 2,
     title,
     description,
     default: default_value,
   };
+
+  if (minItems !== null) {
+    field.minItems = minItems;
+  }
+  if (maxItems !== null) {
+    field.maxItems = maxItems;
+  }
+  if (items !== null) {
+    field.items = items;
+  }
+
+  return field;
 };
 
 export const createEnumField = ({
@@ -110,33 +130,19 @@ export const createUuidField = ({
   };
 };
 
-export const createRelationField = ({
+export const createCollectionField = ({
   ajv,
   title = "",
   description = "",
-  type = "hasMany",
   model,
   foreign_key,
 } = {}) => {
-  if (ajv.getKeyword("relation") === false) {
-    ajv.addKeyword("relation", {
-      compile: function (schema) {
-        return function (data) {
-          // TODO
-          return true;
-        };
-      },
-    });
-  }
-
+  ajv.addFormat("collection", { validate: () => true });
   return {
-    title,
-    description,
-    relation: {
-      type,
-      model,
-      foreign_key,
-    },
+    ...createArrayField({ title, description }),
+    format: "collection",
+    model,
+    foreign_key,
   };
 };
 
@@ -219,25 +225,24 @@ export const createBorderRadiusField = ({
   };
 };
 
-export const createAnimatedField = ({ sub_field } = {}) => {
-  const title = sub_field.title ?? "";
-  const description = sub_field.description ?? "";
-  const default_value = sub_field.default ?? null;
-
-  delete sub_field.description;
-  delete sub_field.title;
-  delete sub_field.default;
-
+export const createAnimatedField = ({
+  ajv,
+  title = "",
+  description = "",
+  default: default_value = 0,
+  subfield,
+} = {}) => {
   return {
-    type: "array",
-    items: {
-      type: "array",
-      items: [...createTimeField(), ...sub_field],
-      minItems: 2,
-      additionalItems: false,
-    },
-    title,
-    description,
-    default: [[0, default_value]],
+    ...createArrayField({
+      title,
+      description,
+      default: default_value,
+      items: {
+        type: "array",
+        items: [createTimeField({ ajv }), subfield],
+        minItems: 2,
+        additionalItems: false,
+      },
+    }),
   };
 };

@@ -1,6 +1,6 @@
-import { AbstractComponent } from "@/player/models/ComponentHierarchy";
-import { createRelationField } from "@/core/models/Helpers.js";
-import { merge } from "@/core/utils/Object";
+import { AbstractComponent, Block } from "@/player/models/ComponentHierarchy";
+import { createCollectionField } from "@/core/models/Helpers.js";
+import { merge } from "lodash";
 
 export class Scenario extends AbstractComponent {
   static entity = "Scenario";
@@ -12,34 +12,13 @@ export class Scenario extends AbstractComponent {
 
     return merge(super.schema, {
       properties: {
-        children: createRelationField({
+        children: createCollectionField({
           ajv,
-          type: "hasManyBy",
-          model: AbstractComponent,
+          model: Block,
           foreign_key: "children_ids",
         }),
       },
     });
-  }
-
-  /**
-   * @inheritdoc
-   */
-  static fields() {
-    return {
-      ...super.fields(),
-      children_ids: this.attr(() => []),
-    };
-  }
-
-  /**
-   * @inheritdoc
-   */
-  $toJson() {
-    const json = super.$toJson();
-    delete json.children_ids;
-
-    return json;
   }
 }
 
