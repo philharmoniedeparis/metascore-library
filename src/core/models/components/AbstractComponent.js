@@ -1,11 +1,5 @@
 import AbstractModel from "../AbstractModel";
-import {
-  Scenario,
-  Block,
-  Page,
-  VideoRenderer,
-  Controller,
-} from "../ComponentHierarchy";
+import * as Components from "../ComponentHierarchy";
 import {
   createStringField,
   createUuidField,
@@ -17,13 +11,7 @@ export class AbstractComponent extends AbstractModel {
   static entity = "AbstractComponent";
 
   static types() {
-    return {
-      Scenario,
-      Block,
-      Page,
-      VideoRenderer,
-      Controller,
-    };
+    return Components;
   }
 
   static get schema() {

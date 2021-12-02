@@ -37,6 +37,7 @@ export class Cursor extends mix(AbstractComponent).with(
         form: createEnumField({
           title: "Form",
           enum: ["linear", "circular"],
+          default: "linear",
         }),
         direction: createStringField({
           title: "Direction",

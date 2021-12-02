@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper v-if="active" :model="model" class="scenario">
+  <component-wrapper v-if="isActiveScenario" :model="model" class="scenario">
     <template v-for="child in model.children" :key="child.id">
       <component :is="child.type" :model="child" />
     </template>
@@ -40,11 +40,16 @@ export default {
   },
   computed: {
     ...mapState("components", ["activeScenario"]),
-    active() {
+    isActiveScenario() {
       return this.model.id === this.activeScenario;
     },
   },
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.scenario {
+  width: 100%;
+  height: 100%;
+}
+</style>

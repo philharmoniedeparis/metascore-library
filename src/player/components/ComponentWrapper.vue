@@ -8,9 +8,14 @@
     v-show="active && !hidden"
     :id="model.id"
     :class="['metaScore-component', { active, hidden }]"
-    :style="{ ...background, ...border, ...position, ...size }"
+    :style="{ ...position, ...size }"
   >
-    <slot />
+    <div
+      class="metaScore-component--inner"
+      :style="{ ...background, ...border }"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -53,5 +58,11 @@ export default {
   min-width: 1px;
   min-height: 1px;
   transform-style: preserve-3d;
+
+  > .metaScore-component--inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

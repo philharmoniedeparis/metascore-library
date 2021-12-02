@@ -33,15 +33,13 @@ export class Animation extends mix(AbstractComponent).with(
 
     return merge(super.schema, {
       properties: {
-        type: {
-          const: "Animation",
-        },
         src: createUrlField({
           ajv,
           title: "Source",
         }),
         "start-frame": createNumberField({
           title: "Start frame",
+          default: 1,
         }),
         "loop-duration": createTimeField({
           ajv,

@@ -40,9 +40,6 @@ export default {
     },
   },
   watch: {
-    active() {
-      this.update();
-    },
     mediaReady() {
       this.update();
     },
@@ -55,7 +52,7 @@ export default {
   },
   methods: {
     update() {
-      if (!this.active) {
+      if (!this.mediaReady) {
         return;
       }
 
