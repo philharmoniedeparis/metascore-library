@@ -1,3 +1,5 @@
+import { formatTime } from "../../../core/utils/Media";
+
 export default function () {
   return {
     namespaced: true,
@@ -6,7 +8,11 @@ export default function () {
       time: 0,
       playing: false,
     },
-    getters: {},
+    getters: {
+      formattedTime(state) {
+        return formatTime(state.time);
+      },
+    },
     mutations: {
       setReady(state, ready) {
         state.ready = ready;

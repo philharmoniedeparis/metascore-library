@@ -1,41 +1,7 @@
 import Ajv from "ajv";
 import { Model } from "@vuex-orm/core";
-import { clone } from "@/core/utils/Var";
-import { merge, omitBy } from "lodash";
-
-/**
- * Helper function to get retreive properties from a JSON schema.
- *
- * @param {object} schema The schema
- * @param {Ajv?} validator An Ajv instance
- * @returns {object} The list of properties
- */
-function getProperties(schema, validator = null) {
-  let root = !validator;
-  if (root) {
-    validator = new Ajv();
-    validator.addSchema(schema);
-  }
-  if (schema.definitions) {
-    Object.entries(schema.definitions).forEach(([k, d]) => {
-      validator.addSchema(d, `#/definitions/${k}`);
-    });
-  }
-  if (schema.$ref) {
-    schema = validator.getSchema(schema.$ref).schema;
-  }
-  if (schema.properties) {
-    return clone(schema.properties);
-  }
-  let res = {};
-  let defs = schema["anyOf"] || schema["allOf"] || (root && schema["oneOf"]);
-  if (defs) {
-    defs.forEach((def) => {
-      res = merge(res, getProperties(def, validator));
-    });
-  }
-  return res;
-}
+import { omitBy } from "lodash";
+import { getProperties } from "../utils/JSONSchema";
 
 /**
  * An abstract model based on {@link https://vuex-orm.org/|@vuex-orm} and {@link http://json-schema.org/|JSON schema}
@@ -95,7 +61,7 @@ export default class AbstractModel extends Model {
       switch (schema.type) {
         case "array":
           if (schema.format === "collection") {
-            const model = schema.model;
+            const model = this.store().$db().model(schema.model);
             const foreign_key = schema.foreign_key;
             fields[key] = this.hasManyBy(model, foreign_key);
             fields[foreign_key] = this.attr([]);

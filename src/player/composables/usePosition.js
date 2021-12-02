@@ -1,21 +1,28 @@
-import { computed, readonly } from "vue";
-import { isNull, isUndefined } from "@/core/utils/Var";
+import { computed, unref, readonly } from "vue";
+import { isNull, isUndefined } from "lodash";
+import Positionable from "../../core/models/components/mixins/Positionable";
 
 export default function (model) {
-  const position = computed(() => {
-    const { position: value } = model.value;
+  if (unref(model) instanceof Positionable) {
+    const position = computed(() => {
+      const { position: value } = unref(model);
+      const ret = {};
 
-    if (!isUndefined(value) && !isNull(value)) {
-      return {
-        top: `${value[0]}px`,
-        left: `${value[1]}px`,
-      };
-    }
+      if (!isUndefined(value) && !isNull(value)) {
+        ret.left = `${value[0]}px`;
+        ret.top = `${value[1]}px`;
+      }
 
-    return {};
-  });
+      return ret;
+    });
 
+    return {
+      position: readonly(position),
+    };
+  }
+
+  // Default value.
   return {
-    position: readonly(position),
+    position: null,
   };
 }

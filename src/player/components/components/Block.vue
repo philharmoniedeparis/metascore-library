@@ -4,11 +4,9 @@
 </i18n>
 
 <template>
-  <div
-    v-show="active"
-    :id="model.id"
-    :class="['metaScore-component', 'block', { active }]"
-    :style="{ ...position, ...size }"
+  <component-wrapper
+    :model="model"
+    class="block"
     @mouseenter="_onMouseEnter"
     @mouseleave="_onMouseLeave"
   >
@@ -41,18 +39,16 @@
         <page :model="page" />
       </template>
     </div>
-  </div>
+  </component-wrapper>
 </template>
 
 <script>
-import { toRef } from "vue";
-import useTime from "@/player/composables/useTime";
-import usePosition from "@/player/composables/usePosition";
-import useSize from "@/player/composables/useSize";
+import ComponentWrapper from "../ComponentWrapper.vue";
 import Page from "./Page";
 
 export default {
   components: {
+    ComponentWrapper,
     Page,
   },
   props: {
@@ -63,15 +59,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  setup(props) {
-    const model = toRef(props, "model");
-
-    return {
-      ...useTime(model),
-      ...usePosition(model),
-      ...useSize(model),
-    };
   },
   data() {
     return {

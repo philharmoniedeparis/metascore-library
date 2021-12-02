@@ -1,10 +1,14 @@
-import { AbstractComponent } from "@/player/models/ComponentHierarchy";
+import { AbstractComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
-import TimedComponent from "./mixins/TimedComponent";
-import { createCollectionField } from "@/core/models/Helpers.js";
+import Backgroundable from "./mixins/Backgroundable";
+import Timeable from "./mixins/Timeable";
+import { createCollectionField } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
-export class Page extends mix(AbstractComponent).with(TimedComponent) {
+export class Page extends mix(AbstractComponent).with(
+  Backgroundable,
+  Timeable
+) {
   static entity = "Page";
 
   static baseEntity = "AbstractComponent";
@@ -16,7 +20,7 @@ export class Page extends mix(AbstractComponent).with(TimedComponent) {
       properties: {
         children: createCollectionField({
           ajv,
-          model: AbstractComponent,
+          model: "AbstractComponent",
           foreign_key: "children_ids",
         }),
       },

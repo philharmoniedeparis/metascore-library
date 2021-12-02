@@ -4,19 +4,36 @@
 </i18n>
 
 <template>
-  <div
-    v-show="active"
-    :id="model.id"
-    :class="['metaScore-component', 'page', { active }]"
-  >
-    Page
-  </div>
+  <component-wrapper :model="model" class="page">
+    <template v-for="child in model.children" :key="child.id">
+      <component :is="child.type" :model="child" />
+    </template>
+  </component-wrapper>
 </template>
 
 <script>
-import useTime from "@/player/composables/useTime";
+import ComponentWrapper from "../ComponentWrapper.vue";
+import Animation from "./Animation";
+import BlockToggler from "./BlockToggler";
+import Content from "./Content";
+import Controller from "./Controller";
+import Cursor from "./Cursor";
+import Media from "./Media";
+import SVG from "./SVG";
+import VideoRenderer from "./VideoRenderer";
 
 export default {
+  components: {
+    ComponentWrapper,
+    Animation,
+    BlockToggler,
+    Content,
+    Controller,
+    Cursor,
+    Media,
+    SVG,
+    VideoRenderer,
+  },
   props: {
     /**
      * The associated vuex-orm model
@@ -25,11 +42,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  setup(props) {
-    return {
-      ...useTime(props.model),
-    };
   },
 };
 </script>

@@ -4,7 +4,7 @@
 </i18n>
 
 <template>
-  <component-wrapper :model="model" class="cursor"></component-wrapper>
+  <component-wrapper :model="model" class="svg"></component-wrapper>
 </template>
 
 <script>
@@ -27,6 +27,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cursor {
+.svg {
 }
 </style>

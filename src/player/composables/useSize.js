@@ -1,21 +1,28 @@
-import { computed, readonly } from "vue";
-import { isNull, isUndefined } from "@/core/utils/Var";
+import { computed, unref, readonly } from "vue";
+import { isNull, isUndefined } from "lodash";
+import Resizable from "../../core/models/components/mixins/Resizable";
 
 export default function (model) {
-  const size = computed(() => {
-    const { dimension: value } = model.value;
+  if (unref(model) instanceof Resizable) {
+    const size = computed(() => {
+      const { dimension: value } = unref(model);
+      const ret = {};
 
-    if (!isUndefined(value) && !isNull(value)) {
-      return {
-        width: `${value[0]}px`,
-        height: `${value[1]}px`,
-      };
-    }
+      if (!isUndefined(value) && !isNull(value)) {
+        ret.width = `${value[0]}px`;
+        ret.height = `${value[1]}px`;
+      }
 
-    return {};
-  });
+      return ret;
+    });
 
+    return {
+      size: readonly(size),
+    };
+  }
+
+  // Default value.
   return {
-    size: readonly(size),
+    size: null,
   };
 }

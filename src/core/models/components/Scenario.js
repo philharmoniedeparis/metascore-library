@@ -1,5 +1,5 @@
-import { AbstractComponent, Block } from "@/player/models/ComponentHierarchy";
-import { createCollectionField } from "@/core/models/Helpers.js";
+import { AbstractComponent } from "../ComponentHierarchy";
+import { createCollectionField } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
 export class Scenario extends AbstractComponent {
@@ -14,7 +14,7 @@ export class Scenario extends AbstractComponent {
       properties: {
         children: createCollectionField({
           ajv,
-          model: Block,
+          model: "AbstractComponent",
           foreign_key: "children_ids",
         }),
       },

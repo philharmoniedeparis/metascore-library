@@ -4,20 +4,19 @@
 </i18n>
 
 <template>
-  <div
-    v-show="active"
-    :id="model.id"
-    :class="['metaScore-component', 'video-renderer', { active }]"
-  >
+  <component-wrapper :model="model" class="video-renderer">
     <canvas ref="canvas" />
-  </div>
+  </component-wrapper>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import useTime from "@/player/composables/useTime";
+import ComponentWrapper from "../ComponentWrapper.vue";
 
 export default {
+  components: {
+    ComponentWrapper,
+  },
   inject: ["getMediaElement"],
   props: {
     /**
@@ -27,11 +26,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  setup(props) {
-    return {
-      ...useTime(props.model),
-    };
   },
   computed: {
     ...mapState("media", {

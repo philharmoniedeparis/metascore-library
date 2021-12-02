@@ -1,4 +1,4 @@
-import { createTimeField } from "@/core/models/Helpers.js";
+import { createColorField, createImageField } from "../../../utils/JSONSchema";
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
 
@@ -10,14 +10,14 @@ export default Mixin(
 
         return merge(super.schema, {
           properties: {
-            "start-time": createTimeField({
+            "background-color": createColorField({
               ajv,
-              title: "Start time",
+              title: "Background color",
               default: null,
             }),
-            "end-time": createTimeField({
+            "background-image": createImageField({
               ajv,
-              title: "End time",
+              title: "Background image",
               default: null,
             }),
           },

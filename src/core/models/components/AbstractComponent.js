@@ -1,15 +1,16 @@
-import AbstractModel from "@/core/models/AbstractModel";
+import AbstractModel from "../AbstractModel";
 import {
   Scenario,
   Block,
   Page,
   VideoRenderer,
-} from "@/player/models/ComponentHierarchy";
+  Controller,
+} from "../ComponentHierarchy";
 import {
   createStringField,
   createUuidField,
   createBooleanField,
-} from "@/core/models/Helpers.js";
+} from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
 export class AbstractComponent extends AbstractModel {
@@ -21,6 +22,7 @@ export class AbstractComponent extends AbstractModel {
       Block,
       Page,
       VideoRenderer,
+      Controller,
     };
   }
 
@@ -32,6 +34,7 @@ export class AbstractComponent extends AbstractModel {
         type: createStringField({
           title: "Type",
           description: "The component's type",
+          const: this.entity,
         }),
         id: createUuidField({
           ajv,

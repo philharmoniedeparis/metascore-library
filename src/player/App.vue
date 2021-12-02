@@ -12,8 +12,6 @@
       @timeupdate="_onMediaTimeupdate"
     />
 
-    <div>{{ mediaTime }}</div>
-
     <template v-for="scenario in getScenarios()" :key="scenario.id">
       <Scenario :model="scenario" />
     </template>
@@ -21,9 +19,9 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
-import Scenario from "@/player/components/components/Scenario";
-import MediaPlayer from "@/player/components/MediaPlayer";
+import { mapGetters, mapMutations, mapActions } from "vuex";
+import Scenario from "./components/components/Scenario";
+import MediaPlayer from "./components/MediaPlayer";
 
 export default {
   components: {
@@ -33,7 +31,16 @@ export default {
   provide() {
     return {
       setMediaTime: (time) => {
-        this.setMediaTime(time);
+        this.mediaPlayer.setTime(time);
+      },
+      playMedia: () => {
+        this.mediaPlayer.play();
+      },
+      pauseMedia: () => {
+        this.mediaPlayer.pause();
+      },
+      stopMedia: () => {
+        this.mediaPlayer.stop();
       },
       getMediaElement: () => {
         return this.mediaPlayer.getElement();
@@ -59,11 +66,6 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaPlaying: "playing",
-      mediaTime: "time",
-    }),
-
     /**
      * Get the media player component
      * @return {MediaPlayer} The component
@@ -83,10 +85,6 @@ export default {
     }),
     ...mapGetters("components", ["getScenarios"]),
     ...mapActions("components", ["load"]),
-
-    setMediaTime(time) {
-      this.mediaPlayer.setTime(time);
-    },
 
     /**
      * The media's 'ready' event handler
@@ -133,15 +131,8 @@ export default {
 
 <style lang="scss" scoped>
 .metaScore-player {
-  ::v-deep(& > .media-player) {
+  ::v-deep(.media-player) {
     display: none;
-  }
-
-  ::v-deep(.metaScore-component) {
-    position: absolute;
-    min-width: 1px;
-    min-height: 1px;
-    transform-style: preserve-3d;
   }
 }
 </style>

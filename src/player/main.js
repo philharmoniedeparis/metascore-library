@@ -2,8 +2,8 @@ import packageInfo from "../../package.json";
 import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
-import { createStore } from "@/player/store";
-import App from "@/player/App.vue";
+import { createStore } from "./store";
+import App from "./App.vue";
 import "@/tailwind.css";
 
 export class Player {

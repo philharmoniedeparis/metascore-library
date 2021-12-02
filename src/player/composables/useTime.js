@@ -1,34 +1,41 @@
-import { computed, readonly } from "vue";
+import { computed, unref, readonly } from "vue";
 import { useStore } from "vuex";
-import { isNull, isUndefined } from "@/core/utils/Var";
+import { isNull, isUndefined } from "lodash";
+import Timeable from "../../core/models/components/mixins/Timeable";
 
 export default function (model) {
-  const active = computed(() => {
-    const store = useStore();
-    const mediaTime = store.state.media.time;
-    const { "start-time": startTime, "end-time": endTime } = model.value;
+  const store = useStore();
 
-    if (
-      (isUndefined(startTime) || isNull(startTime)) &&
-      (isUndefined(endTime) || isNull(endTime))
-    ) {
-      return true;
-    }
+  if (unref(model) instanceof Timeable) {
+    const active = computed(() => {
+      const mediaTime = store.state.media.time;
+      const { "start-time": startTime, "end-time": endTime } = unref(model);
 
-    if (isUndefined(endTime) || isNull(endTime)) {
-      return mediaTime >= startTime;
-    }
+      if (
+        (isUndefined(startTime) || isNull(startTime)) &&
+        (isUndefined(endTime) || isNull(endTime))
+      ) {
+        return true;
+      }
 
-    if (isUndefined(startTime) || isNull(startTime)) {
-      return mediaTime <= endTime;
-    }
+      if (isUndefined(endTime) || isNull(endTime)) {
+        return mediaTime >= startTime;
+      }
 
-    return (
-      mediaTime.value >= startTime.value && mediaTime.value <= endTime.value
-    );
-  });
+      if (isUndefined(startTime) || isNull(startTime)) {
+        return mediaTime <= endTime;
+      }
 
+      return unref(mediaTime) >= startTime && unref(mediaTime) <= endTime;
+    });
+
+    return {
+      active: readonly(active),
+    };
+  }
+
+  // Default value.
   return {
-    active: readonly(active),
+    active: true,
   };
 }

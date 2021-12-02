@@ -1,7 +1,7 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import VuexORM from "@vuex-orm/core";
-import createMediaModule from "@/player/store/modules/media";
-import createComponentsModule from "@/player/store/modules/components";
+import createMediaModule from "./modules/media";
+import createComponentsModule from "./modules/components";
 
 export function createStore({ app, debug = false }) {
   const database = new VuexORM.Database();

@@ -1,4 +1,40 @@
+import Ajv from "ajv";
+import { clone, merge } from "lodash";
 import urlRegex from "url-regex";
+
+/**
+ * Retreive properties from a JSON schema.
+ *
+ * @param {object} schema The schema
+ * @param {Ajv?} validator An Ajv instance
+ * @returns {object} The list of properties
+ */
+export const getProperties = (schema, validator = null) => {
+  const root = !validator;
+  if (root) {
+    validator = new Ajv();
+    validator.addSchema(schema);
+  }
+  if (schema.definitions) {
+    Object.entries(schema.definitions).forEach(([k, d]) => {
+      validator.addSchema(d, `#/definitions/${k}`);
+    });
+  }
+  if (schema.$ref) {
+    schema = validator.getSchema(schema.$ref).schema;
+  }
+  if (schema.properties) {
+    return clone(schema.properties);
+  }
+  let res = {};
+  const defs = schema["anyOf"] || schema["allOf"] || (root && schema["oneOf"]);
+  if (defs) {
+    defs.forEach((def) => {
+      res = merge(res, getProperties(def, validator));
+    });
+  }
+  return res;
+};
 
 export const createStringField = ({
   title = "",
@@ -108,7 +144,7 @@ export const createEnumField = ({
   title = "",
   description = "",
   default: default_value = null,
-  allowed_values,
+  enum: allowed_values = [],
 } = {}) => {
   return {
     ...createStringField({ title, description, default: default_value }),
@@ -127,6 +163,24 @@ export const createUuidField = ({
   return {
     ...createStringField({ title, description, default: default_value }),
     format: "uuid",
+  };
+};
+
+export const createUrlField = ({
+  ajv,
+  title = "",
+  description = "",
+  default: default_value = "",
+} = {}) => {
+  ajv.addFormat(
+    "url",
+    // Source: https://gist.github.com/dperini/729294
+    /^(?:https?|ftp):\/\/(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)(?:\.(?:[a-z0-9\u{00a1}-\u{ffff}]+-)*[a-z0-9\u{00a1}-\u{ffff}]+)*(?:\.(?:[a-z\u{00a1}-\u{ffff}]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/iu
+  );
+
+  return {
+    ...createStringField({ title, description, default: default_value }),
+    format: "url",
   };
 };
 

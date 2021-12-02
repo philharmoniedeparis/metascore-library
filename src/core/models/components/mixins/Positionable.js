@@ -2,7 +2,7 @@ import {
   createArrayField,
   createIntegerField,
   createAnimatedField,
-} from "@/core/models/Helpers.js";
+} from "../../../utils/JSONSchema";
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
 
@@ -14,17 +14,17 @@ export default Mixin(
 
         return merge(super.schema, {
           properties: {
-            dimension: createArrayField({
-              title: "Dimension",
-              default: [50, 50],
+            position: createArrayField({
+              title: "Position",
+              default: [0, 0],
               items: [createIntegerField(), createIntegerField()],
             }),
-            scale: createAnimatedField({
+            translate: createAnimatedField({
               ajv,
-              title: "Scale",
-              default: [[0, [1, 1]]],
+              title: "Translate",
+              default: [[0, [0, 0]]],
               subfield: createArrayField({
-                default: [1, 1],
+                default: [0, 0],
                 items: [createIntegerField(), createIntegerField()],
               }),
             }),
