@@ -18,6 +18,7 @@
     "ajv": "^6.12.6",
     "core-js": "^3.18.3",
     "dashjs": "^4.1.0",
+    "geometry-polyfill": "^1.0.7",
     "hls.js": "^1.1.1",
     "lodash": "^4.17.21",
     "lottie-web": "^5.8.1",
@@ -26,6 +27,7 @@
     "url-regex": "^5.0.0",
     "uuid": "^8.3.2",
     "vue": "^3.2.6",
+    "vue-dompurify-html": "^3.0.0-alpha.3",
     "vue-i18n": "^9.1.8",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0-0"

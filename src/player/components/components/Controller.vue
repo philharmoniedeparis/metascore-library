@@ -37,7 +37,7 @@ export default {
   components: {
     ComponentWrapper,
   },
-  inject: ["setMediaTime", "playMedia", "pauseMedia"],
+  inject: ["seekMediaTo", "playMedia", "pauseMedia"],
   props: {
     /**
      * The associated vuex-orm model
@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     onRewindClick() {
-      this.setMediaTime(0);
+      this.seekMediaTo(0);
     },
     onPlayClick() {
       this.playMedia();

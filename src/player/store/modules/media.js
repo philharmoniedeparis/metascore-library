@@ -6,6 +6,7 @@ export default function () {
     state: {
       ready: false,
       time: 0,
+      duration: 0,
       playing: false,
     },
     getters: {
@@ -19,6 +20,9 @@ export default function () {
       },
       setTime(state, time) {
         state.time = time;
+      },
+      setDuration(state, duration) {
+        state.duration = duration;
       },
       setPlaying(state, playing) {
         state.playing = playing;

@@ -3,6 +3,7 @@ import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "./store";
+import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./App.vue";
 import "@/tailwind.css";
 
@@ -18,6 +19,17 @@ export class Player {
 
     const i18n = createI18n({ locale });
     this._app.use(i18n);
+
+    this._app.use(VueDOMPurifyHTML, {
+      hooks: {
+        afterSanitizeAttributes: (node) => {
+          if (node.tagName === "A") {
+            node.setAttribute("target", "_blank");
+            node.setAttribute("rel", "noopener");
+          }
+        },
+      },
+    });
 
     const store = createStore({
       debug,

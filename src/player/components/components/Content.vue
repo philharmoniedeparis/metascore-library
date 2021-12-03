@@ -4,7 +4,9 @@
 </i18n>
 
 <template>
-  <component-wrapper :model="model" class="content"></component-wrapper>
+  <component-wrapper :model="model" class="content">
+    <div v-dompurify-html="model.text"></div>
+  </component-wrapper>
 </template>
 
 <script>
@@ -28,5 +30,6 @@ export default {
 
 <style lang="scss" scoped>
 .content {
+  overflow: hidden;
 }
 </style>

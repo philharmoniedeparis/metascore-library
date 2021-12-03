@@ -61,7 +61,7 @@ export default {
     loopDuration() {
       return this.model["loop-duration"]
         ? this.model["loop-duration"]
-        : this.getDuration();
+        : this._getDuration();
     },
     reversed() {
       return this.model.reversed;
@@ -74,93 +74,47 @@ export default {
     mediaTime() {
       this.update();
     },
-    startTime() {
-      this.update();
-    },
-    endTime() {
-      this.update();
+    model: {
+      handler() {
+        this.update();
+      },
+      deep: true,
     },
     src() {
-      this.setupAdnimation();
-    },
-    startFrame() {
-      this.update();
+      this._setupAdnimation();
     },
     loopDuration() {
-      this.updateSpeed();
-      this.update();
-    },
-    reversed() {
-      this.update();
+      this._updateSpeed();
     },
     animation(newValue, oldValue) {
       if (oldValue) {
-        oldValue.removeEventListener("DOMLoaded", this.onAnimationLoaded);
+        oldValue.removeEventListener("DOMLoaded", this._onAnimationLoaded);
         oldValue.destroy();
       }
     },
     loaded(newValue) {
       if (newValue) {
-        this.updateSpeed();
+        this._updateSpeed();
         this.update();
       }
     },
   },
   mounted() {
-    this.setupAdnimation();
+    this._setupAdnimation();
+  },
+  beforeUnmount() {
+    if (this.animation) {
+      this.animation.removeEventListener("DOMLoaded", this._onAnimationLoaded);
+      this.animation.destroy();
+    }
   },
   methods: {
-    setupAdnimation() {
-      this.loaded = false;
-
-      if (!this.model.src) {
-        return;
-      }
-
-      this.animation = Lottie.loadAnimation({
-        container: this.$refs["animation-wrapper"],
-        path: this.model.src,
-        renderer: this.renderer,
-        loop: true,
-        autoplay: false,
-      });
-
-      this.animation.addEventListener("DOMLoaded", this.onAnimationLoaded);
-    },
-    onAnimationLoaded() {
-      this.loaded = true;
-    },
-    updateSpeed() {
-      if (!this.loaded) {
-        return;
-      }
-
-      this.animation.setSpeed(this.getDuration() / this.loopDuration);
-    },
-    getDuration() {
-      return this.loaded ? this.animation.getDuration() : 0;
-    },
-    getTotalFrames() {
-      return this.loaded ? this.animation.getDuration(true) : 0;
-    },
-    getCurrentFrame() {
-      if (!this.loaded) {
-        return null;
-      }
-
-      const time = this.mediaTime - this.startTime;
-      const total_frames = this.getTotalFrames();
-      const fps = total_frames / this.loopDuration;
-      const frame = (time * fps + (this.startFrame - 1)) % total_frames;
-
-      return this.reversed ? total_frames - frame : frame;
-    },
     update() {
       if (!this.loaded) {
         return;
       }
 
-      this.animation.goToAndStop(this.getCurrentFrame(), true);
+      this.animation.goToAndStop(this._getCurrentFrame(), true);
     },
     play() {
       if (!this.loaded || this.playing) {
@@ -177,6 +131,51 @@ export default {
 
       this.animation.stop();
       this.playing = false;
+    },
+    _setupAdnimation() {
+      this.loaded = false;
+
+      if (!this.model.src) {
+        return;
+      }
+
+      this.animation = Lottie.loadAnimation({
+        container: this.$refs["animation-wrapper"],
+        path: this.model.src,
+        renderer: this.renderer,
+        loop: true,
+        autoplay: false,
+      });
+
+      this.animation.addEventListener("DOMLoaded", this._onAnimationLoaded);
+    },
+    _onAnimationLoaded() {
+      this.loaded = true;
+    },
+    _updateSpeed() {
+      if (!this.loaded) {
+        return;
+      }
+
+      this.animation.setSpeed(this._getDuration() / this.loopDuration);
+    },
+    _getDuration() {
+      return this.loaded ? this.animation.getDuration() : 0;
+    },
+    _getTotalFrames() {
+      return this.loaded ? this.animation.getDuration(true) : 0;
+    },
+    _getCurrentFrame() {
+      if (!this.loaded) {
+        return null;
+      }
+
+      const time = this.mediaTime - this.startTime;
+      const total_frames = this._getTotalFrames();
+      const fps = total_frames / this.loopDuration;
+      const frame = (time * fps + (this.startFrame - 1)) % total_frames;
+
+      return this.reversed ? total_frames - frame : frame;
     },
   },
 };

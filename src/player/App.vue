@@ -30,7 +30,7 @@ export default {
   },
   provide() {
     return {
-      setMediaTime: (time) => {
+      seekMediaTo: (time) => {
         this.mediaPlayer.setTime(time);
       },
       playMedia: () => {
@@ -82,6 +82,7 @@ export default {
       _setMediaReady: "setReady",
       _setMediaPlaying: "setPlaying",
       _setMediaTime: "setTime",
+      _setMediaDuration: "setDuration",
     }),
     ...mapGetters("components", ["getScenarios"]),
     ...mapActions("components", ["load"]),
@@ -92,6 +93,7 @@ export default {
      */
     _onMediaLoadedmetadata() {
       this._setMediaReady(true);
+      this._setMediaDuration(this.mediaPlayer.getDuration());
     },
 
     /**

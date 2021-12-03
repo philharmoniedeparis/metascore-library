@@ -52,6 +52,7 @@ export class Cursor extends mix(AbstractComponent).with(
           title: "Cursor width",
           multipleOf: 1,
           minimum: 0,
+          default: 1,
         }),
         "cursor-color": createColorField({
           ajv,
