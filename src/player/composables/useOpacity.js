@@ -1,26 +1,26 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import Hideable from "../../core/models/components/mixins/Hideable";
+import Opacitiable from "../../core/models/components/mixins/Opacitiable";
 
 export default function (model) {
-  if (unref(model) instanceof Hideable) {
-    const hidden = computed(() => {
-      const { hidden: value } = unref(model);
+  if (unref(model) instanceof Opacitiable) {
+    const opacity = computed(() => {
+      const { opacity: value } = unref(model);
 
       if (!isUndefined(value) && !isNull(value)) {
         return value;
       }
 
-      return false;
+      return null;
     });
 
     return {
-      hidden: readonly(hidden),
+      opacity: readonly(opacity),
     };
   }
 
   // Default value.
   return {
-    hidden: null,
+    opacity: null,
   };
 }

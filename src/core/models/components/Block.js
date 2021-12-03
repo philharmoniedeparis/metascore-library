@@ -1,10 +1,11 @@
 import { AbstractComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
-import Hideable from "./mixins/Hideable";
-import Positionable from "./mixins/Positionable";
-import Resizable from "./mixins/Resizable";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
+import Hideable from "./mixins/Hideable";
+import Opacitiable from "./mixins/Opacitiable";
+import Positionable from "./mixins/Positionable";
+import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
 import {
   createBooleanField,
@@ -14,11 +15,12 @@ import {
 import { merge } from "lodash";
 
 export class Block extends mix(AbstractComponent).with(
-  Hideable,
-  Positionable,
-  Resizable,
   Backgroundable,
   Borderable,
+  Hideable,
+  Opacitiable,
+  Positionable,
+  Resizable,
   Timeable
 ) {
   static entity = "Block";

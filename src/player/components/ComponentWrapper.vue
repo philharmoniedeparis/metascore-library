@@ -12,7 +12,7 @@
   >
     <div
       class="metaScore-component--inner"
-      :style="{ ...background, ...border }"
+      :style="{ ...background, ...border, opacity }"
     >
       <slot />
     </div>
@@ -21,9 +21,10 @@
 
 <script>
 import { toRef } from "vue";
-import useHidden from "../composables/useHidden";
-import useBorder from "../composables/useBorder";
 import useBackground from "../composables/useBackground";
+import useBorder from "../composables/useBorder";
+import useHidden from "../composables/useHidden";
+import useOpacity from "../composables/useOpacity";
 import usePosition from "../composables/usePosition";
 import useSize from "../composables/useSize";
 import useTime from "../composables/useTime";
@@ -41,9 +42,10 @@ export default {
   setup(props) {
     const model = toRef(props, "model");
     return {
-      ...useHidden(model),
       ...useBackground(model),
       ...useBorder(model),
+      ...useHidden(model),
+      ...useOpacity(model),
       ...usePosition(model),
       ...useSize(model),
       ...useTime(model),

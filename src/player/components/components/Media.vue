@@ -4,7 +4,14 @@
 </i18n>
 
 <template>
-  <component-wrapper :model="model" class="media"></component-wrapper>
+  <component-wrapper :model="model" class="media">
+    <component
+      :is="model.tag"
+      :src="model.src"
+      controls
+      playsinline
+    ></component>
+  </component-wrapper>
 </template>
 
 <script>
@@ -28,5 +35,19 @@ export default {
 
 <style lang="scss" scoped>
 .media {
+  ::v-deep(.metaScore-component--inner) {
+    display: flex;
+    align-items: center;
+
+    video,
+    audio {
+      width: 100%;
+      object-fit: contain;
+    }
+
+    video {
+      height: 100%;
+    }
+  }
 }
 </style>

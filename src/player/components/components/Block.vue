@@ -14,19 +14,23 @@
       <div class="count"></div>
       <ul class="links">
         <li>
-          <a href="#" aria-label="First" @click="_onPagerFirstClick">
+          <a href="#" aria-label="First" @click.prevent="_onPagerFirstClick">
             <span aria-hidden="true">&laquo;</span>
             <span class="sr-only">First</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Previous" @click="_onPagerPreviousClick">
+          <a
+            href="#"
+            aria-label="Previous"
+            @click.prevent="_onPagerPreviousClick"
+          >
             <span aria-hidden="true">&laquo;</span>
             <span class="sr-only">Previous</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Next" @click="_onPagerNextClick">
+          <a href="#" aria-label="Next" @click.prevent="_onPagerNextClick">
             <span aria-hidden="true">&raquo;</span>
             <span class="sr-only">Next</span>
           </a>
@@ -45,6 +49,8 @@
 <script>
 import ComponentWrapper from "../ComponentWrapper.vue";
 import Page from "./Page";
+
+// @TODO: implement pager
 
 export default {
   components: {

@@ -36,6 +36,7 @@ export default function ({ database } = {}) {
                 position: [0, 0],
                 dimension: [100, 100],
                 src: "http://localhost:8080/assets/animation.json",
+                opacity: 0.5,
               },
               {
                 type: "Block",
@@ -103,13 +104,14 @@ export default function ({ database } = {}) {
                 name: "SVG",
                 position: [100, 200],
                 dimension: [100, 100],
-                src: "https://metascore.philharmoniedeparis.fr/sites/default/files/uploads/media/svg/15.accordeon.svg",
+                src: "http://localhost:8080/assets/sample.svg",
+                colors: ["#0000FF"],
               },
               {
                 type: "VideoRenderer",
                 id: "videorenderer-1",
                 name: "Video Renderer",
-                position: [20, 200],
+                position: [200, 200],
                 dimension: [100, 100],
               },
             ],
@@ -128,6 +130,14 @@ export default function ({ database } = {}) {
               name: "New name",
               position: [0, 0],
               "background-color": "#0000FF",
+            },
+          });
+
+          component_models.AbstractComponent.update({
+            where: "svg-1",
+            data: {
+              stroke: "#FF0000",
+              "stroke-width": 2,
             },
           });
         }, 2000);

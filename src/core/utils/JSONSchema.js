@@ -1,6 +1,7 @@
 import Ajv from "ajv";
 import { clone, merge } from "lodash";
 import urlRegex from "url-regex";
+import validateColor from "validate-color";
 
 /**
  * Retreive properties from a JSON schema.
@@ -214,11 +215,7 @@ export const createColorField = ({
   description = "",
   default: default_value = null,
 } = {}) => {
-  ajv.addFormat(
-    "color",
-    /(#([\da-f]{3}){1,2}|(rgb|hsl)a\((\d{1,3}%?,\s?){3}(1|0|0?\.\d+)\)|(rgb|hsl)\(\d{1,3}%?(,\s?\d{1,3}%?){2}\))/
-  );
-
+  ajv.addFormat("color", { validate: validateColor });
   return {
     type: "string",
     format: "color",
@@ -248,7 +245,6 @@ export const createAngleField = ({
   default: default_value = 0,
 } = {}) => {
   ajv.addFormat("angle", { validate: () => true });
-
   return {
     ...createIntegerField({
       title,

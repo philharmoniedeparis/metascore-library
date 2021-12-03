@@ -1,11 +1,13 @@
 import { AbstractComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Hideable from "./mixins/Hideable";
+import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Timeable from "./mixins/Timeable";
 
 export class Controller extends mix(AbstractComponent).with(
   Hideable,
+  Opacitiable,
   Positionable,
   Timeable
 ) {

@@ -5,7 +5,7 @@
 
 <template>
   <component-wrapper :model="model" class="cursor">
-    <canvas ref="canvas" @click="_onClick" />
+    <canvas ref="canvas" @click.prevent="_onClick" />
   </component-wrapper>
 </template>
 
@@ -14,6 +14,8 @@ import "../../../../polyfills/GeomertyUtils";
 import { mapState } from "vuex";
 import ComponentWrapper from "../ComponentWrapper.vue";
 import { map, radians } from "../../../core/utils/Math";
+
+// @TODO: update on resize
 
 export default {
   components: {

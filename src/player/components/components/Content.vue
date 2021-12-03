@@ -12,6 +12,8 @@
 <script>
 import ComponentWrapper from "../ComponentWrapper.vue";
 
+// @TODO: add link auto-highlighting
+
 export default {
   components: {
     ComponentWrapper,
