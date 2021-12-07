@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { AbstractComponent, EmbeddableComponent } from "../ComponentHierarchy";
 import { createCollectionField } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
@@ -14,7 +14,7 @@ export class Scenario extends AbstractComponent {
       properties: {
         children: createCollectionField({
           ajv,
-          model: "AbstractComponent",
+          model: EmbeddableComponent,
           foreign_key: "children_ids",
         }),
       },

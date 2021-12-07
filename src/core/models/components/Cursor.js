@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { EmbeddableComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
@@ -18,7 +18,7 @@ import {
 } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
-export class Cursor extends mix(AbstractComponent).with(
+export class Cursor extends mix(EmbeddableComponent).with(
   Backgroundable,
   Borderable,
   Hideable,
@@ -29,7 +29,7 @@ export class Cursor extends mix(AbstractComponent).with(
 ) {
   static entity = "Cursor";
 
-  static baseEntity = "AbstractComponent";
+  static baseEntity = "EmbeddableComponent";
 
   static get schema() {
     const ajv = this.ajv;

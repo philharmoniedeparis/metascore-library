@@ -39,6 +39,7 @@ export default {
       required: true,
     },
   },
+  emits: ["activated", "deactivated"],
   setup(props) {
     const model = toRef(props, "model");
     return {
@@ -50,6 +51,13 @@ export default {
       ...useSize(model),
       ...useTime(model),
     };
+  },
+  watch: {
+    active: {
+      handler(active) {
+        this.$emit(active ? "activated" : "deactivated", this, this.model);
+      },
+    },
   },
 };
 </script>

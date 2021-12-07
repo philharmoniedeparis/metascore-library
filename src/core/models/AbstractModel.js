@@ -61,7 +61,7 @@ export default class AbstractModel extends Model {
       switch (schema.type) {
         case "array":
           if (schema.format === "collection") {
-            const model = this.store().$db().model(schema.model);
+            const model = schema.model;
             const foreign_key = schema.foreign_key;
             fields[key] = this.hasManyBy(model, foreign_key);
             fields[foreign_key] = this.attr([]);

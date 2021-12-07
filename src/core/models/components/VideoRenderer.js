@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { EmbeddableComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
@@ -8,7 +8,7 @@ import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
 
-export class VideoRenderer extends mix(AbstractComponent).with(
+export class VideoRenderer extends mix(EmbeddableComponent).with(
   Backgroundable,
   Borderable,
   Hideable,
@@ -19,7 +19,7 @@ export class VideoRenderer extends mix(AbstractComponent).with(
 ) {
   static entity = "VideoRenderer";
 
-  static baseEntity = "AbstractComponent";
+  static baseEntity = "EmbeddableComponent";
 }
 
 export default VideoRenderer;

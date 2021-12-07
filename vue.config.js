@@ -18,6 +18,7 @@ module.exports = {
     svgRule
       .oneOf("inline")
       .resourceQuery(/inline/)
+      .type("javascript/auto")
       .use("vue-loader")
       .loader("vue-loader")
       .end()

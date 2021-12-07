@@ -6,11 +6,11 @@
     :loop="loop"
     :controls="controls"
     class="media-player"
-    @timeupdate="_onTimeupdate"
-    @play="_onPlay"
-    @pause="_onPause"
-    @stop="_onStop"
-    @seeked="_onSeeked"
+    @timeupdate="onTimeupdate"
+    @play="onPlay"
+    @pause="onPause"
+    @stop="onStop"
+    @seeked="onSeeked"
   >
     <source
       v-for="(source, index) in sources"
@@ -119,11 +119,11 @@ export default {
   },
   watch: {
     sources() {
-      this._setupMedia();
+      this.setupMedia();
     },
   },
   mounted() {
-    this._setupMedia();
+    this.setupMedia();
   },
   methods: {
     /**
@@ -243,9 +243,8 @@ export default {
 
     /**
      * Setup the media
-     * @private
      */
-    async _setupMedia() {
+    async setupMedia() {
       if (this.dash) {
         this.dash.destroy();
         this.dash = null;
@@ -257,7 +256,7 @@ export default {
 
       for (const source of this.sources) {
         const renderer = this.getRendererFromType(source.type);
-        await this._setupRenderer(renderer, source.src);
+        await this.setupRenderer(renderer, source.src);
 
         if (renderer) {
           break;
@@ -267,11 +266,10 @@ export default {
 
     /**
      * Setup a renderer
-     * @private
      * @param {String} type The renderer type
      * @param {String} url The media url
      */
-    async _setupRenderer(type, url) {
+    async setupRenderer(type, url) {
       switch (type) {
         case "dashjs":
           {
@@ -300,9 +298,8 @@ export default {
 
     /**
      * The 'timeupdate' event handler
-     * @private
      */
-    _onTimeupdate(evt) {
+    onTimeupdate(evt) {
       if (this.useRequestAnimationFrame) {
         evt.stopImmediatePropagation();
       }
@@ -310,53 +307,48 @@ export default {
 
     /**
      * The 'play' event handler
-     * @private
      */
-    _onPlay() {
+    onPlay() {
       this.playing = true;
-      this._triggerTimeUpdate();
+      this.triggerTimeUpdate();
     },
 
     /**
      * The 'pasue' event handler
-     * @private
      */
-    _onPause() {
+    onPause() {
       this.playing = false;
-      this._triggerTimeUpdate(false);
+      this.triggerTimeUpdate(false);
     },
 
     /**
      * The 'stop' event handler
-     * @private
      */
-    _onStop() {
+    onStop() {
       this.playing = false;
-      this._triggerTimeUpdate(false);
+      this.triggerTimeUpdate(false);
     },
 
     /**
      * The 'seeked' event handler
-     * @private
      */
-    _onSeeked() {
+    onSeeked() {
       if (!this.playing) {
-        this._triggerTimeUpdate(false);
+        this.triggerTimeUpdate(false);
       }
     },
 
     /**
      * Trigger a manual 'timeupdate' event
-     * @private
      * @param {boolean} repeat Whether to repeatedly execute using requestAnimationFrame
      */
-    _triggerTimeUpdate(repeat = true) {
+    triggerTimeUpdate(repeat = true) {
       if (!this.useRequestAnimationFrame) {
         return;
       }
 
       if (repeat !== false && this.playing) {
-        window.requestAnimationFrame(this._triggerTimeUpdate);
+        window.requestAnimationFrame(this.triggerTimeUpdate);
       }
 
       this.$emit("timeupdate");

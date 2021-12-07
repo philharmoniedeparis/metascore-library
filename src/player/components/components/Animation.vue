@@ -12,7 +12,6 @@
 <script>
 import { mapState } from "vuex";
 import ComponentWrapper from "../ComponentWrapper.vue";
-import Lottie from "lottie-web";
 
 export default {
   components: {
@@ -61,7 +60,7 @@ export default {
     loopDuration() {
       return this.model["loop-duration"]
         ? this.model["loop-duration"]
-        : this._getDuration();
+        : this.getDuration();
     },
     reversed() {
       return this.model.reversed;
@@ -81,30 +80,30 @@ export default {
       deep: true,
     },
     src() {
-      this._setupAdnimation();
+      this.setupAdnimation();
     },
     loopDuration() {
-      this._updateSpeed();
+      this.updateSpeed();
     },
     animation(newValue, oldValue) {
       if (oldValue) {
-        oldValue.removeEventListener("DOMLoaded", this._onAnimationLoaded);
+        oldValue.removeEventListener("DOMLoaded", this.onAnimationLoaded);
         oldValue.destroy();
       }
     },
     loaded(newValue) {
       if (newValue) {
-        this._updateSpeed();
+        this.updateSpeed();
         this.update();
       }
     },
   },
   mounted() {
-    this._setupAdnimation();
+    this.setupAdnimation();
   },
   beforeUnmount() {
     if (this.animation) {
-      this.animation.removeEventListener("DOMLoaded", this._onAnimationLoaded);
+      this.animation.removeEventListener("DOMLoaded", this.onAnimationLoaded);
       this.animation.destroy();
     }
   },
@@ -114,7 +113,7 @@ export default {
         return;
       }
 
-      this.animation.goToAndStop(this._getCurrentFrame(), true);
+      this.animation.goToAndStop(this.getCurrentFrame(), true);
     },
     play() {
       if (!this.loaded || this.playing) {
@@ -132,12 +131,16 @@ export default {
       this.animation.stop();
       this.playing = false;
     },
-    _setupAdnimation() {
+    async setupAdnimation() {
       this.loaded = false;
 
       if (!this.model.src) {
         return;
       }
+
+      const { default: Lottie } = await import(
+        /* webpackChunkName: "vendors/lottie.js.bundle" */ "lottie-web"
+      );
 
       this.animation = Lottie.loadAnimation({
         container: this.$refs["animation-wrapper"],
@@ -147,31 +150,31 @@ export default {
         autoplay: false,
       });
 
-      this.animation.addEventListener("DOMLoaded", this._onAnimationLoaded);
+      this.animation.addEventListener("DOMLoaded", this.onAnimationLoaded);
     },
-    _onAnimationLoaded() {
+    onAnimationLoaded() {
       this.loaded = true;
     },
-    _updateSpeed() {
+    updateSpeed() {
       if (!this.loaded) {
         return;
       }
 
-      this.animation.setSpeed(this._getDuration() / this.loopDuration);
+      this.animation.setSpeed(this.getDuration() / this.loopDuration);
     },
-    _getDuration() {
+    getDuration() {
       return this.loaded ? this.animation.getDuration() : 0;
     },
-    _getTotalFrames() {
+    getTotalFrames() {
       return this.loaded ? this.animation.getDuration(true) : 0;
     },
-    _getCurrentFrame() {
+    getCurrentFrame() {
       if (!this.loaded) {
         return null;
       }
 
       const time = this.mediaTime - this.startTime;
-      const total_frames = this._getTotalFrames();
+      const total_frames = this.getTotalFrames();
       const fps = total_frames / this.loopDuration;
       const frame = (time * fps + (this.startFrame - 1)) % total_frames;
 

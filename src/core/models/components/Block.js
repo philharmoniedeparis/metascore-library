@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { EmbeddableComponent, Page } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
@@ -14,7 +14,7 @@ import {
 } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
-export class Block extends mix(AbstractComponent).with(
+export class Block extends mix(EmbeddableComponent).with(
   Backgroundable,
   Borderable,
   Hideable,
@@ -25,7 +25,7 @@ export class Block extends mix(AbstractComponent).with(
 ) {
   static entity = "Block";
 
-  static baseEntity = "AbstractComponent";
+  static baseEntity = "EmbeddableComponent";
 
   static get schema() {
     const ajv = this.ajv;
@@ -42,7 +42,7 @@ export class Block extends mix(AbstractComponent).with(
         }),
         pages: createCollectionField({
           ajv,
-          model: "Page",
+          model: Page,
           foreign_key: "pages_ids",
         }),
       },

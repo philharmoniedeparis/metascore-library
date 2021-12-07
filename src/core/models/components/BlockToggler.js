@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { EmbeddableComponent, Block } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
@@ -10,7 +10,7 @@ import Timeable from "./mixins/Timeable";
 import { createCollectionField } from "../../utils/JSONSchema";
 import { merge } from "lodash";
 
-export class BlockToggler extends mix(AbstractComponent).with(
+export class BlockToggler extends mix(EmbeddableComponent).with(
   Backgroundable,
   Borderable,
   Hideable,
@@ -21,7 +21,7 @@ export class BlockToggler extends mix(AbstractComponent).with(
 ) {
   static entity = "BlockToggler";
 
-  static baseEntity = "AbstractComponent";
+  static baseEntity = "EmbeddableComponent";
 
   static get schema() {
     const ajv = this.ajv;
@@ -30,7 +30,7 @@ export class BlockToggler extends mix(AbstractComponent).with(
       properties: {
         blocks: createCollectionField({
           ajv,
-          model: "Block",
+          model: Block,
           foreign_key: "block_ids",
         }),
       },

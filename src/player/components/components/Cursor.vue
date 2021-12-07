@@ -5,7 +5,7 @@
 
 <template>
   <component-wrapper :model="model" class="cursor">
-    <canvas ref="canvas" @click.prevent="_onClick" />
+    <canvas ref="canvas" @click.prevent="onClick" />
   </component-wrapper>
 </template>
 
@@ -14,8 +14,6 @@ import "../../../../polyfills/GeomertyUtils";
 import { mapState } from "vuex";
 import ComponentWrapper from "../ComponentWrapper.vue";
 import { map, radians } from "../../../core/utils/Math";
-
-// @TODO: update on resize
 
 export default {
   components: {
@@ -93,34 +91,52 @@ export default {
       },
       deep: true,
     },
+    "model.dimension"() {
+      this.updateSize();
+    },
+    "model.border-width"() {
+      this.updateSize();
+    },
   },
   mounted() {
+    this.resizeObserver = new ResizeObserver(this.updateSize);
+    this.resizeObserver.observe(this.canvas);
+
     this.update();
+  },
+  beforeUnmount() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      delete this.resizeObserver;
+    }
   },
   methods: {
     update() {
-      this.canvas.width = this.canvas.clientWidth;
-      this.canvas.height = this.canvas.clientHeight;
-
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       switch (this.form) {
         case "circular":
-          this._drawCircularCursor();
+          this.drawCircularCursor();
           break;
 
         default:
-          this._drawLinearCursor();
+          this.drawLinearCursor();
           break;
       }
     },
 
+    updateSize() {
+      this.canvas.width = this.canvas.clientWidth;
+      this.canvas.height = this.canvas.clientHeight;
+
+      this.update();
+    },
+
     /**
      * Draw a linear cursor
-     * @private
      */
-    _drawLinearCursor() {
-      const pos = this._getLinearPositionFromTime(this.mediaTime);
+    drawLinearCursor() {
+      const pos = this.getLinearPositionFromTime(this.mediaTime);
       const vertical = this.direction === "bottom" || this.direction === "top";
       const width = vertical ? this.canvas.width : this.cursorWidth;
       const height = vertical ? this.cursorWidth : this.canvas.height;
@@ -147,11 +163,10 @@ export default {
 
     /**
      * Get a position on a linear cursor corresponding to a media time
-     * @private
      * @param {Number} time The media time in seconds
      * @returns {Object} The x and y position
      */
-    _getLinearPositionFromTime(time) {
+    getLinearPositionFromTime(time) {
       const reversed = this.direction === "left" || this.direction === "top";
       let startTime = this.startTime;
       let endTime = this.endTime;
@@ -216,13 +231,12 @@ export default {
 
     /**
      * Draw a circular cursor
-     * @private
      */
-    _drawCircularCursor() {
+    drawCircularCursor() {
       const width = this.canvas.width;
       const height = this.canvas.height;
 
-      const angle = this._getCircularAngleFromTime(this.mediaTime);
+      const angle = this.getCircularAngleFromTime(this.mediaTime);
 
       const centre = {
         x: width / 2,
@@ -252,11 +266,10 @@ export default {
 
     /**
      * Get an angle on a circular cursor corresponding to a media time
-     * @private
      * @param {Number} time The media time in seconds
      * @returns {Number} The angle in radians
      */
-    _getCircularAngleFromTime(time) {
+    getCircularAngleFromTime(time) {
       let angle = this.startAngle;
       angle += Math.PI / 2; // Adjust the angle so that 0 start at top
       angle +=
@@ -266,21 +279,21 @@ export default {
       return angle;
     },
 
-    _onClick(evt) {
+    onClick(evt) {
       switch (this.form) {
         case "circular":
           {
-            const pos = this._getLinearPositionFromMouseEvent(evt);
-            const angle = this._getCircularAngleFromMousePos(pos.x, pos.y);
-            const time = this._getTimeFromCircularAngle(angle);
+            const pos = this.getLinearPositionFromMouseEvent(evt);
+            const angle = this.getCircularAngleFromMousePos(pos.x, pos.y);
+            const time = this.getTimeFromCircularAngle(angle);
             this.seekMediaTo(time);
           }
           break;
 
         default:
           {
-            const pos = this._getLinearPositionFromMouseEvent(evt);
-            const time = this._getTimeFromLinearPosition(pos.x, pos.y);
+            const pos = this.getLinearPositionFromMouseEvent(evt);
+            const time = this.getTimeFromLinearPosition(pos.x, pos.y);
             this.seekMediaTo(time);
           }
           break;
@@ -289,11 +302,10 @@ export default {
 
     /**
      * Get a position on a linear cursor corresponding to a mouse position
-     * @private
      * @param {Event} evt The mouse click event
      * @returns {Object} The x and y position
      */
-    _getLinearPositionFromMouseEvent(evt) {
+    getLinearPositionFromMouseEvent(evt) {
       return window.convertPointFromPageToNode(
         this.canvas,
         evt.clientX,
@@ -303,11 +315,10 @@ export default {
 
     /**
      * Get an angle on a circular cursor corresponding to a mouse position
-     * @private
      * @param {Event} evt The mouse click event
      * @returns {Number} The angle in radians
      */
-    _getCircularAngleFromMousePos(x, y) {
+    getCircularAngleFromMousePos(x, y) {
       x -= this.canvas.width / 2;
       x *= this.direction === "ccw" ? -1 : 1;
 
@@ -318,12 +329,10 @@ export default {
 
     /**
      * Helper function to get the media time corresponding to an angle in a circular cursor
-     *
-     * @private
      * @param {Number} angle The angle in radians
      * @returns {Number} The corresponding media time
      */
-    _getTimeFromCircularAngle(angle) {
+    getTimeFromCircularAngle(angle) {
       angle -= this.startAngle;
       angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
 
@@ -341,12 +350,11 @@ export default {
 
     /**
      * Get the media time corresponding to a position on the cursor
-     * @private
      * @param {Number} x The position on the horizontal axis
      * @param {Number} y The position on the vertical axis
      * @returns {Number} The corresponding media time
      */
-    _getTimeFromLinearPosition(x, y) {
+    getTimeFromLinearPosition(x, y) {
       const axis =
         this.direction === "top" || this.direction === "bottom" ? "y" : "x";
       const reversed = this.direction === "left" || this.direction === "top";

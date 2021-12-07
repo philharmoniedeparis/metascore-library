@@ -2,6 +2,8 @@
 // see https://vuex-orm.org/guide/model/single-table-inheritance.html#initial-setup
 
 export * from "./components/AbstractComponent";
+export * from "./components/EmbeddableComponent";
+
 export * from "./components/Animation";
 export * from "./components/Block";
 export * from "./components/BlockToggler";

@@ -11,7 +11,10 @@ export class AbstractComponent extends AbstractModel {
   static entity = "AbstractComponent";
 
   static types() {
-    return Components;
+    return {
+      Page: Components.Page,
+      Scenario: Components.Scenario,
+    };
   }
 
   static get schema() {

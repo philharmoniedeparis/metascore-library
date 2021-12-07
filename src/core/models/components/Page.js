@@ -1,4 +1,4 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { AbstractComponent, EmbeddableComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Backgroundable from "./mixins/Backgroundable";
 import Timeable from "./mixins/Timeable";
@@ -20,7 +20,7 @@ export class Page extends mix(AbstractComponent).with(
       properties: {
         children: createCollectionField({
           ajv,
-          model: "AbstractComponent",
+          model: EmbeddableComponent,
           foreign_key: "children_ids",
         }),
       },

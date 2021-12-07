@@ -1,11 +1,11 @@
-import { AbstractComponent } from "../ComponentHierarchy";
+import { EmbeddableComponent } from "../ComponentHierarchy";
 import { mix } from "mixwith";
 import Hideable from "./mixins/Hideable";
 import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Timeable from "./mixins/Timeable";
 
-export class Controller extends mix(AbstractComponent).with(
+export class Controller extends mix(EmbeddableComponent).with(
   Hideable,
   Opacitiable,
   Positionable,
@@ -13,7 +13,7 @@ export class Controller extends mix(AbstractComponent).with(
 ) {
   static entity = "Controller";
 
-  static baseEntity = "AbstractComponent";
+  static baseEntity = "EmbeddableComponent";
 }
 
 export default Controller;

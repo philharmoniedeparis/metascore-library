@@ -9,7 +9,7 @@
       ref="object"
       type="image/svg+xml"
       :data="model.src"
-      @load="_onLoad"
+      @load="onLoad"
     ></object>
   </component-wrapper>
 </template>
@@ -88,41 +88,39 @@ export default {
       this.loaded = false;
     },
     loaded() {
-      this._updateProperties();
-      this._updateColors();
+      this.updateProperties();
+      this.updateColors();
     },
     model: {
       handler() {
-        this._updateProperties();
-        this._updateColors();
+        this.updateProperties();
+        this.updateColors();
       },
       deep: true,
     },
   },
   methods: {
-    _onLoad() {
+    onLoad() {
       this.loaded = true;
     },
 
     /**
      * Update SVG properties with component property values.
-     * @private
      */
-    _updateProperties() {
+    updateProperties() {
       if (this.svg) {
         SVG_PROPERTIES.forEach((property) => {
-          this._updateProperty(property, false);
+          this.updateProperty(property, false);
         });
 
-        this._executeInnerUpdate();
+        this.executeInnerUpdate();
       }
     },
 
     /**
      * Update an SVG property with corresponding component property value.
-     * @private
      */
-    _updateProperty(property, executeInnerUpdate) {
+    updateProperty(property, executeInnerUpdate) {
       if (this.svg) {
         const value = this.model[property];
 
@@ -135,16 +133,15 @@ export default {
         });
 
         if (executeInnerUpdate !== false) {
-          this._executeInnerUpdate();
+          this.executeInnerUpdate();
         }
       }
     },
 
     /**
      * Update the svg's colors.
-     * @private
      */
-    _updateColors() {
+    updateColors() {
       if (this.svg) {
         (this.model.colors ?? [null, null]).forEach((color, index) => {
           this.svg.querySelectorAll(`.color${index + 1}`).forEach((el) => {
@@ -156,9 +153,8 @@ export default {
 
     /**
      * Execute the embedded update function if it exists.
-     * @private
      */
-    _executeInnerUpdate() {
+    executeInnerUpdate() {
       if (this.svg && isFunction(this.svg.update)) {
         this.svg.update();
       }

@@ -7,56 +7,62 @@
   <component-wrapper
     :model="model"
     class="block"
-    @mouseenter="_onMouseEnter"
-    @mouseleave="_onMouseLeave"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
   >
     <nav v-show="pagerVisibe" class="pager">
-      <div class="count"></div>
+      <div class="count">page {{ activePageIndex + 1 }}/{{ pageCount }}</div>
       <ul class="links">
         <li>
-          <a href="#" aria-label="First" @click.prevent="_onPagerFirstClick">
-            <span aria-hidden="true">&laquo;</span>
-            <span class="sr-only">First</span>
+          <a href="#" aria-label="First" @click.prevent="reset">
+            <span aria-hidden="true"><pager-first-icon /></span>
+            <span class="tw-sr-only">First</span>
           </a>
         </li>
         <li>
-          <a
-            href="#"
-            aria-label="Previous"
-            @click.prevent="_onPagerPreviousClick"
-          >
-            <span aria-hidden="true">&laquo;</span>
-            <span class="sr-only">Previous</span>
+          <a href="#" aria-label="Previous" @click.prevent="turnPageBackward">
+            <span aria-hidden="true"><pager-previous-icon /></span>
+            <span class="tw-sr-only">Previous</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Next" @click.prevent="_onPagerNextClick">
-            <span aria-hidden="true">&raquo;</span>
-            <span class="sr-only">Next</span>
+          <a href="#" aria-label="Next" @click.prevent="turnPageForward">
+            <span aria-hidden="true"><pager-next-icon /></span>
+            <span class="tw-sr-only">Next</span>
           </a>
         </li>
       </ul>
     </nav>
-    <div class="pages">
-      {{ model.name }}
-      <template v-for="page in model.pages" :key="page.id">
-        <page :model="page" />
+    <div ref="pages" class="pages">
+      <template v-for="(page, index) in model.pages" :key="page.id">
+        <template v-if="synched">
+          <page :model="page" @activated="onTimedPageActivated" />
+        </template>
+        <template v-else>
+          <page v-show="activePageIndex === index" :model="page" />
+        </template>
       </template>
     </div>
   </component-wrapper>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ComponentWrapper from "../ComponentWrapper.vue";
 import Page from "./Page";
-
-// @TODO: implement pager
+import PagerFirstIcon from "../../assets/icons/block/pager-first.svg?inline";
+import PagerPreviousIcon from "../../assets/icons/block/pager-previous.svg?inline";
+import PagerNextIcon from "../../assets/icons/block/pager-next.svg?inline";
 
 export default {
   components: {
     ComponentWrapper,
+    PagerFirstIcon,
+    PagerPreviousIcon,
+    PagerNextIcon,
     Page,
   },
+  inject: ["seekMediaTo"],
   props: {
     /**
      * The associated vuex-orm model
@@ -69,9 +75,16 @@ export default {
   data() {
     return {
       hover: false,
+      activePageIndex: 0,
     };
   },
   computed: {
+    ...mapState("device", {
+      deviceHasTouch: "hasTouch",
+    }),
+    synched() {
+      return this.model.synched;
+    },
     pagerVisibe() {
       switch (this.model["pager-visibility"]) {
         case "visible":
@@ -84,46 +97,88 @@ export default {
           return this.hover;
       }
     },
+    pageCount() {
+      return this.model.pages.length;
+    },
+  },
+  mounted() {
+    this.setupSwipe();
   },
   methods: {
+    async setupSwipe() {
+      if (!this.deviceHasTouch) {
+        return;
+      }
+
+      const { default: Hammer } = await import(
+        /* webpackChunkName: "vendors/hammerjs.bundle" */ "hammerjs"
+      );
+
+      new Hammer.Manager(this.$refs["pages"], {
+        recognizers: [
+          [Hammer.Swipe, { direction: Hammer.DIRECTION_HORIZONTAL }],
+        ],
+        cssProps: {
+          userSelect: "auto", // Allow user selection.
+        },
+      })
+        .on("swiperight", this.turnPageBackward)
+        .on("swipeleft", this.turnPageForward);
+    },
+
+    getPage(index) {
+      return this.model.pages[index];
+    },
+
+    setActivePage(index) {
+      if (this.synched) {
+        const page = this.getPage(index);
+        this.seekMediaTo(page["start-time"]);
+      } else {
+        this.activePageIndex = index;
+      }
+    },
+
     /**
      * The 'mouseenter' event handler
-     * @private
      */
-    _onMouseEnter() {
+    onMouseEnter() {
       this.hover = true;
     },
 
     /**
      * The 'mouseleave' event handler
-     * @private
      */
-    _onMouseLeave() {
+    onMouseLeave() {
       this.hover = false;
     },
 
-    /**
-     * The page's first link 'click' event handler
-     * @private
-     */
-    _onPagerFirstClick() {},
+    onTimedPageActivated(component, model) {
+      this.activePageIndex = this.model.pages.findIndex((v) => {
+        return v.id === model.id;
+      });
+    },
 
-    /**
-     * The page's preious link 'click' event handler
-     * @private
-     */
-    _onPagerPreviousClick() {},
+    reset() {
+      this.setActivePage(0);
+    },
 
-    /**
-     * The page's next link 'click' event handler
-     * @private
-     */
-    _onPagerNextClick() {},
+    turnPageBackward() {
+      const index = Math.max(this.activePageIndex - 1, 0);
+      this.setActivePage(index);
+    },
+
+    turnPageForward() {
+      const index = Math.min(this.activePageIndex + 1, this.pageCount - 1);
+      this.setActivePage(index);
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "../../assets/css/theme.scss";
+
 .block {
   min-width: 10px;
   min-height: 10px;
@@ -143,11 +198,15 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+    display: flex;
     width: 100%;
     height: 20px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
     background-color: rgba(214, 214, 214, 0.6);
-    text-align: right;
     user-select: none;
+    z-index: 1;
 
     .count {
       display: inline-block;
@@ -164,6 +223,18 @@ export default {
       margin-right: 2px;
       flex-direction: row;
       vertical-align: middle;
+
+      a {
+        display: flex;
+        width: 1.54em;
+        height: 1.54em;
+        margin: 0.1em 0.2em;
+        align-items: center;
+        justify-content: center;
+        color: $metascore-color;
+        background-color: #fff;
+        border-radius: 50%;
+      }
     }
   }
 }

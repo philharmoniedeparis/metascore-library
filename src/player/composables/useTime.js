@@ -23,10 +23,10 @@ export default function (model) {
       }
 
       if (isUndefined(startTime) || isNull(startTime)) {
-        return mediaTime <= endTime;
+        return mediaTime < endTime;
       }
 
-      return unref(mediaTime) >= startTime && unref(mediaTime) <= endTime;
+      return unref(mediaTime) >= startTime && unref(mediaTime) < endTime;
     });
 
     return {

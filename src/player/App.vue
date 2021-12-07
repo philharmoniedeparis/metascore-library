@@ -5,11 +5,11 @@
       :sources="sources"
       type="video"
       :use-request-animation-frame="true"
-      @loadedmetadata="_onMediaLoadedmetadata"
-      @play="_onMediaPlay"
-      @pause="_onMediaPause"
-      @stop="_onMediaStop"
-      @timeupdate="_onMediaTimeupdate"
+      @loadedmetadata="onMediaLoadedmetadata"
+      @play="onMediaPlay"
+      @pause="onMediaPause"
+      @stop="onMediaStop"
+      @timeupdate="onMediaTimeupdate"
     />
 
     <template v-for="scenario in getScenarios()" :key="scenario.id">
@@ -79,53 +79,48 @@ export default {
   },
   methods: {
     ...mapMutations("media", {
-      _setMediaReady: "setReady",
-      _setMediaPlaying: "setPlaying",
-      _setMediaTime: "setTime",
-      _setMediaDuration: "setDuration",
+      setMediaReady: "setReady",
+      setMediaPlaying: "setPlaying",
+      setMediaTime: "setTime",
+      setMediaDuration: "setDuration",
     }),
     ...mapGetters("components", ["getScenarios"]),
     ...mapActions("components", ["load"]),
 
     /**
      * The media's 'ready' event handler
-     * @private
      */
-    _onMediaLoadedmetadata() {
-      this._setMediaReady(true);
-      this._setMediaDuration(this.mediaPlayer.getDuration());
+    onMediaLoadedmetadata() {
+      this.setMediaReady(true);
+      this.setMediaDuration(this.mediaPlayer.getDuration());
     },
 
     /**
      * The media's 'play' event handler
-     * @private
      */
-    _onMediaPlay() {
-      this._setMediaPlaying(true);
+    onMediaPlay() {
+      this.setMediaPlaying(true);
     },
 
     /**
      * The media's 'pause' event handler
-     * @private
      */
-    _onMediaPause() {
-      this._setMediaPlaying(false);
+    onMediaPause() {
+      this.setMediaPlaying(false);
     },
 
     /**
      * The media's 'stop' event handler
-     * @private
      */
-    _onMediaStop() {
-      this._setMediaPlaying(false);
+    onMediaStop() {
+      this.setMediaPlaying(false);
     },
 
     /**
      * The media's 'timeupdate' event handler
-     * @private
      */
-    _onMediaTimeupdate() {
-      this._setMediaTime(this.mediaPlayer.getTime());
+    onMediaTimeupdate() {
+      this.setMediaTime(this.mediaPlayer.getTime());
     },
   },
 };
@@ -133,6 +128,9 @@ export default {
 
 <style lang="scss" scoped>
 .metaScore-player {
+  font-size: 11px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+
   ::v-deep(.media-player) {
     display: none;
   }
