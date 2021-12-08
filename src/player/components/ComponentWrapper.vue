@@ -5,7 +5,6 @@
 
 <template>
   <div
-    v-show="active && !hidden"
     :id="model.id"
     :class="['metaScore-component', { active, hidden }]"
     :style="{ ...position, ...size }"
@@ -73,6 +72,11 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
+  }
+
+  &:not(.active),
+  &.hidden {
+    display: none;
   }
 }
 </style>

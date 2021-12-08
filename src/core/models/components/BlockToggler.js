@@ -28,10 +28,30 @@ export class BlockToggler extends mix(EmbeddableComponent).with(
 
     return merge(super.schema, {
       properties: {
+        "background-color": {
+          default: "#eee",
+        },
+        "border-width": {
+          default: 1,
+        },
+        "border-color": {
+          default: "#eee",
+        },
+        dimension: {
+          default: [100, 20],
+          items: [
+            {
+              minimum: 10,
+            },
+            {
+              minimum: 10,
+            },
+          ],
+        },
         blocks: createCollectionField({
           ajv,
           model: Block,
-          foreign_key: "block_ids",
+          foreign_key: "$block_ids",
         }),
       },
     });

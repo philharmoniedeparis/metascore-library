@@ -21,7 +21,7 @@ export class Page extends mix(AbstractComponent).with(
         children: createCollectionField({
           ajv,
           model: EmbeddableComponent,
-          foreign_key: "children_ids",
+          foreign_key: "$children_ids",
         }),
       },
     });

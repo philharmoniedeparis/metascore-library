@@ -6,6 +6,7 @@
 <template>
   <component-wrapper
     :model="model"
+    :class="{ toggled: model.$toggled }"
     class="block"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
@@ -14,19 +15,34 @@
       <div class="count">page {{ activePageIndex + 1 }}/{{ pageCount }}</div>
       <ul class="links">
         <li>
-          <a href="#" aria-label="First" @click.prevent="reset">
+          <a
+            href="#"
+            aria-label="First"
+            :class="{ disabled: activePageIndex === 0 }"
+            @click.prevent="reset"
+          >
             <span aria-hidden="true"><pager-first-icon /></span>
             <span class="tw-sr-only">First</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Previous" @click.prevent="turnPageBackward">
+          <a
+            href="#"
+            aria-label="Previous"
+            :class="{ disabled: activePageIndex === 0 }"
+            @click.prevent="turnPageBackward"
+          >
             <span aria-hidden="true"><pager-previous-icon /></span>
             <span class="tw-sr-only">Previous</span>
           </a>
         </li>
         <li>
-          <a href="#" aria-label="Next" @click.prevent="turnPageForward">
+          <a
+            href="#"
+            aria-label="Next"
+            :class="{ disabled: activePageIndex === pageCount - 1 }"
+            @click.prevent="turnPageForward"
+          >
             <span aria-hidden="true"><pager-next-icon /></span>
             <span class="tw-sr-only">Next</span>
           </a>
@@ -200,7 +216,7 @@ export default {
     left: 0;
     display: flex;
     width: 100%;
-    height: 20px;
+    padding: 0.15em 0;
     flex-direction: row;
     align-items: center;
     justify-content: right;
@@ -212,7 +228,7 @@ export default {
       display: inline-block;
       margin-right: 10px;
       color: rgb(99, 99, 99);
-      font-size: 10px;
+      font-size: 0.9em;
       font-weight: bold;
       vertical-align: middle;
       cursor: default;
@@ -228,14 +244,23 @@ export default {
         display: flex;
         width: 1.54em;
         height: 1.54em;
-        margin: 0.1em 0.2em;
+        margin: 0 0.2em;
         align-items: center;
         justify-content: center;
         color: $metascore-color;
         background-color: #fff;
         border-radius: 50%;
+
+        &.disabled {
+          color: #ccc;
+          pointer-events: none;
+        }
       }
     }
+  }
+
+  &.toggled {
+    display: none;
   }
 }
 </style>

@@ -32,6 +32,9 @@ export class Block extends mix(EmbeddableComponent).with(
 
     return merge(super.schema, {
       properties: {
+        dimension: {
+          default: [200, 200],
+        },
         synched: createBooleanField({
           title: "Synched",
         }),
@@ -43,7 +46,10 @@ export class Block extends mix(EmbeddableComponent).with(
         pages: createCollectionField({
           ajv,
           model: Page,
-          foreign_key: "pages_ids",
+          foreign_key: "$pages_ids",
+        }),
+        $toggled: createBooleanField({
+          default: false,
         }),
       },
     });

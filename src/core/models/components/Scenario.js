@@ -15,7 +15,7 @@ export class Scenario extends AbstractComponent {
         children: createCollectionField({
           ajv,
           model: EmbeddableComponent,
-          foreign_key: "children_ids",
+          foreign_key: "$children_ids",
         }),
       },
     });

@@ -59,6 +59,7 @@ export class Cursor extends mix(EmbeddableComponent).with(
         "cursor-color": createColorField({
           ajv,
           title: "Cursor color",
+          default: "#000",
         }),
       },
       if: {

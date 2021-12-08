@@ -20,6 +20,12 @@ export default function ({ database } = {}) {
       setActiveScenario(state, id) {
         state.activeScenario = id;
       },
+      toggleBlock(state, id) {
+        const component = Components.Block.find(id);
+        component.$update({
+          $toggled: !component.$toggled,
+        });
+      },
     },
     actions: {
       async load({ commit }) {
@@ -122,6 +128,7 @@ export default function ({ database } = {}) {
                 name: "Block Toggler",
                 position: [600, 0],
                 dimension: [200, 200],
+                blocks: ["block-2", "block-1"],
               },
               {
                 type: "Content",
@@ -168,7 +175,6 @@ export default function ({ database } = {}) {
                 id: "videorenderer-1",
                 name: "Video Renderer",
                 position: [400, 400],
-                dimension: [200, 200],
               },
             ],
           },

@@ -135,19 +135,8 @@ export default class AbstractModel extends Model {
   }
 
   $toJson() {
-    const internal_fields = [];
-    for (const schema of Object.values(this.properties)) {
-      if (
-        schema.type === "array" &&
-        schema.format === "collection" &&
-        "foreign_key" in schema
-      ) {
-        internal_fields.push(schema.foreign_key);
-      }
-    }
-
     return omitBy(super.$toJson(), (value, key) => {
-      return value === null || internal_fields.includes(key);
+      return value === null || key.startsWith("$");
     });
   }
 

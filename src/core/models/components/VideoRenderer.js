@@ -7,6 +7,7 @@ import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
+import { merge } from "lodash";
 
 export class VideoRenderer extends mix(EmbeddableComponent).with(
   Backgroundable,
@@ -20,6 +21,16 @@ export class VideoRenderer extends mix(EmbeddableComponent).with(
   static entity = "VideoRenderer";
 
   static baseEntity = "EmbeddableComponent";
+
+  static get schema() {
+    return merge(super.schema, {
+      properties: {
+        dimension: {
+          default: [320, 240],
+        },
+      },
+    });
+  }
 }
 
 export default VideoRenderer;
