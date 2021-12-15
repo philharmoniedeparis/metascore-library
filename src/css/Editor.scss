@@ -55,7 +55,7 @@
 
             &:not(.collapsed) {
                 width: 20em;
-                min-width: min-content;
+                min-width: 15em;
                 max-width: 25vw;
             }
         }
@@ -169,7 +169,7 @@
             grid-area: right;
 
             width: 20em;
-            min-width: min-content;
+            min-width: 15em;
             max-width: 25vw;
         }
 
