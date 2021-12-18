@@ -4,6 +4,7 @@ export default function () {
   return {
     namespaced: true,
     state: {
+      sources: [],
       ready: false,
       time: 0,
       duration: 0,
@@ -17,6 +18,9 @@ export default function () {
     mutations: {
       setReady(state, ready) {
         state.ready = ready;
+      },
+      setSources(state, sources) {
+        state.sources = sources;
       },
       setTime(state, time) {
         state.time = time;

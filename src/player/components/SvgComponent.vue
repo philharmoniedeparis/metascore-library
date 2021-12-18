@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ComponentWrapper from "../ComponentWrapper.vue";
+import ComponentWrapper from "./ComponentWrapper.vue";
 import { isFunction } from "lodash";
 
 const SVG_PROPERTIES = [

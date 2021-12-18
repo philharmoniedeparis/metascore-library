@@ -7,6 +7,7 @@ import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
+import Transformable from "./mixins/Transformable";
 import { merge } from "lodash";
 
 export class VideoRenderer extends mix(EmbeddableComponent).with(
@@ -16,7 +17,8 @@ export class VideoRenderer extends mix(EmbeddableComponent).with(
   Opacitiable,
   Positionable,
   Resizable,
-  Timeable
+  Timeable,
+  Transformable
 ) {
   static entity = "VideoRenderer";
 

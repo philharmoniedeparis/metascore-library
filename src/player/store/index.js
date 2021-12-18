@@ -3,8 +3,10 @@ import VuexORM from "@vuex-orm/core";
 import createDeviceModule from "./modules/device";
 import createMediaModule from "./modules/media";
 import createComponentsModule from "./modules/components";
+import BackendApi from "../api/backend";
 
-export function createStore({ app, debug = false }) {
+export function createStore({ debug = false } = {}) {
+  const api = new BackendApi();
   const database = new VuexORM.Database();
 
   const plugins = [VuexORM.install(database)];
@@ -16,12 +18,41 @@ export function createStore({ app, debug = false }) {
   return createVuexStore({
     plugins,
     modules: {
-      device: createDeviceModule({ app }),
-      media: createMediaModule({ app }),
+      device: createDeviceModule(),
+      media: createMediaModule(),
       components: createComponentsModule({ database }),
     },
-    state: {},
-    mutations: {},
-    actions: {},
+    state: {
+      ready: false,
+      css: null,
+    },
+    mutations: {
+      setReady(state, ready) {
+        state.ready = ready;
+      },
+      setCss(state, css) {
+        state.css = css;
+      },
+    },
+    actions: {
+      async load({ commit, dispatch }, url) {
+        commit("setReady", false);
+
+        const data = await api.load(url);
+
+        commit("media/setSources", [
+          {
+            src: data.media.url,
+            type: data.media.mime,
+          },
+        ]);
+
+        dispatch("components/load", data.components);
+
+        commit("setCss", data.css);
+
+        commit("setReady", true);
+      },
+    },
   });
 }

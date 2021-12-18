@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ComponentWrapper from "../ComponentWrapper.vue";
+import ComponentWrapper from "./ComponentWrapper.vue";
 
 export default {
   components: {
@@ -35,7 +35,7 @@ export default {
 
 <style lang="scss" scoped>
 .media {
-  ::v-deep(.metaScore-component--inner) {
+  > .metaScore-component--inner {
     display: flex;
     align-items: center;
 

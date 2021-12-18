@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import ComponentWrapper from "../ComponentWrapper.vue";
+import ComponentWrapper from "./ComponentWrapper.vue";
 
 // @TODO: add link auto-highlighting
 

@@ -7,7 +7,7 @@
   <div
     :id="model.id"
     :class="['metaScore-component', { active, hidden }]"
-    :style="{ ...position, ...size }"
+    :style="{ ...position, ...size, transform }"
   >
     <div
       class="metaScore-component--inner"
@@ -27,6 +27,7 @@ import useOpacity from "../composables/useOpacity";
 import usePosition from "../composables/usePosition";
 import useSize from "../composables/useSize";
 import useTime from "../composables/useTime";
+import useTransform from "../composables/useTransform";
 
 export default {
   props: {
@@ -49,13 +50,12 @@ export default {
       ...usePosition(model),
       ...useSize(model),
       ...useTime(model),
+      ...useTransform(model),
     };
   },
   watch: {
-    active: {
-      handler(active) {
-        this.$emit(active ? "activated" : "deactivated", this, this.model);
-      },
+    active(value) {
+      this.$emit(value ? "activated" : "deactivated", this, this.model);
     },
   },
 };

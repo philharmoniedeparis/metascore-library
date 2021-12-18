@@ -6,7 +6,7 @@
 <template>
   <component-wrapper
     :model="model"
-    :class="{ toggled: model.$toggled }"
+    :class="{ toggled: isToggled(model.id) }"
     class="block"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
@@ -22,7 +22,7 @@
             @click.prevent="reset"
           >
             <span aria-hidden="true"><pager-first-icon /></span>
-            <span class="tw-sr-only">First</span>
+            <span class="ms--sr-only">First</span>
           </a>
         </li>
         <li>
@@ -33,7 +33,7 @@
             @click.prevent="turnPageBackward"
           >
             <span aria-hidden="true"><pager-previous-icon /></span>
-            <span class="tw-sr-only">Previous</span>
+            <span class="ms--sr-only">Previous</span>
           </a>
         </li>
         <li>
@@ -44,7 +44,7 @@
             @click.prevent="turnPageForward"
           >
             <span aria-hidden="true"><pager-next-icon /></span>
-            <span class="tw-sr-only">Next</span>
+            <span class="ms--sr-only">Next</span>
           </a>
         </li>
       </ul>
@@ -63,12 +63,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import ComponentWrapper from "../ComponentWrapper.vue";
-import Page from "./Page";
-import PagerFirstIcon from "../../assets/icons/block/pager-first.svg?inline";
-import PagerPreviousIcon from "../../assets/icons/block/pager-previous.svg?inline";
-import PagerNextIcon from "../../assets/icons/block/pager-next.svg?inline";
+import { mapState, mapGetters } from "vuex";
+import ComponentWrapper from "./ComponentWrapper.vue";
+import Page from "./PageComponent";
+import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
+import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
+import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
 
 export default {
   components: {
@@ -98,10 +98,17 @@ export default {
     ...mapState("device", {
       deviceHasTouch: "hasTouch",
     }),
+    ...mapGetters("components", {
+      isToggled: "isBlockToggled",
+    }),
     synched() {
       return this.model.synched;
     },
     pagerVisibe() {
+      if (this.pageCount < 2) {
+        return false;
+      }
+
       switch (this.model["pager-visibility"]) {
         case "visible":
           return true;
@@ -193,22 +200,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../assets/css/theme.scss";
+@import "../assets/css/theme.scss";
 
 .block {
-  min-width: 10px;
-  min-height: 10px;
-  width: 200px;
-  height: 200px;
-  color: rgb(66, 66, 66);
-  background-repeat: no-repeat;
-  background-position: left top;
-  background-size: contain;
-  background-color: rgb(238, 238, 238);
-  border: 1px solid rgb(204, 204, 204);
-  font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
-  border-radius: 10px;
-  overflow: hidden;
+  > .metaScore-component--inner {
+    color: rgb(66, 66, 66);
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: contain;
+    font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
+    overflow: hidden;
+  }
 
   .pager {
     position: absolute;
@@ -238,13 +240,14 @@ export default {
       display: flex;
       margin-right: 2px;
       flex-direction: row;
-      vertical-align: middle;
+      list-style: none;
 
       a {
         display: flex;
         width: 1.54em;
         height: 1.54em;
         margin: 0 0.2em;
+        padding: 0.35em;
         align-items: center;
         justify-content: center;
         color: $metascore-color;

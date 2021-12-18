@@ -8,16 +8,16 @@
 
 <script>
 import { mapState } from "vuex";
-import ComponentWrapper from "../ComponentWrapper.vue";
-import Animation from "./Animation";
-import Block from "./Block";
-import BlockToggler from "./BlockToggler";
-import Content from "./Content";
-import Controller from "./Controller";
-import Cursor from "./Cursor";
-import Media from "./Media";
-import SVG from "./SVG";
-import VideoRenderer from "./VideoRenderer";
+import ComponentWrapper from "./ComponentWrapper.vue";
+import Animation from "./AnimationComponent";
+import Block from "./BlockComponent";
+import BlockToggler from "./BlockTogglerComponent";
+import Content from "./ContentComponent";
+import Controller from "./ControllerComponent";
+import Cursor from "./CursorComponent";
+import Media from "./MediaComponent";
+import SVG from "./SvgComponent";
+import VideoRenderer from "./VideoRendererComponent";
 
 export default {
   components: {

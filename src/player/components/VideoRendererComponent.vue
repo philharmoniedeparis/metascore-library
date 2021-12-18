@@ -11,7 +11,7 @@
 
 <script>
 import { mapState } from "vuex";
-import ComponentWrapper from "../ComponentWrapper.vue";
+import ComponentWrapper from "./ComponentWrapper.vue";
 
 export default {
   components: {

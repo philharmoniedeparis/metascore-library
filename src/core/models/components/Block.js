@@ -7,6 +7,7 @@ import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
+import Transformable from "./mixins/Transformable";
 import {
   createBooleanField,
   createEnumField,
@@ -21,7 +22,8 @@ export class Block extends mix(EmbeddableComponent).with(
   Opacitiable,
   Positionable,
   Resizable,
-  Timeable
+  Timeable,
+  Transformable
 ) {
   static entity = "Block";
 
@@ -32,6 +34,18 @@ export class Block extends mix(EmbeddableComponent).with(
 
     return merge(super.schema, {
       properties: {
+        "background-color": {
+          default: "rgb(238, 238, 238)",
+        },
+        "border-width": {
+          default: 1,
+        },
+        "border-color": {
+          default: "rgb(204, 204, 204)",
+        },
+        "border-radius": {
+          default: "10px",
+        },
         dimension: {
           default: [200, 200],
         },
@@ -47,9 +61,6 @@ export class Block extends mix(EmbeddableComponent).with(
           ajv,
           model: Page,
           foreign_key: "$pages_ids",
-        }),
-        $toggled: createBooleanField({
-          default: false,
         }),
       },
     });

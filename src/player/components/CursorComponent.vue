@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import "../../../../polyfills/GeomertyUtils";
+import "../../../polyfills/GeomertyUtils";
 import { mapState } from "vuex";
-import ComponentWrapper from "../ComponentWrapper.vue";
-import { map, radians } from "../../../core/utils/Math";
+import ComponentWrapper from "./ComponentWrapper.vue";
+import { map, radians } from "../../core/utils/Math";
 
 export default {
   components: {

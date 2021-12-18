@@ -18,7 +18,9 @@ export default class AbstractModel extends Model {
    */
   static get ajv() {
     if (!this._ajv) {
-      this._ajv = new Ajv();
+      this._ajv = new Ajv({
+        multipleOfPrecision: 2,
+      });
     }
 
     return this._ajv;

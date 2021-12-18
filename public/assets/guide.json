@@ -1,0 +1,1710 @@
+{
+  "id": "lY5g",
+  "vid": 25107,
+  "type": null,
+  "title": "Symphonie n\u00b0 3 (extrait du 1er mouvement) de Ludwig van Beethoven : ruptures et affirmation",
+  "description": null,
+  "credits": "\u003Cp\u003EConcert enregistr\u00e9 \u00e0 la \u003Cspan\u003ECit\u00e9 de la Musique le 16 avril 2011\u003C\/span\u003E\u003Cbr \/\u003E\r\nEmmanuel Krivine, \u003Cem\u003Edirection\u003C\/em\u003E\u003Cbr \/\u003E\r\nLa Chambre Philharmonique\u003C\/p\u003E\r\n\r\n\u003Cp\u003EAuteure, int\u00e9gration multim\u00e9dia et partition graphique\u0026nbsp;:\u003Cbr \/\u003E\r\nAur\u00e9lie Loyer\u003C\/p\u003E\r\n",
+  "media": {
+    "id": 10302,
+    "name": "video.mp4",
+    "mime": "video\/mp4",
+    "source": "upload",
+    "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/media\/video_10.mp4",
+    "type": "video",
+    "size": "15146464",
+    "audiowaveform": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/audiowaveforms\/public\/uploads\/guide\/media\/video_10.mp4\/2257bddc5b0f1f863a0ad792aa00dab5.dat?zoom=256\u0026bits=8\u0026format=dat\u0026awtok=6tEdu5AH"
+  },
+  "thumbnail": {
+    "id": 10617,
+    "name": "CMDA100008500-.jpg",
+    "mime": "image\/jpeg",
+    "source": "upload",
+    "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/styles\/guide_thumbnail\/public\/uploads\/guide\/thumbnail\/CMDA100008500-.jpg?itok=8q28q73E",
+    "size": "47954"
+  },
+  "width": 1004,
+  "height": 657,
+  "components": [
+    {
+      "id": "scenario-1",
+      "name": "Sc\u00e9nario 1",
+      "type": "Scenario",
+      "children": [
+        {
+          "id": "component-0uQeLywx6d",
+          "name": "Timeline",
+          "type": "Block",
+          "pages": [
+            {
+              "id": "component-56l35ggEcn",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-JksUDUjphK",
+                  "name": "Titre H1",
+                  "text": "\u003Ch1\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h1\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    85,
+                    -1
+                  ],
+                  "dimension": [
+                    764,
+                    29
+                  ]
+                },
+                {
+                  "id": "component-h6bNySp2sd",
+                  "name": "timeline-NEW.png",
+                  "text": "",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    74,
+                    24
+                  ],
+                  "dimension": [
+                    921,
+                    64
+                  ],
+                  "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/timeline-NEW.png"
+                },
+                {
+                  "id": "component-YzLpxPxuSU",
+                  "name": "Intro",
+                  "text": "\u003Cp style=\u0022font-size:12px; text-orientation:upright; writing-mode:vertical-rl\u0022 class=\u0022partie\u0022\u003E\u003Cspan style=\u0022font-size:10px;\u0022\u003EIntro\u003C\/span\u003E\u003C\/p\u003E",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    68,
+                    24
+                  ],
+                  "dimension": [
+                    35,
+                    75
+                  ]
+                },
+                {
+                  "id": "component-aVT7s0Eg6N",
+                  "name": "Th\u00e8me A",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me A\u003Cbr\u003E\u003C\/p\u003E",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    97,
+                    28
+                  ],
+                  "dimension": [
+                    438,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-5hMJ3Ry1AY",
+                  "name": "Motif a",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    97,
+                    58
+                  ],
+                  "dimension": [
+                    226,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-7Yy85e7930",
+                  "name": "Motif b",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    326,
+                    58
+                  ],
+                  "dimension": [
+                    210,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-J35hrGAuer",
+                  "name": "Th\u00e8me B",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me B\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    538,
+                    28
+                  ],
+                  "dimension": [
+                    170,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-OySlohtYOr",
+                  "name": "Motif c",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif c\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    539,
+                    58
+                  ],
+                  "dimension": [
+                    168,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-30qoGRJbLz",
+                  "name": "Final",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003EFinal de l\u2019exposition\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    711,
+                    28
+                  ],
+                  "dimension": [
+                    258,
+                    34
+                  ]
+                },
+                {
+                  "id": "component-nqZKFrpVwA",
+                  "name": "Autour du motif b",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif b\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    711,
+                    52
+                  ],
+                  "dimension": [
+                    129,
+                    48
+                  ]
+                },
+                {
+                  "id": "component-A3Krdq8cv4",
+                  "name": "Autour du motif a",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    843,
+                    52
+                  ],
+                  "dimension": [
+                    126,
+                    48
+                  ]
+                },
+                {
+                  "id": "component-C1lj3wCruq",
+                  "form": "linear",
+                  "name": "Cursor 1",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 167.02,
+                  "position": [
+                    74,
+                    24
+                  ],
+                  "dimension": [
+                    921,
+                    64
+                  ],
+                  "direction": "right",
+                  "start-time": 0,
+                  "acceleration": 1,
+                  "cursor-color": "#ffffff",
+                  "cursor-width": 2,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-nifPtI4eoN",
+                  "name": "Cr\u00e9dits",
+                  "text": "\u003Cp\u003E\u003Ca href=\u0022#showBlock=Bloc Cr\u00e9dits\u0022\u003ECr\u00e9dits\u003C\/a\u003E\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    944,
+                    -5
+                  ],
+                  "dimension": [
+                    58,
+                    37
+                  ]
+                }
+              ]
+            }
+          ],
+          "hidden": false,
+          "synched": false,
+          "position": [
+            0,
+            0
+          ],
+          "dimension": [
+            1001,
+            93
+          ],
+          "pager-visibility": "auto"
+        },
+        {
+          "id": "component-m0WFLEUhMJ",
+          "type": "Controller",
+          "position": [
+            -4,
+            0
+          ]
+        },
+        {
+          "id": "component-ktbqFshza0",
+          "name": "Vid\u00e9o",
+          "type": "VideoRenderer",
+          "hidden": false,
+          "position": [
+            349,
+            101
+          ],
+          "dimension": [
+            654,
+            334
+          ]
+        },
+        {
+          "id": "component-vJjpoBcORE",
+          "name": "Bloc non synchronis\u00e9",
+          "type": "Block",
+          "pages": [
+            {
+              "id": "component-mjimpu2Wyo",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-Qfci5sW2Xf",
+                  "name": "Texte",
+                  "text": "\u003Ch2\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h2\u003E\n\n\u003Cdiv class=\u0022texte\u0022\u003E\n\u003Cp\u003ELa cr\u00e9ation de cette symphonie en 1805 suscite de vives critiques. On parle d\u2019une \u0153uvre \u00ab\u0026nbsp;assommante, interminable et d\u00e9cousue\u0026nbsp;\u00bb. Depuis, elle a \u00e9t\u00e9 reconnue comme l\u2019un des chefs-d\u2019\u0153uvre les plus importants de son \u00e9poque. Mais les nouvelles dimensions que Beethoven apporte \u00e0 sa \u003Cem\u003ESymphonie H\u00e9ro\u00efque\u003C\/em\u003E ont effectivement de quoi surprendre les auditeurs du d\u00e9but du XIX\u003Csup\u003Ee\u003C\/sup\u003E si\u00e8cle.\u003C\/p\u003E\n\n\u003Cp\u003EBeethoven y affirme son identit\u00e9 et sa vision d\u2019un langage musical, rompant les limites classiques existantes. Le seul premier mouvement dure aussi longtemps que toute une symphonie de Mozart ou de Haydn. Ses premi\u00e8res minutes annoncent rapidement cette r\u00e9volution musicale\u0026nbsp;:\u003Cbr\u003E\n- l\u2019\u003Ca href=\u0022#play=1.45,3.67,scenario-1\u0022\u003Eintroduction\u003C\/a\u003E \u003Cspan class=\u0022serre\u0022\u003Ese r\u00e9sume \u00e0 deux accords martel\u00e9s\u0026nbsp;;\u003C\/span\u003E\u003Cbr\u003E\n- les diff\u00e9rentes id\u00e9es musicales (th\u00e8mes compos\u00e9s de motifs) \u003Ca href=\u0022#play=37.38,57.97,scenario-1\u0022\u003Es\u2019encha\u00eenent abruptement, sans pr\u00e9paration ni transition\u003C\/a\u003E\u0026nbsp;;\u003Cbr\u003E\n- dans l\u2019orchestre, les vents et les \u003Ca href=\u0022#play=3.8,11.12,scenario-1\u0022\u003Ecordes graves\u003C\/a\u003E prennent une importance pr\u00e9pond\u00e9rante, offrant une \u003Ca href=\u0022#play=83.95,105.47,scenario-1\u0022\u003Epalette \u00e9largie\u003C\/a\u003E de timbres et de nuances\u0026nbsp;; Beethoven exprime ainsi, par des contrastes impressionnants, passant de la plus grande douceur \u00e0 des accents violents, toute l\u2019\u00e9tendue de son caract\u00e8re imp\u00e9tueux.\u003C\/p\u003E\n\u003C\/div\u003E\n\n\u003Cdiv class=\u0022bordered smallText,\u0022\u003E\n\u003Cp style=\u0022margin-top:5px\u0022\u003E\u003Cstrong\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (1\u003Csup\u003Eer\u003C\/sup\u003E mouvement)\u003Cbr\u003E\nLudwig van Beethoven\u003C\/strong\u003E (1770-1827)\u003Cbr\u003E\nConcert enregistr\u00e9 \u00e0 la \u003Cspan class=\u0022serre\u0022\u003ECit\u00e9 de la Musique le 16 avril 2011\u003C\/span\u003E\u003Cbr\u003E\nEmmanuel Krivine, \u003Cem\u003Edirection\u003C\/em\u003E\u003Cbr\u003E\nLa Chambre Philharmonique\u003C\/p\u003E\n\n\u003Cp\u003ESeules les premi\u00e8res minutes de l\u0027\u0153uvre sont pr\u00e9sent\u00e9es dans ce guide.\u003C\/p\u003E\n\u003C\/div\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    0,
+                    0
+                  ],
+                  "dimension": [
+                    340,
+                    556
+                  ],
+                  "editor.locked": false
+                }
+              ]
+            }
+          ],
+          "hidden": false,
+          "synched": false,
+          "position": [
+            0,
+            101
+          ],
+          "dimension": [
+            340,
+            554
+          ],
+          "pager-visibility": "auto"
+        },
+        {
+          "id": "component-Y986fRd9Do",
+          "name": "Score",
+          "type": "Block",
+          "pages": [
+            {
+              "id": "component-5Q3v3qTCJl",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-BBPVhCKIH0",
+                  "name": "Intro tr\u00e8s br\u00e8ve",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022\u003EIntroduction tr\u00e8s br\u00e8ve\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    66,
+                    10
+                  ],
+                  "dimension": [
+                    103,
+                    48
+                  ],
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-kmVDGaxmYg",
+                  "name": "Motif a -1",
+                  "text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    131,
+                    35
+                  ],
+                  "dimension": [
+                    103,
+                    34
+                  ],
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-dQJYQyUL92",
+                  "name": "Motif a -2",
+                  "text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    421,
+                    70
+                  ],
+                  "dimension": [
+                    103,
+                    34
+                  ],
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-Kof5FBZVIu",
+                  "name": "Motif a -3",
+                  "text": "\u003Cp class=\u0022gros rose\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    440,
+                    186
+                  ],
+                  "dimension": [
+                    103,
+                    34
+                  ],
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-lgCy1I9aqE",
+                  "name": "2 accords",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003E2 accords\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    57,
+                    90
+                  ],
+                  "dimension": [
+                    103,
+                    34
+                  ],
+                  "start-time": 1.64,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-iQZL5hXx1j",
+                  "name": "violoncelles",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Evioloncelles\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    131,
+                    48
+                  ],
+                  "dimension": [
+                    127,
+                    34
+                  ],
+                  "start-time": 3.94
+                },
+                {
+                  "id": "component-2MjohdDK5A",
+                  "name": "R\u00e9action de l\u0027orchestre",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Er\u00e9action de l\u2019orchestre\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    233,
+                    19
+                  ],
+                  "dimension": [
+                    210,
+                    34
+                  ],
+                  "start-time": 8.32
+                },
+                {
+                  "id": "component-yoU4Fypmui",
+                  "name": "dialogue vents-cordes",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Edialogue entre vents et cordes\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    418,
+                    19
+                  ],
+                  "dimension": [
+                    265,
+                    34
+                  ],
+                  "start-time": 15.73
+                },
+                {
+                  "id": "component-PIPTv7JzyA",
+                  "form": "linear",
+                  "name": "Cursor 1",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 23.26,
+                  "position": [
+                    91,
+                    1
+                  ],
+                  "dimension": [
+                    525,
+                    104
+                  ],
+                  "direction": "right",
+                  "keyframes": [
+                    {
+                      "time": 3.853937,
+                      "position": 54
+                    },
+                    {
+                      "time": 15.803854,
+                      "position": 338
+                    }
+                  ],
+                  "start-time": 1.65,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-YZhCFETByX",
+                  "name": "crescendo",
+                  "text": "\u003Cp class=\u0022marron moyen serre\u0022 style=\u0022text-align:right\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    44,
+                    187
+                  ],
+                  "dimension": [
+                    113,
+                    34
+                  ],
+                  "start-time": 23.66
+                },
+                {
+                  "id": "component-jBsRtxhxtw",
+                  "name": "ruptures rythmiques",
+                  "text": "\u003Cp class=\u0022marronRose moyen serre\u0022\u003Eruptures rythmiques et accents\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    143,
+                    187
+                  ],
+                  "dimension": [
+                    265,
+                    34
+                  ],
+                  "start-time": 25.85
+                },
+                {
+                  "id": "component-R9ZmIu49eq",
+                  "name": "crescendo 2",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    349,
+                    187
+                  ],
+                  "dimension": [
+                    114,
+                    34
+                  ],
+                  "start-time": 35.65
+                },
+                {
+                  "id": "component-7MXBEnIDRl",
+                  "name": "tout l\u0027orchestre",
+                  "text": "\u003Cp class=\u0022gros rose\u0022\u003Etout l\u0027orchestre\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    440,
+                    199
+                  ],
+                  "dimension": [
+                    171,
+                    34
+                  ],
+                  "start-time": 37.3
+                },
+                {
+                  "id": "component-TPwxDh4Hbt",
+                  "form": "linear",
+                  "name": "Cursor 2",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 45.75,
+                  "position": [
+                    91,
+                    108
+                  ],
+                  "dimension": [
+                    533,
+                    104
+                  ],
+                  "direction": "right",
+                  "start-time": 23.26,
+                  "acceleration": 1,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                }
+              ],
+              "end-time": 45.46,
+              "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-1.gif"
+            },
+            {
+              "id": "component-Fa1T8IeRSK",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-vvsLlv8dR8",
+                  "name": "Motif b -1",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    134,
+                    80
+                  ],
+                  "dimension": [
+                    75,
+                    34
+                  ],
+                  "start-time": 45.46,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-fcjCEC2KK7",
+                  "name": "Motif b -2",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    384,
+                    78
+                  ],
+                  "dimension": [
+                    75,
+                    34
+                  ],
+                  "start-time": 45.46,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-maiwJ00OP8",
+                  "name": "relais de timbres",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Erelais de timbres\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    134,
+                    93
+                  ],
+                  "dimension": [
+                    171,
+                    34
+                  ],
+                  "start-time": 45.87,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-zyS7kScsec",
+                  "name": "tout l\u0027orchestre",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Etout l\u2019orchestre\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    385,
+                    92
+                  ],
+                  "dimension": [
+                    154,
+                    34
+                  ],
+                  "start-time": 55.75,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-5YvtO8R6oR",
+                  "name": "crescendo",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    519,
+                    92
+                  ],
+                  "dimension": [
+                    107,
+                    34
+                  ],
+                  "start-time": 57.39
+                },
+                {
+                  "id": "component-GhpAQTsKu3",
+                  "form": "linear",
+                  "name": "Cursor 1",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 65.52,
+                  "position": [
+                    139,
+                    1
+                  ],
+                  "dimension": [
+                    498,
+                    104
+                  ],
+                  "direction": "right",
+                  "keyframes": [
+                    {
+                      "time": 45.918792,
+                      "position": 8
+                    },
+                    {
+                      "time": 50.793812,
+                      "position": 127
+                    },
+                    {
+                      "time": 53.708432,
+                      "position": 199
+                    },
+                    {
+                      "time": 54.710791,
+                      "position": 223
+                    },
+                    {
+                      "time": 55.699604,
+                      "position": 256
+                    },
+                    {
+                      "time": 56.450625,
+                      "position": 280
+                    },
+                    {
+                      "time": 57.531749,
+                      "position": 316
+                    }
+                  ],
+                  "start-time": 45.46,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-IxrQ54kBN2",
+                  "name": "agitation rythmique",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    91,
+                    189
+                  ],
+                  "dimension": [
+                    203,
+                    34
+                  ],
+                  "start-time": 65.52,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-GdM08tB761",
+                  "name": "acc\u00e9l\u00e9ration",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eacc\u00e9l\u00e9ration\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    301,
+                    189
+                  ],
+                  "dimension": [
+                    145,
+                    34
+                  ],
+                  "start-time": 71.57,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-lzzUi3ehDW",
+                  "name": "poursuite crescendo",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epoursuite du crescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    448,
+                    189
+                  ],
+                  "dimension": [
+                    188,
+                    34
+                  ],
+                  "start-time": 75.68,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-cQVHeiLwAc",
+                  "form": "linear",
+                  "name": "Cursor 2",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 83.95,
+                  "position": [
+                    91,
+                    108
+                  ],
+                  "dimension": [
+                    546,
+                    104
+                  ],
+                  "direction": "right",
+                  "keyframes": [
+                    {
+                      "time": 75.785687,
+                      "position": 358
+                    }
+                  ],
+                  "start-time": 65.52,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                }
+              ],
+              "end-time": 83.95,
+              "start-time": 45.46,
+              "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score2-NEW.gif"
+            },
+            {
+              "id": "component-ew46X4adNj",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-TEj1ZB0ClI",
+                  "name": "Motif c",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003EMotif c dialogue\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 114.8,
+                  "position": [
+                    64,
+                    128
+                  ],
+                  "dimension": [
+                    98,
+                    48
+                  ],
+                  "start-time": 83.95,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-SGfM7QRd7q",
+                  "name": "bois",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    64,
+                    106
+                  ],
+                  "dimension": [
+                    73,
+                    34
+                  ],
+                  "start-time": 84.36,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-b6Fzy6lBHA",
+                  "name": "cordes",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ecordes\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    171,
+                    153
+                  ],
+                  "dimension": [
+                    73,
+                    34
+                  ],
+                  "start-time": 89.56,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-8JY5vbWgLk",
+                  "name": "bois + cuivres",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003Cbr\u003E\n\u003Cspan class=\u0022serre\u0022\u003E+ cuivres\u003C\/span\u003E\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    234,
+                    89
+                  ],
+                  "dimension": [
+                    107,
+                    48
+                  ],
+                  "start-time": 92.65,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-3zd99d7Dch",
+                  "name": "bois",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Eune r\u00e9ponse plus sombre\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    274,
+                    145
+                  ],
+                  "dimension": [
+                    105,
+                    48
+                  ],
+                  "start-time": 94.56,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-Em6MlJgTRK",
+                  "name": "silence",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center; text-orientation:upright; writing-mode:vertical-rl\u0022\u003Esilence\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    374,
+                    119
+                  ],
+                  "dimension": [
+                    38,
+                    152
+                  ],
+                  "start-time": 99.25,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-6wOpzckXCR",
+                  "name": "\u00e9lan rythmique",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003E\u00e9lan rythmique\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    512,
+                    163
+                  ],
+                  "dimension": [
+                    147,
+                    34
+                  ],
+                  "start-time": 106.16,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-2nshqrc54H",
+                  "name": "crescendo",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    547,
+                    149
+                  ],
+                  "dimension": [
+                    105,
+                    34
+                  ],
+                  "start-time": 109.2,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-T9XmEHrm7d",
+                  "form": "linear",
+                  "name": "Cursor 1",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 115.21,
+                  "position": [
+                    70,
+                    54
+                  ],
+                  "dimension": [
+                    569,
+                    156
+                  ],
+                  "direction": "right",
+                  "keyframes": [
+                    {
+                      "time": 85.565354,
+                      "position": 29
+                    },
+                    {
+                      "time": 97.048791,
+                      "position": 263
+                    },
+                    {
+                      "time": 99.487173,
+                      "position": 314
+                    },
+                    {
+                      "time": 101.607458,
+                      "position": 357
+                    },
+                    {
+                      "time": 104.823687,
+                      "position": 419
+                    },
+                    {
+                      "time": 105.61102,
+                      "position": 438
+                    }
+                  ],
+                  "start-time": 83.95,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                }
+              ],
+              "end-time": 115.21,
+              "start-time": 83.95,
+              "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-3_0.png"
+            },
+            {
+              "id": "component-c1TM5pPXvE",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-epvjLK6Uwy",
+                  "name": "Motif b -1",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    65,
+                    75
+                  ],
+                  "dimension": [
+                    84,
+                    34
+                  ],
+                  "start-time": 114.81,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-IB91ACza8X",
+                  "name": "rappel motif a",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Erappel du motif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    72,
+                    183
+                  ],
+                  "dimension": [
+                    92,
+                    48
+                  ],
+                  "start-time": 114.81,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-Lql0WyfOct",
+                  "name": "Motif b -un peu cach\u00e9",
+                  "text": "\u003Cp class=\u0022moyen rose\u0022\u003EMotif b (un peu cach\u00e9...)\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    152,
+                    3
+                  ],
+                  "dimension": [
+                    221,
+                    36
+                  ],
+                  "start-time": 114.81,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-wfZiPfkviR",
+                  "name": "jeu d\u0027amplification",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Ejeu d\u2019amplification\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    65,
+                    89
+                  ],
+                  "dimension": [
+                    171,
+                    34
+                  ],
+                  "start-time": 116.52,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-tENbuM5sEP",
+                  "name": "fl\u00fbtes et clarinettes",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Efl\u00fbtes et clarinettes\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    152,
+                    18
+                  ],
+                  "dimension": [
+                    171,
+                    34
+                  ],
+                  "start-time": 119.66,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-6WFPQZNSQC",
+                  "name": "d\u00e9ploiement d\u0027\u00e9nergie",
+                  "text": "\u003Cp class=\u0022petit rose serre\u0022 style=\u0022text-align:center\u0022\u003Ed\u00e9ploiement d\u2019\u00e9nergie\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    244,
+                    89
+                  ],
+                  "dimension": [
+                    198,
+                    34
+                  ],
+                  "start-time": 123.7,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-1hyVAfkaoq",
+                  "name": "affirmation des rythm",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eaffirmation des rythmiques\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    413,
+                    89
+                  ],
+                  "dimension": [
+                    221,
+                    34
+                  ],
+                  "start-time": 129.97,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-QqTdE3Tks5",
+                  "form": "linear",
+                  "name": "Cursor 1",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 139.29,
+                  "position": [
+                    72,
+                    1
+                  ],
+                  "dimension": [
+                    558,
+                    104
+                  ],
+                  "direction": "right",
+                  "keyframes": [
+                    {
+                      "time": 116.558354,
+                      "position": 25
+                    },
+                    {
+                      "time": 118.469854,
+                      "position": 67
+                    },
+                    {
+                      "time": 119.715125,
+                      "position": 90
+                    },
+                    {
+                      "time": 120.669333,
+                      "position": 118
+                    },
+                    {
+                      "time": 122.784,
+                      "position": 167
+                    },
+                    {
+                      "time": 129.922479,
+                      "position": 341
+                    },
+                    {
+                      "time": 135.265312,
+                      "position": 468
+                    }
+                  ],
+                  "start-time": 115.21,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                },
+                {
+                  "id": "component-ynNHNsWCvu",
+                  "name": "agitation rythmique",
+                  "text": "\u003Cp class=\u0022marron petit serre\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    146,
+                    139
+                  ],
+                  "dimension": [
+                    99,
+                    48
+                  ],
+                  "start-time": 143.43,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-6PlBl9hdXJ",
+                  "name": "crescendo",
+                  "text": "\u003Cp class=\u0022marronRose petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    236,
+                    191
+                  ],
+                  "dimension": [
+                    110,
+                    34
+                  ],
+                  "start-time": 147.53,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-iAaHIc3feK",
+                  "name": "puissants accords",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epuissants accords\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    337,
+                    184
+                  ],
+                  "dimension": [
+                    96,
+                    48
+                  ],
+                  "start-time": 151.66,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-wLGUBwkWDd",
+                  "name": "annonce du retour de a",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Eannonce du retour\u003Cbr\u003E\ndu motif a\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    422,
+                    184
+                  ],
+                  "dimension": [
+                    162,
+                    48
+                  ],
+                  "start-time": 156.31,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-zMoggb8wT8",
+                  "name": "violoncelles",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Evioloncelles\u003C\/p\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 167.03,
+                  "position": [
+                    552,
+                    147
+                  ],
+                  "dimension": [
+                    122,
+                    34
+                  ],
+                  "start-time": 162.87,
+                  "editor.locked": false
+                },
+                {
+                  "id": "component-hKSHwZkWsT",
+                  "form": "linear",
+                  "name": "Cursor 2",
+                  "type": "Cursor",
+                  "opacity": 1,
+                  "end-time": 167.02,
+                  "position": [
+                    83,
+                    108
+                  ],
+                  "dimension": [
+                    567,
+                    104
+                  ],
+                  "direction": "right",
+                  "start-time": 139.29,
+                  "acceleration": 1,
+                  "cursor-color": "#000000",
+                  "cursor-width": 1,
+                  "editor.locked": true
+                }
+              ],
+              "start-time": 115.21,
+              "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-4.png"
+            }
+          ],
+          "hidden": false,
+          "synched": true,
+          "position": [
+            349,
+            442
+          ],
+          "dimension": [
+            653,
+            213
+          ],
+          "pager-visibility": "auto"
+        },
+        {
+          "id": "component-ijeddndCEs",
+          "name": "premi\u00e8re-image",
+          "type": "Block",
+          "pages": [
+            {
+              "id": "component-Q0qTrz5ot2",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-2LNOnNNOn4",
+                  "name": "premie\u0300re-image.png",
+                  "text": "",
+                  "type": "Content",
+                  "opacity": 1,
+                  "end-time": 0.01,
+                  "position": [
+                    0,
+                    0
+                  ],
+                  "dimension": [
+                    594,
+                    334
+                  ],
+                  "background-image": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/premie%CC%80re-image.png"
+                }
+              ]
+            }
+          ],
+          "synched": false,
+          "position": [
+            378,
+            101
+          ],
+          "dimension": [
+            600,
+            334
+          ],
+          "border-width": 0,
+          "background-color": "rgba(0,0,0,0)",
+          "background-image": "",
+          "pager-visibility": "hidden"
+        },
+        {
+          "id": "component-QRJEci8qRX",
+          "name": "Bloc Cr\u00e9dits",
+          "type": "Block",
+          "pages": [
+            {
+              "id": "component-BP30NLwZVY",
+              "type": "Page",
+              "children": [
+                {
+                  "id": "component-f5YB6UZNyl",
+                  "name": "Texte cr\u00e9dits",
+                  "text": "\u003Cp style=\u0022text-align:right\u0022\u003E\u003Cspan style=\u0022font-size:14px\u0022\u003E\u003Ca href=\u0022#hideBlock=Bloc Cr\u00e9dits\u0022\u003EX\u003C\/a\u003E\u003C\/span\u003E\u003C\/p\u003E\n\n\u003Cdiv class=\u0022credits\u0022\u003E\n\u003Cul\u003E\n\t\u003Cli\u003EAuteur\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003ECoordination \u00e9ditoriale\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAnne-Florence Borneuf\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003EInt\u00e9gration multim\u00e9dia et partition graphique\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\u003C\/ul\u003E\n\u003C\/div\u003E\n",
+                  "type": "Content",
+                  "opacity": 1,
+                  "position": [
+                    0,
+                    2
+                  ],
+                  "dimension": [
+                    360,
+                    231
+                  ]
+                }
+              ]
+            }
+          ],
+          "hidden": true,
+          "synched": false,
+          "position": [
+            495,
+            148
+          ],
+          "dimension": [
+            360,
+            234
+          ],
+          "pager-visibility": "auto"
+        },
+        {
+          "id": "component-IMa2UDaLP2",
+          "name": "Toggle",
+          "type": "BlockToggler",
+          "blocks": [
+            "component-0uQeLywx6d",
+            "component-vJjpoBcORE",
+            "component-Y986fRd9Do"
+          ],
+          "position": [
+            848,
+            1
+          ],
+          "dimension": [
+            100,
+            22
+          ]
+        }
+      ]
+    }
+  ],
+  "css": "@import url(\u0022https:\/\/pad.philharmoniedeparis.fr\/ui\/skins\/CIMU\/metascore.css\u0022);\r\n\r\n\/*@import url(\u0022https:\/\/pad.philharmoniedeparis.fr\/ui\/skins\/CIMU\/metascore-SourceSansPro.css\u0022);*\/\r\n\r\n.metaScore-player .metaScore-component.controller {\r\n    font-weight: 700;\r\n    font-size: 11px;\r\n\twidth: 80px;\r\n  \theight: 90px;\r\n  \tbackground-color: transparent;\r\n}\r\n\r\n.metaScore-player .metaScore-component.controller::after {\r\n\tbottom: 0px;\r\n}\r\n\r\n.metaScore-player .metaScore-component.controller .timer {\r\n    text-align: center;\r\n    line-height: 30px;\r\n    background-color: transparent;\r\n    cursor: default;\r\n    color: #7d1248;\r\n}\r\n\r\n.metaScore-player .metaScore-component.controller .buttons button {\r\n    position: absolute;\r\n    border: none;\r\n    outline: none;\r\n    background-color: transparent;\r\n    background-image: url(\u0022\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/controller-buttons.png\u0022);\r\n    background-repeat: no-repeat;\r\n    transition: none;\r\n    opacity: 1;\r\n}\r\n\r\n.metaScore-player .metaScore-component.controller .buttons button[data-action=\u0022play\u0022] {\r\n\ttop: 0px;\r\n\tleft: 26px;\r\n}\r\n\r\n.metaScore-player .metaScore-component.controller .buttons button[data-action=\u0022rewind\u0022] {\r\n\ttop: 17px;\r\n\tleft: 13px;}\r\n\r\n\r\n.metaScore-player .metaScore-component.block-toggler .buttons .button {\r\n  margin: 1px 2px;\r\n}\r\n\r\n\r\n.texte {\r\n    font-size: 12px;\r\n}\r\n\r\n.blanc {\r\n    color:#ffffff;\r\n    margin:0 ;\r\n    text-align:center;\r\n}\r\n\r\n.partie {\r\n    font-size: 14px;\r\n    text-transform: uppercase;\r\n    color:#ffffff;\r\n    margin:0 ;\r\n    text-align:center;\r\n    font-weight: bolder;\r\n}\r\n\r\n.rose {\r\n    color:#ff0064;\r\n    margin:0 ;\r\n}\r\n\r\n.marron {\r\n    color:#ce6564;\r\n    margin:0 ;\r\n}\r\n\r\n.marronRose {\r\n    color:#ce2f65;\r\n    margin:0;\r\n}\r\n\r\n.jaune {\r\n    color:#ff9a00;\r\n    margin:0;\r\n}\r\n\r\n.serre {\r\n    letter-spacing: -0.5px;\r\n}\r\n\r\n.large{\r\n    letter-spacing: 1.1px;\r\n}\r\n\r\n.petit {\r\n    font-size: 12px;\r\n    font-weight: bolder;\r\n}\r\n\r\n.moyen {\r\n    font-size: 13px;\r\n    font-weight: bolder;\r\n}\r\n\r\n.gros {\r\n    font-size: 14px;\r\n\tfont-weight: bolder;\r\n}\r\n\r\n\/*.bordered \u003E p:nth-child(1) {\r\n  margin-top: 5px;\r\n  margin-bottom: 5px;\r\n}\r\n*\/\r\n",
+  "tags": "CMDA1000008500, alo\u00e8s 1031348",
+  "author": "anne-florence.borneuf",
+  "created": 1584120193,
+  "changed": 1637917612,
+  "published": true,
+  "assets": [
+    {
+      "id": "10436",
+      "name": "controller-buttons.png",
+      "size": "3494",
+      "mimetype": "image\/png",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/controller-buttons.png",
+      "width": 137,
+      "height": 103
+    },
+    {
+      "id": "10478",
+      "name": "score-1.gif",
+      "size": "13588",
+      "mimetype": "image\/gif",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-1.gif",
+      "width": 653,
+      "height": 213
+    },
+    {
+      "id": "10479",
+      "name": "score2-NEW.gif",
+      "size": "16998",
+      "mimetype": "image\/gif",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score2-NEW.gif",
+      "width": 653,
+      "height": 213
+    },
+    {
+      "id": "10481",
+      "name": "score-4.png",
+      "size": "34857",
+      "mimetype": "image\/png",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-4.png",
+      "width": 653,
+      "height": 213
+    },
+    {
+      "id": "10482",
+      "name": "score-3_0.png",
+      "size": "25599",
+      "mimetype": "image\/png",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/score-3_0.png",
+      "width": 653,
+      "height": 213
+    },
+    {
+      "id": "10484",
+      "name": "timeline-NEW.png",
+      "size": "2729",
+      "mimetype": "image\/png",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/timeline-NEW.png",
+      "width": 921,
+      "height": 64
+    },
+    {
+      "id": "10615",
+      "name": "premie\u0300re-image.png",
+      "size": "405087",
+      "mimetype": "image\/png",
+      "url": "https:\/\/metascore.philharmoniedeparis.fr\/sites\/default\/files\/uploads\/guide\/assets\/lY5g\/premie%CC%80re-image.png",
+      "width": 1192,
+      "height": 667
+    }
+  ],
+  "shared_assets": [],
+  "revisions": [
+    {
+      "vid": 10021,
+      "author": "anne-florence.borneuf",
+      "created": 1586156095,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 10078,
+      "author": "anne-florence.borneuf",
+      "created": 1586202639,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 10489,
+      "author": "anne-florence.borneuf",
+      "created": 1586937043,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 10820,
+      "author": "anne-florence.borneuf",
+      "created": 1587502634,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 10821,
+      "author": "anne-florence.borneuf",
+      "created": 1587502926,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 10822,
+      "author": "anne-florence.borneuf",
+      "created": 1587503065,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 10826,
+      "author": "anne-florence.borneuf",
+      "created": 1587539948,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 10832,
+      "author": "anne-florence.borneuf",
+      "created": 1587541159,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 12481,
+      "author": "anne-florence.borneuf",
+      "created": 1588843177,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 12482,
+      "author": "anne-florence.borneuf",
+      "created": 1588843201,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 15186,
+      "author": "anne-florence.borneuf",
+      "created": 1602145579,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 15187,
+      "author": "anne-florence.borneuf",
+      "created": 1602145640,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 15188,
+      "author": "anne-florence.borneuf",
+      "created": 1602145762,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 15189,
+      "author": "anne-florence.borneuf",
+      "created": 1602145774,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 15484,
+      "author": "rodolphe.bailly",
+      "created": 1603705391,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 15485,
+      "author": "rodolphe.bailly",
+      "created": 1603705409,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "prepublished"
+    },
+    {
+      "vid": 15486,
+      "author": "rodolphe.bailly",
+      "created": 1603705427,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 15487,
+      "author": "rodolphe.bailly",
+      "created": 1603705553,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "draft"
+    },
+    {
+      "vid": 15488,
+      "author": "rodolphe.bailly",
+      "created": 1603705567,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "prepublished"
+    },
+    {
+      "vid": 15489,
+      "author": "rodolphe.bailly",
+      "created": 1603705570,
+      "log_message": null,
+      "published": true,
+      "default": false,
+      "moderation_state": "published"
+    },
+    {
+      "vid": 25106,
+      "author": "anne-florence.borneuf",
+      "created": 1637917612,
+      "log_message": null,
+      "published": false,
+      "default": false,
+      "moderation_state": "prepublished"
+    },
+    {
+      "vid": 25107,
+      "author": "anne-florence.borneuf",
+      "created": 1637917624,
+      "log_message": null,
+      "published": true,
+      "default": true,
+      "moderation_state": "published"
+    }
+  ],
+  "latest_revision": 25107
+}

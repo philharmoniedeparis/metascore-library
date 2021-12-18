@@ -7,6 +7,7 @@ import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
+import Transformable from "./mixins/Transformable";
 import {
   createUrlField,
   createNumberField,
@@ -24,7 +25,8 @@ export class SVG extends mix(EmbeddableComponent).with(
   Opacitiable,
   Positionable,
   Resizable,
-  Timeable
+  Timeable,
+  Transformable
 ) {
   static entity = "SVG";
 

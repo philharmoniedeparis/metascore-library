@@ -6,7 +6,10 @@
 <template>
   <component-wrapper :model="model" class="block-toggler">
     <template v-for="block in sortedBlocks" :key="block.id">
-      <button @click="onButtonClick(block)">
+      <button
+        :class="{ toggled: isBlockToggled(block.id) }"
+        @click="toggleBlock(block.id)"
+      >
         <svg preserveAspectRatio="xMidYMid meet" :viewBox="viewBox">
           <template v-for="block_2 in sortedBlocks" :key="block_2.id">
             <rect
@@ -24,8 +27,8 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-import ComponentWrapper from "../ComponentWrapper.vue";
+import { mapGetters, mapMutations } from "vuex";
+import ComponentWrapper from "./ComponentWrapper.vue";
 import { sortBy } from "lodash";
 
 export default {
@@ -42,6 +45,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("components", ["isBlockToggled"]),
     sortedBlocks() {
       return sortBy(this.model.blocks, [
         (block) => {
@@ -66,16 +70,13 @@ export default {
   },
   methods: {
     ...mapMutations("components", ["toggleBlock"]),
-    onButtonClick(block) {
-      this.toggleBlock(block.id);
-    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .block-toggler {
-  ::v-deep(.metaScore-component--inner) {
+  > .metaScore-component--inner {
     display: flex;
     width: 100%;
     height: 100%;
@@ -84,7 +85,7 @@ export default {
     align-content: stretch;
   }
 
-  ::v-deep(button) {
+  button {
     svg {
       width: 100%;
       height: 100%;
@@ -100,7 +101,7 @@ export default {
       }
     }
 
-    &.active {
+    &.toggled {
       opacity: 0.75;
     }
 
