@@ -53,5 +53,9 @@ module.exports = {
       .use("i18n")
       .loader("@intlify/vue-i18n-loader")
       .end();
+
+    config.entryPoints.clear();
+    config.entry("metaScore.Player").add("./src/player/main.js").end();
+    config.entry("metaScore.Editor").add("./src/editor/main.js").end();
   },
 };

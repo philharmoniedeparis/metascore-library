@@ -28,6 +28,7 @@ export default {
     MediaPlayer,
     Scenario,
   },
+  inject: ["$postMessage"],
   provide() {
     return {
       seekMediaTo: (time) => {
@@ -51,6 +52,10 @@ export default {
     url: {
       type: String,
       required: true,
+    },
+    api: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
@@ -76,8 +81,18 @@ export default {
       this.sheet.innerHTML = value ?? "";
     },
   },
-  mounted() {
-    this.load(this.url);
+  created() {
+    if (this.api) {
+      this.$postMessage.on(this.onAPIMessage);
+    }
+  },
+  async mounted() {
+    await this.load(this.url);
+  },
+  unmounted() {
+    if (this.api) {
+      this.$postMessage.off(this.onAPIMessage);
+    }
   },
   methods: {
     ...mapMutations("media", {
@@ -123,6 +138,10 @@ export default {
      */
     onMediaTimeupdate() {
       this.setMediaTime(this.mediaPlayer.getTime());
+    },
+
+    onAPIMessage(evt) {
+      console.log(evt.data);
     },
   },
 };

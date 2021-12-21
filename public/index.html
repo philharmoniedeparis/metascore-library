@@ -14,8 +14,20 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <script>
+      const url_params = new URLSearchParams(window.location.search);
+
       document.addEventListener("DOMContentLoaded", function(event) {
-        new metaScore.Player({el: document.querySelector('body')});
+        if (url_params.has('player')) {
+          new metaScore.Player({
+            url: "assets/guide.json",
+            el: document.querySelector('body'),
+            api: true,
+          });
+        } else {
+          new metaScore.Editor({
+            el: document.querySelector('body'),
+          });
+        }
       });
     </script>
   </body>

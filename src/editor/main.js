@@ -2,9 +2,14 @@ import packageInfo from "../../package.json";
 import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
-import { createStore } from "@/editor/store";
-import { createRouter } from "@/editor/router";
+import { createStore } from "./store";
+import { createRouter } from "./router";
+import { createPostMessage } from "../core/plugins/post-message";
+import { registerModule } from "./moduleManager.js";
 import App from "@/editor/App.vue";
+
+import MainMenu from "./modules/mainmenu";
+import ComponentForm from "./modules/component_form";
 
 export class Editor {
   /**
@@ -14,16 +19,20 @@ export class Editor {
 
   constructor({ el = null, locale = "fr", debug = false } = {}) {
     const i18n = createI18n({ locale });
-    const store = createStore({
-      debug,
-    });
-    const router = createRouter({
-      debug,
-    });
+    const store = createStore({ debug });
+    const router = createRouter({ debug });
 
+    const postMessage = createPostMessage();
 
     this._events = new Emitter();
-    this._app = createApp(App, {}).use(i18n).use(store).use(router);
+    this._app = createApp(App, {})
+      .use(i18n)
+      .use(store)
+      .use(router)
+      .use(postMessage);
+
+    registerModule(MainMenu, this._app, store, router);
+    registerModule(ComponentForm, this._app, store, router);
 
     if (el) {
       this.mount(el);
