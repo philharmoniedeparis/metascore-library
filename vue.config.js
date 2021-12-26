@@ -7,6 +7,10 @@ module.exports = {
   lintOnSave: true,
   publicPath: "./",
   transpileDependencies: true,
+  css: {
+    // Extract CSS in development mode as well, to be used by editor
+    extract: true,
+  },
   chainWebpack: (config) => {
     config.output.library({
       name: "metaScore",

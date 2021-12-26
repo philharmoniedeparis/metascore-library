@@ -75,7 +75,7 @@ export default {
     css(value) {
       if (!this.sheet) {
         this.sheet = document.createElement("style");
-        document.querySelector("head").appendChild(this.sheet);
+        document.head.appendChild(this.sheet);
       }
 
       this.sheet.innerHTML = value ?? "";

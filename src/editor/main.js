@@ -4,12 +4,12 @@ import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "./store";
 import { createRouter } from "./router";
-import { createPostMessage } from "../core/plugins/post-message";
 import { registerModule } from "./moduleManager.js";
 import App from "@/editor/App.vue";
 
 import MainMenu from "./modules/mainmenu";
 import ComponentForm from "./modules/component_form";
+import PlayerPreview from "./modules/player_preview";
 
 export class Editor {
   /**
@@ -17,22 +17,23 @@ export class Editor {
    */
   static version = packageInfo.version;
 
-  constructor({ el = null, locale = "fr", debug = false } = {}) {
+  constructor({ el = null, locale = "fr", debug = false, url, css } = {}) {
     const i18n = createI18n({ locale });
     const store = createStore({ debug });
     const router = createRouter({ debug });
 
-    const postMessage = createPostMessage();
-
     this._events = new Emitter();
-    this._app = createApp(App, {})
+    this._app = createApp(App, {
+      playerUrl: url,
+      playerCss: css,
+    })
       .use(i18n)
       .use(store)
-      .use(router)
-      .use(postMessage);
+      .use(router);
 
     registerModule(MainMenu, this._app, store, router);
     registerModule(ComponentForm, this._app, store, router);
+    registerModule(PlayerPreview, this._app, store, router);
 
     if (el) {
       this.mount(el);

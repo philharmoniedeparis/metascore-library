@@ -1,4 +1,4 @@
-import { formatTime } from "../../utils/Media";
+import { formatTime } from "../../../core/utils/Media";
 
 export default function () {
   return {

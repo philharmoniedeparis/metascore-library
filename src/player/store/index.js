@@ -1,22 +1,15 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import VuexORM from "@vuex-orm/core";
-import { createVuexSync } from "../../core/plugins/vuex-sync";
 import createDeviceModule from "./modules/device";
-import createMediaModule from "../../core/store/modules/media";
-import createComponentsModule from "../../core/store/modules/components";
+import createMediaModule from "./modules/media";
+import createComponentsModule from "./modules/components";
 import BackendApi from "../api/backend";
 
 export function createStore({ debug = false } = {}) {
   const api = new BackendApi();
   const database = new VuexORM.Database();
-  const vuexSync = createVuexSync({
-    channelName: "metascore-editor-sync",
-    filterOutgoing(mutation) {
-      return /setReady|entities\/|components\//.test(mutation.type);
-    },
-  });
 
-  const plugins = [VuexORM.install(database), vuexSync];
+  const plugins = [VuexORM.install(database)];
 
   if (debug) {
     plugins.push(createLogger());

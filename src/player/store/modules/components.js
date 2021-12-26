@@ -1,4 +1,4 @@
-import * as Components from "../../models/ComponentHierarchy";
+import * as Components from "../../../core/models/ComponentHierarchy";
 
 export default function ({ database } = {}) {
   // Register models in ORM database

@@ -5,7 +5,6 @@ import { createStore } from "./store";
 import { createPostMessage } from "../core/plugins/post-message";
 import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./App.vue";
-import "@/tailwind.css";
 
 export class Player {
   /**
