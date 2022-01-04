@@ -8,15 +8,56 @@ module.exports = {
   publicPath: "./",
   transpileDependencies: true,
   css: {
-    // Extract CSS in development mode as well, to be used by editor
-    extract: true,
+    extract: {
+      filename: "[name].css",
+      chunkFilename: function() {
+        return "metaScore.[name].chunk.css";
+      },
+      insert: function (linkTag) {
+        try {
+          var href = linkTag.getAttribute("href");
+          if (href.includes("PlayerApp")) {
+            // Load player preview CSS into its iframe.
+            var preview = document.querySelector("iframe.player-preview");
+            if (preview) {
+              preview.contentDocument.head.appendChild(linkTag);
+            }
+            return;
+          }
+        }
+        catch(e) {}
+
+        document.head.appendChild(linkTag);
+      },
+    },
   },
   chainWebpack: (config) => {
-    config.output.library({
-      name: "metaScore",
-      type: "assign-properties",
-    });
+    // Override entry points.
+    config.entryPoints.clear();
+    config.entry("metaScore.Player").add("./src/player.js").end();
+    config.entry("metaScore.Editor").add("./src/editor.js").end();
 
+    // Override output options.
+    config.output
+      .library({
+        name: "metaScore",
+        type: "assign-properties",
+      })
+      .filename("[name].js")
+      .chunkFilename("metaScore.[name].chunk.js");
+
+    // Extract common dependencies to a separate chunk.
+    config.optimization
+      .splitChunks({
+        cacheGroups: {
+          commons: {
+            name: 'metaScore.commons.chunk',
+            chunks: 'initial',
+          },
+        }
+      });
+
+    // Override svg rule to add inline SVGs.
     const svgRule = config.module.rule("svg");
     svgRule.uses.clear();
     svgRule
@@ -38,6 +79,7 @@ module.exports = {
         name: "[path][name].[ext]?[contenthash]",
       });
 
+    // Override fonts rule to extract fonts.
     const fontsRule = config.module.rule("fonts");
     fontsRule.uses.clear();
     fontsRule
@@ -57,9 +99,5 @@ module.exports = {
       .use("i18n")
       .loader("@intlify/vue-i18n-loader")
       .end();
-
-    config.entryPoints.clear();
-    config.entry("metaScore.Player").add("./src/player/main.js").end();
-    config.entry("metaScore.Editor").add("./src/editor/main.js").end();
   },
 };
