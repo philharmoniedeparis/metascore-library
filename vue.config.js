@@ -10,7 +10,7 @@ module.exports = {
   css: {
     extract: {
       filename: "[name].css",
-      chunkFilename: function() {
+      chunkFilename: function () {
         return "metaScore.[name].chunk.css";
       },
       insert: function (linkTag) {
@@ -24,8 +24,9 @@ module.exports = {
             }
             return;
           }
+        } catch (e) {
+          //
         }
-        catch(e) {}
 
         document.head.appendChild(linkTag);
       },
@@ -47,15 +48,14 @@ module.exports = {
       .chunkFilename("metaScore.[name].chunk.js");
 
     // Extract common dependencies to a separate chunk.
-    config.optimization
-      .splitChunks({
-        cacheGroups: {
-          commons: {
-            name: 'metaScore.commons.chunk',
-            chunks: 'initial',
-          },
-        }
-      });
+    config.optimization.splitChunks({
+      cacheGroups: {
+        commons: {
+          name: "metaScore.commons.chunk",
+          chunks: "initial",
+        },
+      },
+    });
 
     // Override svg rule to add inline SVGs.
     const svgRule = config.module.rule("svg");
@@ -77,17 +77,6 @@ module.exports = {
       .options({
         context: path.resolve(__dirname, "./src"),
         name: "[path][name].[ext]?[contenthash]",
-      });
-
-    // Override fonts rule to extract fonts.
-    const fontsRule = config.module.rule("fonts");
-    fontsRule.uses.clear();
-    fontsRule
-      .use("file-loader")
-      .loader("file-loader")
-      .options({
-        context: path.resolve(__dirname, "./src"),
-        name: "[path][name].[ext]",
       });
 
     // Setup i18n loader.

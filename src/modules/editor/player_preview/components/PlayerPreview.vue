@@ -1,6 +1,6 @@
 <template>
   <teleport v-if="iframeDocument" :to="iframeDocument.body">
-    <player-app :url="url" />
+    <player-app :url="url" @click="onPlayerClick" />
   </teleport>
   <iframe
     class="player-preview"
@@ -40,6 +40,15 @@ export default {
     async onIframeLoad() {
       this.iframeDocument = this.$refs.iframe.contentDocument;
     },
+    onPlayerClick(evt) {
+      console.log(evt);
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.player-preview {
+  border: 0;
+}
+</style>
