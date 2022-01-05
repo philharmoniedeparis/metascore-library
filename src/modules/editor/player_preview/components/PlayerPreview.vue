@@ -1,6 +1,6 @@
 <template>
   <teleport v-if="iframeDocument" :to="iframeDocument.body">
-    <player-app :url="url" @click="onPlayerClick" />
+    <app-renderer :url="url" @click="onPlayerClick" />
   </teleport>
   <iframe
     class="player-preview"
@@ -11,16 +11,7 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from "vue";
-
 export default {
-  components: {
-    PlayerApp: defineAsyncComponent(() =>
-      import(
-        /* webpackChunkName: "Editor.PlayerApp" */ "../../../../PlayerApp.vue"
-      )
-    ),
-  },
   props: {
     url: {
       type: String,
@@ -38,7 +29,22 @@ export default {
   },
   methods: {
     async onIframeLoad() {
-      this.iframeDocument = this.$refs.iframe.contentDocument;
+      const doc = this.$refs.iframe.contentDocument;
+
+      // Find the url of the preloaded CSS link tag
+      // (see css.extract options in vue.config.js),
+      // and add it to the iframe.
+      const preloaded = document.querySelector("link#player-preview-iframe");
+      if (preloaded) {
+        const url = preloaded.getAttribute("href");
+        const link = document.createElement("link");
+        link.setAttribute("rel", "stylesheet");
+        link.setAttribute("type", "text/css");
+        link.setAttribute("href", url);
+        doc.head.appendChild(link);
+      }
+
+      this.iframeDocument = doc;
     },
     onPlayerClick(evt) {
       console.log(evt);

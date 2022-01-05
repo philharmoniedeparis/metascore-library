@@ -7,7 +7,7 @@ import { createRouter } from "./router/editor";
 import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./EditorApp.vue";
 
-import { register as registerModule } from "./modules/manager.js";
+import { registerModules } from "./modules/manager.js";
 import MainMenu from "./modules/editor/mainmenu";
 import ComponentForm from "./modules/editor/component_form";
 import PlayerPreview from "./modules/editor/player_preview";
@@ -43,20 +43,23 @@ export class Editor {
       });
 
     // Register root modules.
-    [
-      MainMenu,
-      ComponentForm,
-      PlayerPreview,
-      ComponentsLibrary,
-      AssetsLibrary,
-      SharedAssetsLibrary,
-    ].forEach((module) => {
-      registerModule(module, this._app, store, router);
+    registerModules(
+      [
+        MainMenu,
+        ComponentForm,
+        PlayerPreview,
+        ComponentsLibrary,
+        AssetsLibrary,
+        SharedAssetsLibrary,
+      ],
+      this._app,
+      store,
+      router
+    ).then(() => {
+      if (el) {
+        this.mount(el);
+      }
     });
-
-    if (el) {
-      this.mount(el);
-    }
   }
 
   /**

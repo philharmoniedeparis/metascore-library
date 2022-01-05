@@ -16,13 +16,12 @@ module.exports = {
       insert: function (linkTag) {
         try {
           var href = linkTag.getAttribute("href");
-          if (href.includes("PlayerApp")) {
-            // Load player preview CSS into its iframe.
-            var preview = document.querySelector("iframe.player-preview");
-            if (preview) {
-              preview.contentDocument.head.appendChild(linkTag);
-            }
-            return;
+          if (href.includes("Editor.PlayerPreviewIframe")) {
+            // Alter the link tag to prevent it from affecting the main page,
+            // and allow the editor to insert it at the correct location.
+            linkTag.setAttribute("rel", "preload");
+            linkTag.setAttribute("as", "style");
+            linkTag.setAttribute("id", "player-preview-iframe");
           }
         } catch (e) {
           //

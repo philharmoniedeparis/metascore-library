@@ -2,9 +2,11 @@ import packageInfo from "../package.json";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "./store/player";
-import { createPostMessage } from "./plugins/post-message";
-import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./PlayerApp.vue";
+
+import { registerModules } from "./modules/manager.js";
+import PostMessage from "./modules/player/post_message";
+import AppRenderer from "./modules/player/app_renderer";
 
 export class Player {
   /**
@@ -14,27 +16,16 @@ export class Player {
 
   constructor({ url, el, api = false, locale = "fr", debug = false } = {}) {
     const i18n = createI18n({ locale });
-    const postMessage = createPostMessage({ debug });
     const store = createStore({ debug });
 
-    this._app = createApp(App, { url, api })
-      .use(i18n)
-      .use(store)
-      .use(postMessage)
-      .use(VueDOMPurifyHTML, {
-        hooks: {
-          afterSanitizeAttributes: (node) => {
-            if (node.tagName === "A") {
-              node.setAttribute("target", "_blank");
-              node.setAttribute("rel", "noopener");
-            }
-          },
-        },
-      });
+    this._app = createApp(App, { url, api }).use(i18n).use(store);
 
-    if (el) {
-      this.mount(el);
-    }
+    // Register root modules.
+    registerModules([PostMessage, AppRenderer], this._app, store).then(() => {
+      if (el) {
+        this.mount(el);
+      }
+    });
   }
 
   /**
