@@ -1,6 +1,6 @@
 <template>
   <teleport v-if="iframeDocument" :to="iframeDocument.body">
-    <app-renderer :url="url" @click="onPlayerClick" />
+    <app-renderer :url="url" />
   </teleport>
   <iframe
     class="player-preview"
@@ -34,7 +34,7 @@ export default {
       // Find the url of the preloaded CSS link tag
       // (see css.extract options in vue.config.js),
       // and add it to the iframe.
-      const preloaded = document.querySelector("link#player-preview-iframe");
+      const preloaded = document.querySelector("link#player-preview");
       if (preloaded) {
         const url = preloaded.getAttribute("href");
         const link = document.createElement("link");
@@ -45,9 +45,6 @@ export default {
       }
 
       this.iframeDocument = doc;
-    },
-    onPlayerClick(evt) {
-      console.log(evt);
     },
   },
 };

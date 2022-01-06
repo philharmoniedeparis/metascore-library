@@ -82,6 +82,7 @@ export class Cursor extends mix(EmbeddableComponent).with(
             ajv,
             title: "Keyframes",
             subfield: createNumberField(),
+            default: [],
           }),
         },
       },

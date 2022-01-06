@@ -1,9 +1,5 @@
 <template>
-  <nav class="main-menu">
-    <history-form />
-    <player-zoom />
-    <revisions-form />
-  </nav>
+  <nav class="main-menu"></nav>
 </template>
 
 <script>

@@ -1,10 +1,7 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import VuexORM from "@vuex-orm/core";
-import createDeviceModule from "./modules/device";
-import BackendApi from "../api/backend";
 
 export function createStore({ debug = false } = {}) {
-  const api = new BackendApi();
   const database = new VuexORM.Database();
 
   const plugins = [VuexORM.install(database)];
@@ -13,42 +10,53 @@ export function createStore({ debug = false } = {}) {
     plugins.push(createLogger());
   }
 
+  const state = {
+    selectedComponents: {},
+  };
+
+  const getters = {
+    getComponentById: () => (id) => {
+      return (
+        database
+          .model("AbstractComponent")
+          .query()
+          .whereId(id)
+          .withAllRecursive()
+          .first() ||
+        database
+          .model("EmbeddableComponent")
+          .query()
+          .whereId(id)
+          .withAllRecursive()
+          .first()
+      );
+    },
+    isComponentSelected: (state) => (model) => {
+      return model.id in state.selectedComponents;
+    },
+  };
+
+  const mutations = {
+    selectComponent(state, { model }) {
+      if (!getters.isComponentSelected(state)(model)) {
+        state.selectedComponents[model.id] = model;
+      }
+    },
+    deselectComponent(state, { model }) {
+      delete state.selectedComponents[model.id];
+    },
+    deselectAllComponents(state) {
+      state.selectedComponents = {};
+    },
+  };
+
+  const actions = {};
+
   return createVuexStore({
     plugins,
-    modules: {
-      device: createDeviceModule(),
-    },
-    state: {
-      ready: false,
-      css: null,
-    },
-    mutations: {
-      setReady(state, ready) {
-        state.ready = ready;
-      },
-      setCss(state, css) {
-        state.css = css;
-      },
-    },
-    actions: {
-      async load({ commit, dispatch }, url) {
-        commit("setReady", false);
-
-        const data = await api.load(url);
-
-        commit("media/setSources", [
-          {
-            src: data.media.url,
-            type: data.media.mime,
-          },
-        ]);
-
-        dispatch("components/load", data.components);
-
-        commit("setCss", data.css);
-
-        commit("setReady", true);
-      },
-    },
+    state,
+    getters,
+    mutations,
+    actions,
   });
 }

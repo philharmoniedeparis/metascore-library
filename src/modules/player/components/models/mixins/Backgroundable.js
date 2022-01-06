@@ -17,11 +17,13 @@ export default Mixin(
               ajv,
               title: "Background color",
               default: null,
+              nullable: true,
             }),
             "background-image": createImageField({
               ajv,
               title: "Background image",
               default: null,
+              nullable: true,
             }),
           },
         });

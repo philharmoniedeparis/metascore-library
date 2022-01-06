@@ -96,7 +96,7 @@ export default {
       setMediaTime: "setTime",
       setMediaDuration: "setDuration",
     }),
-    ...mapActions(["load"]),
+    ...mapActions({ load: "app-renderer/load" }),
 
     /**
      * The media's 'ready' event handler

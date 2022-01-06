@@ -3,6 +3,14 @@ import { Model } from "@vuex-orm/core";
 import { omitBy } from "lodash";
 import { getProperties } from "../utils/jsonSchema";
 
+const ajv = new Ajv({
+  allErrors: true,
+  verbose: true,
+  strict: false,
+  useDefaults: true,
+  multipleOfPrecision: 2,
+});
+
 /**
  * An abstract model based on {@link https://vuex-orm.org/|@vuex-orm} and {@link http://json-schema.org/|JSON schema}
  * Heavily inspired by {@link https://github.com/chialab/schema-model|schema-model},
@@ -17,15 +25,14 @@ export default class AbstractModel extends Model {
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    if (!this._ajv) {
-      this._ajv = new Ajv({
-        multipleOfPrecision: 2,
-      });
-    }
-
-    return this._ajv;
+    return ajv;
   }
 
+  /**
+   * Get the JSON Schema definition for this model
+   *
+   * @returns {object} The schema definition
+   */
   static get schema() {
     return {
       type: "object",
@@ -97,15 +104,15 @@ export default class AbstractModel extends Model {
   }
 
   static beforeCreate(model) {
-    if (!model.validate()) {
-      console.error(model.errors);
+    if (!model.$validate()) {
+      console.error(model.$errors, model.$schema, model.$data);
       return false;
     }
   }
 
   static beforeUpdate(model) {
-    if (!model.validate()) {
-      console.error(model.errors);
+    if (!model.$validate()) {
+      console.error(model.$errors, model.$schema, model.$data);
       return false;
     }
   }
@@ -113,9 +120,27 @@ export default class AbstractModel extends Model {
   /**
    * Alias to the static method of the same name
    *
+   * @returns {Ajv} The Ajv instance
+   */
+  get $ajv() {
+    return this.constructor.ajv;
+  }
+
+  /**
+   * Alias to the static method of the same name
+   *
+   * @returns {object} The schema definition
+   */
+  get $schema() {
+    return this.constructor.schema;
+  }
+
+  /**
+   * Alias to the static method of the same name
+   *
    * @returns {object} The list of properties in JSON schema format
    */
-  get properties() {
+  get $properties() {
     return this.constructor.properties;
   }
 
@@ -124,31 +149,39 @@ export default class AbstractModel extends Model {
    *
    * @returns {Function} A validation function returned by Ajv
    */
-  get validator() {
-    if (!this._validator) {
-      this._validator = this.constructor.ajv.compile(this.constructor.schema);
+  get $validator() {
+    if (!this._$validator) {
+      this._$validator = this.$ajv.compile(this.$schema);
     }
 
-    return this._validator;
+    return this._$validator;
   }
 
-  get errors() {
-    return this.validator.errors;
+  /**
+   * Get current validation errors.
+   */
+  get $errors() {
+    return this.$validator.errors;
   }
 
-  $toJson() {
-    return omitBy(super.$toJson(), (value, key) => {
+  /**
+   * Get the data as a JSON without private properties.
+   *
+   * @returns {object} The data
+   */
+  get $data() {
+    return omitBy(this.$toJson(), (value, key) => {
       return value === null || key.startsWith("$");
     });
   }
 
   /**
-   * Validate data.
+   * Validate data against the schema.
    *
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
-  validate() {
-    return this.validator(this.$toJson());
+  $validate() {
+    return this.$validator(this.$data);
   }
 }

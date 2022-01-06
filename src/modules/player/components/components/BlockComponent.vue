@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import PagerFirstIcon from "../../../../assets/icons/components/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../../../../assets/icons/components/block/pager-previous.svg?inline";
 import PagerNextIcon from "../../../../assets/icons/components/block/pager-next.svg?inline";
@@ -74,7 +74,7 @@ export default {
     PagerPreviousIcon,
     PagerNextIcon,
   },
-  inject: ["seekMediaTo"],
+  inject: ["seekMediaTo", "$deviceHasTouch"],
   props: {
     /**
      * The associated vuex-orm model
@@ -91,9 +91,6 @@ export default {
     };
   },
   computed: {
-    ...mapState("device", {
-      deviceHasTouch: "hasTouch",
-    }),
     ...mapGetters("components", {
       isToggled: "isBlockToggled",
     }),
@@ -125,7 +122,7 @@ export default {
   },
   methods: {
     async setupSwipe() {
-      if (!this.deviceHasTouch) {
+      if (!this.$deviceHasTouch) {
         return;
       }
 

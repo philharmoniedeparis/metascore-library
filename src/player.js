@@ -5,7 +5,6 @@ import { createStore } from "./store/player";
 import App from "./PlayerApp.vue";
 
 import { registerModules } from "./modules/manager.js";
-import PostMessage from "./modules/player/post_message";
 import AppRenderer from "./modules/player/app_renderer";
 
 export class Player {
@@ -21,7 +20,7 @@ export class Player {
     this._app = createApp(App, { url, api }).use(i18n).use(store);
 
     // Register root modules.
-    registerModules([PostMessage, AppRenderer], this._app, store).then(() => {
+    registerModules([AppRenderer], this._app, store).then(() => {
       if (el) {
         this.mount(el);
       }

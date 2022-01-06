@@ -41,9 +41,10 @@ export const createStringField = ({
   title = "",
   description = "",
   default: default_value = "",
+  nullable = false,
 } = {}) => {
   return {
-    type: "string",
+    type: nullable ? ["string", "null"] : "string",
     title,
     description,
     default: default_value,
@@ -54,12 +55,13 @@ export const createNumberField = ({
   title = "",
   description = "",
   default: default_value = 0,
+  nullable = false,
   multipleOf = 0.01,
   minimum = null,
   maximum = null,
 } = {}) => {
   const field = {
-    type: "number",
+    type: nullable ? ["number", "null"] : "number",
     title,
     description,
     default: default_value,
@@ -80,11 +82,12 @@ export const createIntegerField = ({
   title = "",
   description = "",
   default: default_value = 0,
+  nullable = false,
   minimum = null,
   maximum = null,
 } = {}) => {
   const field = {
-    type: "integer",
+    type: nullable ? ["integer", "null"] : "integer",
     title,
     description,
     default: default_value,
@@ -104,9 +107,10 @@ export const createBooleanField = ({
   title = "",
   description = "",
   default: default_value = false,
+  nullable = false,
 } = {}) => {
   return {
-    type: "boolean",
+    type: nullable ? ["boolean", "null"] : "boolean",
     title,
     description,
     default: default_value,
@@ -145,10 +149,16 @@ export const createEnumField = ({
   title = "",
   description = "",
   default: default_value = null,
+  nullable = true,
   enum: allowed_values = [],
 } = {}) => {
   return {
-    ...createStringField({ title, description, default: default_value }),
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
     enum: allowed_values,
   };
 };
@@ -158,11 +168,17 @@ export const createUuidField = ({
   title = "",
   description = "",
   default: default_value = "",
+  nullable = false,
 } = {}) => {
   ajv.addFormat("uuid", { validate: () => true });
 
   return {
-    ...createStringField({ title, description, default: default_value }),
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
     format: "uuid",
   };
 };
@@ -172,10 +188,16 @@ export const createUrlField = ({
   title = "",
   description = "",
   default: default_value = "",
+  nullable = false,
 } = {}) => {
   ajv.addFormat("url", urlRegex);
   return {
-    ...createStringField({ title, description, default: default_value }),
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
     format: "url",
   };
 };
@@ -201,10 +223,16 @@ export const createTimeField = ({
   title = "",
   description = "",
   default: default_value = 0,
+  nullable = false,
 } = {}) => {
   ajv.addFormat("time", { validate: () => true });
   return {
-    ...createNumberField({ title, description, default: default_value }),
+    ...createNumberField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
     format: "time",
   };
 };
@@ -214,10 +242,11 @@ export const createColorField = ({
   title = "",
   description = "",
   default: default_value = null,
+  nullable = true,
 } = {}) => {
   ajv.addFormat("color", { validate: validateColor });
   return {
-    type: "string",
+    type: nullable ? ["string", "null"] : "string",
     format: "color",
     title,
     description,
@@ -230,10 +259,16 @@ export const createImageField = ({
   title = "",
   description = "",
   default: default_value = null,
+  nullable = true,
 } = {}) => {
   ajv.addFormat("image", urlRegex);
   return {
-    ...createStringField({ title, description, default: default_value }),
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
     format: "image",
   };
 };
@@ -243,6 +278,7 @@ export const createAngleField = ({
   title = "",
   description = "",
   default: default_value = 0,
+  nullable = true,
 } = {}) => {
   ajv.addFormat("angle", { validate: () => true });
   return {
@@ -250,6 +286,7 @@ export const createAngleField = ({
       title,
       description,
       default: default_value,
+      nullable,
       minimum: 0,
       maximum: 359,
     }),
@@ -262,10 +299,14 @@ export const createBorderRadiusField = ({
   title = "",
   description = "",
   default: default_value = 0,
+  nullable = false,
 } = {}) => {
   ajv.addFormat("border-radius", { validate: () => true });
   return {
-    ...createStringField({ title, description, default: default_value }),
+    type: nullable ? ["string", "integer", "null"] : ["string", "integer"],
+    title,
+    description,
+    default: default_value,
     format: "border-radius",
   };
 };

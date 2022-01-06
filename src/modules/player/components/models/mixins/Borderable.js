@@ -17,16 +17,19 @@ export default Mixin(
             "border-width": createIntegerField({
               title: "Border width",
               default: null,
+              nullable: true,
             }),
             "border-color": createColorField({
               ajv,
               title: "Border color",
               default: null,
+              nullable: true,
             }),
             "border-radius": createBorderRadiusField({
               ajv,
               title: "Border radius",
               default: null,
+              nullable: true,
             }),
           },
         });

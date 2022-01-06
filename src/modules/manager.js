@@ -30,5 +30,5 @@ export async function registerModule(module, app, store, router = null) {
   }
 
   // Install.
-  module.install({ app, store, router, eventBus });
+  await module.install({ app, store, router, eventBus });
 }

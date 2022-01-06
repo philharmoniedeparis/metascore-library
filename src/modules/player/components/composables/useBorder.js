@@ -10,7 +10,10 @@ export default function (model) {
         "border-color": borderColor,
         "border-radius": borderRadius,
       } = unref(model);
-      const ret = {};
+      const ret = {
+        "border-style": "solid",
+        "border-width": 0,
+      };
 
       if (!isUndefined(borderWidth) && !isNull(borderWidth)) {
         ret["border-width"] = `${borderWidth}px`;

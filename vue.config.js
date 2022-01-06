@@ -14,17 +14,22 @@ module.exports = {
         return "metaScore.[name].chunk.css";
       },
       insert: function (linkTag) {
-        try {
-          var href = linkTag.getAttribute("href");
-          if (href.includes("Editor.PlayerPreviewIframe")) {
-            // Alter the link tag to prevent it from affecting the main page,
-            // and allow the editor to insert it at the correct location.
+        var href = linkTag.getAttribute("href");
+        if (href.includes("Editor.PlayerPreview")) {
+          var preview = document.querySelector("iframe.player-preview");
+          if (preview) {
+            // Load CSS into iframe if available.
+            preview.contentDocument.head.appendChild(linkTag);
+            return;
+          } else {
+            // Iframe not yet mounted,
+            // allow the editor to insert it at the correct location.
+            linkTag.setAttribute("id", "player-preview");
+            // Prevent the tag from affecting the main page,
+            // while still allowing it to load to finalize the async import.
             linkTag.setAttribute("rel", "preload");
             linkTag.setAttribute("as", "style");
-            linkTag.setAttribute("id", "player-preview-iframe");
           }
-        } catch (e) {
-          //
         }
 
         document.head.appendChild(linkTag);

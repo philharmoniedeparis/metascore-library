@@ -14,11 +14,13 @@ export default Mixin(
               ajv,
               title: "Start time",
               default: null,
+              nullable: true,
             }),
             "end-time": createTimeField({
               ajv,
               title: "End time",
               default: null,
+              nullable: true,
             }),
           },
         });

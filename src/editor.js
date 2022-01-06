@@ -4,7 +4,6 @@ import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "./store/editor";
 import { createRouter } from "./router/editor";
-import VueDOMPurifyHTML from "vue-dompurify-html";
 import App from "./EditorApp.vue";
 
 import { registerModules } from "./modules/manager.js";
@@ -27,20 +26,7 @@ export class Editor {
     const router = createRouter({ debug });
 
     this._events = new Emitter();
-    this._app = createApp(App, { url })
-      .use(i18n)
-      .use(store)
-      .use(router)
-      .use(VueDOMPurifyHTML, {
-        hooks: {
-          afterSanitizeAttributes: (node) => {
-            if (node.tagName === "A") {
-              node.setAttribute("target", "_blank");
-              node.setAttribute("rel", "noopener");
-            }
-          },
-        },
-      });
+    this._app = createApp(App, { url }).use(i18n).use(store).use(router);
 
     // Register root modules.
     registerModules(

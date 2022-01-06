@@ -14,6 +14,8 @@ export default Mixin(
               ajv,
               title: "Opacity",
               default: null,
+              nullable: true,
+              minimum: 0,
               maximum: 1,
             }),
           },
