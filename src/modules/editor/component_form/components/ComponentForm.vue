@@ -19,9 +19,10 @@
 
 <script>
 import { mapState } from "vuex";
+import { generateDefaultUISchema } from "@jsonforms/core";
 import { JsonForms } from "@jsonforms/vue";
-import { defaultStyles, vanillaRenderers } from "@jsonforms/vue-vanilla";
-import "@jsonforms/vue-vanilla/vanilla.css";
+import { vanillaRenderers } from "@jsonforms/vue-vanilla";
+import { customRenderers } from "./renderers";
 
 export default {
   components: {
@@ -44,30 +45,47 @@ export default {
       return this.model?.$schema;
     },
     uischema() {
-      const schema = {
-        type: "VerticalLayout",
-        elements: [],
-      };
+      const uischema = generateDefaultUISchema(this.schema);
 
-      const properties = this.model?.$properties;
-      if (properties) {
-        Object.entries(properties)
-          .filter(([key]) => {
-            return !["type", "id", "editor"].includes(key);
-          })
-          .forEach(([key, value]) => {
-            if (value.type === "array") {
-              // TODO
-            } else {
-              schema.elements.push({
-                type: "Control",
-                scope: `#/properties/${key}`,
-              });
-            }
-          });
-      }
+      console.log("schema", this.schema);
 
-      return schema;
+      uischema.elements = uischema.elements
+        .filter((control) => {
+          return ![
+            "#/properties/type",
+            "#/properties/id",
+            "#/properties/editor",
+            "#/properties/dimension",
+            //"#/properties/translate",
+            //"#/properties/scale",
+            //"#/properties/position",
+          ].includes(control.scope);
+        })
+        .map((control) => {
+          switch (control.scope) {
+            /*case "#/properties/position":
+              return {
+                type: "Group",
+                label: "Position",
+                elements: [
+                  {
+                    type: "Control",
+                    scope: "#/properties/position/items",
+                  },
+                  {
+                    type: "Control",
+                    scope: "#/properties/position/items",
+                  },
+                ],
+              };*/
+            default:
+              return control;
+          }
+        });
+
+      console.log("uischema", uischema);
+
+      return uischema;
     },
     ajv() {
       return this.model?.$ajv;
@@ -76,18 +94,13 @@ export default {
   data() {
     return {
       // freeze renderers for performance gains
-      renderers: Object.freeze(vanillaRenderers),
+      renderers: Object.freeze([...vanillaRenderers, ...customRenderers]),
     };
   },
   methods: {
     onChange(evt) {
       this.data = evt.data;
     },
-  },
-  provide() {
-    return {
-      styles: defaultStyles,
-    };
   },
 };
 </script>

@@ -4,13 +4,15 @@
     :class="{ selected: isComponentSelected(model) }"
     @click.stop="onClick"
   >
-    <slot />
+    <div class="editor-component-wrapper">
+      <slot />
+    </div>
   </player-component-wrapper>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import PlayerComponentWrapper from "../../../player/components/components/ComponentWrapper";
+import PlayerComponentWrapper from "../../../player/app_components/components/ComponentWrapper";
 
 export default {
   components: {
@@ -58,6 +60,8 @@ export default {
 @import "../../../../assets/css/theme.scss";
 
 .metaScore-component {
+  overflow: visible;
+
   &.selected {
     @each $component, $color in $component-colors {
       @if $component == default {
@@ -68,6 +72,14 @@ export default {
         }
       }
     }
+  }
+
+  & > .editor-component-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
   }
 }
 </style>

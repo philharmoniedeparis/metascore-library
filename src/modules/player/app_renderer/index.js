@@ -1,12 +1,12 @@
 import MediaPlayer from "../media_player";
-import Components from "../components";
+import AppComponents from "../app_components";
 import PostMessage from "../post_message";
 import AppRenderer from "./components/AppRenderer.vue";
 import moduleStore from "./store";
 
 export default {
   name: "AppRenderer",
-  dependencies: [MediaPlayer, Components, PostMessage],
+  dependencies: [MediaPlayer, AppComponents, PostMessage],
   install({ app, store }) {
     app.component("app-renderer", AppRenderer);
 

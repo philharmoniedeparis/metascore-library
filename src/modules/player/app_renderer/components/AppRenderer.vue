@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import "../../../../assets/css/tailwind.css";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {
@@ -141,9 +142,23 @@ export default {
 };
 </script>
 
+<style lang="scss">
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+</style>
+
 <style lang="scss" scoped>
 .metaScore-player {
   position: relative;
+  width: 100%;
+  height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
 
