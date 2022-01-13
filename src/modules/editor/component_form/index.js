@@ -5,6 +5,6 @@ export default {
   name: "ComponentForm",
   dependencies: [PlayerPreview],
   install({ app }) {
-    app.component("component-form", ComponentForm);
+    app.component("ComponentForm", ComponentForm);
   },
 };

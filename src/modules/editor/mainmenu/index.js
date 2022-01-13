@@ -8,6 +8,6 @@ export default {
   name: "MainMenu",
   dependencies: [PlayerZoom, History, RevisionsManager],
   install({ app }) {
-    app.component("main-menu", MainMenu);
+    app.component("MainMenu", MainMenu);
   },
 };

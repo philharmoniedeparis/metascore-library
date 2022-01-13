@@ -5,28 +5,32 @@
 
 <template>
   <div class="component-form">
-    <json-forms
-      v-if="model"
-      :data="data"
-      :schema="schema"
-      :uischema="uischema"
-      :ajv="ajv"
-      :renderers="renderers"
-      @change="onChange"
-    />
+    <template v-for="(subSchema, key) in properties" :key="key">
+      <control-dispatcher
+        :property="key"
+        :schema="subSchema"
+        :value="model[key]"
+        @change="onChange"
+      />
+    </template>
   </div>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import { generateDefaultUISchema } from "@jsonforms/core";
-import { JsonForms } from "@jsonforms/vue";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { customRenderers } from "./renderers";
+import { omit } from "lodash";
+import ControlDispatcher from "./controls/ControlDispatcher.vue";
 
 export default {
   components: {
-    JsonForms,
+    ControlDispatcher,
+  },
+  provide() {
+    return {
+      getAjv: () => {
+        return this.model?.$ajv;
+      },
+    };
   },
   computed: {
     ...mapState(["selectedComponents"]),
@@ -42,64 +46,25 @@ export default {
       },
     },
     schema() {
-      return this.model?.$schema;
+      return this.model?.$schema || {};
     },
-    uischema() {
-      const uischema = generateDefaultUISchema(this.schema);
-
-      console.log("schema", this.schema);
-
-      uischema.elements = uischema.elements
-        .filter((control) => {
-          return ![
-            "#/properties/type",
-            "#/properties/id",
-            "#/properties/editor",
-            "#/properties/dimension",
-            //"#/properties/translate",
-            //"#/properties/scale",
-            //"#/properties/position",
-          ].includes(control.scope);
-        })
-        .map((control) => {
-          switch (control.scope) {
-            /*case "#/properties/position":
-              return {
-                type: "Group",
-                label: "Position",
-                elements: [
-                  {
-                    type: "Control",
-                    scope: "#/properties/position/items",
-                  },
-                  {
-                    type: "Control",
-                    scope: "#/properties/position/items",
-                  },
-                ],
-              };*/
-            default:
-              return control;
-          }
-        });
-
-      console.log("uischema", uischema);
-
-      return uischema;
+    properties() {
+      return omit(this.schema?.properties, ["id", "type", "editor"]);
     },
-    ajv() {
-      return this.model?.$ajv;
-    },
-  },
-  data() {
-    return {
-      // freeze renderers for performance gains
-      renderers: Object.freeze([...vanillaRenderers, ...customRenderers]),
-    };
   },
   methods: {
     onChange(evt) {
-      this.data = evt.data;
+      this.model
+        .$dispatch("update", {
+          [evt.property]: evt.value,
+        })
+        .then(() => {
+          console.log("updated");
+          console.log(this.model.$data);
+        })
+        .catch((e) => {
+          console.error(e);
+        });
     },
   },
 };

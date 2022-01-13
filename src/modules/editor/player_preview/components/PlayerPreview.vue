@@ -3,9 +3,9 @@
     <app-renderer :url="url" />
   </teleport>
   <iframe
+    ref="iframe"
     class="player-preview"
     src="about:blank"
-    ref="iframe"
     @load="onIframeLoad"
   ></iframe>
 </template>

@@ -13,8 +13,8 @@ export default {
     const { default: ComponentWrapper } = await import(
       /* webpackChunkName: "Editor.PlayerPreview" */ "./components/ComponentWrapper"
     );
-    app.component("component-wrapper", ComponentWrapper);
+    app.component("ComponentWrapper", ComponentWrapper);
 
-    app.component("player-preview", PlayerPreview);
+    app.component("PlayerPreview", PlayerPreview);
   },
 };

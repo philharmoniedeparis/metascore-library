@@ -18,7 +18,6 @@ export default {
   components: {
     PlayerComponentWrapper,
   },
-  emits: ["componentclick"],
   props: {
     /**
      * The associated vuex-orm model
@@ -28,6 +27,7 @@ export default {
       required: true,
     },
   },
+  emits: ["componentclick"],
   computed: {
     ...mapGetters(["isComponentSelected"]),
   },

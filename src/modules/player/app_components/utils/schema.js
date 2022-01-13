@@ -291,6 +291,8 @@ export const createAnimatedField = ({
   ajv.addFormat("animated", { validate: () => true });
   return {
     type: nullable ? ["object", "null"] : ["object"],
+    title,
+    description,
     properties: {
       animated: createBooleanField({
         title: "Animated",
@@ -313,8 +315,6 @@ export const createAnimatedField = ({
     else: {
       properties: {
         value: createArrayField({
-          title,
-          description,
           items: {
             type: "array",
             items: [createTimeField({ ajv }), items],
