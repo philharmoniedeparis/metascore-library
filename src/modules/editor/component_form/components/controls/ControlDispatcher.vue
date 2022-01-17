@@ -14,25 +14,27 @@
 
 <script>
 import { flatten } from "../../utils/schema";
-import StringControl from "./StringControl.vue";
 import BooleanControl from "./BooleanControl.vue";
-import NumberControl from "./NumberControl.vue";
-import EnumControl from "./EnumControl.vue";
-import TimeControl from "./TimeControl.vue";
-import ImageControl from "./ImageControl.vue";
-import ColorControl from "./ColorControl.vue";
 import BorderRadiusControl from "./BorderRadiusControl.vue";
+import ColorControl from "./ColorControl.vue";
+import EnumControl from "./EnumControl.vue";
+import HtmlControl from "./HtmlControl.vue";
+import ImageControl from "./ImageControl.vue";
+import NumberControl from "./NumberControl.vue";
+import StringControl from "./StringControl.vue";
+import TimeControl from "./TimeControl.vue";
 
 export default {
   components: {
-    StringControl,
     BooleanControl,
-    NumberControl,
-    EnumControl,
-    TimeControl,
-    ImageControl,
-    ColorControl,
     BorderRadiusControl,
+    ColorControl,
+    EnumControl,
+    HtmlControl,
+    ImageControl,
+    NumberControl,
+    StringControl,
+    TimeControl,
   },
   inject: ["getAjv"],
   props: {

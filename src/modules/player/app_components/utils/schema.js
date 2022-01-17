@@ -242,6 +242,25 @@ export const createImageField = ({
   };
 };
 
+export const createHtmlField = ({
+  ajv,
+  title = "",
+  description = "",
+  default: default_value = null,
+  nullable = true,
+} = {}) => {
+  ajv.addFormat("html", urlRegex);
+  return {
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
+    format: "html",
+  };
+};
+
 export const createAngleField = ({
   ajv,
   title = "",

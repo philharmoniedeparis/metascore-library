@@ -5,18 +5,22 @@
 
 <template>
   <div v-if="masterModel" class="component-form">
-    <template v-for="(subSchema, key) in properties" :key="key">
-      <control-dispatcher
-        :property="key"
-        :schema="subSchema"
-        :value="masterModel[key]"
-        @change="onChange"
-      />
-    </template>
+    <h2 class="title">{{ title }}</h2>
+    <div class="controls">
+      <template v-for="(subSchema, key) in properties" :key="key">
+        <control-dispatcher
+          :property="key"
+          :schema="subSchema"
+          :value="masterModel[key]"
+          @change="onChange"
+        />
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
+import "../../../../assets/css/tailwind.css";
 import { mapGetters, mapActions } from "vuex";
 import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
@@ -46,6 +50,9 @@ export default {
       });
       return commonClasses[0];
     },
+    title() {
+      return this.commonClass?.entity;
+    },
     schema() {
       return this.commonClass?.schema;
     },
@@ -70,4 +77,86 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import "../../../../assets/css/theme.scss";
+
+.component-form {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  background: $mediumgray;
+  overflow: auto;
+  color: $white;
+
+  h2.title {
+    position: sticky;
+    top: 0;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.5em;
+    font-size: 1em;
+    font-weight: normal;
+    background: $lightgray;
+    border-bottom: 0.25em solid $mediumgray;
+    z-index: 1;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-content: flex-start;
+    padding: 0.5em;
+    background: $lightgray;
+
+    > .control {
+      margin: 0.25em 0;
+    }
+  }
+
+  .control {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    ::v-deep(label) {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    ::v-deep(input) {
+      width: 100%;
+      margin: 0;
+      padding: 0.25em 0.5em;
+      flex: 1;
+      font-family: inherit;
+      color: inherit;
+      background: $mediumgray;
+      box-sizing: border-box;
+      border: 0;
+
+      &:not([type]),
+      &[type=""],
+      &[type="text"] {
+        border-radius: 0.25em;
+      }
+    }
+
+    & > :not(:last-child) {
+      margin-right: 0.5em;
+    }
+
+    &[data-property="name"] {
+      ::v-deep(label) {
+        @apply ms--sr-only;
+      }
+    }
+
+    &.animated {
+      order: 2;
+    }
+  }
+}
+</style>

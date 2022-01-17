@@ -13,6 +13,10 @@ export default {
       type: Object,
       required: true,
     },
+    flattenedSchema: {
+      type: Object,
+      required: true,
+    },
     value: {
       type: String,
       default: "",

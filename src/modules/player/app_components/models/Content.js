@@ -5,7 +5,7 @@ import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
 import Resizable from "./mixins/Resizable";
 import Transformable from "./mixins/Transformable";
-import { createStringField } from "../utils/schema";
+import { createHtmlField } from "../utils/schema";
 
 export class Content extends mix(EmbeddableComponent).with(
   Backgroundable,
@@ -18,9 +18,12 @@ export class Content extends mix(EmbeddableComponent).with(
   static baseEntity = "EmbeddableComponent";
 
   static get schema() {
+    const ajv = this.ajv;
+
     return merge(super.schema, {
       properties: {
-        "content-text": createStringField({
+        "content-text": createHtmlField({
+          ajv,
           title: "Text",
         }),
       },
