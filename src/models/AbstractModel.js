@@ -62,6 +62,24 @@ export default class AbstractModel extends Model {
   }
 
   /**
+   * Get a list of inheritance chain classes
+   *
+   * @returns {Class[]} The list of Model classes in the inheritance chain
+   */
+  static getModelChain() {
+    let classes = [this];
+
+    if (this.baseEntity) {
+      const baseModel = this.store().$db().model(this.baseEntity);
+      if (baseModel) {
+        classes = classes.concat(baseModel.getModelChain());
+      }
+    }
+
+    return classes;
+  }
+
+  /**
    * Get the JSON Schema definition for this model
    *
    * @returns {object} The schema definition
@@ -157,6 +175,15 @@ export default class AbstractModel extends Model {
    */
   get $ajv() {
     return this.constructor.ajv;
+  }
+
+  /**
+   * Alias to the static method getModelChain
+   *
+   * @returns {Class[]} The list of Model classes in the inheritance chain
+   */
+  get $modelChain() {
+    return this.constructor.getModelChain();
   }
 
   /**

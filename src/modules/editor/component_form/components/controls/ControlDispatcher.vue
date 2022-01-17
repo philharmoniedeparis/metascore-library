@@ -5,6 +5,8 @@
       :is="`${control}-control`"
       :property="property"
       :schema="schema"
+      :flattened-schema="flattened"
+      :value="value"
       @change="onChange"
     />
   </div>

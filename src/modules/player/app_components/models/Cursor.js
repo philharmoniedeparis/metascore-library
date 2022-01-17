@@ -3,11 +3,7 @@ import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
-import Hideable from "./mixins/Hideable";
-import Opacitiable from "./mixins/Opacitiable";
-import Positionable from "./mixins/Positionable";
 import Resizable from "./mixins/Resizable";
-import Timeable from "./mixins/Timeable";
 import Transformable from "./mixins/Transformable";
 import {
   createEnumField,
@@ -22,11 +18,7 @@ import {
 export class Cursor extends mix(EmbeddableComponent).with(
   Backgroundable,
   Borderable,
-  Hideable,
-  Opacitiable,
-  Positionable,
   Resizable,
-  Timeable,
   Transformable
 ) {
   static entity = "Cursor";

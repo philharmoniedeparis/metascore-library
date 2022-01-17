@@ -8,7 +8,7 @@ export default {
   name: "AppRenderer",
   dependencies: [MediaPlayer, AppComponents, PostMessage],
   install({ app, store }) {
-    app.component("app-renderer", AppRenderer);
+    app.component("AppRenderer", AppRenderer);
 
     store.registerModule("app-renderer", moduleStore);
   },

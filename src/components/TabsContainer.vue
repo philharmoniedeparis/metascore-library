@@ -6,7 +6,7 @@
         :key="index"
         :class="{ active: index === selected }"
       >
-        <a @click="selectTab(index)" role="tab">{{ tab.title }}</a>
+        <a role="tab" @click="selectTab(index)">{{ tab.title }}</a>
       </li>
     </ul>
     <div class="tabs-content">
@@ -23,6 +23,9 @@ export default {
       selected: null,
     };
   },
+  mounted() {
+    this.selectTab(0);
+  },
   methods: {
     addTab(tab) {
       this.tabs.push(tab);
@@ -35,9 +38,6 @@ export default {
         else tab.deactivate();
       });
     },
-  },
-  mounted() {
-    this.selectTab(0);
   },
 };
 </script>

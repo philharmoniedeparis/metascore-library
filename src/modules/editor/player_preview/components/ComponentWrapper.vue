@@ -40,7 +40,7 @@ export default {
     onClick(evt) {
       const model = this.model;
 
-      if (this.selected) {
+      if (this.isComponentSelected(model)) {
         if (evt.shiftKey) {
           this.deselectComponent({ model });
         }
@@ -61,6 +61,7 @@ export default {
 
 .metaScore-component {
   overflow: visible;
+  user-select: none;
 
   &.selected {
     @each $component, $color in $component-colors {

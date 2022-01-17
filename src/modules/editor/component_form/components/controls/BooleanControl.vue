@@ -23,7 +23,7 @@ export default {
     onChange(evt) {
       this.$emit("change", {
         property: this.property,
-        value: evt.target.value,
+        value: evt.target.checked,
       });
     },
   },

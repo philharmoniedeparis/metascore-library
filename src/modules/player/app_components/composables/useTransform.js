@@ -29,7 +29,7 @@ export default function (model) {
       }
 
       if (!isUndefined(scale) && !isNull(scale)) {
-        const value = scale.aniamted
+        const value = !scale.aniamted
           ? scale.value
           : getAnimatedValueAtTime(scale.value, mediaTime);
 

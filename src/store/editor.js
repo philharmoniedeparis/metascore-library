@@ -11,7 +11,7 @@ export function createStore({ debug = false } = {}) {
   }
 
   const state = {
-    selectedComponents: {},
+    selectedComponents: new Set(),
   };
 
   const getters = {
@@ -31,26 +31,41 @@ export function createStore({ debug = false } = {}) {
           .first()
       );
     },
+    getComponentsByIds: (state, getters) => (ids) => {
+      return ids.map(getters.getComponentById);
+    },
     isComponentSelected: (state) => (model) => {
-      return model.id in state.selectedComponents;
+      return state.selectedComponents.has(model.id);
+    },
+    getSelectedComponents: (state, getters) => {
+      return getters.getComponentsByIds(Array.from(state.selectedComponents));
     },
   };
 
   const mutations = {
     selectComponent(state, { model }) {
       if (!getters.isComponentSelected(state)(model)) {
-        state.selectedComponents[model.id] = model;
+        state.selectedComponents.add(model.id);
       }
     },
     deselectComponent(state, { model }) {
-      delete state.selectedComponents[model.id];
+      state.selectedComponents.delete(model.id);
     },
     deselectAllComponents(state) {
-      state.selectedComponents = {};
+      state.selectedComponents.clear();
     },
   };
 
-  const actions = {};
+  const actions = {
+    updateComponents(state, { models, data }) {
+      models.forEach((model) => {
+        model.$dispatch("update", {
+          ...data,
+          id: model.id,
+        });
+      });
+    },
+  };
 
   return createVuexStore({
     plugins,

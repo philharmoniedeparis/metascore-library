@@ -2,6 +2,7 @@ import { Mixin } from "mixwith";
 import { merge } from "lodash";
 import {
   createArrayField,
+  createNumberField,
   createIntegerField,
   createAnimatedField,
 } from "../../utils/schema";
@@ -27,7 +28,7 @@ export default Mixin(
               title: "Scale",
               default: { animated: false, value: [1, 1] },
               items: createArrayField({
-                items: [createIntegerField(), createIntegerField()],
+                items: [createNumberField(), createNumberField()],
               }),
             }),
           },

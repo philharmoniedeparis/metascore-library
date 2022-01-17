@@ -4,12 +4,12 @@
 </i18n>
 
 <template>
-  <div class="component-form">
+  <div v-if="masterModel" class="component-form">
     <template v-for="(subSchema, key) in properties" :key="key">
       <control-dispatcher
         :property="key"
         :schema="subSchema"
-        :value="model[key]"
+        :value="masterModel[key]"
         @change="onChange"
       />
     </template>
@@ -17,8 +17,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import { omit } from "lodash";
+import { mapGetters, mapActions } from "vuex";
+import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
 
 export default {
@@ -28,43 +28,43 @@ export default {
   provide() {
     return {
       getAjv: () => {
-        return this.model?.$ajv;
+        return this.masterModel?.$ajv;
       },
     };
   },
   computed: {
-    ...mapState(["selectedComponents"]),
-    model() {
-      return Object.values(this.selectedComponents)[0];
+    ...mapGetters({ selectedComponents: "getSelectedComponents" }),
+    masterModel() {
+      return this.selectedComponents[0];
     },
-    data: {
-      get() {
-        return this.model?.$data;
-      },
-      set(data) {
-        this.model.$dispatch("update", data);
-      },
+    commonClass() {
+      let commonClasses = [];
+      this.selectedComponents.forEach((model, index) => {
+        const modelChain = model.$modelChain;
+        commonClasses =
+          index > 0 ? intersection(commonClasses, modelChain) : modelChain;
+      });
+      return commonClasses[0];
     },
     schema() {
-      return this.model?.$schema || {};
+      return this.commonClass?.schema;
     },
     properties() {
-      return omit(this.schema?.properties, ["id", "type", "editor"]);
+      return omit(this.schema.properties, ["id", "type", "editor"]);
     },
   },
   methods: {
+    ...mapActions(["updateComponents"]),
     onChange(evt) {
-      this.model
-        .$dispatch("update", {
-          [evt.property]: evt.value,
-        })
-        .then(() => {
-          console.log("updated");
-          console.log(this.model.$data);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+      console.log(evt);
+      const data = {
+        [evt.property]: evt.value,
+      };
+
+      this.updateComponents({
+        models: this.selectedComponents,
+        data,
+      });
     },
   },
 };
