@@ -35,5 +35,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isBorderable() {
+        return true;
+      }
     }
 );

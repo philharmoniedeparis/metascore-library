@@ -18,5 +18,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isHideable() {
+        return true;
+      }
     }
 );

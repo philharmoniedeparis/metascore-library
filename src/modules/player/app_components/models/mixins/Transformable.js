@@ -34,5 +34,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isTransformable() {
+        return true;
+      }
     }
 );

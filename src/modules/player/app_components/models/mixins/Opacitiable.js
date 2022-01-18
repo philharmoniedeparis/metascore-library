@@ -22,5 +22,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isOpacitable() {
+        return true;
+      }
     }
 );

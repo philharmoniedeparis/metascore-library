@@ -25,5 +25,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isTimeable() {
+        return true;
+      }
     }
 );

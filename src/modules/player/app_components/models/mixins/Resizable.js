@@ -16,5 +16,9 @@ export default Mixin(
           },
         });
       }
+
+      get $isResizable() {
+        return true;
+      }
     }
 );

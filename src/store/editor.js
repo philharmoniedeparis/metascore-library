@@ -57,12 +57,15 @@ export function createStore({ debug = false } = {}) {
   };
 
   const actions = {
-    updateComponents(state, { models, data }) {
+    updateComponent(context, { model, data }) {
+      model.$dispatch("update", {
+        ...data,
+        id: model.id,
+      });
+    },
+    updateComponents({ dispatch }, { models, data }) {
       models.forEach((model) => {
-        model.$dispatch("update", {
-          ...data,
-          id: model.id,
-        });
+        dispatch("updateComponent", { model, data });
       });
     },
   };

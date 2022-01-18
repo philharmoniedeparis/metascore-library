@@ -11,6 +11,11 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@interactjs/actions": "^1.10.11",
+    "@interactjs/auto-start": "^1.10.11",
+    "@interactjs/dev-tools": "^1.10.11",
+    "@interactjs/interact": "^1.10.11",
+    "@interactjs/modifiers": "^1.10.11",
     "@vuex-orm/core": "https://github.com/semiaddict/vuex-orm/releases/download/v0.36.4-fix-custom-relationships-derived-models/v0.36.4-fix-custom-relationships-derived-models.tar.gz",
     "ajv": "^6.12.6",
     "axios": "^0.24.0",

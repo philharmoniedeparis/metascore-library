@@ -63,7 +63,6 @@ export default {
   methods: {
     ...mapActions(["updateComponents"]),
     onChange(evt) {
-      console.log(evt);
       const data = {
         [evt.property]: evt.value,
       };
