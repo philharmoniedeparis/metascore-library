@@ -48,7 +48,7 @@ export default {
 .tabs-container {
   .tabs-nav {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -56,14 +56,19 @@ export default {
 
     > li {
       flex: 1 1 auto;
+      overflow: hidden;
 
       a {
+        display: block;
         padding: 0.25em 0.5em;
         color: #fff;
         background: $mediumgray;
         line-height: 2em;
         user-select: none;
+        text-align: center;
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
         cursor: pointer;
       }
 

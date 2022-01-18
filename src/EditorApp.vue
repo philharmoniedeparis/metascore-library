@@ -4,11 +4,7 @@
       <main-menu />
     </resizable-pane>
 
-    <resizable-pane
-      class="left"
-      direction="vertical"
-      :resizable="{ edges: { right: true } }"
-    >
+    <resizable-pane class="left" :right="true">
       <tabs-container>
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
@@ -17,19 +13,15 @@
     </resizable-pane>
 
     <resizable-pane class="center">
+      <dynamic-ruler />
       <player-preview :url="url" />
     </resizable-pane>
 
-    <resizable-pane
-      class="right"
-      direction="vertical"
-      :resizable="{ edges: { left: true } }"
-    >
+    <resizable-pane class="right" :left="true">
       <component-form></component-form>
     </resizable-pane>
 
-    <resizable-pane class="bottom" :resizable="{ edges: { top: true } }">
-    </resizable-pane>
+    <resizable-pane class="bottom" :top="true"></resizable-pane>
   </div>
 </template>
 
@@ -106,7 +98,6 @@ export default {
     width: 20em;
     min-width: 15em;
     max-width: 25vw;
-    min-height: 100%;
     border-right: 0.5em solid $darkgray;
   }
 
@@ -120,7 +111,6 @@ export default {
     width: 20em;
     min-width: 15em;
     max-width: 25vw;
-    min-height: 100%;
     border-left: 0.5em solid $darkgray;
   }
 
@@ -129,7 +119,6 @@ export default {
     height: 300px;
     min-height: 150px;
     max-height: 75vh;
-    min-width: 100%;
     border-top: 0.5em solid $darkgray;
   }
 }

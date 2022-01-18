@@ -13,6 +13,7 @@ import PlayerPreview from "./modules/editor/player_preview";
 import ComponentsLibrary from "./modules/editor/components_library";
 import AssetsLibrary from "./modules/editor/assets_libraray";
 import SharedAssetsLibrary from "./modules/editor/shared_assets_library";
+import Ruler from "./modules/editor/ruler";
 
 export class Editor {
   /**
@@ -37,6 +38,7 @@ export class Editor {
         ComponentsLibrary,
         AssetsLibrary,
         SharedAssetsLibrary,
+        Ruler,
       ],
       this._app,
       store,

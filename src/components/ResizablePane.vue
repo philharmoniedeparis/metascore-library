@@ -11,22 +11,32 @@ import interact from "@interactjs/interact";
 
 export default {
   props: {
-    resizable: {
-      type: [Boolean, Object],
+    top: {
+      type: Boolean,
       default: false,
     },
-    direction: {
-      type: String,
-      default: "horizontal",
-      validator(value) {
-        return ["horizontal", "vertical"].includes(value);
-      },
+    left: {
+      type: Boolean,
+      default: false,
+    },
+    bottom: {
+      type: Boolean,
+      default: false,
+    },
+    right: {
+      type: Boolean,
+      default: false,
     },
   },
   mounted() {
-    if (this.resizable) {
+    if (this.top || this.left || this.bottom || this.right) {
       this._interactable = interact(this.$el).resizable({
-        ...this.resizable,
+        edges: {
+          top: this.top,
+          left: this.left,
+          bottom: this.bottom,
+          right: this.right,
+        },
         listeners: {
           move: this.onResize,
         },
@@ -41,10 +51,12 @@ export default {
   },
   methods: {
     onResize(evt) {
-      Object.assign(evt.target.style, {
-        width: `${evt.rect.width}px`,
-        height: `${evt.rect.height}px`,
-      });
+      if (this.left || this.right) {
+        evt.target.style.width = `${evt.rect.width}px`;
+      }
+      if (this.top || this.bottom) {
+        evt.target.style.height = `${evt.rect.height}px`;
+      }
     },
   },
 };
