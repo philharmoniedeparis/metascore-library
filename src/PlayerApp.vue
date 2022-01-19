@@ -1,5 +1,7 @@
 <template>
-  <app-renderer :url="url" :api="api" />
+  <div class="metaScore-player">
+    <app-renderer :url="url" :api="api" />
+  </div>
 </template>
 
 <script>

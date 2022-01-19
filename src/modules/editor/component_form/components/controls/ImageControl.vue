@@ -1,19 +1,22 @@
 <template>
-  <input :value="value" @change.stop="onChange" />
+  <div class="control image" :data-property="property">
+    <label v-if="label">{{ label }}</label>
+    <input :value="value" @change.stop="onChange" />
+  </div>
 </template>
 
 <script>
 export default {
   props: {
+    label: {
+      type: String,
+      default: null,
+    },
     property: {
       type: String,
       required: true,
     },
     schema: {
-      type: Object,
-      required: true,
-    },
-    flattenedSchema: {
       type: Object,
       required: true,
     },

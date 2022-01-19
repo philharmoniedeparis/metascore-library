@@ -17,7 +17,7 @@ import VideoRendererComponent from "./components/VideoRendererComponent";
 import moduleStore from "./store";
 
 export default {
-  name: "Components",
+  name: "AppComponents",
   dependencies: [Device, DomPurify],
   install({ app, store }) {
     app.component("AnimationComponent", AnimationComponent);
@@ -34,6 +34,6 @@ export default {
     app.component("VideoRendererComponent", VideoRendererComponent);
 
     const database = store.$db();
-    store.registerModule("components", moduleStore({ database }));
+    store.registerModule("app-components", moduleStore({ database }));
   },
 };

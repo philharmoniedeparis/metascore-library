@@ -17,7 +17,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("components", ["activeScenario"]),
+    ...mapState("app-components", ["activeScenario"]),
     active() {
       return this.model.id === this.activeScenario;
     },

@@ -1,8 +1,3 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <div v-if="masterModel" class="component-form">
     <h2 class="title">{{ title }}</h2>
@@ -20,7 +15,6 @@
 </template>
 
 <script>
-import "../../../../assets/css/tailwind.css";
 import { mapGetters, mapActions } from "vuex";
 import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
@@ -78,6 +72,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../../assets/css/theme.scss";
+@import "../../../../assets/css/utils.scss";
 
 .component-form {
   display: flex;
@@ -106,40 +101,46 @@ export default {
     flex-wrap: nowrap;
     justify-content: space-between;
     align-content: flex-start;
-    padding: 0.5em;
     background: $lightgray;
 
     > .control {
-      margin: 0.25em 0;
+      padding: 0.25em 0.5em;
+
+      &.animated {
+        background: $mediumgray;
+      }
     }
   }
 
-  .control {
+  ::v-deep(.control) {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
 
-    ::v-deep(label) {
+    label {
       flex: 0 0 auto;
       white-space: nowrap;
     }
 
-    ::v-deep(input) {
-      width: 100%;
-      margin: 0;
-      padding: 0.25em 0.5em;
+    input {
       flex: 1;
+      margin: 0;
       font-family: inherit;
       color: inherit;
-      background: $mediumgray;
-      box-sizing: border-box;
       border: 0;
 
       &:not([type]),
       &[type=""],
       &[type="text"] {
         border-radius: 0.25em;
+      }
+
+      &:not([type="checkbox"]):not([type="radio"]) {
+        width: 100%;
+        padding: 0.25em 0.5em;
+        background: $mediumgray;
+        box-sizing: border-box;
       }
     }
 
@@ -148,8 +149,8 @@ export default {
     }
 
     &[data-property="name"] {
-      ::v-deep(label) {
-        @apply ms--sr-only;
+      label {
+        @include sr-only;
       }
     }
 

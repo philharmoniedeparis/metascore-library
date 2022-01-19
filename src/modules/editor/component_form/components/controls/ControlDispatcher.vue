@@ -1,15 +1,12 @@
 <template>
-  <div :class="['control', control]" :data-property="property">
-    <label v-if="displayLabel && schema.title">{{ schema.title }}</label>
-    <component
-      :is="`${control}-control`"
-      :property="property"
-      :schema="schema"
-      :flattened-schema="flattened"
-      :value="value"
-      @change="onChange"
-    />
-  </div>
+  <component
+    :is="`${control}-control`"
+    :label="displayLabel ? schema.title : null"
+    :property="property"
+    :schema="flattenedSchema"
+    :value="value"
+    @change="onChange"
+  />
 </template>
 
 <script>
@@ -57,23 +54,23 @@ export default {
   },
   emits: ["change"],
   computed: {
-    flattened() {
+    flattenedSchema() {
       return flatten(this.schema, this.getAjv(), this.value);
     },
     control() {
-      if (this.flattened.format) {
-        return this.flattened.format;
+      if (this.flattenedSchema.format) {
+        return this.flattenedSchema.format;
       }
 
-      if (this.flattened.enum) {
+      if (this.flattenedSchema.enum) {
         return "enum";
       }
 
-      if (this.flattened.type === "integer") {
+      if (this.flattenedSchema.type === "integer") {
         return "number";
       }
 
-      return this.flattened.type || "string";
+      return this.flattenedSchema.type || "string";
     },
   },
   beforeCreate() {
@@ -90,5 +87,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

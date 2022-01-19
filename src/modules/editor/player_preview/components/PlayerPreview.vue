@@ -1,13 +1,10 @@
 <template>
-  <teleport v-if="iframeDocument" :to="iframeDocument.body">
-    <app-renderer :url="url" />
-  </teleport>
-  <iframe
-    ref="iframe"
-    class="player-preview"
-    src="about:blank"
-    @load="onIframeLoad"
-  ></iframe>
+  <div class="player-preview">
+    <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
+    <teleport v-if="iframeDocument" :to="iframeDocument.body">
+      <app-renderer :url="url" />
+    </teleport>
+  </div>
 </template>
 
 <script>
@@ -22,6 +19,7 @@ export default {
       default: null,
     },
   },
+  emits: ["load"],
   data() {
     return {
       iframeDocument: null,
@@ -45,6 +43,8 @@ export default {
       }
 
       this.iframeDocument = doc;
+
+      this.$emit("load", { iframe: this.$refs.iframe });
     },
   },
 };
@@ -52,8 +52,12 @@ export default {
 
 <style lang="scss" scoped>
 .player-preview {
-  width: 100%;
   height: 100%;
-  border: 0;
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
 }
 </style>

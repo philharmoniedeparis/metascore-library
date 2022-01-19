@@ -1,8 +1,3 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <component-wrapper :model="model" class="block-toggler">
     <template v-for="block in sortedBlocks" :key="block.id">
@@ -41,7 +36,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("components", ["isBlockToggled"]),
+    ...mapGetters("app-components", ["isBlockToggled"]),
     blocks() {
       return this.model["blocktoggler-blocks"];
     },
@@ -68,7 +63,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("components", ["toggleBlock"]),
+    ...mapMutations("app-components", ["toggleBlock"]),
   },
 };
 </script>

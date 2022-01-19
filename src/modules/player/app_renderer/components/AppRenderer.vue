@@ -1,5 +1,5 @@
 <template>
-  <div class="metaScore-player">
+  <div class="metaScore-app">
     <media-player
       ref="media-player"
       :sources="mediaSources"
@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import "../../../../assets/css/tailwind.css";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 
 export default {
@@ -58,7 +57,7 @@ export default {
     ...mapState("media", {
       mediaSources: "sources",
     }),
-    ...mapGetters("components", { scenarios: "getScenarios" }),
+    ...mapGetters("app-components", { scenarios: "getScenarios" }),
     /**
      * Get the media player component
      * @return {MediaPlayer} The component
@@ -155,12 +154,25 @@ body {
 </style>
 
 <style lang="scss" scoped>
-.metaScore-player {
+@import "normalize.css";
+@import "../../../../assets/css/utils.scss";
+
+.metaScore-app {
   position: relative;
   width: 100%;
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
+
+  ::v-deep(.sr-only) {
+    @include sr-only;
+  }
+
+  ::v-deep(button) {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
 
   > ::v-deep(.media-player) {
     display: none;

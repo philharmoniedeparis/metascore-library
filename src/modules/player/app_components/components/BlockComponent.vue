@@ -1,8 +1,3 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <component-wrapper
     :model="model"
@@ -22,7 +17,7 @@
             @click.prevent="reset"
           >
             <span aria-hidden="true"><pager-first-icon class="icon" /></span>
-            <span class="ms--sr-only">First</span>
+            <span class="sr-only">First</span>
           </a>
         </li>
         <li>
@@ -33,7 +28,7 @@
             @click.prevent="turnPageBackward"
           >
             <span aria-hidden="true"><pager-previous-icon class="icon" /></span>
-            <span class="ms--sr-only">Previous</span>
+            <span class="sr-only">Previous</span>
           </a>
         </li>
         <li>
@@ -44,7 +39,7 @@
             @click.prevent="turnPageForward"
           >
             <span aria-hidden="true"><pager-next-icon class="icon" /></span>
-            <span class="ms--sr-only">Next</span>
+            <span class="sr-only">Next</span>
           </a>
         </li>
       </ul>
@@ -64,9 +59,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-import PagerFirstIcon from "../../../../assets/icons/components/block/pager-first.svg?inline";
-import PagerPreviousIcon from "../../../../assets/icons/components/block/pager-previous.svg?inline";
-import PagerNextIcon from "../../../../assets/icons/components/block/pager-next.svg?inline";
+import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
+import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
+import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
 
 export default {
   components: {
@@ -91,7 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("components", {
+    ...mapGetters("app-components", {
       isToggled: "isBlockToggled",
     }),
     synched() {

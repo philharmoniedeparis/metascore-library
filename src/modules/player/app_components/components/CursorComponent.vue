@@ -1,8 +1,3 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <component-wrapper :model="model" class="cursor">
     <canvas ref="canvas" @click.prevent="onClick" />

@@ -1,8 +1,3 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <component-wrapper :model="model" class="media">
     <component :is="tag" :src="src" controls playsinline></component>

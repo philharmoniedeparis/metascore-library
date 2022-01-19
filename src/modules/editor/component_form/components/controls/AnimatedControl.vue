@@ -1,17 +1,18 @@
 <template>
-  <div class="control-wrapper">
-    <control-dispatcher
+  <div class="control animated" :data-property="property">
+    <label v-if="label">{{ label }}</label>
+    <boolean-control
       property="animated"
       :schema="animatedSchema"
       :value="value.animated"
-      :display-label="false"
       @change="onAnimatedChange"
-    />
+    >
+      <check-icon />
+    </boolean-control>
     <control-dispatcher
       property="value"
       :schema="valueSchema"
       :value="valueAtTime"
-      :display-label="false"
       @change="onValueChange"
     />
   </div>
@@ -21,22 +22,26 @@
 import { mapState } from "vuex";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "../../../../../utils/animation";
+import BooleanControl from "./BooleanControl.vue";
 import ControlDispatcher from "./ControlDispatcher.vue";
+import CheckIcon from "../../assets/icons/animated.svg?inline";
 
 export default {
   components: {
+    BooleanControl,
     ControlDispatcher,
+    CheckIcon,
   },
   props: {
+    label: {
+      type: String,
+      default: null,
+    },
     property: {
       type: String,
       required: true,
     },
     schema: {
-      type: Object,
-      required: true,
-    },
-    flattenedSchema: {
       type: Object,
       required: true,
     },
@@ -56,12 +61,12 @@ export default {
       return round(this.mediaTime, 2);
     },
     animatedSchema() {
-      return this.flattenedSchema.properties.animated;
+      return this.schema.properties.animated;
     },
     valueSchema() {
       return !this.value.animated
-        ? this.flattenedSchema.properties.value
-        : this.flattenedSchema.properties.value.items.items[1];
+        ? this.schema.properties.value
+        : this.schema.properties.value.items.items[1];
     },
     valueAtTime() {
       return !this.value.animated
@@ -115,4 +120,27 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import "../../../../../assets/css/theme.scss";
+
+.control {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: flex-start;
+
+  ::v-deep(.control[data-property="animated"]) {
+    order: -1;
+
+    input + label {
+      color: $white;
+      background: none;
+    }
+
+    input:not(:checked) + label {
+      opacity: 0.25;
+    }
+  }
+}
+</style>

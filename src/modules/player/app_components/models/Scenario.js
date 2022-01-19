@@ -1,8 +1,10 @@
+import { mix } from "mixwith";
 import { merge } from "lodash";
 import { AbstractComponent, EmbeddableComponent } from ".";
+import Backgroundable from "./mixins/Backgroundable";
 import { createCollectionField } from "../utils/schema";
 
-export class Scenario extends AbstractComponent {
+export class Scenario extends mix(AbstractComponent).with(Backgroundable) {
   static entity = "Scenario";
 
   static baseEntity = "AbstractComponent";

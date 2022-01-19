@@ -1,12 +1,15 @@
 <template>
-  <template v-for="(item, index) in flattenedSchema.items" :key="index">
-    <control-dispatcher
-      :property="`${index}`"
-      :schema="item"
-      :value="value[index]"
-      @change="onChange"
-    />
-  </template>
+  <div class="control array" :data-property="property">
+    <label v-if="label">{{ label }}</label>
+    <template v-for="(item, index) in schema.items" :key="index">
+      <control-dispatcher
+        :property="`${index}`"
+        :schema="item"
+        :value="value[index]"
+        @change="onChange"
+      />
+    </template>
+  </div>
 </template>
 
 <script>
@@ -17,15 +20,15 @@ export default {
     ControlDispatcher,
   },
   props: {
+    label: {
+      type: String,
+      default: null,
+    },
     property: {
       type: String,
       required: true,
     },
     schema: {
-      type: Object,
-      required: true,
-    },
-    flattenedSchema: {
       type: Object,
       required: true,
     },

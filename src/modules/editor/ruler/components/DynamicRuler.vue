@@ -1,39 +1,71 @@
 <template>
-  <div class="dynamic-ruler" :style="style">
+  <div class="dynamic-ruler" :data-axis="axis">
     <svg xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern
+          :id="patternId"
+          x="0"
+          y="0"
+          :width="vertical ? majorTickLength : majorTickStep"
+          :height="vertical ? majorTickStep : majorTickLength"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect
+            x="0"
+            y="0"
+            :width="vertical ? majorTickLength : tickWidth"
+            :height="vertical ? tickWidth : majorTickLength"
+            fill="currentColor"
+          />
+          <rect
+            v-for="n in majorTickStep / minorTickStep"
+            :key="n"
+            :x="
+              vertical ? majorTickLength - minorTickLength : n * minorTickStep
+            "
+            :y="
+              vertical ? n * minorTickStep : majorTickLength - minorTickLength
+            "
+            :width="vertical ? minorTickLength : tickWidth"
+            :height="vertical ? tickWidth : minorTickLength"
+            fill="currentColor"
+          />
+        </pattern>
+      </defs>
       <g>
         <rect
-          v-for="(n, i) in minorTicks"
-          :key="n"
-          :x="i * minorTickStep"
-          :y="majorTickLength - minorTickLength"
-          :width="tickWidth"
-          :height="minorTickLength"
-        />
-        <rect
-          v-for="(n, i) in majorTicks"
-          :key="n"
-          :x="i * majorTickStep"
-          y="0"
-          :width="tickWidth"
-          :height="majorTickLength"
+          :fill="`url(#${patternId})`"
+          :width="vertical ? majorTickLength : '100%'"
+          :height="vertical ? '100%' : majorTickLength"
         />
         <text
-          v-for="(n, i) in majorTicks"
+          v-for="(n, i) in majorTicksCount"
           :key="n"
-          :x="i * majorTickStep + minorTickStep"
-          y="0"
+          :x="vertical ? 0 : i * majorTickStep + minorTickStep"
+          :y="vertical ? i * majorTickStep + minorTickStep : 0"
           text-anchor="start"
+          fill="currentColor"
+          dominant-baseline="hanging"
+          :writing-mode="vertical ? 'vertical-lr' : null"
         >
           {{ i * majorTickStep }}
         </text>
+        <rect
+          v-show="tracking"
+          class="tracker"
+          :x="vertical ? 0 : trackerPosition"
+          :y="vertical ? trackerPosition : 0"
+          :width="vertical ? majorTickLength : trackerWidth"
+          :height="vertical ? trackerWidth : majorTickLength"
+        />
       </g>
     </svg>
   </div>
 </template>
 
 <script>
-import { debounce, round } from "lodash";
+import { debounce, ceil } from "lodash";
+import { v4 as uuid } from "uuid";
 
 export default {
   props: {
@@ -56,10 +88,6 @@ export default {
       type: Number,
       default: 5,
     },
-    minMinorTickSpacing: {
-      type: Number,
-      default: 5,
-    },
     majorTickLength: {
       type: Number,
       default: 18,
@@ -68,72 +96,123 @@ export default {
       type: Number,
       default: 50,
     },
-    minMajorTickSpacing: {
-      type: Number,
-      default: 50,
-    },
     trackTarget: {
       type: Object,
       default: null,
     },
+    trackerWidth: {
+      type: Number,
+      default: 1,
+    },
   },
   data() {
     return {
-      minorTicks: 0,
-      majorTicks: 0,
+      majorTicksCount: 0,
+      tracking: false,
+      trackerPosition: 0,
+      patternId: uuid(),
     };
   },
   computed: {
-    style() {
-      return {
-        [this.axis === "y" ? "width" : "height"]: `${this.majorTickLength}px`,
-      };
+    vertical() {
+      return this.axis === "y";
+    },
+  },
+  watch: {
+    trackTarget(value, previous) {
+      if (previous) {
+        this.destroyTracker(previous);
+      }
+
+      this.setupTracker();
     },
   },
   mounted() {
     this._observer = new ResizeObserver(
-      debounce(this.updateTicks.bind(this), 500)
+      debounce(this.updateTicksCount.bind(this), 500)
     );
     this._observer.observe(this.$el);
 
-    this.updateTicks();
+    this.setupTracker();
+
+    this.updateTicksCount();
   },
   beforeUnmount() {
     if (this._observer) {
       this._observer.disconnect();
     }
+
+    this.destroyTracker(this.trackTarget);
   },
   methods: {
-    updateTicks() {
-      this.minorTicks = round(
-        (this.axis === "y" ? this.$el.clientHeight : this.$el.clientWidth) /
-          this.minorTickStep
+    updateTicksCount() {
+      this.majorTicksCount = ceil(
+        this.vertical
+          ? this.$el.clientHeight
+          : this.$el.clientWidth / this.majorTickStep
       );
-      this.majorTicks = round(
-        (this.axis === "y" ? this.$el.clientHeight : this.$el.clientWidth) /
-          this.majorTickStep
-      );
+    },
+    setupTracker() {
+      if (this.trackTarget) {
+        this.trackTarget.addEventListener(
+          "mouseover",
+          this.onTrackTargetMouseover,
+          true
+        );
+        this.trackTarget.addEventListener(
+          "mousemove",
+          this.onTrackTargetMousemove,
+          true
+        );
+        this.trackTarget.addEventListener(
+          "mouseout",
+          this.onTrackTargetMouseout,
+          true
+        );
+      }
+    },
+    destroyTracker(target) {
+      if (target) {
+        target.removeEventListener(
+          "mouseover",
+          this.onTrackTargetMouseover,
+          true
+        );
+        target.removeEventListener(
+          "mousemove",
+          this.onTrackTargetMousemove,
+          true
+        );
+        target.removeEventListener(
+          "mouseout",
+          this.onTrackTargetMouseout,
+          true
+        );
+      }
+    },
+    onTrackTargetMouseover() {
+      this.tracking = true;
+    },
+    onTrackTargetMousemove(evt) {
+      this.trackerPosition = this.vertical ? evt.clientY : evt.clientX;
+    },
+    onTrackTargetMouseout() {
+      this.tracking = false;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../assets/css/theme.scss";
-
 .dynamic-ruler {
-  background: $mediumgray;
-
   ::v-deep(svg) {
     width: 100%;
-    dominant-baseline: hanging;
+    height: 100%;
     user-select: none;
 
-    rect {
-      fill: $white;
-    }
     text {
-      fill: $white;
+      font-size: 0.9em;
+      opacity: 0.75;
     }
   }
 }

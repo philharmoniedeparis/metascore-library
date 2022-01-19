@@ -1,15 +1,10 @@
-<i18n>
-{
-}
-</i18n>
-
 <template>
   <component-wrapper :model="model" class="controller">
     <div class="timer">{{ mediaTime }}</div>
     <div class="buttons">
       <button type="button" data-action="rewind" @click="onRewindClick">
         <span aria-hidden="true"><rewind-icon class="icon" /></span>
-        <span class="ms--sr-only">Rewind</span>
+        <span class="sr-only">Rewind</span>
       </button>
 
       <button
@@ -19,11 +14,11 @@
         @click="onPauseClick"
       >
         <span aria-hidden="true"><pause-icon class="icon" /></span>
-        <span class="ms--sr-only">Pause</span>
+        <span class="sr-only">Pause</span>
       </button>
       <button v-else type="button" data-action="play" @click="onPlayClick">
         <span aria-hidden="true"><play-icon class="icon" /></span>
-        <span class="ms--sr-only">Play</span>
+        <span class="sr-only">Play</span>
       </button>
     </div>
     <div class="logo"><logo-icon /></div>
@@ -32,10 +27,10 @@
 
 <script>
 import { mapGetters, mapState } from "vuex";
-import RewindIcon from "../../../../assets/icons/components/controller/rewind.svg?inline";
-import PlayIcon from "../../../../assets/icons/components/controller/play.svg?inline";
-import PauseIcon from "../../../../assets/icons/components/controller/pause.svg?inline";
-import LogoIcon from "../../../../assets/icons/logo-metascore.svg?inline";
+import RewindIcon from "../assets/icons/controller/rewind.svg?inline";
+import PlayIcon from "../assets/icons/controller/play.svg?inline";
+import PauseIcon from "../assets/icons/controller/pause.svg?inline";
+import LogoIcon from "../assets/icons/logo-metascore.svg?inline";
 
 export default {
   components: {

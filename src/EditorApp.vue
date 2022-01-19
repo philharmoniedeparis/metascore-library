@@ -13,8 +13,13 @@
     </resizable-pane>
 
     <resizable-pane class="center">
-      <dynamic-ruler />
-      <player-preview :url="url" />
+      <dynamic-ruler :track-target="rulersTrackTarget" />
+      <dynamic-ruler axis="y" :track-target="rulersTrackTarget" />
+      <player-preview
+        :url="url"
+        :style="{ width: `${playerWidth}px`, height: `${playerHeight}px` }"
+        @load="onPlayerPreviewLoad"
+      />
     </resizable-pane>
 
     <resizable-pane class="right" :left="true">
@@ -26,6 +31,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ResizablePane from "./components/ResizablePane.vue";
 import TabsContainer from "./components/TabsContainer.vue";
 import TabsItem from "./components/TabsItem.vue";
@@ -42,11 +48,30 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      rulersTrackTarget: null,
+    };
+  },
+  computed: {
+    ...mapState("app-renderer", {
+      playerWidth: "width",
+      playerHeight: "height",
+    }),
+  },
+  methods: {
+    onPlayerPreviewLoad({ iframe }) {
+      this.rulersTrackTarget = iframe.contentDocument.body;
+    },
+  },
 };
 </script>
-<style lang="scss">
+
+<style lang="scss" scoped>
+@import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
 @import "./assets/css/theme.scss";
+@import "./assets/css/utils.scss";
 
 .metaScore-editor {
   font-size: 14px;
@@ -87,6 +112,16 @@ export default {
     }
   }
 
+  ::v-deep(.sr-only) {
+    @include sr-only;
+  }
+
+  ::v-deep(button) {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
   > .top {
     grid-area: top;
     height: 2.5em;
@@ -103,7 +138,12 @@ export default {
 
   > .center {
     grid-area: center;
+    display: grid;
     width: 100%;
+    grid-template-columns: 20px auto min-content auto;
+    grid-template-rows: 20px auto min-content auto;
+    box-sizing: border-box;
+    overflow: auto;
   }
 
   > .right {
@@ -120,6 +160,29 @@ export default {
     min-height: 150px;
     max-height: 75vh;
     border-top: 0.5em solid $darkgray;
+  }
+
+  .dynamic-ruler {
+    position: sticky;
+    z-index: 1;
+    background: $mediumgray;
+
+    &[data-axis="x"] {
+      top: 0;
+      grid-area: 1/2/2/5;
+      padding-top: 2px;
+    }
+
+    &[data-axis="y"] {
+      left: 0;
+      grid-area: 2/1/5/2;
+      padding-left: 2px;
+    }
+  }
+
+  .player-preview {
+    grid-area: 3/3/4/4;
+    overflow: hidden;
   }
 }
 </style>

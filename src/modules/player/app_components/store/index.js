@@ -33,9 +33,10 @@ export default function ({ database } = {}) {
       },
     },
     actions: {
-      async load({ commit, dispatch }, data) {
+      async clear({ dispatch }) {
         await dispatch("entities/deleteAll", null, { root: true });
-
+      },
+      async insert({ commit }, data) {
         await Components.Scenario.insert({ data });
 
         const scenario = database.model("Scenario").query().first();

@@ -1,5 +1,6 @@
 <template>
-  <div class="control-wrapper">
+  <div class="control number" :data-property="property">
+    <label v-if="label">{{ label }}</label>
     <input
       ref="input"
       type="number"
@@ -19,7 +20,7 @@
         @mouseout="onSpinUpMouseout"
       >
         <span aria-hidden="true"><spin-up-icon class="icon" /></span>
-        <span class="ms--sr-only">+</span>
+        <span class="sr-only">+</span>
       </button>
       <button
         type="button"
@@ -28,7 +29,7 @@
         @mouseout="onSpinDownMouseout"
       >
         <span aria-hidden="true"><spin-down-icon class="icon" /></span>
-        <span class="ms--sr-only">-</span>
+        <span class="sr-only">-</span>
       </button>
     </div>
   </div>
@@ -44,15 +45,15 @@ export default {
     SpinDownIcon,
   },
   props: {
+    label: {
+      type: String,
+      default: null,
+    },
     property: {
       type: String,
       required: true,
     },
     schema: {
-      type: Object,
-      required: true,
-    },
-    flattenedSchema: {
       type: Object,
       required: true,
     },
@@ -79,15 +80,15 @@ export default {
   },
   computed: {
     step() {
-      return this.flattenedSchema.type === "integer"
+      return this.schema.type === "integer"
         ? 1
-        : this.flattenedSchema.multipleOf || 0.01;
+        : this.schema.multipleOf || 0.01;
     },
     min() {
-      return this.flattenedSchema.minimum;
+      return this.schema.minimum;
     },
     max() {
-      return this.flattenedSchema.maximum;
+      return this.schema.maximum;
     },
   },
   methods: {
@@ -165,7 +166,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.control-wrapper {
+@import "../../../../../assets/css/utils.scss";
+
+.control {
   position: relative;
 
   /* Chrome, Safari, Edge, Opera */
@@ -180,7 +183,7 @@ export default {
     -moz-appearance: textfield;
   }
 
-  ::v-deep(.spinners) {
+  .spinners {
     display: flex;
     position: absolute;
     top: 0;
@@ -204,7 +207,7 @@ export default {
   }
 
   &:not(:hover) {
-    ::v-deep(.spinners) {
+    .spinners {
       display: none;
     }
   }

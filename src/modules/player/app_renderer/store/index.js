@@ -6,14 +6,22 @@ export default {
   namespaced: true,
   state: {
     ready: false,
+    width: null,
+    height: null,
     css: null,
   },
   mutations: {
     setReady(state, ready) {
       state.ready = ready;
     },
-    setCss(state, css) {
-      state.css = css;
+    setWidth(state, value) {
+      state.width = value;
+    },
+    setHeight(state, value) {
+      state.height = value;
+    },
+    setCss(state, value) {
+      state.css = value;
     },
   },
   actions: {
@@ -33,8 +41,11 @@ export default {
         { root: true }
       );
 
-      dispatch("components/load", data.components, { root: true });
+      dispatch("app-components/clear", null, { root: true });
+      dispatch("app-components/insert", data.components, { root: true });
 
+      commit("setWidth", data.width);
+      commit("setHeight", data.height);
       commit("setCss", data.css);
 
       commit("setReady", true);
