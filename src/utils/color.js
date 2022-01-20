@@ -1,5 +1,4 @@
-import { isString, isObject } from "./Var";
-import { pad } from "./string";
+import { isString, isPlainObject, padStart } from "lodash";
 
 /**
  * @type {object}
@@ -194,11 +193,7 @@ export function rgb2hsv(r, g, b) {
     h /= 6; // eslint-disable-line no-magic-numbers
   }
 
-  return {
-    h: h,
-    s: s,
-    v: v,
-  };
+  return { h, s, v };
 }
 
 /**
@@ -269,9 +264,9 @@ export function hsv2rgb(h, s, v) {
  * @returns {string} The hex value
  */
 export function rgb2hex(r, g, b) {
-  const _r = pad(r.toString(16), 2, "0", "left");
-  const _g = pad(g.toString(16), 2, "0", "left");
-  const _b = pad(b.toString(16), 2, "0", "left");
+  const _r = padStart(r.toString(16), 2, "0");
+  const _g = padStart(g.toString(16), 2, "0");
+  const _b = padStart(b.toString(16), 2, "0");
 
   return `#${_r}${_g}${_b}`;
 }
@@ -287,7 +282,7 @@ export function rgb2hex(r, g, b) {
  */
 export function rgba2hex(r, g, b, a) {
   const hex = rgb2hex(r, g, b);
-  const _a = pad(Math.round(a * 255).toString(16), 2, "0", "left");
+  const _a = padStart(Math.round(a * 255).toString(16), 2, "0");
 
   return hex + _a;
 }
@@ -299,7 +294,7 @@ export function rgba2hex(r, g, b, a) {
  * @returns {object} The color object with 'r', 'g', 'b', and 'a' keys
  */
 export function toRGBA(color) {
-  if (isObject(color)) {
+  if (isPlainObject(color)) {
     return {
       r: "r" in color ? color.r : 0,
       g: "g" in color ? color.g : 0,

@@ -32,16 +32,8 @@
 
 <script>
 import { mapState } from "vuex";
-import ResizablePane from "./components/ResizablePane.vue";
-import TabsContainer from "./components/TabsContainer.vue";
-import TabsItem from "./components/TabsItem.vue";
 
 export default {
-  components: {
-    ResizablePane,
-    TabsContainer,
-    TabsItem,
-  },
   props: {
     url: {
       type: String,
@@ -70,8 +62,6 @@ export default {
 <style lang="scss" scoped>
 @import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
-@import "./assets/css/theme.scss";
-@import "./assets/css/utils.scss";
 
 .metaScore-editor {
   font-size: 14px;
@@ -119,7 +109,24 @@ export default {
   ::v-deep(button) {
     background: none;
     border: none;
+    opacity: 0.5;
     cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  ::v-deep(input, select) {
+    &:focus {
+      background: $darkgray;
+      box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
+      outline: none;
+    }
+  }
+
+  ::v-deep(.icon) {
+    display: block;
   }
 
   > .top {

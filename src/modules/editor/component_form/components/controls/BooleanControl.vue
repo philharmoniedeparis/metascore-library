@@ -10,7 +10,7 @@
     />
     <label :for="inputId">
       <slot>
-        <check-icon />
+        <check-icon class="icon" />
       </slot>
     </label>
   </div>
@@ -18,7 +18,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import CheckIcon from "../../assets/icons/check.svg?inline";
+import CheckIcon from "../../assets/icons/boolean-check.svg?inline";
 
 export default {
   components: {
@@ -61,8 +61,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../../assets/css/theme.scss";
-
 .control {
   position: relative;
   cursor: pointer;
@@ -85,7 +83,7 @@ export default {
     background: $white;
     cursor: pointer;
 
-    svg {
+    .icon {
       position: absolute;
       top: -0.1em;
       left: 0.2em;
@@ -96,7 +94,7 @@ export default {
   }
 
   input:not(:checked) + label {
-    svg {
+    .icon {
       display: none;
     }
   }

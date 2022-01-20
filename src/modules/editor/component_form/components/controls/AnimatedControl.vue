@@ -7,7 +7,7 @@
       :value="value.animated"
       @change="onAnimatedChange"
     >
-      <check-icon />
+      <check-icon class="icon" />
     </boolean-control>
     <control-dispatcher
       property="value"
@@ -24,7 +24,7 @@ import { round } from "lodash";
 import { getAnimatedValueAtTime } from "../../../../../utils/animation";
 import BooleanControl from "./BooleanControl.vue";
 import ControlDispatcher from "./ControlDispatcher.vue";
-import CheckIcon from "../../assets/icons/animated.svg?inline";
+import CheckIcon from "../../assets/icons/animated-check.svg?inline";
 
 export default {
   components: {
@@ -121,8 +121,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../../assets/css/theme.scss";
-
 .control {
   display: flex;
   flex-direction: column;

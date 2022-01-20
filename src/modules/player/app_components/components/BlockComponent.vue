@@ -191,8 +191,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../assets/css/theme.scss";
-
 .block {
   > .metaScore-component--inner {
     color: rgb(66, 66, 66);

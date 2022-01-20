@@ -7,6 +7,8 @@ import { createRouter } from "./router/editor";
 import App from "./EditorApp.vue";
 
 import { registerModules } from "./modules/manager.js";
+import Panes from "./modules/editor/panes";
+import Tabs from "./modules/editor/tabs";
 import MainMenu from "./modules/editor/mainmenu";
 import ComponentForm from "./modules/editor/component_form";
 import PlayerPreview from "./modules/editor/player_preview";
@@ -32,6 +34,8 @@ export class Editor {
     // Register root modules.
     registerModules(
       [
+        Panes,
+        Tabs,
         MainMenu,
         ComponentForm,
         PlayerPreview,

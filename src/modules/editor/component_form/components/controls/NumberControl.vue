@@ -1,43 +1,47 @@
 <template>
   <div class="control number" :data-property="property">
     <label v-if="label">{{ label }}</label>
-    <input
-      ref="input"
-      type="number"
-      :step="step"
-      :min="min"
-      :max="max"
-      :value="value"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-      @change.stop="onChange"
-    />
-    <div :class="['spinners', spinnersDirection, { flip: flipSpinners }]">
-      <button
-        type="button"
-        @mousedown="onSpinUpMousedown"
-        @mouseup="onSpinUpMouseup"
-        @mouseout="onSpinUpMouseout"
-      >
-        <span aria-hidden="true"><spin-up-icon class="icon" /></span>
-        <span class="sr-only">+</span>
-      </button>
-      <button
-        type="button"
-        @mousedown="onSpinDownMousedown"
-        @mouseup="onSpinDownMouseup"
-        @mouseout="onSpinDownMouseout"
-      >
-        <span aria-hidden="true"><spin-down-icon class="icon" /></span>
-        <span class="sr-only">-</span>
-      </button>
+    <div class="input-wrapper">
+      <input
+        ref="input"
+        type="number"
+        :step="step"
+        :min="min"
+        :max="max"
+        :value="value"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+        @change.stop="onChange"
+      />
+      <div :class="['spinners', spinnersDirection, { flip: flipSpinners }]">
+        <button
+          type="button"
+          @mousedown="onSpinUpMousedown"
+          @mouseup="onSpinUpMouseup"
+          @mouseout="onSpinUpMouseout"
+        >
+          <span aria-hidden="true"><spin-up-icon class="icon" /></span>
+          <span class="sr-only">+</span>
+        </button>
+        <button
+          type="button"
+          @mousedown="onSpinDownMousedown"
+          @mouseup="onSpinDownMouseup"
+          @mouseout="onSpinDownMouseout"
+        >
+          <span aria-hidden="true"><spin-down-icon class="icon" /></span>
+          <span class="sr-only">-</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import SpinUpIcon from "../../assets/icons/spin-up.svg?inline";
-import SpinDownIcon from "../../assets/icons/spin-down.svg?inline";
+import { round } from "lodash";
+import { countDecimals } from "../../../../../utils/number";
+import SpinUpIcon from "../../assets/icons/number-up.svg?inline";
+import SpinDownIcon from "../../assets/icons/number-down.svg?inline";
 
 export default {
   components: {
@@ -84,6 +88,9 @@ export default {
         ? 1
         : this.schema.multipleOf || 0.01;
     },
+    decimals() {
+      return countDecimals(this.step);
+    },
     min() {
       return this.schema.minimum;
     },
@@ -104,8 +111,7 @@ export default {
     },
     onChange() {
       const input = this.$refs.input;
-      const value =
-        this.step === 1 ? parseInt(input.value, 10) : Number(input.value);
+      const value = round(input.value, this.decimals);
 
       this.$emit("change", {
         property: this.property,
@@ -166,10 +172,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../../assets/css/utils.scss";
-
 .control {
-  position: relative;
+  .input-wrapper {
+    position: relative;
+  }
 
   /* Chrome, Safari, Edge, Opera */
   ::v-deep(input::-webkit-outer-spin-button),
@@ -179,7 +185,7 @@ export default {
   }
 
   /* Firefox */
-  ::v-deep(input[type="number"]) {
+  ::v-deep(input) {
     -moz-appearance: textfield;
   }
 
@@ -188,15 +194,20 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    width: 2em;
+    width: 1em;
     height: 100%;
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    background-color: #3f3f3f;
+    background-color: $darkgray;
+
+    button {
+      padding: 0;
+      color: $white;
+    }
 
     &.horizontal {
-      width: 1em;
+      width: 2em;
       flex-direction: row-reverse;
     }
 

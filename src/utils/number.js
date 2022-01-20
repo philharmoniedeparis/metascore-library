@@ -4,7 +4,7 @@
  * @param {number} value The number to check against
  * @returns {number} The number of decimal places
  */
-export function getDecimalPlaces(value) {
+export function countDecimals(value) {
   const match = `${value}`.match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
 
   if (!match) {

@@ -155,7 +155,6 @@ body {
 
 <style lang="scss" scoped>
 @import "normalize.css";
-@import "../../../../assets/css/utils.scss";
 
 .metaScore-app {
   position: relative;

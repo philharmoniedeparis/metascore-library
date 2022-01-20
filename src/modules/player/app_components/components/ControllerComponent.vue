@@ -72,8 +72,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../assets/css/theme.scss";
-
 .controller {
   & > .metaScore-component--inner {
     display: flex;

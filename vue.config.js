@@ -8,6 +8,14 @@ module.exports = {
   publicPath: "./",
   transpileDependencies: true,
   css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `
+          @import "@/scss/_variables.scss";
+          @import "@/scss/_mixins.scss";
+        `,
+      },
+    },
     extract: {
       filename: "[name].css",
       chunkFilename: function () {

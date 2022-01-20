@@ -43,8 +43,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../assets/css/theme.scss";
-
 .tabs-container {
   .tabs-nav {
     display: flex;

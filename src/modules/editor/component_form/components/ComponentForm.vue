@@ -71,9 +71,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../../assets/css/theme.scss";
-@import "../../../../assets/css/utils.scss";
-
 .component-form {
   display: flex;
   height: 100%;
@@ -105,10 +102,6 @@ export default {
 
     > .control {
       padding: 0.25em 0.5em;
-
-      &.animated {
-        background: $mediumgray;
-      }
     }
   }
 
@@ -117,6 +110,12 @@ export default {
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    flex: 1 1 auto;
+
+    label,
+    .control:not(:last-of-type) {
+      margin-right: 0.5em;
+    }
 
     label {
       flex: 0 0 auto;
@@ -125,7 +124,6 @@ export default {
 
     input {
       flex: 1;
-      margin: 0;
       font-family: inherit;
       color: inherit;
       border: 0;
@@ -144,18 +142,21 @@ export default {
       }
     }
 
-    & > :not(:last-child) {
-      margin-right: 0.5em;
+    &.animated {
+      order: 2;
+      background: $mediumgray;
+
+      input {
+        &:not([type="checkbox"]):not([type="radio"]) {
+          background: $lightgray;
+        }
+      }
     }
 
     &[data-property="name"] {
       label {
         @include sr-only;
       }
-    }
-
-    &.animated {
-      order: 2;
     }
   }
 }
