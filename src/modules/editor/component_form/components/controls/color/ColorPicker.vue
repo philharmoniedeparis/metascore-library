@@ -1,3 +1,16 @@
+<i18n>
+{
+  "en": {
+    "hexa_button": "HEXA",
+    "rgba_button": "RGBA",
+  },
+  "fr": {
+    "hexa_button": "HEXA",
+    "rgba_button": "RGBA",
+  },
+}
+</i18n>
+
 <template>
   <div class="color-picker">
     <div
@@ -7,85 +20,115 @@
     >
       <div
         class="thumb"
-        :style="`background-color: ${paletteThumbBackground}; left: ${paletteThumbLeft}; top: ${paletteThumbTop}; `"
+        :style="`background-color: ${paletteThumbColor}; left: ${paletteThumbLeft}; top: ${paletteThumbTop}; `"
       ></div>
     </div>
-    <div
-      class="preview"
-      :style="`background-color: ${previewBackground};`"
-    ></div>
+    <div class="preview" :style="`color: ${previewColor};`"></div>
     <div ref="hue" class="hue">
       <div
         class="thumb"
-        :style="`background-color: ${hueThumbBackground}; left: ${hueThumbLeft};`"
+        :style="`background-color: ${hueThumbColor}; left: ${hueThumbLeft};`"
       ></div>
     </div>
     <div ref="opacity" class="opacity">
       <div
         class="thumb"
-        :style="`background-color: ${opacityThumbBackground}; left: ${opacityThumbLeft};`"
+        :style="`background-color: ${opacityThumbColor}; left: ${opacityThumbLeft};`"
       ></div>
+    </div>
+    <div class="format">
+      <input ref="text" :value="text" type="text" @change="onTextChange" />
+      <button
+        :class="['hexa', { selected: format == 'hexa' }]"
+        type="button"
+        @click="format = 'hexa'"
+      >
+        {{ $t("hexa_button") }}
+      </button>
+      <button
+        :class="['rgba', { selected: format == 'rgba' }]"
+        type="button"
+        @click="format = 'rgba'"
+      >
+        {{ $t("rgba_button") }}
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import chroma from "chroma-js";
 import "@interactjs/auto-start";
 import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
-import { isEmpty, round } from "lodash";
-import { toRGBA, hsv2rgb, rgb2hsv } from "../../../../../../utils/color";
+import { round } from "lodash";
 
 export default {
   props: {
     value: {
       type: String,
-      default: "",
+      default: "#000",
     },
   },
   emits: ["change"],
   data() {
     return {
-      hsv: { h: 0, s: 0, v: 0 },
+      hsv: [0, 0, 0],
       alpha: 1,
+      format: "hexa",
+      text: "",
     };
   },
   computed: {
+    chroma() {
+      return chroma.hsv(...this.hsv).alpha(this.alpha);
+    },
     rgb() {
-      return hsv2rgb(this.hsv.h, this.hsv.s, this.hsv.v);
+      return this.chroma.rgb();
+    },
+    css() {
+      return this.chroma.css();
+    },
+    hex() {
+      return this.chroma.hex();
     },
     paletteBackground() {
-      const rgb = hsv2rgb(this.hsv.h, 1, 1);
+      const [r, g, b] = chroma.hsv([this.hsv[0], 1, 1]).rgb();
 
       let background =
         "linear-gradient(to top, rgb(0, 0, 0), transparent) repeat scroll 0% 0%,";
-      background += `rgba(0, 0, 0, 0) linear-gradient(to left, rgb(${rgb.r},${rgb.g},${rgb.b}),`;
+      background += `rgba(0, 0, 0, 0) linear-gradient(to left, rgb(${r},${g},${b}),`;
       background += "rgb(255, 255, 255)) repeat scroll 0% 0%";
 
       return background;
     },
-    paletteThumbBackground() {
-      return `rgb(${this.rgb.r},${this.rgb.g},${this.rgb.b})`;
+    paletteThumbColor() {
+      const [r, g, b] = this.rgb;
+      return `rgb(${r},${g},${b})`;
     },
     paletteThumbLeft() {
-      return `${this.hsv.s * 100}%`;
+      const [, s] = this.hsv;
+      return `${s * 100}%`;
     },
     paletteThumbTop() {
-      return `${(1 - this.hsv.v) * 100}%`;
+      const [, , v] = this.hsv;
+      return `${(1 - v) * 100}%`;
     },
-    previewBackground() {
-      return `rgb(${this.rgb.r}, ${this.rgb.g}, ${this.rgb.b}, ${this.alpha})`;
+    previewColor() {
+      const [r, g, b] = this.rgb;
+      return `rgb(${r}, ${g}, ${b}, ${this.alpha})`;
     },
-    hueThumbBackground() {
-      const rgb = hsv2rgb(this.hsv.h, 1, 1);
-      return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    hueThumbColor() {
+      const [r, g, b] = chroma.hsv([this.hsv[0], 1, 1]).rgb();
+      return `rgb(${r}, ${g}, ${b})`;
     },
     hueThumbLeft() {
-      return `${this.hsv.h * 100}%`;
+      const [h] = this.hsv;
+      return `${(h / 360) * 100}%`;
     },
-    opacityThumbBackground() {
+    opacityThumbColor() {
       return `rgba(0, 0, 0, ${this.alpha})`;
     },
     opacityThumbLeft() {
@@ -93,39 +136,49 @@ export default {
     },
   },
   watch: {
-    value(color) {
-      if (isEmpty(color)) {
-        this.hsv = { h: 0, s: 0, v: 0 };
-        this.alpha = 1;
-      } else {
-        const rgba = toRGBA(color);
-        this.hsv = rgb2hsv(rgba.r, rgba.g, rgba.b);
-        this.alpha = rgba.a;
-      }
+    value: {
+      handler(value) {
+        this.setColor(value);
+        this.updateText();
+      },
+      immediate: true,
     },
     hsv: {
       handler() {
-        this.$emit("change", {
-          hsv: this.hsv,
-          alpha: this.alpha,
-        });
+        this.updateText();
       },
       deep: true,
     },
     alpha() {
-      this.$emit("change", {
-        hsv: this.hsv,
-        alpha: this.alpha,
-      });
+      this.updateText();
+    },
+    format() {
+      this.updateText();
     },
   },
   mounted() {
-    this.$nextTick(this.setupInteractions);
+    this.$nextTick(function () {
+      this.setupInteractions();
+    });
   },
   beforeUnmount() {
     this.destroyInteractions();
   },
   methods: {
+    setColor(value) {
+      if (chroma.valid(value)) {
+        const color = chroma(value);
+        const [h, s, v] = color.hsv();
+        this.hsv = [isNaN(h) ? 0 : h, s, v];
+        this.alpha = color.alpha();
+      }
+    },
+    updateText() {
+      this.text = this.format === "rgba" ? this.css : this.hex;
+    },
+    emitChange() {
+      this.$emit("change", this.css);
+    },
     setupInteractions() {
       this._interactables = [];
 
@@ -180,30 +233,6 @@ export default {
         .on("down", this.onOpacityMove);
       this._interactables.push(opacity);
     },
-    onPaletteMove(evt) {
-      const { width, height } = interact.getElementRect(evt.target);
-      const x = evt.pageX / width;
-      const y = evt.pageY / height;
-      const saturation = round(x, 2);
-      const value = 1 - round(y, 2);
-
-      this.hsv.s = saturation;
-      this.hsv.v = value;
-    },
-    onHueMove(evt) {
-      const { width } = interact.getElementRect(evt.target);
-      const x = evt.pageX / width;
-      const hue = round(x, 2);
-
-      this.hsv.h = hue;
-    },
-    onOpacityMove(evt) {
-      const { width } = interact.getElementRect(evt.target);
-      const x = evt.pageX / width;
-      const opacity = round(x, 2);
-
-      this.alpha = opacity;
-    },
     destroyInteractions() {
       if (this._interactables) {
         this._interactables.forEach((interactable) => {
@@ -212,6 +241,33 @@ export default {
 
         delete this._interactables;
       }
+    },
+    onPaletteMove(evt) {
+      const { width, height } = interact.getElementRect(evt.target);
+      const x = evt.pageX / width;
+      const y = evt.pageY / height;
+
+      this.hsv[1] = round(x, 2);
+      this.hsv[2] = 1 - round(y, 2);
+      this.emitChange();
+    },
+    onHueMove(evt) {
+      const { width } = interact.getElementRect(evt.target);
+      const x = evt.pageX / width;
+
+      this.hsv[0] = round(x * 360, 2);
+      this.emitChange();
+    },
+    onOpacityMove(evt) {
+      const { width } = interact.getElementRect(evt.target);
+      const x = evt.pageX / width;
+
+      this.alpha = round(x, 2);
+      this.emitChange();
+    },
+    onTextChange(evt) {
+      this.setColor(evt.target.value);
+      this.emitChange();
     },
   },
 };
@@ -222,8 +278,8 @@ export default {
   display: grid;
   min-width: 20em;
   grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto auto;
-  grid-template-areas: "palette palette" "preview hue" "preview opacity";
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas: "palette palette" "preview hue" "preview opacity" "format format";
 
   .thumb {
     position: absolute;
@@ -242,6 +298,7 @@ export default {
     grid-area: palette;
     position: relative;
     height: 10em;
+    margin-bottom: 0.5em;
     cursor: grab;
   }
 
@@ -250,29 +307,37 @@ export default {
     position: relative;
     width: 2em;
     height: 2em;
-    margin: 0.5em;
+    margin: 0.5em 0.5em 0.5em 0.75em;
     border-radius: 50%;
     overflow: hidden;
     box-shadow: 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
 
-    &::before {
+    &::before,
+    &::after {
       content: "";
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+    }
+
+    &::before {
       @include transparency-grid;
       background-size: 1em;
-      z-index: -1;
+    }
+
+    &::after {
+      color: inherit;
+      background-color: currentColor;
     }
   }
 
   .hue,
   .opacity {
     position: relative;
-    height: 0.5em;
-    margin: 0.5em;
+    height: 0.75em;
+    margin: 0.25em 1em 0.25em 0.25em;
     border-radius: 0.5em;
     cursor: grab;
   }
@@ -304,6 +369,28 @@ export default {
       width: 100%;
       height: 100%;
       background: linear-gradient(90deg, transparent, $black);
+      border-radius: 0.5em;
+    }
+  }
+
+  .format {
+    grid-area: format;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin: 0.5em 0.75em;
+    gap: 0.5em;
+
+    input {
+      border-radius: 0;
+    }
+
+    button {
+      color: $white;
+
+      &.selected {
+        background: $mediumgray;
+      }
     }
   }
 }

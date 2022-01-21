@@ -129,6 +129,7 @@ export default {
   align-content: flex-start;
 
   ::v-deep(.control[data-property="animated"]) {
+    flex: 0;
     order: -1;
 
     input + label {

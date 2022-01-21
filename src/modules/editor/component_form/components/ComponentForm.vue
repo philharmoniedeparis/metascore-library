@@ -124,27 +124,15 @@ export default {
 
     input {
       flex: 1;
-      font-family: inherit;
-      color: inherit;
-      border: 0;
-
-      &:not([type]),
-      &[type=""],
-      &[type="text"] {
-        border-radius: 0.25em;
-      }
 
       &:not([type="checkbox"]):not([type="radio"]) {
         width: 100%;
-        padding: 0.25em 0.5em;
-        background: $mediumgray;
-        box-sizing: border-box;
       }
     }
 
     &.animated {
-      order: 2;
       background: $mediumgray;
+      order: 2;
 
       input {
         &:not([type="checkbox"]):not([type="radio"]) {

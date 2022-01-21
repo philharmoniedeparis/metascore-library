@@ -1,14 +1,10 @@
 <i18n>
 {
   "en": {
-    "hexa_button": "HEXA",
-    "rgba_button": "RGBA",
     "apply_button": "Appliquer",
     "cancel_button": "Cancel",
   },
   "fr": {
-    "hexa_button": "HEXA",
-    "rgba_button": "RGBA",
     "apply_button": "Appliquer",
     "cancel_button": "Annuler",
   },
@@ -18,54 +14,54 @@
 <template>
   <div class="control color" :data-property="property">
     <label v-if="label">{{ label }}</label>
-    <button class="opener" @click="onOpenerClick"></button>
-    <keep-alive>
-      <div v-if="open" class="overlay">
+    <tippy
+      trigger="click"
+      role="dialog"
+      content-tag="div"
+      content-class="overlay"
+      append-to="parent"
+      placement="bottom"
+      sticky="reference"
+      max-width="none"
+      :interactive="true"
+      :popper-options="{ strategy: 'fixed' }"
+    >
+      <button class="opener"></button>
+      <template #content="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
-            <color-picker @change="onPickerChange" />
+            <color-picker :value="css" @change="onPickerChange" />
           </tabs-item>
-          <tabs-item v-if="swatches.length > 0" title="Swatches">
-            <color-swatches :swatches="swatches" @select="onSwatchesSelect" />
+          <tabs-item v-if="swatches" title="Swatches">
+            <color-swatches
+              v-bind="isArray(swatches) ? { swatches } : null"
+              :value="css"
+              @change="onSwatchesChange"
+            />
           </tabs-item>
         </tabs-container>
-        <div class="format">
-          <input ref="text" type="text" />
-          <button
-            :class="['hexa', { selected: format == 'hex' }]"
-            type="button"
-            @click="format = 'hex'"
-          >
-            <span class="label">{{ $t("hexa_button") }}</span>
-          </button>
-          <button
-            :class="['rgba', { selected: format == 'rgba' }]"
-            type="button"
-            @click="format = 'rgba'"
-          >
-            <span class="label">{{ $t("rgba_button") }}</span>
-          </button>
-        </div>
         <div class="buttons">
-          <button class="apply">
+          <button class="apply" @click="apply">
             <span class="label">{{ $t("apply_button") }}</span>
           </button>
-          <button class="cancel">
+          <button class="cancel" @click="hide">
             <span class="label">{{ $t("cancel_button") }}</span>
           </button>
         </div>
-      </div>
-    </keep-alive>
+      </template>
+    </tippy>
   </div>
 </template>
 
 <script>
+import { isArray } from "lodash";
+import { Tippy } from "vue-tippy";
 import ColorPicker from "./color/ColorPicker.vue";
 import ColorSwatches from "./color/ColorSwatches.vue";
-import { hsv2rgb, rgb2hex, rgba2hex } from "../../../../../utils/color";
 
 export default {
   components: {
+    Tippy,
     ColorPicker,
     ColorSwatches,
   },
@@ -91,48 +87,29 @@ export default {
       default: true,
     },
     swatches: {
-      type: Array,
-      default() {
-        return ["#fff", "#000"];
-      },
+      type: [Boolean, Array],
+      default: true,
     },
   },
   emits: ["change"],
   data() {
     return {
-      open: false,
-      format: "hex",
+      css: null,
     };
   },
   methods: {
+    isArray,
     onChange(evt) {
       this.$emit("change", {
         property: this.property,
         value: evt.target.value,
       });
     },
-    onOpenerClick() {
-      this.open = !this.open;
+    onPickerChange(css) {
+      this.css = css;
     },
-    onPickerChange({ hsv, alpha }) {
-      const rgb = hsv2rgb(hsv.h, hsv.s, hsv.v);
-      this.updateText({
-        ...rgb,
-        a: alpha,
-      });
-    },
-    onSwatchesSelect() {},
-    updateText({ r, g, b, a }) {
-      switch (this.format) {
-        case "rgba":
-          this.$refs.text.value =
-            a < 1 ? `rgba(${r}, ${g}, ${b}, ${a})` : `rgb(${r}, ${g}, ${b})`;
-          break;
-
-        default:
-          this.$refs.text.value =
-            a < 1 ? rgba2hex(r, g, b, a) : rgb2hex(r, g, b);
-      }
+    onSwatchesChange(css) {
+      this.css = css;
     },
   },
 };
@@ -164,31 +141,32 @@ export default {
     }
   }
 
-  .overlay {
-    position: fixed;
+  ::v-deep(.overlay) {
+    margin: 0 1em;
     width: 20em;
     background: $lightgray;
+    border: 1px solid $mediumgray;
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
-    z-index: 999;
 
-    .format {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      padding: 0.5em 0.75em;
+    .tabs-nav {
+      border: none;
     }
 
     .buttons {
       display: flex;
       flex-direction: row;
-      justify-content: flex-end;
-      padding: 0.5em 0.75em;
+      justify-content: flex-start;
+      margin: 0.5em 0.75em;
 
       button {
-        margin: 0 0.25em;
+        margin-right: 0.25em;
         padding: 0.25em 0.5em;
         color: $white;
         background: $lightgray;
+
+        &.apply {
+          background: $mediumgray;
+        }
       }
     }
   }

@@ -21,6 +21,7 @@
     "@vuex-orm/core": "https://github.com/semiaddict/vuex-orm/releases/download/v0.36.4-fix-custom-relationships-derived-models/v0.36.4-fix-custom-relationships-derived-models.tar.gz",
     "ajv": "^6.12.6",
     "axios": "^0.24.0",
+    "chroma-js": "^2.1.2",
     "core-js": "^3.8.3",
     "dashjs": "^4.1.0",
     "geometry-polyfill": "^1.0.7",
@@ -40,6 +41,7 @@
     "vue-i18n": "^9.1.8",
     "vue-nav-tabs": "^0.5.7",
     "vue-router": "^4.0.3",
+    "vue-tippy": "^6.0.0-alpha.44",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

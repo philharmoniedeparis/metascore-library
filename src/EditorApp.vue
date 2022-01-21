@@ -118,6 +118,23 @@ export default {
   }
 
   ::v-deep(input, select) {
+    font-family: inherit;
+    color: inherit;
+
+    &:not([type]),
+    &[type=""],
+    &[type="text"],
+    &[type="number"] {
+      border-radius: 0.25em;
+    }
+
+    &:not([type="checkbox"]):not([type="radio"]) {
+      padding: 0.25em 0.5em;
+      background: $mediumgray;
+      border: none;
+      box-sizing: border-box;
+    }
+
     &:focus {
       background: $darkgray;
       box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5);
