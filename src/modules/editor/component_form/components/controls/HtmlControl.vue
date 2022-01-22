@@ -1,7 +1,7 @@
 <template>
   <div class="control html" :data-property="property">
     <label v-if="label">{{ label }}</label>
-    <input :value="value" @change.stop="onChange" />
+    <input v-model="value" />
   </div>
 </template>
 
@@ -20,18 +20,20 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: String,
       default: "",
     },
   },
-  emits: ["change"],
-  methods: {
-    onChange(evt) {
-      this.$emit("change", {
-        property: this.property,
-        value: evt.target.value,
-      });
+  emits: ["update:modelValue"],
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
     },
   },
 };

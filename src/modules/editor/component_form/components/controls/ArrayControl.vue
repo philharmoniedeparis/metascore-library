@@ -5,8 +5,8 @@
       <control-dispatcher
         :property="`${index}`"
         :schema="item"
-        :value="value[index]"
-        @change="onChange"
+        :model-value="value[index]"
+        @update:model-value="update(index, $event)"
       />
     </template>
   </div>
@@ -32,23 +32,29 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: Array,
       default() {
         return [];
       },
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
+    },
+  },
   methods: {
-    onChange(evt) {
-      const value = this.value;
-      value[evt.property] = evt.value;
-
-      this.$emit("change", {
-        property: this.property,
-        value,
-      });
+    update(index, value) {
+      const updated = [...this.value];
+      updated[index] = value;
+      this.value = updated;
     },
   },
 };

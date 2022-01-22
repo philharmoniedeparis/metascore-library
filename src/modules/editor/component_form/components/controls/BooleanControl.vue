@@ -1,13 +1,7 @@
 <template>
   <div class="control boolean" :data-property="property">
     <label v-if="label">{{ label }}</label>
-    <input
-      :id="inputId"
-      v-model="checked"
-      type="checkbox"
-      :checked="value"
-      @change.stop="onChange"
-    />
+    <input :id="inputId" v-model="value" type="checkbox" />
     <label :for="inputId">
       <slot>
         <check-icon class="icon" />
@@ -37,24 +31,25 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   data() {
     return {
       inputId: uuid(),
-      checked: false,
     };
   },
-  methods: {
-    onChange(evt) {
-      this.$emit("change", {
-        property: this.property,
-        value: evt.target.checked,
-      });
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
     },
   },
 };

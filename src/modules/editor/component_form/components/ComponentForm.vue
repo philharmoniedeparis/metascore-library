@@ -5,9 +5,9 @@
       <template v-for="(subSchema, key) in properties" :key="key">
         <control-dispatcher
           :property="key"
+          :model-value="masterModel[key]"
           :schema="subSchema"
-          :value="masterModel[key]"
-          @change="onChange"
+          @update:model-value="update(key, $event)"
         />
       </template>
     </div>
@@ -56,9 +56,9 @@ export default {
   },
   methods: {
     ...mapActions(["updateComponents"]),
-    onChange(evt) {
+    update(property, value) {
       const data = {
-        [evt.property]: evt.value,
+        [property]: value,
       };
 
       this.updateComponents({

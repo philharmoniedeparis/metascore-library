@@ -1,11 +1,10 @@
 <template>
   <component
     :is="`${control}-control`"
+    v-model="value"
     :label="displayLabel ? schema.title : null"
     :property="property"
     :schema="flattenedSchema"
-    :value="value"
-    @change="onChange"
   />
 </template>
 
@@ -43,7 +42,7 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: [String, Number, Boolean, Array, Object],
       default: null,
     },
@@ -52,8 +51,16 @@ export default {
       default: true,
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
+    },
     flattenedSchema() {
       return flatten(this.schema, this.getAjv(), this.value);
     },
@@ -79,11 +86,6 @@ export default {
     this.$options.components.ArrayControl = require("./ArrayControl").default;
     this.$options.components.AnimatedControl =
       require("./AnimatedControl").default;
-  },
-  methods: {
-    onChange(evt) {
-      this.$emit("change", evt);
-    },
   },
 };
 </script>

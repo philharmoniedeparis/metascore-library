@@ -2,7 +2,7 @@
   <div class="control enum" :data-property="property">
     <label v-if="label">{{ label }}</label>
     <div class="input-wrapper">
-      <select @change.stop="onChange">
+      <select v-model="value">
         <option v-for="v in schema.enum" :key="v">
           {{ v }}
         </option>
@@ -32,18 +32,20 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: String,
       default: "",
     },
   },
-  emits: ["change"],
-  methods: {
-    onChange(evt) {
-      this.$emit("change", {
-        property: this.property,
-        value: evt.target.value,
-      });
+  emits: ["update:modelValue"],
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
     },
   },
 };

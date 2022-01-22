@@ -26,22 +26,21 @@
       :interactive="true"
       :popper-options="{ strategy: 'fixed' }"
     >
-      <button class="opener"></button>
+      <button class="opener" :style="`color: ${modelValue};`"></button>
       <template #content="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
-            <color-picker :value="css" @change="onPickerChange" />
+            <color-picker v-model="value" :value="internalValue" />
           </tabs-item>
           <tabs-item v-if="swatches" title="Swatches">
             <color-swatches
+              v-model="value"
               v-bind="isArray(swatches) ? { swatches } : null"
-              :value="css"
-              @change="onSwatchesChange"
             />
           </tabs-item>
         </tabs-container>
         <div class="buttons">
-          <button class="apply" @click="apply">
+          <button class="apply" @click="onApplyClick(hide)">
             <span class="label">{{ $t("apply_button") }}</span>
           </button>
           <button class="cancel" @click="hide">
@@ -78,7 +77,7 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: String,
       default: "",
     },
@@ -91,25 +90,27 @@ export default {
       default: true,
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   data() {
     return {
-      css: null,
+      internalValue: this.modelValue,
     };
+  },
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.internalValue = value;
+      },
+    },
   },
   methods: {
     isArray,
-    onChange(evt) {
-      this.$emit("change", {
-        property: this.property,
-        value: evt.target.value,
-      });
-    },
-    onPickerChange(css) {
-      this.css = css;
-    },
-    onSwatchesChange(css) {
-      this.css = css;
+    onApplyClick(hide) {
+      this.$emit("update:modelValue", this.internalValue);
+      hide();
     },
   },
 };
@@ -124,6 +125,7 @@ export default {
     padding: 0;
     vertical-align: middle;
     @include transparency-grid;
+    background-size: 1em;
     border-radius: 0.25em;
     box-shadow: 0.05em 0.05em 0.5em 0.1em rgba(0, 0, 0, 0.25);
     opacity: 1;

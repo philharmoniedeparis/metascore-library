@@ -2,18 +2,18 @@
   <div class="control animated" :data-property="property">
     <label v-if="label">{{ label }}</label>
     <boolean-control
+      :model-value="value.animated"
       property="animated"
       :schema="animatedSchema"
-      :value="value.animated"
-      @change="onAnimatedChange"
+      @update:model-value="updateAnimated($event)"
     >
       <check-icon class="icon" />
     </boolean-control>
     <control-dispatcher
+      :model-value="valueAtTime"
       property="value"
       :schema="valueSchema"
-      :value="valueAtTime"
-      @change="onValueChange"
+      @update:model-value="updateValue($event)"
     />
   </div>
 </template>
@@ -45,18 +45,26 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: Object,
       default() {
         return { animated: false, value: null };
       },
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   computed: {
     ...mapState("media", {
       mediaTime: "time",
     }),
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", value);
+      },
+    },
     roundedMediaTime() {
       return round(this.mediaTime, 2);
     },
@@ -75,7 +83,7 @@ export default {
     },
   },
   methods: {
-    onAnimatedChange({ value: animated }) {
+    updateAnimated(animated) {
       let value = this.value.value;
       if (animated) {
         value = [[this.roundedMediaTime, value]];
@@ -83,15 +91,9 @@ export default {
         value = value[0][1];
       }
 
-      this.$emit("change", {
-        property: this.property,
-        value: {
-          animated,
-          value,
-        },
-      });
+      this.value = { animated, value };
     },
-    onValueChange({ value: input }) {
+    updateValue(input) {
       const animated = this.value.animated;
       let value = this.value.value;
 
@@ -108,13 +110,7 @@ export default {
         value = input;
       }
 
-      this.$emit("change", {
-        property: this.property,
-        value: {
-          animated,
-          value,
-        },
-      });
+      this.value = { animated, value };
     },
   },
 };

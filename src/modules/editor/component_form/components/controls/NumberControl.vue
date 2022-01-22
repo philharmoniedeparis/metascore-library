@@ -4,14 +4,13 @@
     <div class="input-wrapper">
       <input
         ref="input"
+        v-model="value"
         type="number"
         :step="step"
         :min="min"
         :max="max"
-        :value="value"
         @focus="isFocused = true"
         @blur="isFocused = false"
-        @change.stop="onChange"
       />
       <div :class="['spinners', spinnersDirection, { flip: flipSpinners }]">
         <button
@@ -61,7 +60,7 @@ export default {
       type: Object,
       required: true,
     },
-    value: {
+    modelValue: {
       type: Number,
       default: 0,
     },
@@ -74,7 +73,7 @@ export default {
       default: false,
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   data() {
     return {
       isFocused: false,
@@ -83,6 +82,14 @@ export default {
     };
   },
   computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        this.$emit("update:modelValue", round(value, this.decimals));
+      },
+    },
     step() {
       return this.schema.type === "integer"
         ? 1
@@ -106,17 +113,7 @@ export default {
       if (!isNaN(this.max)) {
         value = Math.min(value, this.max);
       }
-      this.$refs.input.value = value;
-      this.onChange();
-    },
-    onChange() {
-      const input = this.$refs.input;
-      const value = round(input.value, this.decimals);
-
-      this.$emit("change", {
-        property: this.property,
-        value,
-      });
+      this.value = value;
     },
     onSpinUpMousedown() {
       this.stepUp(true);

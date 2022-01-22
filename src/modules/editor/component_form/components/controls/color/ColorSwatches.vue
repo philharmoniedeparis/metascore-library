@@ -17,7 +17,7 @@ import { uniq } from "lodash";
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: null,
     },
@@ -25,28 +25,24 @@ export default {
       type: Array,
       default() {
         return [
-          "#000000",
-          "#cccccc",
-          "#ffffff",
-          "#f44336",
-          "#e91e63",
-          "#9c27b0",
-          "#673ab7",
-          "#3f51b5",
-          "#2196f3",
-          "#03a9f4",
-          "#00bcd4",
-          "#009688",
-          "#4caf50",
-          "#8bc34a",
-          "#cddc39",
-          "#ffeb3b",
-          "#ffc107",
+          ...chroma.scale(["black", "white"]).mode("hsl").colors(10),
+          ...chroma
+            .scale([
+              "red",
+              "orange",
+              "yellow",
+              "green",
+              "blue",
+              "pink",
+              "purple",
+            ])
+            .mode("hsl")
+            .colors(40),
         ];
       },
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   data() {
     return {
       selected: null,
@@ -65,26 +61,17 @@ export default {
     chroma() {
       return this.selected ? chroma.css(this.selected) : null;
     },
-    rgb() {
-      return this.chroma?.rgb();
-    },
     css() {
       return this.chroma?.css();
     },
-    hex() {
-      return this.chroma?.hex();
-    },
-    alpha() {
-      return this.chroma?.alpha();
-    },
   },
   watch: {
-    value: {
-      handler(value) {
-        this.setSelected(value, true);
-      },
-      immediate: true,
+    modelValue(value) {
+      this.setSelected(value, true);
     },
+  },
+  mounted() {
+    this.setSelected(this.modelValue, true);
   },
   methods: {
     setSelected(value, validate = false) {
@@ -102,10 +89,7 @@ export default {
     },
     onSwatchClick(value) {
       this.setSelected(value);
-      this.emitChange();
-    },
-    emitChange() {
-      this.$emit("change", this.css);
+      this.$emit("update:modelValue", this.css);
     },
   },
 };

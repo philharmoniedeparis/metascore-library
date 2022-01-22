@@ -67,12 +67,12 @@ import { round } from "lodash";
 
 export default {
   props: {
-    value: {
+    modelValue: {
       type: String,
       default: "#000",
     },
   },
-  emits: ["change"],
+  emits: ["update:modelValue"],
   data() {
     return {
       hsv: [0, 0, 0],
@@ -136,12 +136,9 @@ export default {
     },
   },
   watch: {
-    value: {
-      handler(value) {
-        this.setColor(value);
-        this.updateText();
-      },
-      immediate: true,
+    modelValue(value) {
+      this.setColor(value);
+      this.updateText();
     },
     hsv: {
       handler() {
@@ -157,6 +154,9 @@ export default {
     },
   },
   mounted() {
+    this.setColor(this.modelValue);
+    this.updateText();
+
     this.$nextTick(function () {
       this.setupInteractions();
     });
@@ -175,9 +175,6 @@ export default {
     },
     updateText() {
       this.text = this.format === "rgba" ? this.css : this.hex;
-    },
-    emitChange() {
-      this.$emit("change", this.css);
     },
     setupInteractions() {
       this._interactables = [];
@@ -249,25 +246,25 @@ export default {
 
       this.hsv[1] = round(x, 2);
       this.hsv[2] = 1 - round(y, 2);
-      this.emitChange();
+      this.$emit("update:modelValue", this.css);
     },
     onHueMove(evt) {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
       this.hsv[0] = round(x * 360, 2);
-      this.emitChange();
+      this.$emit("update:modelValue", this.css);
     },
     onOpacityMove(evt) {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
       this.alpha = round(x, 2);
-      this.emitChange();
+      this.$emit("update:modelValue", this.css);
     },
     onTextChange(evt) {
       this.setColor(evt.target.value);
-      this.emitChange();
+      this.$emit("update:modelValue", this.css);
     },
   },
 };
