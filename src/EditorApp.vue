@@ -26,7 +26,9 @@
       <component-form></component-form>
     </resizable-pane>
 
-    <resizable-pane class="bottom" :top="true"></resizable-pane>
+    <resizable-pane class="bottom" :top="true">
+      <components-timeline />
+    </resizable-pane>
   </div>
 </template>
 

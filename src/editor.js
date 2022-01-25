@@ -7,15 +7,16 @@ import { createRouter } from "./router/editor";
 import App from "./EditorApp.vue";
 
 import { registerModules } from "./modules/manager.js";
-import Panes from "./modules/editor/panes";
-import Tabs from "./modules/editor/tabs";
-import MainMenu from "./modules/editor/mainmenu";
-import ComponentForm from "./modules/editor/component_form";
-import PlayerPreview from "./modules/editor/player_preview";
-import ComponentsLibrary from "./modules/editor/components_library";
 import AssetsLibrary from "./modules/editor/assets_libraray";
-import SharedAssetsLibrary from "./modules/editor/shared_assets_library";
+import ComponentForm from "./modules/editor/component_form";
+import ComponentsLibrary from "./modules/editor/components_library";
+import MainMenu from "./modules/editor/mainmenu";
+import Panes from "./modules/editor/panes";
+import PlayerPreview from "./modules/editor/player_preview";
 import Ruler from "./modules/editor/ruler";
+import SharedAssetsLibrary from "./modules/editor/shared_assets_library";
+import Tabs from "./modules/editor/tabs";
+import Timeline from "./modules/editor/timeline";
 
 export class Editor {
   /**
@@ -34,15 +35,16 @@ export class Editor {
     // Register root modules.
     registerModules(
       [
-        Panes,
-        Tabs,
-        MainMenu,
-        ComponentForm,
-        PlayerPreview,
-        ComponentsLibrary,
         AssetsLibrary,
-        SharedAssetsLibrary,
+        ComponentForm,
+        ComponentsLibrary,
+        MainMenu,
+        Panes,
+        PlayerPreview,
         Ruler,
+        SharedAssetsLibrary,
+        Tabs,
+        Timeline,
       ],
       this._app,
       store,
