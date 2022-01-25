@@ -11,34 +11,9 @@ export class EmbeddableComponent extends mix(Components.AbstractComponent).with(
   Positionable,
   Timeable
 ) {
-  static entity = "EmbeddableComponent";
+  static type = "EmbeddableComponent";
 
-  static types() {
-    return {
-      Animation: Components.Animation,
-      Block: Components.Block,
-      BlockToggler: Components.BlockToggler,
-      Content: Components.Content,
-      Controller: Components.Controller,
-      Cursor: Components.Cursor,
-      Media: Components.Media,
-      SVG: Components.SVG,
-      VideoRenderer: Components.VideoRenderer,
-    };
-  }
-
-  /**
-   * Get a list of inheritance chain classes
-   *
-   * @returns {Class[]} The list of Model classes in the inheritance chain
-   */
-  static getModelChain() {
-    if (this.entity === "EmbeddableComponent") {
-      return [this, Components.AbstractComponent];
-    }
-
-    return Components.AbstractComponent.getModelChain.call(this);
-  }
+  static baseModel = Components.AbstractComponent;
 }
 
 export default EmbeddableComponent;

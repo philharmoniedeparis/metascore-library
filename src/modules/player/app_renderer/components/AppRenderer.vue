@@ -57,7 +57,10 @@ export default {
     ...mapState("media", {
       mediaSources: "sources",
     }),
-    ...mapGetters("app-components", { scenarios: "getScenarios" }),
+    ...mapGetters("app-components", { filterComponentsByType: "filterByType" }),
+    scenarios() {
+      return this.filterComponentsByType("Scenario");
+    },
     /**
      * Get the media player component
      * @return {MediaPlayer} The component

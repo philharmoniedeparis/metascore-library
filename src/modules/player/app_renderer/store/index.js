@@ -41,7 +41,6 @@ export default {
         { root: true }
       );
 
-      dispatch("app-components/clear", null, { root: true });
       dispatch("app-components/insert", data.components, { root: true });
 
       commit("setWidth", data.width);

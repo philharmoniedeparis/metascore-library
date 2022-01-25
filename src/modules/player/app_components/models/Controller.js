@@ -1,9 +1,9 @@
 import { EmbeddableComponent } from ".";
 
 export class Controller extends EmbeddableComponent {
-  static entity = "Controller";
+  static type = "Controller";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 }
 
 export default Controller;

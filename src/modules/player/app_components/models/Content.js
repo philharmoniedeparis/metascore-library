@@ -13,16 +13,16 @@ export class Content extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "Content";
+  static type = "Content";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
 
     return merge(super.schema, {
       properties: {
-        "content-text": createHtmlField({
+        text: createHtmlField({
           ajv,
           title: "Text",
         }),

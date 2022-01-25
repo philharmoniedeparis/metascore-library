@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     /**
@@ -18,8 +20,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     children() {
-      return this.model["page-children"];
+      return this.filterComponentsByIds(this.model.children);
     },
   },
 };

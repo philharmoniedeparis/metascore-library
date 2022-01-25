@@ -13,21 +13,21 @@ export class Media extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "Media";
+  static type = "Media";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
 
     return merge(super.schema, {
       properties: {
-        "media-tag": createEnumField({
+        tag: createEnumField({
           title: "Tag",
           enum: ["audio", "video"],
           default: "audio",
         }),
-        "media-src": createUrlField({
+        src: createUrlField({
           ajv,
           title: "Source",
         }),

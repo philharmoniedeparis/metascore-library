@@ -12,9 +12,9 @@ export class VideoRenderer extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "VideoRenderer";
+  static type = "VideoRenderer";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     return merge(super.schema, {

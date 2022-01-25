@@ -37,8 +37,9 @@ export default {
   },
   computed: {
     ...mapGetters("app-components", ["isBlockToggled"]),
+    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     blocks() {
-      return this.model["blocktoggler-blocks"];
+      return this.filterComponentsByIds(this.model.blocks);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [

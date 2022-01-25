@@ -10,6 +10,7 @@ import {
   createStringField,
   createArrayField,
   createNumberField,
+  createIntegerField,
   createAngleField,
   createTimeField,
   createColorField,
@@ -21,25 +22,25 @@ export class Cursor extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "Cursor";
+  static type = "Cursor";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
 
     return merge(super.schema, {
       properties: {
-        "cursor-form": createEnumField({
+        form: createEnumField({
           title: "Form",
           enum: ["linear", "circular"],
           default: "linear",
         }),
-        "cursor-direction": createStringField({
+        direction: createStringField({
           title: "Direction",
           default: "right",
         }),
-        "cursor-acceleration": createNumberField({
+        acceleration: createNumberField({
           title: "Acceleration",
           minimum: 0.01,
           maximum: 2,
@@ -59,23 +60,23 @@ export class Cursor extends mix(EmbeddableComponent).with(
       },
       if: {
         properties: {
-          "cursor-form": {
+          form: {
             const: "linear",
           },
         },
       },
       then: {
         properties: {
-          "cursor-direction": {
+          direction: {
             enum: ["right", "left", "bottom", "top"],
             default: "right",
           },
-          "cursor-keyframes": createArrayField({
+          keyframes: createArrayField({
             title: "Keyframes",
             default: [],
             items: {
               type: "array",
-              items: [createTimeField({ ajv }), createNumberField()],
+              items: [createTimeField({ ajv }), createIntegerField()],
               minItems: 2,
               additionalItems: false,
             },
@@ -84,15 +85,15 @@ export class Cursor extends mix(EmbeddableComponent).with(
       },
       else: {
         properties: {
-          "cursor-direction": {
+          direction: {
             enum: ["cw", "ccw"],
             default: "cw",
           },
-          "cursor-start-angle": createAngleField({
+          "start-angle": createAngleField({
             ajv,
             title: "Start angle",
           }),
-          "cursor-loop-duration": createTimeField({
+          duration: createTimeField({
             ajv,
             title: "Start angle",
           }),

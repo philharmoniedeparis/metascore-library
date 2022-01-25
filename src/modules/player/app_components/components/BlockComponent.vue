@@ -106,17 +106,18 @@ export default {
   },
   computed: {
     ...mapGetters("app-components", {
+      filterComponentsByIds: "filterByIds",
       isToggled: "isBlockToggled",
     }),
     synched() {
-      return this.model["block-synched"];
+      return this.model.synched;
     },
     pagerVisibe() {
       if (this.pageCount < 2) {
         return false;
       }
 
-      switch (this.model["block-pager-visibility"]) {
+      switch (this.model["pager-visibility"]) {
         case "visible":
           return true;
 
@@ -128,7 +129,7 @@ export default {
       }
     },
     pages() {
-      return this.model["block-pages"];
+      return this.filterComponentsByIds(this.model.pages);
     },
     pageCount() {
       return this.pages.length;
@@ -147,7 +148,7 @@ export default {
         /* webpackChunkName: "vendors.hammerjs" */ "hammerjs"
       );
 
-      new Hammer.Manager(this.$refs["pages"], {
+      new Hammer.Manager(this.$refs.pages, {
         recognizers: [
           [Hammer.Swipe, { direction: Hammer.DIRECTION_HORIZONTAL }],
         ],

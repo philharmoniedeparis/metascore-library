@@ -33,7 +33,6 @@ export default {
     app.component("SVGcomponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
 
-    const database = store.$db();
-    store.registerModule("app-components", moduleStore({ database }));
+    store.registerModule("app-components", moduleStore);
   },
 };

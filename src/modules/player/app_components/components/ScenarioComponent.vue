@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   props: {
@@ -18,11 +18,12 @@ export default {
   },
   computed: {
     ...mapState("app-components", ["activeScenario"]),
+    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     active() {
       return this.model.id === this.activeScenario;
     },
     children() {
-      return this.model["scenario-children"];
+      return this.filterComponentsByIds(this.model.children);
     },
   },
 };

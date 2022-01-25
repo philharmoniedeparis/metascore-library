@@ -30,20 +30,20 @@
       "id": "scenario-1",
       "name": "Sc\u00e9nario 1",
       "type": "Scenario",
-      "scenario-children": [
+      "children": [
         {
           "id": "component-0uQeLywx6d",
           "name": "Timeline",
           "type": "Block",
-          "block-pages": [
+          "pages": [
             {
               "id": "component-56l35ggEcn",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-JksUDUjphK",
                   "name": "Titre H1",
-                  "content-text": "\u003Ch1\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h1\u003E\n",
+                  "text": "\u003Ch1\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h1\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -61,7 +61,7 @@
                 {
                   "id": "component-h6bNySp2sd",
                   "name": "timeline-NEW.png",
-                  "content-text": "",
+                  "text": "",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -80,7 +80,7 @@
                 {
                   "id": "component-YzLpxPxuSU",
                   "name": "Intro",
-                  "content-text": "\u003Cp style=\u0022font-size:12px; text-orientation:upright; writing-mode:vertical-rl\u0022 class=\u0022partie\u0022\u003E\u003Cspan style=\u0022font-size:10px;\u0022\u003EIntro\u003C\/span\u003E\u003C\/p\u003E",
+                  "text": "\u003Cp style=\u0022font-size:12px; text-orientation:upright; writing-mode:vertical-rl\u0022 class=\u0022partie\u0022\u003E\u003Cspan style=\u0022font-size:10px;\u0022\u003EIntro\u003C\/span\u003E\u003C\/p\u003E",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -98,7 +98,7 @@
                 {
                   "id": "component-aVT7s0Eg6N",
                   "name": "Th\u00e8me A",
-                  "content-text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me A\u003Cbr\u003E\u003C\/p\u003E",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me A\u003Cbr\u003E\u003C\/p\u003E",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -116,7 +116,7 @@
                 {
                   "id": "component-5hMJ3Ry1AY",
                   "name": "Motif a",
-                  "content-text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -134,7 +134,7 @@
                 {
                   "id": "component-7Yy85e7930",
                   "name": "Motif b",
-                  "content-text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif b\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -152,7 +152,7 @@
                 {
                   "id": "component-J35hrGAuer",
                   "name": "Th\u00e8me B",
-                  "content-text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me B\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003ETh\u00e8me B\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -170,7 +170,7 @@
                 {
                   "id": "component-OySlohtYOr",
                   "name": "Motif c",
-                  "content-text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif c\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EMotif c\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -188,7 +188,7 @@
                 {
                   "id": "component-30qoGRJbLz",
                   "name": "Final",
-                  "content-text": "\u003Cp class=\u0022partie\u0022\u003EFinal de l\u2019exposition\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022partie\u0022\u003EFinal de l\u2019exposition\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -206,7 +206,7 @@
                 {
                   "id": "component-nqZKFrpVwA",
                   "name": "Autour du motif b",
-                  "content-text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif b\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif b\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -224,7 +224,7 @@
                 {
                   "id": "component-A3Krdq8cv4",
                   "name": "Autour du motif a",
-                  "content-text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022blanc moyen\u0022\u003EAutour du motif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -241,7 +241,7 @@
                 },
                 {
                   "id": "component-C1lj3wCruq",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 1",
                   "type": "Cursor",
                   "opacity": {
@@ -257,17 +257,19 @@
                     921,
                     64
                   ],
-                  "cursor-direction": "right",
+                  "direction": "right",
                   "start-time": 0,
-                  "cursor-acceleration": 1,
+                  "acceleration": 1,
                   "cursor-color": "#ffffff",
                   "cursor-width": 2,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-nifPtI4eoN",
                   "name": "Cr\u00e9dits",
-                  "content-text": "\u003Cp\u003E\u003Ca href=\u0022#showBlock=Bloc Cr\u00e9dits\u0022\u003ECr\u00e9dits\u003C\/a\u003E\u003C\/p\u003E\n",
+                  "text": "\u003Cp\u003E\u003Ca href=\u0022#showBlock=Bloc Cr\u00e9dits\u0022\u003ECr\u00e9dits\u003C\/a\u003E\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -286,7 +288,7 @@
             }
           ],
           "hidden": false,
-          "block-synched": false,
+          "synched": false,
           "position": [
             0,
             0
@@ -295,7 +297,7 @@
             1001,
             93
           ],
-          "block-pager-visibility": "auto"
+          "pager-visibility": "auto"
         },
         {
           "id": "component-m0WFLEUhMJ",
@@ -323,15 +325,15 @@
           "id": "component-vJjpoBcORE",
           "name": "Bloc non synchronis\u00e9",
           "type": "Block",
-          "block-pages": [
+          "pages": [
             {
               "id": "component-mjimpu2Wyo",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-Qfci5sW2Xf",
                   "name": "Texte",
-                  "content-text": "\u003Ch2\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h2\u003E\n\n\u003Cdiv class=\u0022texte\u0022\u003E\n\u003Cp\u003ELa cr\u00e9ation de cette symphonie en 1805 suscite de vives critiques. On parle d\u2019une \u0153uvre \u00ab\u0026nbsp;assommante, interminable et d\u00e9cousue\u0026nbsp;\u00bb. Depuis, elle a \u00e9t\u00e9 reconnue comme l\u2019un des chefs-d\u2019\u0153uvre les plus importants de son \u00e9poque. Mais les nouvelles dimensions que Beethoven apporte \u00e0 sa \u003Cem\u003ESymphonie H\u00e9ro\u00efque\u003C\/em\u003E ont effectivement de quoi surprendre les auditeurs du d\u00e9but du XIX\u003Csup\u003Ee\u003C\/sup\u003E si\u00e8cle.\u003C\/p\u003E\n\n\u003Cp\u003EBeethoven y affirme son identit\u00e9 et sa vision d\u2019un langage musical, rompant les limites classiques existantes. Le seul premier mouvement dure aussi longtemps que toute une symphonie de Mozart ou de Haydn. Ses premi\u00e8res minutes annoncent rapidement cette r\u00e9volution musicale\u0026nbsp;:\u003Cbr\u003E\n- l\u2019\u003Ca href=\u0022#play=1.45,3.67,scenario-1\u0022\u003Eintroduction\u003C\/a\u003E \u003Cspan class=\u0022serre\u0022\u003Ese r\u00e9sume \u00e0 deux accords martel\u00e9s\u0026nbsp;;\u003C\/span\u003E\u003Cbr\u003E\n- les diff\u00e9rentes id\u00e9es musicales (th\u00e8mes compos\u00e9s de motifs) \u003Ca href=\u0022#play=37.38,57.97,scenario-1\u0022\u003Es\u2019encha\u00eenent abruptement, sans pr\u00e9paration ni transition\u003C\/a\u003E\u0026nbsp;;\u003Cbr\u003E\n- dans l\u2019orchestre, les vents et les \u003Ca href=\u0022#play=3.8,11.12,scenario-1\u0022\u003Ecordes graves\u003C\/a\u003E prennent une importance pr\u00e9pond\u00e9rante, offrant une \u003Ca href=\u0022#play=83.95,105.47,scenario-1\u0022\u003Epalette \u00e9largie\u003C\/a\u003E de timbres et de nuances\u0026nbsp;; Beethoven exprime ainsi, par des contrastes impressionnants, passant de la plus grande douceur \u00e0 des accents violents, toute l\u2019\u00e9tendue de son caract\u00e8re imp\u00e9tueux.\u003C\/p\u003E\n\u003C\/div\u003E\n\n\u003Cdiv class=\u0022bordered smallText,\u0022\u003E\n\u003Cp style=\u0022margin-top:5px\u0022\u003E\u003Cstrong\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (1\u003Csup\u003Eer\u003C\/sup\u003E mouvement)\u003Cbr\u003E\nLudwig van Beethoven\u003C\/strong\u003E (1770-1827)\u003Cbr\u003E\nConcert enregistr\u00e9 \u00e0 la \u003Cspan class=\u0022serre\u0022\u003ECit\u00e9 de la Musique le 16 avril 2011\u003C\/span\u003E\u003Cbr\u003E\nEmmanuel Krivine, \u003Cem\u003Edirection\u003C\/em\u003E\u003Cbr\u003E\nLa Chambre Philharmonique\u003C\/p\u003E\n\n\u003Cp\u003ESeules les premi\u00e8res minutes de l\u0027\u0153uvre sont pr\u00e9sent\u00e9es dans ce guide.\u003C\/p\u003E\n\u003C\/div\u003E\n",
+                  "text": "\u003Ch2\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (extrait du 1\u003Csup\u003Eer\u003C\/sup\u003E mouvement) de Ludwig van Beethoven\u0026nbsp;: ruptures et affirmation\u003C\/h2\u003E\n\n\u003Cdiv class=\u0022texte\u0022\u003E\n\u003Cp\u003ELa cr\u00e9ation de cette symphonie en 1805 suscite de vives critiques. On parle d\u2019une \u0153uvre \u00ab\u0026nbsp;assommante, interminable et d\u00e9cousue\u0026nbsp;\u00bb. Depuis, elle a \u00e9t\u00e9 reconnue comme l\u2019un des chefs-d\u2019\u0153uvre les plus importants de son \u00e9poque. Mais les nouvelles dimensions que Beethoven apporte \u00e0 sa \u003Cem\u003ESymphonie H\u00e9ro\u00efque\u003C\/em\u003E ont effectivement de quoi surprendre les auditeurs du d\u00e9but du XIX\u003Csup\u003Ee\u003C\/sup\u003E si\u00e8cle.\u003C\/p\u003E\n\n\u003Cp\u003EBeethoven y affirme son identit\u00e9 et sa vision d\u2019un langage musical, rompant les limites classiques existantes. Le seul premier mouvement dure aussi longtemps que toute une symphonie de Mozart ou de Haydn. Ses premi\u00e8res minutes annoncent rapidement cette r\u00e9volution musicale\u0026nbsp;:\u003Cbr\u003E\n- l\u2019\u003Ca href=\u0022#play=1.45,3.67,scenario-1\u0022\u003Eintroduction\u003C\/a\u003E \u003Cspan class=\u0022serre\u0022\u003Ese r\u00e9sume \u00e0 deux accords martel\u00e9s\u0026nbsp;;\u003C\/span\u003E\u003Cbr\u003E\n- les diff\u00e9rentes id\u00e9es musicales (th\u00e8mes compos\u00e9s de motifs) \u003Ca href=\u0022#play=37.38,57.97,scenario-1\u0022\u003Es\u2019encha\u00eenent abruptement, sans pr\u00e9paration ni transition\u003C\/a\u003E\u0026nbsp;;\u003Cbr\u003E\n- dans l\u2019orchestre, les vents et les \u003Ca href=\u0022#play=3.8,11.12,scenario-1\u0022\u003Ecordes graves\u003C\/a\u003E prennent une importance pr\u00e9pond\u00e9rante, offrant une \u003Ca href=\u0022#play=83.95,105.47,scenario-1\u0022\u003Epalette \u00e9largie\u003C\/a\u003E de timbres et de nuances\u0026nbsp;; Beethoven exprime ainsi, par des contrastes impressionnants, passant de la plus grande douceur \u00e0 des accents violents, toute l\u2019\u00e9tendue de son caract\u00e8re imp\u00e9tueux.\u003C\/p\u003E\n\u003C\/div\u003E\n\n\u003Cdiv class=\u0022bordered smallText,\u0022\u003E\n\u003Cp style=\u0022margin-top:5px\u0022\u003E\u003Cstrong\u003E\u003Cem\u003ESymphonie n\u00b0\u0026nbsp;3 \u00ab\u0026nbsp;H\u00e9ro\u00efque\u0026nbsp;\u00bb\u003C\/em\u003E (1\u003Csup\u003Eer\u003C\/sup\u003E mouvement)\u003Cbr\u003E\nLudwig van Beethoven\u003C\/strong\u003E (1770-1827)\u003Cbr\u003E\nConcert enregistr\u00e9 \u00e0 la \u003Cspan class=\u0022serre\u0022\u003ECit\u00e9 de la Musique le 16 avril 2011\u003C\/span\u003E\u003Cbr\u003E\nEmmanuel Krivine, \u003Cem\u003Edirection\u003C\/em\u003E\u003Cbr\u003E\nLa Chambre Philharmonique\u003C\/p\u003E\n\n\u003Cp\u003ESeules les premi\u00e8res minutes de l\u0027\u0153uvre sont pr\u00e9sent\u00e9es dans ce guide.\u003C\/p\u003E\n\u003C\/div\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -344,14 +346,13 @@
                   "dimension": [
                     340,
                     556
-                  ],
-                  "editor.locked": false
+                  ]
                 }
               ]
             }
           ],
           "hidden": false,
-          "block-synched": false,
+          "synched": false,
           "position": [
             0,
             101
@@ -360,21 +361,21 @@
             340,
             554
           ],
-          "block-pager-visibility": "auto"
+          "pager-visibility": "auto"
         },
         {
           "id": "component-Y986fRd9Do",
           "name": "Score",
           "type": "Block",
-          "block-pages": [
+          "pages": [
             {
               "id": "component-5Q3v3qTCJl",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-BBPVhCKIH0",
                   "name": "Intro tr\u00e8s br\u00e8ve",
-                  "content-text": "\u003Cp class=\u0022moyen rose serre\u0022\u003EIntroduction tr\u00e8s br\u00e8ve\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022\u003EIntroduction tr\u00e8s br\u00e8ve\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -388,13 +389,12 @@
                   "dimension": [
                     103,
                     48
-                  ],
-                  "editor.locked": false
+                  ]
                 },
                 {
                   "id": "component-kmVDGaxmYg",
                   "name": "Motif a -1",
-                  "content-text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -408,13 +408,12 @@
                   "dimension": [
                     103,
                     34
-                  ],
-                  "editor.locked": false
+                  ]
                 },
                 {
                   "id": "component-dQJYQyUL92",
                   "name": "Motif a -2",
-                  "content-text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022large marron moyen\u0022\u003EMotif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -428,13 +427,12 @@
                   "dimension": [
                     103,
                     34
-                  ],
-                  "editor.locked": false
+                  ]
                 },
                 {
                   "id": "component-Kof5FBZVIu",
                   "name": "Motif a -3",
-                  "content-text": "\u003Cp class=\u0022gros rose\u0022\u003EMotif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022gros rose\u0022\u003EMotif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -448,13 +446,12 @@
                   "dimension": [
                     103,
                     34
-                  ],
-                  "editor.locked": false
+                  ]
                 },
                 {
                   "id": "component-lgCy1I9aqE",
                   "name": "2 accords",
-                  "content-text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003E2 accords\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003E2 accords\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -469,14 +466,13 @@
                     103,
                     34
                   ],
-                  "start-time": 1.64,
-                  "editor.locked": false
+                  "start-time": 1.64
                 },
                 {
                   "id": "component-iQZL5hXx1j",
                   "name": "violoncelles",
-                  "content-text": "\u003Cp class=\u0022marron moyen\u0022\u003Evioloncelles\u003C\/p\u003E\n",
-                  "content": "Content",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Evioloncelles\u003C\/p\u003E\n",
+                  "type": "Content",
                   "opacity": {
                     "animated": false,
                     "value": 1
@@ -495,7 +491,7 @@
                 {
                   "id": "component-2MjohdDK5A",
                   "name": "R\u00e9action de l\u0027orchestre",
-                  "content-text": "\u003Cp class=\u0022marron moyen\u0022\u003Er\u00e9action de l\u2019orchestre\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Er\u00e9action de l\u2019orchestre\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -515,7 +511,7 @@
                 {
                   "id": "component-yoU4Fypmui",
                   "name": "dialogue vents-cordes",
-                  "content-text": "\u003Cp class=\u0022marron moyen\u0022\u003Edialogue entre vents et cordes\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron moyen\u0022\u003Edialogue entre vents et cordes\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -534,7 +530,7 @@
                 },
                 {
                   "id": "component-PIPTv7JzyA",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 1",
                   "type": "Cursor",
                   "opacity": {
@@ -550,26 +546,22 @@
                     525,
                     104
                   ],
-                  "cursor-direction": "right",
-                  "cursor-keyframes": [
-                    {
-                      "time": 3.853937,
-                      "position": 54
-                    },
-                    {
-                      "time": 15.803854,
-                      "position": 338
-                    }
+                  "direction": "right",
+                  "keyframes": [
+                    [3.85, 54],
+                    [15.80, 338]
                   ],
                   "start-time": 1.65,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-YZhCFETByX",
                   "name": "crescendo",
-                  "content-text": "\u003Cp class=\u0022marron moyen serre\u0022 style=\u0022text-align:right\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron moyen serre\u0022 style=\u0022text-align:right\u0022\u003Ecrescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -589,7 +581,7 @@
                 {
                   "id": "component-jBsRtxhxtw",
                   "name": "ruptures rythmiques",
-                  "content-text": "\u003Cp class=\u0022marronRose moyen serre\u0022\u003Eruptures rythmiques et accents\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marronRose moyen serre\u0022\u003Eruptures rythmiques et accents\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -609,7 +601,7 @@
                 {
                   "id": "component-R9ZmIu49eq",
                   "name": "crescendo 2",
-                  "content-text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022moyen rose serre\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -629,7 +621,7 @@
                 {
                   "id": "component-7MXBEnIDRl",
                   "name": "tout l\u0027orchestre",
-                  "content-text": "\u003Cp class=\u0022gros rose\u0022\u003Etout l\u0027orchestre\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022gros rose\u0022\u003Etout l\u0027orchestre\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -648,7 +640,7 @@
                 },
                 {
                   "id": "component-TPwxDh4Hbt",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 2",
                   "type": "Cursor",
                   "opacity": {
@@ -664,12 +656,14 @@
                     533,
                     104
                   ],
-                  "cursor-direction": "right",
+                  "direction": "right",
                   "start-time": 23.26,
-                  "cursor-acceleration": 1,
+                  "acceleration": 1,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 }
               ],
               "end-time": 45.46,
@@ -678,11 +672,11 @@
             {
               "id": "component-Fa1T8IeRSK",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-vvsLlv8dR8",
                   "name": "Motif b -1",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003EMotif b\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -698,12 +692,14 @@
                     34
                   ],
                   "start-time": 45.46,
-                  "editor.locked": false
+                  "editor": {
+                    "locked": false
+                  }
                 },
                 {
                   "id": "component-fcjCEC2KK7",
                   "name": "Motif b -2",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -719,12 +715,14 @@
                     34
                   ],
                   "start-time": 45.46,
-                  "editor.locked": false
+                  "editor": {
+                    "locked": false
+                  }
                 },
                 {
                   "id": "component-maiwJ00OP8",
                   "name": "relais de timbres",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003Erelais de timbres\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Erelais de timbres\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -740,12 +738,14 @@
                     34
                   ],
                   "start-time": 45.87,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-zyS7kScsec",
                   "name": "tout l\u0027orchestre",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022\u003Etout l\u2019orchestre\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Etout l\u2019orchestre\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -761,12 +761,14 @@
                     34
                   ],
                   "start-time": 55.75,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-5YvtO8R6oR",
                   "name": "crescendo",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Ecrescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -785,7 +787,7 @@
                 },
                 {
                   "id": "component-GhpAQTsKu3",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 1",
                   "type": "Cursor",
                   "opacity": {
@@ -801,46 +803,27 @@
                     498,
                     104
                   ],
-                  "cursor-direction": "right",
-                  "cursor-keyframes": [
-                    {
-                      "time": 45.918792,
-                      "position": 8
-                    },
-                    {
-                      "time": 50.793812,
-                      "position": 127
-                    },
-                    {
-                      "time": 53.708432,
-                      "position": 199
-                    },
-                    {
-                      "time": 54.710791,
-                      "position": 223
-                    },
-                    {
-                      "time": 55.699604,
-                      "position": 256
-                    },
-                    {
-                      "time": 56.450625,
-                      "position": 280
-                    },
-                    {
-                      "time": 57.531749,
-                      "position": 316
-                    }
+                  "direction": "right",
+                  "keyframes": [
+                    [45.92, 8],
+                    [50.80, 127],
+                    [53.71, 199],
+                    [54.71, 223],
+                    [55.70, 256],
+                    [56.45, 280],
+                    [57.53, 316]
                   ],
                   "start-time": 45.46,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-IxrQ54kBN2",
                   "name": "agitation rythmique",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -856,12 +839,14 @@
                     34
                   ],
                   "start-time": 65.52,
-                  "editor.locked": false
+                  "editor": {
+                    "locked": false
+                  }
                 },
                 {
                   "id": "component-GdM08tB761",
                   "name": "acc\u00e9l\u00e9ration",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eacc\u00e9l\u00e9ration\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eacc\u00e9l\u00e9ration\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -876,13 +861,12 @@
                     145,
                     34
                   ],
-                  "start-time": 71.57,
-                  "editor.locked": false
+                  "start-time": 71.57
                 },
                 {
                   "id": "component-lzzUi3ehDW",
                   "name": "poursuite crescendo",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epoursuite du crescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epoursuite du crescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -897,12 +881,11 @@
                     188,
                     34
                   ],
-                  "start-time": 75.68,
-                  "editor.locked": false
+                  "start-time": 75.68
                 },
                 {
                   "id": "component-cQVHeiLwAc",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 2",
                   "type": "Cursor",
                   "opacity": {
@@ -918,17 +901,16 @@
                     546,
                     104
                   ],
-                  "cursor-direction": "right",
-                  "cursor-keyframes": [
-                    {
-                      "time": 75.785687,
-                      "position": 358
-                    }
+                  "direction": "right",
+                  "keyframes": [
+                    [75.79, 358]
                   ],
                   "start-time": 65.52,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 }
               ],
               "end-time": 83.95,
@@ -938,11 +920,11 @@
             {
               "id": "component-ew46X4adNj",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-TEj1ZB0ClI",
                   "name": "Motif c",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003EMotif c dialogue\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003EMotif c dialogue\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -957,13 +939,12 @@
                     98,
                     48
                   ],
-                  "start-time": 83.95,
-                  "editor.locked": false
+                  "start-time": 83.95
                 },
                 {
                   "id": "component-SGfM7QRd7q",
                   "name": "bois",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -978,13 +959,12 @@
                     73,
                     34
                   ],
-                  "start-time": 84.36,
-                  "editor.locked": false
+                  "start-time": 84.36
                 },
                 {
                   "id": "component-b6Fzy6lBHA",
                   "name": "cordes",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003Ecordes\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ecordes\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -999,13 +979,12 @@
                     73,
                     34
                   ],
-                  "start-time": 89.56,
-                  "editor.locked": false
+                  "start-time": 89.56
                 },
                 {
                   "id": "component-8JY5vbWgLk",
                   "name": "bois + cuivres",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003Cbr\u003E\n\u003Cspan class=\u0022serre\u0022\u003E+ cuivres\u003C\/span\u003E\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Ebois\u003Cbr\u003E\n\u003Cspan class=\u0022serre\u0022\u003E+ cuivres\u003C\/span\u003E\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1020,13 +999,12 @@
                     107,
                     48
                   ],
-                  "start-time": 92.65,
-                  "editor.locked": false
+                  "start-time": 92.65
                 },
                 {
                   "id": "component-3zd99d7Dch",
                   "name": "bois",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003Eune r\u00e9ponse plus sombre\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003Eune r\u00e9ponse plus sombre\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1041,13 +1019,12 @@
                     105,
                     48
                   ],
-                  "start-time": 94.56,
-                  "editor.locked": false
+                  "start-time": 94.56
                 },
                 {
                   "id": "component-Em6MlJgTRK",
                   "name": "silence",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center; text-orientation:upright; writing-mode:vertical-rl\u0022\u003Esilence\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center; text-orientation:upright; writing-mode:vertical-rl\u0022\u003Esilence\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1062,13 +1039,12 @@
                     38,
                     152
                   ],
-                  "start-time": 99.25,
-                  "editor.locked": false
+                  "start-time": 99.25
                 },
                 {
                   "id": "component-6wOpzckXCR",
                   "name": "\u00e9lan rythmique",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022\u003E\u00e9lan rythmique\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022\u003E\u00e9lan rythmique\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1083,13 +1059,12 @@
                     147,
                     34
                   ],
-                  "start-time": 106.16,
-                  "editor.locked": false
+                  "start-time": 106.16
                 },
                 {
                   "id": "component-2nshqrc54H",
                   "name": "crescendo",
-                  "content-text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022jaune petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1104,12 +1079,11 @@
                     105,
                     34
                   ],
-                  "start-time": 109.2,
-                  "editor.locked": false
+                  "start-time": 109.2
                 },
                 {
                   "id": "component-T9XmEHrm7d",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 1",
                   "type": "Cursor",
                   "opacity": {
@@ -1125,37 +1099,21 @@
                     569,
                     156
                   ],
-                  "cursor-direction": "right",
-                  "cursor-keyframes": [
-                    {
-                      "time": 85.565354,
-                      "position": 29
-                    },
-                    {
-                      "time": 97.048791,
-                      "position": 263
-                    },
-                    {
-                      "time": 99.487173,
-                      "position": 314
-                    },
-                    {
-                      "time": 101.607458,
-                      "position": 357
-                    },
-                    {
-                      "time": 104.823687,
-                      "position": 419
-                    },
-                    {
-                      "time": 105.61102,
-                      "position": 438
-                    }
+                  "direction": "right",
+                  "keyframes": [
+                    [85.57, 29],
+                    [97.05, 263],
+                    [99.49, 314],
+                    [101.61, 357],
+                    [104.82, 419],
+                    [105.61,  438]
                   ],
                   "start-time": 83.95,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 }
               ],
               "end-time": 115.21,
@@ -1165,11 +1123,11 @@
             {
               "id": "component-c1TM5pPXvE",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-epvjLK6Uwy",
                   "name": "Motif b -1",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003EMotif b\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1184,13 +1142,12 @@
                     84,
                     34
                   ],
-                  "start-time": 114.81,
-                  "editor.locked": false
+                  "start-time": 114.81
                 },
                 {
                   "id": "component-IB91ACza8X",
                   "name": "rappel motif a",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003Erappel du motif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Erappel du motif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1205,13 +1162,12 @@
                     92,
                     48
                   ],
-                  "start-time": 114.81,
-                  "editor.locked": false
+                  "start-time": 114.81
                 },
                 {
                   "id": "component-Lql0WyfOct",
                   "name": "Motif b -un peu cach\u00e9",
-                  "content-text": "\u003Cp class=\u0022moyen rose\u0022\u003EMotif b (un peu cach\u00e9...)\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022moyen rose\u0022\u003EMotif b (un peu cach\u00e9...)\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1226,13 +1182,12 @@
                     221,
                     36
                   ],
-                  "start-time": 114.81,
-                  "editor.locked": false
+                  "start-time": 114.81
                 },
                 {
                   "id": "component-wfZiPfkviR",
                   "name": "jeu d\u0027amplification",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022\u003Ejeu d\u2019amplification\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Ejeu d\u2019amplification\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1247,13 +1202,12 @@
                     171,
                     34
                   ],
-                  "start-time": 116.52,
-                  "editor.locked": false
+                  "start-time": 116.52
                 },
                 {
                   "id": "component-tENbuM5sEP",
                   "name": "fl\u00fbtes et clarinettes",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022\u003Efl\u00fbtes et clarinettes\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022\u003Efl\u00fbtes et clarinettes\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1268,13 +1222,12 @@
                     171,
                     34
                   ],
-                  "start-time": 119.66,
-                  "editor.locked": false
+                  "start-time": 119.66
                 },
                 {
                   "id": "component-6WFPQZNSQC",
                   "name": "d\u00e9ploiement d\u0027\u00e9nergie",
-                  "content-text": "\u003Cp class=\u0022petit rose serre\u0022 style=\u0022text-align:center\u0022\u003Ed\u00e9ploiement d\u2019\u00e9nergie\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose serre\u0022 style=\u0022text-align:center\u0022\u003Ed\u00e9ploiement d\u2019\u00e9nergie\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1289,13 +1242,12 @@
                     198,
                     34
                   ],
-                  "start-time": 123.7,
-                  "editor.locked": false
+                  "start-time": 123.7
                 },
                 {
                   "id": "component-1hyVAfkaoq",
                   "name": "affirmation des rythm",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eaffirmation des rythmiques\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Eaffirmation des rythmiques\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1310,12 +1262,11 @@
                     221,
                     34
                   ],
-                  "start-time": 129.97,
-                  "editor.locked": false
+                  "start-time": 129.97
                 },
                 {
                   "id": "component-QqTdE3Tks5",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 1",
                   "type": "Cursor",
                   "opacity": {
@@ -1331,46 +1282,27 @@
                     558,
                     104
                   ],
-                  "cursor-direction": "right",
-                  "cursor-keyframes": [
-                    {
-                      "time": 116.558354,
-                      "position": 25
-                    },
-                    {
-                      "time": 118.469854,
-                      "position": 67
-                    },
-                    {
-                      "time": 119.715125,
-                      "position": 90
-                    },
-                    {
-                      "time": 120.669333,
-                      "position": 118
-                    },
-                    {
-                      "time": 122.784,
-                      "position": 167
-                    },
-                    {
-                      "time": 129.922479,
-                      "position": 341
-                    },
-                    {
-                      "time": 135.265312,
-                      "position": 468
-                    }
+                  "direction": "right",
+                  "keyframes": [
+                      [116.56, 25],
+                      [118.50, 67],
+                      [119.72, 90],
+                      [120.67, 118],
+                      [122.78, 167],
+                      [129.92, 341],
+                      [135.27,  468]
                   ],
                   "start-time": 115.21,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 },
                 {
                   "id": "component-ynNHNsWCvu",
                   "name": "agitation rythmique",
-                  "content-text": "\u003Cp class=\u0022marron petit serre\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit serre\u0022 style=\u0022text-align:center\u0022\u003Eagitation rythmique\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1385,13 +1317,12 @@
                     99,
                     48
                   ],
-                  "start-time": 143.43,
-                  "editor.locked": false
+                  "start-time": 143.43
                 },
                 {
                   "id": "component-6PlBl9hdXJ",
                   "name": "crescendo",
-                  "content-text": "\u003Cp class=\u0022marronRose petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marronRose petit\u0022 style=\u0022text-align:center\u0022\u003Ecrescendo\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1406,13 +1337,12 @@
                     110,
                     34
                   ],
-                  "start-time": 147.53,
-                  "editor.locked": false
+                  "start-time": 147.53
                 },
                 {
                   "id": "component-iAaHIc3feK",
                   "name": "puissants accords",
-                  "content-text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epuissants accords\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022petit rose\u0022 style=\u0022text-align:center\u0022\u003Epuissants accords\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1427,13 +1357,12 @@
                     96,
                     48
                   ],
-                  "start-time": 151.66,
-                  "editor.locked": false
+                  "start-time": 151.66
                 },
                 {
                   "id": "component-wLGUBwkWDd",
                   "name": "annonce du retour de a",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003Eannonce du retour\u003Cbr\u003E\ndu motif a\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Eannonce du retour\u003Cbr\u003E\ndu motif a\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1448,13 +1377,12 @@
                     162,
                     48
                   ],
-                  "start-time": 156.31,
-                  "editor.locked": false
+                  "start-time": 156.31
                 },
                 {
                   "id": "component-zMoggb8wT8",
                   "name": "violoncelles",
-                  "content-text": "\u003Cp class=\u0022marron petit\u0022\u003Evioloncelles\u003C\/p\u003E\n",
+                  "text": "\u003Cp class=\u0022marron petit\u0022\u003Evioloncelles\u003C\/p\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1469,12 +1397,11 @@
                     122,
                     34
                   ],
-                  "start-time": 162.87,
-                  "editor.locked": false
+                  "start-time": 162.87
                 },
                 {
                   "id": "component-hKSHwZkWsT",
-                  "cursor-form": "linear",
+                  "form": "linear",
                   "name": "Cursor 2",
                   "type": "Cursor",
                   "opacity": {
@@ -1490,12 +1417,14 @@
                     567,
                     104
                   ],
-                  "cursor-direction": "right",
+                  "direction": "right",
                   "start-time": 139.29,
-                  "cursor-acceleration": 1,
+                  "acceleration": 1,
                   "cursor-color": "#000000",
                   "cursor-width": 1,
-                  "editor.locked": true
+                  "editor": {
+                    "locked": true
+                  }
                 }
               ],
               "start-time": 115.21,
@@ -1503,7 +1432,7 @@
             }
           ],
           "hidden": false,
-          "block-synched": true,
+          "synched": true,
           "position": [
             349,
             442
@@ -1512,21 +1441,21 @@
             653,
             213
           ],
-          "block-pager-visibility": "auto"
+          "pager-visibility": "auto"
         },
         {
           "id": "component-ijeddndCEs",
           "name": "premi\u00e8re-image",
           "type": "Block",
-          "block-pages": [
+          "pages": [
             {
               "id": "component-Q0qTrz5ot2",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-2LNOnNNOn4",
                   "name": "premie\u0300re-image.png",
-                  "content-text": "",
+                  "text": "",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1546,7 +1475,7 @@
               ]
             }
           ],
-          "block-synched": false,
+          "synched": false,
           "position": [
             378,
             101
@@ -1558,21 +1487,21 @@
           "border-width": 0,
           "background-color": "rgba(0,0,0,0)",
           "background-image": "",
-          "block-pager-visibility": "hidden"
+          "pager-visibility": "hidden"
         },
         {
           "id": "component-QRJEci8qRX",
           "name": "Bloc Cr\u00e9dits",
           "type": "Block",
-          "block-pages": [
+          "pages": [
             {
               "id": "component-BP30NLwZVY",
               "type": "Page",
-              "page-children": [
+              "children": [
                 {
                   "id": "component-f5YB6UZNyl",
                   "name": "Texte cr\u00e9dits",
-                  "content-text": "\u003Cp style=\u0022text-align:right\u0022\u003E\u003Cspan style=\u0022font-size:14px\u0022\u003E\u003Ca href=\u0022#hideBlock=Bloc Cr\u00e9dits\u0022\u003EX\u003C\/a\u003E\u003C\/span\u003E\u003C\/p\u003E\n\n\u003Cdiv class=\u0022credits\u0022\u003E\n\u003Cul\u003E\n\t\u003Cli\u003EAuteur\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003ECoordination \u00e9ditoriale\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAnne-Florence Borneuf\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003EInt\u00e9gration multim\u00e9dia et partition graphique\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\u003C\/ul\u003E\n\u003C\/div\u003E\n",
+                  "text": "\u003Cp style=\u0022text-align:right\u0022\u003E\u003Cspan style=\u0022font-size:14px\u0022\u003E\u003Ca href=\u0022#hideBlock=Bloc Cr\u00e9dits\u0022\u003EX\u003C\/a\u003E\u003C\/span\u003E\u003C\/p\u003E\n\n\u003Cdiv class=\u0022credits\u0022\u003E\n\u003Cul\u003E\n\t\u003Cli\u003EAuteur\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003ECoordination \u00e9ditoriale\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAnne-Florence Borneuf\u003C\/span\u003E\u003C\/li\u003E\n\t\u003Cli\u003EInt\u00e9gration multim\u00e9dia et partition graphique\u0026nbsp;:\u003Cbr\u003E\n\t\u003Cspan\u003EAur\u00e9lie Loyer\u003C\/span\u003E\u003C\/li\u003E\n\u003C\/ul\u003E\n\u003C\/div\u003E\n",
                   "type": "Content",
                   "opacity": {
                     "animated": false,
@@ -1591,7 +1520,7 @@
             }
           ],
           "hidden": true,
-          "block-synched": false,
+          "synched": false,
           "position": [
             495,
             148
@@ -1600,7 +1529,7 @@
             360,
             234
           ],
-          "block-pager-visibility": "auto"
+          "pager-visibility": "auto"
         },
         {
           "id": "component-IMa2UDaLP2",

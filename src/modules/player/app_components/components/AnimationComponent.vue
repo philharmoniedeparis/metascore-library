@@ -46,15 +46,15 @@ export default {
       return this.model["animation-src"];
     },
     startFrame() {
-      return this.model["animation-start-frame"] || 1;
+      return this.model["start-frame"] || 1;
     },
     loopDuration() {
-      return this.model["animation-loop-duration"]
-        ? this.model["animation-loop-duration"]
+      return this.model["loop-duration"]
+        ? this.model["loop-duration"]
         : this.getDuration();
     },
     reversed() {
-      return this.model["animation-reversed"];
+      return this.model.reversed;
     },
   },
   watch: {

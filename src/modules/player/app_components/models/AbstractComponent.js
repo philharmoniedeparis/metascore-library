@@ -1,6 +1,6 @@
 import { merge } from "lodash";
+import { v4 as uuid } from "uuid";
 import AbstractModel from "../../../../models/AbstractModel";
-import * as Components from ".";
 import {
   createStringField,
   createUuidField,
@@ -8,13 +8,23 @@ import {
 } from "../utils/schema";
 
 export class AbstractComponent extends AbstractModel {
-  static entity = "AbstractComponent";
+  static type = "AbstractComponent";
 
-  static types() {
-    return {
-      Page: Components.Page,
-      Scenario: Components.Scenario,
-    };
+  static baseModel = AbstractModel;
+
+  /**
+   * Get a list of inheritance chain classes
+   *
+   * @returns {Class[]} The list of Model classes in the inheritance chain
+   */
+  static get modelChain() {
+    let classes = [this];
+
+    if (this.baseModel) {
+      classes = classes.concat(this.baseModel.modelChain);
+    }
+
+    return classes;
   }
 
   static get schema() {
@@ -25,7 +35,7 @@ export class AbstractComponent extends AbstractModel {
         type: createStringField({
           title: "Type",
           description: "The component's type",
-          const: this.entity,
+          const: this.type,
         }),
         id: createUuidField({
           ajv,
@@ -50,6 +60,26 @@ export class AbstractComponent extends AbstractModel {
       },
       required: ["type", "id"],
     });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  constructor(data) {
+    if (!data.id) {
+      data.id = `component-${uuid()}`;
+    }
+
+    super(data);
+  }
+
+  /**
+   * Alias to the static getter modelChain
+   *
+   * @returns {Class[]} The list of Model classes in the inheritance chain
+   */
+  get $modelChain() {
+    return this.constructor.modelChain;
   }
 }
 

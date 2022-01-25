@@ -1,6 +1,5 @@
 import Ajv from "ajv";
-import { Model } from "@vuex-orm/core";
-import { clone, merge, omitBy } from "lodash";
+import { clone, merge } from "lodash";
 
 const ajv = new Ajv({
   allErrors: true,
@@ -45,13 +44,13 @@ function getProperties(schema, validator = null) {
 }
 
 /**
- * An abstract model based on {@link https://vuex-orm.org/|@vuex-orm} and {@link http://json-schema.org/|JSON schema}
+ * An abstract model based {@link http://json-schema.org/|JSON schema}
  * Heavily inspired by {@link https://github.com/chialab/schema-model|schema-model},
  * and uses {@link https://ajv.js.org/|AJV} for shcema validation.
  *
  * @abstract
  */
-export default class AbstractModel extends Model {
+export default class AbstractModel {
   /**
    * Get the ajv instance.
    *
@@ -59,24 +58,6 @@ export default class AbstractModel extends Model {
    */
   static get ajv() {
     return ajv;
-  }
-
-  /**
-   * Get a list of inheritance chain classes
-   *
-   * @returns {Class[]} The list of Model classes in the inheritance chain
-   */
-  static getModelChain() {
-    let classes = [this];
-
-    if (this.baseEntity) {
-      const baseModel = this.store().$db().model(this.baseEntity);
-      if (baseModel) {
-        classes = classes.concat(baseModel.getModelChain());
-      }
-    }
-
-    return classes;
   }
 
   /**
@@ -88,7 +69,7 @@ export default class AbstractModel extends Model {
     return {
       type: "object",
       properties: {},
-      additionalProperties: false,
+      unevaluatedProperties: false,
     };
   }
 
@@ -111,60 +92,15 @@ export default class AbstractModel extends Model {
     return this.schema.required;
   }
 
-  /**
-   * @inheritdoc
-   */
-  static fields() {
-    const fields = {};
+  constructor(data) {
+    this.$deleted = false;
 
-    for (const [key, schema] of Object.entries(this.properties)) {
-      switch (schema.type) {
-        case "array":
-          if (schema.format === "collection") {
-            const model = schema.model;
-            const foreign_key = schema.foreign_key;
-            fields[key] = this.hasManyBy(model, foreign_key);
-            fields[foreign_key] = this.attr([]);
-          } else {
-            fields[key] = this.attr(schema.default);
-          }
-          break;
-
-        case "boolean":
-          fields[key] = this.boolean(schema.default);
-          break;
-
-        case "string":
-          if (schema.format === "uuid") {
-            fields[key] = this.uid(schema.default);
-          } else {
-            fields[key] = this.string(schema.default);
-          }
-          break;
-
-        default:
-          fields[key] = this.attr(schema.default);
-      }
-
-      if (fields[key].nullable && !this.requiredProperties.includes(key)) {
-        fields[key].nullable();
-      }
-    }
-
-    return fields;
-  }
-
-  static beforeCreate(model) {
-    if (!model.$validate()) {
-      console.error(model.$errors, model.$schema, model.$data);
-      return false;
-    }
-  }
-
-  static beforeUpdate(model) {
-    if (!model.$validate()) {
-      console.error(model.$errors, model.$schema, model.$data);
-      return false;
+    if (this.validate(data)) {
+      Object.entries(data).forEach(([key, value]) => {
+        this[key] = value;
+      });
+    } else {
+      console.error(this.$errors);
     }
   }
 
@@ -175,15 +111,6 @@ export default class AbstractModel extends Model {
    */
   get $ajv() {
     return this.constructor.ajv;
-  }
-
-  /**
-   * Alias to the static method getModelChain
-   *
-   * @returns {Class[]} The list of Model classes in the inheritance chain
-   */
-  get $modelChain() {
-    return this.constructor.getModelChain();
   }
 
   /**
@@ -210,11 +137,11 @@ export default class AbstractModel extends Model {
    * @returns {Function} A validation function returned by Ajv
    */
   get $validator() {
-    if (!this._$validator) {
-      this._$validator = this.$ajv.compile(this.$schema);
+    if (!this.$_validator) {
+      this.$_validator = this.$ajv.compile(this.$schema);
     }
 
-    return this._$validator;
+    return this.$_validator;
   }
 
   /**
@@ -224,15 +151,35 @@ export default class AbstractModel extends Model {
     return this.$validator.errors;
   }
 
-  /**
-   * Get the data as a JSON without private properties.
-   *
-   * @returns {object} The data
-   */
-  get $data() {
-    return omitBy(this.$toJson(), (value, key) => {
-      return value === null || key.startsWith("$");
+  update(data) {
+    if (
+      this.validate({
+        ...this.toJson(),
+        ...data,
+      })
+    ) {
+      Object.entries(data).forEach(([key, value]) => {
+        this[key] = value;
+      });
+    } else {
+      console.error(this.$errors);
+    }
+  }
+
+  delete() {
+    this.$deleted = true;
+  }
+
+  toJson() {
+    const json = {};
+
+    Object.keys(this.$properties).forEach((key) => {
+      if (key in this) {
+        json[key] = this[key];
+      }
     });
+
+    return json;
   }
 
   /**
@@ -241,7 +188,7 @@ export default class AbstractModel extends Model {
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
-  $validate() {
-    return this.$validator(this.$data);
+  validate(data) {
+    return this.$validator(data);
   }
 }

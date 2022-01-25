@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     text() {
-      return this.model["content-text"];
+      return this.model.text;
     },
   },
 };

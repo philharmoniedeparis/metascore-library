@@ -49,10 +49,10 @@ export default {
   },
   computed: {
     src() {
-      return this.model["svg-src"];
+      return this.model.src;
     },
     colors() {
-      return this.model["svg-colors"];
+      return this.model.colors;
     },
     svg() {
       if (!this.loaded) {

@@ -88,8 +88,9 @@ export const createArrayField = ({
   nullable = false,
   minItems = null,
   maxItems = null,
-  additionalItems = null,
   items = null,
+  additionalItems = null,
+  uniqueItems = null,
 } = {}) => {
   const field = {
     type: nullable ? ["array", "null"] : "array",
@@ -104,11 +105,14 @@ export const createArrayField = ({
   if (maxItems !== null) {
     field.maxItems = maxItems;
   }
+  if (items !== null) {
+    field.items = items;
+  }
   if (additionalItems !== null) {
     field.additionalItems = additionalItems;
   }
-  if (items !== null) {
-    field.items = items;
+  if (uniqueItems !== null) {
+    field.uniqueItems = uniqueItems;
   }
 
   return field;
@@ -175,15 +179,19 @@ export const createCollectionField = ({
   ajv,
   title = "",
   description = "",
-  model,
-  foreign_key,
 } = {}) => {
   ajv.addFormat("collection", { validate: () => true });
+
+  // @TODO: reference sub-schemas ?
+
   return {
-    ...createArrayField({ title, description }),
+    ...createArrayField({
+      title,
+      description,
+      items: { type: "string" },
+      uniqueItems: true,
+    }),
     format: "collection",
-    model,
-    foreign_key,
   };
 };
 

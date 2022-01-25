@@ -1,11 +1,11 @@
 import { mix } from "mixwith";
 import { merge } from "lodash";
-import { EmbeddableComponent, Block } from ".";
+import { EmbeddableComponent } from ".";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
 import Resizable from "./mixins/Resizable";
 import Transformable from "./mixins/Transformable";
-import { createCollectionField } from "../utils/schema";
+import { createArrayField } from "../utils/schema";
 
 export class BlockToggler extends mix(EmbeddableComponent).with(
   Backgroundable,
@@ -13,13 +13,11 @@ export class BlockToggler extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "BlockToggler";
+  static type = "BlockToggler";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         "background-color": {
@@ -42,10 +40,8 @@ export class BlockToggler extends mix(EmbeddableComponent).with(
             },
           ],
         },
-        "blocktoggler-blocks": createCollectionField({
-          ajv,
-          model: Block,
-          foreign_key: "$block_ids",
+        blocks: createArrayField({
+          items: { type: "string" },
         }),
       },
     });

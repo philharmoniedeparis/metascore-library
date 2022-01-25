@@ -20,30 +20,30 @@ export class SVG extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "SVG";
+  static type = "SVG";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
 
     return merge(super.schema, {
       properties: {
-        "svg-src": createUrlField({
+        src: createUrlField({
           ajv,
           title: "Source",
         }),
-        "svg-stroke": createColorField({
+        stroke: createColorField({
           ajv,
           title: "Stroke",
         }),
-        "svg-stroke-width": createNumberField({
+        "stroke-width": createNumberField({
           ajv,
           title: "Stroke width",
           multipleOf: 1,
           minimum: 0,
         }),
-        "svg-stroke-dasharray": createEnumField({
+        "stroke-dasharray": createEnumField({
           title: "Stroke width",
           enum: ["2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
         }),
@@ -51,16 +51,16 @@ export class SVG extends mix(EmbeddableComponent).with(
           ajv,
           title: "Fill",
         }),
-        "svg-marker-start": createStringField({
+        "marker-start": createStringField({
           title: "Marker start",
         }),
-        "svg-marker-mid": createStringField({
+        "marker-mid": createStringField({
           title: "Marker mid",
         }),
-        "svg-marker-end": createStringField({
+        "marker-end": createStringField({
           title: "Marker end",
         }),
-        "svg-colors": createArrayField({
+        colors: createArrayField({
           title: "Colors",
           items: createColorField({ ajv }),
         }),

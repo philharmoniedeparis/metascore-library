@@ -17,10 +17,10 @@ export default {
   },
   computed: {
     tag() {
-      return this.model["media-tag"];
+      return this.model.tag;
     },
     src() {
-      return this.model["media-src"];
+      return this.model.src;
     },
   },
 };

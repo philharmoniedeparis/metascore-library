@@ -17,9 +17,9 @@ export class Block extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "Block";
+  static type = "Block";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
@@ -41,18 +41,17 @@ export class Block extends mix(EmbeddableComponent).with(
         dimension: {
           default: [200, 200],
         },
-        "block-synched": createBooleanField({
+        synched: createBooleanField({
           title: "Synched",
         }),
-        "block-pager-visibility": createEnumField({
+        "pager-visibility": createEnumField({
           title: "Pager visibility",
           enum: ["auto", "hidden", "visible"],
           default: "auto",
         }),
-        "block-pages": createCollectionField({
+        pages: createCollectionField({
           ajv,
           model: Page,
-          foreign_key: "$pages_ids",
         }),
       },
     });

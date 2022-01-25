@@ -20,9 +20,9 @@ export class Animation extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
-  static entity = "Animation";
+  static type = "Animation";
 
-  static baseEntity = "EmbeddableComponent";
+  static baseModel = EmbeddableComponent;
 
   static get schema() {
     const ajv = this.ajv;
@@ -33,18 +33,18 @@ export class Animation extends mix(EmbeddableComponent).with(
           ajv,
           title: "Source",
         }),
-        "animation-start-frame": createNumberField({
+        "start-frame": createNumberField({
           title: "Start frame",
           default: 1,
         }),
-        "animation-loop-duration": createTimeField({
+        "loop-duration": createTimeField({
           ajv,
           title: "Loop duration",
         }),
-        "animation-reversed": createBooleanField({
+        reversed: createBooleanField({
           title: "Reversed",
         }),
-        "animation-colors": createArrayField({
+        colors: createArrayField({
           title: "Colors",
           items: createColorField({ ajv }),
         }),

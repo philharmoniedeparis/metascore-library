@@ -45,10 +45,10 @@ export default {
       return this.model["border-width"];
     },
     form() {
-      return this.model["cursor-form"];
+      return this.model.form;
     },
     direction() {
-      return this.model["cursor-direction"];
+      return this.model.direction;
     },
     cursorWidth() {
       return this.model["cursor-width"];
@@ -57,18 +57,16 @@ export default {
       return this.model["cursor-color"];
     },
     keyframes() {
-      return this.model["cursor-keyframes"];
+      return this.model.keyframes;
     },
     acceleration() {
-      return this.keyframes ? 1 : this.model["cursor-acceleration"];
+      return this.keyframes ? 1 : this.model.acceleration;
     },
     loopDuration() {
-      return (
-        this.model["cursor-loop-duration"] ?? this.endTime - this.startTime
-      );
+      return this.model["loop-duration"] ?? this.endTime - this.startTime;
     },
     startAngle() {
-      return radians(this.model["cursor-start-angle"]);
+      return radians(this.model["start-angle"]);
     },
   },
   watch: {
