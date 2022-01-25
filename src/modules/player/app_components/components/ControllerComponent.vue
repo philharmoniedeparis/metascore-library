@@ -1,10 +1,29 @@
+<i18n>
+{
+  "en": {
+    "buttons": {
+      "rewind": "Rewind",
+      "pause": "Pause",
+      "play": "Play",
+    }
+  },
+  "fr": {
+    "buttons": {
+      "rewind": "Rembobiner",
+      "pause": "Pause",
+      "play": "Jouer",
+    }
+  },
+}
+</i18n>
+
 <template>
   <component-wrapper :model="model" class="controller">
     <div class="timer">{{ mediaTime }}</div>
     <div class="buttons">
       <button type="button" data-action="rewind" @click="onRewindClick">
         <span aria-hidden="true"><rewind-icon class="icon" /></span>
-        <span class="sr-only">Rewind</span>
+        <span class="sr-only">{{ $t("buttons.rewind") }}</span>
       </button>
 
       <button
@@ -14,11 +33,11 @@
         @click="onPauseClick"
       >
         <span aria-hidden="true"><pause-icon class="icon" /></span>
-        <span class="sr-only">Pause</span>
+        <span class="sr-only">{{ $t("buttons.pause") }}</span>
       </button>
       <button v-else type="button" data-action="play" @click="onPlayClick">
         <span aria-hidden="true"><play-icon class="icon" /></span>
-        <span class="sr-only">Play</span>
+        <span class="sr-only">{{ $t("buttons.play") }}</span>
       </button>
     </div>
     <div class="logo"><logo-icon /></div>

@@ -1,6 +1,6 @@
 <template>
   <component-wrapper :model="model" class="cursor">
-    <canvas ref="canvas" @click.prevent="onClick" />
+    <canvas ref="canvas" @click="onClick" />
   </component-wrapper>
 </template>
 

@@ -1,3 +1,22 @@
+<i18n>
+{
+  "en": {
+    "pager": {
+      "first": "First",
+      "previous": "Previous",
+      "next": "Next",
+    }
+  },
+  "fr": {
+    "pager": {
+      "first": "Première",
+      "previous": "Précédente",
+      "next": "Suivante",
+    }
+  },
+}
+</i18n>
+
 <template>
   <component-wrapper
     :model="model"
@@ -17,7 +36,7 @@
             @click.prevent="reset"
           >
             <span aria-hidden="true"><pager-first-icon class="icon" /></span>
-            <span class="sr-only">First</span>
+            <span class="sr-only">{{ $t("pager.first") }}</span>
           </a>
         </li>
         <li>
@@ -28,7 +47,7 @@
             @click.prevent="turnPageBackward"
           >
             <span aria-hidden="true"><pager-previous-icon class="icon" /></span>
-            <span class="sr-only">Previous</span>
+            <span class="sr-only">{{ $t("pager.previous") }}</span>
           </a>
         </li>
         <li>
@@ -39,7 +58,7 @@
             @click.prevent="turnPageForward"
           >
             <span aria-hidden="true"><pager-next-icon class="icon" /></span>
-            <span class="sr-only">Next</span>
+            <span class="sr-only">{{ $t("pager.next") }}</span>
           </a>
         </li>
       </ul>
