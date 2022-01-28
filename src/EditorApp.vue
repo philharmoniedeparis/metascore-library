@@ -27,7 +27,20 @@
     </resizable-pane>
 
     <resizable-pane class="bottom" :top="true">
-      <components-timeline />
+      <div class="top">
+        <playback-time />
+        <waveform-overview />
+      </div>
+      <div class="middle">
+        <div class="sticky-top">
+          <playback-controller />
+          <waveform-zoom />
+        </div>
+        <components-timeline />
+      </div>
+      <div class="bottom">
+        <scenario-selector />
+      </div>
     </resizable-pane>
   </div>
 </template>
@@ -64,6 +77,11 @@ export default {
 <style lang="scss" scoped>
 @import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
+
+$controller-top-height: 2.5em;
+$controller-left-width: 12em;
+$controller-bottom-sticky-top-height: 8em;
+$controller-bottom-sticky-bottom-height: 1.5em;
 
 .metaScore-editor {
   font-size: 14px;
@@ -182,10 +200,90 @@ export default {
 
   > .bottom {
     grid-area: bottom;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     height: 300px;
     min-height: 150px;
     max-height: 75vh;
     border-top: 0.5em solid $darkgray;
+    overflow-y: hidden;
+    overflow-y: hidden;
+
+    > .top {
+      display: flex;
+      flex-direction: row;
+      flex: 0 0 $controller-top-height;
+      background: $mediumgray;
+      border-bottom: 2px solid $darkgray;
+      z-index: 1;
+
+      .playback-time {
+        display: flex;
+        flex: 0 0 $controller-left-width;
+        box-sizing: border-box;
+        border-right: 2px solid $darkgray;
+      }
+
+      .waveform-overview {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+    }
+
+    > .middle {
+      flex: 1 1 auto;
+      overflow: hidden;
+      position: relative;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+
+      > .sticky-top {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: $controller-bottom-sticky-top-height;
+        display: flex;
+        flex-direction: row;
+        background: $lightgray;
+        border-bottom: 2px solid $darkgray;
+        z-index: 4;
+
+        > .playback-controller {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          width: $controller-left-width;
+          flex: 0 0 auto;
+          box-sizing: border-box;
+          border-right: 2px solid $darkgray;
+        }
+
+        > .waveform-zoom {
+          flex: 1 1 auto;
+        }
+      }
+    }
+
+    > .bottom {
+      display: flex;
+      flex-direction: row;
+      flex: 0 0 $controller-bottom-sticky-bottom-height;
+      background: $mediumgray;
+      border-top: 1px solid $darkgray;
+      z-index: 1;
+
+      .scenario-selector {
+        flex: 1 1 auto;
+      }
+
+      .zoom-controls {
+        flex: 0 0 auto;
+        background: $darkgray;
+      }
+    }
   }
 
   .dynamic-ruler {

@@ -12,11 +12,13 @@ import ComponentForm from "./modules/editor/component_form";
 import ComponentsLibrary from "./modules/editor/components_library";
 import MainMenu from "./modules/editor/mainmenu";
 import Panes from "./modules/editor/panes";
+import PlaybackControls from "./modules/editor/playback_controls";
 import PlayerPreview from "./modules/editor/player_preview";
 import Ruler from "./modules/editor/ruler";
 import SharedAssetsLibrary from "./modules/editor/shared_assets_library";
 import Tabs from "./modules/editor/tabs";
 import Timeline from "./modules/editor/timeline";
+import Waveform from "./modules/editor/waveform";
 
 export class Editor {
   /**
@@ -40,11 +42,13 @@ export class Editor {
         ComponentsLibrary,
         MainMenu,
         Panes,
+        PlaybackControls,
         PlayerPreview,
         Ruler,
         SharedAssetsLibrary,
         Tabs,
         Timeline,
+        Waveform,
       ],
       this._app,
       store,
