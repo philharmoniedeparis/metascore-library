@@ -1,5 +1,5 @@
+import VueDOMPurifyHTML from "vue-dompurify-html";
 import Device from "../device";
-import DomPurify from "../dom_purify";
 
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
@@ -18,8 +18,19 @@ import moduleStore from "./store";
 
 export default {
   name: "AppComponents",
-  dependencies: [Device, DomPurify],
+  dependencies: [Device],
   install({ app, store }) {
+    app.use(VueDOMPurifyHTML, {
+      hooks: {
+        afterSanitizeAttributes: (node) => {
+          if (node.tagName === "A") {
+            node.setAttribute("target", "_blank");
+            node.setAttribute("rel", "noopener");
+          }
+        },
+      },
+    });
+
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
     app.component("BlockTogglerComponent", BlockTogglerComponent);

@@ -1,5 +1,5 @@
 <template>
-  <component :is="type" />
+  <component :is="type" class="icon component-icon" />
 </template>
 
 <script>
@@ -32,27 +32,27 @@ export default {
     VideoRenderer,
   },
   props: {
-    component: {
+    model: {
       type: Object,
       required: true,
     },
   },
   computed: {
     type() {
-      switch (this.component.type) {
+      switch (this.model.type) {
         case "Scenario":
           return null;
 
         case "Block":
-          return this.component.synched === "video"
+          return this.model.synched === "video"
             ? "SynchedBlock"
             : "NonSynchedBlock";
 
         case "Media":
-          return this.component.tag === "video" ? "MediaVideo" : "MediaAudio";
+          return this.model.tag === "video" ? "MediaVideo" : "MediaAudio";
       }
 
-      return this.component.type;
+      return this.model.type;
     },
   },
 };

@@ -6,7 +6,7 @@
   >
     <div class="tracks-container">
       <canvas ref="playhead" class="playhead" />
-      <component-track v-if="scenario" :component="scenario" />
+      <component-track v-if="scenario" :model="scenario" />
     </div>
   </div>
 </template>

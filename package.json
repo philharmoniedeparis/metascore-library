@@ -30,6 +30,7 @@
     "lottie-web": "^5.8.1",
     "mixwith": "^0.1.1",
     "normalize.css": "^8.0.1",
+    "param-case": "^3.0.4",
     "source-sans": "github:adobe-fonts/source-sans#3.046",
     "tiny-emitter": "^2.1.0",
     "url-regex": "^5.0.0",

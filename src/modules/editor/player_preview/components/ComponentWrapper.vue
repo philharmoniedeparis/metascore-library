@@ -86,7 +86,7 @@ export default {
     onClick(evt) {
       const model = this.model;
 
-      if (this.isComponentSelected(model)) {
+      if (this.selected) {
         if (evt.shiftKey) {
           this.deselectComponent({ model });
         }

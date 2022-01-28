@@ -29,5 +29,13 @@ export default Mixin(
       get $isTimeable() {
         return true;
       }
+
+      get $hasStartTime() {
+        return this["start-time"] !== null;
+      }
+
+      get $hasEndTime() {
+        return this["end-time"] !== null;
+      }
     }
 );
