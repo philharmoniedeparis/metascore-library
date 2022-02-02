@@ -48,7 +48,19 @@ export default {
         });
 
         if (this.model.$isPositionable) {
+          let allowFrom = null;
+
+          switch (this.model.type) {
+            case "Block":
+              allowFrom = ".pager";
+              break;
+            case "Controller":
+              allowFrom = ".timer";
+              break;
+          }
+
           this._interactable.draggable({
+            allowFrom,
             listeners: {
               move: this.onDrag,
               end: this.onDragEnd,

@@ -242,7 +242,6 @@ export default {
       font-size: 0.9em;
       font-weight: bold;
       vertical-align: middle;
-      cursor: default;
     }
 
     .links {

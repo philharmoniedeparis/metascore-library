@@ -114,7 +114,6 @@ export default {
     justify-content: center;
     align-items: center;
     background-color: $metascore-color;
-    cursor: default;
   }
 
   .buttons {

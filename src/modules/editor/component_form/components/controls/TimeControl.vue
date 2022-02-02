@@ -1,7 +1,7 @@
 <template>
   <div class="control time" :data-property="property">
     <label v-if="label">{{ label }}</label>
-    <input v-model="value" />
+    <timecode-input v-model="value" />
   </div>
 </template>
 
