@@ -27,4 +27,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.playback-time {
+  ::v-deep(input) {
+    width: 100%;
+
+    &:focus {
+      box-shadow: none;
+    }
+  }
+}
+</style>

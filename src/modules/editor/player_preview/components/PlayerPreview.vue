@@ -1,6 +1,6 @@
 <template>
   <div class="player-preview">
-    <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
+    <iframe src="about:blank" @load="onIframeLoad"></iframe>
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
       <app-renderer :url="url" />
     </teleport>
@@ -26,8 +26,9 @@ export default {
     };
   },
   methods: {
-    async onIframeLoad() {
-      const doc = this.$refs.iframe.contentDocument;
+    async onIframeLoad(evt) {
+      const iframe = evt.target;
+      const doc = evt.target.contentDocument;
 
       // Find the url of the preloaded CSS link tag
       // (see css.extract options in vue.config.js),
@@ -44,7 +45,7 @@ export default {
 
       this.iframeDocument = doc;
 
-      this.$emit("load", { iframe: this.$refs.iframe });
+      this.$emit("load", { iframe });
     },
   },
 };

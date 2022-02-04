@@ -498,3 +498,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.timecode-input {
+  input {
+    text-align: center;
+  }
+}
+</style>

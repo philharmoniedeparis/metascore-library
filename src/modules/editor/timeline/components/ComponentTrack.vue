@@ -12,6 +12,7 @@
     ]"
     :data-type="paramCase(model.type)"
     :title="model.name"
+    :style="style"
   >
     <div class="handle">
       <component-icon :model="model" />
@@ -124,6 +125,16 @@ export default {
     },
     hasEndTime() {
       return this.model.$isTimeable && this.model.$hasEndTime;
+    },
+    style() {
+      const style = {};
+      if (this.hasStartTime) {
+        style["--component-start-time"] = this.model["start-time"];
+      }
+      if (this.hasEndTime) {
+        style["--component-end-time"] = this.model["end-time"];
+      }
+      return style;
     },
   },
   methods: {
