@@ -12,7 +12,6 @@
     ]"
     :data-type="paramCase(model.type)"
     :title="model.name"
-    :style="style"
   >
     <div class="handle">
       <component-icon :model="model" />
@@ -47,7 +46,7 @@
     </div>
 
     <div class="time-wrapper" @click="onTimeWrapperClick">
-      <div class="time" tabindex="0"></div>
+      <div ref="time" class="time" tabindex="0" :style="timeStyle"></div>
     </div>
 
     <div v-if="hasChildren" class="children">
@@ -63,7 +62,13 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import "@interactjs/auto-start";
+import "@interactjs/actions/drag";
+import "@interactjs/actions/resize";
+import "@interactjs/modifiers";
+import interact from "@interactjs/interact";
+import { round } from "lodash";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import { paramCase } from "param-case";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
@@ -85,6 +90,9 @@ export default {
     };
   },
   computed: {
+    ...mapState("media", {
+      mediaDuration: "duration",
+    }),
     ...mapGetters(["isComponentSelected"]),
     ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     selected() {
@@ -126,15 +134,46 @@ export default {
     hasEndTime() {
       return this.model.$isTimeable && this.model.$hasEndTime;
     },
-    style() {
+    timeStyle() {
       const style = {};
+
       if (this.hasStartTime) {
-        style["--component-start-time"] = this.model["start-time"];
+        style.left = `${
+          (this.model["start-time"] / this.mediaDuration) * 100
+        }%`;
       }
+
       if (this.hasEndTime) {
-        style["--component-end-time"] = this.model["end-time"];
+        style.right = `${
+          100 - (this.model["end-time"] / this.mediaDuration) * 100
+        }%`;
       }
+
       return style;
+    },
+  },
+  watch: {
+    selected(value) {
+      if (value) {
+        this._interactables = [];
+
+        if (this.model.$isTimeable) {
+          // @todo: skip for locked components and pages of non-synched blocks
+
+          const resizable = interact(this.$refs.time);
+          resizable.resizable({
+            edges: { left: true, right: true },
+            listeners: {
+              move: this.onTimeResize,
+            },
+          });
+
+          this._interactables.push(resizable);
+        }
+      } else if (this._interactables) {
+        this._interactables.forEach((i) => i.unset());
+        delete this._interactables;
+      }
     },
   },
   methods: {
@@ -143,6 +182,7 @@ export default {
       "deselectComponent",
       "deselectAllComponents",
     ]),
+    ...mapActions(["updateComponent"]),
     paramCase,
     onTimeWrapperClick(evt) {
       const model = this.model;
@@ -158,6 +198,32 @@ export default {
 
         this.selectComponent({ model });
       }
+    },
+    onTimeResize(evt) {
+      const time = evt.target;
+      const time_wrapper = time.parentNode;
+      const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
+      const { left: deltaLeft, right: deltaRight } = evt.deltaRect;
+      const data = {};
+
+      if (evt.edges.right) {
+        data["end-time"] = round(
+          this.model["end-time"] +
+            deltaRight * (this.mediaDuration / wrapper_width),
+          2
+        );
+      } else {
+        data["start-time"] = round(
+          this.model["start-time"] +
+            deltaLeft * (this.mediaDuration / wrapper_width),
+          2
+        );
+      }
+
+      this.updateComponent({
+        model: this.model,
+        data,
+      });
     },
   },
 };
@@ -374,26 +440,6 @@ $handles-margin: 0.5em;
   &:not(.has-children) {
     .label {
       margin-left: 0.5em;
-    }
-  }
-
-  &.has-start-time {
-    > .time-wrapper {
-      .time {
-        left: calc(
-          var(--component-start-time) / var(--timeline-duration) * 100%
-        );
-      }
-    }
-  }
-
-  &.has-end-time {
-    > .time-wrapper {
-      .time {
-        right: calc(
-          100% - (var(--component-end-time) / var(--timeline-duration) * 100%)
-        );
-      }
     }
   }
 
