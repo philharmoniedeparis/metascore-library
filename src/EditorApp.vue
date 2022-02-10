@@ -258,11 +258,12 @@ $controller-bottom-sticky-bottom-height: 1.5em;
           width: $controller-left-width;
           flex: 0 0 auto;
           box-sizing: border-box;
-          border-right: 2px solid $darkgray;
+          border-right: 1px solid $darkgray;
         }
 
         > .waveform-zoom {
           flex: 1 1 auto;
+          border-left: 1px solid $darkgray;
         }
       }
     }

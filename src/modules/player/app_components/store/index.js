@@ -45,9 +45,13 @@ export default {
       return component && !component.$deleted ? component : null;
     },
     filterByIds: (state) => (ids) => {
-      return filter(state.components, (component) => {
-        return !component.$deleted && ids.includes(component.id);
-      });
+      return ids
+        .map((id) => {
+          return state.components[id];
+        })
+        .filter((component) => {
+          return component && !component.$deleted;
+        });
     },
     filterByType: (state) => (type) => {
       return filter(state.components, (component) => {

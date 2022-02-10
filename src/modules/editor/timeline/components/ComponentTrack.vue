@@ -1,19 +1,21 @@
 <template>
   <div
     :class="[
-      'track',
+      'component-track',
       {
         'has-children': hasChildren,
         'has-start-time': hasStartTime,
         'has-end-time': hasEndTime,
         'user-expanded': expanded,
         selected,
+        dragging,
       },
     ]"
     :data-type="paramCase(model.type)"
+    :data-id="model.id"
     :title="model.name"
   >
-    <div class="handle">
+    <div ref="handle" class="handle" @click="onClick">
       <component-icon :model="model" />
 
       <div v-if="hasChildren" class="toggle expander">
@@ -45,7 +47,7 @@
       </div>
     </div>
 
-    <div class="time-wrapper" @click="onTimeWrapperClick">
+    <div class="time-wrapper" @click="onClick">
       <div ref="time" class="time" tabindex="0" :style="timeStyle"></div>
     </div>
 
@@ -63,9 +65,7 @@
 
 <script>
 import "@interactjs/auto-start";
-import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
-import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
@@ -87,6 +87,8 @@ export default {
   data() {
     return {
       expanded: false,
+      dragging: false,
+      dragDelta: null,
     };
   },
   computed: {
@@ -123,10 +125,10 @@ export default {
 
         case "Page":
         case "Scenario":
-          children = this.model.children;
+          children = this.model.children.slice().reverse();
       }
 
-      return this.filterComponentsByIds(children).slice().reverse();
+      return this.filterComponentsByIds(children);
     },
     hasStartTime() {
       return this.model.$isTimeable && this.model.$hasStartTime;
@@ -155,7 +157,7 @@ export default {
   watch: {
     selected(value) {
       if (value) {
-        this._interactables = [];
+        this._time_interactables = [];
 
         if (this.model.$isTimeable) {
           // @todo: skip for locked components and pages of non-synched blocks
@@ -168,11 +170,11 @@ export default {
             },
           });
 
-          this._interactables.push(resizable);
+          this._time_interactables.push(resizable);
         }
-      } else if (this._interactables) {
-        this._interactables.forEach((i) => i.unset());
-        delete this._interactables;
+      } else if (this._time_interactables) {
+        this._time_interactables.forEach((i) => i.unset());
+        delete this._time_interactables;
       }
     },
   },
@@ -184,7 +186,7 @@ export default {
     ]),
     ...mapActions(["updateComponent"]),
     paramCase,
-    onTimeWrapperClick(evt) {
+    onClick(evt) {
       const model = this.model;
 
       if (this.selected) {
@@ -236,7 +238,7 @@ $handles-final-level: 3;
 $handles-lighten-scale: -10%;
 $handles-margin: 0.5em;
 
-.track {
+.component-track {
   display: contents;
   user-select: none;
 
@@ -275,7 +277,9 @@ $handles-margin: 0.5em;
     justify-content: flex-start;
     align-items: center;
     background: $mediumgray;
-    border-right: 2px solid $darkgray;
+    border-right: 1px solid $darkgray;
+    touch-action: none;
+    user-select: none;
     z-index: 2;
 
     > .icon {
@@ -360,6 +364,7 @@ $handles-margin: 0.5em;
     margin-left: calc(var(--timeline-offset) * -100%);
     grid-column: 2;
     background: $mediumgray;
+    border-left: 1px solid $darkgray;
     cursor: pointer;
 
     .time {
@@ -443,58 +448,55 @@ $handles-margin: 0.5em;
     }
   }
 
-  &:not(.has-end-time) {
-    > .time-wrapper {
-      &::after {
-        content: "";
-        display: block;
-        position: sticky;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-repeat: repeat-y;
-        background-size: 8px 8px;
-        pointer-events: none;
-      }
-    }
-  }
-
   &:not(.has-start-time) {
-    > .time-wrapper {
-      &::after {
-        background-image: linear-gradient(135deg, #606060 4px, transparent 0),
-          linear-gradient(45deg, #606060 4px, transparent 0);
-        background-position: left 3px;
-      }
+    > .time-wrapper .time {
+      clip-path: polygon(
+        0 0,
+        4px 25%,
+        0 50%,
+        4px 75%,
+        0 100%,
+        100% 100%,
+        100% 0
+      );
     }
   }
 
   &:not(.has-end-time) {
-    > .time-wrapper {
-      &::after {
-        background-image: linear-gradient(-135deg, #606060 4px, transparent 0),
-          linear-gradient(-45deg, #606060 4px, transparent 0);
-        background-position: right 3px;
-      }
+    > .time-wrapper .time {
+      clip-path: polygon(
+        0 0,
+        0 100%,
+        100% 100%,
+        calc(100% - 4px) 75%,
+        100% 50%,
+        calc(100% - 4px) 25%,
+        100% 0
+      );
     }
   }
 
   &:not(.has-start-time):not(.has-end-time) {
-    > .time-wrapper {
-      &::after {
-        background-image: linear-gradient(135deg, #606060 4px, transparent 0),
-          linear-gradient(45deg, #606060 4px, transparent 0),
-          linear-gradient(-135deg, #606060 4px, transparent 0),
-          linear-gradient(-45deg, #606060 4px, transparent 0);
-        background-position: left 3px, left 3px, right 3px, right 3px;
-      }
+    > .time-wrapper .time {
+      clip-path: polygon(
+        0 0,
+        4px 25%,
+        0 50%,
+        4px 75%,
+        0 100%,
+        100% 100%,
+        calc(100% - 4px) 75%,
+        100% 50%,
+        calc(100% - 4px) 25%,
+        100% 0
+      );
     }
   }
 
   &.selected {
     > .handle,
     > .time-wrapper {
-      background: $lightgray !important;
+      background: $lightgray;
     }
 
     > .time-wrapper {
@@ -520,22 +522,6 @@ $handles-margin: 0.5em;
 
     > .children {
       display: contents;
-    }
-  }
-
-  &.dragging {
-    > * {
-      opacity: 0.1;
-    }
-  }
-
-  &.dragover {
-    &.drag-above::before,
-    &.drag-below::after {
-      content: "";
-      grid-column: 1 / span 2;
-      outline: #ff00a6 solid 1px;
-      z-index: 3;
     }
   }
 }
