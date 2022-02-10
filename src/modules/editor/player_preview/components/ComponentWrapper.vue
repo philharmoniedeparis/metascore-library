@@ -101,6 +101,7 @@ export default {
       if (this.selected) {
         if (evt.shiftKey) {
           this.deselectComponent(model.id);
+          evt.stopImmediatePropagation();
         }
       } else {
         if (!evt.shiftKey) {
@@ -108,6 +109,7 @@ export default {
         }
 
         this.selectComponent(model.id);
+        evt.stopImmediatePropagation();
       }
     },
     onDrag(evt) {
