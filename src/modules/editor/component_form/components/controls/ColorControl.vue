@@ -23,6 +23,7 @@
       placement="bottom"
       sticky="reference"
       max-width="none"
+      :duration="0"
       :interactive="true"
       :popper-options="{ strategy: 'fixed' }"
     >
