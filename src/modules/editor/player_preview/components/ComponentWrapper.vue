@@ -37,7 +37,7 @@ export default {
   computed: {
     ...mapGetters(["isComponentSelected"]),
     selected() {
-      return this.isComponentSelected(this.model);
+      return this.isComponentSelected(this.model.id);
     },
   },
   watch: {
@@ -100,14 +100,14 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent({ model });
+          this.deselectComponent(model.id);
         }
       } else {
         if (!evt.shiftKey) {
           this.deselectAllComponents();
         }
 
-        this.selectComponent({ model });
+        this.selectComponent(model.id);
       }
     },
     onDrag(evt) {

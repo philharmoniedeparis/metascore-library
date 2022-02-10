@@ -18,7 +18,7 @@
     <div ref="handle" class="handle" @click="onClick">
       <component-icon :model="model" />
 
-      <div v-if="hasChildren" class="toggle expander">
+      <div v-if="hasChildren" class="toggle expander" @click.stop>
         <input
           :id="`handle--expand--${model.id}`"
           v-model="expanded"
@@ -34,9 +34,13 @@
 
       <div class="label">{{ model.name }}</div>
 
-      <div class="togglers">
+      <div class="togglers" @click.stop>
         <div class="toggle lock">
-          <input :id="`handle--lock--${model.id}`" type="checkbox" />
+          <input
+            :id="`handle--lock--${model.id}`"
+            v-model="locked"
+            type="checkbox"
+          />
           <label
             :for="`handle--lock--${model.id}`"
             title="Verrouiller/Déverrouiller"
@@ -95,10 +99,18 @@ export default {
     ...mapState("media", {
       mediaDuration: "duration",
     }),
-    ...mapGetters(["isComponentSelected"]),
+    ...mapGetters(["isComponentSelected", "isComponentLocked"]),
     ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     selected() {
-      return this.isComponentSelected(this.model);
+      return this.isComponentSelected(this.model.id);
+    },
+    locked: {
+      get() {
+        return this.isComponentLocked(this.model.id);
+      },
+      set(value) {
+        (value ? this.lockComponent : this.unlockComponent)(this.model.id);
+      },
     },
     hasChildren() {
       switch (this.model.type) {
@@ -183,6 +195,8 @@ export default {
       "selectComponent",
       "deselectComponent",
       "deselectAllComponents",
+      "lockComponent",
+      "unlockComponent",
     ]),
     ...mapActions(["updateComponent"]),
     paramCase,
@@ -191,14 +205,14 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent({ model });
+          this.deselectComponent(model.id);
         }
       } else {
         if (!evt.shiftKey) {
           this.deselectAllComponents();
         }
 
-        this.selectComponent({ model });
+        this.selectComponent(model.id);
       }
     },
     onTimeResize(evt) {
@@ -493,7 +507,8 @@ $handles-margin: 0.5em;
     }
   }
 
-  &.selected {
+  // #\9 is used here to increase specificity.
+  &.selected:not(#\9) {
     > .handle,
     > .time-wrapper {
       background: $lightgray;

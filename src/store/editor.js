@@ -9,30 +9,43 @@ export function createStore({ debug = false } = {}) {
 
   const state = {
     selectedComponents: new Set(),
+    lockedComponents: new Set(),
   };
 
   const getters = {
-    isComponentSelected: (state) => (model) => {
-      return state.selectedComponents.has(model.id);
+    isComponentSelected: (state) => (id) => {
+      return state.selectedComponents.has(id);
     },
     getSelectedComponents: (state, getters, rootState, rootGetters) => {
       return rootGetters["app-components/filterByIds"](
         Array.from(state.selectedComponents)
       );
     },
+    isComponentLocked: (state) => (id) => {
+      return state.lockedComponents.has(id);
+    },
+    getLockedComponents: (state, getters, rootState, rootGetters) => {
+      return rootGetters["app-components/filterByIds"](
+        Array.from(state.lockedComponents)
+      );
+    },
   };
 
   const mutations = {
-    selectComponent(state, { model }) {
-      if (!getters.isComponentSelected(state)(model)) {
-        state.selectedComponents.add(model.id);
-      }
+    selectComponent(state, id) {
+      state.selectedComponents.add(id);
     },
-    deselectComponent(state, { model }) {
-      state.selectedComponents.delete(model.id);
+    deselectComponent(state, id) {
+      state.selectedComponents.delete(id);
     },
     deselectAllComponents(state) {
       state.selectedComponents.clear();
+    },
+    lockComponent(state, id) {
+      state.lockedComponents.add(id);
+    },
+    unlockComponent(state, id) {
+      state.lockedComponents.delete(id);
     },
   };
 
