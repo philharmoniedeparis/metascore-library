@@ -1,0 +1,9 @@
+{
+  "name": "@metascore-library/core",
+  "private": true,
+  "dependencies": {
+    "ajv": "^6.12.6",
+    "lodash": "^4.17.21",
+    "tiny-emitter": "^2.1.0"
+  }
+}

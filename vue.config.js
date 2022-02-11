@@ -11,8 +11,8 @@ module.exports = {
     loaderOptions: {
       scss: {
         additionalData: `
-          @import "@/scss/_variables.scss";
-          @import "@/scss/_mixins.scss";
+          @import "@metascore-library/core/scss/_variables.scss";
+          @import "@metascore-library/core/scss/_mixins.scss";
         `,
       },
     },
@@ -47,8 +47,8 @@ module.exports = {
   chainWebpack: (config) => {
     // Override entry points.
     config.entryPoints.clear();
-    config.entry("metaScore.Player").add("./src/player.js").end();
-    config.entry("metaScore.Editor").add("./src/editor.js").end();
+    config.entry("metaScore.Player").add("./packages/player/index.js").end();
+    config.entry("metaScore.Editor").add("./packages/editor/index.js").end();
 
     // Override output options.
     config.output
