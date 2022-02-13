@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   computed: {
@@ -15,13 +15,13 @@ export default {
         return this.mediaTime;
       },
       set(value) {
-        this.setMediaTime(value);
+        this.seekMediaTo(value);
       },
     },
   },
   methods: {
-    ...mapMutations("media", {
-      setMediaTime: "setTime",
+    ...mapActions("media", {
+      seekMediaTo: "seekTo",
     }),
   },
 };

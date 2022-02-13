@@ -8,6 +8,7 @@ import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/modules/manager.js";
 import AssetsLibrary from "./modules/assets_libraray";
+import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import MainMenu from "./modules/mainmenu";
@@ -39,6 +40,7 @@ export class Editor {
     registerModules(
       [
         AssetsLibrary,
+        BufferIndicator,
         ComponentForm,
         ComponentsLibrary,
         MainMenu,

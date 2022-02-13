@@ -29,6 +29,7 @@
     <resizable-pane class="bottom" :top="true">
       <div class="top">
         <playback-time />
+        <buffer-indicator />
         <waveform-overview />
       </div>
       <div class="middle">
@@ -47,7 +48,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -62,12 +63,23 @@ export default {
     };
   },
   computed: {
+    ...mapState("media", {
+      mediaSource: "source",
+    }),
     ...mapState("app-renderer", {
       playerWidth: "width",
       playerHeight: "height",
     }),
   },
+  watch: {
+    mediaSource(source) {
+      if (source) {
+        this.loadWaveform({ source });
+      }
+    },
+  },
   methods: {
+    ...mapActions({ loadWaveform: "waveform/load" }),
     onPlayerPreviewLoad({ iframe }) {
       this.rulersTrackTarget = iframe.contentDocument.body;
     },
@@ -78,11 +90,7 @@ export default {
 <style lang="scss" scoped>
 @import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
-
-$controller-top-height: 2.5em;
-$controller-left-width: 12em;
-$controller-bottom-sticky-top-height: 8em;
-$controller-bottom-sticky-bottom-height: 1.5em;
+@import "./scss/variables.scss";
 
 .metaScore-editor {
   font-size: 14px;
@@ -212,8 +220,9 @@ $controller-bottom-sticky-bottom-height: 1.5em;
     overflow-y: hidden;
 
     > .top {
-      display: flex;
-      flex-direction: row;
+      display: grid;
+      grid-template-columns: $controller-left-width 1fr;
+      grid-template-rows: 15% 1fr;
       flex: 0 0 $controller-top-height;
       background: $mediumgray;
       border-bottom: 2px solid $darkgray;
@@ -221,15 +230,19 @@ $controller-bottom-sticky-bottom-height: 1.5em;
 
       .playback-time {
         display: flex;
-        flex: 0 0 $controller-left-width;
+        grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
         border-right: 2px solid $darkgray;
+      }
+
+      .buffer-indicator {
+        grid-area: 1 / 2;
       }
 
       .waveform-overview {
         display: flex;
         flex-direction: column;
-        flex: 1;
+        grid-area: 2 / 2;
       }
     }
 
@@ -253,9 +266,6 @@ $controller-bottom-sticky-bottom-height: 1.5em;
         z-index: 4;
 
         > .playback-controller {
-          display: flex;
-          flex-direction: column;
-          flex-wrap: nowrap;
           width: $controller-left-width;
           flex: 0 0 auto;
           box-sizing: border-box;

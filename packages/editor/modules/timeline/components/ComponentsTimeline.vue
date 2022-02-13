@@ -183,6 +183,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "../../../scss/variables.scss";
+
 .timeline {
   display: flex;
   flex-direction: row;
@@ -194,7 +196,7 @@ export default {
   .tracks-container {
     display: grid;
     position: relative;
-    grid-template-columns: 12em auto;
+    grid-template-columns: $controller-left-width auto;
     flex: 1;
 
     .playhead {

@@ -10,6 +10,7 @@ export default {
     time: 0,
     duration: 0,
     playing: false,
+    buffered: [],
   },
   getters: {
     getType(state) {
@@ -37,25 +38,6 @@ export default {
 
     formattedTime(state) {
       return formatTime(state.time);
-    },
-
-    /**
-     * Get the media's buffered time ranges
-     * @return {Array} An array of arrays, each containing a time range
-     */
-    getBuffered(state) {
-      const buffered = [];
-
-      if (state.element) {
-        for (let i = 0; i < state.element.buffered.length; i++) {
-          const start_x = state.element.buffered.start(i);
-          const end_x = state.element.buffered.end(i);
-
-          buffered.push([start_x, end_x]);
-        }
-      }
-
-      return buffered;
     },
   },
   mutations: {
@@ -108,6 +90,18 @@ export default {
           if (!state.playing) {
             dispatch("updateTime", false);
           }
+        });
+        element.addEventListener("progress", (evt) => {
+          const buffered = [];
+
+          for (let i = 0; i < evt.target.buffered.length; i++) {
+            const start_x = evt.target.buffered.start(i);
+            const end_x = evt.target.buffered.end(i);
+
+            buffered.push([start_x, end_x]);
+          }
+
+          state.buffered = buffered;
         });
       }
     },

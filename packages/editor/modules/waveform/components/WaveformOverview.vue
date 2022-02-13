@@ -1,21 +1,16 @@
 <template>
-  <div :class="['waveform-overview', { 'has-data': hasData }]">
+  <div class="waveform-overview">
     <div class="layers" @mousedown="onMousedown" @click="onClick">
       <canvas ref="wave" class="wave" :width="width" :height="height" />
-      <canvas
-        ref="highlight"
-        class="highlight"
-        :width="width"
-        :height="height"
-      />
-      <canvas ref="playhead" class="playhead" :width="width" :height="height" />
+      <div class="highlight" :style="highlightStyle"></div>
+      <div class="playhead" :style="playheadStyle"></div>
     </div>
   </div>
 </template>
 
 <script>
 import { debounce } from "lodash";
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -25,63 +20,87 @@ export default {
     },
     highlightColor: {
       type: String,
-      default: "#000",
+      default: "rgba(0, 0, 0, 0.2)",
     },
     playheadWidth: {
       type: Number,
-      default: 1,
+      default: 2,
     },
     playheadColor: {
       type: String,
       default: "#0000fe",
     },
   },
-  emits: ["playheadclick"],
   data() {
     return {
-      hasData: false,
-      resampledData: null,
-      range: null,
-      width: null,
-      height: null,
+      width: 0,
+      height: 0,
     };
   },
   computed: {
     ...mapState("media", {
       mediaTime: "time",
       mediaDuration: "duration",
-      mediaWaveformData: "waveformData",
     }),
+    ...mapState("waveform", {
+      waveformData: "data",
+      waveformRange: "range",
+      waveformOffset: "offset",
+    }),
+    resampledData() {
+      if (this.waveformData && this.width > 0) {
+        const width = Math.min(this.width, this.waveformData.length);
+        return this.waveformData.resample({ width });
+      }
+
+      return null;
+    },
+    highlightStyle() {
+      const { start, end } = this.waveformOffset;
+      let style = { backgroundColor: this.highlightColor };
+
+      if (start !== null && end !== null) {
+        const left = this.getPositionAt(start);
+        const width = this.getPositionAt(end) - left;
+
+        style = { ...style, width, left };
+      }
+
+      return style;
+    },
+    playheadPosition() {
+      return Math.round(this.getPositionAt(this.mediaTime));
+    },
+    playheadStyle() {
+      return {
+        borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
+        left: `${this.playheadPosition - this.playheadWidth / 2}px`,
+      };
+    },
   },
   watch: {
-    mediaWaveformData(data) {
-      if (data) {
-        this.range = 0;
-        const channel = data.channel(0);
-        for (let index = 0; index < data.length; index++) {
-          const min = channel.min_sample(index);
-          const max = channel.max_sample(index);
-          this.range = Math.max(this.range, Math.abs(min), Math.abs(max));
-        }
-
-        const width = Math.min(this.width, this.mediaWaveformData.length);
-        this.resampled_data = this.mediaWaveformData.resample({ width: width });
-
-        this.draw();
-      }
+    height() {
+      this.$nextTick(function () {
+        this.drawWave();
+      });
+    },
+    resampledData() {
+      this.$nextTick(function () {
+        this.drawWave();
+      });
     },
   },
   mounted() {
-    this.$nextTick(function () {
-      this._resize_observer = new ResizeObserver(
-        debounce(() => {
-          this.draw();
-        }, 500)
-      );
-      this._resize_observer.observe(this.$el);
+    this._resize_observer = new ResizeObserver(
+      debounce(() => {
+        this.width = this.$el.clientWidth;
+        this.height = this.$el.clientHeight;
+      }, 500)
+    );
+    this._resize_observer.observe(this.$el);
 
-      this.draw();
-    });
+    this.width = this.$el.clientWidth;
+    this.height = this.$el.clientHeight;
   },
   beforeUnmount() {
     if (this._resize_observer) {
@@ -89,28 +108,10 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("media", {
-      setMediaTime: "setTime",
+    ...mapActions("media", {
+      seekMediaTo: "seekTo",
     }),
-    /**
-     * Clear all layers
-     */
-    clear() {
-      this.$el.querySelectorAll("canvas").forEach((canvas) => {
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, this.width, this.height);
-      });
-    },
-    /**
-     * Update all layers
-     */
-    draw() {
-      this.width = this.$el.clientWidth;
-      this.height = this.$el.clientHeight;
 
-      this.drawWave();
-      this.drawPlayhead();
-    },
     /**
      * Update the wave layer
      */
@@ -125,14 +126,16 @@ export default {
 
         context.beginPath();
 
-        for (let index = 0; index < this.resampledData.length; index++) {
-          const val = channel.min_sample(index);
-          context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
+        // Loop forwards, drawing the upper half of the waveform
+        for (let x = 0; x < this.resampledData.length; x++) {
+          const val = channel.max_sample(x);
+          context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
         }
 
-        for (let index = this.resampledData.length - 1; index >= 0; index--) {
-          const val = channel.max_sample(index);
-          context.lineTo(index + 0.5, this.scaleY(val, this.height) + 0.5);
+        // Loop backwards, drawing the lower half of the waveform
+        for (let x = this.resampledData.length - 1; x >= 0; x--) {
+          const val = channel.min_sample(x);
+          context.lineTo(x + 0.5, this.scaleY(val, this.height) + 0.5);
         }
 
         context.closePath();
@@ -141,38 +144,6 @@ export default {
       }
     },
 
-    /**
-     * Update the highlight rectangle
-     * @param {Number} start The start time in seconds
-     * @param {Number} end The end time in seconds
-     */
-    setHighlight(start, end) {
-      const canvas = this.$refs.highlight;
-      const context = canvas.getContext("2d");
-      const x = this.getPositionAt(start);
-      const width = this.getPositionAt(end) - x;
-
-      context.clearRect(0, 0, this.width, this.height);
-
-      context.fillStyle = this.highlightColor;
-      context.fillRect(x, 0, width, this.height);
-    },
-    /**
-     * Update the playhead layer
-     */
-    drawPlayhead() {
-      const canvas = this.$refs.playhead;
-      const context = canvas.getContext("2d");
-      const x = Math.round(this.getPositionAt(this.mediaTime)) + 0.5;
-
-      context.clearRect(0, 0, this.width, this.height);
-      context.beginPath();
-      context.moveTo(x, 0);
-      context.lineTo(x, this.height);
-      context.lineWidth = this.playheadWidth;
-      context.strokeStyle = this.playheadColor;
-      context.stroke();
-    },
     /**
      * Get the time in seconds corresponding to an x position in pixels
      * @param {Number} x The x position
@@ -185,6 +156,7 @@ export default {
 
       return (this.mediaDuration * x) / this.width;
     },
+
     /**
      * Get the x position in pixels corresponding to a time in seconds
      * @param {Number} time The time in seconds
@@ -199,6 +171,7 @@ export default {
         ? (time * this.width) / this.mediaDuration
         : null;
     },
+
     /**
      * Rescale an amplitude value to a given hight
      * @param {Number} amplitude The waveform data point amplitude
@@ -206,11 +179,27 @@ export default {
      * @return {Number} The scaled value
      */
     scaleY(amplitude, height) {
-      const range = this._wave_range * 2;
-      const offset = this._wave_range;
+      const range = this.waveformRange * 2;
+      const offset = this.waveformRange;
 
       return height - ((amplitude + offset) * height) / range;
     },
+
+    /**
+     * Set the time to the mouse position
+     */
+    gotToMousePosition(evt) {
+      if (!this.resampledData) {
+        return;
+      }
+
+      const offset = this.$el.getBoundingClientRect();
+      const x = evt.pageX - offset.left;
+      const time = this.getTimeAt(x);
+
+      this.seekMediaTo(time);
+    },
+
     /**
      * The mousedown event callback
      */
@@ -220,6 +209,7 @@ export default {
       doc.addEventListener("mouseup", this.onMouseup);
       doc.addEventListener("blur", this.onMouseup);
     },
+
     /**
      * The mouseup event callback
      */
@@ -229,28 +219,20 @@ export default {
       doc.removeEventListener("mouseup", this.onMouseup);
       doc.removeEventListener("blur", this.onMouseup);
     },
+
     /**
      * The mousemove event callback
      */
     onMousemove(evt) {
-      if (!this.resampledData) {
-        return;
-      }
-
-      const offset = this.$el.getBoundingClientRect();
-      const x = evt.pageX - offset.left;
-      const time = this.getTimeAt(x);
-
-      this.setMediaTime(time);
-
-      this.$emit("playheadclick", { time });
+      this.gotToMousePosition(evt);
     },
+
     /**
      * The click event callback
      * @param {MouseEvent} evt The event object
      */
     onClick(evt) {
-      this.onMousemove(evt);
+      this.gotToMousePosition(evt);
     },
   },
 };
@@ -261,18 +243,31 @@ export default {
   position: relative;
 
   .layers {
-    overflow: hidden;
     position: relative;
     height: 100%;
+    overflow: hidden;
 
-    canvas {
+    .wave {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-      &.highlight {
-        opacity: 0.33;
-      }
+    .highlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .playhead {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
     }
   }
 }

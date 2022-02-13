@@ -98,10 +98,7 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(function () {
-      this.initMediaElement(this.$refs.media);
-    });
-
+    this.initMediaElement(this.$refs.media);
     this.setupMedia();
   },
   beforeUnmount() {
