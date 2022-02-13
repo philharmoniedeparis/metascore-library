@@ -30,16 +30,7 @@ export default {
 
       const data = await api.load(url);
 
-      commit(
-        "media/setSources",
-        [
-          {
-            src: data.media.url,
-            type: data.media.mime,
-          },
-        ],
-        { root: true }
-      );
+      commit("media/setSource", data.media, { root: true });
 
       dispatch("app-components/insert", data.components, { root: true });
 

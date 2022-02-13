@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
 import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
@@ -88,7 +88,7 @@ export default {
     PagerPreviousIcon,
     PagerNextIcon,
   },
-  inject: ["seekMediaTo", "$deviceHasTouch"],
+  inject: ["$deviceHasTouch"],
   props: {
     /**
      * The associated vuex-orm model
@@ -139,6 +139,9 @@ export default {
     this.setupSwipe();
   },
   methods: {
+    ...mapActions("media", {
+      seekMediaTo: "seekTo",
+    }),
     async setupSwipe() {
       if (!this.$deviceHasTouch) {
         return;

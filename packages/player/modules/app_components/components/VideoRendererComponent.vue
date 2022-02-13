@@ -5,10 +5,9 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
-  inject: ["getMediaElement"],
   props: {
     /**
      * The associated vuex-orm model
@@ -20,8 +19,14 @@ export default {
   },
   computed: {
     ...mapState("media", {
+      mediaElement: "element",
       mediaReady: "ready",
       mediaTime: "time",
+    }),
+    ...mapGetters("media", {
+      mediaType: "getType",
+      mediaWidth: "getWidth",
+      mediaHeight: "getHeight",
     }),
     canvas() {
       return this.$refs.canvas;
@@ -47,13 +52,11 @@ export default {
         return;
       }
 
-      const media_el = this.getMediaElement();
-      if (media_el instanceof HTMLVideoElement) {
+      if (this.mediaType === "video") {
         try {
-          this.canvas.width = media_el.videoWidth;
-          this.canvas.height = media_el.videoHeight;
-
-          this.context.drawImage(media_el, 0, 0);
+          this.canvas.width = this.mediaWidth;
+          this.canvas.height = this.mediaHeight;
+          this.context.drawImage(this.mediaElement, 0, 0);
         } catch (e) {
           console.error(e);
         }

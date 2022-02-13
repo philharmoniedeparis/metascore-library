@@ -6,11 +6,10 @@
 
 <script>
 import "../../../polyfills/GeomertyUtils";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import { map, radians } from "@metascore-library/core/utils/math";
 
 export default {
-  inject: ["seekMediaTo"],
   props: {
     /**
      * The associated vuex-orm model
@@ -102,6 +101,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions("media", {
+      seekMediaTo: "seekTo",
+    }),
     update() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

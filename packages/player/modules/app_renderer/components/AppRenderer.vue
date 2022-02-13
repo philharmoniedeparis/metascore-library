@@ -1,15 +1,10 @@
 <template>
   <div class="metaScore-app">
     <media-player
-      ref="media-player"
-      :sources="mediaSources"
+      v-if="mediaSource"
+      :source="mediaSource"
       type="video"
       :use-request-animation-frame="true"
-      @loadedmetadata="onMediaLoadedmetadata"
-      @play="onMediaPlay"
-      @pause="onMediaPause"
-      @stop="onMediaStop"
-      @timeupdate="onMediaTimeupdate"
     />
 
     <template v-for="scenario in scenarios" :key="scenario.id">
@@ -19,29 +14,10 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   inject: ["$postMessage"],
-  provide() {
-    return {
-      seekMediaTo: (time) => {
-        this.mediaPlayer.setTime(time);
-      },
-      playMedia: () => {
-        this.mediaPlayer.play();
-      },
-      pauseMedia: () => {
-        this.mediaPlayer.pause();
-      },
-      stopMedia: () => {
-        this.mediaPlayer.stop();
-      },
-      getMediaElement: () => {
-        return this.mediaPlayer.getElement();
-      },
-    };
-  },
   props: {
     url: {
       type: String,
@@ -55,18 +31,11 @@ export default {
   computed: {
     ...mapState(["css"]),
     ...mapState("media", {
-      mediaSources: "sources",
+      mediaSource: "source",
     }),
     ...mapGetters("app-components", { filterComponentsByType: "filterByType" }),
     scenarios() {
       return this.filterComponentsByType("Scenario");
-    },
-    /**
-     * Get the media player component
-     * @return {MediaPlayer} The component
-     */
-    mediaPlayer() {
-      return this.$refs["media-player"];
     },
   },
   watch: {
@@ -93,49 +62,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("media", {
-      setMediaReady: "setReady",
-      setMediaPlaying: "setPlaying",
-      setMediaTime: "setTime",
-      setMediaDuration: "setDuration",
-    }),
     ...mapActions({ load: "app-renderer/load" }),
-
-    /**
-     * The media's 'ready' event handler
-     */
-    onMediaLoadedmetadata() {
-      this.setMediaReady(true);
-      this.setMediaDuration(this.mediaPlayer.getDuration());
-    },
-
-    /**
-     * The media's 'play' event handler
-     */
-    onMediaPlay() {
-      this.setMediaPlaying(true);
-    },
-
-    /**
-     * The media's 'pause' event handler
-     */
-    onMediaPause() {
-      this.setMediaPlaying(false);
-    },
-
-    /**
-     * The media's 'stop' event handler
-     */
-    onMediaStop() {
-      this.setMediaPlaying(false);
-    },
-
-    /**
-     * The media's 'timeupdate' event handler
-     */
-    onMediaTimeupdate() {
-      this.setMediaTime(this.mediaPlayer.getTime());
-    },
 
     onAPIMessage(evt) {
       console.log(evt.data);

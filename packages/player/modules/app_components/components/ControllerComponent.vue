@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 import RewindIcon from "../assets/icons/controller/rewind.svg?inline";
 import PlayIcon from "../assets/icons/controller/play.svg?inline";
 import PauseIcon from "../assets/icons/controller/pause.svg?inline";
@@ -58,7 +58,6 @@ export default {
     PauseIcon,
     LogoIcon,
   },
-  inject: ["seekMediaTo", "playMedia", "pauseMedia"],
   props: {
     /**
      * The associated vuex-orm model
@@ -77,6 +76,11 @@ export default {
     }),
   },
   methods: {
+    ...mapActions("media", {
+      playMedia: "play",
+      pauseMedia: "pause",
+      seekMediaTo: "seekTo",
+    }),
     onRewindClick() {
       this.seekMediaTo(0);
     },
