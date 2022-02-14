@@ -117,13 +117,15 @@ export default {
         }
       }
     },
-    resampledData() {
+    resampledData(value) {
       this.$nextTick(function () {
-        this.setWaveformScale(this.resampledData.scale);
-        this.setWaveformMinScale(this.waveformData.scale);
-        this.setWaveformMaxScale(this.resampledData.scale);
-        this.setOffset(0);
+        if (value) {
+          this.setWaveformScale(this.resampledData.scale);
+          this.setWaveformMinScale(this.waveformData.scale);
+          this.setWaveformMaxScale(this.resampledData.scale);
+        }
 
+        this.setOffset(0);
         this.drawWave();
         this.drawAxis();
       });

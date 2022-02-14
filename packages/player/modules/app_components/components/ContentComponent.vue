@@ -5,9 +5,22 @@
 </template>
 
 <script>
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 // @TODO: add link auto-highlighting
 
 export default {
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective({
+      hooks: {
+        afterSanitizeAttributes: (node) => {
+          if (node.tagName === "A") {
+            node.setAttribute("target", "_blank");
+            node.setAttribute("rel", "noopener");
+          }
+        },
+      },
+    }),
+  },
   props: {
     /**
      * The associated vuex-orm model

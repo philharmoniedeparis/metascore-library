@@ -117,6 +117,8 @@ export default {
     getRendererFromType(mime) {
       let renderer = null;
 
+      mime = mime.toLowerCase();
+
       if (new Audio().canPlayType(mime)) {
         renderer = "html5";
       } else if (dash_types.includes(mime)) {
@@ -142,7 +144,9 @@ export default {
       }
 
       const renderer = this.getRendererFromType(this.source.mime);
-      await this.setupRenderer(renderer, this.source.src);
+      await this.setupRenderer(renderer, this.source.url);
+
+      this.$el.load();
     },
 
     /**
@@ -158,7 +162,7 @@ export default {
               /* webpackChunkName: "vendors.dashjs" */ "dashjs"
             );
             this.dash = DashJS.MediaPlayer().create();
-            this.dash.initialize(this.el, url, true);
+            this.dash.initialize(this.$el, url, true);
           }
           return;
 
@@ -170,7 +174,7 @@ export default {
             if (Hls.isSupported()) {
               this.hls = new Hls();
               this.hls.loadSource(url);
-              this.hls.attachMedia(this.el);
+              this.hls.attachMedia(this.$el);
             }
           }
           return;

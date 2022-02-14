@@ -35,6 +35,7 @@
       <div class="middle">
         <div class="sticky-top">
           <playback-controller />
+          <media-selector :modal-target="modalsTarget" />
           <waveform-zoom />
         </div>
         <components-timeline />
@@ -60,6 +61,7 @@ export default {
   data() {
     return {
       rulersTrackTarget: null,
+      modalsTarget: null,
     };
   },
   computed: {
@@ -77,6 +79,9 @@ export default {
         this.loadWaveform({ source });
       }
     },
+  },
+  mounted() {
+    this.modalsTarget = this.$el;
   },
   methods: {
     ...mapActions({ loadWaveform: "waveform/load" }),
@@ -232,17 +237,21 @@ export default {
         display: flex;
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
-        border-right: 2px solid $darkgray;
+        border-right: 1px solid $darkgray;
       }
 
       .buffer-indicator {
         grid-area: 1 / 2;
+        box-sizing: border-box;
+        border-left: 1px solid $darkgray;
       }
 
       .waveform-overview {
         display: flex;
         flex-direction: column;
         grid-area: 2 / 2;
+        box-sizing: border-box;
+        border-left: 1px solid $darkgray;
       }
     }
 
@@ -259,21 +268,28 @@ export default {
         left: 0;
         width: 100%;
         height: $controller-bottom-sticky-top-height;
-        display: flex;
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: $controller-left-width 1fr;
+        grid-template-rows: 1fr auto;
         background: $lightgray;
         border-bottom: 2px solid $darkgray;
         z-index: 4;
 
-        > .playback-controller {
-          width: $controller-left-width;
-          flex: 0 0 auto;
+        .playback-controller {
+          grid-area: 1 / 1;
           box-sizing: border-box;
           border-right: 1px solid $darkgray;
         }
 
-        > .waveform-zoom {
-          flex: 1 1 auto;
+        .media-selector {
+          grid-area: 2 / 1;
+          padding: 0.25em 0.5em;
+          box-sizing: border-box;
+          border-right: 1px solid $darkgray;
+        }
+
+        .waveform-zoom {
+          grid-area: 1 / 2 / span 2 / auto;
           border-left: 1px solid $darkgray;
         }
       }

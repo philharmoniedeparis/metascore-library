@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   props: {
@@ -22,11 +22,9 @@ export default {
       mediaElement: "element",
       mediaReady: "ready",
       mediaTime: "time",
-    }),
-    ...mapGetters("media", {
-      mediaType: "getType",
-      mediaWidth: "getWidth",
-      mediaHeight: "getHeight",
+      mediaType: "type",
+      mediaWidth: "width",
+      mediaHeight: "height",
     }),
     canvas() {
       return this.$refs.canvas;

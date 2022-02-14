@@ -1,10 +1,6 @@
 {
   "name": "@metascore-library/editor",
   "private": true,
-  "peerDependencies": {
-    "@metascore-library/core": "3.0.0-alpha.1",
-    "@metascore-library/player": "3.0.0-alpha.1"
-  },
   "dependencies": {
     "@interactjs/actions": "^1.10.11",
     "@interactjs/auto-scroll": "^1.10.11",
@@ -13,6 +9,8 @@
     "@interactjs/interact": "^1.10.11",
     "@interactjs/modifiers": "^1.10.11",
     "@interactjs/pointer-events": "^1.10.11",
+    "@vuelidate/core": "^2.0.0-alpha.34",
+    "@vuelidate/validators": "^2.0.0-alpha.26",
     "axios": "^0.24.0",
     "chroma-js": "^2.1.2",
     "lodash": "^4.17.21",
@@ -24,6 +22,7 @@
     "uuid": "^8.3.2",
     "validate-color": "^2.2.1",
     "vue": "^3.2.13",
+    "vue-dompurify-html": "^3.0.0-beta.1",
     "vue-i18n": "^9.1.8",
     "vue-nav-tabs": "^0.5.7",
     "vue-router": "^4.0.3",

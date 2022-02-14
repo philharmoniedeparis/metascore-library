@@ -16,7 +16,7 @@ export default {
     maxScale: null,
   },
   mutations: {
-    setData(state, data) {
+    _setData(state, data) {
       state.data = data;
 
       if (data) {
@@ -59,7 +59,7 @@ export default {
       })
         .then((response) => {
           if (!response.data) {
-            commit("setData", null);
+            commit("_setData", null);
           }
 
           if (from_web_audio) {
@@ -68,14 +68,14 @@ export default {
               array_buffer: response.data,
             };
             WaveformData.createFromAudio(options, (err, waveform) => {
-              commit("setData", err ? null : waveform);
+              commit("_setData", err ? null : waveform);
             });
           } else {
-            commit("setData", WaveformData.create(response.data));
+            commit("_setData", WaveformData.create(response.data));
           }
         })
         .catch((e) => {
-          commit("setData", null);
+          commit("_setData", null);
           console.error(e);
         });
     },

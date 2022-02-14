@@ -1,0 +1,68 @@
+<template>
+  <base-modal ref="modal" class="modal-form" @close="$emit('close')">
+    <div v-if="description || $slots.description" class="description">
+      <p v-if="description">{{ description }}</p>
+      <slot v-else name="description" />
+    </div>
+
+    <form :id="uuid" novalidate @submit.stop.prevent="$emit('submit')">
+      <slot />
+    </form>
+
+    <template #footer>
+      <slot name="actions" :form="uuid" />
+    </template>
+  </base-modal>
+</template>
+
+<script>
+import { v4 as uuid } from "uuid";
+import BaseModal from "./BaseModal";
+
+export default {
+  components: {
+    BaseModal,
+  },
+  props: {
+    description: {
+      type: String,
+      default: null,
+    },
+  },
+  emits: ["submit", "close"],
+  data() {
+    return {
+      uuid: uuid(),
+    };
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.modal-form {
+  ::v-deep(.body) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    p:first-child {
+      margin-top: 0;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .danger {
+      color: #cd2453;
+    }
+  }
+}
+</style>
