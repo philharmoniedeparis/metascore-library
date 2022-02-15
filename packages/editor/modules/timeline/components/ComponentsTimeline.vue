@@ -82,11 +82,10 @@ export default {
     },
     onHandleDrag(evt) {
       const { target: handle, dy } = evt;
-      const old_drag_y = parseFloat(handle.getAttribute("data-drag-y"));
-      const new_drag_y = old_drag_y + dy;
+      const y = parseFloat(handle.getAttribute("data-drag-y")) + dy;
 
-      handle.setAttribute("data-drag-y", new_drag_y);
-      handle.style.transform = `translateY(${new_drag_y}px)`;
+      handle.setAttribute("data-drag-y", y);
+      handle.style.transform = `translateY(${y}px)`;
     },
     onHandleDragEnd(evt) {
       const { target: handle } = evt;

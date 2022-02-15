@@ -45,8 +45,33 @@ export default {
 
       this.iframeDocument = doc;
 
+      doc.addEventListener("mousemove", this.bubbleIframeEvent.bind(iframe));
+
       this.$emit("load", { iframe });
     },
+  },
+
+  /**
+   * Bubble an event up from inside the iframe to the iframe element
+   * @param {HTMLElement} iframe The iframe element
+   * @param {Event} evt The event to bubble
+   */
+  bubbleIframeEvent(iframe, evt) {
+    const init = {};
+
+    for (let prop in evt) {
+      init[prop] = evt[prop];
+    }
+
+    if (evt instanceof MouseEvent) {
+      const { left, top } = iframe.getBoundingClientRect();
+      init["clientX"] += left;
+      init["clientY"] += top;
+    }
+
+    const new_evt = new evt.constructor(evt.type, init);
+
+    iframe.dispatchEvent(new_evt);
   },
 };
 </script>
