@@ -10,7 +10,6 @@ export default {
       start: null,
       end: null,
     },
-    zoom: null,
     scale: null,
     minScale: null,
     maxScale: null,

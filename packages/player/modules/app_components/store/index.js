@@ -44,6 +44,11 @@ export default {
       const component = state.components[id];
       return component && !component.$deleted ? component : null;
     },
+    create: () => (data) => {
+      if (data.type in Components) {
+        return new Components[data.type](data);
+      }
+    },
     filterByIds: (state) => (ids) => {
       return ids
         .map((id) => {
@@ -63,10 +68,7 @@ export default {
     },
   },
   mutations: {
-    clear(state) {
-      state.components = {};
-    },
-    set(state, data) {
+    _set(state, data) {
       state.components = normalize(cloneDeep(data));
     },
     setActiveScenario(state, scenario) {
@@ -81,23 +83,9 @@ export default {
     },
   },
   actions: {
-    async insert({ commit, getters }, data) {
-      commit("set", data);
+    async set({ commit, getters }, data) {
+      commit("_set", data);
       commit("setActiveScenario", getters.filterByType("Scenario")[0]);
-    },
-    async create(context, { type, data }) {
-      return Components[type].insert({
-        data,
-      });
-    },
-    async update(context, { type, id, data }) {
-      return Components[type].update({
-        where: id,
-        data,
-      });
-    },
-    async delete(context, { type, id }) {
-      return Components[type].delete(id);
     },
   },
 };

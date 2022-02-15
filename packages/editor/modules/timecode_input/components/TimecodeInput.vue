@@ -7,7 +7,7 @@
       @change="onChange"
       @keypress="onKeypress"
       @mousedown="onMouseDown"
-      @mousewheel.prevent="onMouseWheel"
+      @wheel.prevent="onWheel"
       @click="onClick"
       @focus="onFocus"
       @blur="onBlur"
@@ -178,7 +178,7 @@ export default {
     onMouseDown() {
       this.skip_focus = true;
     },
-    onMouseWheel(evt) {
+    onWheel(evt) {
       const segment = this.getFocusedSegment();
 
       if (typeof segment !== "undefined") {

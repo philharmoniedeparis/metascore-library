@@ -114,7 +114,8 @@ export default {
   align-items: stretch;
   flex-wrap: nowrap;
 
-  * {
+  &,
+  ::v-deep(*) {
     scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
     scrollbar-width: thin;
 

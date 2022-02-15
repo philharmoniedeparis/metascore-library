@@ -44,9 +44,14 @@ export default {
 
 <style lang="scss" scoped>
 .tabs-container {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
   .tabs-nav {
     display: flex;
     flex-wrap: nowrap;
+    flex: 0;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -76,6 +81,11 @@ export default {
         }
       }
     }
+  }
+
+  .tabs-content {
+    flex: 1 1 100%;
+    overflow-y: auto;
   }
 }
 </style>

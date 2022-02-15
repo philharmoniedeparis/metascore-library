@@ -69,9 +69,8 @@ module.exports = {
       },
     });
 
-    // Override svg rule to add inline SVGs.
+    // Add inline SVGs support.
     const svgRule = config.module.rule("svg");
-    svgRule.uses.clear();
     svgRule
       .oneOf("inline")
       .resourceQuery(/inline/)
@@ -82,14 +81,7 @@ module.exports = {
       .use("vue-svg-loader")
       .loader("vue-svg-loader")
       .end()
-      .end()
-      .oneOf("external")
-      .use("file-loader")
-      .loader("file-loader")
-      .options({
-        context: path.resolve(__dirname, "./src"),
-        name: "[path][name].[ext]?[contenthash]",
-      });
+      .end();
 
     // Setup i18n loader.
     // See https://vue-i18n.intlify.dev/guide/advanced/sfc.html#vue-cli

@@ -32,7 +32,7 @@ export default {
 
       commit("media/setSource", data.media, { root: true });
 
-      dispatch("app-components/insert", data.components, { root: true });
+      dispatch("app-components/set", data.components, { root: true });
 
       commit("setWidth", data.width);
       commit("setHeight", data.height);
