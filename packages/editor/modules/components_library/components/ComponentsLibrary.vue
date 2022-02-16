@@ -24,23 +24,24 @@
 </i18n>
 
 <template>
-  <ul class="components-library">
-    <li v-for="(model, index) in models" :key="index" class="item">
-      <component-icon :model="model" />
-      <div class="label">{{ $t(model.name) || model.name }}</div>
-    </li>
-  </ul>
+  <div class="components-library">
+    <template v-for="(model, index) in models" :key="index">
+      <component-library-item
+        :model="model"
+        :label="$t(model.name) || model.name"
+      />
+    </template>
+  </div>
 </template>
 
 <script>
-import "@interactjs/auto-start";
-import "@interactjs/actions/drag";
-import "@interactjs/modifiers";
-import "@interactjs/pointer-events";
-import interact from "@interactjs/interact";
 import { mapGetters } from "vuex";
+import ComponentLibraryItem from "./ComponentLibraryItem.vue";
 
 export default {
+  components: {
+    ComponentLibraryItem,
+  },
   props: {
     modelConfigs: {
       type: Array,
@@ -93,50 +94,6 @@ export default {
       return this.modelConfigs.map(this.createModel);
     },
   },
-  mounted() {
-    this.$nextTick(function () {
-      this._interactable = interact(".item").draggable({
-        context: this.$el,
-        listeners: {
-          start: this.onItemDragStart,
-          move: this.onItemDrag,
-          end: this.onItemDragEnd,
-        },
-      });
-    });
-  },
-  beforeUnmount() {
-    if (this._interactable) {
-      this._interactable.unset();
-      delete this._interactable;
-    }
-  },
-  methods: {
-    onItemDragStart(evt) {
-      const { target } = evt;
-
-      target.classList.add("dragging");
-      target.setAttribute("data-drag-x", 0);
-      target.setAttribute("data-drag-y", 0);
-    },
-    onItemDrag(evt) {
-      const { target, dx, dy } = evt;
-      const x = parseFloat(target.getAttribute("data-drag-x")) + dx;
-      const y = parseFloat(target.getAttribute("data-drag-y")) + dy;
-
-      target.setAttribute("data-drag-x", x);
-      target.setAttribute("data-drag-y", y);
-      target.style.transform = `translateX(${x}px) translateY(${y}px)`;
-    },
-    onItemDragEnd(evt) {
-      const { target } = evt;
-
-      target.classList.remove("dragging");
-      target.removeAttribute("data-drag-x");
-      target.removeAttribute("data-drag-y");
-      target.style.transform = null;
-    },
-  },
 };
 </script>
 
@@ -146,50 +103,10 @@ export default {
   position: relative;
   flex-direction: column;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
   overflow-y: auto;
 
-  .item {
-    display: flex;
+  ::v-deep(.components-library-item) {
     flex: 0 0 2em;
-    flex-direction: row;
-    align-items: center;
-    padding: 0.25em;
-    background-color: $lightgray;
-    border-top: 1px solid $mediumgray;
-    border-bottom: 1px solid $mediumgray;
-
-    .icon {
-      flex: 0 0 2em;
-      height: 1.5em;
-      margin-right: 0.5em;
-    }
-
-    .label {
-      flex: 1 1 auto;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: none;
-    }
-
-    &::before {
-      content: "";
-      display: inline-block;
-      width: 1em;
-      height: 100%;
-      margin-right: 0.5em;
-      background: url(../assets/icons/drag-handle.svg) 50% 50% no-repeat;
-      vertical-align: middle;
-      opacity: 0.5;
-    }
-
-    &:hover,
-    &.dragging {
-      background-color: $mediumgray;
-    }
   }
 }
 </style>

@@ -58,6 +58,11 @@ export function createStore({ debug = false } = {}) {
         dispatch("updateComponent", { model, data });
       });
     },
+    addComponent({ getters, commit }, { data, parent }) {
+      const model = getters["app-components/create"](data);
+      commit("app-components/add", { model, parent });
+      commit("selectComponent", model.id);
+    },
   };
 
   return createVuexStore({

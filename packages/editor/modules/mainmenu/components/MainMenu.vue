@@ -1,5 +1,7 @@
 <template>
-  <nav class="main-menu"></nav>
+  <nav class="main-menu">
+    <player-zoom-controller />
+  </nav>
 </template>
 
 <script>

@@ -1,8 +1,12 @@
 <template>
   <player-component-wrapper
     :model="model"
-    :class="{ selected }"
+    :class="{ selected, 'drag-over': dragOver }"
     @click.stop="onClick"
+    @dragenter="onDragEnter"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @drop="onDrop"
   >
     <div class="editor-component-wrapper">
       <slot />
@@ -34,6 +38,11 @@ export default {
     },
   },
   emits: ["componentclick"],
+  data() {
+    return {
+      dragOver: false,
+    };
+  },
   computed: {
     ...mapGetters(["isComponentSelected"]),
     selected() {
@@ -43,7 +52,7 @@ export default {
   watch: {
     selected(value) {
       if (value && (this.model.$isPositionable || this.model.$isResizable)) {
-        this._interactable = interact(this.$el, {
+        this._interactables = interact(this.$el, {
           context: this.$el.ownerDocument,
         });
 
@@ -59,33 +68,37 @@ export default {
               break;
           }
 
-          this._interactable.draggable({
+          this._interactables.draggable({
             allowFrom,
             listeners: {
-              move: this.onDrag,
+              move: this.onDragMove,
               end: this.onDragEnd,
             },
           });
         }
 
         if (this.model.$isResizable) {
-          this._interactable.resizable({
+          this._interactables.resizable({
             edges: { top: true, left: true, bottom: true, right: true },
             listeners: {
               move: this.onResize,
             },
           });
         }
-      } else if (this._interactable) {
-        this._interactable.unset();
-        delete this._interactable;
+      } else {
+        // Remove interactables.
+        if (this._interactables) {
+          this._interactables.unset();
+          delete this._interactables;
+        }
       }
     },
   },
   beforeUnmount() {
-    if (this._interactable) {
-      this._interactable.unset();
-      delete this._interactable;
+    // Remove interactables.
+    if (this._interactables) {
+      this._interactables.unset();
+      delete this._interactables;
     }
   },
   methods: {
@@ -94,7 +107,7 @@ export default {
       "deselectComponent",
       "deselectAllComponents",
     ]),
-    ...mapActions(["updateComponent"]),
+    ...mapActions(["updateComponent", "addComponent"]),
     onClick(evt) {
       const model = this.model;
 
@@ -112,7 +125,7 @@ export default {
         evt.stopImmediatePropagation();
       }
     },
-    onDrag(evt) {
+    onDragMove(evt) {
       const position = this.model.position;
 
       this.updateComponent({
@@ -144,6 +157,55 @@ export default {
         },
       });
     },
+    getDropModel(evt) {
+      if (evt.dataTransfer.types.includes("metascore/component")) {
+        const data = evt.dataTransfer.getData("metascore/component");
+        return JSON.parse(data);
+      }
+    },
+    isDropAllowed(evt) {
+      const draggedModel = this.getDropModel(evt);
+
+      if (draggedModel) {
+        switch (this.model.type) {
+          case "Scenario":
+          case "Page":
+            return !["Scenario", "Page"].includes(draggedModel.type);
+          case "Block":
+            return draggedModel.type === "Page";
+        }
+      }
+
+      return false;
+    },
+    onDragEnter(evt) {
+      if (this.isDropAllowed(evt)) {
+        this.dragOver = true;
+        evt.stopPropagation();
+      }
+    },
+    onDragOver(evt) {
+      if (this.isDropAllowed(evt)) {
+        evt.stopPropagation();
+        evt.preventDefault();
+      }
+    },
+    onDragLeave() {
+      this.dragOver = false;
+    },
+    onDrop(evt) {
+      if (this.isDropAllowed(evt)) {
+        const droppedModel = this.getDropModel(evt);
+        this.addComponent({
+          data: droppedModel,
+          parent: this.model,
+        });
+
+        this.dragOver = false;
+        evt.stopPropagation();
+        evt.preventDefault();
+      }
+    },
   },
 };
 </script>
@@ -172,6 +234,10 @@ export default {
     height: 100%;
     overflow: hidden;
     border-radius: inherit;
+  }
+
+  &.drag-over {
+    box-shadow: inset 0px 0px 1em 0.25em rgba(0, 0, 0, 0.75);
   }
 }
 </style>

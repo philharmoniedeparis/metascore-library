@@ -1,5 +1,5 @@
 <template>
-  <form class="player-zoom"></form>
+  <form class="player-zoom-controller"></form>
 </template>
 
 <script>

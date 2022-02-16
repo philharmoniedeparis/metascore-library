@@ -26,7 +26,8 @@ function normalize(data) {
       }
     });
 
-    normalized[value.id] = new Components[value.type](value);
+    const model = new Components[value.type](value);
+    normalized[model.id] = model;
   });
 
   return normalized;
@@ -70,6 +71,18 @@ export default {
   mutations: {
     _set(state, data) {
       state.components = normalize(cloneDeep(data));
+    },
+    add(state, { model, parent }) {
+      state.components[model.id] = model;
+
+      switch (parent.type) {
+        case "Block":
+          parent.pages.push(model.id);
+          break;
+
+        default:
+          parent.children.push(model.id);
+      }
     },
     setActiveScenario(state, scenario) {
       state.activeScenario = scenario.id;

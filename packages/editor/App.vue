@@ -13,13 +13,7 @@
     </resizable-pane>
 
     <resizable-pane class="center">
-      <dynamic-ruler :track-target="rulersTrackTarget" />
-      <dynamic-ruler axis="y" :track-target="rulersTrackTarget" />
-      <player-preview
-        :url="url"
-        :style="{ width: `${playerWidth}px`, height: `${playerHeight}px` }"
-        @load="onPlayerPreviewLoad"
-      />
+      <player-preview :url="url" />
     </resizable-pane>
 
     <resizable-pane class="right" :left="true">
@@ -60,17 +54,12 @@ export default {
   },
   data() {
     return {
-      rulersTrackTarget: null,
       modalsTarget: null,
     };
   },
   computed: {
     ...mapState("media", {
       mediaSource: "source",
-    }),
-    ...mapState("app-renderer", {
-      playerWidth: "width",
-      playerHeight: "height",
     }),
   },
   watch: {
@@ -85,9 +74,6 @@ export default {
   },
   methods: {
     ...mapActions({ loadWaveform: "waveform/load" }),
-    onPlayerPreviewLoad({ iframe }) {
-      this.rulersTrackTarget = iframe.contentDocument.body;
-    },
   },
 };
 </script>
@@ -197,11 +183,6 @@ export default {
 
   > .center {
     grid-area: center;
-    display: grid;
-    width: 100%;
-    grid-template-columns: 20px auto min-content auto;
-    grid-template-rows: 20px auto min-content auto;
-    box-sizing: border-box;
     overflow: auto;
   }
 
@@ -313,29 +294,6 @@ export default {
         background: $darkgray;
       }
     }
-  }
-
-  .dynamic-ruler {
-    position: sticky;
-    z-index: 1;
-    background: $mediumgray;
-
-    &[data-axis="x"] {
-      top: 0;
-      grid-area: 1/2/2/5;
-      padding-top: 2px;
-    }
-
-    &[data-axis="y"] {
-      left: 0;
-      grid-area: 2/1/5/2;
-      padding-left: 2px;
-    }
-  }
-
-  .player-preview {
-    grid-area: 3/3/4/4;
-    overflow: hidden;
   }
 }
 </style>

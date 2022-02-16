@@ -1,4 +1,5 @@
 import PlayerPreview from "./components/PlayerPreview";
+import PlayerZoomController from "./components/PlayerZoomController";
 
 export default {
   name: "PlayerPreview",
@@ -16,5 +17,6 @@ export default {
     app.component("ComponentWrapper", ComponentWrapper);
 
     app.component("PlayerPreview", PlayerPreview);
+    app.component("PlayerZoomController", PlayerZoomController);
   },
 };
