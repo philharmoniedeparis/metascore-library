@@ -243,6 +243,7 @@ export default {
       position: relative;
       overflow-y: scroll;
       scroll-behavior: smooth;
+      scroll-padding-top: $controller-bottom-sticky-top-height;
 
       > .sticky-top {
         position: sticky;

@@ -6,7 +6,8 @@
         'has-children': hasChildren,
         'has-start-time': hasStartTime,
         'has-end-time': hasEndTime,
-        'user-expanded': expanded,
+        'has-selected-descendents': hasSelectedDescendents,
+        expanded,
         selected,
         dragging,
       },
@@ -99,48 +100,42 @@ export default {
     ...mapState("media", {
       mediaDuration: "duration",
     }),
-    ...mapGetters(["isComponentSelected", "isComponentLocked"]),
+    ...mapGetters([
+      "componentHasChildren",
+      "getComponentChildren",
+      "isComponentSelected",
+      "componentHasSelectedDescendents",
+      "isComponentLocked",
+    ]),
     ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
     selected() {
-      return this.isComponentSelected(this.model.id);
+      return this.isComponentSelected(this.model);
     },
     locked: {
       get() {
-        return this.isComponentLocked(this.model.id);
+        return this.isComponentLocked(this.model);
       },
       set(value) {
-        (value ? this.lockComponent : this.unlockComponent)(this.model.id);
+        (value ? this.lockComponent : this.unlockComponent)(this.model);
       },
     },
     hasChildren() {
-      switch (this.model.type) {
-        case "Block":
-          return this.model.pages?.length;
-        case "Page":
-        case "Scenario":
-          return this.model.children?.length;
-      }
-
-      return false;
+      return this.componentHasChildren(this.model);
     },
     children() {
-      if (!this.hasChildren) {
-        return [];
-      }
-
-      let children = [];
+      const children = this.getComponentChildren(this.model);
 
       switch (this.model.type) {
-        case "Block":
-          children = this.model.pages;
-          break;
-
         case "Page":
         case "Scenario":
-          children = this.model.children.slice().reverse();
-      }
+          return children.slice().reverse();
 
-      return this.filterComponentsByIds(children);
+        default:
+          return children;
+      }
+    },
+    hasSelectedDescendents() {
+      return this.componentHasSelectedDescendents(this.model);
     },
     hasStartTime() {
       return this.model.$isTimeable && this.model.$hasStartTime;
@@ -184,6 +179,10 @@ export default {
 
           this._time_interactables.push(resizable);
         }
+
+        this.$nextTick(function () {
+          this.$refs.handle.scrollIntoView();
+        });
       } else if (this._time_interactables) {
         this._time_interactables.forEach((i) => i.unset());
         delete this._time_interactables;
@@ -205,14 +204,14 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent(model.id);
+          this.deselectComponent(model);
         }
       } else {
         if (!evt.shiftKey) {
           this.deselectAllComponents();
         }
 
-        this.selectComponent(model.id);
+        this.selectComponent(model);
       }
     },
     onTimeResize(evt) {
@@ -332,12 +331,6 @@ $handles-margin: 0.5em;
       label {
         padding: 0 0.5em;
       }
-
-      input:checked + label {
-        .icon {
-          transform: rotate(90deg);
-        }
-      }
     }
 
     .label {
@@ -420,6 +413,23 @@ $handles-margin: 0.5em;
 
   .properties {
     display: contents;
+  }
+
+  &.expanded,
+  &.has-selected-descendents {
+    > .handle {
+      .expander {
+        label {
+          .icon {
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+
+    > .children {
+      display: contents;
+    }
   }
 
   @each $component, $color in $component-colors {
@@ -522,21 +532,6 @@ $handles-margin: 0.5em;
           display: block;
         }
       }
-    }
-  }
-
-  &.user-expanded,
-  &.auto-expanded {
-    > .handle {
-      button[data-action="expander"] {
-        .icon {
-          transform: rotate(90deg);
-        }
-      }
-    }
-
-    > .children {
-      display: contents;
     }
   }
 }

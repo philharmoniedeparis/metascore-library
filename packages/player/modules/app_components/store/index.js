@@ -72,6 +72,9 @@ export default {
     _set(state, data) {
       state.components = normalize(cloneDeep(data));
     },
+    update(state, { model, data }) {
+      model.update(data);
+    },
     add(state, { model, parent }) {
       state.components[model.id] = model;
 

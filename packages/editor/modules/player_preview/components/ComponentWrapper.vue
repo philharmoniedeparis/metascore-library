@@ -46,7 +46,7 @@ export default {
   computed: {
     ...mapGetters(["isComponentSelected"]),
     selected() {
-      return this.isComponentSelected(this.model.id);
+      return this.isComponentSelected(this.model);
     },
   },
   watch: {
@@ -113,7 +113,7 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent(model.id);
+          this.deselectComponent(model);
           evt.stopImmediatePropagation();
         }
       } else {
@@ -121,7 +121,7 @@ export default {
           this.deselectAllComponents();
         }
 
-        this.selectComponent(model.id);
+        this.selectComponent(model);
         evt.stopImmediatePropagation();
       }
     },
@@ -157,35 +157,35 @@ export default {
         },
       });
     },
-    getDropModel(evt) {
+    getModelFromDragEvent(evt) {
       if (evt.dataTransfer.types.includes("metascore/component")) {
         const data = evt.dataTransfer.getData("metascore/component");
         return JSON.parse(data);
       }
     },
-    isDropAllowed(evt) {
-      const draggedModel = this.getDropModel(evt);
-
-      if (draggedModel) {
+    isDropAllowed(model) {
+      if (model) {
         switch (this.model.type) {
           case "Scenario":
           case "Page":
-            return !["Scenario", "Page"].includes(draggedModel.type);
+            return !["Scenario", "Page"].includes(model.type);
           case "Block":
-            return draggedModel.type === "Page";
+            return model.type === "Page";
         }
       }
 
       return false;
     },
     onDragEnter(evt) {
-      if (this.isDropAllowed(evt)) {
+      const draggedModel = this.getModelFromDragEvent(evt);
+      if (this.isDropAllowed(draggedModel)) {
         this.dragOver = true;
         evt.stopPropagation();
       }
     },
     onDragOver(evt) {
-      if (this.isDropAllowed(evt)) {
+      const draggedModel = this.getModelFromDragEvent(evt);
+      if (this.isDropAllowed(draggedModel)) {
         evt.stopPropagation();
         evt.preventDefault();
       }
@@ -194,8 +194,21 @@ export default {
       this.dragOver = false;
     },
     onDrop(evt) {
-      if (this.isDropAllowed(evt)) {
-        const droppedModel = this.getDropModel(evt);
+      const droppedModel = this.getModelFromDragEvent(evt);
+      if (this.isDropAllowed(droppedModel)) {
+        switch (droppedModel.type) {
+          case "Page":
+            break;
+
+          default: {
+            const { left, top } = evt.target.getBoundingClientRect();
+            droppedModel.position = [
+              Math.round(evt.clientX - left),
+              Math.round(evt.clientY - top),
+            ];
+          }
+        }
+
         this.addComponent({
           data: droppedModel,
           parent: this.model,

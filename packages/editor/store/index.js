@@ -13,16 +13,55 @@ export function createStore({ debug = false } = {}) {
   };
 
   const getters = {
-    isComponentSelected: (state) => (id) => {
-      return state.selectedComponents.has(id);
+    componentHasChildren: () => (model) => {
+      switch (model.type) {
+        case "Block":
+          return model.pages?.length > 0;
+        case "Page":
+        case "Scenario":
+          return model.children?.length > 0;
+      }
+
+      return false;
+    },
+    getComponentChildren:
+      (state, getters, rootState, rootGetters) => (model) => {
+        let children = [];
+
+        if (getters.componentHasChildren(model)) {
+          switch (model.type) {
+            case "Block":
+              children = model.pages;
+              break;
+
+            case "Page":
+            case "Scenario":
+              children = model.children;
+          }
+        }
+
+        return rootGetters["app-components/filterByIds"](children);
+      },
+    isComponentSelected: (state) => (model) => {
+      return state.selectedComponents.has(model.id);
     },
     getSelectedComponents: (state, getters, rootState, rootGetters) => {
       return rootGetters["app-components/filterByIds"](
         Array.from(state.selectedComponents)
       );
     },
-    isComponentLocked: (state) => (id) => {
-      return state.lockedComponents.has(id);
+    componentHasSelectedDescendents: (state, getters) => (model) => {
+      const children = getters.getComponentChildren(model);
+      return children.some((child) => {
+        if (getters.isComponentSelected(child)) {
+          return true;
+        }
+
+        return getters.componentHasSelectedDescendents(child);
+      });
+    },
+    isComponentLocked: (state) => (model) => {
+      return state.lockedComponents.has(model.id);
     },
     getLockedComponents: (state, getters, rootState, rootGetters) => {
       return rootGetters["app-components/filterByIds"](
@@ -32,36 +71,36 @@ export function createStore({ debug = false } = {}) {
   };
 
   const mutations = {
-    selectComponent(state, id) {
-      state.selectedComponents.add(id);
+    selectComponent(state, model) {
+      state.selectedComponents.add(model.id);
     },
-    deselectComponent(state, id) {
-      state.selectedComponents.delete(id);
+    deselectComponent(state, model) {
+      state.selectedComponents.delete(model.id);
     },
     deselectAllComponents(state) {
       state.selectedComponents.clear();
     },
-    lockComponent(state, id) {
-      state.lockedComponents.add(id);
+    lockComponent(state, model) {
+      state.lockedComponents.add(model.id);
     },
-    unlockComponent(state, id) {
-      state.lockedComponents.delete(id);
+    unlockComponent(state, model) {
+      state.lockedComponents.delete(model.id);
     },
   };
 
   const actions = {
-    updateComponent(context, { model, data }) {
-      model.update(data);
+    updateComponent({ commit }, { model, data }) {
+      commit("app-components/update", { model, data });
     },
-    updateComponents({ dispatch }, { models, data }) {
+    updateComponents({ commit }, { models, data }) {
       models.forEach((model) => {
-        dispatch("updateComponent", { model, data });
+        commit("app-components/update", { model, data });
       });
     },
     addComponent({ getters, commit }, { data, parent }) {
       const model = getters["app-components/create"](data);
       commit("app-components/add", { model, parent });
-      commit("selectComponent", model.id);
+      commit("selectComponent", model);
     },
   };
 
