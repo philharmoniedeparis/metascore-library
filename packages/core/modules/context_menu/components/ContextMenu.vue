@@ -34,17 +34,18 @@ export default {
     },
   },
   watch: {
-    isShown(value) {
-      const window = this.$el.ownerDocument.defaultView;
-
-      if (value) {
-        window.addEventListener("mousedown", this.onWindowMousedown);
-        window.addEventListener("blur", this.onWindowBlur);
-        window.addEventListener("keyup", this.onWindowKeyup);
-      } else {
-        window.removeEventListener("mousedown", this.onWindowMousedown);
-        window.removeEventListener("blur", this.onWindowBlur);
+    target(value, oldValue) {
+      if (oldValue) {
+        const window = oldValue.ownerDocument.defaultView;
+        window.removeEventListener("mousedown", this.hide);
+        window.removeEventListener("blur", this.hide);
         window.removeEventListener("keyup", this.onWindowKeyup);
+      }
+      if (value) {
+        const window = value.ownerDocument.defaultView;
+        window.addEventListener("mousedown", this.hide);
+        window.addEventListener("blur", this.hide);
+        window.addEventListener("keyup", this.onWindowKeyup);
       }
     },
   },
@@ -55,12 +56,6 @@ export default {
         item.handler(this.target);
         this.hide();
       }
-    },
-    onWindowMousedown() {
-      this.hide();
-    },
-    onWindowBlur() {
-      //this.hide();
     },
     onWindowKeyup(evt) {
       if (evt.key === "Escape") {

@@ -3,11 +3,11 @@ import { cloneDeep } from "lodash";
 const initalState = {
   isShown: false,
   items: [],
+  target: null,
   position: {
     x: 0,
     y: 0,
   },
-  target: null,
 };
 
 export default {
@@ -15,9 +15,9 @@ export default {
   state: cloneDeep(initalState),
   mutations: {
     show(state, { x, y, target }) {
-      state.position = { x, y };
-      state.target = target;
       state.isShown = true;
+      state.target = target;
+      state.position = { x, y };
     },
     hide(state) {
       Object.assign(state, cloneDeep(initalState));
