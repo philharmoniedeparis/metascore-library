@@ -1,9 +1,7 @@
 const path = require("path");
+const { defineConfig } = require("@vue/cli-service");
 
-/**
- * @type {import('@vue/cli-service').ProjectOptions}
- */
-module.exports = {
+module.exports = defineConfig({
   lintOnSave: true,
   publicPath: "./",
   transpileDependencies: true,
@@ -93,4 +91,4 @@ module.exports = {
       .loader("@intlify/vue-i18n-loader")
       .end();
   },
-};
+});
