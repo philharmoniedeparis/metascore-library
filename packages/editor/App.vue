@@ -1,5 +1,5 @@
 <template>
-  <div class="metaScore-editor">
+  <div v-contextmenu.show class="metaScore-editor">
     <resizable-pane class="top">
       <main-menu />
     </resizable-pane>
@@ -39,6 +39,9 @@
         <waveform-zoom-controller />
       </div>
     </resizable-pane>
+    <context-menu>
+      <template #footer>metaScore Editor</template>
+    </context-menu>
   </div>
 </template>
 
@@ -178,7 +181,6 @@ export default {
     width: 20em;
     min-width: 15em;
     max-width: 25vw;
-    border-right: 0.5em solid $darkgray;
   }
 
   > .center {
@@ -191,7 +193,6 @@ export default {
     width: 20em;
     min-width: 15em;
     max-width: 25vw;
-    border-left: 0.5em solid $darkgray;
   }
 
   > .bottom {
@@ -202,8 +203,6 @@ export default {
     height: 300px;
     min-height: 150px;
     max-height: 75vh;
-    border-top: 0.5em solid $darkgray;
-    overflow-y: hidden;
     overflow-y: hidden;
 
     > .top {
@@ -294,6 +293,12 @@ export default {
         flex: 0 0 auto;
         background: $darkgray;
       }
+    }
+  }
+
+  ::v-deep(.context-menu) {
+    .footer {
+      opacity: 0.5;
     }
   }
 }

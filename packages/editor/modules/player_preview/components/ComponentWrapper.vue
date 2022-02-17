@@ -1,5 +1,6 @@
 <template>
-  <player-component-wrapper
+  <component-wrapper
+    v-contextmenu="contextmenuItems"
     :model="model"
     :class="{ selected, 'drag-over': dragOver }"
     @click.stop="onClick"
@@ -8,10 +9,8 @@
     @dragleave="onDragLeave"
     @drop="onDrop"
   >
-    <div class="editor-component-wrapper">
-      <slot />
-    </div>
-  </player-component-wrapper>
+    <slot />
+  </component-wrapper>
 </template>
 
 <script>
@@ -22,11 +21,11 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { mapGetters, mapMutations, mapActions } from "vuex";
-import PlayerComponentWrapper from "@metascore-library/player/modules/app_components/components/ComponentWrapper";
+import ComponentWrapper from "@metascore-library/player/modules/app_components/components/ComponentWrapper";
 
 export default {
   components: {
-    PlayerComponentWrapper,
+    ComponentWrapper,
   },
   props: {
     /**
@@ -41,12 +40,23 @@ export default {
   data() {
     return {
       dragOver: false,
+      dragEnterCounter: 0,
     };
   },
   computed: {
     ...mapGetters(["isComponentSelected"]),
     selected() {
       return this.isComponentSelected(this.model);
+    },
+    contextmenuItems() {
+      return [
+        {
+          label: `${this.model.type} ${this.model.name}`,
+          handler: () => {
+            console.log(this.model);
+          },
+        },
+      ];
     },
   },
   watch: {
@@ -80,6 +90,7 @@ export default {
         if (this.model.$isResizable) {
           this._interactables.resizable({
             edges: { top: true, left: true, bottom: true, right: true },
+            margin: 5,
             listeners: {
               move: this.onResize,
             },
@@ -177,6 +188,8 @@ export default {
       return false;
     },
     onDragEnter(evt) {
+      this.dragEnterCounter++;
+
       const draggedModel = this.getModelFromDragEvent(evt);
       if (this.isDropAllowed(draggedModel)) {
         this.dragOver = true;
@@ -191,9 +204,14 @@ export default {
       }
     },
     onDragLeave() {
-      this.dragOver = false;
+      if (--this.dragEnterCounter === 0) {
+        this.dragOver = false;
+      }
     },
-    onDrop(evt) {
+    async onDrop(evt) {
+      this.dragEnterCounter = 0;
+      this.dragOver = false;
+
       const droppedModel = this.getModelFromDragEvent(evt);
       if (this.isDropAllowed(droppedModel)) {
         switch (droppedModel.type) {
@@ -201,7 +219,7 @@ export default {
             break;
 
           default: {
-            const { left, top } = evt.target.getBoundingClientRect();
+            const { left, top } = this.$el.getBoundingClientRect();
             droppedModel.position = [
               Math.round(evt.clientX - left),
               Math.round(evt.clientY - top),
@@ -209,12 +227,13 @@ export default {
           }
         }
 
-        this.addComponent({
+        const model = await this.addComponent({
           data: droppedModel,
           parent: this.model,
         });
+        this.deselectAllComponents();
+        this.selectComponent(model);
 
-        this.dragOver = false;
         evt.stopPropagation();
         evt.preventDefault();
       }
@@ -225,9 +244,14 @@ export default {
 
 <style lang="scss" scoped>
 .metaScore-component {
-  overflow: visible;
   touch-action: none;
   user-select: none;
+
+  &.block {
+    &:hover::v-deep(> .pager) {
+      display: flex !important;
+    }
+  }
 
   &.selected {
     @each $component, $color in $component-colors {
@@ -239,14 +263,6 @@ export default {
         }
       }
     }
-  }
-
-  & > .editor-component-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    border-radius: inherit;
   }
 
   &.drag-over {

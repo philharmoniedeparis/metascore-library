@@ -1,5 +1,5 @@
 <template>
-  <div class="resizable-pane">
+  <div class="resizable-pane" :style="style">
     <slot />
   </div>
 </template>
@@ -27,6 +27,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    handleHeight: {
+      type: Number,
+      default: 6,
+    },
+  },
+  computed: {
+    style() {
+      const borderWidth = `${this.handleHeight}px`;
+
+      return {
+        borderTopWidth: this.top ? borderWidth : null,
+        borderLeftWidth: this.left ? borderWidth : null,
+        borderBottomWidth: this.bottom ? borderWidth : null,
+        borderRightWidth: this.right ? borderWidth : null,
+      };
+    },
   },
   mounted() {
     if (this.top || this.left || this.bottom || this.right) {
@@ -37,6 +53,7 @@ export default {
           bottom: this.bottom,
           right: this.right,
         },
+        margin: this.handleHeight,
         listeners: {
           move: this.onResize,
         },
@@ -68,5 +85,6 @@ export default {
   overflow: hidden;
   background: $lightgray;
   color: $white;
+  border: 0 solid $darkgray;
 }
 </style>

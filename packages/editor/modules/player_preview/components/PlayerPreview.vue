@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import "../../../polyfills/GeomertyUtils";
+import { mapState, mapMutations } from "vuex";
 import DynamicRuler from "./DynamicRuler.vue";
 
 export default {
@@ -47,9 +48,14 @@ export default {
     }),
   },
   methods: {
+    ...mapMutations("contextmenu", {
+      showContextmenu: "show",
+    }),
     async onIframeLoad() {
       const iframe = this.$refs.iframe;
-      const doc = iframe.contentDocument;
+
+      this.iframeDocument = iframe.contentDocument;
+      this.iframeBody = this.iframeDocument.body;
 
       // Find the url of the preloaded CSS link tag
       // (see css.extract options in vue.config.js),
@@ -61,13 +67,11 @@ export default {
         link.setAttribute("rel", "stylesheet");
         link.setAttribute("type", "text/css");
         link.setAttribute("href", url);
-        doc.head.appendChild(link);
+        this.iframeDocument.head.appendChild(link);
       }
 
-      this.iframeDocument = doc;
-      this.iframeBody = this.iframeDocument.body;
-
-      doc.addEventListener("mousemove", this.bubbleIframeEvent);
+      this.iframeDocument.addEventListener("mousemove", this.bubbleIframeEvent);
+      this.iframeBody.addEventListener("contextmenu", this.onIframeContextMenu);
 
       this.$emit("load", { iframe });
     },
@@ -93,6 +97,19 @@ export default {
       const new_evt = new evt.constructor(evt.type, init);
 
       iframe.dispatchEvent(new_evt);
+    },
+
+    onIframeContextMenu(evt) {
+      const { x, y } = window.convertPointFromNodeToPage(
+        this.$refs.iframe,
+        evt.pageX,
+        evt.pageY
+      );
+      this.showContextmenu({
+        x,
+        y,
+        target: evt.target,
+      });
     },
   },
 };

@@ -11,6 +11,7 @@ import AssetsLibrary from "./modules/assets_libraray";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
+import ContextMenu from "@metascore-library/core/modules/context_menu";
 import MainMenu from "./modules/mainmenu";
 import MediaSelector from "./modules/media_selector";
 import Panes from "./modules/panes";
@@ -43,6 +44,7 @@ export class Editor {
         BufferIndicator,
         ComponentForm,
         ComponentsLibrary,
+        ContextMenu,
         MainMenu,
         MediaSelector,
         Panes,

@@ -100,7 +100,7 @@ export function createStore({ debug = false } = {}) {
     addComponent({ getters, commit }, { data, parent }) {
       const model = getters["app-components/create"](data);
       commit("app-components/add", { model, parent });
-      commit("selectComponent", model);
+      return model;
     },
   };
 

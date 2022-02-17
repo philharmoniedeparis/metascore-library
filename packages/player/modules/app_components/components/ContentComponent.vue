@@ -40,7 +40,7 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-  ::v-deep(p) {
+  ::v-deep p {
     margin: 1em 0;
   }
 }

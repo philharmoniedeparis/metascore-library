@@ -27,6 +27,13 @@ export default {
       dragging: false,
     };
   },
+  computed: {
+    dragData() {
+      const data = this.model.toJson();
+      delete data.id;
+      return JSON.stringify(data);
+    },
+  },
   methods: {
     onItemMousemove(evt) {
       const interaction = evt.interaction;
@@ -53,10 +60,7 @@ export default {
     },
     onDragStart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(
-        `metascore/component`,
-        JSON.stringify(this.model.toJson())
-      );
+      evt.dataTransfer.setData(`metascore/component`, this.dragData);
 
       this.dragging = true;
     },
