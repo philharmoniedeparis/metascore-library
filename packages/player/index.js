@@ -6,6 +6,7 @@ import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/modules/manager.js";
 import AppRenderer from "./modules/app_renderer";
+import ContextMenu from "@metascore-library/core/modules/context_menu";
 
 export class Player {
   /**
@@ -20,7 +21,7 @@ export class Player {
     this._app = createApp(App, { url, api }).use(i18n).use(store);
 
     // Register root modules.
-    registerModules([AppRenderer], this._app, store).then(() => {
+    registerModules([AppRenderer, ContextMenu], this._app, store).then(() => {
       if (el) {
         this.mount(el);
       }

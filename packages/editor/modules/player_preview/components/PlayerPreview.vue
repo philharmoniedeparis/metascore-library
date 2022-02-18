@@ -17,7 +17,7 @@
 
 <script>
 import "../../../polyfills/GeomertyUtils";
-import { mapState, mapMutations } from "vuex";
+import { mapState } from "vuex";
 import DynamicRuler from "./DynamicRuler.vue";
 
 export default {
@@ -48,9 +48,6 @@ export default {
     }),
   },
   methods: {
-    ...mapMutations("contextmenu", {
-      showContextmenu: "show",
-    }),
     async onIframeLoad() {
       const iframe = this.$refs.iframe;
 
@@ -90,8 +87,17 @@ export default {
 
       if (evt instanceof MouseEvent) {
         const { left, top } = iframe.getBoundingClientRect();
+        const { x: pageX, y: pageY } = window.convertPointFromNodeToPage(
+          iframe,
+          evt.pageX,
+          evt.pageY
+        );
+
         init["clientX"] += left;
         init["clientY"] += top;
+
+        init["pageX"] = pageX;
+        init["pageY"] = pageY;
       }
 
       const new_evt = new evt.constructor(evt.type, init);
@@ -100,16 +106,13 @@ export default {
     },
 
     onIframeContextMenu(evt) {
-      const { x, y } = window.convertPointFromNodeToPage(
-        this.$refs.iframe,
-        evt.pageX,
-        evt.pageY
-      );
-      this.showContextmenu({
-        x,
-        y,
-        target: evt.target,
-      });
+      // Show the native menu if the Ctrl key is down.
+      if (evt.ctrlKey) {
+        return;
+      }
+
+      evt.preventDefault();
+      this.bubbleIframeEvent(evt);
     },
   },
 };

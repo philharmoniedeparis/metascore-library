@@ -1,5 +1,5 @@
 <template>
-  <div v-contextmenu.show class="metaScore-editor">
+  <context-menu class="metaScore-editor">
     <resizable-pane class="top">
       <main-menu />
     </resizable-pane>
@@ -8,7 +8,9 @@
       <tabs-container>
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
-        <tabs-item title="Shared Library"><shared-assets-library /></tabs-item>
+        <tabs-item title="Shared Library">
+          <shared-assets-library />
+        </tabs-item>
       </tabs-container>
     </resizable-pane>
 
@@ -39,14 +41,16 @@
         <waveform-zoom-controller />
       </div>
     </resizable-pane>
-    <context-menu>
-      <template #footer>metaScore Editor</template>
-    </context-menu>
-  </div>
+
+    <template #footer>
+      {{ `metaScore Editor ${version}` }}
+    </template>
+  </context-menu>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex";
+import packageInfo from "../../package.json";
 
 export default {
   props: {
@@ -58,6 +62,7 @@ export default {
   data() {
     return {
       modalsTarget: null,
+      version: packageInfo.version,
     };
   },
   computed: {

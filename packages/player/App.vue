@@ -1,10 +1,16 @@
 <template>
-  <div class="metaScore-player">
+  <context-menu class="metaScore-player">
     <app-renderer :url="url" :api="api" />
-  </div>
+
+    <template #footer>
+      {{ `metaScore Player ${version}` }}
+    </template>
+  </context-menu>
 </template>
 
 <script>
+import packageInfo from "../../package.json";
+
 export default {
   props: {
     url: {
@@ -15,6 +21,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  date() {
+    return {
+      version: packageInfo.version,
+    };
   },
 };
 </script>

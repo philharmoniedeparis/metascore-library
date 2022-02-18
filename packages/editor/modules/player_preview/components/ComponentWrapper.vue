@@ -1,8 +1,8 @@
 <template>
   <component-wrapper
-    v-contextmenu="contextmenuItems"
     :model="model"
     :class="{ selected, 'drag-over': dragOver }"
+    @contextmenu="onContextmenu"
     @click.stop="onClick"
     @dragenter="onDragEnter"
     @dragover="onDragOver"
@@ -21,6 +21,7 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import { useContextmenu } from "@metascore-library/core/modules/context_menu";
 import ComponentWrapper from "@metascore-library/player/modules/app_components/components/ComponentWrapper";
 
 export default {
@@ -37,6 +38,13 @@ export default {
     },
   },
   emits: ["componentclick"],
+  setup() {
+    const { addItems: addContextmenuItems } = useContextmenu();
+
+    return {
+      addContextmenuItems,
+    };
+  },
   data() {
     return {
       dragOver: false,
@@ -49,14 +57,90 @@ export default {
       return this.isComponentSelected(this.model);
     },
     contextmenuItems() {
-      return [
-        {
-          label: `${this.model.type} ${this.model.name}`,
-          handler: () => {
-            console.log(this.model);
-          },
-        },
-      ];
+      switch (this.model.type) {
+        case "Scenario":
+          return [];
+
+        case "Block":
+          return [];
+
+        case "Page":
+          return [];
+
+        default:
+          return [
+            {
+              label: `${this.model.name} (${this.model.type})`,
+              items: [
+                {
+                  label: "Select",
+                  handler: () => {
+                    console.log("Select");
+                  },
+                },
+                {
+                  label: "Copy",
+                  handler: () => {
+                    console.log("Copy");
+                  },
+                },
+                {
+                  label: "Paste",
+                  handler: () => {
+                    console.log("Copy");
+                  },
+                },
+                {
+                  label: "Delete",
+                  handler: () => {
+                    console.log("Delete");
+                  },
+                },
+                {
+                  label: "Lock",
+                  handler: () => {
+                    console.log("Lock");
+                  },
+                },
+                {
+                  label: "Unlock",
+                  handler: () => {
+                    console.log("Unlock");
+                  },
+                },
+                {
+                  label: "Arrange",
+                  items: [
+                    {
+                      label: "Bring to front",
+                      handler: () => {
+                        console.log("Bring to front");
+                      },
+                    },
+                    {
+                      label: "Send to back",
+                      handler: () => {
+                        console.log("Send to back");
+                      },
+                    },
+                    {
+                      label: "Bring forward",
+                      handler: () => {
+                        console.log("Bring forward");
+                      },
+                    },
+                    {
+                      label: "Send backward",
+                      handler: () => {
+                        console.log("Send backward");
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+      }
     },
   },
   watch: {
@@ -237,6 +321,9 @@ export default {
         evt.stopPropagation();
         evt.preventDefault();
       }
+    },
+    onContextmenu() {
+      this.addContextmenuItems(this.contextmenuItems);
     },
   },
 };
