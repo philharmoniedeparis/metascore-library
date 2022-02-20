@@ -2,12 +2,11 @@ import { computed, unref, readonly } from "vue";
 import { useStore } from "vuex";
 import { isNull, isUndefined } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
-import Opacitiable from "../models/mixins/Opacitiable";
 
 export default function (model) {
   const store = useStore();
 
-  if (unref(model) instanceof Opacitiable) {
+  if (unref(model).$isOpacitiable) {
     const opacity = computed(() => {
       const mediaTime = store.state.media.time;
       const { opacity } = unref(model);

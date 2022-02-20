@@ -1,11 +1,11 @@
 import { mix } from "mixwith";
-import * as Components from ".";
+import { AbstractComponent } from ".";
 import Hideable from "./mixins/Hideable";
 import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
 import Timeable from "./mixins/Timeable";
 
-export class EmbeddableComponent extends mix(Components.AbstractComponent).with(
+export class EmbeddableComponent extends mix(AbstractComponent).with(
   Hideable,
   Opacitiable,
   Positionable,
@@ -13,7 +13,7 @@ export class EmbeddableComponent extends mix(Components.AbstractComponent).with(
 ) {
   static type = "EmbeddableComponent";
 
-  static baseModel = Components.AbstractComponent;
+  static baseModel = AbstractComponent;
 }
 
 export default EmbeddableComponent;

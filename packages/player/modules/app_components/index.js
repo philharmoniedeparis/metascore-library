@@ -35,3 +35,5 @@ export default {
     store.registerModule("app-components", moduleStore);
   },
 };
+
+export { default as ComponentWrapper } from "./components/ComponentWrapper";

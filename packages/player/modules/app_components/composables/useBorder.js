@@ -1,9 +1,8 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import Borderable from "../models/mixins/Borderable";
 
 export default function (model) {
-  if (unref(model) instanceof Borderable) {
+  if (unref(model).$isBorderable) {
     const border = computed(() => {
       const {
         "border-width": borderWidth,

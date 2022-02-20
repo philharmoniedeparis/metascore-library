@@ -1,9 +1,8 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import Positionable from "../models/mixins/Positionable";
 
 export default function (model) {
-  if (unref(model) instanceof Positionable) {
+  if (unref(model).$isPositionable) {
     const position = computed(() => {
       const { position: value } = unref(model);
       const ret = {};

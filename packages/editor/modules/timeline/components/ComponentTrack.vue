@@ -101,13 +101,15 @@ export default {
       mediaDuration: "duration",
     }),
     ...mapGetters([
-      "componentHasChildren",
-      "getComponentChildren",
       "isComponentSelected",
       "componentHasSelectedDescendents",
       "isComponentLocked",
     ]),
-    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
+    ...mapGetters("app-components", {
+      getComponent: "get",
+      componentHasChildren: "hasChildren",
+      getComponentChildren: "getChildren",
+    }),
     selected() {
       return this.isComponentSelected(this.model);
     },
@@ -123,7 +125,9 @@ export default {
       return this.componentHasChildren(this.model);
     },
     children() {
-      const children = this.getComponentChildren(this.model);
+      const children = this.getComponentChildren(this.model).map(
+        this.getComponent
+      );
 
       switch (this.model.type) {
         case "Page":
@@ -137,11 +141,14 @@ export default {
     hasSelectedDescendents() {
       return this.componentHasSelectedDescendents(this.model);
     },
+    isTimeable() {
+      return this.model.$isTimeable;
+    },
     hasStartTime() {
-      return this.model.$isTimeable && this.model.$hasStartTime;
+      return this.isTimeable && this.model.$hasStartTime;
     },
     hasEndTime() {
-      return this.model.$isTimeable && this.model.$hasEndTime;
+      return this.isTimeable && this.model.$hasEndTime;
     },
     timeStyle() {
       const style = {};
@@ -166,7 +173,7 @@ export default {
       if (value) {
         this._time_interactables = [];
 
-        if (this.model.$isTimeable) {
+        if (this.isTimeable) {
           // @todo: skip for locked components and pages of non-synched blocks
 
           const resizable = interact(this.$refs.time);

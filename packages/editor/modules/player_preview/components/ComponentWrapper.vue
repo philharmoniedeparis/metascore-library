@@ -22,7 +22,7 @@ import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { useContextmenu } from "@metascore-library/core/modules/context_menu";
-import ComponentWrapper from "@metascore-library/player/modules/app_components/components/ComponentWrapper";
+import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
   },
   props: {
     /**
-     * The associated vuex-orm model
+     * The associated component model
      */
     model: {
       type: Object,
@@ -55,6 +55,12 @@ export default {
     ...mapGetters(["isComponentSelected"]),
     selected() {
       return this.isComponentSelected(this.model);
+    },
+    isPositionable() {
+      return this.model.$isPositionable;
+    },
+    isResizable() {
+      return this.model.$isResizable;
     },
     contextmenuItems() {
       switch (this.model.type) {
@@ -145,12 +151,12 @@ export default {
   },
   watch: {
     selected(value) {
-      if (value && (this.model.$isPositionable || this.model.$isResizable)) {
+      if (value && (this.isPositionable || this.isResizable)) {
         this._interactables = interact(this.$el, {
           context: this.$el.ownerDocument,
         });
 
-        if (this.model.$isPositionable) {
+        if (this.isPositionable) {
           let allowFrom = null;
 
           switch (this.model.type) {
@@ -171,7 +177,7 @@ export default {
           });
         }
 
-        if (this.model.$isResizable) {
+        if (this.isResizable) {
           this._interactables.resizable({
             edges: { top: true, left: true, bottom: true, right: true },
             margin: 5,

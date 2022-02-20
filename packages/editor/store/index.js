@@ -13,59 +13,31 @@ export function createStore({ debug = false } = {}) {
   };
 
   const getters = {
-    componentHasChildren: () => (model) => {
-      switch (model.type) {
-        case "Block":
-          return model.pages?.length > 0;
-        case "Page":
-        case "Scenario":
-          return model.children?.length > 0;
-      }
-
-      return false;
-    },
-    getComponentChildren:
-      (state, getters, rootState, rootGetters) => (model) => {
-        let children = [];
-
-        if (getters.componentHasChildren(model)) {
-          switch (model.type) {
-            case "Block":
-              children = model.pages;
-              break;
-
-            case "Page":
-            case "Scenario":
-              children = model.children;
-          }
-        }
-
-        return rootGetters["app-components/filterByIds"](children);
-      },
     isComponentSelected: (state) => (model) => {
       return state.selectedComponents.has(model.id);
     },
     getSelectedComponents: (state, getters, rootState, rootGetters) => {
-      return rootGetters["app-components/filterByIds"](
-        Array.from(state.selectedComponents)
+      return Array.from(state.selectedComponents).map(
+        rootGetters["app-components/get"]
       );
     },
-    componentHasSelectedDescendents: (state, getters) => (model) => {
-      const children = getters.getComponentChildren(model);
-      return children.some((child) => {
-        if (getters.isComponentSelected(child)) {
-          return true;
-        }
+    componentHasSelectedDescendents:
+      (state, getters, rootState, rootGetters) => (model) => {
+        const children = rootGetters["app-components/getChildren"](model);
+        return children.some((child) => {
+          if (getters.isComponentSelected(child)) {
+            return true;
+          }
 
-        return getters.componentHasSelectedDescendents(child);
-      });
-    },
+          return getters.componentHasSelectedDescendents(child);
+        });
+      },
     isComponentLocked: (state) => (model) => {
       return state.lockedComponents.has(model.id);
     },
     getLockedComponents: (state, getters, rootState, rootGetters) => {
-      return rootGetters["app-components/filterByIds"](
-        Array.from(state.lockedComponents)
+      return Array.from(state.lockedComponents).map(
+        rootGetters["app-components/get"]
       );
     },
   };

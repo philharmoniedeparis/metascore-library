@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper v-if="active" :model="model" class="scenario">
+  <component-wrapper :model="model" class="scenario">
     <template v-for="child in children" :key="child.id">
       <component :is="`${child.type}Component`" :model="child" />
     </template>
@@ -18,12 +18,12 @@ export default {
   },
   computed: {
     ...mapState("app-components", ["activeScenario"]),
-    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
-    active() {
-      return this.model.id === this.activeScenario;
-    },
+    ...mapGetters("app-components", {
+      getComponent: "get",
+      getComponentChildren: "getChildren",
+    }),
     children() {
-      return this.filterComponentsByIds(this.model.children);
+      return this.getComponentChildren(this.model).map(this.getComponent);
     },
   },
 };

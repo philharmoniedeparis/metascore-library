@@ -1,9 +1,8 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import Backgroundable from "../models/mixins/Backgroundable";
 
 export default function (model) {
-  if (unref(model) instanceof Backgroundable) {
+  if (unref(model).$isBackgroundable) {
     const background = computed(() => {
       const {
         "background-color": backgroundColor,

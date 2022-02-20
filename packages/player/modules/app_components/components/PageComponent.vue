@@ -12,7 +12,7 @@ import { mapGetters } from "vuex";
 export default {
   props: {
     /**
-     * The associated vuex-orm model
+     * The associated component model
      */
     model: {
       type: Object,
@@ -20,9 +20,12 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
+    ...mapGetters("app-components", {
+      getComponent: "get",
+      getComponentChildren: "getChildren",
+    }),
     children() {
-      return this.filterComponentsByIds(this.model.children);
+      return this.getComponentChildren(this.model).map(this.getComponent);
     },
   },
 };

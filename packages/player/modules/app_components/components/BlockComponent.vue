@@ -20,7 +20,7 @@
 <template>
   <component-wrapper
     :model="model"
-    :class="{ toggled: isToggled(model.id) }"
+    :class="{ toggled: isBlockToggled(model.id) }"
     class="block"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
@@ -91,7 +91,7 @@ export default {
   inject: ["$deviceHasTouch"],
   props: {
     /**
-     * The associated vuex-orm model
+     * The associated component model
      */
     model: {
       type: Object,
@@ -105,9 +105,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("app-components", ["isBlockToggled"]),
     ...mapGetters("app-components", {
-      filterComponentsByIds: "filterByIds",
-      isToggled: "isBlockToggled",
+      getComponent: "get",
+      getComponentChildren: "getChildren",
     }),
     synched() {
       return this.model.synched;
@@ -129,7 +130,7 @@ export default {
       }
     },
     pages() {
-      return this.filterComponentsByIds(this.model.pages);
+      return this.getComponentChildren(this.model).map(this.getComponent);
     },
     pageCount() {
       return this.pages.length;

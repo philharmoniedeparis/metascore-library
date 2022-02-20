@@ -23,7 +23,7 @@ export default {
   },
   props: {
     /**
-     * The associated vuex-orm model
+     * The associated component model
      */
     model: {
       type: Object,

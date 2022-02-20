@@ -1,42 +1,12 @@
-import * as Components from "../models";
-import { filter, cloneDeep } from "lodash";
-
-function normalize(data) {
-  let normalized = {};
-  data.forEach((value) => {
-    const relations = [];
-    switch (value.type) {
-      case "Scenario":
-      case "Page":
-        relations.push("children");
-        break;
-
-      case "Block":
-        relations.push("pages");
-        break;
-    }
-
-    relations.forEach((relation) => {
-      if (value[relation]) {
-        normalized = {
-          ...normalized,
-          ...normalize(value[relation]),
-        };
-        value[relation] = value[relation].map((related) => related.id);
-      }
-    });
-
-    const model = new Components[value.type](value);
-    normalized[model.id] = model;
-  });
-
-  return normalized;
-}
+import { filter } from "lodash";
+import { normalize } from "../utils/normalize";
+import * as Models from "../models";
 
 export default {
   namespaced: true,
   state: {
     components: {},
+    scenarios: [],
     activeScenario: null,
     toggledBlocks: [],
   },
@@ -46,18 +16,9 @@ export default {
       return component && !component.$deleted ? component : null;
     },
     create: () => (data) => {
-      if (data.type in Components) {
-        return new Components[data.type](data);
+      if (data.type in Models) {
+        return new Models[data.type](data);
       }
-    },
-    filterByIds: (state) => (ids) => {
-      return ids
-        .map((id) => {
-          return state.components[id];
-        })
-        .filter((component) => {
-          return component && !component.$deleted;
-        });
     },
     filterByType: (state) => (type) => {
       return filter(state.components, (component) => {
@@ -67,10 +28,47 @@ export default {
     isBlockToggled: (state) => (id) => {
       return state.toggledBlocks.includes(id);
     },
+    hasChildren: () => (component) => {
+      switch (component.type) {
+        case "Block":
+          return component.pages?.length > 0;
+        case "Page":
+        case "Scenario":
+          return component.children?.length > 0;
+      }
+
+      return false;
+    },
+    getChildren: (state, getters) => (component) => {
+      let ids = [];
+
+      if (getters.hasChildren(component)) {
+        switch (component.type) {
+          case "Block":
+            ids = component.pages;
+            break;
+
+          case "Page":
+          case "Scenario":
+            ids = component.children;
+        }
+      }
+
+      return ids;
+    },
   },
   mutations: {
     _set(state, data) {
-      state.components = normalize(cloneDeep(data));
+      const normalized = normalize(data);
+
+      Object.entries(normalized.entities.components).forEach(
+        ([key, values]) => {
+          state.components[key] = new Models[values.type](values);
+        }
+      );
+
+      state.scenarios = normalized.result;
+      state.activeScenario = state.scenarios[0];
     },
     update(state, { model, data }) {
       model.update(data);
@@ -87,8 +85,8 @@ export default {
           parent.children.push(model.id);
       }
     },
-    setActiveScenario(state, scenario) {
-      state.activeScenario = scenario.id;
+    setActiveScenario(state, id) {
+      state.activeScenario = id;
     },
     toggleBlock(state, id) {
       if (state.toggledBlocks.includes(id)) {
@@ -97,11 +95,38 @@ export default {
         state.toggledBlocks.push(id);
       }
     },
+    hasChildren: () => (model) => {
+      switch (model.type) {
+        case "Block":
+          return model.pages?.length > 0;
+        case "Page":
+        case "Scenario":
+          return model.children?.length > 0;
+      }
+
+      return false;
+    },
+    getChildren: (state, getters) => (model) => {
+      let ids = [];
+
+      if (getters.hasChildren(model)) {
+        switch (model.type) {
+          case "Block":
+            ids = model.pages;
+            break;
+
+          case "Page":
+          case "Scenario":
+            ids = model.children;
+        }
+      }
+
+      return ids;
+    },
   },
   actions: {
-    async set({ commit, getters }, data) {
+    async set({ commit }, data) {
       commit("_set", data);
-      commit("setActiveScenario", getters.filterByType("Scenario")[0]);
     },
   },
 };

@@ -28,7 +28,7 @@ import { sortBy } from "lodash";
 export default {
   props: {
     /**
-     * The associated vuex-orm model
+     * The associated component model
      */
     model: {
       type: Object,
@@ -37,9 +37,9 @@ export default {
   },
   computed: {
     ...mapGetters("app-components", ["isBlockToggled"]),
-    ...mapGetters("app-components", { filterComponentsByIds: "filterByIds" }),
+    ...mapGetters("app-components", { getComponent: "get" }),
     blocks() {
-      return this.filterComponentsByIds(this.model.blocks);
+      return this.model.blocks.map(this.getComponent);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [

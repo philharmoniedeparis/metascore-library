@@ -7,9 +7,7 @@
       :use-request-animation-frame="true"
     />
 
-    <template v-for="scenario in scenarios" :key="scenario.id">
-      <scenario-component :model="scenario" />
-    </template>
+    <scenario-component v-if="scenario" :model="scenario" />
   </div>
 </template>
 
@@ -33,9 +31,10 @@ export default {
     ...mapState("media", {
       mediaSource: "source",
     }),
-    ...mapGetters("app-components", { filterComponentsByType: "filterByType" }),
-    scenarios() {
-      return this.filterComponentsByType("Scenario");
+    ...mapState("app-components", ["activeScenario"]),
+    ...mapGetters("app-components", { getComponent: "get" }),
+    scenario() {
+      return this.getComponent(this.activeScenario);
     },
   },
   watch: {
