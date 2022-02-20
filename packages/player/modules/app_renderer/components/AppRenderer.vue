@@ -12,15 +12,11 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   inject: ["$postMessage"],
   props: {
-    url: {
-      type: String,
-      required: true,
-    },
     api: {
       type: Boolean,
       default: false,
@@ -52,17 +48,12 @@ export default {
       this.$postMessage.on(this.onAPIMessage);
     }
   },
-  async mounted() {
-    await this.load(this.url);
-  },
   unmounted() {
     if (this.api) {
       this.$postMessage.off(this.onAPIMessage);
     }
   },
   methods: {
-    ...mapActions({ load: "app-renderer/load" }),
-
     onAPIMessage(evt) {
       console.log(evt.data);
     },

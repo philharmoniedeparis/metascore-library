@@ -10,7 +10,7 @@
       @load="onIframeLoad"
     ></iframe>
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
-      <app-renderer :url="url" />
+      <app-renderer />
     </teleport>
   </div>
 </template>
@@ -25,10 +25,6 @@ export default {
     DynamicRuler,
   },
   props: {
-    url: {
-      type: String,
-      required: true,
-    },
     css: {
       type: String,
       default: null,
@@ -49,28 +45,36 @@ export default {
   },
   methods: {
     async onIframeLoad() {
-      const iframe = this.$refs.iframe;
+      this.$nextTick(function () {
+        const iframe = this.$refs.iframe;
 
-      this.iframeDocument = iframe.contentDocument;
-      this.iframeBody = this.iframeDocument.body;
+        this.iframeDocument = iframe.contentDocument;
+        this.iframeBody = this.iframeDocument.body;
 
-      // Find the url of the preloaded CSS link tag
-      // (see css.extract options in vue.config.js),
-      // and add it to the iframe.
-      const preloaded = document.querySelector("link#player-preview");
-      if (preloaded) {
-        const url = preloaded.getAttribute("href");
-        const link = document.createElement("link");
-        link.setAttribute("rel", "stylesheet");
-        link.setAttribute("type", "text/css");
-        link.setAttribute("href", url);
-        this.iframeDocument.head.appendChild(link);
-      }
+        // Find the url of the preloaded CSS link tag
+        // (see css.extract options in vue.config.js),
+        // and add it to the iframe.
+        const preloaded = document.querySelector("link#player-preview");
+        if (preloaded) {
+          const url = preloaded.getAttribute("href");
+          const link = document.createElement("link");
+          link.setAttribute("rel", "stylesheet");
+          link.setAttribute("type", "text/css");
+          link.setAttribute("href", url);
+          this.iframeDocument.head.appendChild(link);
+        }
 
-      this.iframeDocument.addEventListener("mousemove", this.bubbleIframeEvent);
-      this.iframeBody.addEventListener("contextmenu", this.onIframeContextMenu);
+        this.iframeDocument.addEventListener(
+          "mousemove",
+          this.bubbleIframeEvent
+        );
+        this.iframeBody.addEventListener(
+          "contextmenu",
+          this.onIframeContextMenu
+        );
 
-      this.$emit("load", { iframe });
+        this.$emit("load", { iframe });
+      });
     },
 
     /**

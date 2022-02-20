@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import packageInfo from "../../package.json";
 
 export default {
@@ -26,6 +27,12 @@ export default {
     return {
       version: packageInfo.version,
     };
+  },
+  async mounted() {
+    await this.load(this.url);
+  },
+  methods: {
+    ...mapActions(["load"]),
   },
 };
 </script>

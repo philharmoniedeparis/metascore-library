@@ -15,7 +15,7 @@
     </resizable-pane>
 
     <resizable-pane class="center">
-      <player-preview :url="url" />
+      <player-preview />
     </resizable-pane>
 
     <resizable-pane class="right" :left="true">
@@ -77,10 +77,12 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     this.modalsTarget = this.$el;
+    await this.load(this.url);
   },
   methods: {
+    ...mapActions(["load"]),
     ...mapActions({ loadWaveform: "waveform/load" }),
   },
 };

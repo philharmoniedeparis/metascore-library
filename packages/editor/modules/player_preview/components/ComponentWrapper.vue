@@ -210,11 +210,9 @@ export default {
     ]),
     ...mapActions(["updateComponent", "addComponent"]),
     onClick(evt) {
-      const model = this.model;
-
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent(model);
+          this.deselectComponent(this.model);
           evt.stopImmediatePropagation();
         }
       } else {
@@ -222,7 +220,7 @@ export default {
           this.deselectAllComponents();
         }
 
-        this.selectComponent(model);
+        this.selectComponent(this.model);
         evt.stopImmediatePropagation();
       }
     },
