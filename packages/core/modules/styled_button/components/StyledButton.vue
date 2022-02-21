@@ -49,7 +49,6 @@ export default {
   border-radius: 2px;
   text-align: center;
   font-size: 1em;
-  font-weight: 600;
   font-family: "SourceSansPro", "Source-Sans-Pro", "Source Sans Pro", sans-serif;
   cursor: pointer;
 

@@ -28,6 +28,7 @@
       :popper-options="{ strategy: 'fixed' }"
     >
       <button class="opener" :style="`color: ${modelValue};`"></button>
+
       <template #content="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
@@ -41,12 +42,16 @@
           </tabs-item>
         </tabs-container>
         <div class="buttons">
-          <button class="apply" @click="onApplyClick(hide)">
-            <span class="label">{{ $t("apply_button") }}</span>
-          </button>
-          <button class="cancel" @click="hide">
-            <span class="label">{{ $t("cancel_button") }}</span>
-          </button>
+          <styled-button
+            class="apply"
+            role="primary"
+            @click="onApplyClick(hide)"
+          >
+            {{ $t("apply_button") }}
+          </styled-button>
+          <styled-button class="cancel" role="secondary" @click="hide">
+            {{ $t("cancel_button") }}
+          </styled-button>
         </div>
       </template>
     </tippy>
@@ -163,7 +168,6 @@ export default {
 
       button {
         margin-right: 0.25em;
-        padding: 0.25em 0.5em;
         color: $white;
         background: $lightgray;
 

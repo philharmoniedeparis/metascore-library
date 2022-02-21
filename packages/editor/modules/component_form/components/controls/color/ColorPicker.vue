@@ -38,20 +38,20 @@
     </div>
     <div class="format">
       <input ref="text" :value="text" type="text" @change="onTextChange" />
-      <button
+      <styled-button
         :class="['hexa', { selected: format == 'hexa' }]"
         type="button"
         @click="format = 'hexa'"
       >
         {{ $t("hexa_button") }}
-      </button>
-      <button
+      </styled-button>
+      <styled-button
         :class="['rgba', { selected: format == 'rgba' }]"
         type="button"
         @click="format = 'rgba'"
       >
         {{ $t("rgba_button") }}
-      </button>
+      </styled-button>
     </div>
   </div>
 </template>
@@ -383,6 +383,7 @@ export default {
     }
 
     button {
+      padding: 0.5em;
       color: $white;
 
       &.selected {
