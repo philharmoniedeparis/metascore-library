@@ -6,7 +6,7 @@
       type="text"
       @change="onChange"
       @keypress="onKeypress"
-      @mousedown="onMouseDown"
+      @mousedown="onMousedown"
       @wheel.prevent="onWheel"
       @click="onClick"
       @focus="onFocus"
@@ -175,7 +175,7 @@ export default {
     },
   },
   methods: {
-    onMouseDown() {
+    onMousedown() {
       this.skip_focus = true;
     },
     onWheel(evt) {

@@ -55,7 +55,7 @@ export default {
         },
         margin: this.handleHeight,
         listeners: {
-          move: this.onResize,
+          move: this.onResizableMove,
         },
       });
     }
@@ -67,7 +67,7 @@ export default {
     }
   },
   methods: {
-    onResize(evt) {
+    onResizableMove(evt) {
       if (this.left || this.right) {
         evt.target.style.width = `${evt.rect.width}px`;
       }

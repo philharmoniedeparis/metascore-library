@@ -51,16 +51,16 @@ export default {
             }),
           ],
           listeners: {
-            start: this.onHandleDragStart,
-            move: this.onHandleDrag,
-            end: this.onHandleDragEnd,
+            start: this.onHandleDraggableStart,
+            move: this.onHandleDraggableMove,
+            end: this.onHandleDraggableEnd,
           },
         })
         .dropzone({
           context: this.$el,
-          checker: this.handleDropChecker,
+          checker: this.handleDropzoneChecker,
           listeners: {
-            dropmove: this.onHandleDropMove,
+            dropmove: this.onHandleDropzoneDropmove,
           },
         });
     });
@@ -73,21 +73,21 @@ export default {
   },
   methods: {
     ...mapActions(["updateComponent"]),
-    onHandleDragStart(evt) {
+    onHandleDraggableStart(evt) {
       const { target: handle } = evt;
       const track = handle.parentNode;
 
       track.classList.add("dragging");
       handle.setAttribute("data-drag-y", 0);
     },
-    onHandleDrag(evt) {
+    onHandleDraggableMove(evt) {
       const { target: handle, dy } = evt;
       const y = parseFloat(handle.getAttribute("data-drag-y")) + dy;
 
       handle.setAttribute("data-drag-y", y);
       handle.style.transform = `translateY(${y}px)`;
     },
-    onHandleDragEnd(evt) {
+    onHandleDraggableEnd(evt) {
       const { target: handle } = evt;
       const track = handle.parentNode;
 
@@ -115,7 +115,7 @@ export default {
         this.resorted = false;
       }
     },
-    handleDropChecker(
+    handleDropzoneChecker(
       dragEvent,
       event,
       dropped,
@@ -151,7 +151,7 @@ export default {
 
       return overlapRatio >= 0.25;
     },
-    onHandleDropMove(evt) {
+    onHandleDropzoneDropmove(evt) {
       const drag_hanlde = evt.dragEvent.target;
       const drag_track = drag_hanlde.parentNode;
       const { top: drag_top, bottom: drag_bottom } =

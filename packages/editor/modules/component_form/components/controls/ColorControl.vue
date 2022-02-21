@@ -32,7 +32,7 @@
       <template #content="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
-            <color-picker v-model="value" :value="internalValue" />
+            <color-picker v-model="value" />
           </tabs-item>
           <tabs-item v-if="swatches" title="Swatches">
             <color-swatches

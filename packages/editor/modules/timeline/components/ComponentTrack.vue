@@ -177,7 +177,7 @@ export default {
           resizable.resizable({
             edges: { left: true, right: true },
             listeners: {
-              move: this.onTimeResize,
+              move: this.onTimeResizableMove,
             },
           });
 
@@ -218,7 +218,7 @@ export default {
         this.selectComponent(model);
       }
     },
-    onTimeResize(evt) {
+    onTimeResizableMove(evt) {
       const time = evt.target;
       const time_wrapper = time.parentNode;
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();

@@ -1,5 +1,5 @@
 <template>
-  <div class="lottie-animation-icon" @mouseover="play" @mouseout="stop" />
+  <div class="lottie-animation-icon" />
 </template>
 
 <script>

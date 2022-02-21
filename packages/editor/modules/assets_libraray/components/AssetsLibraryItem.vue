@@ -2,8 +2,8 @@
   <div
     :class="['assets-library-item', { dragging }]"
     draggable="true"
-    @dragstart="onDragStart"
-    @dragend="onDragEnd"
+    @dragstart="onDragstart"
+    @dragend="onDragend"
     @mouseover="onMouseover"
     @mouseout="onMouseout"
   >
@@ -67,14 +67,14 @@ export default {
     },
   },
   methods: {
-    onDragStart(evt) {
+    onDragstart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(`metascore/asset`, this.dragData);
 
       this.play = false;
       this.dragging = true;
     },
-    onDragEnd() {
+    onDragend() {
       this.dragging = false;
     },
     onMouseover() {

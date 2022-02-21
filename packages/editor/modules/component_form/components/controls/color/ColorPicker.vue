@@ -189,11 +189,11 @@ export default {
             }),
           ],
           listeners: {
-            move: this.onPaletteMove,
+            move: this.onPaletteDraggableMove,
           },
         })
         .pointerEvents({ origin: "self" })
-        .on("down", this.onPaletteMove);
+        .on("down", this.onPaletteDraggableMove);
       this._interactables.push(palette);
 
       const hue = interact(this.$refs.hue)
@@ -206,11 +206,11 @@ export default {
             }),
           ],
           listeners: {
-            move: this.onHueMove,
+            move: this.onHueDraggableMove,
           },
         })
         .pointerEvents({ origin: "self" })
-        .on("down", this.onHueMove);
+        .on("down", this.onHueDraggableMove);
       this._interactables.push(hue);
 
       const opacity = interact(this.$refs.opacity)
@@ -223,11 +223,11 @@ export default {
             }),
           ],
           listeners: {
-            move: this.onOpacityMove,
+            move: this.onOpacityDraggableMove,
           },
         })
         .pointerEvents({ origin: "self" })
-        .on("down", this.onOpacityMove);
+        .on("down", this.onOpacityDraggableMove);
       this._interactables.push(opacity);
     },
     destroyInteractions() {
@@ -239,7 +239,7 @@ export default {
         delete this._interactables;
       }
     },
-    onPaletteMove(evt) {
+    onPaletteDraggableMove(evt) {
       const { width, height } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
       const y = evt.pageY / height;
@@ -248,14 +248,14 @@ export default {
       this.hsv[2] = 1 - round(y, 2);
       this.$emit("update:modelValue", this.css);
     },
-    onHueMove(evt) {
+    onHueDraggableMove(evt) {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
       this.hsv[0] = round(x * 360, 2);
       this.$emit("update:modelValue", this.css);
     },
-    onOpacityMove(evt) {
+    onOpacityDraggableMove(evt) {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
@@ -296,6 +296,7 @@ export default {
     position: relative;
     height: 10em;
     margin-bottom: 0.5em;
+    overflow: hidden;
     cursor: grab;
   }
 

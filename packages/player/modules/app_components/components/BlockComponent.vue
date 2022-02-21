@@ -22,8 +22,8 @@
     :model="model"
     :class="{ toggled: isBlockToggled(model) }"
     class="block"
-    @mouseenter="onMouseEnter"
-    @mouseleave="onMouseLeave"
+    @mouseenter="onMouseenter"
+    @mouseleave="onMouseleave"
   >
     <nav v-show="pagerVisibe" class="pager">
       <div class="count">page {{ activePageIndex + 1 }}/{{ pageCount }}</div>
@@ -179,14 +179,14 @@ export default {
     /**
      * The 'mouseenter' event handler
      */
-    onMouseEnter() {
+    onMouseenter() {
       this.hover = true;
     },
 
     /**
      * The 'mouseleave' event handler
      */
-    onMouseLeave() {
+    onMouseleave() {
       this.hover = false;
     },
 

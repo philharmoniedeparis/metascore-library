@@ -4,9 +4,9 @@
     :class="{ selected, 'drag-over': dragOver }"
     @contextmenu="onContextmenu"
     @click.stop="onClick"
-    @dragenter="onDragEnter"
-    @dragover="onDragOver"
-    @dragleave="onDragLeave"
+    @dragenter="onDragenter"
+    @dragover="onDragover"
+    @dragleave="onDragleave"
     @drop="onDrop"
   >
     <slot />
@@ -171,8 +171,8 @@ export default {
           this._interactables.draggable({
             allowFrom,
             listeners: {
-              move: this.onDragMove,
-              end: this.onDragEnd,
+              move: this.onDraggableMove,
+              end: this.onDraggableEnd,
             },
           });
         }
@@ -182,7 +182,7 @@ export default {
             edges: { top: true, left: true, bottom: true, right: true },
             margin: 5,
             listeners: {
-              move: this.onResize,
+              move: this.onResizableMove,
             },
           });
         }
@@ -224,7 +224,7 @@ export default {
         evt.stopImmediatePropagation();
       }
     },
-    onDragMove(evt) {
+    onDraggableMove(evt) {
       const position = this.model.position;
 
       this.updateComponent({
@@ -234,7 +234,7 @@ export default {
         },
       });
     },
-    onDragEnd(evt) {
+    onDraggableEnd(evt) {
       // Prevent the next click event
       evt.target.addEventListener(
         "click",
@@ -242,7 +242,7 @@ export default {
         { capture: true, once: true }
       );
     },
-    onResize(evt) {
+    onResizableMove(evt) {
       const position = this.model.position;
 
       this.updateComponent({
@@ -275,7 +275,7 @@ export default {
 
       return false;
     },
-    onDragEnter(evt) {
+    onDragenter(evt) {
       this.dragEnterCounter++;
 
       const draggedModel = this.getModelFromDragEvent(evt);
@@ -284,14 +284,14 @@ export default {
         evt.stopPropagation();
       }
     },
-    onDragOver(evt) {
+    onDragover(evt) {
       const draggedModel = this.getModelFromDragEvent(evt);
       if (this.isDropAllowed(draggedModel)) {
         evt.stopPropagation();
         evt.preventDefault();
       }
     },
-    onDragLeave() {
+    onDragleave() {
       if (--this.dragEnterCounter === 0) {
         this.dragOver = false;
       }

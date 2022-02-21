@@ -2,8 +2,8 @@
   <div
     :class="['component-library-item', { dragging }]"
     draggable="true"
-    @dragstart="onDragStart"
-    @dragend="onDragEnd"
+    @dragstart="onDragstart"
+    @dragend="onDragend"
   >
     <component-icon :model="model" :label="label" />
     <div class="label">{{ label }}</div>
@@ -36,13 +36,13 @@ export default {
     },
   },
   methods: {
-    onDragStart(evt) {
+    onDragstart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(`metascore/component`, this.dragData);
 
       this.dragging = true;
     },
-    onDragEnd() {
+    onDragend() {
       this.dragging = false;
     },
   },
