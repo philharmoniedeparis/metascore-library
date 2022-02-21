@@ -20,7 +20,7 @@
 <template>
   <component-wrapper
     :model="model"
-    :class="{ toggled: isBlockToggled(model.id) }"
+    :class="{ toggled: isBlockToggled(model) }"
     class="block"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
@@ -107,7 +107,6 @@ export default {
   computed: {
     ...mapGetters("app-components", ["isBlockToggled"]),
     ...mapGetters("app-components", {
-      getComponent: "get",
       getComponentChildren: "getChildren",
     }),
     synched() {
@@ -130,7 +129,7 @@ export default {
       }
     },
     pages() {
-      return this.getComponentChildren(this.model).map(this.getComponent);
+      return this.getComponentChildren(this.model);
     },
     pageCount() {
       return this.pages.length;

@@ -131,6 +131,10 @@ export default {
     user-select: none;
   }
 
+  button {
+    color: $white;
+  }
+
   &::before {
     content: "";
     display: inline-block;

@@ -19,11 +19,10 @@ export default {
   computed: {
     ...mapState("app-components", ["activeScenario"]),
     ...mapGetters("app-components", {
-      getComponent: "get",
       getComponentChildren: "getChildren",
     }),
     children() {
-      return this.getComponentChildren(this.model).map(this.getComponent);
+      return this.getComponentChildren(this.model);
     },
   },
 };

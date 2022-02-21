@@ -37,19 +37,6 @@ export default {
   },
   mounted() {
     this.$nextTick(async function () {
-      await this.setupAdnimation();
-    });
-  },
-  beforeUnmount() {
-    if (this.animation) {
-      this.animation.removeEventListener("DOMLoaded", this.onAnimationLoaded);
-      this.animation.destroy();
-    }
-  },
-  methods: {
-    async setupAdnimation() {
-      this.loaded = false;
-
       if (!this.src) {
         return;
       }
@@ -67,7 +54,16 @@ export default {
       });
 
       this.animation.addEventListener("DOMLoaded", this.onAnimationLoaded);
-    },
+    });
+  },
+  beforeUnmount() {
+    console.log("beforeUnmount");
+    if (this.animation) {
+      this.animation.removeEventListener("DOMLoaded", this.onAnimationLoaded);
+      this.animation.destroy();
+    }
+  },
+  methods: {
     onAnimationLoaded() {
       this.loaded = true;
 

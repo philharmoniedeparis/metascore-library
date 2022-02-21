@@ -106,7 +106,6 @@ export default {
       "isComponentLocked",
     ]),
     ...mapGetters("app-components", {
-      getComponent: "get",
       componentHasChildren: "hasChildren",
       getComponentChildren: "getChildren",
     }),
@@ -125,9 +124,7 @@ export default {
       return this.componentHasChildren(this.model);
     },
     children() {
-      const children = this.getComponentChildren(this.model).map(
-        this.getComponent
-      );
+      const children = this.getComponentChildren(this.model);
 
       switch (this.model.type) {
         case "Page":

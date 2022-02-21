@@ -2,8 +2,8 @@
   <component-wrapper :model="model" class="block-toggler">
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
-        :class="{ toggled: isBlockToggled(block.id) }"
-        @click="toggleBlock(block.id)"
+        :class="{ toggled: isBlockToggled(block) }"
+        @click="toggleBlock(block)"
       >
         <svg preserveAspectRatio="xMidYMid meet" :viewBox="viewBox">
           <template v-for="block_2 in sortedBlocks" :key="block_2.id">
