@@ -58,7 +58,7 @@ export default {
     },
   },
   mutations: {
-    _set(state, data) {
+    init(state, data) {
       const normalized = normalize(data);
 
       Object.entries(normalized.entities.components).forEach(
@@ -122,11 +122,6 @@ export default {
       }
 
       return ids;
-    },
-  },
-  actions: {
-    async set({ commit }, data) {
-      commit("_set", data);
     },
   },
 };

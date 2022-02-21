@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { omit } from "lodash";
+
 export default {
   props: {
     model: {
@@ -29,35 +31,11 @@ export default {
   },
   computed: {
     dragData() {
-      const data = this.model.toJson();
-      delete data.id;
+      const data = omit(this.model.toJson(), ["id"]);
       return JSON.stringify(data);
     },
   },
   methods: {
-    onItemMousemove(evt) {
-      const interaction = evt.interaction;
-      const interactable = evt.interactable;
-
-      // If the pointer was moved while being held down
-      // and an interaction hasn't started yet
-      if (interaction.pointerIsDown && !interaction.interacting()) {
-        const target = evt.currentTarget;
-
-        // Create and insert the clone.
-        const { left, top, width, height } = interactable.getRect(target);
-        const clone = target.cloneNode(true);
-        clone.classList.add("dragging");
-        clone.style.left = `${left}px`;
-        clone.style.top = `${top}px`;
-        clone.style.width = `${width}px`;
-        clone.style.height = `${height}px`;
-        target.parentNode.appendChild(clone);
-
-        // Start the drag interaction targeting the clone
-        interaction.start({ name: "drag" }, evt.interactable, clone);
-      }
-    },
     onDragStart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(`metascore/component`, this.dragData);
@@ -76,7 +54,8 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0.5em;
+  height: 2.5em;
+  padding: 0.25em;
   background-color: $lightgray;
   border-top: 1px solid $mediumgray;
   border-bottom: 1px solid $mediumgray;

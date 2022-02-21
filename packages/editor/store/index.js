@@ -64,12 +64,14 @@ export function createStore({ debug = false } = {}) {
   };
 
   const actions = {
-    async load({ commit, dispatch }, url) {
+    async load({ commit }, url) {
       const data = await api.load(url);
 
-      commit("media/setSource", data.media, { root: true });
+      commit("media/setSource", data.media);
 
-      dispatch("app-components/set", data.components, { root: true });
+      commit("app-components/init", data.components);
+
+      commit("assets/init", data.assets);
 
       commit("app-renderer/setWidth", data.width);
       commit("app-renderer/setHeight", data.height);
