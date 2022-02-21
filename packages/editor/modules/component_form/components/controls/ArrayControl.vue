@@ -5,6 +5,7 @@
       <control-dispatcher
         :property="`${index}`"
         :schema="item"
+        :validator="validator"
         :model-value="value[index]"
         @update:model-value="update(index, $event)"
       />
@@ -29,6 +30,10 @@ export default {
       required: true,
     },
     schema: {
+      type: Object,
+      required: true,
+    },
+    validator: {
       type: Object,
       required: true,
     },

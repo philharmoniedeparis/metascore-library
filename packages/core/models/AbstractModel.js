@@ -1,5 +1,6 @@
 import Ajv from "ajv";
 import { clone, merge } from "lodash";
+import { markRaw } from "vue";
 
 const ajv = new Ajv({
   allErrors: true,
@@ -57,7 +58,7 @@ export default class AbstractModel {
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    return ajv;
+    return markRaw(ajv);
   }
 
   /**

@@ -5,6 +5,7 @@
     :label="displayLabel ? schema.title : null"
     :property="property"
     :schema="flattenedSchema"
+    :validator="validator"
   />
 </template>
 
@@ -32,13 +33,16 @@ export default {
     StringControl,
     TimeControl,
   },
-  inject: ["getAjv"],
   props: {
     property: {
       type: String,
       default: null,
     },
     schema: {
+      type: Object,
+      required: true,
+    },
+    validator: {
       type: Object,
       required: true,
     },
@@ -62,7 +66,7 @@ export default {
       },
     },
     flattenedSchema() {
-      return flatten(this.schema, this.getAjv(), this.value);
+      return flatten(this.schema, this.validator, this.value);
     },
     control() {
       if (this.flattenedSchema.format) {

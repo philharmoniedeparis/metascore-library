@@ -2,14 +2,15 @@
   <div v-if="masterModel" class="component-form">
     <h2 class="title">{{ title }}</h2>
     <div class="controls">
-      <template v-for="(subSchema, key) in properties" :key="key">
-        <control-dispatcher
-          :property="key"
-          :model-value="masterModel[key]"
-          :schema="subSchema"
-          @update:model-value="update(key, $event)"
-        />
-      </template>
+      <control-dispatcher
+        v-for="(subSchema, property) in properties"
+        :key="property"
+        :property="property"
+        :model-value="masterModel[property]"
+        :schema="subSchema"
+        :validator="validator"
+        @update:model-value="update(property, $event)"
+      />
     </div>
   </div>
 </template>
@@ -23,17 +24,13 @@ export default {
   components: {
     ControlDispatcher,
   },
-  provide() {
-    return {
-      getAjv: () => {
-        return this.masterModel?.$ajv;
-      },
-    };
-  },
   computed: {
     ...mapGetters({ selectedComponents: "getSelectedComponents" }),
     masterModel() {
       return this.selectedComponents[0];
+    },
+    validator() {
+      return this.masterModel?.$ajv;
     },
     commonClass() {
       let commonClasses = [];
