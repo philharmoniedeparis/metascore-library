@@ -1,6 +1,10 @@
 <template>
-  <div class="control animated" :data-property="property">
-    <label v-if="label">{{ label }}</label>
+  <form-group
+    class="control animated"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
     <boolean-control
       :model-value="value.animated"
       property="animated"
@@ -16,10 +20,11 @@
       :validator="validator"
       @update:model-value="updateValue($event)"
     />
-  </div>
+  </form-group>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
 import { mapState } from "vuex";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
@@ -58,6 +63,11 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  data() {
+    return {
+      inputId: uuid(),
+    };
+  },
   computed: {
     ...mapState("media", {
       mediaTime: "time",

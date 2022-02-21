@@ -1,11 +1,17 @@
 <template>
-  <div class="control border-radius" :data-property="property">
-    <label v-if="label">{{ label }}</label>
-    <input v-model="value" />
-  </div>
+  <form-group
+    class="control border-radius"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
+    <input :id="inputId" v-model="value" />
+  </form-group>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
+
 export default {
   props: {
     label: {
@@ -26,6 +32,11 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  data() {
+    return {
+      inputId: uuid(),
+    };
+  },
   computed: {
     value: {
       get() {

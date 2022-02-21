@@ -1,6 +1,5 @@
 <template>
-  <div class="control array" :data-property="property">
-    <label v-if="label">{{ label }}</label>
+  <form-group class="control array" :data-property="property" :label="label">
     <template v-for="(item, index) in schema.items" :key="index">
       <control-dispatcher
         :property="`${index}`"
@@ -10,7 +9,7 @@
         @update:model-value="update(index, $event)"
       />
     </template>
-  </div>
+  </form-group>
 </template>
 
 <script>

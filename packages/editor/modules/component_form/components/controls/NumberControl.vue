@@ -1,8 +1,13 @@
 <template>
-  <div class="control number" :data-property="property">
-    <label v-if="label">{{ label }}</label>
+  <form-group
+    class="control number"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
     <div class="input-wrapper">
       <input
+        :id="inputId"
         ref="input"
         v-model="value"
         type="number"
@@ -33,10 +38,11 @@
         </button>
       </div>
     </div>
-  </div>
+  </form-group>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import { countDecimals } from "@metascore-library/core/utils/number";
 import SpinUpIcon from "../../assets/icons/number-up.svg?inline";
@@ -76,6 +82,7 @@ export default {
   emits: ["update:modelValue"],
   data() {
     return {
+      inputId: uuid(),
       isFocused: false,
       spinCount: 0,
       timeout: null,

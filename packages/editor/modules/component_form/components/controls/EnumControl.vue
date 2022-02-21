@@ -1,18 +1,21 @@
 <template>
-  <div class="control enum" :data-property="property">
-    <label v-if="label">{{ label }}</label>
-    <div class="input-wrapper">
-      <select v-model="value">
-        <option v-for="v in schema.enum" :key="v">
-          {{ v }}
-        </option>
-      </select>
-      <arrow-icon class="icon" />
-    </div>
-  </div>
+  <form-group
+    class="control enum"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
+    <select :id="inputId" v-model="value">
+      <option v-for="v in schema.enum" :key="v">
+        {{ v }}
+      </option>
+    </select>
+    <arrow-icon class="icon" />
+  </form-group>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
 import ArrowIcon from "../../assets/icons/enum-arrow.svg?inline";
 
 export default {
@@ -38,6 +41,11 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  data() {
+    return {
+      inputId: uuid(),
+    };
+  },
   computed: {
     value: {
       get() {

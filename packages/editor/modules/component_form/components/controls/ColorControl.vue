@@ -12,8 +12,12 @@
 </i18n>
 
 <template>
-  <div class="control color" :data-property="property">
-    <label v-if="label">{{ label }}</label>
+  <form-group
+    class="control color"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
     <tippy
       trigger="click"
       role="dialog"
@@ -27,7 +31,11 @@
       :interactive="true"
       :popper-options="{ strategy: 'fixed' }"
     >
-      <button class="opener" :style="`color: ${modelValue};`"></button>
+      <button
+        :id="inputId"
+        class="opener"
+        :style="`color: ${modelValue};`"
+      ></button>
 
       <template #content="{ hide }">
         <tabs-container>
@@ -55,10 +63,11 @@
         </div>
       </template>
     </tippy>
-  </div>
+  </form-group>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import { Tippy } from "vue-tippy";
 import ColorPicker from "./color/ColorPicker.vue";
@@ -99,6 +108,7 @@ export default {
   emits: ["update:modelValue"],
   data() {
     return {
+      inputId: uuid(),
       internalValue: this.modelValue,
     };
   },

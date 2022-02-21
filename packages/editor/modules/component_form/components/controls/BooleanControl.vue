@@ -1,13 +1,17 @@
 <template>
-  <div class="control boolean" :data-property="property">
-    <label v-if="label">{{ label }}</label>
+  <form-group
+    class="control boolean"
+    :data-property="property"
+    :label="label"
+    :label-for="inputId"
+  >
     <input :id="inputId" v-model="value" type="checkbox" />
     <label :for="inputId">
       <slot>
         <check-icon class="icon" />
       </slot>
     </label>
-  </div>
+  </form-group>
 </template>
 
 <script>
