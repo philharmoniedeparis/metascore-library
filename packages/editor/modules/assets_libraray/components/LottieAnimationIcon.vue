@@ -57,7 +57,6 @@ export default {
     });
   },
   beforeUnmount() {
-    console.log("beforeUnmount");
     if (this.animation) {
       this.animation.removeEventListener("DOMLoaded", this.onAnimationLoaded);
       this.animation.destroy();

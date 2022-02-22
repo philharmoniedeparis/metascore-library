@@ -1,5 +1,5 @@
 <template>
-  <base-modal ref="modal" class="modal-form" @close="$emit('close')">
+  <base-modal class="modal-form" @close="$emit('close')">
     <div v-if="description || $slots.description" class="description">
       <p v-if="description">{{ description }}</p>
       <slot v-else name="description" />
@@ -17,12 +17,8 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import BaseModal from "./BaseModal";
 
 export default {
-  components: {
-    BaseModal,
-  },
   props: {
     description: {
       type: String,
@@ -40,12 +36,6 @@ export default {
 
 <style scoped lang="scss">
 .modal-form {
-  ::v-deep(.body) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .description {
     display: flex;
     flex-direction: column;

@@ -1,5 +1,5 @@
 import { filter } from "lodash";
-import { normalize } from "../utils/normalize";
+import { normalize } from "./utils/normalize";
 import * as Models from "../models";
 
 export default {

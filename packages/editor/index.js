@@ -37,6 +37,9 @@ export class Editor {
     this._events = new Emitter();
     this._app = createApp(App, { url }).use(i18n).use(store).use(router);
 
+    // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
+    this._app.config.unwrapInjectedRef = true;
+
     // Register root modules.
     registerModules(
       [

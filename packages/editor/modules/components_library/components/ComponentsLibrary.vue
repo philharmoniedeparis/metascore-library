@@ -88,10 +88,10 @@ export default {
   },
   computed: {
     ...mapGetters("app-components", {
-      createModel: "create",
+      createComponent: "create",
     }),
     models() {
-      return this.modelConfigs.map(this.createModel);
+      return this.modelConfigs.map(this.createComponent);
     },
   },
 };

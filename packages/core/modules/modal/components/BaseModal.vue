@@ -10,36 +10,41 @@
 </i18n>
 
 <template>
-  <transition name="fade">
-    <div class="base-modal">
-      <div class="backdrop" tabindex="-1" role="dialog">
-        <div class="dialog" role="document">
-          <div class="content">
-            <div v-if="header || $slots.title || title" class="header">
-              <h3 class="title">
-                <slot v-if="$slots.title" name="title" />
-                <template v-else>{{ title }} </template>
-              </h3>
-              <styled-button
-                class="close no-bg"
-                :title="$t('close_title')"
-                :aria-label="$t('close_title')"
-                @click="$emit('close')"
-              >
-                <template #icon><close-icon /></template>
-              </styled-button>
-            </div>
-            <div class="body">
-              <slot />
-            </div>
-            <div class="footer">
-              <slot name="footer" />
+  <!-- The wrapper is used as a work-around to pass classes from the parent component to the actual modal -->
+  <div class="base-modal-wrapper">
+    <teleport :to="target ?? modalsTarget">
+      <transition name="fade">
+        <div class="base-modal" v-bind="$attrs">
+          <div class="backdrop" tabindex="-1" role="dialog">
+            <div class="dialog" role="document">
+              <div class="content">
+                <div v-if="header || $slots.title || title" class="header">
+                  <h3 class="title">
+                    <slot v-if="$slots.title" name="title" />
+                    <template v-else>{{ title }} </template>
+                  </h3>
+                  <styled-button
+                    class="close no-bg"
+                    :title="$t('close_title')"
+                    :aria-label="$t('close_title')"
+                    @click="$emit('close')"
+                  >
+                    <template #icon><close-icon /></template>
+                  </styled-button>
+                </div>
+                <div class="body">
+                  <slot />
+                </div>
+                <div class="footer">
+                  <slot name="footer" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </transition>
+      </transition>
+    </teleport>
+  </div>
 </template>
 
 <script>
@@ -49,7 +54,16 @@ export default {
   components: {
     CloseIcon,
   },
+  inject: {
+    modalsTarget: {
+      default: "body",
+    },
+  },
   props: {
+    target: {
+      type: [String, HTMLElement],
+      default: null,
+    },
     header: {
       type: Boolean,
       default: false,
@@ -71,6 +85,10 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.base-modal-wrapper {
+  display: none;
 }
 
 .base-modal {
@@ -133,6 +151,7 @@ export default {
 
   .body {
     padding: 1em;
+
     &.scroll {
       overflow-y: auto;
       overscroll-behavior-y: contain;

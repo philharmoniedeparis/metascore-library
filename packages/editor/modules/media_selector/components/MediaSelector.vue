@@ -4,15 +4,11 @@
       {{ mediaSource.name }}
     </button>
 
-    <template v-if="modalTarget">
-      <Teleport :to="modalTarget">
-        <media-source-form
-          v-if="showForm"
-          @submit="onFormSubmit"
-          @close="onFormClose"
-        />
-      </Teleport>
-    </template>
+    <media-source-form
+      v-if="showForm"
+      @submit="onFormSubmit"
+      @close="onFormClose"
+    />
   </div>
 </template>
 
@@ -24,12 +20,6 @@ import { getMimeTypeFromURL } from "@metascore-library/core/utils/media";
 export default {
   components: {
     MediaSourceForm,
-  },
-  props: {
-    modalTarget: {
-      type: [String, Object],
-      default: "body",
-    },
   },
   data() {
     return {

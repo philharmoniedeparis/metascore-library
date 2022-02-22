@@ -31,7 +31,7 @@
       <div class="middle">
         <div class="sticky-top">
           <playback-controller />
-          <media-selector :modal-target="modalsTarget" />
+          <media-selector />
           <waveform-zoom />
         </div>
         <components-timeline />
@@ -49,10 +49,16 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { mapState, mapActions } from "vuex";
 import packageInfo from "../../package.json";
 
 export default {
+  provide() {
+    return {
+      modalsTarget: computed(() => this.modalsTarget),
+    };
+  },
   props: {
     url: {
       type: String,
@@ -79,6 +85,7 @@ export default {
   },
   async mounted() {
     this.modalsTarget = this.$el;
+
     await this.load(this.url);
   },
   methods: {

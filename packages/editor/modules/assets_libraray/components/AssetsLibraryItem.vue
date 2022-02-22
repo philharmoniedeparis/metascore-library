@@ -1,3 +1,14 @@
+<i18n>
+{
+  "fr": {
+    "delete_text": "Êtes-vous sûr de vouloir supprimer <em>{label}</em>\xa0?",
+  },
+  "en": {
+    "delete_text": "Are you sure you want to delete <em>{label}</em>?",
+  },
+}
+</i18n>
+
 <template>
   <div
     :class="['assets-library-item', { dragging }]"
@@ -11,16 +22,29 @@
       <img v-if="['image', 'svg'].includes(type)" :src="file.url" />
       <component :is="`${type}-icon`" v-else :src="file.url" :play="play" />
     </figure>
+
     <div class="label" title="{{ label }}">{{ label }}</div>
-    <div class="buttons">
-      <styled-button type="button" title="Supprimer">
-        <template #icon><delete-icon /></template>
-      </styled-button>
-    </div>
+
+    <styled-button type="button" title="Supprimer" @click="onDeleteClick">
+      <template #icon><delete-icon /></template>
+    </styled-button>
+
+    <confirm-dialog
+      v-if="showDeleteConfirm"
+      @submit="onDeleteSubmit"
+      @cancel="onDeleteCancel"
+    >
+      <template #text>
+        <p v-dompurify-html="$t('delete_text', { label })"></p>
+      </template>
+    </confirm-dialog>
   </div>
 </template>
 
 <script>
+import { omit } from "lodash";
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import { mapGetters, mapMutations } from "vuex";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
@@ -35,6 +59,9 @@ export default {
     LottieAnimationIcon,
     DeleteIcon,
   },
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
   props: {
     asset: {
       type: Object,
@@ -45,31 +72,100 @@ export default {
     return {
       dragging: false,
       play: false,
+      showDeleteConfirm: false,
     };
   },
   computed: {
+    ...mapGetters("assets", {
+      getAssetName: "getName",
+      getAssetFile: "getFile",
+      getAssetType: "getType",
+    }),
+    ...mapGetters("app-components", {
+      createComponent: "create",
+    }),
     label() {
-      return this.asset.name;
+      return this.getAssetName(this.asset);
     },
     file() {
-      return this.asset.shared ? this.asset.file : this.asset;
+      return this.getAssetFile(this.asset);
     },
     type() {
-      if (this.asset.type) {
-        return this.asset.type.replace("_", "-");
+      return this.getAssetType(this.asset);
+    },
+    componentDragData() {
+      const config = {
+        name: this.label,
+      };
+
+      switch (this.type) {
+        case "image":
+          Object.assign(config, {
+            type: "Content",
+            "background-image": this.file.url,
+            dimension: [this.file.width, this.file.height],
+          });
+          break;
+
+        case "lottie-animation":
+          Object.assign(config, {
+            type: "Animation",
+            src: this.file.url,
+          });
+          break;
+
+        case "svg":
+          Object.assign(config, {
+            type: "SVG",
+            src: this.file.url,
+          });
+          break;
+
+        case "audio":
+        case "video":
+          Object.assign(config, {
+            type: "Media",
+            tag: this.type,
+            src: this.file.url,
+            dimension: [this.file.width, this.file.height],
+          });
+          break;
       }
 
-      const matches = /^(image|audio|video)\/.*/.exec(this.file.mimetype);
-      return matches ? matches[1] : null;
+      const component = this.createComponent(config);
+      const data = omit(component.toJson(), ["id"]);
+      return JSON.stringify(data);
     },
-    dragData() {
+    assetDragData() {
       return JSON.stringify(this.asset);
+    },
+    deleteText() {
+      return this.$t("delete_text", { label: this.label });
     },
   },
   methods: {
+    ...mapMutations("assets", {
+      deleteAsset: "delete",
+    }),
     onDragstart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(`metascore/asset`, this.dragData);
+      evt.dataTransfer.setData(`metascore/component`, this.componentDragData);
+      evt.dataTransfer.setData(`metascore/asset`, this.assetDragData);
+      evt.dataTransfer.setData("text/uri-list", this.file.url);
+      evt.dataTransfer.setData("text/plain", this.file.url);
+      if (this.type === "image") {
+        if ("width" in this.file && "height" in this.file) {
+          evt.dataTransfer.setData(
+            "text/html",
+            `<img src="${this.file.url}" width="${this.file.width}" height="${this.file.height}" />`
+          );
+        } else {
+          evt.dataTransfer.setData(
+            "text/html",
+            `<img src="${this.file.url}" />`
+          );
+        }
+      }
 
       this.play = false;
       this.dragging = true;
@@ -82,6 +178,16 @@ export default {
     },
     onMouseout() {
       this.play = false;
+    },
+    onDeleteClick() {
+      this.showDeleteConfirm = true;
+    },
+    onDeleteSubmit() {
+      this.deleteAsset(this.asset.id);
+      this.showDeleteConfirm = false;
+    },
+    onDeleteCancel() {
+      this.showDeleteConfirm = false;
     },
   },
 };

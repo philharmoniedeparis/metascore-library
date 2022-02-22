@@ -1,13 +1,13 @@
 <template>
   <div class="assets-library">
-    <template v-for="(item, index) in items" :key="index">
-      <assets-library-item :asset="item" />
+    <template v-for="(asset, id) in assets" :key="id">
+      <assets-library-item :asset="asset" />
     </template>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import AssetsLibraryItem from "./AssetsLibraryItem.vue";
 
 export default {
@@ -15,7 +15,7 @@ export default {
     AssetsLibraryItem,
   },
   computed: {
-    ...mapState("assets", ["items"]),
+    ...mapGetters("assets", { assets: "getAll" }),
   },
 };
 </script>
