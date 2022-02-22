@@ -17,7 +17,6 @@
       :model-value="valueAtTime"
       property="value"
       :schema="valueSchema"
-      :validator="validator"
       @update:model-value="updateValue($event)"
     />
   </form-group>
@@ -48,10 +47,6 @@ export default {
       required: true,
     },
     schema: {
-      type: Object,
-      required: true,
-    },
-    validator: {
       type: Object,
       required: true,
     },

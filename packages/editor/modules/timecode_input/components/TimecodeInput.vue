@@ -502,6 +502,7 @@ export default {
 <style lang="scss" scoped>
 .timecode-input {
   input {
+    width: 6em;
     text-align: center;
   }
 }

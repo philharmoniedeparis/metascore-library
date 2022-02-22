@@ -8,7 +8,6 @@
         :property="property"
         :model-value="masterModel[property]"
         :schema="subSchema"
-        :validator="validator"
         @update:model-value="update(property, $event)"
       />
     </div>
@@ -16,6 +15,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { mapGetters, mapActions } from "vuex";
 import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
@@ -23,6 +23,11 @@ import ControlDispatcher from "./controls/ControlDispatcher.vue";
 export default {
   components: {
     ControlDispatcher,
+  },
+  provide() {
+    return {
+      validator: computed(() => this.validator),
+    };
   },
   computed: {
     ...mapGetters({ selectedComponents: "getSelectedComponents" }),
@@ -54,13 +59,11 @@ export default {
   methods: {
     ...mapActions(["updateComponents"]),
     update(property, value) {
-      const data = {
-        [property]: value,
-      };
-
       this.updateComponents({
         models: this.selectedComponents,
-        data,
+        data: {
+          [property]: value,
+        },
       });
     },
   },
@@ -103,11 +106,15 @@ export default {
   }
 
   ::v-deep(.control) {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    flex: 1 1 auto;
+    margin: 0;
+
+    .input-wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      flex: 1 1 auto;
+    }
 
     label,
     .control:not(:last-of-type) {
@@ -116,15 +123,13 @@ export default {
 
     label {
       flex: 0 0 auto;
+      align-self: center;
       white-space: nowrap;
     }
 
     input {
+      min-width: 0;
       flex: 1;
-
-      &:not([type="checkbox"]):not([type="radio"]) {
-        width: 100%;
-      }
     }
 
     &.animated {

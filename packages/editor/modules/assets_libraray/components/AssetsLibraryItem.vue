@@ -20,7 +20,12 @@
   >
     <figure>
       <img v-if="['image', 'svg'].includes(type)" :src="file.url" />
-      <component :is="`${type}-icon`" v-else :src="file.url" :play="play" />
+      <lottie-animation-icon
+        v-else-if="type === 'lottie_animation'"
+        :src="file.url"
+        :play="play"
+      />
+      <component :is="`${type}-icon`" v-else class="icon" />
     </figure>
 
     <div class="label" title="{{ label }}">{{ label }}</div>
@@ -107,7 +112,7 @@ export default {
           });
           break;
 
-        case "lottie-animation":
+        case "lottie_animation":
           Object.assign(config, {
             type: "Animation",
             src: this.file.url,
@@ -122,6 +127,13 @@ export default {
           break;
 
         case "audio":
+          Object.assign(config, {
+            type: "Media",
+            tag: this.type,
+            src: this.file.url,
+          });
+          break;
+
         case "video":
           Object.assign(config, {
             type: "Media",
@@ -225,6 +237,7 @@ export default {
     .icon {
       width: 100%;
       height: 100%;
+      color: $white;
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
     }
   }

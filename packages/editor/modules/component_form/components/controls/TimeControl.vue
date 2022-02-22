@@ -1,6 +1,6 @@
 <template>
   <form-group
-    class="control array"
+    class="control time"
     :data-property="property"
     :label="label"
     :label-for="inputId"
@@ -49,5 +49,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

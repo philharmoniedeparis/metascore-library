@@ -5,7 +5,7 @@
     :label="label"
     :label-for="inputId"
   >
-    <div class="input-wrapper">
+    <div class="input-container">
       <input
         :id="inputId"
         ref="input"
@@ -177,7 +177,7 @@ export default {
 
 <style lang="scss" scoped>
 .control {
-  .input-wrapper {
+  .input-container {
     position: relative;
   }
 
@@ -187,10 +187,13 @@ export default {
     -webkit-appearance: none;
     margin: 0;
   }
-
   /* Firefox */
-  ::v-deep(input) {
+  input {
     -moz-appearance: textfield;
+  }
+
+  input {
+    width: 100%;
   }
 
   .spinners {

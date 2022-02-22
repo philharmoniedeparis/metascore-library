@@ -13,10 +13,12 @@
       <template v-if="label_position === 'after'">
         <slot />
       </template>
-      <label :for="labelFor">
-        <template v-if="label">{{ label }}</template>
-        <template v-else><slot name="label" /></template>
-      </label>
+      <template v-if="label || $slots.label">
+        <label :for="labelFor">
+          <template v-if="label">{{ label }}</template>
+          <template v-else><slot name="label" /></template>
+        </label>
+      </template>
       <template v-if="label_position === 'before'">
         <slot />
       </template>

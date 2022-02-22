@@ -27,7 +27,7 @@ export default {
     },
     getType: () => (item) => {
       if (item.type) {
-        return item.type.replace("_", "-");
+        return item.type;
       }
 
       const file = item.shared ? item.file : item;

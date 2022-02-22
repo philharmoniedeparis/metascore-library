@@ -45,7 +45,7 @@ export class SVG extends mix(EmbeddableComponent).with(
         }),
         "stroke-dasharray": createEnumField({
           title: "Stroke width",
-          enum: ["2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
+          enum: [null, "2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
         }),
         fill: createColorField({
           ajv,

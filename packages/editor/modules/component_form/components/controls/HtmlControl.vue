@@ -50,4 +50,10 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.control {
+  input {
+    width: 100%;
+  }
+}
+</style>

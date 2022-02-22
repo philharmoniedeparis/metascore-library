@@ -380,6 +380,7 @@ export default {
     gap: 0.5em;
 
     input {
+      width: 100%;
       border-radius: 0;
     }
 

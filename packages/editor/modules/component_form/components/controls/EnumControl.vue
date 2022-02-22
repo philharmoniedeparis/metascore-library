@@ -61,10 +61,6 @@ export default {
 
 <style lang="scss" scoped>
 .control {
-  .input-wrapper {
-    position: relative;
-  }
-
   select {
     display: inline-block;
     font-family: inherit;
