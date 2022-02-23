@@ -1,89 +1,59 @@
 import { formatTime } from "@metascore-library/core/utils/media";
 
 export default {
-  namespaced: true,
-  state: {
-    useRequestAnimationFrame: true,
-    source: null,
-    element: null,
-    ready: false,
-    time: 0,
-    duration: 0,
-    playing: false,
-    type: null,
-    width: null,
-    height: null,
-    buffered: [],
+  state: () => {
+    return {
+      useRequestAnimationFrame: true,
+      source: null,
+      element: null,
+      ready: false,
+      time: 0,
+      duration: 0,
+      playing: false,
+      type: null,
+      width: null,
+      height: null,
+      buffered: [],
+    };
   },
   getters: {
-    formattedTime(state) {
-      return formatTime(state.time);
-    },
-  },
-  mutations: {
-    setSource(state, source) {
-      state.source = source;
-    },
-    _setElement(state, element) {
-      state.element = element;
-    },
-    _setType(state, type) {
-      state.type = type;
-    },
-    _setReady(state, ready) {
-      state.ready = ready;
-    },
-    _setWidth(state, width) {
-      state.width = width;
-    },
-    _setHeight(state, height) {
-      state.height = height;
-    },
-    _setDuration(state, duration) {
-      state.duration = duration;
-    },
-    _setPlaying(state, playing) {
-      state.playing = playing;
-    },
-    _setTime(state, time) {
-      state.time = time;
+    formattedTime() {
+      return formatTime(this.time);
     },
   },
   actions: {
-    initElement({ state, commit, dispatch }, element) {
-      commit("_setElement", element);
+    initElement(element) {
+      this.element = element;
 
       if (element) {
-        const type = element instanceof HTMLVideoElement ? "video" : "audio";
-
-        commit("_setType", type);
+        this.type = element instanceof HTMLVideoElement ? "video" : "audio";
 
         element.addEventListener("loadedmetadata", (evt) => {
-          commit("_setReady", true);
-          commit("_setWidth", type === "video" ? element.videoWidth : null);
-          commit("_setHeight", type === "video" ? element.videoHeight : null);
-          commit("_setDuration", evt.target.duration);
+          this.ready = true;
+          this.width = this.type === "video" ? element.videoWidth : null;
+          this.height = this.type === "video" ? element.videoHeight : null;
+          this.duration = evt.target.duration;
         });
         element.addEventListener("play", () => {
-          commit("_setPlaying", true);
-          dispatch("_updateTime");
+          this.playing = true;
+          this.updateTime();
         });
         element.addEventListener("pause", () => {
-          commit("_setPlaying", false);
-          dispatch("_updateTime", false);
+          this.playing = false;
+          this.updateTime(false);
         });
         element.addEventListener("stop", () => {
-          commit("_setPlaying", false);
-          dispatch("_updateTime", false);
+          this.playing = false;
+          this.updateTime(false);
         });
         element.addEventListener("timeupdate", (evt) => {
-          if (!state.useRequestAnimationFrame) {
-            commit("_setTime", evt.target.currentTime);
+          if (!this.useRequestAnimationFrame) {
+            this.time = evt.target.currentTime;
           }
         });
         element.addEventListener("seeked", () => {
-          if (!state.playing) {
-            dispatch("_updateTime", false);
+          if (!this.playing) {
+            this.updateTime(false);
           }
         });
         element.addEventListener("progress", (evt) => {
@@ -96,17 +66,17 @@ export default {
             buffered.push([start_x, end_x]);
           }
 
-          state.buffered = buffered;
+          this.buffered = buffered;
         });
       } else {
-        commit("_setType", null);
-        commit("_setWidth", null);
-        commit("_setHeight", null);
+        this.type = null;
+        this.width = null;
+        this.height = null;
       }
     },
-    play({ state }) {
-      if (state.element) {
-        const promise = state.element.play();
+    play() {
+      if (this.element) {
+        const promise = this.element.play();
 
         if (typeof promise !== "undefined") {
           promise.catch((error) => {
@@ -118,29 +88,29 @@ export default {
         }
       }
     },
-    pause({ state }) {
-      if (state.element) {
-        state.element.pause();
+    pause() {
+      if (this.element) {
+        this.element.pause();
       }
     },
-    stop({ state }) {
-      if (state.element) {
-        state.element.stop();
+    stop() {
+      if (this.element) {
+        this.element.stop();
       }
     },
-    seekTo({ state }, time) {
-      state.element.currentTime = time;
+    seekTo(time) {
+      this.element.currentTime = time;
     },
-    _updateTime({ state, commit, dispatch }, repeat = true) {
-      if (!state.useRequestAnimationFrame) {
+    updateTime(repeat = true) {
+      if (!this.useRequestAnimationFrame) {
         return;
       }
 
-      commit("_setTime", state.element.currentTime);
+      this.time = this.element.currentTime;
 
-      if (repeat !== false && state.playing) {
+      if (repeat !== false && this.playing) {
         window.requestAnimationFrame(() => {
-          dispatch("_updateTime");
+          this.updateTime();
         });
       }
     },

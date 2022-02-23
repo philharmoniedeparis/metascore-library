@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import packageInfo from "../../package.json";
 
 export default {
@@ -23,16 +23,17 @@ export default {
       default: false,
     },
   },
+  setup() {
+    const editorStore = useStore("editor");
+    return { editorStore };
+  },
   date() {
     return {
       version: packageInfo.version,
     };
   },
   async mounted() {
-    await this.load(this.url);
-  },
-  methods: {
-    ...mapActions(["load"]),
+    await this.editorStore.load(this.url);
   },
 };
 </script>

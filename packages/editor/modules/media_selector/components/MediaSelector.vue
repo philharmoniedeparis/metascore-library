@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import MediaSourceForm from "./MediaSourceForm";
 import { getMimeTypeFromURL } from "@metascore-library/core/utils/media";
 
@@ -21,20 +21,24 @@ export default {
   components: {
     MediaSourceForm,
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   data() {
     return {
       showForm: false,
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaSource: "source",
-    }),
+    mediaSource() {
+      return this.mediaStore.source;
+    },
   },
   methods: {
-    ...mapMutations("media", {
-      setMediaSource: "setSource",
-    }),
+    setMediaSource(source) {
+      this.mediaStore.source = source;
+    },
     onClick() {
       this.showForm = true;
     },

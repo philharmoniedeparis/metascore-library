@@ -20,7 +20,7 @@
 <template>
   <component-wrapper
     :model="model"
-    :class="{ toggled: isBlockToggled(model) }"
+    :class="{ toggled }"
     class="block"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
 import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
@@ -98,6 +98,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    const componentsStore = useStore("components");
+    return { mediaStore, componentsStore };
+  },
   data() {
     return {
       hover: false,
@@ -105,10 +110,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("app-components", ["isBlockToggled"]),
-    ...mapGetters("app-components", {
-      getComponentChildren: "getChildren",
-    }),
+    toggled() {
+      return this.componentsStore.isBlockToggled(this.model);
+    },
     synched() {
       return this.model.synched;
     },
@@ -129,7 +133,7 @@ export default {
       }
     },
     pages() {
-      return this.getComponentChildren(this.model);
+      return this.componentsStore.getChildren(this.model);
     },
     pageCount() {
       return this.pages.length;
@@ -139,9 +143,9 @@ export default {
     this.setupSwipe();
   },
   methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     async setupSwipe() {
       if (!this.$deviceHasTouch) {
         return;

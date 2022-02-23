@@ -1,13 +1,13 @@
 import { computed, unref, readonly } from "vue";
-import { useStore } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  const store = useStore();
+  const mediaStore = useStore("media");
 
   if (unref(model).$isTimeable) {
     const active = computed(() => {
-      const mediaTime = store.state.media.time;
+      const mediaTime = mediaStore.time;
       const { "start-time": startTime, "end-time": endTime } = unref(model);
 
       if (

@@ -23,8 +23,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import { v4 as uuid } from "uuid";
-import { mapState } from "vuex";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import BooleanControl from "./BooleanControl.vue";
@@ -58,15 +58,19 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   data() {
     return {
       inputId: uuid(),
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-    }),
+    mediaTime() {
+      return this.mediaStore.time;
+    },
     value: {
       get() {
         return this.modelValue;

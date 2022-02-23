@@ -9,8 +9,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import { debounce } from "lodash";
-import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -31,6 +31,11 @@ export default {
       default: "#0000fe",
     },
   },
+  setup() {
+    const store = useStore("waveform");
+    const mediaStore = useStore("media");
+    return { store, mediaStore };
+  },
   data() {
     return {
       width: 0,
@@ -38,15 +43,21 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-      mediaDuration: "duration",
-    }),
-    ...mapState("waveform", {
-      waveformData: "data",
-      waveformRange: "range",
-      waveformOffset: "offset",
-    }),
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
+    waveformData() {
+      return this.store.data;
+    },
+    waveformRange() {
+      return this.store.range;
+    },
+    waveformOffset() {
+      return this.store.offset;
+    },
     resampledData() {
       if (this.waveformData && this.width > 0) {
         const width = Math.min(this.width, this.waveformData.length);
@@ -108,10 +119,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
-
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     /**
      * Update the wave layer
      */

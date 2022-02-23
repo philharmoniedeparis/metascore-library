@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 export default {
   props: {
@@ -16,13 +16,13 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const componentsStore = useStore("components");
+    return { componentsStore };
+  },
   computed: {
-    ...mapState("app-components", ["activeScenario"]),
-    ...mapGetters("app-components", {
-      getComponentChildren: "getChildren",
-    }),
     children() {
-      return this.getComponentChildren(this.model);
+      return this.componentsStore.getChildren(this.model);
     },
   },
 };

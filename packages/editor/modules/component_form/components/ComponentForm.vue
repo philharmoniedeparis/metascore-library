@@ -16,7 +16,7 @@
 
 <script>
 import { computed } from "vue";
-import { mapGetters, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
 
@@ -29,8 +29,14 @@ export default {
       validator: computed(() => this.validator),
     };
   },
+  setup() {
+    const editorStore = useStore("editor");
+    return { editorStore };
+  },
   computed: {
-    ...mapGetters({ selectedComponents: "getSelectedComponents" }),
+    selectedComponents() {
+      return this.editorStore.getSelectedComponents;
+    },
     masterModel() {
       return this.selectedComponents[0];
     },
@@ -57,13 +63,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["updateComponents"]),
     update(property, value) {
-      this.updateComponents({
-        models: this.selectedComponents,
-        data: {
-          [property]: value,
-        },
+      this.editorStore.updateComponents(this.selectedComponents, {
+        [property]: value,
       });
     },
   },

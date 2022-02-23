@@ -6,7 +6,7 @@
 
 <script>
 import "../../../polyfills/GeomertyUtils";
-import { mapState, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { map, radians } from "@metascore-library/core/utils/math";
 
 export default {
@@ -19,12 +19,20 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   computed: {
-    ...mapState("media", {
-      mediaReady: "ready",
-      mediaTime: "time",
-      mediaDuration: "duration",
-    }),
+    mediaReady() {
+      return this.mediaStore.ready;
+    },
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
     canvas() {
       return this.$refs.canvas;
     },
@@ -101,9 +109,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     update() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

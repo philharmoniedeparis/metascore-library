@@ -16,8 +16,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import "../../../polyfills/GeomertyUtils";
-import { mapState } from "vuex";
 import DynamicRuler from "./DynamicRuler.vue";
 
 export default {
@@ -31,6 +31,10 @@ export default {
     },
   },
   emits: ["load"],
+  setup() {
+    const appRendererStore = useStore("app-renderer");
+    return { appRendererStore };
+  },
   data() {
     return {
       iframeDocument: null,
@@ -38,10 +42,12 @@ export default {
     };
   },
   computed: {
-    ...mapState("app-renderer", {
-      playerWidth: "width",
-      playerHeight: "height",
-    }),
+    playerWidth() {
+      return this.appRendererStore.width;
+    },
+    playerHeight() {
+      return this.appRendererStore.height;
+    },
   },
   methods: {
     async onIframeLoad() {

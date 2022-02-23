@@ -19,7 +19,7 @@
 
 <template>
   <component-wrapper :model="model" class="controller">
-    <div class="timer">{{ mediaTime }}</div>
+    <div class="timer">{{ mediaFormattedTime }}</div>
     <div class="buttons">
       <button type="button" data-action="rewind" @click="onRewindClick">
         <span aria-hidden="true"><rewind-icon class="icon" /></span>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import RewindIcon from "../assets/icons/controller/rewind.svg?inline";
 import PlayIcon from "../assets/icons/controller/play.svg?inline";
 import PauseIcon from "../assets/icons/controller/pause.svg?inline";
@@ -67,20 +67,28 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   computed: {
-    ...mapState("media", {
-      mediaPlaying: "playing",
-    }),
-    ...mapGetters("media", {
-      mediaTime: "formattedTime",
-    }),
+    mediaPlaying() {
+      return this.mediaStore.playing;
+    },
+    mediaFormattedTime() {
+      return this.mediaStore.formattedTime;
+    },
   },
   methods: {
-    ...mapActions("media", {
-      playMedia: "play",
-      pauseMedia: "pause",
-      seekMediaTo: "seekTo",
-    }),
+    playMedia() {
+      this.mediaStore.play();
+    },
+    pauseMedia() {
+      this.mediaStore.pause();
+    },
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     onRewindClick() {
       this.seekMediaTo(0);
     },

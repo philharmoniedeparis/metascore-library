@@ -1,11 +1,12 @@
+import store from "./store";
 import MediaPlayer from "./components/MediaPlayer";
-import moduleStore from "./store";
 
 export default {
   name: "MediaPlayer",
-  install({ app, store }) {
+  stores: {
+    media: store,
+  },
+  install({ app }) {
     app.component("MediaPlayer", MediaPlayer);
-
-    store.registerModule("media", moduleStore);
   },
 };

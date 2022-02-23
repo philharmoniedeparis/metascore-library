@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { sortBy } from "lodash";
 
 export default {
@@ -35,11 +35,13 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const componentsStore = useStore("components");
+    return { componentsStore };
+  },
   computed: {
-    ...mapGetters("app-components", ["isBlockToggled"]),
-    ...mapGetters("app-components", { getComponent: "get" }),
     blocks() {
-      return this.model.blocks.map(this.getComponent);
+      return this.model.blocks.map(this.componentsStore.get);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [
@@ -64,7 +66,12 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("app-components", ["toggleBlock"]),
+    isBlockToggled(block) {
+      return this.componentsStore.isBlockToggled(block);
+    },
+    toggleBlock(block) {
+      this.componentsStore.toggleBlock(block);
+    },
   },
 };
 </script>

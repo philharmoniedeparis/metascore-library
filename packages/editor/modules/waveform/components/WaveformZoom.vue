@@ -15,8 +15,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import { debounce } from "lodash";
-import { mapState, mapMutations, mapActions } from "vuex";
 import { formatTime } from "@metascore-library/core/utils/media";
 
 export default {
@@ -62,6 +62,11 @@ export default {
       default: 32,
     },
   },
+  setup() {
+    const store = useStore("waveform");
+    const mediaStore = useStore("media");
+    return { store, mediaStore };
+  },
   data() {
     return {
       width: 0,
@@ -74,18 +79,30 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-      mediaDuration: "duration",
-    }),
-    ...mapState("waveform", {
-      waveformData: "data",
-      waveformRange: "range",
-      waveformOffset: "offset",
-      waveformScale: "scale",
-      waveformMinScale: "minScale",
-      waveformMaxScale: "maxScale",
-    }),
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
+    waveformData() {
+      return this.store.data;
+    },
+    waveformRange() {
+      return this.store.range;
+    },
+    waveformOffset() {
+      return this.store.offset;
+    },
+    waveformScale() {
+      return this.store.scale;
+    },
+    waveformMinScale() {
+      return this.store.minSclae;
+    },
+    waveformMaxScale() {
+      return this.store.maxScale;
+    },
     playheadPosition() {
       return Math.round(this.getPositionAt(this.mediaTime));
     },
@@ -169,16 +186,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
-    ...mapMutations("waveform", {
-      setWaveformOffset: "setOffset",
-      setWaveformScale: "setScale",
-      setWaveformMinScale: "setMinScale",
-      setWaveformMaxScale: "setMaxScale",
-    }),
-
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
+    setWaveformOffset({ start, end }) {
+      this.store.offset = { start, end };
+    },
+    setWaveformScale(scale) {
+      this.store.scale = scale;
+    },
+    setWaveformMinScale(scale) {
+      this.store.minScale = scale;
+    },
+    setWaveformMaxScale(scale) {
+      this.store.maxScale = scale;
+    },
     resampleData() {
       console.log("> resampleData");
       if (this.waveformData && this.width > 0) {

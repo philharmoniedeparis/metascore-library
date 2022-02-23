@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 export default {
   props: {
@@ -17,15 +17,29 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   computed: {
-    ...mapState("media", {
-      mediaElement: "element",
-      mediaReady: "ready",
-      mediaTime: "time",
-      mediaType: "type",
-      mediaWidth: "width",
-      mediaHeight: "height",
-    }),
+    mediaElement() {
+      return this.mediaStore.element;
+    },
+    mediaReady() {
+      return this.mediaStore.ready;
+    },
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaType() {
+      return this.mediaStore.type;
+    },
+    mediaWidth() {
+      return this.mediaStore.width;
+    },
+    mediaHeight() {
+      return this.mediaStore.height;
+    },
     canvas() {
       return this.$refs.canvas;
     },

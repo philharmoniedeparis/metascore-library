@@ -13,12 +13,18 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { mapState, mapGetters, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import ComponentTrack from "./ComponentTrack.vue";
 
 export default {
   components: {
     ComponentTrack,
+  },
+  setup() {
+    const editorStore = useStore("editor");
+    const mediaStore = useStore("media");
+    const componentsStore = useStore("components");
+    return { editorStore, mediaStore, componentsStore };
   },
   data() {
     return {
@@ -26,14 +32,14 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-      mediaDuration: "duration",
-    }),
-    ...mapState("app-components", ["activeScenario"]),
-    ...mapGetters("app-components", { getComponent: "get" }),
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
     scenario() {
-      return this.getComponent(this.activeScenario);
+      return this.componentsStore.get(this.componentsStore.activeScenario);
     },
   },
   mounted() {
@@ -72,7 +78,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["updateComponent"]),
     onHandleDraggableStart(evt) {
       const { target: handle } = evt;
       const track = handle.parentNode;
@@ -107,10 +112,7 @@ export default {
             children.unshift(child.getAttribute("data-id"));
           });
 
-        this.updateComponent({
-          model,
-          data: { children },
-        });
+        this.editorStore.updateComponent(model, { children });
 
         this.resorted = false;
       }

@@ -1,28 +1,24 @@
 <template>
-  <timecode-input v-model="time" class="playback-time" />
+  <timecode-input v-model="mediaTime" class="playback-time" />
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 export default {
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   computed: {
-    ...mapState("media", {
-      mediaTime: "time",
-    }),
-    time: {
+    mediaTime: {
       get() {
-        return this.mediaTime;
+        return this.mediaStore.time;
       },
       set(value) {
-        this.seekMediaTo(value);
+        this.mediaStore.seekTo(value);
       },
     },
-  },
-  methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
   },
 };
 </script>

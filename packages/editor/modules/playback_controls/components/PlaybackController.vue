@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import PlayIcon from "../assets/icons/play.svg?inline";
 import PauseIcon from "../assets/icons/pause.svg?inline";
 import RewindIcon from "../assets/icons/rewind.svg?inline";
@@ -52,17 +52,25 @@ export default {
     PauseIcon,
     RewindIcon,
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   computed: {
-    ...mapState("media", {
-      mediaPlaying: "playing",
-    }),
+    mediaPlaying() {
+      return this.mediaStore.playing;
+    },
   },
   methods: {
-    ...mapActions("media", {
-      playMedia: "play",
-      pauseMedia: "pause",
-      seekMediaTo: "seekTo",
-    }),
+    playMedia() {
+      this.mediaStore.play();
+    },
+    pauseMedia() {
+      this.mediaStore.pause();
+    },
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     onRewindClick() {
       this.seekMediaTo(0);
     },

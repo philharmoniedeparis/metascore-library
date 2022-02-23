@@ -1,3 +1,4 @@
+import store from "./store";
 import Device from "../device";
 
 import AnimationComponent from "./components/AnimationComponent";
@@ -13,12 +14,13 @@ import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
 
-import moduleStore from "./store";
-
 export default {
   name: "AppComponents",
   dependencies: [Device],
-  install({ app, store }) {
+  stores: {
+    components: store,
+  },
+  install({ app }) {
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
     app.component("BlockTogglerComponent", BlockTogglerComponent);
@@ -31,8 +33,6 @@ export default {
     app.component("ScenarioComponent", ScenarioComponent);
     app.component("SVGcomponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
-
-    store.registerModule("app-components", moduleStore);
   },
 };
 

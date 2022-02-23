@@ -9,7 +9,7 @@
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
         <tabs-item title="Shared Library">
-          <shared-assets-library />
+          <shared-assets-library url="./assets/shared-assets.json" />
         </tabs-item>
       </tabs-container>
     </resizable-pane>
@@ -49,8 +49,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import { computed } from "vue";
-import { mapState, mapActions } from "vuex";
 import packageInfo from "../../package.json";
 
 export default {
@@ -65,6 +65,12 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const store = useStore("editor");
+    const mediaStore = useStore("media");
+    const waveformStore = useStore("waveform");
+    return { store, mediaStore, waveformStore };
+  },
   data() {
     return {
       modalsTarget: null,
@@ -72,25 +78,21 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaSource: "source",
-    }),
+    mediaSource() {
+      return this.mediaStore.source;
+    },
   },
   watch: {
     mediaSource(source) {
       if (source) {
-        this.loadWaveform({ source });
+        this.waveformStore.load(source);
       }
     },
   },
   async mounted() {
     this.modalsTarget = this.$el;
 
-    await this.load(this.url);
-  },
-  methods: {
-    ...mapActions(["load"]),
-    ...mapActions({ loadWaveform: "waveform/load" }),
+    await this.store.load(this.url);
   },
 };
 </script>

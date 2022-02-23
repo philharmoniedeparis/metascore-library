@@ -1,51 +1,59 @@
 import { normalize } from "./utils/normalize";
 
 export default {
-  namespaced: true,
-  state: {
-    list: [],
-    items: {},
+  state: () => {
+    return {
+      list: [],
+      items: {},
+    };
   },
   getters: {
-    get: (state) => (id) => {
-      const item = state.items[id];
-      return item && !item.$deleted ? item : null;
+    get() {
+      return (id) => {
+        const item = this.items[id];
+        return item && !item.$deleted ? item : null;
+      };
     },
-    getAll: (state) => {
-      return state.list
+    all() {
+      return this.list
         .map((id) => {
-          const item = state.items[id];
-          return item && !item.$deleted ? item : null;
+          return this.get(id);
         })
         .filter((i) => i);
     },
-    getName: () => (item) => {
-      return item.name;
+    getName() {
+      return (item) => {
+        return item.name;
+      };
     },
-    getFile: () => (item) => {
-      return item.shared ? item.file : item;
+    getFile() {
+      return (item) => {
+        return item.shared ? item.file : item;
+      };
     },
-    getType: () => (item) => {
-      if (item.type) {
-        return item.type;
-      }
+    getType() {
+      return (item) => {
+        if (item.type) {
+          return item.type;
+        }
 
-      const file = item.shared ? item.file : item;
-      const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
-      return matches ? matches[1] : null;
+        const file = item.shared ? item.file : item;
+        const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
+        return matches ? matches[1] : null;
+      };
     },
   },
-  mutations: {
-    init(state, data) {
+  actions: {
+    init(data) {
       const normalized = normalize(data);
-      state.items = normalized.entities.assets;
-      state.list = normalized.result;
+      this.items = normalized.entities.items;
+      this.list = normalized.result;
     },
-    add(state, item) {
-      state.items.push(item);
+    add(item) {
+      this.items.push(item);
     },
-    delete(state, id) {
-      const item = state.items[id];
+    delete(id) {
+      const item = this.items[id];
       if (item) {
         item.$deleted = true;
       }

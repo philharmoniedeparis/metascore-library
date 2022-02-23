@@ -6,8 +6,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/modules/manager";
 import { debounce } from "lodash";
-import { mapState, mapActions } from "vuex";
 
 export default {
   props: {
@@ -20,6 +20,10 @@ export default {
       default: "#0000fe",
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   data() {
     return {
       width: 0,
@@ -27,12 +31,18 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaReady: "ready",
-      mediaTime: "time",
-      mediaDuration: "duration",
-      mediaBuffered: "buffered",
-    }),
+    mediaReady() {
+      return this.mediaStore.ready;
+    },
+    mediaTime() {
+      return this.mediaStore.time;
+    },
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
+    mediaBuffered() {
+      return this.mediaStore.buffered;
+    },
     playbackWidth() {
       if (!this.mediaReady) {
         return 0;
@@ -81,9 +91,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions("media", {
-      seekMediaTo: "seekTo",
-    }),
+    seekMediaTo(time) {
+      this.mediaStore.seekTo(time);
+    },
     drawBuffered() {
       const canvas = this.$refs.buffered;
       const context = canvas.getContext("2d");

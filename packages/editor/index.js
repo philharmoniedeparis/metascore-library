@@ -1,11 +1,15 @@
 import packageInfo from "../../package.json";
 import Emitter from "tiny-emitter";
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
-import { createStore } from "./store";
+import store from "./store";
 import App from "./App.vue";
 
-import { registerModules } from "@metascore-library/core/modules/manager.js";
+import {
+  registerModules,
+  registerStore,
+} from "@metascore-library/core/modules/manager.js";
 import AssetsLibrary from "./modules/assets_libraray";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
@@ -28,15 +32,20 @@ export class Editor {
    */
   static version = packageInfo.version;
 
-  constructor({ url, el = null, locale = "fr", debug = false } = {}) {
+  constructor({ url, el = null, locale = "fr" } = {}) {
+    const pinia = createPinia();
     const i18n = createI18n({ locale });
-    const store = createStore({ debug });
 
     this._events = new Emitter();
-    this._app = createApp(App, { url }).use(i18n).use(store);
+    this._app = createApp(App, { url }).use(pinia).use(i18n);
+
+    // See https://github.com/vuejs/core/pull/5474
+    this._app.config.skipEventsTimestampCheck = true;
 
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     this._app.config.unwrapInjectedRef = true;
+
+    registerStore("editor", store);
 
     // Register root modules.
     registerModules(
@@ -57,8 +66,7 @@ export class Editor {
         Timeline,
         Waveform,
       ],
-      this._app,
-      store
+      this._app
     ).then(() => {
       if (el) {
         this.mount(el);

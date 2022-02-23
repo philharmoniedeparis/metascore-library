@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 const dash_types = ["application/dash+xml"];
 const hls_types = [
@@ -85,6 +85,10 @@ export default {
       default: null,
     },
   },
+  setup() {
+    const mediaStore = useStore("media");
+    return { mediaStore };
+  },
   data() {
     return {
       playing: false,
@@ -105,9 +109,9 @@ export default {
     this.initMediaElement(null);
   },
   methods: {
-    ...mapActions("media", {
-      initMediaElement: "initElement",
-    }),
+    initMediaElement(element) {
+      this.mediaStore.initElement(element);
+    },
 
     /**
      * Get a renderer type from a source's mime type

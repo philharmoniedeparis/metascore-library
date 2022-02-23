@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import ComponentLibraryItem from "./ComponentLibraryItem.vue";
 
 export default {
@@ -86,12 +86,18 @@ export default {
       },
     },
   },
+  setup() {
+    const componentsStore = useStore("components");
+    return { componentsStore };
+  },
   computed: {
-    ...mapGetters("app-components", {
-      createComponent: "create",
-    }),
     models() {
       return this.modelConfigs.map(this.createComponent);
+    },
+  },
+  methods: {
+    createComponent(data) {
+      return this.componentsStore.create(data);
     },
   },
 };

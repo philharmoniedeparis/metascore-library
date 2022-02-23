@@ -1,101 +1,96 @@
-import { createStore as createVuexStore, createLogger } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
-export function createStore({ debug = false } = {}) {
-  const plugins = [];
-
-  if (debug) {
-    plugins.push(createLogger());
-  }
-
-  const state = {
-    selectedComponents: new Set(),
-    lockedComponents: new Set(),
-  };
-
-  const getters = {
-    isComponentSelected: (state) => (model) => {
-      return state.selectedComponents.has(model.id);
+export default {
+  state: () => {
+    return {
+      selectedComponents: new Set(),
+      lockedComponents: new Set(),
+    };
+  },
+  getters: {
+    isComponentSelected() {
+      return (model) => {
+        return this.selectedComponents.has(model.id);
+      };
     },
-    getSelectedComponents: (state, getters, rootState, rootGetters) => {
-      return Array.from(state.selectedComponents).map(
-        rootGetters["app-components/get"]
-      );
+    getSelectedComponents() {
+      const componentsStore = useStore("components");
+      return Array.from(this.selectedComponents).map(componentsStore.get);
     },
-    componentHasSelectedDescendents:
-      (state, getters, rootState, rootGetters) => (model) => {
-        const children = rootGetters["app-components/getChildren"](model);
+    componentHasSelectedDescendents() {
+      return (model) => {
+        const componentsStore = useStore("components");
+        const children = componentsStore.getChildren(model);
         return children.some((child) => {
-          if (getters.isComponentSelected(child)) {
+          if (this.isComponentSelected(child)) {
             return true;
           }
 
-          return getters.componentHasSelectedDescendents(child);
+          return this.componentHasSelectedDescendents(child);
         });
-      },
-    isComponentLocked: (state) => (model) => {
-      return state.lockedComponents.has(model.id);
+      };
     },
-    getLockedComponents: (state, getters, rootState, rootGetters) => {
-      return Array.from(state.lockedComponents).map(
-        rootGetters["app-components/get"]
-      );
+    isComponentLocked() {
+      return (model) => {
+        return this.lockedComponents.has(model.id);
+      };
     },
-  };
+    getLockedComponents() {
+      const componentsStore = useStore("components");
+      return Array.from(this.lockedComponents).map(componentsStore.get);
+    },
+  },
+  actions: {
+    selectComponent(model) {
+      this.selectedComponents.add(model.id);
+    },
+    deselectComponent(model) {
+      this.selectedComponents.delete(model.id);
+    },
+    deselectAllComponents() {
+      this.selectedComponents.clear();
+    },
+    lockComponent(model) {
+      this.lockedComponents.add(model.id);
+    },
+    unlockComponent(model) {
+      this.lockedComponents.delete(model.id);
+    },
+    async load(url) {
+      const mediaStore = useStore("media");
+      const componentsStore = useStore("components");
+      const appRendererStore = useStore("app-renderer");
+      const assetsStore = useStore("assets");
 
-  const mutations = {
-    selectComponent(state, model) {
-      state.selectedComponents.add(model.id);
-    },
-    deselectComponent(state, model) {
-      state.selectedComponents.delete(model.id);
-    },
-    deselectAllComponents(state) {
-      state.selectedComponents.clear();
-    },
-    lockComponent(state, model) {
-      state.lockedComponents.add(model.id);
-    },
-    unlockComponent(state, model) {
-      state.lockedComponents.delete(model.id);
-    },
-  };
-
-  const actions = {
-    async load({ commit }, url) {
       const data = await load(url);
 
-      commit("media/setSource", data.media);
+      mediaStore.source = data.media;
 
-      commit("app-components/init", data.components);
+      componentsStore.init(data.components);
 
-      commit("assets/init", data.assets);
+      assetsStore.init(data.assets);
 
-      commit("app-renderer/setWidth", data.width);
-      commit("app-renderer/setHeight", data.height);
-      commit("app-renderer/setCss", data.css);
-      commit("app-renderer/setReady", true);
+      appRendererStore.width = data.width;
+      appRendererStore.height = data.height;
+      appRendererStore.css = data.css;
+      appRendererStore.ready = true;
     },
-    updateComponent({ commit }, { model, data }) {
-      commit("app-components/update", { model, data });
+    updateComponent(model, data) {
+      const componentsStore = useStore("components");
+      componentsStore.update(model, data);
     },
-    updateComponents({ commit }, { models, data }) {
+    updateComponents(models, data) {
+      const componentsStore = useStore("components");
       models.forEach((model) => {
-        commit("app-components/update", { model, data });
+        componentsStore.update(model, data);
       });
     },
-    addComponent({ getters, commit }, { data, parent }) {
-      const model = getters["app-components/create"](data);
-      commit("app-components/add", { model, parent });
+    addComponent(data, parent) {
+      const componentsStore = useStore("components");
+      const model = componentsStore.create(data);
+      componentsStore.add(model, parent);
       return model;
     },
-  };
-
-  return createVuexStore({
-    plugins,
-    state,
-    getters,
-    mutations,
-    actions,
-  });
-}
+  },
+};

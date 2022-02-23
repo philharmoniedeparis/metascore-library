@@ -1,5 +1,6 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import { load } from "@metascore-library/core/utils/ajax";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 export function createStore({ debug = false } = {}) {
   const plugins = [];
@@ -14,17 +15,21 @@ export function createStore({ debug = false } = {}) {
     state: {},
     mutations: {},
     actions: {
-      async load({ commit, dispatch }, url) {
+      async load(context, url) {
+        const mediaStore = useStore("media");
+        const componentsStore = useStore("components");
+        const appRendererStore = useStore("app-renderer");
+
         const data = await load(url);
 
-        commit("media/setSource", data.media, { root: true });
+        mediaStore.source = data.media;
 
-        dispatch("app-components/set", data.components, { root: true });
+        componentsStore.init(data.components);
 
-        commit("app-renderer/setWidth", data.width);
-        commit("app-renderer/setHeight", data.height);
-        commit("app-renderer/setCss", data.css);
-        commit("app-renderer/setReady", true);
+        appRendererStore.width = data.width;
+        appRendererStore.height = data.height;
+        appRendererStore.css = data.css;
+        appRendererStore.ready = true;
       },
     },
   });

@@ -73,8 +73,8 @@ import "@interactjs/auto-start";
 import "@interactjs/actions/resize";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import { paramCase } from "param-case";
+import { useStore } from "@metascore-library/core/modules/manager";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
 
@@ -89,6 +89,12 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const editorStore = useStore("editor");
+    const mediaStore = useStore("media");
+    const componentsStore = useStore("components");
+    return { editorStore, mediaStore, componentsStore };
+  },
   data() {
     return {
       expanded: false,
@@ -97,34 +103,27 @@ export default {
     };
   },
   computed: {
-    ...mapState("media", {
-      mediaDuration: "duration",
-    }),
-    ...mapGetters([
-      "isComponentSelected",
-      "componentHasSelectedDescendents",
-      "isComponentLocked",
-    ]),
-    ...mapGetters("app-components", {
-      componentHasChildren: "hasChildren",
-      getComponentChildren: "getChildren",
-    }),
+    mediaDuration() {
+      return this.mediaStore.duration;
+    },
     selected() {
-      return this.isComponentSelected(this.model);
+      return this.editorStore.isComponentSelected(this.model);
     },
     locked: {
       get() {
-        return this.isComponentLocked(this.model);
+        return this.editorStore.isComponentLocked(this.model);
       },
       set(value) {
-        (value ? this.lockComponent : this.unlockComponent)(this.model);
+        this.editorStore[value ? "lockComponent" : "unlockComponent"](
+          this.model
+        );
       },
     },
     hasChildren() {
-      return this.componentHasChildren(this.model);
+      return this.componentsStore.hasChildren(this.model);
     },
     children() {
-      const children = this.getComponentChildren(this.model);
+      const children = this.componentsStore.getChildren(this.model);
 
       switch (this.model.type) {
         case "Page":
@@ -136,7 +135,7 @@ export default {
       }
     },
     hasSelectedDescendents() {
-      return this.componentHasSelectedDescendents(this.model);
+      return this.editorStore.componentHasSelectedDescendents(this.model);
     },
     isTimeable() {
       return this.model.$isTimeable;
@@ -194,28 +193,20 @@ export default {
     },
   },
   methods: {
-    ...mapMutations([
-      "selectComponent",
-      "deselectComponent",
-      "deselectAllComponents",
-      "lockComponent",
-      "unlockComponent",
-    ]),
-    ...mapActions(["updateComponent"]),
     paramCase,
     onClick(evt) {
       const model = this.model;
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent(model);
+          this.editorStore.deselectComponent(model);
         }
       } else {
         if (!evt.shiftKey) {
-          this.deselectAllComponents();
+          this.editorStore.deselectAllComponents();
         }
 
-        this.selectComponent(model);
+        this.editorStore.selectComponent(model);
       }
     },
     onTimeResizableMove(evt) {
@@ -239,10 +230,7 @@ export default {
         );
       }
 
-      this.updateComponent({
-        model: this.model,
-        data,
-      });
+      this.editorStore.updateComponent(this.model, data);
     },
   },
 };

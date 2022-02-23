@@ -20,7 +20,7 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import { useContextmenu } from "@metascore-library/core/modules/context_menu";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
@@ -39,9 +39,11 @@ export default {
   },
   emits: ["componentclick"],
   setup() {
+    const editorStore = useStore("editor");
     const { addItems: addContextmenuItems } = useContextmenu();
 
     return {
+      editorStore,
       addContextmenuItems,
     };
   },
@@ -52,9 +54,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["isComponentSelected"]),
     selected() {
-      return this.isComponentSelected(this.model);
+      return this.editorStore.isComponentSelected(this.model);
     },
     isPositionable() {
       return this.model.$isPositionable;
@@ -203,35 +204,26 @@ export default {
     }
   },
   methods: {
-    ...mapMutations([
-      "selectComponent",
-      "deselectComponent",
-      "deselectAllComponents",
-    ]),
-    ...mapActions(["updateComponent", "addComponent"]),
     onClick(evt) {
       if (this.selected) {
         if (evt.shiftKey) {
-          this.deselectComponent(this.model);
+          this.editorStore.deselectComponent(this.model);
           evt.stopImmediatePropagation();
         }
       } else {
         if (!evt.shiftKey) {
-          this.deselectAllComponents();
+          this.editorStore.deselectAllComponents();
         }
 
-        this.selectComponent(this.model);
+        this.editorStore.selectComponent(this.model);
         evt.stopImmediatePropagation();
       }
     },
     onDraggableMove(evt) {
       const position = this.model.position;
 
-      this.updateComponent({
-        model: this.model,
-        data: {
-          position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
-        },
+      this.editorStore.updateComponent(this.model, {
+        position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
       });
     },
     onDraggableEnd(evt) {
@@ -245,15 +237,12 @@ export default {
     onResizableMove(evt) {
       const position = this.model.position;
 
-      this.updateComponent({
-        model: this.model,
-        data: {
-          position: [
-            position[0] + evt.deltaRect.left,
-            position[1] + evt.deltaRect.top,
-          ],
-          dimension: [round(evt.rect.width), round(evt.rect.height)],
-        },
+      this.editorStore.updateComponent(this.model, {
+        position: [
+          position[0] + evt.deltaRect.left,
+          position[1] + evt.deltaRect.top,
+        ],
+        dimension: [round(evt.rect.width), round(evt.rect.height)],
       });
     },
     getModelFromDragEvent(evt) {
@@ -315,12 +304,12 @@ export default {
           }
         }
 
-        const model = await this.addComponent({
-          data: droppedModel,
-          parent: this.model,
-        });
-        this.deselectAllComponents();
-        this.selectComponent(model);
+        const model = await this.editorStore.addComponent(
+          droppedModel,
+          this.model
+        );
+        this.editorStore.deselectAllComponents();
+        this.editorStore.selectComponent(model);
 
         evt.stopPropagation();
         evt.preventDefault();

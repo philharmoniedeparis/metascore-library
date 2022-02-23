@@ -1,21 +1,27 @@
 <template>
   <div class="assets-library">
     <template v-for="(asset, id) in assets" :key="id">
-      <assets-library-item :asset="asset" />
+      <assets-item :asset="asset" />
     </template>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import AssetsLibraryItem from "./AssetsLibraryItem.vue";
+import { useStore } from "@metascore-library/core/modules/manager";
+import AssetsItem from "./AssetsItem.vue";
 
 export default {
   components: {
-    AssetsLibraryItem,
+    AssetsItem,
+  },
+  setup() {
+    const store = useStore("assets");
+    return { store };
   },
   computed: {
-    ...mapGetters("assets", { assets: "getAll" }),
+    assets() {
+      return this.store.all;
+    },
   },
 };
 </script>

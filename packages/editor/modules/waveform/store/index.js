@@ -2,21 +2,22 @@ import WaveformData from "waveform-data";
 import axios from "axios";
 
 export default {
-  namespaced: true,
-  state: {
-    data: null,
-    range: 0,
-    offset: {
-      start: null,
-      end: null,
-    },
-    scale: null,
-    minScale: null,
-    maxScale: null,
+  state: () => {
+    return {
+      data: null,
+      range: 0,
+      offset: {
+        start: null,
+        end: null,
+      },
+      scale: null,
+      minScale: null,
+      maxScale: null,
+    };
   },
-  mutations: {
-    _setData(state, data) {
-      state.data = data;
+  actions: {
+    _setData(data) {
+      this.data = data;
 
       if (data) {
         let range = 0;
@@ -27,38 +28,24 @@ export default {
           range = Math.max(range, Math.abs(min), Math.abs(max));
         }
 
-        state.range = range;
+        this.range = range;
       }
     },
-    setOffset(state, { start, end }) {
-      state.offset = { start, end };
-    },
-    setScale(state, value) {
-      state.scale = value;
-    },
-    setMinScale(state, value) {
-      state.minScale = value;
-    },
-    setMaxScale(state, value) {
-      state.maxScale = value;
-    },
-  },
-  actions: {
-    async load({ commit }, { source }) {
-      if (!("audiowaveform" in source || "url" in source)) {
+    async load({ audiowaveform, url }) {
+      if (!audiowaveform && !url) {
         throw Error("Source doen't have a url or audiowaveform key");
       }
 
-      const from_web_audio = !("audiowaveform" in source);
+      const from_web_audio = !audiowaveform;
 
       axios({
-        url: from_web_audio ? source.url : source.audiowaveform,
+        url: from_web_audio ? url : audiowaveform,
         method: "get",
         responseType: "arraybuffer",
       })
         .then((response) => {
           if (!response.data) {
-            commit("_setData", null);
+            this._setData(null);
           }
 
           if (from_web_audio) {
@@ -67,14 +54,14 @@ export default {
               array_buffer: response.data,
             };
             WaveformData.createFromAudio(options, (err, waveform) => {
-              commit("_setData", err ? null : waveform);
+              this._setData(err ? null : waveform);
             });
           } else {
-            commit("_setData", WaveformData.create(response.data));
+            this._setData(WaveformData.create(response.data));
           }
         })
         .catch((e) => {
-          commit("_setData", null);
+          this._setData(null);
           console.error(e);
         });
     },

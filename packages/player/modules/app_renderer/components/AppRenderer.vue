@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 
 export default {
   inject: ["$postMessage"],
@@ -22,15 +22,21 @@ export default {
       default: false,
     },
   },
+  setup() {
+    const store = useStore("app-renderer");
+    const mediaStore = useStore("media");
+    const componentsStore = useStore("components");
+    return { store, mediaStore, componentsStore };
+  },
   computed: {
-    ...mapState(["css"]),
-    ...mapState("media", {
-      mediaSource: "source",
-    }),
-    ...mapState("app-components", ["activeScenario"]),
-    ...mapGetters("app-components", { getComponent: "get" }),
+    css() {
+      return this.store.css;
+    },
+    mediaSource() {
+      return this.mediaStore.source;
+    },
     scenario() {
-      return this.getComponent(this.activeScenario);
+      return this.componentsStore.get(this.componentsStore.activeScenario);
     },
   },
   watch: {

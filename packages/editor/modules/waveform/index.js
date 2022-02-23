@@ -1,7 +1,7 @@
+import store from "./store";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
 import WaveformZoomController from "./components/WaveformZoomController";
-import moduleStore from "./store";
 
 export default {
   name: "Waveform",
@@ -12,11 +12,12 @@ export default {
 
     return [Media];
   },
-  async install({ app, store }) {
+  stores: {
+    waveform: store,
+  },
+  async install({ app }) {
     app.component("WaveformOverview", WaveformOverview);
     app.component("WaveformZoom", WaveformZoom);
     app.component("WaveformZoomController", WaveformZoomController);
-
-    store.registerModule("waveform", moduleStore);
   },
 };

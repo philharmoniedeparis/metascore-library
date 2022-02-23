@@ -11,7 +11,7 @@
 
 <template>
   <div
-    :class="['assets-library-item', { dragging }]"
+    :class="['assets-item', { dragging }]"
     draggable="true"
     @dragstart="onDragstart"
     @dragend="onDragend"
@@ -26,9 +26,9 @@
         :play="play"
       />
       <component :is="`${type}-icon`" v-else class="icon" />
-    </figure>
 
-    <div class="label" title="{{ label }}">{{ label }}</div>
+      <figcaption>{{ label }}</figcaption>
+    </figure>
 
     <styled-button type="button" title="Supprimer" @click="onDeleteClick">
       <template #icon><delete-icon /></template>
@@ -49,7 +49,7 @@
 <script>
 import { omit } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { mapGetters, mapMutations } from "vuex";
+import { useStore } from "@metascore-library/core/modules/manager";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
@@ -73,6 +73,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const store = useStore("assets");
+    const componentsStore = useStore("components");
+    return { store, componentsStore };
+  },
   data() {
     return {
       dragging: false,
@@ -81,22 +86,17 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("assets", {
-      getAssetName: "getName",
-      getAssetFile: "getFile",
-      getAssetType: "getType",
-    }),
-    ...mapGetters("app-components", {
-      createComponent: "create",
-    }),
+    createComponent(data) {
+      return this.componentsStore.create(data);
+    },
     label() {
-      return this.getAssetName(this.asset);
+      return this.store.getName(this.asset);
     },
     file() {
-      return this.getAssetFile(this.asset);
+      return this.store.getFile(this.asset);
     },
     type() {
-      return this.getAssetType(this.asset);
+      return this.store.getType(this.asset);
     },
     componentDragData() {
       const config = {
@@ -156,9 +156,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations("assets", {
-      deleteAsset: "delete",
-    }),
     onDragstart(evt) {
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(`metascore/component`, this.componentDragData);
@@ -195,7 +192,7 @@ export default {
       this.showDeleteConfirm = true;
     },
     onDeleteSubmit() {
-      this.deleteAsset(this.asset.id);
+      this.store.delete(this.asset.id);
       this.showDeleteConfirm = false;
     },
     onDeleteCancel() {
@@ -206,7 +203,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.assets-library-item {
+.assets-item {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -219,15 +216,20 @@ export default {
   cursor: grab;
 
   figure {
-    flex: 0 0 2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1 1 auto;
     height: 100%;
-    margin: 0 0.5em 0 0;
+    margin: 0;
     color: $mediumgray;
     pointer-events: none;
 
     img,
-    svg {
+    svg,
+    .lottie-animation-icon {
       display: block;
+      flex: 0 0 2em;
       width: 100%;
       height: 100%;
       box-sizing: border-box;
@@ -240,14 +242,16 @@ export default {
       color: $white;
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
     }
-  }
 
-  .label {
-    flex: 1 1 auto;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    user-select: none;
+    figcaption {
+      flex: 1 1 auto;
+      margin-left: 0.5em;
+      color: $white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select: none;
+    }
   }
 
   button {
