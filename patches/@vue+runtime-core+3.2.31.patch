@@ -1,0 +1,81 @@
+diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
+index 7bd5e39..c606de5 100644
+--- a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
++++ b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
+@@ -3744,7 +3744,8 @@ function createAppContext() {
+             optionMergeStrategies: {},
+             errorHandler: undefined,
+             warnHandler: undefined,
+-            compilerOptions: {}
++            compilerOptions: {},
++            skipEventsTimestampCheck: false
+         },
+         mixins: [],
+         components: {},
+@@ -6728,9 +6729,10 @@ const PublicInstanceProxyHandlers = {
+     },
+     defineProperty(target, key, descriptor) {
+         if (descriptor.get != null) {
+-            this.set(target, key, descriptor.get(), null);
++            // invalidate key cache of a getter based property #5417
++            target.$.accessCache[key] = 0;
+         }
+-        else if (descriptor.value != null) {
++        else if (shared.hasOwn(descriptor, 'value')) {
+             this.set(target, key, descriptor.value, null);
+         }
+         return Reflect.defineProperty(target, key, descriptor);
+diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
+index fcbf919..bc17628 100644
+--- a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
++++ b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
+@@ -2972,7 +2972,8 @@ function createAppContext() {
+             optionMergeStrategies: {},
+             errorHandler: undefined,
+             warnHandler: undefined,
+-            compilerOptions: {}
++            compilerOptions: {},
++            skipEventsTimestampCheck: false
+         },
+         mixins: [],
+         components: {},
+@@ -5555,9 +5556,10 @@ const PublicInstanceProxyHandlers = {
+     },
+     defineProperty(target, key, descriptor) {
+         if (descriptor.get != null) {
+-            this.set(target, key, descriptor.get(), null);
++            // invalidate key cache of a getter based property #5417
++            target.$.accessCache[key] = 0;
+         }
+-        else if (descriptor.value != null) {
++        else if (shared.hasOwn(descriptor, 'value')) {
+             this.set(target, key, descriptor.value, null);
+         }
+         return Reflect.defineProperty(target, key, descriptor);
+diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js b/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
+index 91d0e18..b4fb570 100644
+--- a/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
++++ b/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
+@@ -3762,7 +3762,8 @@ function createAppContext() {
+             optionMergeStrategies: {},
+             errorHandler: undefined,
+             warnHandler: undefined,
+-            compilerOptions: {}
++            compilerOptions: {},
++            skipEventsTimestampCheck: false
+         },
+         mixins: [],
+         components: {},
+@@ -6804,9 +6805,10 @@ const PublicInstanceProxyHandlers = {
+     },
+     defineProperty(target, key, descriptor) {
+         if (descriptor.get != null) {
+-            this.set(target, key, descriptor.get(), null);
++            // invalidate key cache of a getter based property #5417
++            target.$.accessCache[key] = 0;
+         }
+-        else if (descriptor.value != null) {
++        else if (hasOwn(descriptor, 'value')) {
+             this.set(target, key, descriptor.value, null);
+         }
+         return Reflect.defineProperty(target, key, descriptor);
