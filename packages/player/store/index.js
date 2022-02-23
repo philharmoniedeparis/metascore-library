@@ -1,7 +1,5 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
-import BackendApi from "../../api/backend";
-
-const api = new BackendApi();
+import { load } from "@metascore-library/core/utils/ajax";
 
 export function createStore({ debug = false } = {}) {
   const plugins = [];
@@ -17,7 +15,7 @@ export function createStore({ debug = false } = {}) {
     mutations: {},
     actions: {
       async load({ commit, dispatch }, url) {
-        const data = await api.load(url);
+        const data = await load(url);
 
         commit("media/setSource", data.media, { root: true });
 

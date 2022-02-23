@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "ajv": "^8.10.0",
+    "axios": "^0.24.0",
     "lodash": "^4.17.21",
     "tiny-emitter": "^2.1.0"
   }
