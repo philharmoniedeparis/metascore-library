@@ -3,7 +3,6 @@ import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 import { createStore } from "./store";
-import { createRouter } from "./router";
 import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/modules/manager.js";
@@ -32,10 +31,9 @@ export class Editor {
   constructor({ url, el = null, locale = "fr", debug = false } = {}) {
     const i18n = createI18n({ locale });
     const store = createStore({ debug });
-    const router = createRouter({ debug });
 
     this._events = new Emitter();
-    this._app = createApp(App, { url }).use(i18n).use(store).use(router);
+    this._app = createApp(App, { url }).use(i18n).use(store);
 
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     this._app.config.unwrapInjectedRef = true;
@@ -60,8 +58,7 @@ export class Editor {
         Waveform,
       ],
       this._app,
-      store,
-      router
+      store
     ).then(() => {
       if (el) {
         this.mount(el);

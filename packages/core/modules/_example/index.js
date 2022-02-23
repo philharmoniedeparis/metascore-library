@@ -3,26 +3,18 @@ import ExampleComponent from "./components/ExampleComponent";
 export default {
   name: "Example",
   dependencies: [],
-  install({ app, router, store, eventBus }) {
-    // Add a route
-    router.addRoutes([
-      {
-        path: "/example",
-        component: ExampleComponent,
-      },
-    ]);
-
+  install({ app, store }) {
     // Add a module store
     const moduleStore = {
-      actions: {
-        example() {
-          eventBus.$emit.example();
-        },
-      },
+      namespaced: true,
+      state: {},
+      getters: {},
+      mutations: {},
+      actions: {},
     };
     store.registerModule("example", moduleStore);
 
     // Register a component globally
-    app.component("example-component", ExampleComponent);
+    app.component("ExampleComponent", ExampleComponent);
   },
 };

@@ -1,15 +1,13 @@
 import { isFunction } from "lodash";
-import eventBus from "@metascore-library/core/utils/eventBus.js";
-
 const registered = [];
 
-export async function registerModules(modules, app, store, router = null) {
+export async function registerModules(modules, app, store) {
   for (const module of modules) {
-    await registerModule(module, app, store, router);
+    await registerModule(module, app, store);
   }
 }
 
-export async function registerModule(module, app, store, router = null) {
+export async function registerModule(module, app, store) {
   if (registered.includes(module.name)) {
     // Skip if already registerd.
     return;
@@ -25,10 +23,10 @@ export async function registerModule(module, app, store, router = null) {
       : module.dependencies;
 
     for (const dependency of dependencies) {
-      await registerModule(dependency, app, store, router);
+      await registerModule(dependency, app, store);
     }
   }
 
   // Install.
-  await module.install({ app, store, router, eventBus });
+  await module.install({ app, store });
 }
