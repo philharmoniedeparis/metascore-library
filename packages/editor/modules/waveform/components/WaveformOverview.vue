@@ -74,7 +74,7 @@ export default {
         const left = this.getPositionAt(start);
         const width = this.getPositionAt(end) - left;
 
-        style = { ...style, width, left };
+        style = { ...style, width: `${width}px`, left: `${left}px` };
       }
 
       return style;

@@ -1,3 +1,4 @@
+import { markRaw } from "vue";
 import WaveformData from "waveform-data";
 import axios from "axios";
 
@@ -10,14 +11,11 @@ export default {
         start: null,
         end: null,
       },
-      scale: null,
-      minScale: null,
-      maxScale: null,
     };
   },
   actions: {
-    _setData(data) {
-      this.data = data;
+    setData(data) {
+      this.data = markRaw(data);
 
       if (data) {
         let range = 0;
@@ -45,7 +43,7 @@ export default {
       })
         .then((response) => {
           if (!response.data) {
-            this._setData(null);
+            this.setData(null);
           }
 
           if (from_web_audio) {
@@ -54,14 +52,14 @@ export default {
               array_buffer: response.data,
             };
             WaveformData.createFromAudio(options, (err, waveform) => {
-              this._setData(err ? null : waveform);
+              this.setData(err ? null : waveform);
             });
           } else {
-            this._setData(WaveformData.create(response.data));
+            this.setData(WaveformData.create(response.data));
           }
         })
         .catch((e) => {
-          this._setData(null);
+          this.setData(null);
           console.error(e);
         });
     },

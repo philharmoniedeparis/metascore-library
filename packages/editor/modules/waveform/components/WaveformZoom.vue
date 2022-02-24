@@ -2,6 +2,7 @@
   <div class="waveform-zoom">
     <div v-if="message" class="message">{{ message }}</div>
     <div
+      v-else-if="waveformData"
       class="layers"
       @mousedown="onMousedown"
       @wheel.prevent="onWheel"
@@ -72,7 +73,10 @@ export default {
       width: 0,
       height: 0,
       resampledData: null,
-      offset: 0,
+      offsetX: 0,
+      scale: null,
+      minScale: null,
+      maxScale: null,
       mousedownX: null,
       dragging: false,
       message: null,
@@ -90,18 +94,6 @@ export default {
     },
     waveformRange() {
       return this.store.range;
-    },
-    waveformOffset() {
-      return this.store.offset;
-    },
-    waveformScale() {
-      return this.store.scale;
-    },
-    waveformMinScale() {
-      return this.store.minSclae;
-    },
-    waveformMaxScale() {
-      return this.store.maxScale;
     },
     playheadPosition() {
       return Math.round(this.getPositionAt(this.mediaTime));
@@ -122,16 +114,15 @@ export default {
     width() {
       this.$nextTick(function () {
         this.resampleData();
-        this.setWaveformMaxScale(this.resampledData?.scale);
       });
     },
     waveformData(value) {
       this.$nextTick(function () {
-        this.setWaveformMinScale(value?.scale);
+        this.minScale = value?.scale;
         this.resampleData();
       });
     },
-    waveformScale() {
+    scale() {
       this.$nextTick(function () {
         this.resampleData();
       });
@@ -143,28 +134,35 @@ export default {
         if (
           x < 0 ||
           (x > this.width - 10 &&
-            this.resampledData.length > this.offset + this.width)
+            this.resampledData.length > this.offsetX + this.width)
         ) {
-          this.offset += x - 10;
+          this.offsetX += x - 10;
         }
       }
     },
     resampledData(value) {
-      this.setWaveformScale(value?.scale);
-      this.offset = 0;
+      this.scale = value?.scale;
+      this.offsetX = 0;
+
+      this.store.offset = {
+        start: this.getTimeAt(0),
+        end: this.getTimeAt(this.width),
+      };
 
       this.$nextTick(function () {
         this.drawWave();
         this.drawAxis();
       });
     },
-    offset() {
-      this.drawWave();
-      this.drawAxis();
-
-      this.setWaveformOffset({
+    offsetX() {
+      this.store.offset = {
         start: this.getTimeAt(0),
         end: this.getTimeAt(this.width),
+      };
+
+      this.$nextTick(function () {
+        this.drawWave();
+        this.drawAxis();
       });
     },
   },
@@ -187,57 +185,35 @@ export default {
     }
   },
   methods: {
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
-    setWaveformOffset({ start, end }) {
-      this.store.offset = { start, end };
-    },
-    setWaveformScale(scale) {
-      this.store.scale = scale;
-    },
-    setWaveformMinScale(scale) {
-      this.store.minScale = scale;
-    },
-    setWaveformMaxScale(scale) {
-      this.store.maxScale = scale;
-    },
     resampleData() {
-      console.log("> resampleData");
-      if (this.waveformData && this.width > 0) {
+      if (this.waveformData && this.width) {
         if (!this.resampledData) {
           this.resampledData = this.waveformData.resample({
             width: this.width,
           });
+          this.maxScale = this.resampledData.scale;
           return;
         }
 
-        if (
-          this.waveformScale !== null &&
-          this.resampledData.scale !== this.waveformScale
-        ) {
-          console.log("scale", this.waveformScale);
+        if (this.scale !== null && this.resampledData.scale !== this.scale) {
           this.resampledData = this.waveformData.resample({
-            scale: this.waveformScale,
+            scale: this.scale,
           });
           return;
         }
 
         if (this.width < this.resampledData.length) {
-          console.log("width");
           this.resampledData = this.waveformData.resample({
             width: this.width,
           });
         }
       }
-      console.log("< resampleData");
     },
 
     /**
      * Update the wave layer
      */
     drawWave() {
-      //console.log("drawWave");
       if (this.width > 0 && this.height > 0) {
         const canvas = this.$refs.wave;
         const context = canvas.getContext("2d");
@@ -249,7 +225,7 @@ export default {
           const channel = this.resampledData.channel(0);
           const margin = this.waveMargin;
           const height = this.height - margin * 2;
-          const startX = this.offset;
+          const startX = this.offsetX;
           const endX = Math.min(startX + this.width, this.resampledData.length);
 
           // Loop forwards, drawing the upper half of the waveform
@@ -275,16 +251,13 @@ export default {
           context.fill();
         }
       }
-
-      //console.log("> drawWave");
     },
 
     /**
      * Update the axis layer.
      */
     drawAxis() {
-      //console.log("drawAxis");
-      if (this.width > 0 && this.height > 0) {
+      if (this.width && this.height) {
         const canvas = this.$refs.axis;
         const context = canvas.getContext("2d");
         const step = this.getAxisStep();
@@ -334,7 +307,6 @@ export default {
      * @return {Number} The number of seconds for each axis tick
      */
     getAxisStep() {
-      //console.log("getAxisStep");
       const min_spacing = 60;
       const steps = [1, 2, 5, 10, 20, 30];
       let index = 0;
@@ -368,12 +340,10 @@ export default {
      */
     setZoom(scale) {
       if (this.resampledData && this.width) {
-        const clamped = Math.min(
-          Math.max(parseInt(scale, 10), this.waveformMinScale),
-          this.waveformMaxScale
+        this.scale = Math.min(
+          Math.max(parseInt(scale, 10), this.minScale),
+          this.maxScale
         );
-
-        this.setWaveformScale(clamped);
       }
     },
 
@@ -382,9 +352,8 @@ export default {
      * @param {Number} time The time in seconds to center to
      */
     centerToTime(time) {
-      //console.log("centerToTime");
-      if (this.resampledData && this.width > 0) {
-        this.offset = this.resampledData.at_time(time) - this.width / 2;
+      if (this.resampledData && this.width) {
+        this.offsetX = this.resampledData.at_time(time) - this.width / 2;
       }
     },
 
@@ -394,9 +363,8 @@ export default {
      * @return {Number} The corresponding time in seconds
      */
     getTimeAt(x) {
-      //console.log("getTimeAt");
       if (this.resampledData) {
-        return this.resampledData.time(x + this.offset);
+        return this.resampledData.time(x + this.offsetX);
       }
 
       if (this.mediaDuration) {
@@ -413,7 +381,7 @@ export default {
      */
     getPositionAt(time) {
       if (this.resampledData) {
-        return this.resampledData.at_time(time) - this.offset;
+        return this.resampledData.at_time(time) - this.offsetX;
       }
 
       if (this.mediaDuration) {
@@ -429,7 +397,6 @@ export default {
      * @return {Number} The corresponding pixel size
      */
     timeToPixels(time) {
-      //console.log("timeToPixels");
       if (this.resampledData) {
         return Math.floor(
           (time * this.resampledData.sample_rate) / this.resampledData.scale
@@ -510,7 +477,7 @@ export default {
 
       this.dragging = true;
 
-      this.offset += this._mousedown_x - evt.clientX;
+      this.offsetX += this._mousedown_x - evt.clientX;
       this.mousedownX = evt.clientX;
     },
 
@@ -540,7 +507,7 @@ export default {
         const x = evt.pageX - left;
         const time = this.getTimeAt(x);
 
-        this.seekMediaTo(time);
+        this.mediaStore.seekTo(time);
       } else {
         this.dragging = false;
       }
