@@ -9,10 +9,6 @@ export default {
       type: String,
       required: true,
     },
-    play: {
-      type: Boolean,
-      default: false,
-    },
     renderer: {
       type: String,
       default: "svg",
@@ -26,14 +22,6 @@ export default {
       loaded: false,
       animation: null,
     };
-  },
-  watch: {
-    play(value) {
-      if (this.loaded) {
-        if (value) this.animation.play();
-        else this.animation.stop();
-      }
-    },
   },
   mounted() {
     this.$nextTick(async function () {
@@ -57,6 +45,11 @@ export default {
     });
   },
   beforeUnmount() {
+    if (this._intersection_observer) {
+      this._intersection_observer.disconnect();
+      delete this._intersection_observer;
+    }
+
     if (this.animation) {
       this.animation.removeEventListener("DOMLoaded", this.onAnimationLoaded);
       this.animation.destroy();
@@ -66,9 +59,19 @@ export default {
     onAnimationLoaded() {
       this.loaded = true;
 
-      if (this.play) {
-        this.animation.play();
+      this._intersection_observer = new IntersectionObserver(
+        this.onIntersectionChange,
+        { threshold: 0.5 }
+      );
+      this._intersection_observer.observe(this.$el);
+    },
+    onIntersectionChange(entries) {
+      const entry = entries[0];
+      if (!entry) {
+        return;
       }
+
+      this.animation[entry.isIntersecting ? "play" : "stop"]();
     },
   },
 };

@@ -116,6 +116,7 @@ export default {
   beforeUnmount() {
     if (this._resize_observer) {
       this._resize_observer.disconnect();
+      delete this._resize_observer;
     }
   },
   methods: {

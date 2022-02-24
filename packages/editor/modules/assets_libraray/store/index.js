@@ -50,7 +50,12 @@ export default {
       this.list = normalized.result;
     },
     add(item) {
-      this.items.push(item);
+      if (this.list.includes(item.id)) {
+        return;
+      }
+
+      this.items[item.id] = item;
+      this.list.push(item.id);
     },
     delete(id) {
       const item = this.items[id];

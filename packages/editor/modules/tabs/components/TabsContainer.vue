@@ -1,14 +1,22 @@
 <template>
   <div class="tabs-container">
-    <ul class="tabs-nav" role="tablist">
-      <li
-        v-for="(tab, index) in tabs"
-        :key="index"
-        :class="{ active: index === selected }"
-      >
-        <a role="tab" @click="selectTab(index)">{{ tab.title }}</a>
-      </li>
-    </ul>
+    <div class="tabs-nav-wrapper">
+      <div v-if="$slots['tabs-left']" class="tabs-left">
+        <slot name="tabs-left" />
+      </div>
+      <ul class="tabs-nav" role="tablist">
+        <li
+          v-for="(tab, index) in tabs"
+          :key="index"
+          :class="{ active: index === modelValue }"
+        >
+          <a role="tab" @click="selectTab(index)">{{ tab.title }}</a>
+        </li>
+      </ul>
+      <div v-if="$slots['tabs-right']" class="tabs-right">
+        <slot name="tabs-right" />
+      </div>
+    </div>
     <div class="tabs-content">
       <slot />
     </div>
@@ -17,26 +25,36 @@
 
 <script>
 export default {
+  props: {
+    modelValue: {
+      type: Number,
+      default: 0,
+    },
+  },
+  emits: ["update:modelValue"],
   data() {
     return {
       tabs: [],
-      selected: null,
     };
   },
+  watch: {
+    modelValue(value) {
+      this.selectTab(value);
+    },
+  },
   mounted() {
-    this.selectTab(0);
+    this.selectTab(this.modelValue);
   },
   methods: {
     addTab(tab) {
       this.tabs.push(tab);
     },
     selectTab(index) {
-      this.selected = index;
-
       this.tabs.forEach((tab, i) => {
         if (i === index) tab.activate();
         else tab.deactivate();
       });
+      this.$emit("update:modelValue", index);
     },
   },
 };
@@ -48,10 +66,16 @@ export default {
   height: 100%;
   flex-direction: column;
 
+  .tabs-nav-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+  }
+
   .tabs-nav {
     display: flex;
     flex-wrap: nowrap;
-    flex: 0;
+    flex: 1 1 auto;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -81,6 +105,11 @@ export default {
         }
       }
     }
+  }
+
+  .tabs-left,
+  .tabs-right {
+    flex: 1;
   }
 
   .tabs-content {

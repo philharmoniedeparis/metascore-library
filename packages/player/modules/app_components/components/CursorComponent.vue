@@ -97,15 +97,15 @@ export default {
     },
   },
   mounted() {
-    this.resizeObserver = new ResizeObserver(this.updateSize);
-    this.resizeObserver.observe(this.canvas);
+    this._resize_observer = new ResizeObserver(this.updateSize);
+    this._resize_observer.observe(this.canvas);
 
     this.update();
   },
   beforeUnmount() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-      delete this.resizeObserver;
+    if (this._resize_observer) {
+      this._resize_observer.disconnect();
+      delete this._resize_observer;
     }
   },
   methods: {

@@ -1,48 +1,136 @@
+<i18n>
+{
+  "fr": {
+    "terms_placeholder": "Filtrer",
+    "animated_label": "Animé",
+    "static_label": "Fixe",
+  },
+  "en": {
+    "terms_placeholder": "Filter",
+    "animated_label": "Animated",
+    "static_label": "Static",
+  },
+}
+</i18n>
+
 <template>
   <div class="shared-assets-toolbar">
-    <div class="input Input--2WFC3 text" tabindex="-1">
-      <input
-        id="input-gxsbE"
-        type="text"
-        name="search"
-        placeholder="Filtrer"
-      /><svg class="Icon--2HuwM icon" viewBox="0 0 10.243 12.127">
-        <use xlink:href="#editor-assetbrowser-sharedassets-search"></use>
-        <svg></svg>
-      </svg>
-    </div>
-    <div
-      class="input Input--2WFC3 checkbox Checkbox--1TUjG checked toggle-button"
-      tabindex="-1"
+    <form-group class="terms">
+      <input v-model="filters.terms" :placeholder="$t('terms_placeholder')" />
+    </form-group>
+
+    <styled-button
+      v-for="(value, key) in tags"
+      :key="key"
+      :class="['tag', { active: isTagActive(key) }]"
+      type="button"
+      @click="toggleTag(key)"
     >
-      <input id="input-3sCI2" type="checkbox" name="animated" />
-      <div class="state">
-        <label for="input-3sCI2"
-          >Animé<svg class="Icon--2HuwM icon" viewBox="0 0 40 32">
-            <use xlink:href="#core-ui-input-checkbox-check"></use>
-            <svg></svg></svg
-        ></label>
-      </div>
-    </div>
-    <div
-      class="input Input--2WFC3 checkbox Checkbox--1TUjG checked toggle-button"
-      tabindex="-1"
-    >
-      <input id="input-igHMW" type="checkbox" name="static" />
-      <div class="state">
-        <label for="input-igHMW"
-          >Fixe<svg class="Icon--2HuwM icon" viewBox="0 0 40 32">
-            <use xlink:href="#core-ui-input-checkbox-check"></use>
-            <svg></svg></svg
-        ></label>
-      </div>
-    </div>
-    <button class="Button--2gNEV" type="button" data-action="close">
-      <span class="label">Fermer</span
-      ><svg class="Icon--2HuwM icon" viewBox="0 0 32 32">
-        <use xlink:href="#editor-assetbrowser-sharedassets-close"></use>
-        <svg></svg>
-      </svg>
-    </button>
+      {{ $t(value.label) }}
+    </styled-button>
   </div>
 </template>
+
+<script>
+import { useStore } from "@metascore-library/core/module-manager";
+
+export default {
+  props: {
+    tags: {
+      type: Object,
+      default() {
+        return {
+          animated: {
+            label: "animated_label",
+            active: true,
+          },
+          static: {
+            label: "static_label",
+            active: true,
+          },
+        };
+      },
+    },
+  },
+  emits: ["change"],
+  setup() {
+    const store = useStore("shared-assets");
+    return { store };
+  },
+  computed: {
+    filters() {
+      return this.store.filters;
+    },
+  },
+  mounted() {
+    Object.entries(this.tags).forEach(([key, value]) => {
+      if (value.active) {
+        this.filters.tags.push(key);
+      }
+    });
+  },
+  methods: {
+    isTagActive(tag) {
+      return this.filters.tags.includes(tag);
+    },
+    toggleTag(tag) {
+      if (this.isTagActive(tag)) {
+        this.filters.tags = this.filters.tags.filter((t) => t !== tag);
+      } else {
+        this.filters.tags.push(tag);
+      }
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.shared-assets-toolbar {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+
+  .terms {
+    flex: 1;
+    max-width: 30em;
+    min-width: 10em;
+    margin: 0;
+
+    ::v-deep(input) {
+      // #\9 is used here to increase specificity.
+      &:not(#\9) {
+        padding: 0 0 0 2em;
+        background-color: $darkgray;
+        background-image: url(../assets/icons/search.svg);
+        background-size: 1em;
+        background-position: 0.5em 50%;
+        background-repeat: no-repeat;
+        border-radius: 1.5em;
+      }
+    }
+  }
+
+  .tag {
+    min-width: 5em;
+    padding: 0.25em 0.75em;
+    margin-left: 1em;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    color: $white;
+    border: 1px solid $white;
+    border-radius: 1.5em;
+    opacity: 1;
+
+    &.active {
+      color: $darkgray;
+      background: $white;
+    }
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+}
+</style>

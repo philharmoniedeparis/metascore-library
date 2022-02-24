@@ -1,16 +1,24 @@
 <template>
-  <context-menu class="metaScore-editor">
+  <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
       <main-menu />
     </resizable-pane>
 
     <resizable-pane class="left" :right="true">
-      <tabs-container>
+      <tabs-container ref="libraries" v-model="selectedLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
         <tabs-item title="Shared Library">
-          <shared-assets-library url="./assets/shared-assets.json" />
+          <shared-assets-library
+            url="./assets/shared-assets.json"
+            @click:import="onSharedAssetsImportClick"
+          />
         </tabs-item>
+        <template v-if="selectedLibrariesTab === 2" #tabs-right>
+          <keep-alive>
+            <shared-assets-toolbar />
+          </keep-alive>
+        </template>
       </tabs-container>
     </resizable-pane>
 
@@ -69,12 +77,15 @@ export default {
     const store = useStore("editor");
     const mediaStore = useStore("media");
     const waveformStore = useStore("waveform");
-    return { store, mediaStore, waveformStore };
+    const assetsStore = useStore("assets");
+    return { store, mediaStore, waveformStore, assetsStore };
   },
   data() {
     return {
       modalsTarget: null,
       version: packageInfo.version,
+      classes: {},
+      selectedLibrariesTab: 0,
     };
   },
   computed: {
@@ -88,11 +99,29 @@ export default {
         this.waveformStore.load(source);
       }
     },
+    selectedLibrariesTab(index) {
+      const tabs = this.$refs.libraries.$el.querySelector(".tabs-nav");
+
+      if (index === 2) {
+        const { width } = tabs.getBoundingClientRect();
+        tabs.style.maxWidth = `${width}px`;
+        this.classes["libraries-expanded"] = true;
+      } else {
+        tabs.style.maxWidth = null;
+        delete this.classes["libraries-expanded"];
+      }
+    },
   },
   async mounted() {
     this.modalsTarget = this.$el;
 
     await this.store.load(this.url);
+  },
+  methods: {
+    onSharedAssetsImportClick(asset) {
+      this.selectedLibrariesTab = 1;
+      this.assetsStore.add(asset);
+    },
   },
 };
 </script>
@@ -315,6 +344,28 @@ export default {
   ::v-deep(.context-menu) {
     .footer {
       opacity: 0.5;
+    }
+  }
+
+  &.libraries-expanded {
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto;
+    grid-template-areas: "top" "left";
+
+    > .left {
+      width: auto !important;
+      max-width: none;
+      padding: 0;
+
+      ::v-deep(.tabs-nav) {
+        border-color: transparent;
+      }
+    }
+
+    > .center,
+    > .right,
+    > .bottom {
+      display: none;
     }
   }
 }

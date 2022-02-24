@@ -128,18 +128,19 @@ export default {
     },
   },
   mounted() {
-    this._observer = new ResizeObserver(
+    this._resize_observer = new ResizeObserver(
       debounce(this.updateTicksCount.bind(this), 500)
     );
-    this._observer.observe(this.$el);
+    this._resize_observer.observe(this.$el);
 
     this.setupTracker();
 
     this.updateTicksCount();
   },
   beforeUnmount() {
-    if (this._observer) {
-      this._observer.disconnect();
+    if (this._resize_observer) {
+      this._resize_observer.disconnect();
+      delete this._resize_observer;
     }
 
     this.destroyTracker(this.trackTarget);

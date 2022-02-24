@@ -41,9 +41,11 @@ export default {
       required: true,
     },
   },
+  emits: ["click:import"],
   setup() {
     const store = useStore("shared-assets");
-    return { store };
+    const assetsStore = useStore("shared-assets");
+    return { store, assetsStore };
   },
   computed: {
     label() {
@@ -58,7 +60,7 @@ export default {
   },
   methods: {
     onImportClick() {
-      console.log("onImportClick");
+      this.$emit("click:import", this.asset);
     },
   },
 };

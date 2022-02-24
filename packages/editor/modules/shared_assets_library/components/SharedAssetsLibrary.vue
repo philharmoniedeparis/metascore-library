@@ -1,7 +1,9 @@
 <template>
   <div class="shared-assets-library">
     <template v-for="(asset, id) in assets" :key="id">
-      <shared-assets-item :asset="asset" />
+      <keep-alive>
+        <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
+      </keep-alive>
     </template>
   </div>
 </template>
@@ -20,22 +22,31 @@ export default {
       required: true,
     },
   },
+  emits: ["click:import"],
   setup() {
     const store = useStore("shared-assets");
     return { store };
   },
   computed: {
     assets() {
-      return this.store.all;
+      return this.store.filtered;
     },
     loaded() {
       return this.store.loaded;
+    },
+    filters() {
+      return this.store.filters;
     },
   },
   async mounted() {
     if (!this.loaded) {
       await this.store.load(this.url);
     }
+  },
+  methods: {
+    onItemImportClick(asset) {
+      this.$emit("click:import", asset);
+    },
   },
 };
 </script>

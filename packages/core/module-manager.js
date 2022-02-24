@@ -6,6 +6,10 @@ const stores = {};
 
 function registerStore(id, definition) {
   stores[id] = defineStore(id, definition);
+
+  if (process.env.NODE_ENV === "development") {
+    console.info(`Module manager: "${id}" store registerd.`);
+  }
 }
 
 async function registerModules(modules, app) {
@@ -43,6 +47,10 @@ async function registerModule(module, app) {
 
   // Install.
   await module.install({ app });
+
+  if (process.env.NODE_ENV === "development") {
+    console.info(`Module manager: "${module.name}" module registerd.`);
+  }
 }
 
 function useStore(id) {
