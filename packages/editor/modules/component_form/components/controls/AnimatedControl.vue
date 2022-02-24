@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";

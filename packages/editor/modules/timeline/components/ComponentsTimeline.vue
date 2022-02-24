@@ -13,7 +13,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import ComponentTrack from "./ComponentTrack.vue";
 
 export default {

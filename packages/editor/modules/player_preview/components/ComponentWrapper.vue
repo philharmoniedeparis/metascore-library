@@ -20,7 +20,7 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import { useContextmenu } from "@metascore-library/core/modules/context_menu";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 

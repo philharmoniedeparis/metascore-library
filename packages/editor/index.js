@@ -9,7 +9,7 @@ import App from "./App.vue";
 import {
   registerModules,
   registerStore,
-} from "@metascore-library/core/modules/manager.js";
+} from "@metascore-library/core/module-manager.js";
 import AssetsLibrary from "./modules/assets_libraray";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";

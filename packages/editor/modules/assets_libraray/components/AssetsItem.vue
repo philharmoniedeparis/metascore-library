@@ -49,7 +49,7 @@
 <script>
 import { omit } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";

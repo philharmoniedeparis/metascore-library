@@ -1,4 +1,4 @@
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
 export default {

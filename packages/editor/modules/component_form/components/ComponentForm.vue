@@ -16,7 +16,7 @@
 
 <script>
 import { computed } from "vue";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import { omit, intersection } from "lodash";
 import ControlDispatcher from "./controls/ControlDispatcher.vue";
 

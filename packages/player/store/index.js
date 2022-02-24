@@ -1,6 +1,6 @@
 import { createStore as createVuexStore, createLogger } from "vuex";
 import { load } from "@metascore-library/core/utils/ajax";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 
 export function createStore({ debug = false } = {}) {
   const plugins = [];

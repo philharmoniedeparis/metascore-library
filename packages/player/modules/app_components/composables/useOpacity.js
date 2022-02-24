@@ -1,6 +1,6 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
 export default function (model) {

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 
 export default {
   setup() {

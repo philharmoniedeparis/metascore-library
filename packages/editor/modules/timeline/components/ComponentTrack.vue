@@ -74,7 +74,7 @@ import "@interactjs/actions/resize";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { paramCase } from "param-case";
-import { useStore } from "@metascore-library/core/modules/manager";
+import { useStore } from "@metascore-library/core/module-manager";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
 

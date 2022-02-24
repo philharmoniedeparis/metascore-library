@@ -4,7 +4,7 @@ import { createI18n } from "vue-i18n";
 import { createStore } from "./store";
 import App from "./App.vue";
 
-import { registerModules } from "@metascore-library/core/modules/manager.js";
+import { registerModules } from "@metascore-library/core/module-manager.js";
 import AppRenderer from "./modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/context_menu";
 
