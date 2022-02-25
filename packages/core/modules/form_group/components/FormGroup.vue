@@ -29,11 +29,7 @@
       <template v-else>{{ description }} </template>
     </div>
     <template v-if="validation">
-      <div
-        v-for="(error, index) of validation.$errors"
-        :key="index"
-        class="errors"
-      >
+      <div v-for="error of validation.$errors" :key="error.$uid" class="errors">
         <div class="error-msg">{{ error.$message }}</div>
       </div>
     </template>

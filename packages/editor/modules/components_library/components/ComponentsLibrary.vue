@@ -25,7 +25,7 @@
 
 <template>
   <div class="components-library">
-    <template v-for="(model, index) in models" :key="index">
+    <template v-for="model in models" :key="model.id">
       <component-library-item
         :model="model"
         :label="$t(model.name) || model.name"

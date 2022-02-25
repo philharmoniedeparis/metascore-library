@@ -2,7 +2,7 @@
   <form-group class="control array" :data-property="property" :label="label">
     <template v-for="(item, index) in schema.items" :key="index">
       <control-dispatcher
-        :property="`${index}`"
+        :property="index"
         :schema="item"
         :model-value="value[index]"
         @update:model-value="update(index, $event)"

@@ -1,6 +1,6 @@
 <template>
   <div class="assets-library">
-    <template v-for="(asset, id) in assets" :key="id">
+    <template v-for="asset in assets" :key="asset.id">
       <assets-item :asset="asset" />
     </template>
   </div>

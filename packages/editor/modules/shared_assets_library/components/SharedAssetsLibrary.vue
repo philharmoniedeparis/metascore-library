@@ -1,6 +1,6 @@
 <template>
   <div class="shared-assets-library">
-    <template v-for="(asset, id) in assets" :key="id">
+    <template v-for="asset in assets" :key="asset.id">
       <keep-alive>
         <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
       </keep-alive>
