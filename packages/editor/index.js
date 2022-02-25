@@ -45,6 +45,8 @@ export class Editor {
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     this._app.config.unwrapInjectedRef = true;
 
+    this._app.config.performance = process.env.NODE_ENV === "development";
+
     registerStore("editor", store);
 
     // Register root modules.
