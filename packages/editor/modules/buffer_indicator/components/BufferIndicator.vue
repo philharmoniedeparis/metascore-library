@@ -1,6 +1,11 @@
 <template>
   <div class="buffer-indicator" @mousedown="onMousedown" @click="onClick">
-    <canvas ref="buffered" class="buffered" />
+    <div
+      v-for="range in ranges"
+      :key="range.key"
+      :style="range.style"
+      class="range"
+    />
     <div class="playback" :style="playbackStyle" />
   </div>
 </template>
@@ -43,34 +48,31 @@ export default {
     mediaBuffered() {
       return this.mediaStore.buffered;
     },
+    ranges() {
+      const multiplier = this.width / this.mediaDuration;
+
+      return this.mediaBuffered.map(([start, end]) => {
+        return {
+          key: `${start}-${end}`,
+          style: {
+            left: `${Math.round(start * multiplier)}px`,
+            width: `${Math.round((end - start) * multiplier)}px`,
+            backgroundColor: this.bufferedColor,
+          },
+        };
+      });
+    },
     playbackWidth() {
       if (!this.mediaReady) {
         return 0;
       }
-      return (this.mediaTime * this.width) / this.mediaDuration;
+      return Math.round((this.mediaTime * this.width) / this.mediaDuration);
     },
     playbackStyle() {
       return {
         width: `${this.playbackWidth}px`,
         backgroundColor: this.playbackColor,
       };
-    },
-  },
-  watch: {
-    width() {
-      this.$nextTick(function () {
-        this.drawBuffered();
-      });
-    },
-    mediaReady() {
-      this.$nextTick(function () {
-        this.drawBuffered();
-      });
-    },
-    mediaBuffered() {
-      this.$nextTick(function () {
-        this.drawBuffered();
-      });
     },
   },
   mounted() {
@@ -93,27 +95,6 @@ export default {
   methods: {
     seekMediaTo(time) {
       this.mediaStore.seekTo(time);
-    },
-    drawBuffered() {
-      const canvas = this.$refs.buffered;
-      const context = canvas.getContext("2d");
-
-      context.clearRect(0, 0, this.width, this.height);
-
-      if (this.mediaReady) {
-        const ranges = this.mediaBuffered;
-        const multiplier = canvas.width / this.mediaDuration;
-
-        context.fillStyle = this.bufferedColor;
-
-        ranges.forEach(([start, end]) => {
-          const start_x = start * multiplier;
-          const end_x = end * multiplier;
-          const width = end_x - start_x;
-
-          context.fillRect(start_x, 0, width, canvas.height);
-        });
-      }
     },
 
     /**
@@ -178,11 +159,9 @@ export default {
   position: relative;
   overflow: hidden;
 
-  .buffered {
+  .range {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
     height: 100%;
   }
 
