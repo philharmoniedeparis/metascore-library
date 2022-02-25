@@ -29,16 +29,15 @@ export default {
       dragging: false,
     };
   },
-  computed: {
-    dragData() {
-      const data = omit(this.model.toJson(), ["id"]);
-      return JSON.stringify(data);
-    },
-  },
   methods: {
     onDragstart(evt) {
+      const data = omit(this.model.toJson(), ["id"]);
+
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(`metascore/component`, this.dragData);
+      evt.dataTransfer.setData(
+        `metascore/component:${this.model.type}`,
+        JSON.stringify(data)
+      );
 
       this.dragging = true;
     },

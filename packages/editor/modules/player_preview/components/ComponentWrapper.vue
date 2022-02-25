@@ -245,20 +245,37 @@ export default {
         dimension: [round(evt.rect.width), round(evt.rect.height)],
       });
     },
+    getModelTypeFromDragEvent(evt) {
+      let type = null;
+      evt.dataTransfer.types.some((format) => {
+        const matches = format.match(/^metascore\/component:(.*)$/);
+        if (matches) {
+          type = matches[1];
+          return true;
+        }
+      });
+      return type;
+    },
     getModelFromDragEvent(evt) {
-      if (evt.dataTransfer.types.includes("metascore/component")) {
-        const data = evt.dataTransfer.getData("metascore/component");
-        return JSON.parse(data);
+      const type = this.getModelTypeFromDragEvent(evt);
+      if (type) {
+        const format = `metascore/component:${type}`;
+        if (evt.dataTransfer.types.includes(format)) {
+          const data = evt.dataTransfer.getData(format);
+          return JSON.parse(data);
+        }
       }
     },
-    isDropAllowed(model) {
-      if (model) {
+    isDropAllowed(evt) {
+      const type = this.getModelTypeFromDragEvent(evt);
+
+      if (type) {
         switch (this.model.type) {
           case "Scenario":
           case "Page":
-            return !["Scenario", "Page"].includes(model.type);
+            return !["Scenario", "Page"].includes(type);
           case "Block":
-            return model.type === "Page";
+            return type === "Page";
         }
       }
 
@@ -267,15 +284,13 @@ export default {
     onDragenter(evt) {
       this.dragEnterCounter++;
 
-      const draggedModel = this.getModelFromDragEvent(evt);
-      if (this.isDropAllowed(draggedModel)) {
+      if (this.isDropAllowed(evt)) {
         this.dragOver = true;
         evt.stopPropagation();
       }
     },
     onDragover(evt) {
-      const draggedModel = this.getModelFromDragEvent(evt);
-      if (this.isDropAllowed(draggedModel)) {
+      if (this.isDropAllowed(evt)) {
         evt.stopPropagation();
         evt.preventDefault();
       }
@@ -289,8 +304,8 @@ export default {
       this.dragEnterCounter = 0;
       this.dragOver = false;
 
-      const droppedModel = this.getModelFromDragEvent(evt);
-      if (this.isDropAllowed(droppedModel)) {
+      if (this.isDropAllowed(evt)) {
+        const droppedModel = this.getModelFromDragEvent(evt);
         switch (droppedModel.type) {
           case "Page":
             break;

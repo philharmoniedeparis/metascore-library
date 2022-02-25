@@ -145,8 +145,7 @@ export default {
       }
 
       const component = this.createComponent(config);
-      const data = omit(component.toJson(), ["id"]);
-      return JSON.stringify(data);
+      return omit(component.toJson(), ["id"]);
     },
     assetDragData() {
       return JSON.stringify(this.asset);
@@ -157,8 +156,13 @@ export default {
   },
   methods: {
     onDragstart(evt) {
+      const component = this.componentDragData;
+
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(`metascore/component`, this.componentDragData);
+      evt.dataTransfer.setData(
+        `metascore/component:${component.type}`,
+        JSON.stringify(component)
+      );
       evt.dataTransfer.setData(`metascore/asset`, this.assetDragData);
       evt.dataTransfer.setData("text/uri-list", this.file.url);
       evt.dataTransfer.setData("text/plain", this.file.url);
@@ -229,16 +233,14 @@ export default {
     svg,
     .lottie-animation-icon {
       display: block;
-      flex: 0 0 2em;
-      width: 100%;
+      flex: 0 0 auto;
+      width: 2em;
       height: 100%;
       box-sizing: border-box;
       object-fit: contain;
     }
 
     .icon {
-      width: 100%;
-      height: 100%;
       color: $white;
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
     }
