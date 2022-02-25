@@ -87,17 +87,12 @@ export default {
     },
   },
   setup() {
-    const componentsStore = useStore("components");
-    return { componentsStore };
+    const editorStore = useStore("editor");
+    return { editorStore };
   },
   computed: {
     models() {
-      return this.modelConfigs.map(this.createComponent);
-    },
-  },
-  methods: {
-    createComponent(data) {
-      return this.componentsStore.create(data);
+      return this.modelConfigs.map(this.editorStore.createComponent);
     },
   },
 };

@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     blocks() {
-      return this.model.blocks.map(this.componentsStore.get);
+      return this.componentsStore.get(this.model.blocks);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [

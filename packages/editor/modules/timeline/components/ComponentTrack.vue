@@ -202,11 +202,7 @@ export default {
           this.editorStore.deselectComponent(model);
         }
       } else {
-        if (!evt.shiftKey) {
-          this.editorStore.deselectAllComponents();
-        }
-
-        this.editorStore.selectComponent(model);
+        this.editorStore.selectComponent(model, evt.shiftKey);
       }
     },
     onTimeResizableMove(evt) {

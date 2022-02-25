@@ -5,7 +5,7 @@ import ComponentIcons from "../component_icons";
 export default {
   name: "Timeline",
   dependencies: [PlayerPreview, ComponentIcons],
-  async install({ app }) {
+  install({ app }) {
     app.component("ComponentsTimeline", ComponentsTimeline);
   },
 };

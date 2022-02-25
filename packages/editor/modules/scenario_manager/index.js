@@ -2,7 +2,7 @@ import ScenarioManager from "./components/ScenarioManager";
 
 export default {
   name: "ScenarioManager",
-  async install({ app }) {
+  install({ app }) {
     app.component("ScenarioManager", ScenarioManager);
   },
 };

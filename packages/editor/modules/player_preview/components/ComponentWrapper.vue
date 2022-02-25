@@ -1,3 +1,44 @@
+<i18n>
+{
+  "fr": {
+    "contextmenu": {
+      "page_before": "Add a page before",
+      "page_after": "Add a page after",
+      "select": "Sélectionner",
+      "deselect": "Désélectionner",
+      "copy": "Copier",
+      "paste": "Coller",
+      "delete": "Supprimer",
+      "lock": "Verrouiller",
+      "unlock": "Déverrouiller",
+      "arrange": "Disposition",
+      "to_front": "Mettre en premier plan",
+      "to_back": "Mettre en arrière plan",
+      "forward": "Mettre en avant",
+      "backward": "Mettre en arrière",
+    }
+  },
+  "en": {
+    "contextmenu": {
+      "page_before": "Add a page before",
+      "page_after": "Add a page after",
+      "select": "Select",
+      "deselect": "Deselect",
+      "copy": "Copy",
+      "paste": "Paste",
+      "delete": "Delete",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "arrange": "Arrange",
+      "to_front": "Bring to front",
+      "to_back": "Send to back",
+      "forward": "Bring forward",
+      "backward": "Send backward",
+    }
+  }
+}
+</i18n>
+
 <template>
   <component-wrapper
     :model="model"
@@ -19,7 +60,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round } from "lodash";
+import { round, omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
@@ -39,8 +80,9 @@ export default {
   emits: ["componentclick"],
   setup() {
     const editorStore = useStore("editor");
+    const clipboardStore = useStore("clipboard");
     const contextmenuStore = useStore("contextmenu");
-    return { editorStore, contextmenuStore };
+    return { editorStore, clipboardStore, contextmenuStore };
   },
   data() {
     return {
@@ -52,38 +94,98 @@ export default {
     selected() {
       return this.editorStore.isComponentSelected(this.model);
     },
+    locked() {
+      return this.editorStore.isComponentLocked(this.model);
+    },
     isPositionable() {
       return this.model.$isPositionable;
     },
     isResizable() {
       return this.model.$isResizable;
     },
-    contextmenuItems() {
+    clipboardDataAvailable() {
+      if (this.clipboardStore.format !== "metascore/component") {
+        return false;
+      }
+
+      const model = this.clipboardStore.data;
+
+      // @todo: base this on possible Model children
       switch (this.model.type) {
         case "Scenario":
-          return [];
+          return model.type === "Block";
+        case "Page":
+          return ["SVG", "Content", "Animation"].includes(model.type);
+        default:
+          return false;
+      }
+    },
+    contextmenuItems() {
+      const items = [
+        {
+          label: this.$t(`contextmenu.${this.selected ? "de" : ""}select`),
+          handler: () => {
+            if (this.selected) {
+              this.editorStore.deselectComponent(this.model);
+            } else {
+              this.editorStore.selectComponent(this.model);
+            }
+          },
+        },
+        {
+          label: this.$t(`contextmenu.${this.locked ? "un" : ""}lock`),
+          handler: () => {
+            if (this.locked) {
+              this.editorStore.unlockComponent(this.model);
+            } else {
+              this.editorStore.lockComponent(this.model);
+            }
+          },
+        },
+      ];
+
+      if (this.clipboardDataAvailable) {
+        items.push({
+          label: this.$t("contextmenu.paste"),
+          handler: () => {
+            // @todo
+            const data = this.clipboardStore.data;
+            console.log(data);
+          },
+        });
+      }
+
+      switch (this.model.type) {
+        case "Scenario":
+          return [
+            {
+              label: `${this.model.type} (${this.model.name})`,
+              items,
+            },
+          ];
 
         case "Page":
           return [
             {
               label: this.model.type,
               items: [
+                ...items,
                 {
-                  label: "Add a page before",
+                  label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    console.log("Add a page before");
+                    this.editorStore.deleteComponent(this.model);
                   },
                 },
                 {
-                  label: "Add a page after",
+                  label: this.$t("contextmenu.page_before"),
                   handler: () => {
-                    console.log("Add a page after");
+                    this.editorStore.addPageBefore(this.model);
                   },
                 },
                 {
-                  label: "Delete",
+                  label: this.$t("contextmenu.page_after"),
                   handler: () => {
-                    console.log("Delete");
+                    this.editorStore.addPageAfter(this.model);
                   },
                 },
               ],
@@ -91,65 +193,58 @@ export default {
           ];
 
         default:
+          items.push({
+            label: this.$t("contextmenu.copy"),
+            handler: () => {
+              this.clipboardStore.setData(
+                `metascore/component`,
+                omit(this.model.toJson(), ["id"])
+              );
+            },
+          });
+
           return [
             {
               label: `${this.model.type} (${this.model.name})`,
               items: [
+                ...items,
                 {
-                  label: "Copy",
+                  label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    console.log("Copy");
+                    this.editorStore.deleteComponent(this.model);
                   },
                 },
                 {
-                  label: "Paste",
-                  handler: () => {
-                    console.log("Copy");
-                  },
-                },
-                {
-                  label: "Delete",
-                  handler: () => {
-                    console.log("Delete");
-                  },
-                },
-                {
-                  label: "Lock",
-                  handler: () => {
-                    console.log("Lock");
-                  },
-                },
-                {
-                  label: "Unlock",
-                  handler: () => {
-                    console.log("Unlock");
-                  },
-                },
-                {
-                  label: "Arrange",
+                  label: this.$t("contextmenu.arrange"),
                   items: [
                     {
-                      label: "Bring to front",
+                      label: this.$t("contextmenu.to_front"),
                       handler: () => {
-                        console.log("Bring to front");
+                        this.editorStore.arrangeComponent(this.model, "front");
                       },
                     },
                     {
-                      label: "Send to back",
+                      label: this.$t("contextmenu.to_back"),
                       handler: () => {
-                        console.log("Send to back");
+                        this.editorStore.arrangeComponent(this.model, "back");
                       },
                     },
                     {
-                      label: "Bring forward",
+                      label: this.$t("contextmenu.forward"),
                       handler: () => {
-                        console.log("Bring forward");
+                        this.editorStore.arrangeComponent(
+                          this.model,
+                          "forward"
+                        );
                       },
                     },
                     {
-                      label: "Send backward",
+                      label: this.$t("contextmenu.backward"),
                       handler: () => {
-                        console.log("Send backward");
+                        this.editorStore.arrangeComponent(
+                          this.model,
+                          "backward"
+                        );
                       },
                     },
                   ],
@@ -221,11 +316,7 @@ export default {
           evt.stopImmediatePropagation();
         }
       } else {
-        if (!evt.shiftKey) {
-          this.editorStore.deselectAllComponents();
-        }
-
-        this.editorStore.selectComponent(this.model);
+        this.editorStore.selectComponent(this.model, evt.shiftKey);
         evt.stopImmediatePropagation();
       }
     },
@@ -333,7 +424,6 @@ export default {
           droppedModel,
           this.model
         );
-        this.editorStore.deselectAllComponents();
         this.editorStore.selectComponent(model);
 
         evt.stopPropagation();

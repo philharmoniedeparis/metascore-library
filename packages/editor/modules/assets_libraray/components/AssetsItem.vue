@@ -75,8 +75,8 @@ export default {
   },
   setup() {
     const store = useStore("assets");
-    const componentsStore = useStore("components");
-    return { store, componentsStore };
+    const editorStore = useStore("editor");
+    return { store, editorStore };
   },
   data() {
     return {
@@ -86,9 +86,6 @@ export default {
     };
   },
   computed: {
-    createComponent(data) {
-      return this.componentsStore.create(data);
-    },
     label() {
       return this.store.getName(this.asset);
     },
@@ -144,7 +141,7 @@ export default {
           break;
       }
 
-      const component = this.createComponent(config);
+      const component = this.editorStore.createComponent(config);
       return omit(component.toJson(), ["id"]);
     },
     assetDragData() {

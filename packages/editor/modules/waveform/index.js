@@ -15,7 +15,7 @@ export default {
   stores: {
     waveform: store,
   },
-  async install({ app }) {
+  install({ app }) {
     app.component("WaveformOverview", WaveformOverview);
     app.component("WaveformZoom", WaveformZoom);
     app.component("WaveformZoomController", WaveformZoomController);

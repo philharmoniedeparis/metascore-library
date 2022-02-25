@@ -42,7 +42,30 @@ export default {
     },
   },
   actions: {
-    selectComponent(model) {
+    updateComponent(model, data) {
+      const componentsStore = useStore("components");
+      componentsStore.update(model, data);
+    },
+    updateComponents(models, data) {
+      const componentsStore = useStore("components");
+      models.forEach((model) => {
+        componentsStore.update(model, data);
+      });
+    },
+    createComponent(data) {
+      const componentsStore = useStore("components");
+      return componentsStore.create(data);
+    },
+    addComponent(data, parent) {
+      const componentsStore = useStore("components");
+      const model = this.createComponent(data);
+      componentsStore.add(model, parent);
+      return model;
+    },
+    selectComponent(model, append = false) {
+      if (!append) {
+        this.deselectAllComponents();
+      }
       this.selectedComponents.add(model.id);
     },
     deselectComponent(model) {
@@ -56,6 +79,21 @@ export default {
     },
     unlockComponent(model) {
       this.lockedComponents.delete(model.id);
+    },
+    deleteComponent(model) {
+      model.delete();
+    },
+    arrangeComponent(model, action) {
+      // @todo
+      console.log("arrangeComponent", model, action);
+    },
+    addPageBefore() {
+      // @todo
+      console.log("addPageBefore");
+    },
+    addPageAfter() {
+      // @todo
+      console.log("addPageAfter");
     },
     async load(url) {
       const mediaStore = useStore("media");
@@ -75,22 +113,6 @@ export default {
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
       appRendererStore.ready = true;
-    },
-    updateComponent(model, data) {
-      const componentsStore = useStore("components");
-      componentsStore.update(model, data);
-    },
-    updateComponents(models, data) {
-      const componentsStore = useStore("components");
-      models.forEach((model) => {
-        componentsStore.update(model, data);
-      });
-    },
-    addComponent(data, parent) {
-      const componentsStore = useStore("components");
-      const model = componentsStore.create(data);
-      componentsStore.add(model, parent);
-      return model;
     },
   },
 };

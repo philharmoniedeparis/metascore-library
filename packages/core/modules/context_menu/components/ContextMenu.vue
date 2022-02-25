@@ -3,7 +3,7 @@
     <slot />
 
     <div
-      v-if="open"
+      v-if="isOpen"
       ref="menu"
       class="context-menu"
       tabindex="0"
@@ -42,7 +42,6 @@ export default {
   },
   data() {
     return {
-      open: false,
       position: {
         x: 0,
         y: 0,
@@ -50,6 +49,9 @@ export default {
     };
   },
   computed: {
+    isOpen() {
+      return this.store.isOpen;
+    },
     items() {
       return this.store.items;
     },
@@ -68,11 +70,10 @@ export default {
   },
   methods: {
     hide() {
-      this.open = false;
-      this.store.reset();
+      this.store.close();
     },
     show() {
-      this.open = true;
+      this.store.open();
       this.$nextTick(function () {
         this.$refs.menu.focus();
       });

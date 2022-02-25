@@ -37,3 +37,4 @@ export default {
 };
 
 export { default as ComponentWrapper } from "./components/ComponentWrapper";
+export * as Models from "./models";

@@ -46,7 +46,9 @@ async function registerModule(module, app) {
   }
 
   // Install.
-  await module.install({ app });
+  if ("install" in module) {
+    await module.install({ app });
+  }
 
   if (process.env.NODE_ENV === "development") {
     console.info(`Module manager: "${module.name}" module registerd.`);

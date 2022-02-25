@@ -1,6 +1,7 @@
 export default {
   state: () => {
     return {
+      isOpen: false,
       items: [],
     };
   },
@@ -11,7 +12,11 @@ export default {
     addItems(items) {
       this.items.push(...items);
     },
-    reset() {
+    open() {
+      this.isOpen = true;
+    },
+    close() {
+      this.isOpen = false;
       this.items = [];
     },
   },

@@ -1,3 +1,4 @@
+import Clipboard from "../clipboard";
 import ContextMenu from "@metascore-library/core/modules/context_menu";
 import PlayerPreview from "./components/PlayerPreview";
 import PlayerZoomController from "./components/PlayerZoomController";
@@ -9,7 +10,7 @@ export default {
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/app_renderer"
     );
 
-    return [AppRenderer, ContextMenu];
+    return [AppRenderer, Clipboard, ContextMenu];
   },
   async install({ app }) {
     const { default: ComponentWrapper } = await import(

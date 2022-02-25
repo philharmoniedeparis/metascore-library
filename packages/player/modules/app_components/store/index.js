@@ -14,6 +14,10 @@ export default {
   getters: {
     get() {
       return (id) => {
+        if (Array.isArray(id)) {
+          return id.map(this.get).filter((m) => m);
+        }
+
         const model = this.components[id];
         return model && !model.$deleted ? model : null;
       };
@@ -66,7 +70,7 @@ export default {
           }
         }
 
-        return ids.map(this.get);
+        return this.get(ids);
       };
     },
   },

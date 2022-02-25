@@ -6,7 +6,7 @@ import TimecodeInput from "../timecode_input";
 export default {
   name: "PlaybackControls",
   dependencies: [Media, TimecodeInput],
-  async install({ app }) {
+  install({ app }) {
     app.component("PlaybackController", PlaybackController);
     app.component("PlaybackTime", PlaybackTime);
   },

@@ -161,6 +161,7 @@ export default {
     grid-area: 3/3/4/4;
     width: 100%;
     height: 100%;
+    background: $white;
     border: 0;
   }
 }

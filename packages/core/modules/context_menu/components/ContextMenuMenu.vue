@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { useStore } from "@metascore-library/core/module-manager";
+
 export default {
   props: {
     items: {
@@ -36,10 +38,15 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const store = useStore("contextmenu");
+    return { store };
+  },
   methods: {
     onItemClick(item) {
       if (item.handler) {
         item.handler();
+        this.store.close();
       }
     },
   },

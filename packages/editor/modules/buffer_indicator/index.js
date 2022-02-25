@@ -9,7 +9,7 @@ export default {
 
     return [Media];
   },
-  async install({ app }) {
+  install({ app }) {
     app.component("BufferIndicator", BufferIndicator);
   },
 };
