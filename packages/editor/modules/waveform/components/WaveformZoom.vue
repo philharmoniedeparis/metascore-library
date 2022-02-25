@@ -16,8 +16,9 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/module-manager";
 import { debounce } from "lodash";
+import { clamp } from "@metascore-library/core/utils/math";
+import { useStore } from "@metascore-library/core/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
 
 export default {
@@ -136,13 +137,13 @@ export default {
           (x > this.width - 10 &&
             this.resampledData.length > this.offsetX + this.width)
         ) {
-          this.offsetX += x - 10;
+          this.setOffsetX(this.offsetX + x - 10);
         }
       }
     },
     resampledData(value) {
       this.scale = value?.scale;
-      this.offsetX = 0;
+      this.setOffsetX(0);
 
       this.store.offset = {
         start: this.getTimeAt(0),
@@ -347,13 +348,17 @@ export default {
       }
     },
 
+    setOffsetX(value) {
+      this.offsetX = clamp(value, 0, this.resampledData.length - this.width);
+    },
+
     /**
      * Update the offset in order to put the playhead's position at the center
      * @param {Number} time The time in seconds to center to
      */
     centerToTime(time) {
       if (this.resampledData && this.width) {
-        this.offsetX = this.resampledData.at_time(time) - this.width / 2;
+        this.setOffsetX(this.resampledData.at_time(time) - this.width / 2);
       }
     },
 
@@ -476,8 +481,7 @@ export default {
       }
 
       this.dragging = true;
-
-      this.offsetX += this._mousedown_x - evt.clientX;
+      this.setOffsetX(this.offsetX + this.mousedownX - evt.clientX);
       this.mousedownX = evt.clientX;
     },
 
