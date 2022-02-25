@@ -21,7 +21,6 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
-import { useContextmenu } from "@metascore-library/core/modules/context_menu";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
 export default {
@@ -40,12 +39,8 @@ export default {
   emits: ["componentclick"],
   setup() {
     const editorStore = useStore("editor");
-    const { addItems: addContextmenuItems } = useContextmenu();
-
-    return {
-      editorStore,
-      addContextmenuItems,
-    };
+    const contextmenuStore = useStore("contextmenu");
+    return { editorStore, contextmenuStore };
   },
   data() {
     return {
@@ -68,23 +63,38 @@ export default {
         case "Scenario":
           return [];
 
-        case "Block":
-          return [];
-
         case "Page":
-          return [];
+          return [
+            {
+              label: this.model.type,
+              items: [
+                {
+                  label: "Add a page before",
+                  handler: () => {
+                    console.log("Add a page before");
+                  },
+                },
+                {
+                  label: "Add a page after",
+                  handler: () => {
+                    console.log("Add a page after");
+                  },
+                },
+                {
+                  label: "Delete",
+                  handler: () => {
+                    console.log("Delete");
+                  },
+                },
+              ],
+            },
+          ];
 
         default:
           return [
             {
-              label: `${this.model.name} (${this.model.type})`,
+              label: `${this.model.type} (${this.model.name})`,
               items: [
-                {
-                  label: "Select",
-                  handler: () => {
-                    console.log("Select");
-                  },
-                },
                 {
                   label: "Copy",
                   handler: () => {
@@ -331,7 +341,7 @@ export default {
       }
     },
     onContextmenu() {
-      this.addContextmenuItems(this.contextmenuItems);
+      this.contextmenuStore.addItems(this.contextmenuItems);
     },
   },
 };

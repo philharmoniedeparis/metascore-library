@@ -12,7 +12,7 @@
       @blur="hide"
     >
       <context-menu-menu
-        v-if="items.length"
+        v-if="items.length || $slots.header || $slots.footer"
         :items="items"
         @click:handler="hide"
       >
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import useContextmenu from "../composables/useContextmenu";
+import { useStore } from "@metascore-library/core/module-manager";
 import ContextMenuMenu from "./ContextMenuMenu.vue";
 
 export default {
@@ -37,9 +37,8 @@ export default {
     ContextMenuMenu,
   },
   setup() {
-    return {
-      ...useContextmenu(),
-    };
+    const store = useStore("contextmenu");
+    return { store };
   },
   data() {
     return {
@@ -51,6 +50,9 @@ export default {
     };
   },
   computed: {
+    items() {
+      return this.store.items;
+    },
     style() {
       return {
         left: `${this.position.x}px`,
@@ -67,7 +69,7 @@ export default {
   methods: {
     hide() {
       this.open = false;
-      this.reset();
+      this.store.reset();
     },
     show() {
       this.open = true;
@@ -85,6 +87,7 @@ export default {
         x: evt.pageX,
         y: evt.pageY,
       };
+
       this.show();
 
       evt.preventDefault();

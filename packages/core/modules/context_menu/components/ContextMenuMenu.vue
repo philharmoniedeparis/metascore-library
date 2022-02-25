@@ -1,5 +1,5 @@
 <template>
-  <ul v-if="items.length">
+  <ul>
     <li v-if="$slots.header" class="header">
       <slot name="header" />
     </li>
@@ -19,11 +19,7 @@
         {{ item.label }}
       </span>
 
-      <context-menu-menu
-        v-if="item.items?.length"
-        :items="item.items"
-        @click:handler="$emit('click:handler')"
-      />
+      <context-menu-menu v-if="item.items?.length" :items="item.items" />
     </li>
 
     <li v-if="$slots.footer" class="footer">
@@ -40,12 +36,10 @@ export default {
       required: true,
     },
   },
-  emits: ["click:handler"],
   methods: {
     onItemClick(item) {
       if (item.handler) {
         item.handler();
-        this.$emit("click:handler");
       }
     },
   },
@@ -68,12 +62,13 @@ ul {
 
 li {
   position: relative;
-  padding: 0.5em;
   white-space: nowrap;
   user-select: none;
 
   a {
     display: block;
+    padding: 0.5em;
+    color: $white;
   }
 
   ul {
@@ -82,6 +77,10 @@ li {
     left: 100%;
     margin-left: -1em;
     z-index: 1;
+  }
+
+  &:not(.has-handler) {
+    padding: 0.5em;
   }
 
   &.has-handler,

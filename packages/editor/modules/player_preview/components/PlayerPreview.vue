@@ -95,16 +95,18 @@ export default {
         init[prop] = evt[prop];
       }
 
-      if (evt instanceof MouseEvent) {
+      if ("clientX" in evt) {
         const { left, top } = iframe.getBoundingClientRect();
+        init["clientX"] += left;
+        init["clientY"] += top;
+      }
+
+      if ("pageX" in evt) {
         const { x: pageX, y: pageY } = window.convertPointFromNodeToPage(
           iframe,
           evt.pageX,
           evt.pageY
         );
-
-        init["clientX"] += left;
-        init["clientY"] += top;
 
         init["pageX"] = pageX;
         init["pageY"] = pageY;
