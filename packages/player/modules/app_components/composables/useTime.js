@@ -3,11 +3,8 @@ import { useStore } from "@metascore-library/core/module-manager";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  const mediaStore = useStore("media");
-
   if (unref(model).$isTimeable) {
     const active = computed(() => {
-      const mediaTime = mediaStore.time;
       const { "start-time": startTime, "end-time": endTime } = unref(model);
 
       if (
@@ -17,6 +14,8 @@ export default function (model) {
         return true;
       }
 
+      const mediaStore = useStore("media");
+      const mediaTime = mediaStore.time;
       if (isUndefined(endTime) || isNull(endTime)) {
         return mediaTime >= startTime;
       }

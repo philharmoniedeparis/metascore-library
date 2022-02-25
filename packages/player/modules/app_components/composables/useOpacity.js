@@ -8,13 +8,16 @@ export default function (model) {
 
   if (unref(model).$isOpacitable) {
     const opacity = computed(() => {
-      const mediaTime = mediaStore.time;
       const { opacity } = unref(model);
+      let value = null;
 
       if (!isUndefined(opacity) && !isNull(opacity)) {
-        const value = !opacity.animated
-          ? opacity.value
-          : getAnimatedValueAtTime(opacity.value, mediaTime);
+        if (!opacity.animated) {
+          value = opacity.value;
+        } else {
+          const mediaTime = mediaStore.time;
+          value = getAnimatedValueAtTime(opacity.value, mediaTime);
+        }
 
         if (!isUndefined(value) && !isNull(value)) {
           return value;

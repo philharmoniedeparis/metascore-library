@@ -8,14 +8,18 @@ export default function (model) {
 
   if (unref(model).$isTransformable) {
     const transform = computed(() => {
-      const mediaTime = mediaStore.time;
       const { translate, scale } = unref(model);
       const ret = {};
 
       if (!isUndefined(translate) && !isNull(translate)) {
-        const value = !translate.animated
-          ? translate.value
-          : getAnimatedValueAtTime(translate.value, mediaTime);
+        let value = null;
+
+        if (!translate.animated) {
+          value = translate.value;
+        } else {
+          const mediaTime = mediaStore.time;
+          value = getAnimatedValueAtTime(translate.value, mediaTime);
+        }
 
         if (!isUndefined(value) && !isNull(value)) {
           if (value[0] !== 0) {
@@ -28,9 +32,14 @@ export default function (model) {
       }
 
       if (!isUndefined(scale) && !isNull(scale)) {
-        const value = !scale.aniamted
-          ? scale.value
-          : getAnimatedValueAtTime(scale.value, mediaTime);
+        let value = null;
+
+        if (!scale.animated) {
+          value = scale.value;
+        } else {
+          const mediaTime = mediaStore.time;
+          value = getAnimatedValueAtTime(scale.value, mediaTime);
+        }
 
         if (!isUndefined(value) && !isNull(value)) {
           if (value[0] !== 1) {
