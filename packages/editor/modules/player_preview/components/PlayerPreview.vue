@@ -132,6 +132,7 @@ export default {
 .player-preview {
   display: grid;
   width: 100%;
+  height: 100%;
   grid-template-columns: 20px auto min-content auto;
   grid-template-rows: 20px auto min-content auto;
   box-sizing: border-box;

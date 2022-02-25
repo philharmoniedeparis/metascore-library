@@ -41,12 +41,12 @@
         <text
           v-for="(n, i) in majorTicksCount"
           :key="n"
-          :x="vertical ? 0 : i * majorTickStep + minorTickStep"
-          :y="vertical ? i * majorTickStep + minorTickStep : 0"
-          text-anchor="start"
+          :x="(vertical ? -1 : 1) * (i * majorTickStep + minorTickStep)"
+          y="0"
+          :text-anchor="vertical ? 'end' : 'start'"
+          :transform="vertical ? 'rotate(270)' : null"
           fill="currentColor"
           dominant-baseline="hanging"
-          :writing-mode="vertical ? 'vertical-lr' : null"
         >
           {{ i * majorTickStep }}
         </text>
@@ -148,9 +148,8 @@ export default {
   methods: {
     updateTicksCount() {
       this.majorTicksCount = ceil(
-        this.vertical
-          ? this.$el.clientHeight
-          : this.$el.clientWidth / this.majorTickStep
+        (this.vertical ? this.$el.clientHeight : this.$el.clientWidth) /
+          this.majorTickStep
       );
     },
     setupTracker() {
