@@ -36,7 +36,14 @@ export default {
       return this.mediaStore.source;
     },
     scenario() {
-      return this.componentsStore.get(this.componentsStore.activeScenario);
+      if (!this.componentsStore.activeScenario) {
+        return null;
+      }
+
+      return this.componentsStore.get(
+        this.componentsStore.activeScenario.schema,
+        this.componentsStore.activeScenario.id
+      );
     },
   },
   watch: {

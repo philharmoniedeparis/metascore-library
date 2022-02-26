@@ -1,31 +1,58 @@
+import * as Models from "../../models";
+
 import {
   schema as _schema,
   normalize as _normalize,
   denormalize as _denormalize,
 } from "normalizr";
 
-const componentSchema = new _schema.Entity(
-  "components",
-  {},
-  {
-    processStrategy: (entity, parent, key) => {
-      switch (key) {
-        case "children":
-          return { ...entity, parent: parent.id };
-        case "pages":
-          return { ...entity, parent: parent.id };
-        default:
-          return { ...entity };
-      }
-    },
+const schemas = {};
+
+Object.values(Models).forEach(({ name: type }) => {
+  switch (type) {
+    case "AbstractComponent":
+    case "EmbeddableComponent":
+      break;
+
+    default:
+      schemas[type] = new _schema.Entity(
+        type,
+        {},
+        {
+          processStrategy: (entity, parent, key) => {
+            if (
+              parent &&
+              Models[parent.type]?.schema?.properties?.[key]?.format ===
+                "collection"
+            ) {
+              // Add reference to parent entity via "parent" property.
+              return { ...entity, parent: parent.id };
+            }
+
+            return { ...entity };
+          },
+        }
+      );
+      break;
   }
-);
-componentSchema.define({
-  pages: [componentSchema],
-  children: [componentSchema],
 });
 
-const schema = new _schema.Array(componentSchema);
+// Map collection properties to schema references.
+Object.values(Models).forEach(({ name: type, schema }) => {
+  Object.entries(schema.properties).forEach(([key, value]) => {
+    if (value.format === "collection") {
+      const mapping = {};
+      value.items.properties.schema.enum.forEach((related_type) => {
+        mapping[related_type] = schemas[related_type];
+      });
+      schemas[type].define({
+        [key]: new _schema.Array(mapping, "type"),
+      });
+    }
+  });
+});
+
+const schema = new _schema.Array(schemas, "type");
 
 export function normalize(data) {
   return _normalize(data, schema);

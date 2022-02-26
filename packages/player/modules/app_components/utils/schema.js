@@ -179,16 +179,25 @@ export const createCollectionField = ({
   ajv,
   title = "",
   description = "",
+  model = [],
 } = {}) => {
   ajv.addFormat("collection", { validate: () => true });
 
-  // @TODO: reference sub-schemas ?
+  const schemas = Array.isArray(model)
+    ? model.map((m) => m.name)
+    : [model.name];
 
   return {
     ...createArrayField({
       title,
       description,
-      items: { type: "string" },
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          schema: { enum: schemas },
+        },
+      },
       uniqueItems: true,
     }),
     format: "collection",
