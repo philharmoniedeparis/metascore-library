@@ -110,12 +110,14 @@ export default {
 
       const model = this.clipboardStore.data;
 
-      // @todo: base this on possible Model children
       switch (this.model.type) {
         case "Scenario":
-          return model.type === "Block";
         case "Page":
-          return ["SVG", "Content", "Animation"].includes(model.type);
+          return this.model.$schema.properties[
+            "children"
+          ].items.properties.schema.enum.includes(model.type);
+        case "Block":
+          return model.type === "Page";
         default:
           return false;
       }

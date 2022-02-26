@@ -1,5 +1,5 @@
 <template>
-  <div class="dynamic-ruler" :data-axis="axis">
+  <div class="preview-ruler" :data-axis="axis">
     <svg xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern
@@ -110,7 +110,7 @@ export default {
       majorTicksCount: 0,
       tracking: false,
       trackerPosition: 0,
-      patternId: uuid(),
+      patternId: `ruler-${uuid()}`,
     };
   },
   computed: {
@@ -204,7 +204,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dynamic-ruler {
+.preview-ruler {
   ::v-deep(svg) {
     width: 100%;
     height: 100%;

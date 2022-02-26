@@ -1,14 +1,17 @@
 <template>
   <div class="player-preview">
-    <dynamic-ruler :track-target="iframeBody" />
-    <dynamic-ruler axis="y" :track-target="iframeBody" />
+    <preview-ruler :track-target="iframeBody" />
+    <preview-ruler axis="y" :track-target="iframeBody" />
 
-    <iframe
-      ref="iframe"
-      src="about:blank"
+    <div
+      class="iframe-wrapper"
       :style="{ width: `${playerWidth}px`, height: `${playerHeight}px` }"
-      @load="onIframeLoad"
-    ></iframe>
+    >
+      <preview-grid />
+
+      <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
+    </div>
+
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
       <app-renderer />
     </teleport>
@@ -18,11 +21,13 @@
 <script>
 import { useStore } from "@metascore-library/core/module-manager";
 import "../../../polyfills/GeomertyUtils";
-import DynamicRuler from "./DynamicRuler.vue";
+import PreviewRuler from "./PreviewRuler.vue";
+import PreviewGrid from "./PreviewGrid.vue";
 
 export default {
   components: {
-    DynamicRuler,
+    PreviewRuler,
+    PreviewGrid,
   },
   props: {
     css: {
@@ -139,7 +144,7 @@ export default {
   grid-template-rows: 20px auto min-content auto;
   box-sizing: border-box;
 
-  .dynamic-ruler {
+  .preview-ruler {
     position: sticky;
     z-index: 1;
     background: $mediumgray;
@@ -156,13 +161,17 @@ export default {
       padding-left: 2px;
     }
   }
+}
 
-  iframe {
-    grid-area: 3/3/4/4;
-    width: 100%;
-    height: 100%;
-    background: $white;
-    border: 0;
-  }
+.iframe-wrapper {
+  position: relative;
+  grid-area: 3/3/4/4;
+  background: $white;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 </style>
