@@ -1,10 +1,15 @@
 import packageInfo from "../../package.json";
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
-import { createStore } from "./store";
+import hotkey from "v-hotkey";
+import store from "./store";
 import App from "./App.vue";
 
-import { registerModules } from "@metascore-library/core/module-manager.js";
+import {
+  registerModules,
+  registerStore,
+} from "@metascore-library/core/module-manager.js";
 import AppRenderer from "./modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/context_menu";
 
@@ -14,11 +19,14 @@ export class Player {
    */
   static version = packageInfo.version;
 
-  constructor({ url, el, api = false, locale = "fr", debug = false } = {}) {
+  constructor({ url, el, api = false, locale = "fr" } = {}) {
+    const pinia = createPinia();
     const i18n = createI18n({ locale });
-    const store = createStore({ debug });
 
-    this._app = createApp(App, { url, api }).use(i18n).use(store);
+    this._app = createApp(App, { url, api }).use(pinia).use(i18n).use(hotkey);
+
+    // Register the root store.
+    registerStore("player", store);
 
     // Register root modules.
     registerModules([AppRenderer, ContextMenu], this._app, store).then(() => {

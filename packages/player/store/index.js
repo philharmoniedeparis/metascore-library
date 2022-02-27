@@ -1,36 +1,23 @@
-import { createStore as createVuexStore, createLogger } from "vuex";
 import { load } from "@metascore-library/core/utils/ajax";
 import { useStore } from "@metascore-library/core/module-manager";
 
-export function createStore({ debug = false } = {}) {
-  const plugins = [];
+export default {
+  actions: {
+    async load(url) {
+      const mediaStore = useStore("media");
+      const componentsStore = useStore("components");
+      const appRendererStore = useStore("app-renderer");
 
-  if (debug) {
-    plugins.push(createLogger());
-  }
+      const data = await load(url);
 
-  return createVuexStore({
-    plugins,
-    modules: {},
-    state: {},
-    mutations: {},
-    actions: {
-      async load(context, url) {
-        const mediaStore = useStore("media");
-        const componentsStore = useStore("components");
-        const appRendererStore = useStore("app-renderer");
+      mediaStore.source = data.media;
 
-        const data = await load(url);
+      componentsStore.init(data.components);
 
-        mediaStore.source = data.media;
-
-        componentsStore.init(data.components);
-
-        appRendererStore.width = data.width;
-        appRendererStore.height = data.height;
-        appRendererStore.css = data.css;
-        appRendererStore.ready = true;
-      },
+      appRendererStore.width = data.width;
+      appRendererStore.height = data.height;
+      appRendererStore.css = data.css;
+      appRendererStore.ready = true;
     },
-  });
-}
+  },
+};

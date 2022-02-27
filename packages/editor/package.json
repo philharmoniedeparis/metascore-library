@@ -24,6 +24,7 @@
     "tiny-emitter": "^2.1.0",
     "url-regex": "^5.0.0",
     "uuid": "^8.3.2",
+    "v-hotkey": "https://gitpkg.now.sh/philharmoniedeparis/v-hotkey?next",
     "validate-color": "^2.2.1",
     "vue": "^3.2.31",
     "vue-dompurify-html": "^3.0.0-beta.1",

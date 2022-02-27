@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import { omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import "../../../polyfills/GeomertyUtils";
 import PreviewRuler from "./PreviewRuler.vue";
@@ -64,8 +65,9 @@ export default {
   setup() {
     const appRendererStore = useStore("app-renderer");
     const editorStore = useStore("editor");
+    const clipboardStore = useStore("clipboard");
     const contextmenuStore = useStore("contextmenu");
-    return { appRendererStore, editorStore, contextmenuStore };
+    return { appRendererStore, editorStore, clipboardStore, contextmenuStore };
   },
   data() {
     return {
@@ -97,7 +99,8 @@ export default {
             {
               label: this.$t("contextmenu.copy"),
               handler: () => {
-                this.editorStore.copyComponents(selection);
+                const data = selection.map((m) => omit(m.toJson(), ["id"]));
+                this.clipboardStore.setData(`metascore/component`, data);
               },
             },
             {

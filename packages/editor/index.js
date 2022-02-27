@@ -3,6 +3,7 @@ import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
+import hotkey from "v-hotkey";
 import store from "./store";
 import App from "./App.vue";
 
@@ -12,7 +13,6 @@ import {
 } from "@metascore-library/core/module-manager.js";
 import AssetsLibrary from "./modules/assets_libraray";
 import BufferIndicator from "./modules/buffer_indicator";
-import Clipboard from "./modules/clipboard";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/context_menu";
@@ -38,7 +38,7 @@ export class Editor {
     const i18n = createI18n({ locale });
 
     this._events = new Emitter();
-    this._app = createApp(App, { url }).use(pinia).use(i18n);
+    this._app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);
 
     // See https://github.com/vuejs/core/pull/5474
     this._app.config.skipEventsTimestampCheck = true;
@@ -48,6 +48,7 @@ export class Editor {
 
     this._app.config.performance = process.env.NODE_ENV === "development";
 
+    // Register the root store.
     registerStore("editor", store);
 
     // Register root modules.
@@ -55,7 +56,6 @@ export class Editor {
       [
         AssetsLibrary,
         BufferIndicator,
-        Clipboard,
         ComponentForm,
         ComponentsLibrary,
         ContextMenu,

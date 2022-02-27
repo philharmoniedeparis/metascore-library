@@ -18,7 +18,7 @@
 </i18n>
 
 <template>
-  <div class="playback-controller">
+  <div v-hotkey="hotkeys" class="playback-controller">
     <button type="button" class="rewind" @click="onRewindClick">
       <span aria-hidden="true"><rewind-icon class="icon" /></span>
       <span class="sr-only">{{ $t("buttons.rewind") }}</span>
@@ -59,6 +59,17 @@ export default {
   computed: {
     mediaPlaying() {
       return this.mediaStore.playing;
+    },
+    hotkeys() {
+      return {
+        space: () => {
+          if (this.mediaPlaying) {
+            this.pauseMedia();
+          } else {
+            this.playMedia();
+          }
+        },
+      };
     },
   },
   methods: {

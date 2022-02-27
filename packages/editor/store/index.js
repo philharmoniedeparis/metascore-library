@@ -1,4 +1,3 @@
-import { omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -75,16 +74,6 @@ export default {
     },
     deselectAllComponents() {
       this.selectedComponents.clear();
-    },
-    copyComponent(model) {
-      const clipboardStore = useStore("clipboard");
-      const data = omit(model.toJson(), ["id"]);
-      clipboardStore.setData(`metascore/component`, data);
-    },
-    copyComponents(models) {
-      const clipboardStore = useStore("clipboard");
-      const data = models.map((m) => omit(m.toJson(), ["id"]));
-      clipboardStore.setData(`metascore/component`, data);
     },
     lockComponent(model) {
       this.lockedComponents.add(model);
