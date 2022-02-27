@@ -2,6 +2,7 @@
   <div
     :class="[
       'component-track',
+      paramCase(model.type),
       {
         'has-children': hasChildren,
         'has-start-time': hasStartTime,
@@ -12,7 +13,7 @@
         dragging,
       },
     ]"
-    :data-type="paramCase(model.type)"
+    :data-type="model.type"
     :data-id="model.id"
     :title="model.name"
   >
@@ -426,7 +427,7 @@ $handles-margin: 0.5em;
         background-color: $color;
       }
     } @else {
-      &[data-type="#{$component}"] {
+      &.#{$component} {
         > .time-wrapper .time {
           background-color: $color;
         }
@@ -434,7 +435,7 @@ $handles-margin: 0.5em;
     }
   }
 
-  &[data-type="scenario"] {
+  &.scenario {
     border-top: 0;
 
     > .handle,
@@ -447,7 +448,7 @@ $handles-margin: 0.5em;
     }
   }
 
-  &[data-type="page"] {
+  &.page {
     &:first-child > .time-wrapper .time .resize-handle[data-direction="left"],
     &:last-child > .time-wrapper .time .resize-handle[data-direction="right"] {
       display: none;

@@ -1,3 +1,4 @@
+import { omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -11,12 +12,11 @@ export default {
   getters: {
     isComponentSelected() {
       return (model) => {
-        return this.selectedComponents.has(model.id);
+        return this.selectedComponents.has(model);
       };
     },
     getSelectedComponents() {
-      const componentsStore = useStore("components");
-      return Array.from(this.selectedComponents).map(componentsStore.get);
+      return Array.from(this.selectedComponents);
     },
     componentHasSelectedDescendents() {
       return (model) => {
@@ -33,12 +33,11 @@ export default {
     },
     isComponentLocked() {
       return (model) => {
-        return this.lockedComponents.has(model.id);
+        return this.lockedComponents.has(model);
       };
     },
     getLockedComponents() {
-      const componentsStore = useStore("components");
-      return Array.from(this.lockedComponents).map(componentsStore.get);
+      return Array.from(this.lockedComponents);
     },
   },
   actions: {
@@ -66,26 +65,89 @@ export default {
       if (!append) {
         this.deselectAllComponents();
       }
-      this.selectedComponents.add(model.id);
+      this.selectedComponents.add(model);
     },
     deselectComponent(model) {
-      this.selectedComponents.delete(model.id);
+      this.selectedComponents.delete(model);
+    },
+    deselectComponents(models) {
+      models.map(this.deselectComponent);
     },
     deselectAllComponents() {
       this.selectedComponents.clear();
     },
+    copyComponent(model) {
+      const clipboardStore = useStore("clipboard");
+      const data = omit(model.toJson(), ["id"]);
+      clipboardStore.setData(`metascore/component`, data);
+    },
+    copyComponents(models) {
+      const clipboardStore = useStore("clipboard");
+      const data = models.map((m) => omit(m.toJson(), ["id"]));
+      clipboardStore.setData(`metascore/component`, data);
+    },
     lockComponent(model) {
-      this.lockedComponents.add(model.id);
+      this.lockedComponents.add(model);
+    },
+    lockComponents(models) {
+      models.map(this.lockComponent);
     },
     unlockComponent(model) {
-      this.lockedComponents.delete(model.id);
+      this.lockedComponents.delete(model);
+    },
+    unlockComponents(models) {
+      models.map(this.unlockComponent);
     },
     deleteComponent(model) {
       model.delete();
     },
+    deleteComponents(models) {
+      models.map(this.deleteComponent);
+    },
     arrangeComponent(model, action) {
-      // @todo
-      console.log("arrangeComponent", model, action);
+      if (model.parent) {
+        const componentsStore = useStore("components");
+        const parent = componentsStore.get(
+          model.parent.schema,
+          model.parent.id
+        );
+        let key = null;
+
+        switch (parent.type) {
+          case "Scenario":
+          case "Page":
+            key = "children";
+            break;
+          case "Block":
+            key = "pages";
+            break;
+        }
+
+        const count = parent[key].length;
+        const old_index = parent[key].findIndex((child) => {
+          return child.schema === model.type && child.id === model.id;
+        });
+        let new_index = null;
+
+        switch (action) {
+          case "front":
+            new_index = count - 1;
+            break;
+          case "back":
+            new_index = 0;
+            break;
+          case "forward":
+            new_index = Math.min(old_index + 1, count - 1);
+            break;
+          case "backward":
+            new_index = Math.max(old_index - 1, 0);
+            break;
+        }
+
+        if (new_index !== null && new_index !== old_index) {
+          parent[key].splice(new_index, 0, parent[key].splice(old_index, 1)[0]);
+        }
+      }
     },
     addPageBefore() {
       // @todo

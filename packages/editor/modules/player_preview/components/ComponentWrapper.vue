@@ -60,7 +60,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round, omit } from "lodash";
+import { round } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
@@ -198,10 +198,7 @@ export default {
           items.push({
             label: this.$t("contextmenu.copy"),
             handler: () => {
-              this.clipboardStore.setData(
-                `metascore/component`,
-                omit(this.model.toJson(), ["id"])
-              );
+              this.editorStore.copyComponent(this.model);
             },
           });
 

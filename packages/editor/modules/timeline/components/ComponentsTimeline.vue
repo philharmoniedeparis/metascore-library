@@ -109,17 +109,21 @@ export default {
 
       if (this.sorted) {
         const parent_track = track.parentNode.closest(".component-track");
+        const parent_type = parent_track.getAttribute("data-type");
         const parent_id = parent_track.getAttribute("data-id");
-        const model = this.getComponent(parent_id);
+        const parent_model = this.componentsStore.get(parent_type, parent_id);
 
         const children = [];
         parent_track
           .querySelectorAll(":scope > .children > .component-track")
           .forEach((child) => {
-            children.unshift(child.getAttribute("data-id"));
+            children.unshift({
+              id: child.getAttribute("data-id"),
+              schema: child.getAttribute("data-type"),
+            });
           });
 
-        this.editorStore.updateComponent(model, { children });
+        this.editorStore.updateComponent(parent_model, { children });
 
         this.resorted = false;
       }

@@ -26,7 +26,10 @@ Object.values(Models).forEach(({ name: type }) => {
                 "collection"
             ) {
               // Add reference to parent entity via "parent" property.
-              return { ...entity, parent: parent.id };
+              return {
+                ...entity,
+                parent: { id: parent.id, schema: parent.type },
+              };
             }
 
             return { ...entity };

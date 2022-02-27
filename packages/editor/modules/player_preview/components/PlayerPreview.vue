@@ -1,3 +1,28 @@
+<i18n>
+{
+  "fr": {
+    "contextmenu": {
+      "selection": "Sélection",
+      "deselect": "Désélectionner",
+      "copy": "Copier",
+      "delete": "Supprimer",
+      "lock": "Verrouiller",
+      "unlock": "Déverrouiller",
+    }
+  },
+  "en": {
+    "contextmenu": {
+      "selection": "Selection",
+      "deselect": "Deselect",
+      "copy": "Copy",
+      "delete": "Delete",
+      "lock": "Lock",
+      "unlock": "Unlock",
+    }
+  }
+}
+</i18n>
+
 <template>
   <div class="player-preview">
     <preview-ruler :track-target="iframeBody" />
@@ -38,7 +63,9 @@ export default {
   emits: ["load"],
   setup() {
     const appRendererStore = useStore("app-renderer");
-    return { appRendererStore };
+    const editorStore = useStore("editor");
+    const contextmenuStore = useStore("contextmenu");
+    return { appRendererStore, editorStore, contextmenuStore };
   },
   data() {
     return {
@@ -52,6 +79,50 @@ export default {
     },
     playerHeight() {
       return this.appRendererStore.height;
+    },
+    contextmenuItems() {
+      const items = [];
+      const selection = this.editorStore.getSelectedComponents;
+
+      if (selection.length > 0) {
+        items.push({
+          label: this.$t("contextmenu.selection"),
+          items: [
+            {
+              label: this.$t("contextmenu.deselect"),
+              handler: () => {
+                this.editorStore.deselectAllComponents();
+              },
+            },
+            {
+              label: this.$t("contextmenu.copy"),
+              handler: () => {
+                this.editorStore.copyComponents(selection);
+              },
+            },
+            {
+              label: this.$t("contextmenu.delete"),
+              handler: () => {
+                this.editorStore.deleteComponents(selection);
+              },
+            },
+            {
+              label: this.$t("contextmenu.lock"),
+              handler: () => {
+                this.editorStore.lockComponents(selection);
+              },
+            },
+            {
+              label: this.$t("contextmenu.unlock"),
+              handler: () => {
+                this.editorStore.unlockComponents(selection);
+              },
+            },
+          ],
+        });
+      }
+
+      return items;
     },
   },
   methods: {
@@ -128,6 +199,8 @@ export default {
         return;
       }
 
+      this.contextmenuStore.addItems(this.contextmenuItems);
+
       evt.preventDefault();
       this.bubbleIframeEvent(evt);
     },
@@ -143,30 +216,34 @@ export default {
   grid-template-columns: 20px auto min-content auto;
   grid-template-rows: 20px auto min-content auto;
   box-sizing: border-box;
-
-  .preview-ruler {
-    position: sticky;
-    z-index: 1;
-    background: $mediumgray;
-
-    &[data-axis="x"] {
-      top: 0;
-      grid-area: 1/2/2/5;
-      padding-top: 2px;
-    }
-
-    &[data-axis="y"] {
-      left: 0;
-      grid-area: 2/1/5/2;
-      padding-left: 2px;
-    }
-  }
 }
 
 .iframe-wrapper {
   position: relative;
   grid-area: 3/3/4/4;
   background: $white;
+}
+
+.preview-ruler {
+  position: sticky;
+  z-index: 1;
+  background: $mediumgray;
+
+  &[data-axis="x"] {
+    top: 0;
+    grid-area: 1/2/2/5;
+    padding-top: 2px;
+  }
+
+  &[data-axis="y"] {
+    left: 0;
+    grid-area: 2/1/5/2;
+    padding-left: 2px;
+  }
+}
+
+.preview-grid {
+  pointer-events: none;
 }
 
 iframe {

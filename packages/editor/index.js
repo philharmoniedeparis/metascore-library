@@ -12,6 +12,7 @@ import {
 } from "@metascore-library/core/module-manager.js";
 import AssetsLibrary from "./modules/assets_libraray";
 import BufferIndicator from "./modules/buffer_indicator";
+import Clipboard from "./modules/clipboard";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/context_menu";
@@ -54,6 +55,7 @@ export class Editor {
       [
         AssetsLibrary,
         BufferIndicator,
+        Clipboard,
         ComponentForm,
         ComponentsLibrary,
         ContextMenu,
