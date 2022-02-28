@@ -31,7 +31,6 @@
     "vue-i18n": "^9.1.9",
     "vue-nav-tabs": "^0.5.7",
     "vue-tippy": "^6.0.0-alpha.44",
-    "vuex": "^4.0.2",
     "waveform-data": "^4.3.0"
   }
 }

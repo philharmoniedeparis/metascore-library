@@ -22,7 +22,6 @@
     "@vue/cli-plugin-eslint": "~5.0.1",
     "@vue/cli-plugin-router": "~5.0.1",
     "@vue/cli-plugin-unit-jest": "~5.0.1",
-    "@vue/cli-plugin-vuex": "~5.0.1",
     "@vue/cli-service": "https://gitpkg.now.sh/philharmoniedeparis/vue-cli/packages/@vue/cli-service?multi-entry-lib",
     "@vue/compiler-sfc": "^3.2.31",
     "@vue/test-utils": "^2.0.0-rc.17",
