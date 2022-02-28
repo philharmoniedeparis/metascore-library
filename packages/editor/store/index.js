@@ -1,3 +1,4 @@
+import { omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -75,6 +76,29 @@ export default {
     deselectAllComponents() {
       this.selectedComponents.clear();
     },
+    moveComponentSelection(reverse = false) {
+      const selected = this.getSelectedComponents;
+      if (selected.length > 0) {
+        const componentsStore = useStore("components");
+        const master = selected[0];
+        const parent = componentsStore.getParent(master);
+        const children = componentsStore.getChildren(parent);
+        const count = children.length;
+        let index = children.findIndex((child) => {
+          return child === master;
+        });
+
+        index += reverse ? -1 : 1;
+
+        if (index < 0) {
+          index = count - 1;
+        } else if (index >= count) {
+          index = 0;
+        }
+
+        this.selectComponent(children[index]);
+      }
+    },
     lockComponent(model) {
       this.lockedComponents.add(model);
     },
@@ -87,6 +111,21 @@ export default {
     unlockComponents(models) {
       models.map(this.unlockComponent);
     },
+    copyComponent(model) {
+      const clipboardStore = useStore("clipboard");
+      const data = omit(model.toJson(), ["id"]);
+      clipboardStore.setData(`metascore/component`, data);
+    },
+    copyComponents(models) {
+      models.map(this.copyComponent);
+    },
+    cutComponent(model) {
+      this.copyComponent(model);
+      this.deleteComponent(model);
+    },
+    cutComponents(models) {
+      models.map(this.cutComponent);
+    },
     deleteComponent(model) {
       model.delete();
     },
@@ -96,28 +135,14 @@ export default {
     arrangeComponent(model, action) {
       if (model.parent) {
         const componentsStore = useStore("components");
-        const parent = componentsStore.get(
-          model.parent.schema,
-          model.parent.id
-        );
-        let key = null;
-
-        switch (parent.type) {
-          case "Scenario":
-          case "Page":
-            key = "children";
-            break;
-          case "Block":
-            key = "pages";
-            break;
-        }
-
-        const count = parent[key].length;
-        const old_index = parent[key].findIndex((child) => {
-          return child.schema === model.type && child.id === model.id;
+        const parent = componentsStore.getParent(model);
+        const children = componentsStore.getChildren(parent);
+        const count = children.length;
+        const old_index = children.findIndex((child) => {
+          return child === model;
         });
-        let new_index = null;
 
+        let new_index = null;
         switch (action) {
           case "front":
             new_index = count - 1;
@@ -134,8 +159,15 @@ export default {
         }
 
         if (new_index !== null && new_index !== old_index) {
-          parent[key].splice(new_index, 0, parent[key].splice(old_index, 1)[0]);
+          children.splice(new_index, 0, children.splice(old_index, 1)[0]);
         }
+
+        const property = componentsStore.getChildrenProperty(parent);
+        this.updateComponent(parent, {
+          [property]: children.map((child) => {
+            return { schema: child.type, id: child.id };
+          }),
+        });
       }
     },
     addPageBefore() {
@@ -145,6 +177,23 @@ export default {
     addPageAfter() {
       // @todo
       console.log("addPageAfter");
+    },
+    moveComponents(models, { left, top }) {
+      models.forEach((model) => {
+        if (!model.$isPositionable) {
+          return;
+        }
+
+        const position = model.position;
+        if (left) {
+          position[0] += left;
+        }
+        if (top) {
+          position[1] += top;
+        }
+
+        this.updateComponent(model, { position });
+      });
     },
     async load(url) {
       const mediaStore = useStore("media");

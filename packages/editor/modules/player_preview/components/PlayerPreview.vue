@@ -38,13 +38,12 @@
     </div>
 
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
-      <app-renderer />
+      <app-renderer v-hotkey="hotkeys" />
     </teleport>
   </div>
 </template>
 
 <script>
-import { omit } from "lodash";
 import { useStore } from "@metascore-library/core/module-manager";
 import "../../../polyfills/GeomertyUtils";
 import PreviewRuler from "./PreviewRuler.vue";
@@ -65,9 +64,12 @@ export default {
   setup() {
     const appRendererStore = useStore("app-renderer");
     const editorStore = useStore("editor");
-    const clipboardStore = useStore("clipboard");
     const contextmenuStore = useStore("contextmenu");
-    return { appRendererStore, editorStore, clipboardStore, contextmenuStore };
+    return {
+      appRendererStore,
+      editorStore,
+      contextmenuStore,
+    };
   },
   data() {
     return {
@@ -81,6 +83,78 @@ export default {
     },
     playerHeight() {
       return this.appRendererStore.height;
+    },
+    hotkeys() {
+      return {
+        right: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { left: 1 });
+        },
+        "shift+right": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { left: 10 });
+        },
+        left: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { left: -1 });
+        },
+        "shift+left": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { left: -10 });
+        },
+        up: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { top: -1 });
+        },
+        "shift+up": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { top: -10 });
+        },
+        down: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { top: 1 });
+        },
+        "shift+down": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.moveComponents(selected, { top: 10 });
+        },
+        tab: () => {
+          this.editorStore.moveComponentSelection();
+        },
+        "shift+tab": () => {
+          this.editorStore.moveComponentSelection(true);
+        },
+        "ctrl+c": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.copyComponents(selected);
+        },
+        "ctrl+v": () => {
+          // @todo
+        },
+        "ctrl+x": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.cutComponents(selected);
+        },
+        "ctrl+d": () => {
+          // @todo
+        },
+        "ctrl+l": () => {
+          const selected = this.editorStore.getSelectedComponents;
+          if (selected.length > 0) {
+            const master = selected[0];
+            const locked = this.editorStore.isComponentLocked(master);
+            this.editorStore[`${locked ? "un" : ""}lockComponents`](selected);
+          }
+        },
+        delete: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.deleteComponents(selected);
+        },
+        backspace: () => {
+          const selected = this.editorStore.getSelectedComponents;
+          this.editorStore.deleteComponents(selected);
+        },
+      };
     },
     contextmenuItems() {
       const items = [];
@@ -99,8 +173,7 @@ export default {
             {
               label: this.$t("contextmenu.copy"),
               handler: () => {
-                const data = selection.map((m) => omit(m.toJson(), ["id"]));
-                this.clipboardStore.setData(`metascore/component`, data);
+                this.editorStore.copyComponents(selection);
               },
             },
             {
@@ -149,6 +222,8 @@ export default {
           this.iframeDocument.head.appendChild(link);
         }
 
+        this.iframeDocument.addEventListener("keydown", this.bubbleIframeEvent);
+        this.iframeDocument.addEventListener("keyup", this.bubbleIframeEvent);
         this.iframeDocument.addEventListener(
           "mousemove",
           this.bubbleIframeEvent
@@ -193,7 +268,10 @@ export default {
 
       const new_evt = new evt.constructor(evt.type, init);
 
-      iframe.dispatchEvent(new_evt);
+      if (!iframe.dispatchEvent(new_evt)) {
+        // Cancel original event if bubbled event was canceled.
+        evt.preventDefault();
+      }
     },
 
     onIframeContextMenu(evt) {

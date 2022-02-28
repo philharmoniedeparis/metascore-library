@@ -29,14 +29,28 @@ export default {
         return this.toggledBlocks.includes(model.id);
       };
     },
-    hasChildren() {
+    getChildrenProperty() {
       return (model) => {
         switch (model.type) {
           case "Block":
-            return model.pages?.length > 0;
+            return "pages";
           case "Page":
           case "Scenario":
-            return model.children?.length > 0;
+            return "children";
+        }
+
+        return null;
+      };
+    },
+    hasChildren() {
+      return (model) => {
+        const property = this.getChildrenProperty(model);
+        switch (model.type) {
+          case "Block":
+            return model[property]?.length > 0;
+          case "Page":
+          case "Scenario":
+            return model[property]?.length > 0;
         }
 
         return false;
@@ -47,18 +61,19 @@ export default {
         let children = [];
 
         if (this.hasChildren(model)) {
-          switch (model.type) {
-            case "Block":
-              children = model.pages;
-              break;
-
-            case "Page":
-            case "Scenario":
-              children = model.children;
-          }
+          const property = this.getChildrenProperty(model);
+          children = model[property];
         }
 
         return children.map((c) => this.get(c.schema, c.id)).filter((m) => m);
+      };
+    },
+    getParent() {
+      return (model) => {
+        if (model.parent) {
+          return this.get(model.parent.schema, model.parent.id);
+        }
+        return null;
       };
     },
   },
@@ -85,11 +100,11 @@ export default {
 
       switch (parent.type) {
         case "Block":
-          parent.pages.push({ id: model.id, schema: model.type });
+          parent.pages.push({ schema: model.type, id: model.id });
           break;
 
         default:
-          parent.children.push({ id: model.id, schema: model.type });
+          parent.children.push({ schema: model.type, id: model.id });
       }
     },
     toggleBlock(model) {

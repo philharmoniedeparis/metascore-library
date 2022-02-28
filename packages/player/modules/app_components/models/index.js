@@ -1,5 +1,4 @@
 // This is used to prevent circular imports
-// see https://vuex-orm.org/guide/model/single-table-inheritance.html#initial-setup
 
 export * from "./AbstractComponent";
 export * from "./EmbeddableComponent";
