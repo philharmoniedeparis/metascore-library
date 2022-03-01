@@ -11,7 +11,7 @@ import {
   registerModules,
   registerStore,
 } from "@metascore-library/core/module-manager.js";
-import AssetsLibrary from "./modules/assets_libraray";
+import AssetsLibrary from "./modules/assets_library";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";

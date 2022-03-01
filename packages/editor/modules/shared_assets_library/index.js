@@ -1,7 +1,7 @@
 import store from "./store";
 import FormGroup from "@metascore-library/core/modules/form_group";
 import StyledButton from "@metascore-library/core/modules/styled_button";
-import AseetsLibrary from "../assets_libraray";
+import AseetsLibrary from "../assets_library";
 import SharedAssetsLibrary from "./components/SharedAssetsLibrary";
 import SharedAssetsToolbar from "./components/SharedAssetsToolbar";
 
