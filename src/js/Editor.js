@@ -3270,6 +3270,8 @@ export class Editor extends Dom {
 
         component.insertAt(parent, position);
 
+        this.setDirty('components');
+
         this.triggerEvent('playercomponentorder', {
             'editor': this,
             'component': component,
