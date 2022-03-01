@@ -1,0 +1,16 @@
+{
+  "name": "@metascore-library/player-app-components",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "hammerjs": "^2.0.8",
+    "lodash": "^4.17.21",
+    "lottie-web": "^5.8.1",
+    "mixwith": "^0.1.1",
+    "normalizr": "^3.6.1",
+    "url-regex": "^5.0.0",
+    "uuid": "^8.3.2",
+    "validate-color": "^2.2.1",
+    "vue-dompurify-html": "^3.0.0-beta.1"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@metascore-library/player-media",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "dashjs": "^4.2.1",
+    "hls.js": "^1.1.5"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@metascore-library/editor-player-preview",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@interactjs/actions": "^1.10.11",
+    "@interactjs/auto-start": "^1.10.11",
+    "@interactjs/interact": "^1.10.11",
+    "@interactjs/modifiers": "^1.10.11",
+    "geometry-polyfill": "^1.0.7",
+    "lodash": "^4.17.21",
+    "uuid": "^8.3.2"
+  }
+}

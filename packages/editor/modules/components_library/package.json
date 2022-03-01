@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/editor-components-library",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

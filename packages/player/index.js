@@ -11,7 +11,7 @@ import {
   registerStore,
 } from "@metascore-library/core/module-manager.js";
 import AppRenderer from "./modules/app_renderer";
-import ContextMenu from "@metascore-library/core/modules/context_menu";
+import ContextMenu from "@metascore-library/core/modules/contextmenu";
 
 export class Player {
   /**

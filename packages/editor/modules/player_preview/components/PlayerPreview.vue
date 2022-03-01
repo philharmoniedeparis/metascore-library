@@ -45,7 +45,7 @@
 
 <script>
 import { useStore } from "@metascore-library/core/module-manager";
-import "../../../polyfills/GeomertyUtils";
+import "../polyfills/GeomertyUtils";
 import PreviewRuler from "./PreviewRuler.vue";
 import PreviewGrid from "./PreviewGrid.vue";
 

@@ -1,0 +1,10 @@
+{
+  "name": "@metascore-library/editor-waveform",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "lodash": "^4.17.21",
+    "waveform-data": "^4.3.0"
+  }
+}

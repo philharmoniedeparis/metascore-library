@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/editor-shared-assets-library",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "fuse.js": "^6.5.3"
+  }
+}

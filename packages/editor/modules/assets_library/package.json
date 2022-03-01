@@ -1,0 +1,9 @@
+{
+  "name": "@metascore-library/editor-assets-library",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "vue-dompurify-html": "^3.0.0-beta.1"
+  }
+}

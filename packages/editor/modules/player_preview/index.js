@@ -1,5 +1,5 @@
 import Clipboard from "../clipboard";
-import ContextMenu from "@metascore-library/core/modules/context_menu";
+import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import PlayerPreview from "./components/PlayerPreview";
 import PlayerZoomController from "./components/PlayerZoomController";
 

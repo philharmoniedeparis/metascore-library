@@ -1,0 +1,10 @@
+{
+  "name": "@metascore-library/editor-panes",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@interactjs/actions": "^1.10.11",
+    "@interactjs/auto-start": "^1.10.11",
+    "@interactjs/interact": "^1.10.11"
+  }
+}
