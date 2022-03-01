@@ -39,6 +39,12 @@ export default {
     getLockedComponents() {
       return Array.from(this.lockedComponents);
     },
+    createComponent() {
+      return (data) => {
+        const componentsStore = useStore("components");
+        return componentsStore.create(data);
+      };
+    },
   },
   actions: {
     updateComponent(model, data) {
@@ -50,10 +56,6 @@ export default {
       models.forEach((model) => {
         componentsStore.update(model, data);
       });
-    },
-    createComponent(data) {
-      const componentsStore = useStore("components");
-      return componentsStore.create(data);
     },
     addComponent(data, parent) {
       const componentsStore = useStore("components");

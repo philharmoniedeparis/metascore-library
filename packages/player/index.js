@@ -29,11 +29,13 @@ export class Player {
     registerStore("player", store);
 
     // Register root modules.
-    registerModules([AppRenderer, ContextMenu], this._app, store).then(() => {
-      if (el) {
-        this.mount(el);
+    registerModules([AppRenderer, ContextMenu], { app: this._app, pinia }).then(
+      () => {
+        if (el) {
+          this.mount(el);
+        }
       }
-    });
+    );
   }
 
   /**

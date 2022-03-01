@@ -70,7 +70,7 @@ export class Editor {
         Timeline,
         Waveform,
       ],
-      this._app
+      { app: this._app, pinia }
     ).then(() => {
       if (el) {
         this.mount(el);

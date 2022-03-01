@@ -12,13 +12,13 @@ function registerStore(id, definition) {
   }
 }
 
-async function registerModules(modules, app) {
+async function registerModules(modules, context) {
   for (const module of modules) {
-    await registerModule(module, app);
+    await registerModule(module, context);
   }
 }
 
-async function registerModule(module, app) {
+async function registerModule(module, context) {
   if (modules.includes(module.name)) {
     // Skip if already registerd.
     return;
@@ -34,7 +34,7 @@ async function registerModule(module, app) {
       : module.dependencies;
 
     for (const dependency of dependencies) {
-      await registerModule(dependency, app);
+      await registerModule(dependency, context);
     }
   }
 
@@ -47,7 +47,7 @@ async function registerModule(module, app) {
 
   // Install.
   if ("install" in module) {
-    await module.install({ app });
+    await module.install(context);
   }
 
   if (process.env.NODE_ENV === "development") {
