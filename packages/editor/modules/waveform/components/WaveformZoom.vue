@@ -188,26 +188,21 @@ export default {
   methods: {
     resampleData() {
       if (this.waveformData && this.width) {
-        if (!this.resampledData) {
-          this.resampledData = this.waveformData.resample({
-            width: this.width,
-          });
-          this.maxScale = this.resampledData.scale;
-          return;
-        }
-
-        if (this.scale !== null && this.resampledData.scale !== this.scale) {
+        if (
+          this.resampledData &&
+          this.scale !== null &&
+          this.resampledData.scale !== this.scale
+        ) {
           this.resampledData = this.waveformData.resample({
             scale: this.scale,
           });
           return;
         }
 
-        if (this.width < this.resampledData.length) {
-          this.resampledData = this.waveformData.resample({
-            width: this.width,
-          });
-        }
+        this.resampledData = this.waveformData.resample({
+          width: this.width,
+        });
+        this.maxScale = this.resampledData.scale;
       }
     },
 
