@@ -315,7 +315,7 @@ export default {
           border-right: 1px solid $darkgray;
         }
 
-        .waveform-zoom {
+        .waveform--zoom {
           grid-area: 1 / 2 / span 2 / auto;
           border-left: 1px solid $darkgray;
         }
@@ -334,7 +334,7 @@ export default {
         flex: 1 1 auto;
       }
 
-      .waveform-zoom-controller {
+      .waveform--zoom-controller {
         flex: 0 0 auto;
         background: $darkgray;
       }

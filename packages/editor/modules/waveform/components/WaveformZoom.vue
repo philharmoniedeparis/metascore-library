@@ -1,5 +1,5 @@
 <template>
-  <div class="waveform-zoom">
+  <div class="waveform--zoom">
     <div v-if="message" class="message">{{ message }}</div>
     <div
       v-else-if="waveformData"
@@ -75,9 +75,6 @@ export default {
       height: 0,
       resampledData: null,
       offsetX: 0,
-      scale: null,
-      minScale: null,
-      maxScale: null,
       mousedownX: null,
       dragging: false,
       message: null,
@@ -95,6 +92,15 @@ export default {
     },
     waveformRange() {
       return this.store.range;
+    },
+    waveformScale() {
+      return this.store.scale;
+    },
+    waveformMinScale() {
+      return this.store.minScale;
+    },
+    waveformMaxScale() {
+      return this.store.maxScale;
     },
     playheadPosition() {
       return Math.round(this.getPositionAt(this.mediaTime));
@@ -119,11 +125,11 @@ export default {
     },
     waveformData(value) {
       this.$nextTick(function () {
-        this.minScale = value?.scale;
+        this.store.minScale = value?.scale;
         this.resampleData();
       });
     },
-    scale() {
+    waveformScale() {
       this.$nextTick(function () {
         this.resampleData();
       });
@@ -142,7 +148,7 @@ export default {
       }
     },
     resampledData(value) {
-      this.scale = value?.scale;
+      this.store.scale = value?.scale;
       this.setOffsetX(0);
 
       this.store.offset = {
@@ -190,11 +196,11 @@ export default {
       if (this.waveformData && this.width) {
         if (
           this.resampledData &&
-          this.scale !== null &&
-          this.resampledData.scale !== this.scale
+          this.waveformScale !== null &&
+          this.resampledData.scale !== this.waveformScale
         ) {
           this.resampledData = this.waveformData.resample({
-            scale: this.scale,
+            scale: this.waveformScale,
           });
           return;
         }
@@ -202,7 +208,7 @@ export default {
         this.resampledData = this.waveformData.resample({
           width: this.width,
         });
-        this.maxScale = this.resampledData.scale;
+        this.store.maxScale = this.resampledData.scale;
       }
     },
 
@@ -331,14 +337,14 @@ export default {
     },
 
     /**
-     * Set the current zoom
-     * @param {Number} scale The zoom scale to set
+     * Set the current scale
+     * @param {Number} value The scale to set
      */
-    setZoom(scale) {
+    setScale(value) {
       if (this.resampledData && this.width) {
-        this.scale = Math.min(
-          Math.max(parseInt(scale, 10), this.minScale),
-          this.maxScale
+        this.store.scale = Math.min(
+          Math.max(parseInt(value, 10), this.waveformMinScale),
+          this.waveformMaxScale
         );
       }
     },
@@ -426,7 +432,7 @@ export default {
      */
     zoomIn() {
       if (this.resampledData) {
-        this.setZoom(this.resampledData.scale - this.zoomStep);
+        this.setScale(this.waveformScale - this.zoomStep);
       }
     },
 
@@ -437,7 +443,7 @@ export default {
      */
     zoomOut() {
       if (this.resampledData) {
-        this.setZoom(this.resampledData.scale + this.zoomStep);
+        this.setScale(this.waveformScale + this.zoomStep);
       }
     },
 
@@ -516,7 +522,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.waveform-zoom {
+.waveform--zoom {
   position: relative;
 
   .message {

@@ -11,6 +11,9 @@ export default {
         start: null,
         end: null,
       },
+      minScale: null,
+      maxScale: null,
+      scale: null,
     };
   },
   actions: {

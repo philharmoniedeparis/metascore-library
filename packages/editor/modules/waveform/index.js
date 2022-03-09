@@ -1,4 +1,5 @@
 import store from "./store";
+import StyledButton from "@metascore-library/core/modules/styled_button";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
 import WaveformZoomController from "./components/WaveformZoomController";
@@ -10,7 +11,7 @@ export default {
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/media"
     );
 
-    return [Media];
+    return [Media, StyledButton];
   },
   stores: {
     waveform: store,
