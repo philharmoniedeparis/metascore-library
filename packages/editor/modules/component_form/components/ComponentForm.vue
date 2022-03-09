@@ -1,34 +1,20 @@
 <template>
   <div v-if="masterModel" class="component-form">
     <h2 class="title">{{ title }}</h2>
-    <div class="controls">
-      <control-dispatcher
-        v-for="(subSchema, property) in properties"
-        :key="property"
-        :property="property"
-        :model-value="masterModel[property]"
-        :schema="subSchema"
-        @update:model-value="update(property, $event)"
-      />
-    </div>
+    <schema-form
+      :schema="schema"
+      :values="masterModel"
+      :validator="validator"
+      @update:model-value="update($event)"
+    />
   </div>
 </template>
 
 <script>
-import { computed } from "vue";
 import { useStore } from "@metascore-library/core/module-manager";
 import { omit, intersection } from "lodash";
-import ControlDispatcher from "./controls/ControlDispatcher.vue";
 
 export default {
-  components: {
-    ControlDispatcher,
-  },
-  provide() {
-    return {
-      validator: computed(() => this.validator),
-    };
-  },
   setup() {
     const editorStore = useStore("editor");
     return { editorStore };
@@ -63,7 +49,7 @@ export default {
     },
   },
   methods: {
-    update(property, value) {
+    update({ property, value }) {
       this.editorStore.updateComponents(this.selectedComponents, {
         [property]: value,
       });
@@ -94,7 +80,7 @@ export default {
     z-index: 1;
   }
 
-  .controls {
+  ::v-deep(.schema-form) {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;

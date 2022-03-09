@@ -16,7 +16,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import ArrowIcon from "../../assets/icons/enum-arrow.svg?inline";
+import ArrowIcon from "../assets/icons/enum-arrow.svg?inline";
 
 export default {
   components: {

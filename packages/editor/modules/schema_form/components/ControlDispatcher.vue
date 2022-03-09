@@ -9,29 +9,9 @@
 </template>
 
 <script>
-import { flatten } from "../../utils/schema";
-import BooleanControl from "./BooleanControl.vue";
-import BorderRadiusControl from "./BorderRadiusControl.vue";
-import ColorControl from "./ColorControl.vue";
-import EnumControl from "./EnumControl.vue";
-import HtmlControl from "./HtmlControl.vue";
-import ImageControl from "./ImageControl.vue";
-import NumberControl from "./NumberControl.vue";
-import StringControl from "./StringControl.vue";
-import TimeControl from "./TimeControl.vue";
+import { flatten } from "../utils/schema";
 
 export default {
-  components: {
-    BooleanControl,
-    BorderRadiusControl,
-    ColorControl,
-    EnumControl,
-    HtmlControl,
-    ImageControl,
-    NumberControl,
-    StringControl,
-    TimeControl,
-  },
   inject: ["validator"],
   props: {
     property: {
@@ -79,13 +59,6 @@ export default {
 
       return this.flattenedSchema.type || "string";
     },
-  },
-  beforeCreate() {
-    // Register complex components here to workaround circular reference issues.
-    this.$options.components = this.$options.components || {};
-    this.$options.components.ArrayControl = require("./ArrayControl").default;
-    this.$options.components.AnimatedControl =
-      require("./AnimatedControl").default;
   },
 };
 </script>

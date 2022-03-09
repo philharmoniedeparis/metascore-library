@@ -16,7 +16,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import CheckIcon from "../../assets/icons/boolean-check.svg?inline";
+import CheckIcon from "../assets/icons/boolean-check.svg?inline";
 
 export default {
   components: {

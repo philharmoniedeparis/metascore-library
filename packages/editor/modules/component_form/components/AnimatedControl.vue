@@ -27,14 +27,10 @@ import { useStore } from "@metascore-library/core/module-manager";
 import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
-import BooleanControl from "./BooleanControl.vue";
-import ControlDispatcher from "./ControlDispatcher.vue";
-import CheckIcon from "../../assets/icons/animated-check.svg?inline";
+import CheckIcon from "../assets/icons/animated-check.svg?inline";
 
 export default {
   components: {
-    BooleanControl,
-    ControlDispatcher,
     CheckIcon,
   },
   props: {

@@ -1,13 +1,13 @@
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <button type="button" @click="onClick">
+    <button type="button" @click="showForm = true">
       {{ mediaSource.name }}
     </button>
 
     <media-source-form
       v-if="showForm"
       @submit="onFormSubmit"
-      @close="onFormClose"
+      @close="showForm = false"
     />
   </div>
 </template>
@@ -39,9 +39,6 @@ export default {
     setMediaSource(source) {
       this.mediaStore.source = source;
     },
-    onClick() {
-      this.showForm = true;
-    },
     onFormSubmit({ file, url }) {
       if (file) {
         const { name, size, type: mime } = file;
@@ -66,9 +63,6 @@ export default {
         });
       }
 
-      this.showForm = false;
-    },
-    onFormClose() {
       this.showForm = false;
     },
   },

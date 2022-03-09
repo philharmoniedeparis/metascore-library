@@ -100,7 +100,6 @@ export default {
     ::v-deep(input) {
       min-width: 15em;
       padding: 0.3125em;
-      line-height: 2em;
       color: $white;
       background: $mediumgray;
       border: 1px solid $mediumgray;
