@@ -11,7 +11,7 @@
 
 <template>
   <div
-    :class="['assets-item', { dragging }]"
+    :class="['assets-library--asset-item', { dragging }]"
     draggable="true"
     @dragstart="onDragstart"
     @dragend="onDragend"
@@ -204,7 +204,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.assets-item {
+.assets-library--asset-item {
   display: flex;
   flex-direction: row;
   align-items: center;

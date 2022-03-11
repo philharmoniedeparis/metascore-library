@@ -1,6 +1,9 @@
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
-import { createArrayField, createIntegerField } from "../../utils/schema";
+import {
+  createArrayField,
+  createIntegerField,
+} from "@metascore-library/core/utils/schema";
 
 export default Mixin(
   (superclass) =>

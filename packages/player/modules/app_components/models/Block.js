@@ -8,8 +8,8 @@ import Transformable from "./mixins/Transformable";
 import {
   createBooleanField,
   createEnumField,
-  createCollectionField,
-} from "../utils/schema";
+} from "@metascore-library/core/utils/schema";
+import { createCollectionField } from "../utils/schema";
 
 export class Block extends mix(EmbeddableComponent).with(
   Backgroundable,

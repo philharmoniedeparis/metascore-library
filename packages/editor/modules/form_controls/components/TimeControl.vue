@@ -1,10 +1,5 @@
 <template>
-  <form-group
-    class="control time"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control time" :label="label" :label-for="inputId">
     <timecode-input :id="inputId" v-model="value" />
   </form-group>
 </template>
@@ -17,14 +12,6 @@ export default {
     label: {
       type: String,
       default: null,
-    },
-    property: {
-      type: String,
-      required: true,
-    },
-    schema: {
-      type: Object,
-      required: true,
     },
     modelValue: {
       type: Number,

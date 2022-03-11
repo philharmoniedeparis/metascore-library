@@ -1,13 +1,8 @@
 <template>
-  <form-group
-    class="control enum"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control select" :label="label" :label-for="inputId">
     <select :id="inputId" v-model="value">
-      <option v-for="v in schema.enum" :key="v">
-        {{ v }}
+      <option v-for="(l, v) in options" :key="v" :value="v">
+        {{ l }}
       </option>
     </select>
     <arrow-icon class="icon" />
@@ -27,17 +22,13 @@ export default {
       type: String,
       default: null,
     },
-    property: {
-      type: String,
-      required: true,
-    },
-    schema: {
+    options: {
       type: Object,
       required: true,
     },
     modelValue: {
-      type: String,
-      default: "",
+      type: [String, Number],
+      default: null,
     },
   },
   emits: ["update:modelValue"],

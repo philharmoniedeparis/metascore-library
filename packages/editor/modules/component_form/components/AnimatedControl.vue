@@ -5,14 +5,14 @@
     :label="label"
     :label-for="inputId"
   >
-    <boolean-control
+    <checkbox-control
       :model-value="value.animated"
       property="animated"
       :schema="animatedSchema"
       @update:model-value="updateAnimated($event)"
     >
       <check-icon class="icon" />
-    </boolean-control>
+    </checkbox-control>
     <control-dispatcher
       :model-value="valueAtTime"
       property="value"

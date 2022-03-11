@@ -1,10 +1,5 @@
 <template>
-  <form-group
-    class="control number"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control number" :label="label" :label-for="inputId">
     <div class="input-container">
       <input
         :id="inputId"
@@ -58,13 +53,17 @@ export default {
       type: String,
       default: null,
     },
-    property: {
-      type: String,
-      required: true,
+    min: {
+      type: Number,
+      default: null,
     },
-    schema: {
-      type: Object,
-      required: true,
+    max: {
+      type: Number,
+      default: null,
+    },
+    step: {
+      type: Number,
+      default: 1,
     },
     modelValue: {
       type: Number,
@@ -89,6 +88,9 @@ export default {
     };
   },
   computed: {
+    decimals() {
+      return countDecimals(this.step);
+    },
     value: {
       get() {
         return this.modelValue;
@@ -97,29 +99,16 @@ export default {
         this.$emit("update:modelValue", round(value, this.decimals));
       },
     },
-    step() {
-      return this.schema.type === "integer"
-        ? 1
-        : this.schema.multipleOf || 0.01;
-    },
-    decimals() {
-      return countDecimals(this.step);
-    },
-    min() {
-      return this.schema.minimum;
-    },
-    max() {
-      return this.schema.maximum;
-    },
   },
   methods: {
     updateValue(value) {
-      if (!isNaN(this.min)) {
+      if (this.min !== null) {
         value = Math.max(value, this.min);
       }
-      if (!isNaN(this.max)) {
+      if (this.max !== null) {
         value = Math.min(value, this.max);
       }
+
       this.value = value;
     },
     onSpinUpMousedown() {

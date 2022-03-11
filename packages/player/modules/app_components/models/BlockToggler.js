@@ -5,7 +5,7 @@ import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
 import Resizable from "./mixins/Resizable";
 import Transformable from "./mixins/Transformable";
-import { createArrayField } from "../utils/schema";
+import { createArrayField } from "@metascore-library/core/utils/schema";
 
 export class BlockToggler extends mix(EmbeddableComponent).with(
   Backgroundable,

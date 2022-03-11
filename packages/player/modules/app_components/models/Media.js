@@ -5,7 +5,10 @@ import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";
 import Resizable from "./mixins/Resizable";
 import Transformable from "./mixins/Transformable";
-import { createEnumField, createUrlField } from "../utils/schema";
+import {
+  createEnumField,
+  createUrlField,
+} from "@metascore-library/core/utils/schema";
 
 export class Media extends mix(EmbeddableComponent).with(
   Backgroundable,

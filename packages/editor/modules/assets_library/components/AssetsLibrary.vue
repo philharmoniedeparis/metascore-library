@@ -1,34 +1,45 @@
+<i18n>
+{
+  "fr": {
+    "spectrogram_button": "Create spectrogram image",
+    "waveform_button": "Create audio waveform image",
+  },
+  "en": {
+    "spectrogram_button": "Create spectrogram image",
+    "waveform_button": "Create audio waveform image",
+  },
+}
+</i18n>
+
 <template>
   <div class="assets-library">
-    <template v-for="asset in assets" :key="asset.id">
-      <assets-item :asset="asset" />
-    </template>
+    <div class="assets-library--assets">
+      <template v-for="asset in assets" :key="asset.id">
+        <assets-item :asset="asset" />
+      </template>
+    </div>
 
-    <styled-button
-      type="button"
-      title="Create spectrogram image"
-      @click="showSpectrogramForm = true"
-    >
-      <template #icon><spectrogram-icon /></template>
-    </styled-button>
-    <spectrogram-form
-      v-if="showSpectrogramForm"
-      @submit="onSpectrogramFormSubmit"
-      @close="showSpectrogramForm = false"
-    />
+    <div class="assets-library--imports">
+      <styled-button type="button" @click="showSpectrogramForm = true">
+        {{ $t("spectrogram_button") }}
+        <template #icon><spectrogram-icon /></template>
+      </styled-button>
+      <spectrogram-form
+        v-if="showSpectrogramForm"
+        @submit="onSpectrogramFormSubmit"
+        @close="showSpectrogramForm = false"
+      />
 
-    <styled-button
-      type="button"
-      title="Create audio waveform image"
-      @click="showWaveformForm = true"
-    >
-      <template #icon><waveform-icon /></template>
-    </styled-button>
-    <waveform-form
-      v-if="showWaveformForm"
-      @submit="onWaveformFormSubmit"
-      @close="showWaveformForm = false"
-    />
+      <styled-button type="button" @click="showWaveformForm = true">
+        {{ $t("waveform_button") }}
+        <template #icon><waveform-icon /></template>
+      </styled-button>
+      <waveform-form
+        v-if="showWaveformForm"
+        @submit="onWaveformFormSubmit"
+        @close="showWaveformForm = false"
+      />
+    </div>
   </div>
 </template>
 
@@ -72,10 +83,35 @@ export default {
   position: relative;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
 
-  ::v-deep(.assets-library-item) {
-    flex: 0 0 2em;
+  .assets-library--assets {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .assets-library--imports {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+
+    ::v-deep(button) {
+      width: 100%;
+      flex: 0 0 2.5em;
+      padding: 0.25em 0.5em;
+      color: $white;
+      opacity: 1;
+
+      .icon {
+        width: 2em;
+      }
+
+      &:hover {
+        background-color: $mediumgray;
+      }
+    }
   }
 }
 </style>

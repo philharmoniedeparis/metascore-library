@@ -2,10 +2,10 @@ import StyledButton from "@metascore-library/core/modules/styled_button";
 import FormGroup from "@metascore-library/core/modules/form_group";
 import TimecodeInput from "../timecode_input";
 
-import BooleanControl from "./components/BooleanControl";
+import CheckboxControl from "./components/CheckboxControl";
 import BorderRadiusControl from "./components/BorderRadiusControl";
 import ColorControl from "./components/ColorControl";
-import EnumControl from "./components/EnumControl";
+import SelectControl from "./components/SelectControl";
 import HtmlControl from "./components/HtmlControl";
 import ImageControl from "./components/ImageControl";
 import NumberControl from "./components/NumberControl";
@@ -16,10 +16,10 @@ export default {
   name: "FormControls",
   dependencies: [StyledButton, FormGroup, TimecodeInput],
   install({ app }) {
-    app.component("BooleanControl", BooleanControl);
+    app.component("CheckboxControl", CheckboxControl);
     app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("ColorControl", ColorControl);
-    app.component("EnumControl", EnumControl);
+    app.component("SelectControl", SelectControl);
     app.component("HtmlControl", HtmlControl);
     app.component("ImageControl", ImageControl);
     app.component("NumberControl", NumberControl);

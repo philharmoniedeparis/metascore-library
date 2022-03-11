@@ -12,7 +12,7 @@ import {
   createBooleanField,
   createArrayField,
   createColorField,
-} from "../utils/schema";
+} from "@metascore-library/core/utils/schema";
 
 export class Animation extends mix(EmbeddableComponent).with(
   Backgroundable,

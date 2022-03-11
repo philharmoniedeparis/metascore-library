@@ -2,5 +2,7 @@
   "name": "@metascore-library/editor-schema-form",
   "private": true,
   "description": "",
-  "dependencies": {}
+  "dependencies": {
+    "ajv": "^8.10.0"
+  }
 }

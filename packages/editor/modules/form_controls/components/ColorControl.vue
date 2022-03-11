@@ -12,12 +12,7 @@
 </i18n>
 
 <template>
-  <form-group
-    class="control color"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control color" :label="label" :label-for="inputId">
     <tippy
       trigger="click"
       role="dialog"
@@ -83,14 +78,6 @@ export default {
     label: {
       type: String,
       default: null,
-    },
-    property: {
-      type: String,
-      required: true,
-    },
-    schema: {
-      type: Object,
-      required: true,
     },
     modelValue: {
       type: String,

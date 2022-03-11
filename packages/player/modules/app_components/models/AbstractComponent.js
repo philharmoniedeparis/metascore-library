@@ -3,9 +3,9 @@ import { v4 as uuid } from "uuid";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createStringField,
-  createUuidField,
   createBooleanField,
-} from "../utils/schema";
+} from "@metascore-library/core/utils/schema";
+import { createUuidField } from "../utils/schema";
 
 export class AbstractComponent extends AbstractModel {
   static type = "AbstractComponent";

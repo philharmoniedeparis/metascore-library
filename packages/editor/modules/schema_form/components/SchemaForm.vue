@@ -1,20 +1,21 @@
 <template>
-  <div class="schema-form">
-    <control-dispatcher
-      v-for="(subSchema, property) in schema.properties"
-      :key="property"
-      :property="property"
-      :model-value="values[property]"
-      :schema="subSchema"
-      @update:model-value="onUpdate(property, $event)"
-    />
-  </div>
+  <layout-dispatcher
+    :layout="generatedLayout"
+    :schema="schema"
+    :values="values"
+    @update:model-value="$emit('update:modelValue', $event)"
+  />
 </template>
 
 <script>
 import { computed } from "vue";
+import Ajv from "ajv";
+import LayoutDispatcher from "./LayoutDispatcher.vue";
 
 export default {
+  components: {
+    LayoutDispatcher,
+  },
   provide() {
     return {
       validator: computed(() => this.validator),
@@ -31,15 +32,38 @@ export default {
         return {};
       },
     },
+    layout: {
+      type: Object,
+      default() {
+        return null;
+      },
+    },
     validator: {
       type: Object,
-      required: true,
+      default() {
+        return new Ajv({
+          allErrors: true,
+          verbose: true,
+          strict: false,
+          multipleOfPrecision: 2,
+        });
+      },
     },
   },
   emits: ["update:modelValue"],
-  methods: {
-    onUpdate(property, value) {
-      this.$emit("update:modelValue", { property, value });
+  computed: {
+    generatedLayout() {
+      return (
+        this.layout ?? {
+          type: "vertical",
+          items: Object.keys(this.schema.properties).map((property) => {
+            return {
+              type: "control",
+              property,
+            };
+          }),
+        }
+      );
     },
   },
 };

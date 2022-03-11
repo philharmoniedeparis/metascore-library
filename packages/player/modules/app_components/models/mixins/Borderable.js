@@ -3,8 +3,8 @@ import { merge } from "lodash";
 import {
   createIntegerField,
   createColorField,
-  createBorderRadiusField,
-} from "../../utils/schema";
+} from "@metascore-library/core/utils/schema";
+import { createBorderRadiusField } from "../../utils/schema";
 
 export default Mixin(
   (superclass) =>

@@ -4,8 +4,8 @@ import {
   createArrayField,
   createNumberField,
   createIntegerField,
-  createAnimatedField,
-} from "../../utils/schema";
+} from "@metascore-library/core/utils/schema";
+import { createAnimatedField } from "../../utils/schema";
 
 export default Mixin(
   (superclass) =>

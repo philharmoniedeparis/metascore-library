@@ -1,4 +1,4 @@
-import Modal from "../modal";
+import Modal from "@metascore-library/core/modules/modal";
 import ModalForm from "./components/ModalForm";
 
 export default {

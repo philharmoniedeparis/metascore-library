@@ -1,10 +1,5 @@
 <template>
-  <form-group
-    class="control boolean"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control checkbox" :label="label" :label-for="inputId">
     <input :id="inputId" v-model="value" type="checkbox" />
     <label :for="inputId">
       <slot>
@@ -16,7 +11,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import CheckIcon from "../assets/icons/boolean-check.svg?inline";
+import CheckIcon from "../assets/icons/checkbox-check.svg?inline";
 
 export default {
   components: {
@@ -26,14 +21,6 @@ export default {
     label: {
       type: String,
       default: null,
-    },
-    property: {
-      type: String,
-      required: true,
-    },
-    schema: {
-      type: Object,
-      required: true,
     },
     modelValue: {
       type: Boolean,

@@ -80,12 +80,7 @@ export default {
     z-index: 1;
   }
 
-  ::v-deep(.schema-form) {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-content: flex-start;
+  ::v-deep(.form-layout) {
     background: $lightgray;
 
     > .control {

@@ -1,6 +1,9 @@
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
-import { createColorField, createImageField } from "../../utils/schema";
+import {
+  createColorField,
+  createImageField,
+} from "@metascore-library/core/utils/schema";
 
 export default Mixin(
   (superclass) =>

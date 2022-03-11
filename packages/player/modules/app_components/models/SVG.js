@@ -12,7 +12,7 @@ import {
   createStringField,
   createArrayField,
   createColorField,
-} from "../utils/schema";
+} from "@metascore-library/core/utils/schema";
 
 export class SVG extends mix(EmbeddableComponent).with(
   Backgroundable,

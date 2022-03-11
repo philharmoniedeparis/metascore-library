@@ -1,6 +1,7 @@
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
-import { createAnimatedField, createNumberField } from "../../utils/schema";
+import { createNumberField } from "@metascore-library/core/utils/schema";
+import { createAnimatedField } from "../../utils/schema";
 
 export default Mixin(
   (superclass) =>

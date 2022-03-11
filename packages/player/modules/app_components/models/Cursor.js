@@ -11,10 +11,10 @@ import {
   createArrayField,
   createNumberField,
   createIntegerField,
-  createAngleField,
   createTimeField,
   createColorField,
-} from "../utils/schema";
+} from "@metascore-library/core/utils/schema";
+import { createAngleField } from "../utils/schema";
 
 export class Cursor extends mix(EmbeddableComponent).with(
   Backgroundable,

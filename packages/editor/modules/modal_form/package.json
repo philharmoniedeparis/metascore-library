@@ -2,7 +2,5 @@
   "name": "@metascore-library/core-modal-form",
   "private": true,
   "description": "",
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }

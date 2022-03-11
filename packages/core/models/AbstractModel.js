@@ -93,7 +93,7 @@ export default class AbstractModel {
     return this.schema.required;
   }
 
-  constructor(data) {
+  constructor(data = {}) {
     this.$deleted = false;
 
     if (this.validate(data)) {
