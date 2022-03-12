@@ -41,7 +41,7 @@ export default {
   props: {
     type: {
       type: String,
-      default: "text",
+      default: null,
     },
     label: {
       type: String,
@@ -80,12 +80,29 @@ export default {
 
   .input-wrapper {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    > label {
+      color: $white;
+      white-space: nowrap;
+      margin-right: 0.75em;
+    }
   }
 
-  ::v-deep(label) {
-    color: $white;
+  &.checkbox,
+  &.radio {
+    .input-wrapper {
+      flex-direction: row;
+      align-items: baseline;
+
+      > label {
+        margin-right: 0;
+        margin-left: 0.75em;
+        font-weight: normal;
+      }
+    }
   }
 
   &.required {
@@ -96,56 +113,9 @@ export default {
     }
   }
 
-  &.text {
-    ::v-deep(input) {
-      min-width: 15em;
-      padding: 0.3125em;
-      color: $white;
-      background: $mediumgray;
-      border: 1px solid $mediumgray;
-      border-radius: 0.25em;
-
-      &:focus,
-      &:active,
-      &:focus-visible {
-        outline: 1px solid $lightgray;
-        border-color: $lightgray;
-      }
-    }
-
+  &.error {
     ::v-deep(label) {
-      align-self: flex-start;
-      white-space: nowrap;
-    }
-
-    &.error {
-      ::v-deep(label) {
-        color: #dd201f;
-      }
-
-      &.text {
-        ::v-deep(input) {
-          border-color: #dd201f;
-        }
-      }
-    }
-  }
-
-  &.checkbox,
-  &.radio {
-    align-self: center;
-
-    .input-wrapper {
-      flex-direction: row;
-      align-items: baseline;
-    }
-
-    ::v-deep(label) {
-      font-weight: normal;
-    }
-
-    ::v-deep(input) {
-      margin: 0.15em 0.5em 0 0;
+      color: #dd201f;
     }
   }
 }

@@ -112,7 +112,7 @@ export default {
     display: flex;
     max-width: calc(100% - 1em);
     max-height: calc(100% - 1em);
-    background: $mediumgray;
+    background: $lightgray;
     border: 2px solid $lightgray;
     border-radius: 0.25em;
     box-shadow: 0 0 0.5em 0 rgb(0, 0, 0);

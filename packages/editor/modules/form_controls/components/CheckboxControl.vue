@@ -1,11 +1,18 @@
 <template>
-  <form-group class="control checkbox" :label="label" :label-for="inputId">
-    <input :id="inputId" v-model="value" type="checkbox" />
-    <label :for="inputId">
-      <slot>
-        <check-icon class="icon" />
-      </slot>
-    </label>
+  <form-group
+    class="control"
+    type="checkbox"
+    :label="label"
+    :label-for="inputId"
+  >
+    <div class="input-container">
+      <input :id="inputId" v-model="value" type="checkbox" />
+      <label :for="inputId">
+        <slot>
+          <check-icon class="icon" />
+        </slot>
+      </label>
+    </div>
   </form-group>
 </template>
 

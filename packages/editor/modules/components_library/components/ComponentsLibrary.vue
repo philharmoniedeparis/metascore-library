@@ -106,8 +106,8 @@ export default {
   height: 100%;
   overflow-y: auto;
 
-  ::v-deep(.components-library-item) {
-    flex: 0 0 2em;
+  ::v-deep(.components-library--item) {
+    flex: 0 0 auto;
   }
 }
 </style>

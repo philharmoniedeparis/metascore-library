@@ -1,5 +1,5 @@
 import StyledButton from "@metascore-library/core/modules/styled_button";
-import FormGroup from "@metascore-library/core/modules/form_group";
+import FormGroup from "../form_group";
 import TimecodeInput from "../timecode_input";
 
 import CheckboxControl from "./components/CheckboxControl";

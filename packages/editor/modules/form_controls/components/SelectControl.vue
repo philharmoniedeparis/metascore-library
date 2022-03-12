@@ -1,11 +1,13 @@
 <template>
-  <form-group class="control select" :label="label" :label-for="inputId">
-    <select :id="inputId" v-model="value">
-      <option v-for="(l, v) in options" :key="v" :value="v">
-        {{ l }}
-      </option>
-    </select>
-    <arrow-icon class="icon" />
+  <form-group class="control" type="select" :label="label" :label-for="inputId">
+    <div class="input-container">
+      <select :id="inputId" v-model="value">
+        <option v-for="(l, v) in options" :key="v" :value="v">
+          {{ l }}
+        </option>
+      </select>
+      <arrow-icon class="icon" />
+    </div>
   </form-group>
 </template>
 
@@ -52,13 +54,18 @@ export default {
 
 <style lang="scss" scoped>
 .control {
+  .input-container {
+    position: relative;
+  }
+
   select {
     display: inline-block;
     font-family: inherit;
     width: auto;
     max-width: 100%;
     margin: 0;
-    padding: 0.25em 2.5em 0.25em 0.5em;
+    padding: 0.3125em;
+    padding-right: 2.5em;
     border: 0;
     font-family: inherit;
     color: $white;

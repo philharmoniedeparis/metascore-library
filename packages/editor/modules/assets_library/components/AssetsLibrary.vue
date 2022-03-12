@@ -90,6 +90,10 @@ export default {
     flex-direction: column;
     height: 100%;
     overflow-y: auto;
+
+    .assets-library--asset-item {
+      flex: 0 0 auto;
+    }
   }
 
   .assets-library--imports {

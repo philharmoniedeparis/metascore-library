@@ -1,5 +1,5 @@
+import FormGroup from "../form_group";
 import SchemaForm from "../schema_form";
-import FormGroup from "@metascore-library/core/modules/form_group";
 import PlayerPreview from "../player_preview";
 import Tabs from "../tabs";
 
@@ -9,7 +9,7 @@ import ComponentForm from "./components/ComponentForm";
 
 export default {
   name: "ComponentForm",
-  dependencies: [SchemaForm, FormGroup, PlayerPreview, Tabs],
+  dependencies: [FormGroup, SchemaForm, PlayerPreview, Tabs],
   install({ app }) {
     app.component("AnimatedControl", AnimatedControl);
     app.component("ArrayControl", ArrayControl);

@@ -1,5 +1,5 @@
 <template>
-  <form-group class="control number" :label="label" :label-for="inputId">
+  <form-group class="control" type="number" :label="label" :label-for="inputId">
     <div class="input-container">
       <input
         :id="inputId"
@@ -183,6 +183,19 @@ export default {
 
   input {
     width: 100%;
+    padding: 0.3125em;
+    color: $white;
+    background: $mediumgray;
+    border: 1px solid $mediumgray;
+    border-radius: 0.25em;
+    box-sizing: border-box;
+
+    &:focus,
+    &:active,
+    &:focus-visible {
+      outline: 1px solid $lightgray;
+      border-color: $lightgray;
+    }
   }
 
   .spinners {

@@ -1,12 +1,10 @@
 <template>
   <control-dispatcher
     v-if="!layout.type || layout.type === 'control'"
-    :property="layout.property"
-    :model-value="values[layout.property]"
-    :schema="schema.properties[layout.property]"
+    v-bind="controlProps"
     @update:model-value="onControlUpdate(layout.property, $event)"
   />
-  <component :is="`${type}-layout`" v-else v-bind="props">
+  <component :is="`${layoutType}-layout`" v-else v-bind="layoutProps">
     <layout-dispatcher
       v-for="(subLayout, index) in layout.items"
       :key="index"
@@ -46,10 +44,19 @@ export default {
   },
   emits: ["update:modelValue"],
   computed: {
-    type() {
+    controlProps() {
+      return {
+        property: this.layout.property,
+        modelValue: this.values[this.layout.property],
+        schema: this.schema.properties[this.layout.property],
+        "data-property": this.layout.property,
+        ...omit(this.layout, ["property"]),
+      };
+    },
+    layoutType() {
       return this.layout.type ?? "vertical";
     },
-    props() {
+    layoutProps() {
       return omit(this.layout, ["type", "items"]);
     },
   },

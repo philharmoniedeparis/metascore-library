@@ -20,7 +20,7 @@
   >
     <figure>
       <img v-if="['image', 'svg'].includes(type)" :src="file.url" />
-      <lottie-animation-icon
+      <animation-icon
         v-else-if="type === 'lottie_animation'"
         :src="file.url"
         :play="play"
@@ -53,7 +53,7 @@ import { useStore } from "@metascore-library/core/module-manager";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
-import LottieAnimationIcon from "./LottieAnimationIcon.vue";
+import AnimationIcon from "./AnimationIcon.vue";
 import DeleteIcon from "../assets/icons/delete.svg?inline";
 
 export default {
@@ -61,7 +61,7 @@ export default {
     ImageIcon,
     AudioIcon,
     VideoIcon,
-    LottieAnimationIcon,
+    AnimationIcon,
     DeleteIcon,
   },
   directives: {

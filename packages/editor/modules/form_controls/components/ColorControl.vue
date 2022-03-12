@@ -12,7 +12,7 @@
 </i18n>
 
 <template>
-  <form-group class="control color" :label="label" :label-for="inputId">
+  <form-group class="control" type="color" :label="label" :label-for="inputId">
     <tippy
       trigger="click"
       role="dialog"
@@ -128,7 +128,7 @@ export default {
     padding: 0;
     vertical-align: middle;
     @include transparency-grid;
-    background-size: 1em;
+    background-size: 0.75em;
     border-radius: 0.25em;
     box-shadow: 0.05em 0.05em 0.5em 0.1em rgba(0, 0, 0, 0.25);
     opacity: 1;

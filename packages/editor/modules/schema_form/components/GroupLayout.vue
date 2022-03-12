@@ -25,7 +25,6 @@ export default {
   > legend {
     padding: 0.25em 0.5em;
     color: $white;
-    background: $mediumgray;
     text-align: left;
   }
 }

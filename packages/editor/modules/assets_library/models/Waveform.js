@@ -2,10 +2,9 @@ import { merge } from "lodash";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createIntegerField,
-  createEnumField,
   createBooleanField,
   createTimeField,
-  createNumberField,
+  createColorField,
 } from "@metascore-library/core/utils/schema";
 
 export default class Spectrogram extends AbstractModel {
@@ -16,99 +15,43 @@ export default class Spectrogram extends AbstractModel {
       merge(super.schema, {
         properties: {
           width: createIntegerField({
-            title: "Width",
             default: 400,
             minimum: 0,
           }),
-          height: createEnumField({
-            title: "Height",
-            enum: ["16", "32", "64", "128", "256", "512", "1024", "2048"],
-            default: "256",
+          height: createIntegerField({
+            default: 200,
+            minimum: 0,
           }),
-          mode: createEnumField({
-            title: "Mode",
-            enum: ["combined", "separate"],
-            default: "combined",
+          "split-channels": createBooleanField({
+            default: false,
           }),
-          legend: createBooleanField({
-            title: "Legend",
+          "no-axis-labels": createBooleanField({
             default: true,
           }),
-          start_time: createTimeField({
+          start: createTimeField({
             ajv,
-            title: "Start time",
           }),
-          end_time: createTimeField({
+          end: createTimeField({
             ajv,
-            title: "End time",
           }),
-          scale: createEnumField({
-            title: "Scale",
-            enum: ["lin", "sqrt", "cbrt", "log", "4thrt", "5thrt"],
-            default: "log",
+          "background-color": createColorField({
+            ajv,
+            default: "#00000000",
           }),
-          start: createIntegerField({
-            title: "Start",
-            default: 0,
-            minimum: 0,
+          "waveform-color": createColorField({
+            ajv,
+            default: "#0000fe",
           }),
-          stop: createIntegerField({
-            title: "Stop",
-            default: 0,
-            minimum: 0,
+          "axis-label-color": createColorField({
+            ajv,
+            default: "#0000fe",
           }),
-          color: createEnumField({
-            title: "Color",
-            enum: [
-              "channel",
-              "intensity",
-              "rainbow",
-              "moreland",
-              "nebulae",
-              "fire",
-              "fiery",
-              "fruit",
-              "cool",
-              "magma",
-              "green",
-              "viridis",
-              "plasma",
-              "cividis",
-              "terrain",
-            ],
-            default: "intensity",
-          }),
-          gain: createIntegerField({
-            title: "Gain",
-            default: 1,
-          }),
-          saturation: createNumberField({
-            title: "Saturation",
-            default: 1,
-            minimum: -10,
-            maximun: 10,
-            multipleOf: 0.1,
-          }),
-          rotation: createNumberField({
-            title: "Saturation",
-            default: 0,
-            minimum: -1,
-            maximun: 1,
-            multipleOf: 0.1,
+          "border-color": createColorField({
+            ajv,
+            default: "#0000fe",
           }),
         },
-        required: [
-          "width",
-          "height",
-          "mode",
-          "scale",
-          "start",
-          "stop",
-          "color",
-          "gain",
-          "saturation",
-          "rotation",
-        ],
+        required: ["width", "height"],
       })
     );
   }
