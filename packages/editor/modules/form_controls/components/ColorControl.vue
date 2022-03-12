@@ -35,11 +35,11 @@
       <template #content="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
-            <color-picker v-model="value" />
+            <color-picker v-model="internalValue" />
           </tabs-item>
           <tabs-item v-if="swatches" title="Swatches">
             <color-swatches
-              v-model="value"
+              v-model="internalValue"
               v-bind="isArray(swatches) ? { swatches } : null"
             />
           </tabs-item>
@@ -96,18 +96,16 @@ export default {
   data() {
     return {
       inputId: uuid(),
-      internalValue: this.modelValue,
+      internalValue: null,
     };
   },
-  computed: {
-    value: {
-      get() {
-        return this.modelValue;
-      },
-      set(value) {
-        this.internalValue = value;
-      },
+  watch: {
+    modelValue(value) {
+      this.internalValue = value;
     },
+  },
+  mounted() {
+    this.internalValue = this.modelValue;
   },
   methods: {
     isArray,

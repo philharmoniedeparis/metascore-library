@@ -86,8 +86,10 @@ export default {
 
     > label {
       color: $white;
+      font-weight: normal;
       white-space: nowrap;
       margin-right: 0.75em;
+      user-select: none;
     }
   }
 
@@ -100,7 +102,6 @@ export default {
       > label {
         margin-right: 0;
         margin-left: 0.75em;
-        font-weight: normal;
       }
     }
   }

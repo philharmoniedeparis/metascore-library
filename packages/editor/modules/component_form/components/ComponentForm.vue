@@ -106,8 +106,6 @@ export default {
 
     label {
       flex: 0 0 auto;
-      align-self: center;
-      white-space: nowrap;
     }
 
     input {

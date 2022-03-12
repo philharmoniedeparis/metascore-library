@@ -8,9 +8,9 @@
         <li
           v-for="(tab, index) in tabs"
           :key="index"
-          :class="{ active: index === modelValue }"
+          :class="{ active: index === internalValue }"
         >
-          <a role="tab" @click="selectTab(index)">{{ tab.title }}</a>
+          <a role="tab" @click="internalValue = index">{{ tab.title }}</a>
         </li>
       </ul>
       <div v-if="$slots['tabs-right']" class="tabs-right">
@@ -25,6 +25,13 @@
 
 <script>
 export default {
+  provide() {
+    return {
+      addTab: (tab) => {
+        this.tabs.push(tab);
+      },
+    };
+  },
   props: {
     modelValue: {
       type: Number,
@@ -35,27 +42,23 @@ export default {
   data() {
     return {
       tabs: [],
+      internalValue: null,
     };
   },
   watch: {
     modelValue(value) {
-      this.selectTab(value);
+      this.internalValue = value;
+    },
+    internalValue(value) {
+      this.tabs.forEach((tab, i) => {
+        if (i === value) tab.activate();
+        else tab.deactivate();
+      });
+      this.$emit("update:modelValue", value);
     },
   },
   mounted() {
-    this.selectTab(this.modelValue);
-  },
-  methods: {
-    addTab(tab) {
-      this.tabs.push(tab);
-    },
-    selectTab(index) {
-      this.tabs.forEach((tab, i) => {
-        if (i === index) tab.activate();
-        else tab.deactivate();
-      });
-      this.$emit("update:modelValue", index);
-    },
+    this.internalValue = this.modelValue;
   },
 };
 </script>

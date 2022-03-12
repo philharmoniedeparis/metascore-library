@@ -6,6 +6,7 @@
 
 <script>
 export default {
+  inject: ["addTab"],
   props: {
     title: {
       type: String,
@@ -18,7 +19,7 @@ export default {
     };
   },
   created() {
-    this.$parent.addTab(this);
+    this.addTab(this);
   },
   methods: {
     activate() {
