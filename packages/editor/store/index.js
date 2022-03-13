@@ -1,5 +1,5 @@
 import { omit } from "lodash";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
 export default {

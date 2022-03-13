@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {

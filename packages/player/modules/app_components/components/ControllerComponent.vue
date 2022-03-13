@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import RewindIcon from "../assets/icons/controller/rewind.svg?inline";
 import PlayIcon from "../assets/icons/controller/play.svg?inline";
 import PauseIcon from "../assets/icons/controller/pause.svg?inline";

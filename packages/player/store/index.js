@@ -1,5 +1,5 @@
 import { load } from "@metascore-library/core/utils/ajax";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 
 export default {
   actions: {

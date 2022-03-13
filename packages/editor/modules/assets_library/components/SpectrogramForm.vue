@@ -98,12 +98,17 @@ export default {
     },
     layout() {
       return {
-        type: "vertical",
+        type: "markup",
         items: [
           {
-            type: "group",
-            label: this.$t("image_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("image_group_label"),
+              },
               { property: "width", label: this.$t("width_label") },
               { property: "height", label: this.$t("height_label") },
               { property: "mode", label: this.$t("mode_label") },
@@ -111,26 +116,41 @@ export default {
             ],
           },
           {
-            type: "group",
-            label: this.$t("time_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("time_group_label"),
+              },
               { property: "start_time", label: this.$t("start_time_label") },
               { property: "end_time", label: this.$t("end_time_label") },
             ],
           },
           {
-            type: "group",
-            label: this.$t("scale_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("scale_group_label"),
+              },
               { property: "scale", label: this.$t("scale_label") },
               { property: "start", label: this.$t("start_label") },
               { property: "stop", label: this.$t("stop_label") },
             ],
           },
           {
-            type: "group",
-            label: this.$t("color_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("color_group_label"),
+              },
               { property: "color", label: this.$t("color_label") },
               { property: "gain", label: this.$t("gain_label") },
               { property: "saturation", label: this.$t("saturation_label") },
@@ -138,9 +158,16 @@ export default {
             ],
           },
           {
-            type: "group",
-            label: this.$t("algorithm_group_label"),
-            items: [{ property: "win_func", label: this.$t("win_func_label") }],
+            type: "markup",
+            tag: "fieldset",
+            items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("algorithm_group_label"),
+              },
+              { property: "win_func", label: this.$t("win_func_label") },
+            ],
           },
         ],
       };
@@ -168,6 +195,14 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5em 1em;
+    margin-bottom: 0.5em;
+    border: 1px solid $darkgray;
+
+    > legend {
+      padding: 0.25em 0.5em;
+      color: $white;
+      text-align: left;
+    }
 
     .form-group.number {
       input {

@@ -1,21 +1,29 @@
 <template>
-  <layout-dispatcher
-    :layout="generatedLayout"
-    :schema="schema"
-    :values="values"
-    @update:model-value="$emit('update:modelValue', $event)"
+  <component :is="tag" v-if="type === 'markup'" v-bind="props">
+    <template v-if="prefix">{{ prefix }}</template>
+    <schema-form
+      v-for="(subLayout, index) in items"
+      :key="index"
+      :layout="subLayout"
+      :schema="schema"
+      :values="values"
+      @update:model-value="onSubFormUpdate"
+    />
+    <template v-if="suffix">{{ suffix }}</template>
+  </component>
+  <control-dispatcher
+    v-else
+    v-bind="props"
+    @update:model-value="onControlUpdate(property, $event)"
   />
 </template>
 
 <script>
+import { omit } from "lodash";
 import { computed } from "vue";
 import Ajv from "ajv";
-import LayoutDispatcher from "./LayoutDispatcher.vue";
 
 export default {
-  components: {
-    LayoutDispatcher,
-  },
   provide() {
     return {
       validator: computed(() => this.validator),
@@ -52,10 +60,10 @@ export default {
   },
   emits: ["update:modelValue"],
   computed: {
-    generatedLayout() {
+    computedLayout() {
       return (
         this.layout ?? {
-          type: "vertical",
+          type: "markup",
           items: Object.keys(this.schema.properties).map((property) => {
             return {
               type: "control",
@@ -64,6 +72,55 @@ export default {
           }),
         }
       );
+    },
+    type() {
+      const layout = this.computedLayout;
+      return layout.type ?? "control";
+    },
+    tag() {
+      const layout = this.computedLayout;
+      return layout.tag ?? "div";
+    },
+    items() {
+      const layout = this.computedLayout;
+      return layout.items ?? [];
+    },
+    property() {
+      const layout = this.computedLayout;
+      return layout.property ?? null;
+    },
+    prefix() {
+      const layout = this.computedLayout;
+      return layout.prefix ?? null;
+    },
+    suffix() {
+      const layout = this.computedLayout;
+      return layout.suffix ?? null;
+    },
+    props() {
+      const layout = this.computedLayout;
+
+      switch (this.type) {
+        case "markup":
+          return omit(layout, ["type", "tag", "prefix", "items", "suffix"]);
+
+        default:
+          return {
+            property: layout.property,
+            modelValue: this.values[layout.property],
+            schema: this.schema.properties[layout.property],
+            "data-property": layout.property,
+            ...omit(layout, ["property"]),
+          };
+      }
+    },
+  },
+  methods: {
+    onControlUpdate(property, value) {
+      this.$emit("update:modelValue", { property, value });
+    },
+    onSubFormUpdate(event) {
+      this.$emit("update:modelValue", event);
     },
   },
 };

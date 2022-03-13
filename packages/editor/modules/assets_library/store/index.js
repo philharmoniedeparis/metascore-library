@@ -63,5 +63,7 @@ export default {
         item.$deleted = true;
       }
     },
+    createSpectrogram(data) {},
+    createWaveform(data) {},
   },
 };

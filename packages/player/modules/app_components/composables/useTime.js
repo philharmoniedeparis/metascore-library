@@ -1,5 +1,5 @@
 import { computed, unref, readonly } from "vue";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {

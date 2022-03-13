@@ -61,7 +61,7 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, omit } from "lodash";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
 
 export default {

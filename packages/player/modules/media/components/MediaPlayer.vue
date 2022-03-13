@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 
 const dash_types = ["application/dash+xml"];
 const hls_types = [

@@ -33,7 +33,7 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { map, clamp } from "@metascore-library/core/utils/math";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import ZoomIcon from "../assets/icons/zoom.svg?inline";
 
 export default {

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import AssetsItem from "./AssetsItem.vue";
 import SpectrogramIcon from "../assets/icons/spectrogram.svg?inline";
 import SpectrogramForm from "./SpectrogramForm.vue";

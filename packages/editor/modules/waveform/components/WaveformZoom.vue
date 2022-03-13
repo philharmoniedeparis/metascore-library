@@ -18,7 +18,7 @@
 <script>
 import { debounce } from "lodash";
 import { clamp } from "@metascore-library/core/utils/math";
-import { useStore } from "@metascore-library/core/module-manager";
+import { useStore } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
 
 export default {

@@ -86,12 +86,17 @@ export default {
     },
     layout() {
       return {
-        type: "vertical",
+        type: "markup",
         items: [
           {
-            type: "group",
-            label: this.$t("image_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("image_group_label"),
+              },
               { property: "width", label: this.$t("width_label") },
               { property: "height", label: this.$t("height_label") },
               {
@@ -105,17 +110,27 @@ export default {
             ],
           },
           {
-            type: "group",
-            label: this.$t("time_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("time_group_label"),
+              },
               { property: "start", label: this.$t("start_label") },
               { property: "end", label: this.$t("end_label") },
             ],
           },
           {
-            type: "group",
-            label: this.$t("color_group_label"),
+            type: "markup",
+            tag: "fieldset",
             items: [
+              {
+                type: "markup",
+                tag: "legend",
+                prefix: this.$t("color_group_label"),
+              },
               {
                 property: "background-color",
                 label: this.$t("background_color_label"),
@@ -160,6 +175,14 @@ export default {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5em 1em;
+    margin-bottom: 0.5em;
+    border: 1px solid $darkgray;
+
+    > legend {
+      padding: 0.25em 0.5em;
+      color: $white;
+      text-align: left;
+    }
 
     .form-group.number {
       input {

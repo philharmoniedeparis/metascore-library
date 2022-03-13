@@ -9,7 +9,7 @@ import App from "./App.vue";
 import {
   registerModules,
   registerStore,
-} from "@metascore-library/core/module-manager.js";
+} from "@metascore-library/core/services/module-manager";
 import AppRenderer from "./modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 
