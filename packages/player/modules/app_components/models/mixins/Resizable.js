@@ -20,7 +20,7 @@ export default Mixin(
         });
       }
 
-      get $isResizable() {
+      static get $isResizable() {
         return true;
       }
     }

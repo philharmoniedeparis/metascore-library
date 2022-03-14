@@ -1,6 +1,12 @@
 <template>
-  <form-group class="control" type="string" :label="label" :label-for="inputId">
-    <input :id="inputId" v-model="value" />
+  <form-group
+    class="control"
+    type="url"
+    :label="label"
+    :label-for="inputId"
+    :description="description"
+  >
+    <input :id="inputId" v-model="value" type="url" />
   </form-group>
 </template>
 
@@ -10,6 +16,10 @@ import { v4 as uuid } from "uuid";
 export default {
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

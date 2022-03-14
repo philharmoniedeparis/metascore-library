@@ -35,7 +35,7 @@ export default Mixin(
         });
       }
 
-      get $isTransformable() {
+      static get $isTransformable() {
         return true;
       }
     }

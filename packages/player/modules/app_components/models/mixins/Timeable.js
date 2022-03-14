@@ -26,7 +26,7 @@ export default Mixin(
         });
       }
 
-      get $isTimeable() {
+      static get $isTimeable() {
         return true;
       }
 

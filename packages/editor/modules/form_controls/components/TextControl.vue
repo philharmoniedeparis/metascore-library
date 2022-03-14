@@ -1,7 +1,7 @@
 <template>
   <form-group
     class="control"
-    type="image"
+    type="text"
     :label="label"
     :label-for="inputId"
     :description="description"

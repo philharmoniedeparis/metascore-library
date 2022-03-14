@@ -2,7 +2,7 @@ import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  if (unref(model).$isPositionable) {
+  if (unref(model).constructor.$isPositionable) {
     const position = computed(() => {
       const { position: value } = unref(model);
       const ret = {};

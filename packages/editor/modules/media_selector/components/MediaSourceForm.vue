@@ -6,9 +6,7 @@
     "file_maxsize_description": "Le fichier doit peser moins de&nbsp;: {maxsize}",
     "file_types_description": "Formats pris en charge&nbsp;: {types}",
     "url_label": "Entrez l'URL d'un flux multimédia",
-    "url_description": "Supported file types: {types}",
-    "url_error": "The entered URL is invalid.",
-    "required_error": "Veuillez remplir soit le champ fichier, soit le champ URL.",
+    "url_description": "Formats pris en charge: {types}",
     "separator": "ou",
     "apply_button": "Appliquer",
     "cancel_button": "Annuler",
@@ -20,8 +18,6 @@
     "file_types_description": "Supported file types: {types}",
     "url_label": "Enter a media stream URL",
     "url_description": "Formats pris en charge&nbsp;: {types}",
-    "url_error": "L'URL saisie n'est pas valide.",
-    "required_error": "Please fill in either the file or the URL field.",
     "separator": "or",
     "apply_button": "Apply",
     "cancel_button": "Cancel",
@@ -30,59 +26,15 @@
 </i18n>
 
 <template>
-  <modal-form
-    class="media-source-form"
-    :title="$t('title')"
-    @submit="onSubmit"
-    @close="onCancel"
-  >
-    <form-group
-      :label="$t('file_label')"
-      label-for="media-source-form--file"
-      :validation="v$.form.file"
-    >
-      <input
-        id="media-source-form--file"
-        v-focus
-        type="file"
-        :accept="formatedFileAccepts"
-        @change="onFileChange"
-      />
-
-      <template #description>
-        <p
-          v-if="fileMaxsize"
-          v-dompurify-html="
-            $t('file_maxsize_description', { maxsize: fileMaxsize })
-          "
-        ></p>
-        <p
-          v-if="formatedFileAccepts"
-          v-dompurify-html="
-            $t('file_types_description', { types: formatedFileAccepts })
-          "
-        ></p>
-      </template>
-    </form-group>
-
-    <div class="separator">{{ $t("separator") }}</div>
-
-    <form-group
-      :label="$t('url_label')"
-      label-for="media-source-form--url"
-      :validation="v$.form.url"
-    >
-      <input id="media-source-form--url" v-model="form.url" type="url" />
-
-      <template #description>
-        <p
-          v-if="formatedUrlAccepts"
-          v-dompurify-html="
-            $t('url_description', { types: formatedUrlAccepts })
-          "
-        ></p>
-      </template>
-    </form-group>
+  <modal-form :title="$t('title')" @submit="onSubmit" @close="onCancel">
+    <schema-form
+      class="media-source-form"
+      :schema="schema"
+      :layout="layout"
+      :values="model"
+      :validator="validator"
+      @update:model-value="onUpdate($event)"
+    />
 
     <template #actions="props">
       <styled-button :form="props.form" role="primary">
@@ -102,14 +54,9 @@
 </template>
 
 <script>
-import useVuelidate from "@vuelidate/core";
-import { helpers, requiredUnless, url } from "@vuelidate/validators";
-import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import Model from "../models/MediaSource";
 
 export default {
-  directives: {
-    dompurifyHtml: buildVueDompurifyHTMLDirective(),
-  },
   props: {
     fileAccepts: {
       type: Array,
@@ -122,69 +69,91 @@ export default {
       default: null,
     },
     urlAccepts: {
-      type: [Array, Function],
+      type: Array,
       default() {
         return ["mp4", "mp3", "m3u8", "mpd"];
       },
     },
   },
   emits: ["submit", "close"],
-  setup() {
-    return { v$: useVuelidate() };
-  },
   data() {
     return {
-      form: {
-        file: null,
-        url: null,
-      },
+      model: new Model(),
     };
   },
   computed: {
+    schema() {
+      return this.model.$schema;
+    },
+    validator() {
+      return this.model.$ajv;
+    },
+    layout() {
+      return {
+        type: "markup",
+        items: [
+          {
+            property: "file",
+            label: this.$t("file_label"),
+            accept: this.formatedFileAccepts,
+            description: this.fileDescription,
+          },
+          { type: "markup", content: this.$t("separator"), class: "separator" },
+          {
+            property: "url",
+            label: this.$t("url_label"),
+            description: this.$t("url_description", {
+              types: this.formatedUrlAccepts,
+            }),
+          },
+        ],
+      };
+    },
     formatedFileAccepts() {
       return this.fileAccepts.length > 0
         ? `.${this.fileAccepts.join(", .")}`
         : null;
+    },
+    fileDescription() {
+      let description = "";
+
+      if (this.fileMaxsize) {
+        description += this.$t("file_maxsize_description", {
+          maxsize: this.fileMaxsize,
+        });
+      }
+
+      if (this.fileAccepts.length > 0) {
+        description += this.$t("file_types_description", {
+          types: this.formatedFileAccepts,
+        });
+      }
+
+      return description;
     },
     formatedUrlAccepts() {
       return this.urlAccepts.length > 0
         ? `.${this.urlAccepts.join(", .")}`
         : null;
     },
-  },
-  validations() {
-    return {
-      form: {
-        file: {
-          required: helpers.withMessage(
-            this.$t("required_error"),
-            requiredUnless(this.form.url)
-          ),
-        },
-        url: {
-          required: helpers.withMessage(
-            this.$t("required_error"),
-            requiredUnless(this.form.file)
-          ),
-          url: helpers.withMessage(this.$t("url_error"), url),
-        },
-      },
-    };
-  },
-  methods: {
-    onFileChange(evt) {
-      const files = evt.target.files || evt.dataTransfer.files;
-      if (!files.length) {
-        return;
+    urlDescription() {
+      if (this.urlAccepts.length > 0) {
+        return this.$t("url_description", {
+          types: this.formatedUrlAccepts,
+        });
       }
 
-      this.form.file = files[0];
+      return null;
+    },
+  },
+  methods: {
+    onUpdate({ property, value }) {
+      this.model.update({
+        [property]: value,
+      });
     },
     async onSubmit() {
-      const valid = await this.v$.$validate();
-      if (!valid) return;
-
-      this.$emit("submit", this.form);
+      console.log(this.model.toJson());
     },
     onCancel() {
       this.$emit("close");
@@ -195,11 +164,19 @@ export default {
 
 <style lang="scss" scoped>
 .media-source-form {
-  .separator {
+  ::v-deep(.form-group) {
+    .input-wrapper {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  ::v-deep(.separator) {
     margin: 1em 0;
     display: flex;
     flex-direction: row;
     align-items: center;
+    gap: 0.5em;
     color: $white;
     text-transform: uppercase;
 
@@ -210,7 +187,6 @@ export default {
       flex: 1;
       height: 1px;
       background: $darkgray;
-      margin: 0.5em;
     }
   }
 }

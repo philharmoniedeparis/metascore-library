@@ -6,7 +6,7 @@ import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation"
 export default function (model) {
   const mediaStore = useStore("media");
 
-  if (unref(model).$isOpacitable) {
+  if (unref(model).constructor.$isOpacitable) {
     const opacity = computed(() => {
       const { opacity } = unref(model);
       let value = null;

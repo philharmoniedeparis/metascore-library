@@ -93,9 +93,9 @@ export class Cursor extends mix(EmbeddableComponent).with(
             ajv,
             title: "Start angle",
           }),
-          duration: createTimeField({
+          "loop-duration": createTimeField({
             ajv,
-            title: "Start angle",
+            title: "Loop duration",
           }),
         },
       },

@@ -3,7 +3,7 @@ import { useStore } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  if (unref(model).$isTimeable) {
+  if (unref(model).constructor.$isTimeable) {
     const active = computed(() => {
       const { "start-time": startTime, "end-time": endTime } = unref(model);
 

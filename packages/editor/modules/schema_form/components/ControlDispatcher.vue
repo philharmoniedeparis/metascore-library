@@ -60,7 +60,11 @@ export default {
         return "checkbox";
       }
 
-      return this.flattenedSchema.type || "string";
+      if (this.flattenedSchema.type === "string") {
+        return "text";
+      }
+
+      return this.flattenedSchema.type || "text";
     },
     extraProps() {
       if (["array", "object"].includes(this.flattenedSchema.type)) {

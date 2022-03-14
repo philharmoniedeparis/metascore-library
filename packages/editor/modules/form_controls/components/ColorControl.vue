@@ -12,7 +12,13 @@
 </i18n>
 
 <template>
-  <form-group class="control" type="color" :label="label" :label-for="inputId">
+  <form-group
+    class="control"
+    type="color"
+    :label="label"
+    :label-for="inputId"
+    :description="description"
+  >
     <tippy
       trigger="click"
       role="dialog"
@@ -76,6 +82,10 @@ export default {
   },
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

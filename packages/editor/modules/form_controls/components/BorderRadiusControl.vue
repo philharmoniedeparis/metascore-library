@@ -4,6 +4,7 @@
     type="border-radius"
     :label="label"
     :label-for="inputId"
+    :description="description"
   >
     <input :id="inputId" v-model="value" />
   </form-group>
@@ -15,6 +16,10 @@ import { v4 as uuid } from "uuid";
 export default {
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

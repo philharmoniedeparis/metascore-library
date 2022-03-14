@@ -4,6 +4,7 @@
     type="checkbox"
     :label="label"
     :label-for="inputId"
+    :description="description"
   >
     <div class="input-container">
       <input :id="inputId" v-model="value" type="checkbox" />
@@ -26,6 +27,10 @@ export default {
   },
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

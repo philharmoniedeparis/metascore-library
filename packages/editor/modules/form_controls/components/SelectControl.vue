@@ -1,5 +1,11 @@
 <template>
-  <form-group class="control" type="select" :label="label" :label-for="inputId">
+  <form-group
+    class="control"
+    type="select"
+    :label="label"
+    :label-for="inputId"
+    :description="description"
+  >
     <div class="input-container">
       <select :id="inputId" v-model="value">
         <option v-for="(l, v) in options" :key="v" :value="v">
@@ -21,6 +27,10 @@ export default {
   },
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

@@ -1,5 +1,11 @@
 <template>
-  <form-group class="control" type="time" :label="label" :label-for="inputId">
+  <form-group
+    class="control"
+    type="time"
+    :label="label"
+    :label-for="inputId"
+    :description="description"
+  >
     <timecode-input :id="inputId" v-model="value" />
   </form-group>
 </template>
@@ -10,6 +16,10 @@ import { v4 as uuid } from "uuid";
 export default {
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

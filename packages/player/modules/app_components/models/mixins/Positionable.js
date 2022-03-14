@@ -20,7 +20,7 @@ export default Mixin(
         });
       }
 
-      get $isPositionable() {
+      static get $isPositionable() {
         return true;
       }
     }

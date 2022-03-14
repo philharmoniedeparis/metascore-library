@@ -139,7 +139,7 @@ export default {
       return this.editorStore.componentHasSelectedDescendents(this.model);
     },
     isTimeable() {
-      return this.model.$isTimeable;
+      return this.model.constructor.$isTimeable;
     },
     hasStartTime() {
       return this.isTimeable && this.model.$hasStartTime;

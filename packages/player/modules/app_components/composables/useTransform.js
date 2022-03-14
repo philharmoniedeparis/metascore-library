@@ -6,7 +6,7 @@ import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation"
 export default function (model) {
   const mediaStore = useStore("media");
 
-  if (unref(model).$isTransformable) {
+  if (unref(model).constructor.$isTransformable) {
     const transform = computed(() => {
       const { translate, scale } = unref(model);
       const ret = {};

@@ -1,5 +1,11 @@
 <template>
-  <form-group class="control" type="number" :label="label" :label-for="inputId">
+  <form-group
+    class="control"
+    type="number"
+    :label="label"
+    :label-for="inputId"
+    :description="description"
+  >
     <div class="input-container">
       <input
         :id="inputId"
@@ -50,6 +56,10 @@ export default {
   },
   props: {
     label: {
+      type: String,
+      default: null,
+    },
+    description: {
       type: String,
       default: null,
     },

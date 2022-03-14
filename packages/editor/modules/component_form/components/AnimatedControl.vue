@@ -1,22 +1,16 @@
 <template>
-  <form-group
-    class="control animated"
-    :data-property="property"
-    :label="label"
-    :label-for="inputId"
-  >
+  <form-group class="control animated" :data-property="property" :label="label">
     <checkbox-control
       :model-value="value.animated"
-      property="animated"
-      :schema="animatedSchema"
+      data-property="animated"
       @update:model-value="updateAnimated($event)"
     >
       <check-icon class="icon" />
     </checkbox-control>
     <control-dispatcher
       :model-value="valueAtTime"
-      property="value"
       :schema="valueSchema"
+      data-property="value"
       @update:model-value="updateValue($event)"
     />
   </form-group>
@@ -24,7 +18,6 @@
 
 <script>
 import { useStore } from "@metascore-library/core/services/module-manager";
-import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import CheckIcon from "../assets/icons/animated-check.svg?inline";
@@ -57,11 +50,6 @@ export default {
   setup() {
     const mediaStore = useStore("media");
     return { mediaStore };
-  },
-  data() {
-    return {
-      inputId: uuid(),
-    };
   },
   computed: {
     mediaTime() {

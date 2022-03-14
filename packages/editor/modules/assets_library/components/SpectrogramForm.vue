@@ -107,7 +107,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("image_group_label"),
+                content: this.$t("image_group_label"),
               },
               { property: "width", label: this.$t("width_label") },
               { property: "height", label: this.$t("height_label") },
@@ -122,7 +122,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("time_group_label"),
+                content: this.$t("time_group_label"),
               },
               { property: "start_time", label: this.$t("start_time_label") },
               { property: "end_time", label: this.$t("end_time_label") },
@@ -135,7 +135,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("scale_group_label"),
+                content: this.$t("scale_group_label"),
               },
               { property: "scale", label: this.$t("scale_label") },
               { property: "start", label: this.$t("start_label") },
@@ -149,7 +149,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("color_group_label"),
+                content: this.$t("color_group_label"),
               },
               { property: "color", label: this.$t("color_label") },
               { property: "gain", label: this.$t("gain_label") },
@@ -164,7 +164,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("algorithm_group_label"),
+                content: this.$t("algorithm_group_label"),
               },
               { property: "win_func", label: this.$t("win_func_label") },
             ],

@@ -182,7 +182,7 @@ export default {
     },
     moveComponents(models, { left, top }) {
       models.forEach((model) => {
-        if (!model.$isPositionable) {
+        if (!model.constructor.$isPositionable) {
           return;
         }
 

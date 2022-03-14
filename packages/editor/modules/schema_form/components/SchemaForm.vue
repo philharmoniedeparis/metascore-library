@@ -1,20 +1,25 @@
 <template>
-  <component :is="tag" v-if="type === 'markup'" v-bind="props">
-    <template v-if="prefix">{{ prefix }}</template>
-    <schema-form
-      v-for="(subLayout, index) in items"
-      :key="index"
-      :layout="subLayout"
-      :schema="schema"
-      :values="values"
-      @update:model-value="onSubFormUpdate"
-    />
-    <template v-if="suffix">{{ suffix }}</template>
+  <component
+    :is="layout.tag || 'div'"
+    v-if="layout.type === 'markup'"
+    v-bind="props"
+  >
+    <template v-if="layout.items">
+      <schema-form
+        v-for="(subLayout, index) in layout.items"
+        :key="index"
+        :layout="subLayout"
+        :schema="schema"
+        :values="values"
+        @update:model-value="onSubFormUpdate"
+      />
+    </template>
+    <template v-else-if="layout.content">{{ layout.content }}</template>
   </component>
   <control-dispatcher
     v-else
     v-bind="props"
-    @update:model-value="onControlUpdate(property, $event)"
+    @update:model-value="onControlUpdate(layout.property, $event)"
   />
 </template>
 
@@ -42,8 +47,18 @@ export default {
     },
     layout: {
       type: Object,
-      default() {
-        return null;
+      default(props) {
+        return {
+          type: "markup",
+          items: Object.entries(props.schema.properties).map(([key, value]) => {
+            return {
+              type: "control",
+              property: key,
+              label: value.title,
+              description: value.description,
+            };
+          }),
+        };
       },
     },
     validator: {
@@ -60,57 +75,18 @@ export default {
   },
   emits: ["update:modelValue"],
   computed: {
-    computedLayout() {
-      return (
-        this.layout ?? {
-          type: "markup",
-          items: Object.keys(this.schema.properties).map((property) => {
-            return {
-              type: "control",
-              property,
-            };
-          }),
-        }
-      );
-    },
-    type() {
-      const layout = this.computedLayout;
-      return layout.type ?? "control";
-    },
-    tag() {
-      const layout = this.computedLayout;
-      return layout.tag ?? "div";
-    },
-    items() {
-      const layout = this.computedLayout;
-      return layout.items ?? [];
-    },
-    property() {
-      const layout = this.computedLayout;
-      return layout.property ?? null;
-    },
-    prefix() {
-      const layout = this.computedLayout;
-      return layout.prefix ?? null;
-    },
-    suffix() {
-      const layout = this.computedLayout;
-      return layout.suffix ?? null;
-    },
     props() {
-      const layout = this.computedLayout;
-
-      switch (this.type) {
+      switch (this.layout.type) {
         case "markup":
-          return omit(layout, ["type", "tag", "prefix", "items", "suffix"]);
+          return omit(this.layout, ["type", "tag", "items", "content"]);
 
         default:
           return {
-            property: layout.property,
-            modelValue: this.values[layout.property],
-            schema: this.schema.properties[layout.property],
-            "data-property": layout.property,
-            ...omit(layout, ["property"]),
+            property: this.layout.property,
+            modelValue: this.values[this.layout.property],
+            schema: this.schema.properties[this.layout.property],
+            "data-property": this.layout.property,
+            ...omit(this.layout, ["property"]),
           };
       }
     },

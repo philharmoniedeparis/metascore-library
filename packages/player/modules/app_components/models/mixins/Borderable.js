@@ -36,7 +36,7 @@ export default Mixin(
         });
       }
 
-      get $isBorderable() {
+      static get $isBorderable() {
         return true;
       }
     }

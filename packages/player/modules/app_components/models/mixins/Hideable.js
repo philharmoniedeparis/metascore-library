@@ -19,7 +19,7 @@ export default Mixin(
         });
       }
 
-      get $isHideable() {
+      static get $isHideable() {
         return true;
       }
     }

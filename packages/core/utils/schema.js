@@ -209,3 +209,43 @@ export const createImageField = ({
     format: "image",
   };
 };
+
+export const createFileField = ({
+  ajv,
+  title = "",
+  description = "",
+  multiple = false,
+  nullable = true,
+} = {}) => {
+  ajv.addFormat("file", { validate: () => true });
+  ajv.addFormat(
+    "data-url",
+    /^data:([a-z]+\/[a-z0-9-+.]+)?;(?:name=(.*);)?base64,(.*)$/
+  );
+
+  const item = {
+    type: nullable ? ["object", "null"] : "object",
+    title,
+    description,
+    properties: {
+      name: { type: "string" },
+      size: { type: "number" },
+      mime: { type: "string" },
+      dataUrl: { type: "string", format: "data-url" },
+    },
+  };
+
+  if (multiple) {
+    return {
+      ...createArrayField({
+        items: item,
+      }),
+      format: "file",
+    };
+  } else {
+    return {
+      ...item,
+      format: "file",
+    };
+  }
+};

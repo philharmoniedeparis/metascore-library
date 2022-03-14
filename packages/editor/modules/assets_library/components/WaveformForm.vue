@@ -95,7 +95,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("image_group_label"),
+                content: this.$t("image_group_label"),
               },
               { property: "width", label: this.$t("width_label") },
               { property: "height", label: this.$t("height_label") },
@@ -116,7 +116,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("time_group_label"),
+                content: this.$t("time_group_label"),
               },
               { property: "start", label: this.$t("start_label") },
               { property: "end", label: this.$t("end_label") },
@@ -129,7 +129,7 @@ export default {
               {
                 type: "markup",
                 tag: "legend",
-                prefix: this.$t("color_group_label"),
+                content: this.$t("color_group_label"),
               },
               {
                 property: "background-color",

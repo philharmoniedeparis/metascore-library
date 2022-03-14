@@ -24,10 +24,15 @@
       </template>
     </div>
 
-    <div v-if="$slots.description || description" class="description">
+    <div v-if="$slots.description" class="description">
       <slot v-if="$slots.description" name="description" />
-      <template v-else>{{ description }} </template>
     </div>
+    <div
+      v-else-if="description"
+      v-dompurify-html="description"
+      class="description"
+    />
+
     <template v-if="validation">
       <div v-for="error of validation.$errors" :key="error.$uid" class="errors">
         <div class="error-msg">{{ error.$message }}</div>
@@ -37,7 +42,12 @@
 </template>
 
 <script>
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+
 export default {
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
   props: {
     type: {
       type: String,
@@ -83,12 +93,12 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    gap: 0.75em;
 
     > label {
       color: $white;
       font-weight: normal;
       white-space: nowrap;
-      margin-right: 0.75em;
       user-select: none;
     }
   }
@@ -98,11 +108,6 @@ export default {
     .input-wrapper {
       flex-direction: row;
       align-items: baseline;
-
-      > label {
-        margin-right: 0;
-        margin-left: 0.75em;
-      }
     }
   }
 

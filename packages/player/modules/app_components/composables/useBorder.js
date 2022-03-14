@@ -2,7 +2,7 @@ import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  if (unref(model).$isBorderable) {
+  if (unref(model).constructor.$isBorderable) {
     const border = computed(() => {
       const {
         "border-width": borderWidth,

@@ -29,7 +29,7 @@ export default Mixin(
         });
       }
 
-      get $isBackgroundable() {
+      static get $isBackgroundable() {
         return true;
       }
     }

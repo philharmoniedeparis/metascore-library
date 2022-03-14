@@ -98,10 +98,10 @@ export default {
       return this.editorStore.isComponentLocked(this.model);
     },
     isPositionable() {
-      return this.model.$isPositionable;
+      return this.model.constructor.$isPositionable;
     },
     isResizable() {
-      return this.model.$isResizable;
+      return this.model.constructor.$isResizable;
     },
     clipboardDataAvailable() {
       if (this.clipboardStore.format !== "metascore/component") {

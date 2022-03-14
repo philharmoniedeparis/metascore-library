@@ -20,7 +20,7 @@ export class AbstractComponent extends AbstractModel {
   static get modelChain() {
     let classes = [this];
 
-    if (this.baseModel) {
+    if (this.baseModel?.modelChain) {
       classes = classes.concat(this.baseModel.modelChain);
     }
 

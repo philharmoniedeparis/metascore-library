@@ -24,7 +24,7 @@ export default Mixin(
         });
       }
 
-      get $isOpacitable() {
+      static get $isOpacitable() {
         return true;
       }
     }

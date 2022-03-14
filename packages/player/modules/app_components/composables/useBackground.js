@@ -2,7 +2,7 @@ import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
-  if (unref(model).$isBackgroundable) {
+  if (unref(model).constructor.$isBackgroundable) {
     const background = computed(() => {
       const {
         "background-color": backgroundColor,
