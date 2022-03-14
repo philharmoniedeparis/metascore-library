@@ -14,6 +14,41 @@
     "opacity": "Opacité",
     "translate": "Translation",
     "scale": "Échelle",
+    "Animation": {
+      "start-frame": "Image de départ",
+      "loop-duration": "Durée d'un boucle",
+      "reversed": "Inversé",
+      "colors": "Couleurs",
+    },
+    "Block": {
+      "pager-visibility": "Visibilité du tourne page",
+    },
+    "BlockToggler": {
+      "blocks": "Blocs",
+    },
+    "Content": {
+      "text": "Éditer le contenu",
+    },
+    "Cursor": {
+      "form": "Forme",
+      "direction": "Direction",
+      "acceleration": "Accélération",
+      "keyframes": "Enregistrer les positions",
+      "start-angle": "Angle de départ",
+      "loop-duration": "Durée d'un boucle",
+      "cursor-width": "Largeur du curseur",
+      "cursor-color": "Couleur du curseur",
+    },
+    "SVG": {
+      "stroke": "Couleur du trait",
+      "stroke-width": "Largeur du trait",
+      "stroke-dasharray": "Style de trait",
+      "fill": "Couleur de remplissage",
+      "marker-start": "Marqueur de début",
+      "marker-mid": "Marqueurs intermédiaires",
+      "marker-end": "Marqueur de fin",
+      "colors": "Couleurs",
+    },
   },
   "en": {
     "name": "Name",
@@ -29,6 +64,41 @@
     "opacity": "Opacity",
     "translate": "Translation",
     "scale": "Scale",
+    "Animation": {
+      "start-frame": "Start frame",
+      "loop-duration": "Loop duration",
+      "reversed": "Reversed",
+      "colors": "Colors",
+    },
+    "Block": {
+      "pager-visibility": "Pager visibility",
+    },
+    "BlockToggler": {
+      "blocks": "Blocks",
+    },
+    "Content": {
+      "text": "Edit the content",
+    },
+    "Cursor": {
+      "form": "Form",
+      "direction": "Direction",
+      "acceleration": "Acceleration",
+      "keyframes": "Record positions",
+      "start-angle": "Start angle",
+      "loop-duration": "Loop duration",
+      "cursor-width": "Cursor width",
+      "cursor-color": "Cursor color",
+    },
+    "SVG": {
+      "stroke": "Stroke color",
+      "stroke-width": "Stroke width",
+      "stroke-dasharray": "Stroke style",
+      "fill": "Fill color",
+      "marker-start": "Marker start",
+      "marker-mid": "Marker mid",
+      "marker-end": "Marker end",
+      "colors": "Colors",
+    },
   },
 }
 </i18n>
@@ -77,11 +147,11 @@ export default {
     commonModelClass() {
       return this.commonModelClasses[0];
     },
-    commonModelTypes() {
-      return this.commonModelClasses.map((c) => c.type);
+    commonModelType() {
+      return this.commonModelClass?.type;
     },
     title() {
-      return this.commonModelClass?.type;
+      return this.commonModelType;
     },
     schema() {
       return this.commonModelClass?.schema;
@@ -98,27 +168,14 @@ export default {
         ],
       };
 
-      if (this.commonModelTypes.includes("AbstractComponent")) {
-        layout.items[0].items.push({
-          property: "name",
-        });
-      }
-
-      if (this.commonModelClass.$isHideable) {
-        layout.items[0].items.push({
-          property: "hidden",
-          label: this.$t("hidden"),
-        });
-      }
-
-      if (this.commonModelClass.$isBackgroundable) {
-        ["background-color", "background-image"].forEach((property) => {
+      ["name", "hidden", "background-color", "background-image"].forEach(
+        (property) => {
           layout.items[0].items.push({
             property,
-            label: this.$t(property),
+            label: property === "name" ? null : this.$t(property),
           });
-        });
-      }
+        }
+      );
 
       if (this.commonModelClass.$isBorderable) {
         layout.items[0].items.push({
@@ -161,32 +218,30 @@ export default {
             (property) => {
               layout.items[0].items.push({
                 property,
-                label: this.$t(property),
+                label: this.$t(`Animation.${property}`),
               });
             }
           );
           break;
 
         case "Block":
-          ["synched", "pager-visibility"].forEach((property) => {
-            layout.items[0].items.push({
-              property,
-              label: this.$t(property),
-            });
+          layout.items[0].items.push({
+            property: "pager-visibility",
+            label: this.$t("Block.pager-visibility"),
           });
           break;
 
         case "BlockToggler":
           layout.items[0].items.push({
             property: "blocks",
-            label: this.$t("blocks"),
+            label: this.$t("BlockToggler.blocks"),
           });
           break;
 
         case "Content":
           layout.items[0].items.push({
             property: "text",
-            label: this.$t("text"),
+            label: this.$t("Content.text"),
           });
           break;
 
@@ -203,7 +258,7 @@ export default {
           ].forEach((property) => {
             layout.items[0].items.push({
               property,
-              label: this.$t(property),
+              label: this.$t(`Cursor.${property}`),
             });
           });
           break;
@@ -221,7 +276,7 @@ export default {
           ].forEach((property) => {
             layout.items[0].items.push({
               property,
-              label: this.$t(property),
+              label: this.$t(`SVG.${property}`),
             });
           });
           break;
@@ -244,29 +299,24 @@ export default {
         });
       }
 
-      if (
-        this.commonModelClass.$isOpacitable ||
-        this.commonModelClass.$isTransformable
-      ) {
-        const animated = [];
-
-        if (this.commonModelClass.$isOpacitable) {
-          animated.push({
-            property: "opacity",
-            label: this.$t("opacity"),
-          });
-        }
-        if (this.commonModelClass.$isTransformable) {
-          animated.push({
-            property: "translate",
-            label: this.$t("translate"),
-          });
-          animated.push({
-            property: "scale",
-            label: this.$t("scale"),
-          });
-        }
-
+      const animated = [];
+      if (this.commonModelClass.$isOpacitable) {
+        animated.push({
+          property: "opacity",
+          label: this.$t("opacity"),
+        });
+      }
+      if (this.commonModelClass.$isTransformable) {
+        animated.push({
+          property: "translate",
+          label: this.$t("translate"),
+        });
+        animated.push({
+          property: "scale",
+          label: this.$t("scale"),
+        });
+      }
+      if (animated.length > 0) {
         layout.items.push({
           type: "markup",
           class: "form-container vertical animated",
@@ -389,6 +439,14 @@ export default {
     input {
       min-width: 0;
       flex: 1;
+    }
+
+    &.checkbox {
+      .input-wrapper {
+        label {
+          order: -1;
+        }
+      }
     }
 
     &[data-property="name"] {

@@ -1,6 +1,6 @@
 <template>
   <form-group class="control array" :data-property="property" :label="label">
-    <template v-for="(item, index) in schema.items" :key="index">
+    <template v-for="(item, index) in items" :key="index">
       <control-dispatcher
         :property="`${index}`"
         :schema="item"
@@ -42,6 +42,21 @@ export default {
       set(value) {
         this.$emit("update:modelValue", value);
       },
+    },
+    items() {
+      if (Array.isArray(this.schema.items)) {
+        return this.schema.items;
+      }
+
+      if (this.value.length > 0) {
+        return [].fill(this.schema.items, 0, this.value.length);
+      }
+
+      if (this.schema.minItems) {
+        return [].fill(this.schema.items, 0, this.schema.minItems);
+      }
+
+      return [this.schema.items];
     },
   },
   methods: {

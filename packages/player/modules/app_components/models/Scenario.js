@@ -1,5 +1,7 @@
 import { mix } from "mixwith";
 import { merge } from "lodash";
+import { createStringField } from "@metascore-library/core/utils/schema";
+import { createCollectionField } from "../utils/schema";
 import {
   AbstractComponent,
   Animation,
@@ -13,7 +15,6 @@ import {
   VideoRenderer,
 } from ".";
 import Backgroundable from "./mixins/Backgroundable";
-import { createCollectionField } from "../utils/schema";
 
 export class Scenario extends mix(AbstractComponent).with(Backgroundable) {
   static type = "Scenario";
@@ -25,6 +26,10 @@ export class Scenario extends mix(AbstractComponent).with(Backgroundable) {
 
     return merge(super.schema, {
       properties: {
+        name: createStringField({
+          title: "Name",
+          description: "The component's name",
+        }),
         children: createCollectionField({
           ajv,
           model: [

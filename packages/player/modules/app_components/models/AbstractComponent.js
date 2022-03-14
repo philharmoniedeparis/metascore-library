@@ -42,10 +42,6 @@ export class AbstractComponent extends AbstractModel {
           title: "ID",
           description: "The component's unique identifier",
         }),
-        name: createStringField({
-          title: "Name",
-          description: "The component's name",
-        }),
         // @TODO: move to seperate data model in editor
         editor: {
           type: "object",

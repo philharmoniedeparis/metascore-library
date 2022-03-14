@@ -17,7 +17,7 @@
     <template v-else-if="layout.content">{{ layout.content }}</template>
   </component>
   <control-dispatcher
-    v-else
+    v-else-if="layout.property in schema.properties"
     v-bind="props"
     @update:model-value="onControlUpdate(layout.property, $event)"
   />

@@ -10,7 +10,7 @@
     <control-dispatcher
       :model-value="valueAtTime"
       :schema="valueSchema"
-      data-property="value"
+      property="value"
       @update:model-value="updateValue($event)"
     />
   </form-group>
