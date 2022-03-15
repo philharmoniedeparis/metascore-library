@@ -1,23 +1,21 @@
 <template>
-  <div class="metaScore-app">
-    <media-player
-      v-if="mediaSource"
-      :source="mediaSource"
-      type="video"
-      :use-request-animation-frame="true"
-    />
-
+  <div class="metaScore-app" :style="style">
+    <media-player v-if="mediaSource" :source="mediaSource" type="video" />
     <scenario-component v-if="scenario" :model="scenario" />
   </div>
 </template>
 
 <script>
+import { debounce } from "lodash";
 import { useStore } from "@metascore-library/core/services/module-manager";
 
 export default {
-  inject: ["$postMessage"],
   props: {
-    api: {
+    responsive: {
+      type: Boolean,
+      default: false,
+    },
+    allowUpscaling: {
       type: Boolean,
       default: false,
     },
@@ -28,7 +26,20 @@ export default {
     const componentsStore = useStore("components");
     return { store, mediaStore, componentsStore };
   },
+  data() {
+    return {
+      containerWidth: null,
+      containerHeight: null,
+      sheet: null,
+    };
+  },
   computed: {
+    width() {
+      return this.store.width;
+    },
+    height() {
+      return this.store.height;
+    },
     css() {
       return this.store.css;
     },
@@ -45,6 +56,31 @@ export default {
         this.componentsStore.activeScenario.id
       );
     },
+    style() {
+      if (this.responsive) {
+        let scale = Math.min(
+          this.containerWidth / this.width,
+          this.containerHeight / this.height
+        );
+
+        if (!this.allowUpscaling) {
+          scale = Math.min(1, scale);
+        }
+
+        return {
+          width: `${this.width}px`,
+          height: `${this.height}px`,
+          transform: `scale(${scale})`,
+          marginRight: `${this.width * scale - this.width}px`,
+          marginBottom: `${this.height * scale - this.height}px`,
+        };
+      }
+
+      return {
+        width: `${this.width}px`,
+        height: `${this.height}px`,
+      };
+    },
   },
   watch: {
     css(value) {
@@ -55,20 +91,44 @@ export default {
 
       this.sheet.innerHTML = value ?? "";
     },
+    responsive(value) {
+      if (value) {
+        this.setupResizeObserver();
+      } else {
+        this.destroyResizeObserver();
+      }
+    },
   },
-  created() {
-    if (this.api) {
-      this.$postMessage.on(this.onAPIMessage);
+  mounted() {
+    if (this.responsive) {
+      this.setupResizeObserver();
     }
   },
-  unmounted() {
-    if (this.api) {
-      this.$postMessage.off(this.onAPIMessage);
-    }
+  beforeUnmount() {
+    this.destroyResizeObserver();
   },
   methods: {
-    onAPIMessage(evt) {
-      console.log(evt.data);
+    setupResizeObserver() {
+      if (this._resize_observer) {
+        return;
+      }
+
+      const container = this.$el.parentNode;
+      this.containerWidth = container.clientWidth;
+      this.containerHeight = container.clientWidth;
+
+      this._resize_observer = new ResizeObserver(
+        debounce(() => {
+          this.containerWidth = container.clientWidth;
+          this.containerHeight = container.clientWidth;
+        }, 500)
+      );
+      this._resize_observer.observe(container);
+    },
+    destroyResizeObserver() {
+      if (this._resize_observer) {
+        this._resize_observer.disconnect();
+      }
     },
   },
 };
@@ -83,6 +143,7 @@ body {
 
 body {
   margin: 0;
+  overflow: hidden;
 }
 </style>
 
@@ -95,6 +156,7 @@ body {
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
+  transform-origin: "top left";
 
   ::v-deep(.sr-only) {
     @include sr-only;

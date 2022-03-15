@@ -1,6 +1,10 @@
 <template>
   <context-menu class="metaScore-player">
-    <app-renderer :url="url" :api="api" />
+    <app-renderer
+      :url="url"
+      :responsive="responsive"
+      :allow-upscaling="allowUpscaling"
+    />
 
     <template #footer>
       {{ `metaScore Player ${version}` }}
@@ -17,6 +21,18 @@ export default {
     url: {
       type: String,
       required: true,
+    },
+    keyboard: {
+      type: Boolean,
+      default: true,
+    },
+    responsive: {
+      type: Boolean,
+      default: false,
+    },
+    allowUpscaling: {
+      type: Boolean,
+      default: false,
     },
     api: {
       type: Boolean,

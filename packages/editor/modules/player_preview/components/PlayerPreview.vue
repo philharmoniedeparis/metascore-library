@@ -28,10 +28,7 @@
     <preview-ruler :track-target="iframeBody" />
     <preview-ruler axis="y" :track-target="iframeBody" />
 
-    <div
-      class="iframe-wrapper"
-      :style="{ width: `${playerWidth}px`, height: `${playerHeight}px` }"
-    >
+    <div class="iframe-wrapper" :style="iFrameWrapperStyle">
       <preview-grid />
 
       <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
@@ -62,10 +59,12 @@ export default {
   },
   emits: ["load"],
   setup() {
+    const store = useStore("player-preview");
     const appRendererStore = useStore("app-renderer");
     const editorStore = useStore("editor");
     const contextmenuStore = useStore("contextmenu");
     return {
+      store,
       appRendererStore,
       editorStore,
       contextmenuStore,
@@ -83,6 +82,28 @@ export default {
     },
     playerHeight() {
       return this.appRendererStore.height;
+    },
+    zoom() {
+      return this.store.zoom;
+    },
+    iFrameWrapperStyle() {
+      if (this.zoom !== 1) {
+        const width = this.playerWidth * this.zoom;
+        const height = this.playerHeight * this.zoom;
+
+        return {
+          width: `${this.playerWidth}px`,
+          height: `${this.playerHeight}px`,
+          transform: `scale(${this.zoom})`,
+          marginRight: `${width - this.playerWidth}px`,
+          marginBottom: `${height - this.playerHeight}px`,
+        };
+      }
+
+      return {
+        width: `${this.playerWidth}px`,
+        height: `${this.playerHeight}px`,
+      };
     },
     hotkeys() {
       return {
@@ -297,12 +318,15 @@ export default {
   grid-template-columns: 20px auto min-content auto;
   grid-template-rows: 20px auto min-content auto;
   box-sizing: border-box;
+  overflow: auto;
 }
 
 .iframe-wrapper {
   position: relative;
   grid-area: 3/3/4/4;
   background: $white;
+  transform-origin: 0 0;
+  transition: all 0.25s;
 }
 
 .preview-ruler {
@@ -328,6 +352,7 @@ export default {
 }
 
 iframe {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;

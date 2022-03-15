@@ -8,7 +8,7 @@
   >
     <div class="input-container">
       <select :id="inputId" v-model="value">
-        <option v-for="(l, v) in options" :key="v" :value="v">
+        <option v-for="(v, l) in options" :key="v" :value="v">
           {{ l }}
         </option>
       </select>

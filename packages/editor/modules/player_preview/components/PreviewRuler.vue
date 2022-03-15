@@ -6,8 +6,8 @@
           :id="patternId"
           x="0"
           y="0"
-          :width="vertical ? majorTickLength : majorTickStep"
-          :height="vertical ? majorTickStep : majorTickLength"
+          :width="vertical ? majorTickLength : adjustedMajorTickStep * zoom"
+          :height="vertical ? adjustedMajorTickStep * zoom : majorTickLength"
           patternUnits="userSpaceOnUse"
         >
           <rect
@@ -18,13 +18,17 @@
             fill="currentColor"
           />
           <rect
-            v-for="n in majorTickStep / minorTickStep"
+            v-for="n in adjustedMajorTickStep / adjustedMinorTickStep"
             :key="n"
             :x="
-              vertical ? majorTickLength - minorTickLength : n * minorTickStep
+              vertical
+                ? majorTickLength - minorTickLength
+                : n * (adjustedMinorTickStep * zoom)
             "
             :y="
-              vertical ? n * minorTickStep : majorTickLength - minorTickLength
+              vertical
+                ? n * (adjustedMinorTickStep * zoom)
+                : majorTickLength - minorTickLength
             "
             :width="vertical ? minorTickLength : tickWidth"
             :height="vertical ? tickWidth : minorTickLength"
@@ -41,14 +45,17 @@
         <text
           v-for="(n, i) in majorTicksCount"
           :key="n"
-          :x="(vertical ? -1 : 1) * (i * majorTickStep + minorTickStep)"
+          :x="
+            (vertical ? -1 : 1) *
+            ((i * adjustedMajorTickStep + adjustedMinorTickStep) * zoom)
+          "
           y="0"
           :text-anchor="vertical ? 'end' : 'start'"
           :transform="vertical ? 'rotate(270)' : null"
           fill="currentColor"
           dominant-baseline="hanging"
         >
-          {{ i * majorTickStep }}
+          {{ i * adjustedMajorTickStep }}
         </text>
         <rect
           v-show="tracking"
@@ -66,6 +73,7 @@
 <script>
 import { debounce, ceil } from "lodash";
 import { v4 as uuid } from "uuid";
+import { useStore } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {
@@ -88,11 +96,19 @@ export default {
       type: Number,
       default: 5,
     },
+    minMinorTickSpacing: {
+      type: Number,
+      default: 5,
+    },
     majorTickLength: {
       type: Number,
       default: 18,
     },
     majorTickStep: {
+      type: Number,
+      default: 50,
+    },
+    minMajorTickSpacing: {
       type: Number,
       default: 50,
     },
@@ -105,6 +121,10 @@ export default {
       default: 1,
     },
   },
+  setup() {
+    const store = useStore("player-preview");
+    return { store };
+  },
   data() {
     return {
       majorTicksCount: 0,
@@ -116,6 +136,27 @@ export default {
   computed: {
     vertical() {
       return this.axis === "y";
+    },
+    zoom() {
+      return this.store.zoom;
+    },
+    adjustedMinorTickStep() {
+      let step = this.minorTickStep;
+
+      while (step * this.zoom < this.minMinorTickSpacing) {
+        step += this.minorTickStep;
+      }
+
+      return step;
+    },
+    adjustedMajorTickStep() {
+      let step = this.majorTickStep;
+
+      while (step * this.zoom < this.minMajorTickSpacing) {
+        step += this.majorTickStep;
+      }
+
+      return step;
     },
   },
   watch: {
@@ -149,7 +190,7 @@ export default {
     updateTicksCount() {
       this.majorTicksCount = ceil(
         (this.vertical ? this.$el.clientHeight : this.$el.clientWidth) /
-          this.majorTickStep
+          (this.adjustedMajorTickStep * this.zoom)
       );
     },
     setupTracker() {
