@@ -59,6 +59,18 @@ export default class HTML5 extends Dom {
         this.configs = Object.assign({}, this.constructor.defaults, configs);
 
         /**
+         * The current source
+         * @type {Object}
+         */
+        this.source = null;
+
+        /**
+         * Whether the loadeddata event has fired
+         * @type {Boolean}
+         */
+        this.data_loaded = false;
+
+        /**
          * Whether the renderer is playing
          * @type {Boolean}
          */
@@ -129,6 +141,7 @@ export default class HTML5 extends Dom {
         this.el = new Dom(`<${this.configs.tag}></${this.configs.tag}/>`, {'preload': 'auto'})
             .addListener('error', this.onError.bind(this), true)
             .addListener('loadedmetadata', this.onLoadedMetadata.bind(this))
+            .addListener('loadeddata', this.onLoadedData.bind(this))
             .addListener('play', this.onPlay.bind(this))
             .addListener('pause', this.onPause.bind(this))
             .addListener('seeking', this.onSeeking.bind(this))
@@ -159,11 +172,8 @@ export default class HTML5 extends Dom {
     * @return {this}
     */
     setSource(source, supressEvent){
-        /**
-         * The current source
-         * @type {Object}
-         */
         this.source = source;
+        this.data_loaded = false;
 
         delete this.waveformdata;
         if(this._waveformdata_ajax){
@@ -316,6 +326,15 @@ export default class HTML5 extends Dom {
     }
 
     /**
+     * The loadeddata event handler
+     *
+     * @private
+     */
+    onLoadedData() {
+        this.data_loaded = true;
+    }
+
+    /**
      * The play event handler
      *
      * @private
@@ -398,14 +417,26 @@ export default class HTML5 extends Dom {
      *
      * @return {this}
      */
-    play() {
+    play(set_loaded_flag = true) {
+        if (set_loaded_flag && !this.data_loaded) {
+            /**
+             * Flag used for the iOS workaround in setTime.
+             * @type {Boolean}
+             */
+            this._play_after_loadeddata = true;
+        }
+
         const promise = this.dom.play();
 
         if (typeof promise !== "undefined") {
-          promise.catch((error) => {
-            console.error(error);
-            console.warn('Play was prevented by the browser. If using the metaScore API, make sure to add allow="autoplay" to the player\'s iframe. See https://github.com/w3c/webappsec-feature-policy/blob/master/features.md for more information.');
-          });
+            promise
+                .then(() => {
+                    delete this._play_after_loadeddata;
+                })
+                .catch((error) => {
+                    console.error(error);
+                    console.warn('Play was prevented by the browser. If using the metaScore API, make sure to add allow="autoplay" to the player\'s iframe. See https://github.com/w3c/webappsec-feature-policy/blob/master/features.md for more information.');
+                });
         }
 
         return this;
@@ -418,6 +449,8 @@ export default class HTML5 extends Dom {
      */
     pause() {
         this.dom.pause();
+
+        delete this._play_after_loadeddata;
 
         return this;
     }
@@ -440,7 +473,24 @@ export default class HTML5 extends Dom {
      * @return {this}
      */
     setTime(time) {
-        this.dom.currentTime = time;
+        if (time > 0 && !this.data_loaded) {
+            // Some iOS devices don't allow seeking
+            // before data has loaded.
+            this.el.addOneTimeListener('loadeddata', () => {
+                this.dom.currentTime = time;
+
+                if (this._play_after_loadeddata !== true) {
+                    this.pause();
+                }
+
+                delete this._play_after_loadeddata;
+            });
+
+            // Force loading.
+            this.play(false);
+        } else {
+            this.dom.currentTime = time;
+        }
 
         return this;
     }
