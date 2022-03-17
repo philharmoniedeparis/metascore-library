@@ -1,7 +1,9 @@
 <template>
   <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
-      <main-menu />
+      <nav class="main-menu">
+        <player-zoom-controller />
+      </nav>
     </resizable-pane>
 
     <resizable-pane class="left" :right="true">
@@ -219,6 +221,14 @@ export default {
     grid-area: top;
     height: 2.5em;
     background: $darkgray;
+
+    .main-menu {
+      display: flex;
+      height: 100%;
+      padding: 0 1em;
+      justify-content: flex-start;
+      align-items: center;
+    }
   }
 
   > .left {
@@ -230,7 +240,6 @@ export default {
 
   > .center {
     grid-area: center;
-    overflow: auto;
   }
 
   > .right {

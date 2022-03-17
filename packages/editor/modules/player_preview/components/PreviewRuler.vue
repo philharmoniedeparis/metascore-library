@@ -4,8 +4,8 @@
       <defs>
         <pattern
           :id="patternId"
-          x="0"
-          y="0"
+          :x="vertical ? 0 : offset"
+          :y="vertical ? offset : 0"
           :width="vertical ? majorTickLength : adjustedMajorTickStep * zoom"
           :height="vertical ? adjustedMajorTickStep * zoom : majorTickLength"
           patternUnits="userSpaceOnUse"
@@ -42,21 +42,45 @@
           :width="vertical ? majorTickLength : '100%'"
           :height="vertical ? '100%' : majorTickLength"
         />
-        <text
-          v-for="(n, i) in majorTicksCount"
-          :key="n"
-          :x="
-            (vertical ? -1 : 1) *
-            ((i * adjustedMajorTickStep + adjustedMinorTickStep) * zoom)
-          "
-          y="0"
-          :text-anchor="vertical ? 'end' : 'start'"
-          :transform="vertical ? 'rotate(270)' : null"
-          fill="currentColor"
-          dominant-baseline="hanging"
-        >
-          {{ i * adjustedMajorTickStep }}
-        </text>
+        <template v-if="negativeLabelsCount > 0">
+          <text
+            v-for="n in negativeLabelsCount"
+            :key="n"
+            :x="
+              (vertical ? -1 : 1) *
+              (offset -
+                ((negativeLabelsCount + 1 - n) * adjustedMajorTickStep -
+                  adjustedMinorTickStep) *
+                  zoom)
+            "
+            :y="(majorTickLength - minorTickLength) / 2"
+            :text-anchor="vertical ? 'end' : 'start'"
+            :transform="vertical ? 'rotate(270)' : null"
+            fill="currentColor"
+            dominant-baseline="middle"
+          >
+            {{ (n - negativeLabelsCount - 1) * adjustedMajorTickStep }}
+          </text>
+        </template>
+        <template v-if="positiveLabelsCount > 0">
+          <text
+            v-for="n in positiveLabelsCount"
+            :key="n"
+            :x="
+              (vertical ? -1 : 1) *
+              (((n - 1) * adjustedMajorTickStep + adjustedMinorTickStep) *
+                zoom +
+                offset)
+            "
+            :y="(majorTickLength - minorTickLength) / 2"
+            :text-anchor="vertical ? 'end' : 'start'"
+            :transform="vertical ? 'rotate(270)' : null"
+            fill="currentColor"
+            dominant-baseline="middle"
+          >
+            {{ (n - 1) * adjustedMajorTickStep }}
+          </text>
+        </template>
         <rect
           v-show="tracking"
           class="tracker"
@@ -84,6 +108,10 @@ export default {
         return ["x", "y"].includes(value);
       },
     },
+    offset: {
+      type: Number,
+      default: 0,
+    },
     tickWidth: {
       type: Number,
       default: 1,
@@ -98,11 +126,11 @@ export default {
     },
     minMinorTickSpacing: {
       type: Number,
-      default: 5,
+      default: 6,
     },
     majorTickLength: {
       type: Number,
-      default: 18,
+      default: 20,
     },
     majorTickStep: {
       type: Number,
@@ -110,7 +138,7 @@ export default {
     },
     minMajorTickSpacing: {
       type: Number,
-      default: 50,
+      default: 60,
     },
     trackTarget: {
       type: Object,
@@ -127,7 +155,8 @@ export default {
   },
   data() {
     return {
-      majorTicksCount: 0,
+      positiveLabelsCount: 0,
+      negativeLabelsCount: 0,
       tracking: false,
       trackerPosition: 0,
       patternId: `ruler-${uuid()}`,
@@ -170,13 +199,13 @@ export default {
   },
   mounted() {
     this._resize_observer = new ResizeObserver(
-      debounce(this.updateTicksCount.bind(this), 500)
+      debounce(this.updateLablesCount.bind(this), 100)
     );
     this._resize_observer.observe(this.$el);
 
     this.setupTracker();
 
-    this.updateTicksCount();
+    this.updateLablesCount();
   },
   beforeUnmount() {
     if (this._resize_observer) {
@@ -187,11 +216,14 @@ export default {
     this.destroyTracker(this.trackTarget);
   },
   methods: {
-    updateTicksCount() {
-      this.majorTicksCount = ceil(
-        (this.vertical ? this.$el.clientHeight : this.$el.clientWidth) /
-          (this.adjustedMajorTickStep * this.zoom)
-      );
+    updateLablesCount() {
+      const length = this.vertical
+        ? this.$el.clientHeight
+        : this.$el.clientWidth;
+      const step = this.adjustedMajorTickStep * this.zoom;
+
+      this.positiveLabelsCount = ceil((length - this.offset) / step);
+      this.negativeLabelsCount = ceil(this.offset / step) - 1;
     },
     setupTracker() {
       if (this.trackTarget) {
@@ -235,7 +267,8 @@ export default {
       this.tracking = true;
     },
     onTrackTargetMousemove(evt) {
-      this.trackerPosition = this.vertical ? evt.clientY : evt.clientX;
+      this.trackerPosition =
+        (this.vertical ? evt.clientY : evt.clientX) * this.zoom + this.offset;
     },
     onTrackTargetMouseout() {
       this.tracking = false;

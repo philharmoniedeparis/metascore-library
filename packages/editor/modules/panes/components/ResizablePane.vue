@@ -86,5 +86,6 @@ export default {
   background: $lightgray;
   color: $white;
   border: 0 solid $darkgray;
+  box-sizing: border-box;
 }
 </style>

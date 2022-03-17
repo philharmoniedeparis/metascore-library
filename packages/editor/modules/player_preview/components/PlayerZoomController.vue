@@ -38,3 +38,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.player-zoom-controller {
+  ::v-deep(.form-group) {
+    margin: 0;
+  }
+}
+</style>

@@ -25,10 +25,24 @@
 
 <template>
   <div class="player-preview">
-    <preview-ruler :track-target="iframeBody" />
-    <preview-ruler axis="y" :track-target="iframeBody" />
+    <preview-ruler
+      :track-target="iframeBody"
+      :major-tick-length="rulerThikness"
+      :offset="playerOffset.x"
+    />
+    <preview-ruler
+      axis="y"
+      :track-target="iframeBody"
+      :major-tick-length="rulerThikness"
+      :offset="playerOffset.y"
+    />
 
-    <div class="iframe-wrapper" :style="iFrameWrapperStyle">
+    <div
+      ref="iframe-wrapper"
+      class="iframe-wrapper"
+      :style="iFrameWrapperStyle"
+      @transitionend="onIframeTransitionend"
+    >
       <preview-grid />
 
       <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
@@ -41,6 +55,7 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
 import { useStore } from "@metascore-library/core/services/module-manager";
 import "../polyfills/GeomertyUtils";
 import PreviewRuler from "./PreviewRuler.vue";
@@ -55,6 +70,10 @@ export default {
     css: {
       type: String,
       default: null,
+    },
+    rulerThikness: {
+      type: Number,
+      default: 20,
     },
   },
   emits: ["load"],
@@ -74,6 +93,10 @@ export default {
     return {
       iframeDocument: null,
       iframeBody: null,
+      playerOffset: {
+        x: 0,
+        y: 0,
+      },
     };
   },
   computed: {
@@ -221,6 +244,30 @@ export default {
 
       return items;
     },
+    cssRulerThikness() {
+      return `${this.rulerThikness}px`;
+    },
+  },
+  watch: {
+    playerWidth() {
+      this.updatePlayerOffset();
+    },
+    playerHeight() {
+      this.updatePlayerOffset();
+    },
+  },
+  mounted() {
+    this._resize_observer = new ResizeObserver(
+      debounce(() => {
+        this.updatePlayerOffset();
+      }, 500)
+    );
+    this._resize_observer.observe(this.$el);
+  },
+  beforeUnmount() {
+    if (this._resize_observer) {
+      this._resize_observer.disconnect();
+    }
   },
   methods: {
     async onIframeLoad() {
@@ -306,6 +353,22 @@ export default {
       evt.preventDefault();
       this.bubbleIframeEvent(evt);
     },
+
+    onIframeTransitionend() {
+      this.updatePlayerOffset();
+    },
+
+    updatePlayerOffset() {
+      const iframe_wrapper = this.$refs["iframe-wrapper"];
+      const { left, top } = this.$el.getBoundingClientRect();
+      const { left: playerLeft, top: playerTop } =
+        iframe_wrapper.getBoundingClientRect();
+
+      this.playerOffset = {
+        x: playerLeft - left,
+        y: playerTop - top,
+      };
+    },
   },
 };
 </script>
@@ -315,10 +378,27 @@ export default {
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-columns: 20px auto min-content auto;
-  grid-template-rows: 20px auto min-content auto;
+  grid-template-columns:
+    v-bind(cssRulerThikness)
+    1fr min-content 1fr
+    v-bind(cssRulerThikness);
+  grid-template-rows:
+    v-bind(cssRulerThikness)
+    1fr min-content 1fr
+    v-bind(cssRulerThikness);
   box-sizing: border-box;
   overflow: auto;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: v-bind(cssRulerThikness);
+    height: v-bind(cssRulerThikness);
+    background: $mediumgray;
+    z-index: 3;
+  }
 }
 
 .iframe-wrapper {
@@ -333,17 +413,16 @@ export default {
   position: sticky;
   z-index: 1;
   background: $mediumgray;
+  overflow: hidden;
 
   &[data-axis="x"] {
     top: 0;
-    grid-area: 1/2/2/5;
-    padding-top: 2px;
+    grid-area: 1/1/2/6;
   }
 
   &[data-axis="y"] {
     left: 0;
-    grid-area: 2/1/5/2;
-    padding-left: 2px;
+    grid-area: 1/1/6/2;
   }
 }
 
