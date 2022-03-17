@@ -1,12 +1,17 @@
 <template>
   <form-group
-    class="control"
+    :class="[
+      'control',
+      spinners ? 'has-spinners' : null,
+      spinners ? `${spinnersDirection}-spinners` : null,
+      spinners && flipSpinners ? 'flip-spinners' : null,
+    ]"
     type="number"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
-    <div class="input-container">
+    <div class="'input-container">
       <input
         :id="inputId"
         ref="input"
@@ -18,7 +23,7 @@
         @focus="isFocused = true"
         @blur="isFocused = false"
       />
-      <div :class="['spinners', spinnersDirection, { flip: flipSpinners }]">
+      <div v-if="spinners" class="spinners">
         <button
           type="button"
           @mousedown="onSpinUpMousedown"
@@ -79,13 +84,17 @@ export default {
       type: Number,
       default: 0,
     },
+    spinners: {
+      type: Boolean,
+      default: true,
+    },
     spinnersDirection: {
       type: String,
       default: "vertical",
     },
     flipSpinners: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   emits: ["update:modelValue"],
@@ -192,20 +201,7 @@ export default {
   }
 
   input {
-    width: 100%;
-    padding: 0.3125em;
-    color: $white;
-    background: $mediumgray;
-    border: 1px solid $mediumgray;
-    border-radius: 0.25em;
-    box-sizing: border-box;
-
-    &:focus,
-    &:active,
-    &:focus-visible {
-      outline: 1px solid $lightgray;
-      border-color: $lightgray;
-    }
+    text-align: center;
   }
 
   .spinners {
@@ -224,15 +220,31 @@ export default {
       padding: 0;
       color: $white;
     }
+  }
 
-    &.horizontal {
-      width: 2em;
-      flex-direction: row-reverse;
+  &.has-spinners {
+    // #\9 is used here to increase specificity.
+    &:not(#\9) {
+      padding-right: 1.3125em;
     }
 
-    &.flip {
-      transform-origin: center;
-      transform: rotate(180deg);
+    &.horizontal-spinners {
+      // #\9 is used here to increase specificity.
+      &:not(#\9) {
+        padding-right: 2.3125em;
+      }
+
+      .spinners {
+        width: 2em;
+        flex-direction: row-reverse;
+      }
+    }
+
+    &.flip-spinners {
+      .spinners {
+        transform-origin: center;
+        transform: rotate(180deg);
+      }
     }
   }
 

@@ -74,14 +74,7 @@ export default {
     width: auto;
     max-width: 100%;
     margin: 0;
-    padding: 0.3125em;
     padding-right: 2.5em;
-    border: 0;
-    font-family: inherit;
-    color: $white;
-    box-sizing: border-box;
-    border-radius: 0.25em;
-    background-color: $mediumgray;
     appearance: none;
 
     &::-ms-expand {

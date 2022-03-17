@@ -7,6 +7,7 @@ export default {
     return {
       selectedComponents: new Set(),
       lockedComponents: new Set(),
+      preview: false,
     };
   },
   getters: {
@@ -196,6 +197,15 @@ export default {
 
         this.updateComponent(model, { position });
       });
+    },
+    setPlayerDimensions({ width, height }) {
+      const appRendererStore = useStore("app-renderer");
+      if (typeof width !== "undefined") {
+        appRendererStore.width = width;
+      }
+      if (typeof height !== "undefined") {
+        appRendererStore.height = height;
+      }
     },
     async load(url) {
       const mediaStore = useStore("media");

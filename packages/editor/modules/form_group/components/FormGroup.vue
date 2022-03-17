@@ -101,6 +101,26 @@ export default {
       white-space: nowrap;
       user-select: none;
     }
+
+    ::v-deep(input),
+    ::v-deep(select) {
+      width: 100%;
+      padding: 0.3125em;
+      color: $white;
+      font-family: inherit;
+      background: $mediumgray;
+      line-height: normal;
+      border: 1px solid $mediumgray;
+      border-radius: 0.25em;
+      box-sizing: border-box;
+
+      &:focus,
+      &:active,
+      &:focus-visible {
+        outline: 1px solid $lightgray;
+        border-color: $lightgray;
+      }
+    }
   }
 
   &.checkbox,

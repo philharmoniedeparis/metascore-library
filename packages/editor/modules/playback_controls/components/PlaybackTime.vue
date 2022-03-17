@@ -1,5 +1,5 @@
 <template>
-  <timecode-input v-model="mediaTime" class="playback-time" />
+  <time-control v-model="mediaTime" class="playback-time" />
 </template>
 
 <script>
@@ -25,8 +25,21 @@ export default {
 
 <style lang="scss" scoped>
 .playback-time {
+  margin: 0;
+
+  ::v-deep(.input-wrapper) {
+    height: 100%;
+
+    .timecode-input {
+      height: 100%;
+    }
+  }
+
   ::v-deep(input) {
     width: 100%;
+    height: 100%;
+    padding: 0;
+    font-size: 1.15em;
 
     &:focus {
       box-shadow: none;

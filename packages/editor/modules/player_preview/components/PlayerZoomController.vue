@@ -1,7 +1,9 @@
 <template>
-  <form class="player-zoom-controller">
-    <select-control v-model="zoom" :options="options" />
-  </form>
+  <select-control
+    v-model="zoom"
+    :options="options"
+    class="player-zoom-controller"
+  />
 </template>
 
 <script>
@@ -41,8 +43,6 @@ export default {
 
 <style lang="scss" scoped>
 .player-zoom-controller {
-  ::v-deep(.form-group) {
-    margin: 0;
-  }
+  margin: 0;
 }
 </style>

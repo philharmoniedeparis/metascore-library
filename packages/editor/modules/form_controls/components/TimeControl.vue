@@ -46,23 +46,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.control {
-  ::v-deep(input) {
-    padding: 0.3125em;
-    color: $white;
-    background: $mediumgray;
-    border: 1px solid $mediumgray;
-    border-radius: 0.25em;
-    box-sizing: border-box;
-
-    &:focus,
-    &:active,
-    &:focus-visible {
-      outline: 1px solid $lightgray;
-      border-color: $lightgray;
-    }
-  }
-}
-</style>
