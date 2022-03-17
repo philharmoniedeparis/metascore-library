@@ -8,12 +8,12 @@ export default {
       data: null,
       range: 0,
       offset: {
-        start: null,
-        end: null,
+        start: 0,
+        end: 0,
       },
-      minScale: null,
-      maxScale: null,
-      scale: null,
+      minScale: 0,
+      maxScale: 0,
+      scale: 0,
     };
   },
   actions: {

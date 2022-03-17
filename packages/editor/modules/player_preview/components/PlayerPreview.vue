@@ -118,14 +118,16 @@ export default {
           width: `${this.playerWidth}px`,
           height: `${this.playerHeight}px`,
           transform: `scale(${this.zoom})`,
-          marginRight: `${width - this.playerWidth}px`,
-          marginBottom: `${height - this.playerHeight}px`,
+          marginRight: `${width - this.playerWidth - this.rulerThikness}px`,
+          marginBottom: `${height - this.playerHeight - this.rulerThikness}px`,
         };
       }
 
       return {
         width: `${this.playerWidth}px`,
         height: `${this.playerHeight}px`,
+        marginRight: `${-this.rulerThikness}px`,
+        marginBottom: `${-this.rulerThikness}px`,
       };
     },
     hotkeys() {

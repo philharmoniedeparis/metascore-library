@@ -279,7 +279,7 @@ $handles-margin: 0.5em;
     justify-content: flex-start;
     align-items: center;
     background: $mediumgray;
-    border-right: 1px solid $darkgray;
+    border-right: 2px solid $darkgray;
     touch-action: none;
     user-select: none;
     z-index: 2;
@@ -356,11 +356,8 @@ $handles-margin: 0.5em;
   .time-wrapper {
     position: relative;
     height: 100%;
-    width: var(--timeline-zoom);
-    margin-left: calc(var(--timeline-offset) * -100%);
     grid-column: 2;
     background: $mediumgray;
-    border-left: 1px solid $darkgray;
     cursor: pointer;
 
     .time {

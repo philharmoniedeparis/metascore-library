@@ -44,7 +44,7 @@
           <media-selector />
           <waveform-zoom />
         </div>
-        <components-timeline />
+        <components-timeline :scale="timelineScale" :offset="timelineOffset" />
       </div>
       <div class="bottom">
         <scenario-manager />
@@ -93,6 +93,12 @@ export default {
   computed: {
     mediaSource() {
       return this.mediaStore.source;
+    },
+    timelineScale() {
+      return this.waveformStore.maxScale / this.waveformStore.scale;
+    },
+    timelineOffset() {
+      return this.waveformStore.offset.start / this.mediaStore.duration;
     },
   },
   watch: {
@@ -272,13 +278,12 @@ export default {
         display: flex;
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
-        border-right: 1px solid $darkgray;
+        border-right: 2px solid $darkgray;
       }
 
       .buffer-indicator {
         grid-area: 1 / 2;
         box-sizing: border-box;
-        border-left: 1px solid $darkgray;
       }
 
       .waveform-overview {
@@ -286,7 +291,6 @@ export default {
         flex-direction: column;
         grid-area: 2 / 2;
         box-sizing: border-box;
-        border-left: 1px solid $darkgray;
       }
     }
 
@@ -314,19 +318,18 @@ export default {
         .playback-controller {
           grid-area: 1 / 1;
           box-sizing: border-box;
-          border-right: 1px solid $darkgray;
+          border-right: 2px solid $darkgray;
         }
 
         .media-selector {
           grid-area: 2 / 1;
           padding: 0.25em 0.5em;
           box-sizing: border-box;
-          border-right: 1px solid $darkgray;
+          border-right: 2px solid $darkgray;
         }
 
         .waveform--zoom {
           grid-area: 1 / 2 / span 2 / auto;
-          border-left: 1px solid $darkgray;
         }
       }
     }

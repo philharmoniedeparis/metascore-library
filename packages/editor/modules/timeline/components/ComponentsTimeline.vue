@@ -20,6 +20,16 @@ export default {
   components: {
     ComponentTrack,
   },
+  props: {
+    scale: {
+      type: Number,
+      default: 1,
+    },
+    offset: {
+      type: Number,
+      default: 0,
+    },
+  },
   setup() {
     const editorStore = useStore("editor");
     const mediaStore = useStore("media");
@@ -47,6 +57,12 @@ export default {
         this.componentsStore.activeScenario.schema,
         this.componentsStore.activeScenario.id
       );
+    },
+    trackTimeWidth() {
+      return `${this.scale * 100}%`;
+    },
+    trackTimeOffset() {
+      return `${-this.offset * this.scale * 100}%`;
     },
   },
   mounted() {
@@ -202,8 +218,6 @@ export default {
   flex-direction: row;
   background: $mediumgray;
   z-index: 0;
-  --timeline-zoom: 100%;
-  --timeline-offset: 0;
 
   .tracks-container {
     display: grid;
@@ -239,6 +253,11 @@ export default {
         display: none;
       }
     }
+  }
+
+  ::v-deep(.component-track > .time-wrapper) {
+    width: v-bind(trackTimeWidth);
+    margin-left: v-bind(trackTimeOffset);
   }
 }
 </style>
