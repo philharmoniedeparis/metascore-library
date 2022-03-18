@@ -7,7 +7,6 @@ export default {
     return {
       selectedComponents: new Set(),
       lockedComponents: new Set(),
-      preview: false,
     };
   },
   getters: {

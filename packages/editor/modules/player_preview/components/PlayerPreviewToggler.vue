@@ -17,16 +17,16 @@ export default {
     ToggleIcon,
   },
   setup() {
-    const editorStore = useStore("editor");
-    return { editorStore };
+    const store = useStore("player-preview");
+    return { store };
   },
   computed: {
     preview: {
       get() {
-        return this.editorStore.preview;
+        return this.store.preview;
       },
       set(value) {
-        this.editorStore.preview = value;
+        this.store.preview = value;
       },
     },
     hotkeys() {
