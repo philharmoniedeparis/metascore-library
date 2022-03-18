@@ -1,4 +1,6 @@
-export default {
+import { defineStore } from "pinia";
+
+export default defineStore("clipboard", {
   state: () => {
     return {
       data: null,
@@ -15,4 +17,4 @@ export default {
       this.format = null;
     },
   },
-};
+});

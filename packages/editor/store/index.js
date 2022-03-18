@@ -1,8 +1,9 @@
+import { defineStore } from "pinia";
 import { omit } from "lodash";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
-export default {
+export default defineStore("editor", {
   state: () => {
     return {
       selectedComponents: new Set(),
@@ -20,7 +21,7 @@ export default {
     },
     componentHasSelectedDescendents() {
       return (model) => {
-        const componentsStore = useStore("components");
+        const componentsStore = useModule("AppComponents").useStore();
         const children = componentsStore.getChildren(model);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
@@ -41,24 +42,24 @@ export default {
     },
     createComponent() {
       return (data) => {
-        const componentsStore = useStore("components");
+        const componentsStore = useModule("AppComponents").useStore();
         return componentsStore.create(data);
       };
     },
   },
   actions: {
     updateComponent(model, data) {
-      const componentsStore = useStore("components");
+      const componentsStore = useModule("AppComponents").useStore();
       componentsStore.update(model, data);
     },
     updateComponents(models, data) {
-      const componentsStore = useStore("components");
+      const componentsStore = useModule("AppComponents").useStore();
       models.forEach((model) => {
         componentsStore.update(model, data);
       });
     },
     addComponent(data, parent) {
-      const componentsStore = useStore("components");
+      const componentsStore = useModule("AppComponents").useStore();
       const model = this.createComponent(data);
       componentsStore.add(model, parent);
       return model;
@@ -81,7 +82,7 @@ export default {
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
       if (selected.length > 0) {
-        const componentsStore = useStore("components");
+        const componentsStore = useModule("AppComponents").useStore();
         const master = selected[0];
         const parent = componentsStore.getParent(master);
         const children = componentsStore.getChildren(parent);
@@ -114,7 +115,7 @@ export default {
       models.map(this.unlockComponent);
     },
     copyComponent(model) {
-      const clipboardStore = useStore("clipboard");
+      const clipboardStore = useModule("Clipboard").useStore();
       const data = omit(model.toJson(), ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
@@ -136,7 +137,7 @@ export default {
     },
     arrangeComponent(model, action) {
       if (model.parent) {
-        const componentsStore = useStore("components");
+        const componentsStore = useModule("AppComponents").useStore();
         const parent = componentsStore.getParent(model);
         const children = componentsStore.getChildren(parent);
         const count = children.length;
@@ -198,7 +199,7 @@ export default {
       });
     },
     setPlayerDimensions({ width, height }) {
-      const appRendererStore = useStore("app-renderer");
+      const appRendererStore = useModule("AppRenderer").useStore();
       if (typeof width !== "undefined") {
         appRendererStore.width = width;
       }
@@ -207,10 +208,10 @@ export default {
       }
     },
     async load(url) {
-      const mediaStore = useStore("media");
-      const componentsStore = useStore("components");
-      const appRendererStore = useStore("app-renderer");
-      const assetsStore = useStore("assets");
+      const mediaStore = useModule("Media").useStore();
+      const componentsStore = useModule("AppComponents").useStore();
+      const appRendererStore = useModule("AppRenderer").useStore();
+      const assetsStore = useModule("AssetsLibrary").useStore();
 
       const data = await load(url);
 
@@ -226,4 +227,4 @@ export default {
       appRendererStore.ready = true;
     },
   },
-};
+});

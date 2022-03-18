@@ -1,4 +1,4 @@
-import store from "./store";
+import useStore from "./store";
 import Device from "../device";
 
 import AnimationComponent from "./components/AnimationComponent";
@@ -13,13 +13,11 @@ import PageComponent from "./components/PageComponent";
 import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
+import * as Models from "./models";
 
 export default {
   name: "AppComponents",
   dependencies: [Device],
-  stores: {
-    components: store,
-  },
   install({ app }) {
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
@@ -33,8 +31,11 @@ export default {
     app.component("ScenarioComponent", ScenarioComponent);
     app.component("SVGcomponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
+
+    return {
+      useStore,
+      ComponentWrapper,
+      Models,
+    };
   },
 };
-
-export { default as ComponentWrapper } from "./components/ComponentWrapper";
-export * as Models from "./models";

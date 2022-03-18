@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 
 export default {
   props: {
@@ -54,7 +54,7 @@ export default {
   },
   emits: ["change"],
   setup() {
-    const store = useStore("shared-assets");
+    const store = useStore();
     return { store };
   },
   computed: {

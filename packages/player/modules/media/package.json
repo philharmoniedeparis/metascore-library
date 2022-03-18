@@ -4,6 +4,7 @@
   "description": "",
   "dependencies": {
     "dashjs": "^4.2.1",
-    "hls.js": "^1.1.5"
+    "hls.js": "^1.1.5",
+    "pinia": "^2.0.11"
   }
 }

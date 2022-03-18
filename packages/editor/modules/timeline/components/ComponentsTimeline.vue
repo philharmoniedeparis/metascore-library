@@ -13,7 +13,8 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 import ComponentTrack from "./ComponentTrack.vue";
 
 export default {
@@ -31,9 +32,9 @@ export default {
     },
   },
   setup() {
-    const editorStore = useStore("editor");
-    const mediaStore = useStore("media");
-    const componentsStore = useStore("components");
+    const editorStore = useEditorStore();
+    const mediaStore = useModule("Media").useStore();
+    const componentsStore = useModule("AppComponents").useStore();
     return { editorStore, mediaStore, componentsStore };
   },
   data() {

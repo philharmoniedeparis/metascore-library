@@ -28,13 +28,13 @@
 
       document.addEventListener("DOMContentLoaded", function(event) {
         if (url_params.has('player')) {
-          new metaScore.Player({
+          metaScore.Player.create({
             url: "assets/guide.json",
             el: document.querySelector('body'),
             api: true,
           });
         } else {
-          new metaScore.Editor({
+          metaScore.Editor.create({
             url: "assets/guide.json",
             el: document.querySelector('body'),
           });

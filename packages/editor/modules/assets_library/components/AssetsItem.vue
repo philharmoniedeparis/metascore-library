@@ -49,7 +49,8 @@
 <script>
 import { omit } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
+import useEditorStore from "@metascore-library/editor/store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
@@ -74,8 +75,8 @@ export default {
     },
   },
   setup() {
-    const store = useStore("assets");
-    const editorStore = useStore("editor");
+    const store = useStore();
+    const editorStore = useEditorStore();
     return { store, editorStore };
   },
   data() {

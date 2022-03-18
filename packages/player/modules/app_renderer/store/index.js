@@ -1,4 +1,6 @@
-export default {
+import { defineStore } from "pinia";
+
+export default defineStore("app-renderer", {
   state: () => {
     return {
       ready: false,
@@ -7,4 +9,4 @@ export default {
       css: null,
     };
   },
-};
+});

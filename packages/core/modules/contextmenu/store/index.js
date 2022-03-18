@@ -1,4 +1,6 @@
-export default {
+import { defineStore } from "pinia";
+
+export default defineStore("contextmenu", {
   state: () => {
     return {
       isOpen: false,
@@ -20,4 +22,4 @@ export default {
       this.items = [];
     },
   },
-};
+});

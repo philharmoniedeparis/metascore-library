@@ -1,6 +1,7 @@
+import { defineStore } from "pinia";
 import { normalize } from "./utils/normalize";
 
-export default {
+export default defineStore("assets-library", {
   state: () => {
     return {
       list: [],
@@ -66,4 +67,4 @@ export default {
     createSpectrogram(data) {},
     createWaveform(data) {},
   },
-};
+});

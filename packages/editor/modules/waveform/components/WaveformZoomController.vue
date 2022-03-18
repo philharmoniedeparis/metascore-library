@@ -33,7 +33,7 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { map, clamp } from "@metascore-library/core/utils/math";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 import ZoomIcon from "../assets/icons/zoom.svg?inline";
 
 export default {
@@ -51,7 +51,7 @@ export default {
     },
   },
   setup() {
-    const store = useStore("waveform");
+    const store = useStore();
     return { store };
   },
   computed: {

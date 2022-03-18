@@ -7,7 +7,8 @@
 
 <script>
 import { debounce } from "lodash";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 
 export default {
   props: {
@@ -21,9 +22,9 @@ export default {
     },
   },
   setup() {
-    const store = useStore("app-renderer");
-    const mediaStore = useStore("media");
-    const componentsStore = useStore("components");
+    const store = useStore();
+    const mediaStore = useModule("Media").useStore();
+    const componentsStore = useModule("AppComponents").useStore();
     return { store, mediaStore, componentsStore };
   },
   data() {

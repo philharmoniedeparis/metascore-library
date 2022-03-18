@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "pinia": "^2.0.11"
   }
 }

@@ -1,4 +1,4 @@
-import store from "./store";
+import useStore from "./store";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
@@ -13,12 +13,13 @@ export default {
 
     return [Media, StyledButton];
   },
-  stores: {
-    waveform: store,
-  },
   install({ app }) {
     app.component("WaveformOverview", WaveformOverview);
     app.component("WaveformZoom", WaveformZoom);
     app.component("WaveformZoomController", WaveformZoomController);
+
+    return {
+      useStore,
+    };
   },
 };

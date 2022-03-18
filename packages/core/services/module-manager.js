@@ -1,16 +1,6 @@
 import { isFunction } from "lodash";
-import { defineStore } from "pinia";
 
-const modules = [];
-const stores = {};
-
-function registerStore(id, definition) {
-  stores[id] = defineStore(id, definition);
-
-  if (process.env.NODE_ENV === "development") {
-    console.info(`Module manager: "${id}" store registerd.`);
-  }
-}
+const modules = {};
 
 async function registerModules(modules, context) {
   for (const module of modules) {
@@ -19,13 +9,13 @@ async function registerModules(modules, context) {
 }
 
 async function registerModule(module, context) {
-  if (modules.includes(module.name)) {
+  if (module.name in modules) {
     // Skip if already registerd.
     return;
   }
 
   // Add to list of registered modules.
-  modules.push(module.name);
+  modules[module.name] = {};
 
   // Register dependencies.
   if ("dependencies" in module) {
@@ -38,16 +28,12 @@ async function registerModule(module, context) {
     }
   }
 
-  // Register stores.
-  if ("stores" in module) {
-    Object.entries(module.stores).forEach(([id, definition]) => {
-      registerStore(id, definition);
-    });
-  }
-
   // Install.
   if ("install" in module) {
-    await module.install(context);
+    const exports = await module.install(context);
+    if (typeof exports !== "undefined") {
+      modules[module.name] = exports;
+    }
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -55,14 +41,14 @@ async function registerModule(module, context) {
   }
 }
 
-function useStore(id) {
-  const store = stores[id];
+function useModule(name) {
+  const module = modules[name];
 
-  if (!store) {
-    throw Error(`Store "${id}" not found`);
+  if (!module) {
+    throw Error(`Module "${name}" not found`);
   }
 
-  return store();
+  return module;
 }
 
-export { registerModules, registerModule, registerStore, useStore };
+export { registerModules, registerModule, useModule };

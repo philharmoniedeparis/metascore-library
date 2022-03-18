@@ -97,7 +97,7 @@
 <script>
 import { debounce, ceil } from "lodash";
 import { v4 as uuid } from "uuid";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 
 export default {
   props: {
@@ -150,7 +150,7 @@ export default {
     },
   },
   setup() {
-    const store = useStore("player-preview");
+    const store = useStore();
     return { store };
   },
   data() {

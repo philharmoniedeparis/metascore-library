@@ -1,29 +1,20 @@
 <template>
   <div class="player-dimensions-controller">
-    <number-control
-      v-model="width"
-      :options="options"
-      :min="1"
-      :spinners="false"
-    />
+    <number-control v-model="width" :min="1" :spinners="false" />
     <span class="separator">x</span>
-    <number-control
-      v-model="height"
-      :options="options"
-      :min="1"
-      :spinners="false"
-    />
+    <number-control v-model="height" :min="1" :spinners="false" />
   </div>
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 
 export default {
   setup() {
-    const appRendererStore = useStore("app-renderer");
-    const editorStore = useStore("editor");
-    return { appRendererStore, editorStore };
+    const editorStore = useEditorStore();
+    const appRendererStore = useModule("AppRenderer").useStore();
+    return { editorStore, appRendererStore };
   },
   computed: {
     width: {

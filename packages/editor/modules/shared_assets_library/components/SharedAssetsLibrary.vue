@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 import SharedAssetsItem from "./SharedAssetsItem.vue";
 
 export default {
@@ -24,7 +24,7 @@ export default {
   },
   emits: ["click:import"],
   setup() {
-    const store = useStore("shared-assets");
+    const store = useStore();
     return { store };
   },
   computed: {

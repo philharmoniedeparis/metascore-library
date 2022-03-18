@@ -1,8 +1,9 @@
+import { defineStore } from "pinia";
 import { markRaw } from "vue";
 import WaveformData from "waveform-data";
 import axios from "axios";
 
-export default {
+export default defineStore("waveform", {
   state: () => {
     return {
       data: null,
@@ -67,4 +68,4 @@ export default {
         });
     },
   },
-};
+});

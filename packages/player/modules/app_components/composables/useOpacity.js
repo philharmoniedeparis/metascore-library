@@ -1,10 +1,10 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
 export default function (model) {
-  const mediaStore = useStore("media");
+  const mediaStore = useModule("Media").useStore();
 
   if (unref(model).constructor.$isOpacitable) {
     const opacity = computed(() => {

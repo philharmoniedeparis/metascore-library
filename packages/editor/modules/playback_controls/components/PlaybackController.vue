@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import PlayIcon from "../assets/icons/play.svg?inline";
 import PauseIcon from "../assets/icons/pause.svg?inline";
 import RewindIcon from "../assets/icons/rewind.svg?inline";
@@ -53,7 +53,7 @@ export default {
     RewindIcon,
   },
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   computed: {

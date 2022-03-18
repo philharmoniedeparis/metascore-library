@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   computed: {

@@ -1,8 +1,10 @@
-import store from "./store";
+import useStore from "./store";
 
 export default {
   name: "Clipboard",
-  stores: {
-    clipboard: store,
+  install() {
+    return {
+      useStore,
+    };
   },
 };

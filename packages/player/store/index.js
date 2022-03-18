@@ -1,12 +1,13 @@
+import { defineStore } from "pinia";
 import { load } from "@metascore-library/core/utils/ajax";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
-export default {
+export default defineStore("player", {
   actions: {
     async load(url) {
-      const mediaStore = useStore("media");
-      const componentsStore = useStore("components");
-      const appRendererStore = useStore("app-renderer");
+      const mediaStore = useModule("Media").useStore();
+      const componentsStore = useModule("AppComponents").useStore();
+      const appRendererStore = useModule("AppRenderer").useStore();
 
       const data = await load(url);
 
@@ -20,4 +21,4 @@ export default {
       appRendererStore.ready = true;
     },
   },
-};
+});

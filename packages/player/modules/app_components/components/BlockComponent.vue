@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
 import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
@@ -99,8 +99,8 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useStore("media");
-    const componentsStore = useStore("components");
+    const mediaStore = useModule("Media").useStore();
+    const componentsStore = useModule("AppComponents").useStore();
     return { mediaStore, componentsStore };
   },
   data() {

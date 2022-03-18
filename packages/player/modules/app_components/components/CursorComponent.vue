@@ -6,7 +6,7 @@
 
 <script>
 import "../../../polyfills/GeomertyUtils";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { map, radians } from "@metascore-library/core/utils/math";
 
 export default {
@@ -20,7 +20,7 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   computed: {

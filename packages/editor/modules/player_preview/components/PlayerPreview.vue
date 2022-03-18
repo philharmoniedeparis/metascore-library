@@ -56,8 +56,10 @@
 
 <script>
 import { debounce } from "lodash";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 import "../polyfills/GeomertyUtils";
+import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";
 import PreviewGrid from "./PreviewGrid.vue";
 
@@ -78,10 +80,10 @@ export default {
   },
   emits: ["load"],
   setup() {
-    const store = useStore("player-preview");
-    const appRendererStore = useStore("app-renderer");
-    const editorStore = useStore("editor");
-    const contextmenuStore = useStore("contextmenu");
+    const store = useStore();
+    const editorStore = useEditorStore();
+    const appRendererStore = useModule("AppRenderer").useStore();
+    const contextmenuStore = useModule("ContextMenu").useStore();
     return {
       store,
       appRendererStore,

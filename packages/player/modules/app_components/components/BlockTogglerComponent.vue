@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { sortBy } from "lodash";
 
 export default {
@@ -36,7 +36,7 @@ export default {
     },
   },
   setup() {
-    const componentsStore = useStore("components");
+    const componentsStore = useModule("AppComponents").useStore();
     return { componentsStore };
   },
   computed: {

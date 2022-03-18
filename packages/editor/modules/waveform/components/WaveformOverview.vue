@@ -9,8 +9,9 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { debounce } from "lodash";
+import useStore from "../store";
 
 export default {
   props: {
@@ -32,8 +33,8 @@ export default {
     },
   },
   setup() {
-    const store = useStore("waveform");
-    const mediaStore = useStore("media");
+    const store = useStore();
+    const mediaStore = useModule("Media").useStore();
     return { store, mediaStore };
   },
   data() {

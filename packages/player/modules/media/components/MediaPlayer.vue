@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 const dash_types = ["application/dash+xml"];
 const hls_types = [
@@ -86,7 +86,7 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   data() {

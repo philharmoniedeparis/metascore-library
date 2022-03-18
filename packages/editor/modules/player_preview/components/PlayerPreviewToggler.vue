@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 import ToggleIcon from "../assets/icons/preview-toggle.svg?inline";
 
 export default {
@@ -17,7 +17,7 @@ export default {
     ToggleIcon,
   },
   setup() {
-    const store = useStore("player-preview");
+    const store = useStore();
     return { store };
   },
   computed: {

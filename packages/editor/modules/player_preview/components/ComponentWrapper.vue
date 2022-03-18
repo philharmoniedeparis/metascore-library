@@ -61,12 +61,12 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, omit } from "lodash";
-import { useStore } from "@metascore-library/core/services/module-manager";
-import { ComponentWrapper } from "@metascore-library/player/modules/app_components";
+import useEditorStore from "@metascore-library/editor/store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   components: {
-    ComponentWrapper,
+    ComponentWrapper: useModule("AppComponents").ComponentWrapper,
   },
   props: {
     /**
@@ -79,9 +79,9 @@ export default {
   },
   emits: ["componentclick"],
   setup() {
-    const editorStore = useStore("editor");
-    const clipboardStore = useStore("clipboard");
-    const contextmenuStore = useStore("contextmenu");
+    const editorStore = useEditorStore();
+    const clipboardStore = useModule("Clipboard").useStore();
+    const contextmenuStore = useModule("ContextMenu").useStore();
     return { editorStore, clipboardStore, contextmenuStore };
   },
   data() {

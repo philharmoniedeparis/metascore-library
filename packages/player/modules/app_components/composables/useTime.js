@@ -1,5 +1,5 @@
 import { computed, unref, readonly } from "vue";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
 export default function (model) {
@@ -14,7 +14,7 @@ export default function (model) {
         return true;
       }
 
-      const mediaStore = useStore("media");
+      const mediaStore = useModule("Media").useStore();
       const mediaTime = mediaStore.time;
       if (isUndefined(endTime) || isNull(endTime)) {
         return mediaTime >= startTime;

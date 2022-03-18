@@ -1,4 +1,4 @@
-import store from "./store";
+import useStore from "./store";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
@@ -16,18 +16,20 @@ export default {
 
     return [ContextMenu, Clipboard, FormControls, AppRenderer];
   },
-  stores: {
-    "player-preview": store,
-  },
   async install({ app }) {
     const { default: ComponentWrapper } = await import(
       /* webpackChunkName: "Editor.PlayerPreview" */ "./components/ComponentWrapper"
     );
+    // Override the player's component-wrapper.
     app.component("ComponentWrapper", ComponentWrapper);
 
     app.component("PlayerPreview", PlayerPreview);
     app.component("PlayerZoomController", PlayerZoomController);
     app.component("PlayerDimensionsController", PlayerDimensionsController);
     app.component("PlayerPreviewToggler", PlayerPreviewToggler);
+
+    return {
+      useStore,
+    };
   },
 };

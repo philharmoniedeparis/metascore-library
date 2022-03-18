@@ -1,3 +1,4 @@
+import { defineStore } from "pinia";
 import Fuse from "fuse.js";
 import { markRaw } from "vue";
 import { load } from "@metascore-library/core/utils/ajax";
@@ -12,7 +13,7 @@ const fuse = markRaw(
   })
 );
 
-export default {
+export default defineStore("shared-assets-library", {
   state: () => {
     return {
       list: [],
@@ -86,4 +87,4 @@ export default {
       this.loaded = true;
     },
   },
-};
+});

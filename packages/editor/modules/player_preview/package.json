@@ -9,6 +9,7 @@
     "@interactjs/modifiers": "^1.10.11",
     "geometry-polyfill": "^1.0.7",
     "lodash": "^4.17.21",
+    "pinia": "^2.0.11",
     "uuid": "^8.3.2"
   }
 }

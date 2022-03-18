@@ -75,7 +75,8 @@ import "@interactjs/actions/resize";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { paramCase } from "param-case";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
 
@@ -91,9 +92,9 @@ export default {
     },
   },
   setup() {
-    const editorStore = useStore("editor");
-    const mediaStore = useStore("media");
-    const componentsStore = useStore("components");
+    const editorStore = useEditorStore();
+    const mediaStore = useModule("Media").useStore();
+    const componentsStore = useModule("AppComponents").useStore();
     return { editorStore, mediaStore, componentsStore };
   },
   data() {

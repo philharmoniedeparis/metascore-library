@@ -1,6 +1,7 @@
+import { defineStore } from "pinia";
 import { formatTime } from "@metascore-library/core/utils/media";
 
-export default {
+export default defineStore("media", {
   state: () => {
     return {
       useRequestAnimationFrame: true,
@@ -115,4 +116,4 @@ export default {
       }
     },
   },
-};
+});

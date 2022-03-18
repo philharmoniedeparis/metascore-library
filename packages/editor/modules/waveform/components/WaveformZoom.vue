@@ -18,8 +18,9 @@
 <script>
 import { debounce } from "lodash";
 import { clamp } from "@metascore-library/core/utils/math";
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
+import useStore from "../store";
 
 export default {
   props: {
@@ -65,8 +66,8 @@ export default {
     },
   },
   setup() {
-    const store = useStore("waveform");
-    const mediaStore = useStore("media");
+    const store = useStore();
+    const mediaStore = useModule("Media").useStore();
     return { store, mediaStore };
   },
   data() {

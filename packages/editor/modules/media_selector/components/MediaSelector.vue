@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import MediaSourceForm from "./MediaSourceForm";
 import { getMimeTypeFromURL } from "@metascore-library/core/utils/media";
 
@@ -22,7 +22,7 @@ export default {
     MediaSourceForm,
   },
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   data() {

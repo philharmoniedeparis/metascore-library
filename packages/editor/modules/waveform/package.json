@@ -5,6 +5,7 @@
   "dependencies": {
     "axios": "^0.26.0",
     "lodash": "^4.17.21",
+    "pinia": "^2.0.11",
     "waveform-data": "^4.3.0"
   }
 }

@@ -1,7 +1,8 @@
+import { defineStore } from "pinia";
 import { normalize } from "./utils/normalize";
 import * as Models from "../models";
 
-export default {
+export default defineStore("app-components", {
   state: () => {
     return {
       components: {},
@@ -115,4 +116,4 @@ export default {
       }
     },
   },
-};
+});

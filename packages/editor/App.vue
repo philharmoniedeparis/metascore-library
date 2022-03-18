@@ -61,7 +61,8 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useStore from "./store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { computed } from "vue";
 import packageInfo from "../../package.json";
 
@@ -78,10 +79,10 @@ export default {
     },
   },
   setup() {
-    const store = useStore("editor");
-    const mediaStore = useStore("media");
-    const waveformStore = useStore("waveform");
-    const assetsStore = useStore("assets");
+    const store = useStore();
+    const mediaStore = useModule("Media").useStore();
+    const waveformStore = useModule("Waveform").useStore();
+    const assetsStore = useModule("AssetsLibrary").useStore();
     return { store, mediaStore, waveformStore, assetsStore };
   },
   data() {

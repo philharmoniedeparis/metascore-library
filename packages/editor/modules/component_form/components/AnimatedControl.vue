@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { round } from "lodash";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import CheckIcon from "../assets/icons/animated-check.svg?inline";
@@ -48,7 +48,7 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useStore("media");
+    const mediaStore = useModule("Media").useStore();
     return { mediaStore };
   },
   computed: {

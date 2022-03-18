@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "fuse.js": "^6.5.3"
+    "fuse.js": "^6.5.3",
+    "pinia": "^2.0.11"
   }
 }

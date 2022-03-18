@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { useStore } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 import ComponentLibraryItem from "./ComponentLibraryItem.vue";
 
 export default {
@@ -87,7 +87,7 @@ export default {
     },
   },
   setup() {
-    const editorStore = useStore("editor");
+    const editorStore = useEditorStore();
     return { editorStore };
   },
   computed: {
