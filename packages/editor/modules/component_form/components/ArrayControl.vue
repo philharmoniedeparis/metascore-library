@@ -5,6 +5,7 @@
         :property="`${index}`"
         :schema="item"
         :model-value="value[index]"
+        v-bind="getItemProps(index)"
         @update:model-value="update(index, $event)"
       />
     </template>
@@ -25,6 +26,12 @@ export default {
     schema: {
       type: Object,
       required: true,
+    },
+    itemProps: {
+      type: [Object, Array],
+      default() {
+        return {};
+      },
     },
     modelValue: {
       type: Array,
@@ -60,6 +67,12 @@ export default {
     },
   },
   methods: {
+    getItemProps(index) {
+      if (Array.isArray(this.itemProps)) {
+        return this.itemProps[index] || {};
+      }
+      return this.itemProps;
+    },
     update(index, value) {
       const updated = [...this.value];
       updated[index] = value;

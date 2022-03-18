@@ -3,6 +3,7 @@
     <checkbox-control
       :model-value="value.animated"
       data-property="animated"
+      v-bind="itemProps.animated || {}"
       @update:model-value="updateAnimated($event)"
     >
       <check-icon class="icon" />
@@ -11,6 +12,7 @@
       :model-value="valueAtTime"
       :schema="valueSchema"
       property="value"
+      v-bind="itemProps.value || {}"
       @update:model-value="updateValue($event)"
     />
   </form-group>
@@ -38,6 +40,15 @@ export default {
     schema: {
       type: Object,
       required: true,
+    },
+    itemProps: {
+      type: Object,
+      default() {
+        return {
+          animated: {},
+          value: {},
+        };
+      },
     },
     modelValue: {
       type: Object,

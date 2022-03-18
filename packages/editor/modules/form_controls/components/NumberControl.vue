@@ -11,7 +11,7 @@
     :label-for="inputId"
     :description="description"
   >
-    <div class="'input-container">
+    <div class="input-container">
       <input
         :id="inputId"
         ref="input"
@@ -91,10 +91,13 @@ export default {
     spinnersDirection: {
       type: String,
       default: "vertical",
+      validator(value) {
+        return ["vertical", "horizontal"].includes(value);
+      },
     },
     flipSpinners: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   emits: ["update:modelValue"],
@@ -187,6 +190,8 @@ export default {
 .control {
   .input-container {
     position: relative;
+    border-radius: 0.25em;
+    overflow: hidden;
   }
 
   /* Chrome, Safari, Edge, Opera */
@@ -217,6 +222,7 @@ export default {
     background-color: $darkgray;
 
     button {
+      flex: 0 0 50%;
       padding: 0;
       color: $white;
     }
@@ -224,19 +230,26 @@ export default {
 
   &.has-spinners {
     // #\9 is used here to increase specificity.
-    &:not(#\9) {
+    input:not(#\9) {
       padding-right: 1.3125em;
     }
 
     &.horizontal-spinners {
       // #\9 is used here to increase specificity.
-      &:not(#\9) {
+      input:not(#\9) {
         padding-right: 2.3125em;
       }
 
       .spinners {
         width: 2em;
         flex-direction: row-reverse;
+
+        button .icon {
+          ::v-deep(path) {
+            transform-origin: 50% 50%;
+            transform: rotate(90deg);
+          }
+        }
       }
     }
 

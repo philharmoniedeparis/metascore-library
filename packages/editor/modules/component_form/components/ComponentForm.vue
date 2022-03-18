@@ -202,6 +202,14 @@ export default {
         layout.items[0].items.push({
           property: "position",
           label: this.$t("position"),
+          itemProps: [
+            {
+              spinnersDirection: "horizontal",
+            },
+            {
+              flipSpinners: true,
+            },
+          ],
         });
       }
 
@@ -209,6 +217,14 @@ export default {
         layout.items[0].items.push({
           property: "dimension",
           label: this.$t("dimension"),
+          itemProps: [
+            {
+              spinnersDirection: "horizontal",
+            },
+            {
+              flipSpinners: true,
+            },
+          ],
         });
       }
 
@@ -308,12 +324,34 @@ export default {
       }
       if (this.commonModelClass.$isTransformable) {
         animated.push({
-          property: "translate",
-          label: this.$t("translate"),
-        });
-        animated.push({
           property: "scale",
           label: this.$t("scale"),
+          itemProps: {
+            value: {
+              itemProps: [
+                {
+                  spinnersDirection: "horizontal",
+                },
+                {},
+              ],
+            },
+          },
+        });
+        animated.push({
+          property: "translate",
+          label: this.$t("translate"),
+          itemProps: {
+            value: {
+              itemProps: [
+                {
+                  spinnersDirection: "horizontal",
+                },
+                {
+                  flipSpinners: true,
+                },
+              ],
+            },
+          },
         });
       }
       if (animated.length > 0) {
