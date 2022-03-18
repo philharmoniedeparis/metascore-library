@@ -42,7 +42,7 @@
 <template>
   <component-wrapper
     :model="model"
-    :class="{ selected, 'drag-over': dragOver }"
+    :class="{ selected, preview, 'drag-over': dragOver }"
     @contextmenu="onContextmenu"
     @click.stop="onClick"
     @dragenter="onDragenter"
@@ -63,6 +63,7 @@ import interact from "@interactjs/interact";
 import { round, omit } from "lodash";
 import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 
 export default {
   components: {
@@ -79,10 +80,11 @@ export default {
   },
   emits: ["componentclick"],
   setup() {
+    const store = useStore();
     const editorStore = useEditorStore();
     const clipboardStore = useModule("Clipboard").useStore();
     const contextmenuStore = useModule("ContextMenu").useStore();
-    return { editorStore, clipboardStore, contextmenuStore };
+    return { store, editorStore, clipboardStore, contextmenuStore };
   },
   data() {
     return {
@@ -91,6 +93,9 @@ export default {
     };
   },
   computed: {
+    preview() {
+      return this.store.preview;
+    },
     selected() {
       return this.editorStore.isComponentSelected(this.model);
     },
@@ -256,8 +261,46 @@ export default {
     },
   },
   watch: {
+    preview(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else if (this.selected) {
+        this.setupInteractions();
+      }
+    },
     selected(value) {
-      if (value && (this.isPositionable || this.isResizable)) {
+      if (value) {
+        this.setupInteractions();
+      } else {
+        this.destroyInteractions();
+      }
+    },
+  },
+  beforeUnmount() {
+    this.destroyInteractions();
+  },
+  methods: {
+    onClick(evt) {
+      if (this.preview) {
+        return;
+      }
+
+      if (this.selected) {
+        if (evt.shiftKey) {
+          this.editorStore.deselectComponent(this.model);
+          evt.stopImmediatePropagation();
+        }
+      } else {
+        this.editorStore.selectComponent(this.model, evt.shiftKey);
+        evt.stopImmediatePropagation();
+      }
+    },
+    setupInteractions() {
+      if (this._interactables) {
+        return;
+      }
+
+      if (this.isPositionable || this.isResizable) {
         this._interactables = interact(this.$el, {
           context: this.$el.ownerDocument,
         });
@@ -292,32 +335,12 @@ export default {
             },
           });
         }
-      } else {
-        // Remove interactables.
-        if (this._interactables) {
-          this._interactables.unset();
-          delete this._interactables;
-        }
       }
     },
-  },
-  beforeUnmount() {
-    // Remove interactables.
-    if (this._interactables) {
-      this._interactables.unset();
-      delete this._interactables;
-    }
-  },
-  methods: {
-    onClick(evt) {
-      if (this.selected) {
-        if (evt.shiftKey) {
-          this.editorStore.deselectComponent(this.model);
-          evt.stopImmediatePropagation();
-        }
-      } else {
-        this.editorStore.selectComponent(this.model, evt.shiftKey);
-        evt.stopImmediatePropagation();
+    destroyInteractions() {
+      if (this._interactables) {
+        this._interactables.unset();
+        delete this._interactables;
       }
     },
     onDraggableMove(evt) {
@@ -439,29 +462,31 @@ export default {
 
 <style lang="scss" scoped>
 .metaScore-component {
-  touch-action: none;
-  user-select: none;
+  &:not(.preview) {
+    touch-action: none;
+    user-select: none;
 
-  &.block {
-    &:hover::v-deep(> .pager) {
-      display: flex !important;
+    &.block {
+      &:hover::v-deep(> .pager) {
+        display: flex !important;
+      }
     }
-  }
 
-  &.selected {
-    @each $component, $color in $component-colors {
-      @if $component == default {
-        box-shadow: 0 0 0.5em 0 $color;
-      } @else {
-        &.#{$component} {
+    &.selected {
+      @each $component, $color in $component-colors {
+        @if $component == default {
           box-shadow: 0 0 0.5em 0 $color;
+        } @else {
+          &.#{$component} {
+            box-shadow: 0 0 0.5em 0 $color;
+          }
         }
       }
     }
-  }
 
-  &.drag-over {
-    box-shadow: inset 0px 0px 1em 0.25em rgba(0, 0, 0, 0.75);
+    &.drag-over {
+      box-shadow: inset 0px 0px 1em 0.25em rgba(0, 0, 0, 0.75);
+    }
   }
 }
 </style>

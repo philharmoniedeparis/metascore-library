@@ -81,9 +81,16 @@ export default {
   setup() {
     const store = useStore();
     const mediaStore = useModule("Media").useStore();
+    const playerPreviewStore = useModule("PlayerPreview").useStore();
     const waveformStore = useModule("Waveform").useStore();
     const assetsStore = useModule("AssetsLibrary").useStore();
-    return { store, mediaStore, waveformStore, assetsStore };
+    return {
+      store,
+      mediaStore,
+      playerPreviewStore,
+      waveformStore,
+      assetsStore,
+    };
   },
   data() {
     return {
@@ -103,11 +110,21 @@ export default {
     timelineOffset() {
       return this.waveformStore.offset.start / this.mediaStore.duration;
     },
+    preview() {
+      return this.playerPreviewStore.preview;
+    },
   },
   watch: {
     mediaSource(source) {
       if (source) {
         this.waveformStore.load(source);
+      }
+    },
+    preview(value) {
+      if (value) {
+        this.classes["preview"] = true;
+      } else {
+        delete this.classes["preview"];
       }
     },
     selectedLibrariesTab(index) {
@@ -371,6 +388,71 @@ export default {
     > .right,
     > .bottom {
       display: none;
+    }
+  }
+
+  &.preview {
+    > .left,
+    > .right {
+      display: none;
+    }
+
+    > .bottom {
+      display: grid;
+      height: auto !important;
+      min-height: 0;
+      grid-template-columns: 2.5em 9.5em 1fr;
+      grid-template-rows: 15% 1fr;
+      z-index: 1;
+
+      > .top {
+        display: contents;
+
+        .playback-time {
+          grid-area: 1 / 2 / span 2 / 2;
+        }
+        .buffer-indicator {
+          grid-area: 1 / 3;
+        }
+        .waveform-overview {
+          grid-area: 2 / 3;
+        }
+      }
+
+      > .middle {
+        display: contents;
+
+        .sticky-top {
+          display: contents;
+
+          .playback-controller {
+            grid-area: 1 / 1 / span 2 / 1;
+            ::v-deep(.rewind) {
+              display: none;
+            }
+
+            ::v-deep(.play),
+            ::v-deep(.pause) {
+              height: 100%;
+              width: 100%;
+              margin-right: 0;
+              padding: 25%;
+              border-radius: 0;
+              box-shadow: none;
+            }
+          }
+
+          .media-selector {
+            display: none;
+          }
+        }
+      }
+
+      .timeline,
+      .waveform--zoom,
+      > .bottom {
+        display: none;
+      }
     }
   }
 }

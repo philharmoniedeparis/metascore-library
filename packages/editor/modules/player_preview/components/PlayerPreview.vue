@@ -26,16 +26,19 @@
 <template>
   <div class="player-preview">
     <preview-ruler
+      v-show="!preview"
       :track-target="iframeBody"
       :major-tick-length="rulerThikness"
       :offset="playerOffset.x"
     />
     <preview-ruler
+      v-show="!preview"
       axis="y"
       :track-target="iframeBody"
       :major-tick-length="rulerThikness"
       :offset="playerOffset.y"
     />
+    <div v-show="!preview" class="rulers-corner" />
 
     <div
       ref="iframe-wrapper"
@@ -43,7 +46,7 @@
       :style="iFrameWrapperStyle"
       @transitionend="onIframeTransitionend"
     >
-      <preview-grid />
+      <preview-grid v-show="!preview" />
 
       <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
     </div>
@@ -111,6 +114,9 @@ export default {
     zoom() {
       return this.store.zoom;
     },
+    preview() {
+      return this.store.preview;
+    },
     iFrameWrapperStyle() {
       if (this.zoom !== 1) {
         const width = this.playerWidth * this.zoom;
@@ -133,6 +139,10 @@ export default {
       };
     },
     hotkeys() {
+      if (this.preview) {
+        return {};
+      }
+
       return {
         right: () => {
           const selected = this.editorStore.getSelectedComponents;
@@ -392,17 +402,6 @@ export default {
     v-bind(cssRulerThikness);
   box-sizing: border-box;
   overflow: auto;
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: v-bind(cssRulerThikness);
-    height: v-bind(cssRulerThikness);
-    background: $mediumgray;
-    z-index: 3;
-  }
 }
 
 .iframe-wrapper {
@@ -428,6 +427,16 @@ export default {
     left: 0;
     grid-area: 1/1/6/2;
   }
+}
+
+.rulers-corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: v-bind(cssRulerThikness);
+  height: v-bind(cssRulerThikness);
+  background: $mediumgray;
+  z-index: 3;
 }
 
 .preview-grid {

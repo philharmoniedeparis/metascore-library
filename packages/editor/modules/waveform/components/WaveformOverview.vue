@@ -1,5 +1,5 @@
 <template>
-  <div class="waveform--overview">
+  <div class="waveform-overview">
     <div class="layers" @mousedown="onMousedown" @click="onClick">
       <canvas ref="wave" class="wave" :width="width" :height="height" />
       <div class="highlight" :style="highlightStyle"></div>
@@ -251,7 +251,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.waveform--overview {
+.waveform-overview {
   position: relative;
 
   .layers {
