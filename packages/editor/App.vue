@@ -14,7 +14,7 @@
       </nav>
     </resizable-pane>
 
-    <resizable-pane class="left" :right="true">
+    <resizable-pane class="left" :right="{ collapse: true }">
       <tabs-container ref="libraries" v-model="selectedLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
@@ -36,11 +36,14 @@
       <player-preview />
     </resizable-pane>
 
-    <resizable-pane class="right" :left="true">
+    <resizable-pane class="right" :left="{ collapse: true }">
       <component-form></component-form>
     </resizable-pane>
 
-    <resizable-pane class="bottom" :top="true">
+    <resizable-pane
+      :class="['bottom', { collapsed: preview }]"
+      :top="{ collapse: true }"
+    >
       <div class="top">
         <playback-time />
         <buffer-indicator />
@@ -315,6 +318,10 @@ export default {
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
         border-right: 2px solid $darkgray;
+
+        ::v-deep(input) {
+          border-radius: 0;
+        }
       }
 
       .buffer-indicator {
@@ -387,6 +394,67 @@ export default {
         background: $darkgray;
       }
     }
+
+    &.collapsed {
+      display: grid;
+      height: auto !important;
+      min-height: 0;
+      grid-template-columns: 2.5em 9.5em 1fr;
+      grid-template-rows: 15% 1fr;
+      z-index: 1;
+
+      > .top {
+        display: contents;
+
+        .playback-time {
+          grid-area: 1 / 2 / span 2 / 2;
+        }
+        .buffer-indicator {
+          grid-area: 1 / 3;
+        }
+        .waveform-overview {
+          grid-area: 2 / 3;
+        }
+      }
+
+      > .middle {
+        display: contents;
+
+        .sticky-top {
+          display: contents;
+
+          .playback-controller {
+            grid-area: 1 / 1 / span 2 / 1;
+            ::v-deep(.rewind) {
+              display: none;
+            }
+
+            ::v-deep(.play),
+            ::v-deep(.pause) {
+              width: 100%;
+              height: 100%;
+              margin-right: 0;
+              border-radius: 0;
+              box-shadow: none;
+
+              .icon {
+                width: 50%;
+              }
+            }
+          }
+
+          .media-selector {
+            display: none;
+          }
+        }
+      }
+
+      .timeline,
+      .waveform--zoom,
+      > .bottom {
+        display: none;
+      }
+    }
   }
 
   ::v-deep(.context-menu) {
@@ -429,64 +497,6 @@ export default {
     > .left,
     > .right {
       display: none;
-    }
-
-    > .bottom {
-      display: grid;
-      height: auto !important;
-      min-height: 0;
-      grid-template-columns: 2.5em 9.5em 1fr;
-      grid-template-rows: 15% 1fr;
-      z-index: 1;
-
-      > .top {
-        display: contents;
-
-        .playback-time {
-          grid-area: 1 / 2 / span 2 / 2;
-        }
-        .buffer-indicator {
-          grid-area: 1 / 3;
-        }
-        .waveform-overview {
-          grid-area: 2 / 3;
-        }
-      }
-
-      > .middle {
-        display: contents;
-
-        .sticky-top {
-          display: contents;
-
-          .playback-controller {
-            grid-area: 1 / 1 / span 2 / 1;
-            ::v-deep(.rewind) {
-              display: none;
-            }
-
-            ::v-deep(.play),
-            ::v-deep(.pause) {
-              height: 100%;
-              width: 100%;
-              margin-right: 0;
-              padding: 25%;
-              border-radius: 0;
-              box-shadow: none;
-            }
-          }
-
-          .media-selector {
-            display: none;
-          }
-        }
-      }
-
-      .timeline,
-      .waveform--zoom,
-      > .bottom {
-        display: none;
-      }
     }
   }
 }

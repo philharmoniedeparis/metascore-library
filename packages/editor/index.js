@@ -14,9 +14,9 @@ import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import MediaSelector from "./modules/media_selector";
-import Panes from "./modules/panes";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
+import ResizablePane from "./modules/resizable_pane";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
@@ -58,9 +58,9 @@ export class Editor {
         FormControls,
         Media,
         MediaSelector,
-        Panes,
         PlaybackControls,
         PlayerPreview,
+        ResizablePane,
         ScenarioManager,
         SharedAssetsLibrary,
         Tabs,

@@ -20,7 +20,7 @@
 <template>
   <div v-hotkey="hotkeys" class="playback-controller">
     <button type="button" class="rewind" @click="onRewindClick">
-      <span aria-hidden="true"><rewind-icon class="icon" /></span>
+      <rewind-icon class="icon" aria-hidden="true" />
       <span class="sr-only">{{ $t("buttons.rewind") }}</span>
     </button>
 
@@ -30,11 +30,11 @@
       class="pause"
       @click="onPauseClick"
     >
-      <span aria-hidden="true"><pause-icon class="icon" /></span>
+      <pause-icon aria-hidden="true" class="icon" />
       <span class="sr-only">{{ $t("buttons.pause") }}</span>
     </button>
     <button v-else type="button" class="play" @click="onPlayClick">
-      <span aria-hidden="true"><play-icon class="icon" /></span>
+      <play-icon aria-hidden="true" class="icon" />
       <span class="sr-only">{{ $t("buttons.play") }}</span>
     </button>
   </div>
@@ -119,14 +119,21 @@ export default {
 
     &.play,
     &.pause {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 4em;
       height: 4em;
       margin-right: 2.5em;
-      padding: 1.5em;
+      padding: 0;
       background: $white;
       color: $mediumgray;
       border-radius: 50%;
       box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
+
+      .icon {
+        width: 1.5em;
+      }
 
       &:active {
         box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.25);
