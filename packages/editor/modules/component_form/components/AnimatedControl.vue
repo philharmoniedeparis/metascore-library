@@ -1,7 +1,14 @@
 <template>
-  <form-group class="control animated" :data-property="property" :label="label">
+  <form-group
+    :class="['control', 'animated', { readonly, disabled }]"
+    :data-property="property"
+    :label="label"
+    :description="description"
+  >
     <checkbox-control
       :model-value="value.animated"
+      :readonly="readonly"
+      :disabled="disabled"
       data-property="animated"
       v-bind="itemProps.animated || {}"
       @update:model-value="updateAnimated($event)"
@@ -11,6 +18,8 @@
     <control-dispatcher
       :model-value="valueAtTime"
       :schema="valueSchema"
+      :readonly="readonly"
+      :disabled="disabled"
       property="value"
       v-bind="itemProps.value || {}"
       @update:model-value="updateValue($event)"
@@ -32,6 +41,18 @@ export default {
     label: {
       type: String,
       default: null,
+    },
+    description: {
+      type: String,
+      default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     property: {
       type: String,

@@ -13,13 +13,21 @@
 
 <template>
   <form-group
-    class="control"
-    type="color"
+    :class="['control', 'color', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
+    <template v-if="readonly || disabled">
+      <button
+        :id="inputId"
+        class="opener"
+        :style="`color: ${modelValue};`"
+        :disabled="disabled"
+      ></button>
+    </template>
     <tippy
+      v-else
       trigger="click"
       role="dialog"
       content-tag="div"
@@ -88,6 +96,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     modelValue: {
       type: String,

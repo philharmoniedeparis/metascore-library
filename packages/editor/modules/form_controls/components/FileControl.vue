@@ -1,7 +1,6 @@
 <template>
   <form-group
-    class="control"
-    type="file"
+    :class="['control', 'file', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
@@ -11,6 +10,8 @@
       type="file"
       :accept="accept"
       :multiple="multiple"
+      :readonly="readonly"
+      :disabled="disabled"
       @change="onChange"
     />
   </form-group>
@@ -28,6 +29,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     accept: {
       type: String,

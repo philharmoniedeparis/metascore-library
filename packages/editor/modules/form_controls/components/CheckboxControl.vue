@@ -1,13 +1,19 @@
 <template>
   <form-group
-    class="control"
-    type="checkbox"
+    :class="['control', 'checkbox', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
+    :label-position="after"
     :description="description"
   >
     <div class="input-container">
-      <input :id="inputId" v-model="value" type="checkbox" />
+      <input
+        :id="inputId"
+        v-model="value"
+        :readonly="readonly"
+        :disabled="disabled"
+        type="checkbox"
+      />
       <label :for="inputId">
         <slot>
           <check-icon class="icon" />
@@ -33,6 +39,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     modelValue: {
       type: Boolean,
@@ -62,6 +76,11 @@ export default {
 .control {
   position: relative;
   cursor: pointer;
+
+  .input-wrapper {
+    flex-direction: row;
+    align-items: baseline;
+  }
 
   input {
     position: absolute;

@@ -2,7 +2,6 @@
   <div
     :class="[
       'form-group',
-      type,
       {
         required: validation && validation.required,
         error: validation && validation.$errors.length,
@@ -10,7 +9,7 @@
     ]"
   >
     <div class="input-wrapper">
-      <template v-if="label_position === 'after'">
+      <template v-if="labelPosition === 'after'">
         <slot />
       </template>
       <template v-if="label || $slots.label">
@@ -19,7 +18,7 @@
           <template v-else><slot name="label" /></template>
         </label>
       </template>
-      <template v-if="label_position === 'before'">
+      <template v-if="labelPosition === 'before'">
         <slot />
       </template>
     </div>
@@ -49,10 +48,6 @@ export default {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
   props: {
-    type: {
-      type: String,
-      default: null,
-    },
     label: {
       type: String,
       default: null,
@@ -61,6 +56,10 @@ export default {
       type: String,
       default: "",
     },
+    labelPosition: {
+      type: String,
+      default: "before",
+    },
     description: {
       type: String,
       default: null,
@@ -68,13 +67,6 @@ export default {
     validation: {
       type: Object,
       default: null,
-    },
-  },
-  computed: {
-    label_position() {
-      return this.type === "checkbox" || this.type === "radio"
-        ? "after"
-        : "before";
     },
   },
 };
@@ -120,14 +112,6 @@ export default {
         outline: 1px solid $lightgray;
         border-color: $lightgray;
       }
-    }
-  }
-
-  &.checkbox,
-  &.radio {
-    .input-wrapper {
-      flex-direction: row;
-      align-items: baseline;
     }
   }
 

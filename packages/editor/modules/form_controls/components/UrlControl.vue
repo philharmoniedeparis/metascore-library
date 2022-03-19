@@ -1,12 +1,17 @@
 <template>
   <form-group
-    class="control"
-    type="url"
+    :class="['control', 'url', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
-    <input :id="inputId" v-model="value" type="url" />
+    <input
+      :id="inputId"
+      v-model="value"
+      type="url"
+      :readonly="readonly"
+      :disabled="disabled"
+    />
   </form-group>
 </template>
 
@@ -22,6 +27,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     modelValue: {
       type: String,

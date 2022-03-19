@@ -1,13 +1,17 @@
 <template>
   <form-group
-    class="control"
-    type="select"
+    :class="['control', 'select', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
     <div class="input-container">
-      <select :id="inputId" v-model="value">
+      <select
+        :id="inputId"
+        v-model="value"
+        :readonly="readonly"
+        :disabled="disabled"
+      >
         <option v-for="(v, l) in options" :key="v" :value="v">
           {{ l }}
         </option>
@@ -33,6 +37,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     options: {
       type: Object,

@@ -1,12 +1,16 @@
 <template>
   <form-group
-    class="control"
-    type="time"
+    :class="['control', 'time', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
-    <timecode-input :id="inputId" v-model="value" />
+    <timecode-input
+      :id="inputId"
+      v-model="value"
+      :readonly="readonly"
+      :disabled="disabled"
+    />
   </form-group>
 </template>
 
@@ -22,6 +26,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     modelValue: {
       type: Number,

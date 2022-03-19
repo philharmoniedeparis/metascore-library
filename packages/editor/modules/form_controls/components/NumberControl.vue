@@ -2,11 +2,12 @@
   <form-group
     :class="[
       'control',
+      'number',
+      { readonly, disabled },
       spinners ? 'has-spinners' : null,
       spinners ? `${spinnersDirection}-spinners` : null,
       spinners && flipSpinners ? 'flip-spinners' : null,
     ]"
-    type="number"
     :label="label"
     :label-for="inputId"
     :description="description"
@@ -20,6 +21,8 @@
         :step="step"
         :min="min"
         :max="max"
+        :readonly="readonly"
+        :disabled="disabled"
         @focus="isFocused = true"
         @blur="isFocused = false"
       />
@@ -67,6 +70,14 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     min: {
       type: Number,

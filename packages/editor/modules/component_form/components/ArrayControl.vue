@@ -1,10 +1,16 @@
 <template>
-  <form-group class="control array" :data-property="property" :label="label">
+  <form-group
+    :class="['control', 'array', { readonly, disabled }]"
+    :data-property="property"
+    :label="label"
+  >
     <template v-for="(item, index) in items" :key="index">
       <control-dispatcher
         :property="`${index}`"
         :schema="item"
         :model-value="value[index]"
+        :readonly="readonly"
+        :disabled="disabled"
         v-bind="getItemProps(index)"
         @update:model-value="update(index, $event)"
       />
@@ -18,6 +24,18 @@ export default {
     label: {
       type: String,
       default: null,
+    },
+    description: {
+      type: String,
+      default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     property: {
       type: String,

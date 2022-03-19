@@ -3,6 +3,8 @@
     :is="`${control}-control`"
     v-model="value"
     :label="displayLabel ? schema.title : null"
+    :readonly="readonly"
+    :disabled="disabled"
     v-bind="extraProps"
   />
 </template>
@@ -13,6 +15,14 @@ import { flatten } from "../utils/schema";
 export default {
   inject: ["validator"],
   props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     property: {
       type: String,
       default: null,
