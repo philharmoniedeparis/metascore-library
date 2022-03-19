@@ -216,10 +216,6 @@ export default {
     -moz-appearance: textfield;
   }
 
-  input {
-    text-align: center;
-  }
-
   .spinners {
     display: flex;
     position: absolute;

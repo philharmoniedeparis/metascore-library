@@ -3,7 +3,7 @@
     :class="['control', 'checkbox', { readonly, disabled }]"
     :label="label"
     :label-for="inputId"
-    :label-position="after"
+    label-position="after"
     :description="description"
   >
     <div class="input-container">

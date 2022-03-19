@@ -64,19 +64,19 @@ export default {
           {
             name: "minutes",
             multiplier: 60,
-            max: 60,
+            max: 59,
             prefix: ":",
           },
           {
             name: "seconds",
             multiplier: 1,
-            max: 60,
+            max: 59,
             prefix: ":",
           },
           {
             name: "centiseconds",
             multiplier: 0.01,
-            max: 100,
+            max: 99,
             prefix: ".",
           },
         ];
@@ -171,7 +171,7 @@ export default {
     focusedSegment() {
       this.updateSelection();
     },
-    modelValue() {
+    textualvalue() {
       this.updateSelection();
     },
   },
@@ -305,11 +305,14 @@ export default {
     },
     updateSelection() {
       if (this.focusedSegment !== null) {
-        const start = this.focusedSegment * 3;
-        const end = start + 2;
+        this.$nextTick(function () {
+          const input = this.$refs.input;
+          const start = this.focusedSegment * 3;
+          const end = start + 2;
 
-        this.$refs.input.setSelectionRange(0, 0);
-        this.$refs.input.setSelectionRange(start, end, "forward");
+          input.setSelectionRange(0, 0);
+          input.setSelectionRange(start, end);
+        });
       }
     },
     /**
@@ -375,30 +378,22 @@ export default {
      * @param {Number} index The segment's index
      */
     incrementSegmentValue(index) {
-      let value = this.value;
-
-      if (value === null) {
-        value = 0;
+      if (this.value === null) {
+        this.value = 0;
       }
 
-      value += this.segments[index].multiplier;
-      this.value = Math.max(0, value);
+      this.value += this.segments[index].multiplier;
     },
     /**
      * Helper function to decrement a segment's value
      * @param {Number} index The segment's index
      */
     decrementSegmentValue(index) {
-      let value = this.value;
-
-      if (value === null) {
-        value = 0;
+      if (this.value === null) {
+        this.value = 0;
       }
 
-      if (value >= this.segments[index].multiplier) {
-        value -= this.segments[index].multiplier;
-        this.value = Math.max(0, value);
-      }
+      this.value -= this.segments[index].multiplier;
     },
     /**
      * Helper function to convert a textual value to a numerical one
