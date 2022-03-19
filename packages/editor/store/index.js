@@ -6,6 +6,7 @@ import { load } from "@metascore-library/core/utils/ajax";
 export default defineStore("editor", {
   state: () => {
     return {
+      appTitle: null,
       selectedComponents: new Set(),
       lockedComponents: new Set(),
     };
@@ -214,6 +215,8 @@ export default defineStore("editor", {
       const assetsStore = useModule("AssetsLibrary").useStore();
 
       const data = await load(url);
+
+      this.appTitle = data.title;
 
       mediaStore.source = data.media;
 

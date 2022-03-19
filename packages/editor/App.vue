@@ -2,6 +2,12 @@
   <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
       <nav class="main-menu">
+        <text-control
+          v-model="appTitle"
+          class="app-title"
+          @focusin="onAppTitleFocusin"
+          @focusout="onAppTitleFocusout"
+        />
         <player-zoom-controller />
         <player-dimensions-controller />
         <player-preview-toggler />
@@ -101,6 +107,14 @@ export default {
     };
   },
   computed: {
+    appTitle: {
+      get() {
+        return this.store.appTitle;
+      },
+      set(value) {
+        this.store.appTitle = value;
+      },
+    },
     mediaSource() {
       return this.mediaStore.source;
     },
@@ -146,6 +160,12 @@ export default {
     await this.store.load(this.url);
   },
   methods: {
+    onAppTitleFocusin() {
+      this.classes["app-title-focused"] = true;
+    },
+    onAppTitleFocusout() {
+      delete this.classes["app-title-focused"];
+    },
     onSharedAssetsImportClick(asset) {
       this.selectedLibrariesTab = 1;
       this.assetsStore.add(asset);
@@ -235,7 +255,13 @@ export default {
       justify-content: flex-start;
       align-items: center;
 
+      .app-title {
+        flex: 1 1 auto;
+      }
+
       ::v-deep(.form-group) {
+        margin: 0;
+
         &:not(:focus, :hover) {
           input,
           select {
@@ -366,6 +392,14 @@ export default {
   ::v-deep(.context-menu) {
     .footer {
       opacity: 0.5;
+    }
+  }
+
+  &.app-title-focused {
+    .main-menu {
+      > :not(.app-title) {
+        display: none;
+      }
     }
   }
 

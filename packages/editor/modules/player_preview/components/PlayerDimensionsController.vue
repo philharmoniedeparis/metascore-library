@@ -44,8 +44,6 @@ export default {
   align-items: center;
 
   ::v-deep(.form-group) {
-    margin: 0;
-
     input {
       width: 4em;
     }

@@ -40,9 +40,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.player-zoom-controller {
-  margin: 0;
-}
-</style>
