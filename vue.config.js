@@ -42,6 +42,17 @@ module.exports = defineConfig({
     },
   },
   chainWebpack: (config) => {
+    // See https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags
+    config.plugin("define").tap((definitions) => {
+      definitions[0] = {
+        ...definitions[0],
+        __VUE_I18N_FULL_INSTALL__: false,
+        __VUE_I18N_LEGACY_API__: true,
+        __INTLIFY_PROD_DEVTOOLS__: false,
+      };
+      return definitions;
+    });
+
     // Override entry points.
     config.entryPoints.clear();
     config.entry("metaScore.Player").add("./packages/player/index.js").end();
