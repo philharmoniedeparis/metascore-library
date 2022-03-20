@@ -17,7 +17,7 @@ export class Player {
 
   static async create({ url, el, api = false, locale = "fr" } = {}) {
     const pinia = createPinia();
-    const i18n = createI18n({ locale });
+    const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
     const app = createApp(App, { url, api }).use(pinia).use(i18n).use(hotkey);
 

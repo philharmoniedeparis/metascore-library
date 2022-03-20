@@ -31,7 +31,7 @@ export class Editor {
 
   static async create({ url, el = null, locale = "fr" } = {}) {
     const pinia = createPinia();
-    const i18n = createI18n({ locale });
+    const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
     const events = new Emitter();
     const app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);

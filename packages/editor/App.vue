@@ -115,7 +115,7 @@ export default {
         return this.store.appTitle;
       },
       set(value) {
-        this.store.appTitle = value;
+        this.store.setAppTitle(value);
       },
     },
     mediaSource() {

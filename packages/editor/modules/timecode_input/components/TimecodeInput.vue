@@ -4,6 +4,8 @@
       ref="input"
       v-model="textualvalue"
       type="text"
+      :readonly="readonly"
+      :disabled="disabled"
       @keypress="onKeypress"
       @mousedown="onMousedown"
       @wheel.prevent="onWheel"
@@ -16,8 +18,11 @@
       @paste.prevent="onPaste"
       @keydown="onKeydown"
     />
-    <div v-if="inButton || outButton || clearButton" class="buttons">
-      <button v-if="inButton" class="in" @click="onInClick">
+    <div
+      v-if="!disabled && (inButton || outButton || clearButton)"
+      class="buttons"
+    >
+      <button v-if="inButton && !readonly" class="in" @click="onInClick">
         <span aria-hidden="true"><in-icon class="icon" /></span>
         <span class="sr-only">+</span>
       </button>
@@ -25,7 +30,11 @@
         <span aria-hidden="true"><out-icon class="icon" /></span>
         <span class="sr-only">+</span>
       </button>
-      <button v-if="clearButton" class="clear" @click="onClearClick">
+      <button
+        v-if="clearButton && !readonly"
+        class="clear"
+        @click="onClearClick"
+      >
         <span aria-hidden="true"><clear-icon class="icon" /></span>
         <span class="sr-only">+</span>
       </button>
@@ -47,6 +56,14 @@ export default {
     ClearIcon,
   },
   props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     modelValue: {
       type: Number,
       default: 0,
@@ -457,9 +474,36 @@ export default {
 
 <style lang="scss" scoped>
 .timecode-input {
+  position: relative;
+
   input {
     width: 6em;
     text-align: center;
+  }
+
+  .buttons {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: #3f3f3f;
+
+    button {
+      padding: 0.25em;
+      font-size: 0.75em;
+      color: $white;
+
+      .icon {
+        width: 1em;
+      }
+    }
+  }
+
+  &:not(:hover) {
+    .buttons {
+      display: none;
+    }
   }
 }
 </style>

@@ -306,10 +306,16 @@ export default {
             {
               property: "start-time",
               label: this.$t("start-time"),
+              inButton: true,
+              outButton: true,
+              clearButton: true,
             },
             {
               property: "end-time",
               label: this.$t("end-time"),
+              inButton: true,
+              outButton: true,
+              clearButton: true,
             },
           ],
         });

@@ -10,6 +10,11 @@
       v-model="value"
       :readonly="readonly"
       :disabled="disabled"
+      :min="min"
+      :max="max"
+      :in-button="inButton"
+      :out-button="outButton"
+      :clear-button="clearButton"
     />
   </form-group>
 </template>
@@ -32,6 +37,26 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    min: {
+      type: Number,
+      default: 0,
+    },
+    max: {
+      type: Number,
+      default: null,
+    },
+    inButton: {
+      type: Boolean,
+      default: false,
+    },
+    outButton: {
+      type: Boolean,
+      default: false,
+    },
+    clearButton: {
       type: Boolean,
       default: false,
     },

@@ -49,6 +49,9 @@ export default defineStore("editor", {
     },
   },
   actions: {
+    setAppTitle(value) {
+      this.appTitle = value;
+    },
     updateComponent(model, data) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.update(model, data);
