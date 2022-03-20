@@ -23,6 +23,7 @@
         :max="max"
         :readonly="readonly"
         :disabled="disabled"
+        @change="onInputChange"
         @focus="isFocused = true"
         @blur="isFocused = false"
       />
@@ -95,6 +96,10 @@ export default {
       type: Number,
       default: 0,
     },
+    lazy: {
+      type: Boolean,
+      default: false,
+    },
     spinners: {
       type: Boolean,
       default: true,
@@ -129,11 +134,18 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit("update:modelValue", round(value, this.decimals));
+        if (!this.lazy) {
+          this.$emit("update:modelValue", round(value, this.decimals));
+        }
       },
     },
   },
   methods: {
+    onInputChange(evt) {
+      if (this.lazy) {
+        this.$emit("update:modelValue", evt.target.value);
+      }
+    },
     updateValue(value) {
       if (this.min !== null) {
         value = Math.max(value, this.min);

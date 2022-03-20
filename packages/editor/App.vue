@@ -4,6 +4,7 @@
       <nav class="main-menu">
         <text-control
           v-model="appTitle"
+          :lazy="true"
           class="app-title"
           @focusin="onAppTitleFocusin"
           @focusout="onAppTitleFocusout"

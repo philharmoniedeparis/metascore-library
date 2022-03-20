@@ -15,6 +15,7 @@
       :in-button="inButton"
       :out-button="outButton"
       :clear-button="clearButton"
+      @change="onInputChange"
     />
   </form-group>
 </template>
@@ -64,6 +65,10 @@ export default {
       type: Number,
       default: 0,
     },
+    lazy: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -77,8 +82,17 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        if (!this.lazy) {
+          this.$emit("update:modelValue", value);
+        }
       },
+    },
+  },
+  methods: {
+    onInputChange(evt) {
+      if (this.lazy) {
+        this.$emit("update:modelValue", evt.target.value);
+      }
     },
   },
 };
