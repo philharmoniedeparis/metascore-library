@@ -1,6 +1,6 @@
 <template>
   <form-group
-    :class="['control', 'checkbox', { readonly, disabled }]"
+    :class="['control', 'checkbox', { disabled }]"
     :label="label"
     :label-for="inputId"
     label-position="after"
@@ -10,7 +10,6 @@
       <input
         :id="inputId"
         v-model="value"
-        :readonly="readonly"
         :disabled="disabled"
         type="checkbox"
       />
@@ -39,10 +38,6 @@ export default {
     description: {
       type: String,
       default: null,
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
     },
     disabled: {
       type: Boolean,
