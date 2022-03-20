@@ -94,12 +94,14 @@ export default {
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     const assetsStore = useModule("assets_library").useStore();
+    const history = useModule("history");
     return {
       store,
       mediaStore,
       playerPreviewStore,
       waveformStore,
       assetsStore,
+      history,
     };
   },
   data() {
@@ -111,12 +113,15 @@ export default {
     };
   },
   computed: {
+    ready() {
+      return this.store.ready;
+    },
     appTitle: {
       get() {
         return this.store.appTitle;
       },
       set(value) {
-        this.store.setAppTitle(value);
+        this.store.appTitle = value;
       },
     },
     mediaSource() {
@@ -133,6 +138,13 @@ export default {
     },
   },
   watch: {
+    ready(value) {
+      if (value) {
+        this.subscribeHistory();
+      } else {
+        this.unsubscribeHistory();
+      }
+    },
     mediaSource(source) {
       if (source) {
         this.waveformStore.load(source);
@@ -158,10 +170,12 @@ export default {
       }
     },
   },
-  async mounted() {
+  mounted() {
     this.modalsTarget = this.$el;
-
-    await this.store.load(this.url);
+    this.store.load(this.url);
+  },
+  beforeUnmount() {
+    this.unsubscribeHistory();
   },
   methods: {
     onAppTitleFocusin() {
@@ -173,6 +187,13 @@ export default {
     onSharedAssetsImportClick(asset) {
       this.selectedLibrariesTab = 1;
       this.assetsStore.add(asset);
+    },
+    subscribeHistory() {
+      this.history.subscribeMutation(this.store, "appTitle");
+      this.history.subscribeMutation(this.mediaStore, "source");
+    },
+    unsubscribeHistory() {
+      this.history.unsubscribeAll();
     },
   },
 };

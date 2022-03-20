@@ -3,6 +3,11 @@ import { load } from "@metascore-library/core/utils/ajax";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default defineStore("player", {
+  state: () => {
+    return {
+      ready: false,
+    };
+  },
   actions: {
     async load(url) {
       const mediaStore = useModule("media").useStore();
@@ -18,7 +23,8 @@ export default defineStore("player", {
       appRendererStore.width = data.width;
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
-      appRendererStore.ready = true;
+
+      this.ready = true;
     },
   },
 });

@@ -6,6 +6,7 @@ import { load } from "@metascore-library/core/utils/ajax";
 export default defineStore("editor", {
   state: () => {
     return {
+      ready: false,
       appTitle: null,
       selectedComponents: new Set(),
       lockedComponents: new Set(),
@@ -49,9 +50,6 @@ export default defineStore("editor", {
     },
   },
   actions: {
-    setAppTitle(value) {
-      this.appTitle = value;
-    },
     updateComponent(model, data) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.update(model, data);
@@ -230,7 +228,8 @@ export default defineStore("editor", {
       appRendererStore.width = data.width;
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
-      appRendererStore.ready = true;
+
+      this.ready = true;
     },
   },
 });

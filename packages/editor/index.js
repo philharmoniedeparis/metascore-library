@@ -13,6 +13,7 @@ import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
+import History from "./modules/history";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
@@ -56,6 +57,7 @@ export class Editor {
         ComponentsLibrary,
         ContextMenu,
         FormControls,
+        History,
         Media,
         MediaSelector,
         PlaybackControls,
