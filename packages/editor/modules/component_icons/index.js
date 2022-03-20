@@ -1,7 +1,7 @@
 import ComponentIcon from "./components/ComponentIcon";
 
 export default {
-  name: "ComponentIcons",
+  id: "component_icons",
   install({ app }) {
     app.component("ComponentIcon", ComponentIcon);
   },

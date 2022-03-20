@@ -14,7 +14,7 @@ export default function (model) {
         return true;
       }
 
-      const mediaStore = useModule("Media").useStore();
+      const mediaStore = useModule("media").useStore();
       const mediaTime = mediaStore.time;
       if (isUndefined(endTime) || isNull(endTime)) {
         return mediaTime >= startTime;

@@ -4,7 +4,7 @@ import ModalForm from "../modal_form";
 import MediaSelector from "./components/MediaSelector";
 
 export default {
-  name: "MediaSelector",
+  id: "media_selector",
   dependencies: [ModalForm, FormGroup, FocusDirective],
   install({ app }) {
     app.component("MediaSelector", MediaSelector);

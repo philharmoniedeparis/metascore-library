@@ -1,5 +1,5 @@
 export default {
-  name: "Device",
+  id: "device",
   install({ app }) {
     app.provide(
       "$deviceHasTouch",

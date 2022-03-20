@@ -85,8 +85,8 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const appRendererStore = useModule("AppRenderer").useStore();
-    const contextmenuStore = useModule("ContextMenu").useStore();
+    const appRendererStore = useModule("app_renderer").useStore();
+    const contextmenuStore = useModule("contextmenu").useStore();
     return {
       store,
       appRendererStore,

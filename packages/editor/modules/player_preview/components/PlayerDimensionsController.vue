@@ -13,7 +13,7 @@ import useEditorStore from "@metascore-library/editor/store";
 export default {
   setup() {
     const editorStore = useEditorStore();
-    const appRendererStore = useModule("AppRenderer").useStore();
+    const appRendererStore = useModule("app_renderer").useStore();
     return { editorStore, appRendererStore };
   },
   computed: {

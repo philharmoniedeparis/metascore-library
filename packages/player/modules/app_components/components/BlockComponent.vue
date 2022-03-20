@@ -99,8 +99,8 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("Media").useStore();
-    const componentsStore = useModule("AppComponents").useStore();
+    const mediaStore = useModule("media").useStore();
+    const componentsStore = useModule("app_components").useStore();
     return { mediaStore, componentsStore };
   },
   data() {

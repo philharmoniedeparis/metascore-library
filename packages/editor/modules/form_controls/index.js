@@ -15,7 +15,7 @@ import TimeControl from "./components/TimeControl";
 import UrlControl from "./components/UrlControl";
 
 export default {
-  name: "FormControls",
+  id: "form_controls",
   dependencies: [StyledButton, FormGroup, TimecodeInput],
   install({ app }) {
     app.component("BorderRadiusControl", BorderRadiusControl);

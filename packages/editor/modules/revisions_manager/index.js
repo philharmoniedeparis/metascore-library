@@ -1,3 +1,3 @@
 export default {
-  name: "RevisionsManager",
+  id: "revisions_manager",
 };

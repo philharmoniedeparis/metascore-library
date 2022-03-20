@@ -1,7 +1,7 @@
 import TimecodeInput from "./components/TimecodeInput";
 
 export default {
-  name: "TimecodeInput",
+  id: "timecode_input",
   install({ app }) {
     app.component("TimecodeInput", TimecodeInput);
   },

@@ -68,7 +68,7 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("Media").useStore();
+    const mediaStore = useModule("media").useStore();
     return { mediaStore };
   },
   computed: {

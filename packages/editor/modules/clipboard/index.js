@@ -1,7 +1,7 @@
 import useStore from "./store";
 
 export default {
-  name: "Clipboard",
+  id: "clipboard",
   install() {
     return {
       useStore,

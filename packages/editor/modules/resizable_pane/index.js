@@ -1,7 +1,7 @@
 import ResizablePane from "./components/ResizablePane";
 
 export default {
-  name: "Panes",
+  id: "resizable_pane",
   install({ app }) {
     app.component("ResizablePane", ResizablePane);
   },

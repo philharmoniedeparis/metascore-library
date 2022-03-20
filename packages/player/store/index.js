@@ -5,9 +5,9 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 export default defineStore("player", {
   actions: {
     async load(url) {
-      const mediaStore = useModule("Media").useStore();
-      const componentsStore = useModule("AppComponents").useStore();
-      const appRendererStore = useModule("AppRenderer").useStore();
+      const mediaStore = useModule("media").useStore();
+      const componentsStore = useModule("app_components").useStore();
+      const appRendererStore = useModule("app_renderer").useStore();
 
       const data = await load(url);
 

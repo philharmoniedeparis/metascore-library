@@ -3,7 +3,7 @@ import ControlDispatcher from "./components/ControlDispatcher";
 import SchemaForm from "./components/SchemaForm";
 
 export default {
-  name: "SchemaForm",
+  id: "schema_form",
   dependencies: [FormControls],
   install({ app }) {
     app.component("ControlDispatcher", ControlDispatcher);

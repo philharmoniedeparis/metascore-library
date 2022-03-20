@@ -1,7 +1,7 @@
 import plugin from "./store/plugins/history";
 
 export default {
-  name: "History",
+  id: "history",
   install({ pinia }) {
     pinia.use(plugin);
   },

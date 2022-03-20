@@ -89,10 +89,10 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("Media").useStore();
-    const playerPreviewStore = useModule("PlayerPreview").useStore();
-    const waveformStore = useModule("Waveform").useStore();
-    const assetsStore = useModule("AssetsLibrary").useStore();
+    const mediaStore = useModule("media").useStore();
+    const playerPreviewStore = useModule("player_preview").useStore();
+    const waveformStore = useModule("waveform").useStore();
+    const assetsStore = useModule("assets_library").useStore();
     return {
       store,
       mediaStore,

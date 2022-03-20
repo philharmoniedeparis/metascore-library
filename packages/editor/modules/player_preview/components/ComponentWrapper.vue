@@ -67,7 +67,7 @@ import useStore from "../store";
 
 export default {
   components: {
-    ComponentWrapper: useModule("AppComponents").ComponentWrapper,
+    ComponentWrapper: useModule("app_components").ComponentWrapper,
   },
   props: {
     /**
@@ -82,8 +82,8 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const clipboardStore = useModule("Clipboard").useStore();
-    const contextmenuStore = useModule("ContextMenu").useStore();
+    const clipboardStore = useModule("clipboard").useStore();
+    const contextmenuStore = useModule("contextmenu").useStore();
     return { store, editorStore, clipboardStore, contextmenuStore };
   },
   data() {

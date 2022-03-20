@@ -2,7 +2,7 @@ import ComponentsLibrary from "./components/ComponentsLibrary";
 import ComponentIcons from "../component_icons";
 
 export default {
-  name: "ComponentsLibrary",
+  id: "components_library",
   async dependencies() {
     const { default: AppComponents } = await import(
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/app_components"

@@ -67,7 +67,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("Media").useStore();
+    const mediaStore = useModule("media").useStore();
     return { store, mediaStore };
   },
   data() {

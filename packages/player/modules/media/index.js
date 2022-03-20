@@ -2,7 +2,7 @@ import useStore from "./store";
 import MediaPlayer from "./components/MediaPlayer";
 
 export default {
-  name: "Media",
+  id: "media",
   install({ app }) {
     app.component("MediaPlayer", MediaPlayer);
 

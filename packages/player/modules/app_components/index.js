@@ -16,7 +16,7 @@ import VideoRendererComponent from "./components/VideoRendererComponent";
 import * as Models from "./models";
 
 export default {
-  name: "AppComponents",
+  id: "app_components",
   dependencies: [Device],
   install({ app }) {
     app.component("AnimationComponent", AnimationComponent);

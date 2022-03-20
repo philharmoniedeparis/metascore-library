@@ -3,7 +3,7 @@ import PlayerPreview from "../player_preview";
 import ComponentIcons from "../component_icons";
 
 export default {
-  name: "Timeline",
+  id: "timeline",
   dependencies: [PlayerPreview, ComponentIcons],
   install({ app }) {
     app.component("ComponentsTimeline", ComponentsTimeline);

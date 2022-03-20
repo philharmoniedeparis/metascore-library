@@ -8,7 +8,7 @@ import PlayerDimensionsController from "./components/PlayerDimensionsController"
 import PlayerPreviewToggler from "./components/PlayerPreviewToggler";
 
 export default {
-  name: "PlayerPreview",
+  id: "player_preview",
   async dependencies() {
     const { default: AppRenderer } = await import(
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/app_renderer"

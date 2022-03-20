@@ -5,7 +5,7 @@ import WaveformZoom from "./components/WaveformZoom";
 import WaveformZoomController from "./components/WaveformZoomController";
 
 export default {
-  name: "Waveform",
+  id: "waveform",
   async dependencies() {
     const { default: Media } = await import(
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/media"

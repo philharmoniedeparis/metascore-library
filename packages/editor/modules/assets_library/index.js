@@ -5,7 +5,7 @@ import SchemaForm from "../schema_form";
 import AssetsLibrary from "./components/AssetsLibrary";
 
 export default {
-  name: "AssetsLibrary",
+  id: "assets_library",
   dependencies: [StyledButton, Confirm, SchemaForm],
   install({ app }) {
     app.component("AssetsLibrary", AssetsLibrary);

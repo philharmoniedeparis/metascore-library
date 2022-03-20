@@ -6,7 +6,7 @@ import SharedAssetsLibrary from "./components/SharedAssetsLibrary";
 import SharedAssetsToolbar from "./components/SharedAssetsToolbar";
 
 export default {
-  name: "SharedAssetsLibrary",
+  id: "shared_assets_library",
   dependencies: [StyledButton, FormGroup, AseetsLibrary],
   install({ app }) {
     app.component("SharedAssetsLibrary", SharedAssetsLibrary);

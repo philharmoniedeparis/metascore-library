@@ -9,13 +9,13 @@ async function registerModules(modules, context) {
 }
 
 async function registerModule(module, context) {
-  if (module.name in modules) {
+  if (module.id in modules) {
     // Skip if already registerd.
     return;
   }
 
   // Add to list of registered modules.
-  modules[module.name] = {};
+  modules[module.id] = {};
 
   // Register dependencies.
   if ("dependencies" in module) {
@@ -32,20 +32,20 @@ async function registerModule(module, context) {
   if ("install" in module) {
     const exports = await module.install(context);
     if (typeof exports !== "undefined") {
-      modules[module.name] = exports;
+      modules[module.id] = exports;
     }
   }
 
   if (process.env.NODE_ENV === "development") {
-    console.info(`Module manager: "${module.name}" module registerd.`);
+    console.info(`Module manager: "${module.id}" module registerd.`);
   }
 }
 
-function useModule(name) {
-  const module = modules[name];
+function useModule(id) {
+  const module = modules[id];
 
   if (!module) {
-    throw Error(`Module "${name}" not found`);
+    throw Error(`Module "${id}" not found`);
   }
 
   return module;

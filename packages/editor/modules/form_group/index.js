@@ -1,7 +1,7 @@
 import FormGroup from "./components/FormGroup";
 
 export default {
-  name: "FormGroup",
+  id: "form_group",
   install({ app }) {
     app.component("FormGroup", FormGroup);
   },

@@ -5,7 +5,7 @@ import PostMessage from "../post_message";
 import AppRenderer from "./components/AppRenderer.vue";
 
 export default {
-  name: "AppRenderer",
+  id: "app_renderer",
   dependencies: [Media, AppComponents, PostMessage],
   install({ app }) {
     app.component("AppRenderer", AppRenderer);

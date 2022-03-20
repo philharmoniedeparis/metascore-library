@@ -45,7 +45,7 @@ export default {
   emits: ["click:import"],
   setup() {
     const store = useStore();
-    const assetsStore = useModule("SharedAssetsLibrary").useStore();
+    const assetsStore = useModule("shared_assets_library").useStore();
     return { store, assetsStore };
   },
   computed: {

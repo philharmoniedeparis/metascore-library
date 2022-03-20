@@ -80,7 +80,7 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useModule("Media").useStore();
+    const mediaStore = useModule("media").useStore();
     return { mediaStore };
   },
   computed: {

@@ -22,7 +22,7 @@ export default defineStore("editor", {
     },
     componentHasSelectedDescendents() {
       return (model) => {
-        const componentsStore = useModule("AppComponents").useStore();
+        const componentsStore = useModule("app_components").useStore();
         const children = componentsStore.getChildren(model);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
@@ -43,24 +43,24 @@ export default defineStore("editor", {
     },
     createComponent() {
       return (data) => {
-        const componentsStore = useModule("AppComponents").useStore();
+        const componentsStore = useModule("app_components").useStore();
         return componentsStore.create(data);
       };
     },
   },
   actions: {
     updateComponent(model, data) {
-      const componentsStore = useModule("AppComponents").useStore();
+      const componentsStore = useModule("app_components").useStore();
       componentsStore.update(model, data);
     },
     updateComponents(models, data) {
-      const componentsStore = useModule("AppComponents").useStore();
+      const componentsStore = useModule("app_components").useStore();
       models.forEach((model) => {
         componentsStore.update(model, data);
       });
     },
     addComponent(data, parent) {
-      const componentsStore = useModule("AppComponents").useStore();
+      const componentsStore = useModule("app_components").useStore();
       const model = this.createComponent(data);
       componentsStore.add(model, parent);
       return model;
@@ -83,7 +83,7 @@ export default defineStore("editor", {
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
       if (selected.length > 0) {
-        const componentsStore = useModule("AppComponents").useStore();
+        const componentsStore = useModule("app_components").useStore();
         const master = selected[0];
         const parent = componentsStore.getParent(master);
         const children = componentsStore.getChildren(parent);
@@ -116,7 +116,7 @@ export default defineStore("editor", {
       models.map(this.unlockComponent);
     },
     copyComponent(model) {
-      const clipboardStore = useModule("Clipboard").useStore();
+      const clipboardStore = useModule("clipboard").useStore();
       const data = omit(model.toJson(), ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
@@ -138,7 +138,7 @@ export default defineStore("editor", {
     },
     arrangeComponent(model, action) {
       if (model.parent) {
-        const componentsStore = useModule("AppComponents").useStore();
+        const componentsStore = useModule("app_components").useStore();
         const parent = componentsStore.getParent(model);
         const children = componentsStore.getChildren(parent);
         const count = children.length;
@@ -200,7 +200,7 @@ export default defineStore("editor", {
       });
     },
     setPlayerDimensions({ width, height }) {
-      const appRendererStore = useModule("AppRenderer").useStore();
+      const appRendererStore = useModule("app_renderer").useStore();
       if (typeof width !== "undefined") {
         appRendererStore.width = width;
       }
@@ -209,10 +209,10 @@ export default defineStore("editor", {
       }
     },
     async load(url) {
-      const mediaStore = useModule("Media").useStore();
-      const componentsStore = useModule("AppComponents").useStore();
-      const appRendererStore = useModule("AppRenderer").useStore();
-      const assetsStore = useModule("AssetsLibrary").useStore();
+      const mediaStore = useModule("media").useStore();
+      const componentsStore = useModule("app_components").useStore();
+      const appRendererStore = useModule("app_renderer").useStore();
+      const assetsStore = useModule("assets_library").useStore();
 
       const data = await load(url);
 

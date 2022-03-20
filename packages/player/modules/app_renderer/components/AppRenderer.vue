@@ -23,8 +23,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("Media").useStore();
-    const componentsStore = useModule("AppComponents").useStore();
+    const mediaStore = useModule("media").useStore();
+    const componentsStore = useModule("app_components").useStore();
     return { store, mediaStore, componentsStore };
   },
   data() {

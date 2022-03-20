@@ -36,7 +36,7 @@ export default {
     },
   },
   setup() {
-    const componentsStore = useModule("AppComponents").useStore();
+    const componentsStore = useModule("app_components").useStore();
     return { componentsStore };
   },
   computed: {

@@ -1,5 +1,5 @@
 export default {
-  name: "PostMessage",
+  id: "post_message",
   install({ app }) {
     app.provide("$postMessage", {
       send(target, message, targetOrigin = "*") {

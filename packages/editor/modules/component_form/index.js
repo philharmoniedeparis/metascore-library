@@ -8,7 +8,7 @@ import ArrayControl from "./components/ArrayControl";
 import ComponentForm from "./components/ComponentForm";
 
 export default {
-  name: "ComponentForm",
+  id: "component_form",
   dependencies: [FormGroup, SchemaForm, PlayerPreview, Tabs],
   install({ app }) {
     app.component("AnimatedControl", AnimatedControl);
