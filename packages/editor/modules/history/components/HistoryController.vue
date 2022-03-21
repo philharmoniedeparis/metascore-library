@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import * as manager from "../services/history-manager";
+import useStore from "../store";
 import UndoIcon from "../assets/icons/undo.svg?inline";
 import RedoIcon from "../assets/icons/redo.svg?inline";
 
@@ -20,20 +20,24 @@ export default {
     UndoIcon,
     RedoIcon,
   },
+  setup() {
+    const store = useStore();
+    return { store };
+  },
   computed: {
     canUndo() {
-      return manager.canUndo();
+      return this.store.canUndo;
     },
     canRedo() {
-      return manager.canRedo();
+      return this.store.canRedo;
     },
   },
   methods: {
     onUndoClick() {
-      manager.undo();
+      this.store.undo();
     },
     onRedoClick() {
-      manager.redo();
+      this.store.redo();
     },
   },
 };

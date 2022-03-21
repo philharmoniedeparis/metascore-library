@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     setMediaSource(source) {
-      this.mediaStore.source = source;
+      this.mediaStore.setSource(source);
     },
     onFormSubmit({ file, url }) {
       if (file) {

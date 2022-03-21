@@ -28,7 +28,6 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 import LottieAnimationIcon from "./LottieAnimationIcon.vue";
 
@@ -45,8 +44,7 @@ export default {
   emits: ["click:import"],
   setup() {
     const store = useStore();
-    const assetsStore = useModule("shared_assets_library").useStore();
-    return { store, assetsStore };
+    return { store };
   },
   computed: {
     label() {

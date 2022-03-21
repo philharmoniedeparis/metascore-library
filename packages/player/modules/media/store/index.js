@@ -23,6 +23,9 @@ export default defineStore("media", {
     },
   },
   actions: {
+    setSource(value) {
+      this.source = value;
+    },
     initElement(element) {
       this.element = element;
 

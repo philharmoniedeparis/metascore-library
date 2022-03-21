@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "deep-diff": "^1.0.2",
     "pinia": "^2.0.11"
   }
 }

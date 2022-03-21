@@ -50,6 +50,9 @@ export default defineStore("editor", {
     },
   },
   actions: {
+    setAppTitle(value) {
+      this.appTitle = value;
+    },
     updateComponent(model, data) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.update(model, data);
@@ -217,9 +220,9 @@ export default defineStore("editor", {
 
       const data = await load(url);
 
-      this.appTitle = data.title;
+      this.setAppTitle(data.title);
 
-      mediaStore.source = data.media;
+      mediaStore.setSource(data.media);
 
       componentsStore.init(data.components);
 

@@ -16,7 +16,7 @@ export default defineStore("player", {
 
       const data = await load(url);
 
-      mediaStore.source = data.media;
+      mediaStore.setSource(data.media);
 
       componentsStore.init(data.components);
 

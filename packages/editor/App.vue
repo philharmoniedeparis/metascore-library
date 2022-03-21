@@ -95,14 +95,14 @@ export default {
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     const assetsStore = useModule("assets_library").useStore();
-    const historyManager = useModule("history").manager;
+    const historyStore = useModule("history").useStore();
     return {
       store,
       mediaStore,
       playerPreviewStore,
       waveformStore,
       assetsStore,
-      historyManager,
+      historyStore,
     };
   },
   data() {
@@ -122,7 +122,7 @@ export default {
         return this.store.appTitle;
       },
       set(value) {
-        this.store.appTitle = value;
+        this.store.setAppTitle(value);
       },
     },
     mediaSource() {
@@ -141,9 +141,9 @@ export default {
   watch: {
     ready(value) {
       if (value) {
-        this.subscribeHistory();
+        this.setupHistoryTracking();
       } else {
-        this.unsubscribeHistory();
+        this.destroyHistoryTracking();
       }
     },
     mediaSource(source) {
@@ -176,7 +176,7 @@ export default {
     this.store.load(this.url);
   },
   beforeUnmount() {
-    this.unsubscribeHistory();
+    this.destroyHistoryTracking();
   },
   methods: {
     onAppTitleFocusin() {
@@ -189,12 +189,12 @@ export default {
       this.selectedLibrariesTab = 1;
       this.assetsStore.add(asset);
     },
-    subscribeHistory() {
-      this.historyManager.subscribeMutation(this.store, "appTitle");
-      this.historyManager.subscribeMutation(this.mediaStore, "source");
+    setupHistoryTracking() {
+      this.historyStore.track(this.store, ["setAppTitle"]);
+      this.historyStore.track(this.mediaStore, ["setSource"]);
     },
-    unsubscribeHistory() {
-      this.historyManager.unsubscribeAll();
+    destroyHistoryTracking() {
+      this.historyStore.untrackAll();
     },
   },
 };
