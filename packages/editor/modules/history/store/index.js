@@ -58,6 +58,7 @@ export default defineStore("history", {
       if (this.canUndo) {
         this.processing = true;
         const item = this.stack[--this.index];
+        console.log("undo", item);
         item.undo();
         this.processing = false;
       }
@@ -66,6 +67,7 @@ export default defineStore("history", {
       if (this.canRedo) {
         this.processing = true;
         const item = this.stack[this.index++];
+        console.log("redo", item);
         item.redo();
         this.processing = false;
       }

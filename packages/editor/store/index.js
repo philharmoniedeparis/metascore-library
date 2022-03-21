@@ -62,61 +62,16 @@ export default defineStore("editor", {
   },
   actions: {
     setAppTitle(value) {
-      const historyStore = useModule("history").useStore();
-      const oldValue = this.appTitle;
-
       this.appTitle = value;
-
-      historyStore.push({
-        store: this,
-        oldValue: { appTitle: oldValue },
-        newValue: { appTitle: this.appTitle },
-      });
     },
     updateComponent(model, data) {
-      const historyStore = useModule("history").useStore();
       const componentsStore = useModule("app_components").useStore();
-      const oldValue = Object.keys(data).reduce(
-        (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
-        {}
-      );
-
       componentsStore.update(model, data);
-
-      historyStore.push({
-        undo: () => {
-          this.updateComponent(model, oldValue);
-        },
-        redo: () => {
-          this.updateComponent(model, data);
-        },
-      });
     },
     updateComponents(models, data) {
-      const historyStore = useModule("history").useStore();
       const componentsStore = useModule("app_components").useStore();
-      const oldValues = [];
-
       models.forEach((model) => {
-        oldValues.push({
-          model,
-          data: Object.keys(data).reduce(
-            (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
-            {}
-          ),
-        });
         componentsStore.update(model, data);
-      });
-
-      historyStore.push({
-        undo: () => {
-          oldValues.forEach(({ model, data }) => {
-            componentsStore.update(model, data);
-          });
-        },
-        redo: () => {
-          this.updateComponents(models, data);
-        },
       });
     },
     addComponent(data, parent) {
@@ -312,5 +267,83 @@ export default defineStore("editor", {
 
       this.ready = true;
     },
+  },
+  history(context) {
+    const {
+      name, // Invoked action's name.
+      args, // Array of parameters passed to the action.
+      after, // Hook called after the action executes.
+      push, // Method to push an undo/redo item to the history.
+    } = context;
+
+    switch (name) {
+      case "setAppTitle":
+        {
+          const oldValue = this.appTitle;
+          after(() => {
+            const newValue = this.appTitle;
+            push({
+              undo: () => {
+                this.appTitle = oldValue;
+              },
+              redo: () => {
+                this.appTitle = newValue;
+              },
+            });
+          });
+        }
+        break;
+
+      case "updateComponent":
+        {
+          const [model, data] = args;
+          const oldValue = Object.keys(data).reduce(
+            (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+            {}
+          );
+          after(() => {
+            push({
+              undo: () => {
+                this.updateComponent(model, oldValue);
+              },
+              redo: () => {
+                this.updateComponent(model, data);
+              },
+            });
+          });
+        }
+        break;
+
+      case "updateComponents":
+        {
+          const [models, data] = args;
+          const oldValues = models.map((model) => {
+            return {
+              model,
+              data: Object.keys(data).reduce(
+                (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+                {}
+              ),
+            };
+          });
+
+          after(() => {
+            push({
+              undo: () => {
+                oldValues.forEach(({ model, data }) => {
+                  this.updateComponent(model, data);
+                });
+              },
+              redo: () => {
+                this.updateComponents(models, data);
+              },
+            });
+          });
+        }
+        break;
+
+      case "addComponent":
+        break;
+    }
   },
 });
