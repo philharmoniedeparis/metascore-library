@@ -91,16 +91,16 @@ export default {
   },
   setup() {
     const store = useStore();
+    const assetsStore = useModule("assets_library").useStore();
     const mediaStore = useModule("media").useStore();
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
-    const assetsStore = useModule("assets_library").useStore();
     return {
       store,
+      assetsStore,
       mediaStore,
       playerPreviewStore,
       waveformStore,
-      assetsStore,
     };
   },
   data() {
@@ -124,7 +124,7 @@ export default {
       },
     },
     mediaSource() {
-      return this.mediaStore.source;
+      return this.store.mediaSource;
     },
     timelineScale() {
       return this.waveformStore.maxScale / this.waveformStore.scale;

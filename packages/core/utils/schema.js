@@ -218,10 +218,6 @@ export const createFileField = ({
   nullable = true,
 } = {}) => {
   ajv.addFormat("file", { validate: () => true });
-  ajv.addFormat(
-    "data-url",
-    /^data:([a-z]+\/[a-z0-9-+.]+)?;(?:name=(.*);)?base64,(.*)$/
-  );
 
   const item = {
     type: nullable ? ["object", "null"] : "object",
@@ -231,7 +227,7 @@ export const createFileField = ({
       name: { type: "string" },
       size: { type: "number" },
       mime: { type: "string" },
-      dataUrl: { type: "string", format: "data-url" },
+      url: { type: "string" },
     },
   };
 

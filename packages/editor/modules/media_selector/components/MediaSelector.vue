@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import useEditorStore from "@metascore-library/editor/store";
 import MediaSourceForm from "./MediaSourceForm";
 import { getMimeTypeFromURL } from "@metascore-library/core/utils/media";
 
@@ -22,8 +22,8 @@ export default {
     MediaSourceForm,
   },
   setup() {
-    const mediaStore = useModule("media").useStore();
-    return { mediaStore };
+    const editorStore = useEditorStore();
+    return { editorStore };
   },
   data() {
     return {
@@ -32,36 +32,28 @@ export default {
   },
   computed: {
     mediaSource() {
-      return this.mediaStore.source;
+      return this.editorStore.mediaSource;
     },
   },
   methods: {
-    setMediaSource(source) {
-      this.mediaStore.setSource(source);
-    },
     onFormSubmit({ file, url }) {
+      let source = null;
+
       if (file) {
-        const { name, size, type: mime } = file;
-
-        this.setMediaSource({
-          name,
-          size,
-          url: URL.createObjectURL(file),
-          mime,
+        source = {
+          ...file,
           source: "upload",
-          file,
-        });
+        };
       } else if (url) {
-        const pathname = new URL(url).pathname;
-        const mime = getMimeTypeFromURL(url);
-
-        this.setMediaSource({
-          name: pathname.split("/").pop(),
+        source = {
+          name: new URL(url).pathname.split("/").pop(),
           url,
-          mime,
+          mime: getMimeTypeFromURL(url),
           source: "url",
-        });
+        };
       }
+
+      this.editorStore.setMediaSource(source);
 
       this.showForm = false;
     },

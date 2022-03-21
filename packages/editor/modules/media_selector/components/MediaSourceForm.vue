@@ -153,7 +153,7 @@ export default {
       });
     },
     async onSubmit() {
-      console.log(this.model.toJson());
+      this.$emit("submit", this.model.toJson());
     },
     onCancel() {
       this.$emit("close");

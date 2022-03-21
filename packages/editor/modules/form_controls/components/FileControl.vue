@@ -74,29 +74,18 @@ export default {
       }
 
       if (this.multiple) {
-        Promise.all(Array.from(files).map(this.getFileInfo)).then((infos) => {
-          this.value = infos;
-        });
+        this.value = Array.from(files).map(this.getFileInfo);
       } else {
-        this.getFileInfo(files[0]).then((info) => {
-          this.value = info;
-        });
+        this.value = this.getFileInfo(files[0]);
       }
     },
     getFileInfo(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.addEventListener("error", reject);
-        reader.addEventListener("load", () => {
-          resolve({
-            name: file.name,
-            size: file.size,
-            mime: file.type,
-            dataURL: reader.result,
-          });
-        });
-        reader.readAsDataURL(file);
-      });
+      return {
+        name: file.name,
+        size: file.size,
+        mime: file.type,
+        url: URL.createObjectURL(file),
+      };
     },
   },
 };

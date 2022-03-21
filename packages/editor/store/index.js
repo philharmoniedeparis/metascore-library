@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { omit, cloneDeep } from "lodash";
+import { omit } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -14,6 +14,10 @@ export default defineStore("editor", {
     };
   },
   getters: {
+    mediaSource() {
+      const mediaStore = useModule("media").useStore();
+      return mediaStore.source;
+    },
     isComponentSelected() {
       return (model) => {
         return this.selectedComponents.find(({ type, id }) => {
@@ -63,6 +67,10 @@ export default defineStore("editor", {
   actions: {
     setAppTitle(value) {
       this.appTitle = value;
+    },
+    setMediaSource(value) {
+      const mediaStore = useModule("media").useStore();
+      mediaStore.source = value;
     },
     updateComponent(model, data) {
       const componentsStore = useModule("app_components").useStore();
@@ -251,12 +259,10 @@ export default defineStore("editor", {
 
       const data = await load(url);
 
-      this.setAppTitle(data.title);
-
-      mediaStore.setSource(data.media);
+      this.appTitle = data.title;
+      mediaStore.source = data.media;
 
       componentsStore.init(data.components);
-
       assetsStore.init(data.assets);
 
       appRendererStore.width = data.width;
@@ -284,10 +290,27 @@ export default defineStore("editor", {
             const newValue = this.appTitle;
             push({
               undo: () => {
-                this.appTitle = oldValue;
+                this.setAppTitle(oldValue);
               },
               redo: () => {
-                this.appTitle = newValue;
+                this.setAppTitle(newValue);
+              },
+            });
+          });
+        }
+        break;
+
+      case "setMediaSource":
+        {
+          const oldValue = this.mediaSource;
+          after(() => {
+            const newValue = this.mediaSource;
+            push({
+              undo: () => {
+                this.setMediaSource(oldValue);
+              },
+              redo: () => {
+                this.setMediaSource(newValue);
               },
             });
           });
