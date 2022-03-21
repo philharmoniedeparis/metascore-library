@@ -394,7 +394,8 @@ export default {
   height: 100%;
   flex-direction: column;
   background: $mediumgray;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   color: $white;
 
   h2.title {
@@ -487,8 +488,8 @@ export default {
 
     &.checkbox {
       .input-wrapper {
-        label {
-          order: -1;
+        > .input-container {
+          order: 1;
         }
       }
     }
