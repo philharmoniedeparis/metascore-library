@@ -17,13 +17,13 @@ function canRedo() {
 
 function undo() {
   if (this.canUndo()) {
-    return stack[--index - 1];
+    return stack[--index];
   }
 }
 
 function redo() {
   if (canRedo()) {
-    return stack[++index - 1];
+    return stack[index++];
   }
 }
 

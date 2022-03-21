@@ -2,6 +2,7 @@
   <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
       <nav class="main-menu">
+        <history-controller />
         <text-control
           v-model="appTitle"
           :lazy="true"
@@ -94,14 +95,14 @@ export default {
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     const assetsStore = useModule("assets_library").useStore();
-    const history = useModule("history");
+    const historyManager = useModule("history").manager;
     return {
       store,
       mediaStore,
       playerPreviewStore,
       waveformStore,
       assetsStore,
-      history,
+      historyManager,
     };
   },
   data() {
@@ -189,11 +190,11 @@ export default {
       this.assetsStore.add(asset);
     },
     subscribeHistory() {
-      this.history.subscribeMutation(this.store, "appTitle");
-      this.history.subscribeMutation(this.mediaStore, "source");
+      this.historyManager.subscribeMutation(this.store, "appTitle");
+      this.historyManager.subscribeMutation(this.mediaStore, "source");
     },
     unsubscribeHistory() {
-      this.history.unsubscribeAll();
+      this.historyManager.unsubscribeAll();
     },
   },
 };

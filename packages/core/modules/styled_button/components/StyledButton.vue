@@ -62,6 +62,7 @@ export default {
   &:disabled {
     cursor: default;
     pointer-events: none;
+    opacity: 0.25;
   }
 
   &.primary {
