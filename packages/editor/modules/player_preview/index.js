@@ -2,6 +2,7 @@ import useStore from "./store";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
+import History from "../history";
 import PlayerPreview from "./components/PlayerPreview";
 import PlayerZoomController from "./components/PlayerZoomController";
 import PlayerDimensionsController from "./components/PlayerDimensionsController";
@@ -14,7 +15,7 @@ export default {
       /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/app_renderer"
     );
 
-    return [ContextMenu, Clipboard, FormControls, AppRenderer];
+    return [AppRenderer, ContextMenu, Clipboard, FormControls, History];
   },
   async install({ app }) {
     const { default: ComponentWrapper } = await import(

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { omit } from "lodash";
+import { unref } from "vue";
+import { omit, cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -8,18 +9,23 @@ export default defineStore("editor", {
     return {
       ready: false,
       appTitle: null,
-      selectedComponents: new Set(),
-      lockedComponents: new Set(),
+      selectedComponents: [],
+      lockedComponents: [],
     };
   },
   getters: {
     isComponentSelected() {
       return (model) => {
-        return this.selectedComponents.has(model);
+        return this.selectedComponents.find(({ type, id }) => {
+          return model.type === type && model.id === id;
+        });
       };
     },
     getSelectedComponents() {
-      return Array.from(this.selectedComponents);
+      const componentsStore = useModule("app_components").useStore();
+      return this.selectedComponents.map(({ type, id }) => {
+        return componentsStore.get(type, id);
+      });
     },
     componentHasSelectedDescendents() {
       return (model) => {
@@ -36,11 +42,16 @@ export default defineStore("editor", {
     },
     isComponentLocked() {
       return (model) => {
-        return this.lockedComponents.has(model);
+        return this.lockedComponents.find(({ type, id }) => {
+          return model.type === type && model.id === id;
+        });
       };
     },
     getLockedComponents() {
-      return Array.from(this.lockedComponents);
+      const componentsStore = useModule("app_components").useStore();
+      return this.lockedComponents.map(({ type, id }) => {
+        return componentsStore.get(type, id);
+      });
     },
     createComponent() {
       return (data) => {
@@ -51,16 +62,61 @@ export default defineStore("editor", {
   },
   actions: {
     setAppTitle(value) {
+      const historyStore = useModule("history").useStore();
+      const oldValue = this.appTitle;
+
       this.appTitle = value;
+
+      historyStore.push({
+        store: this,
+        oldValue: { appTitle: oldValue },
+        newValue: { appTitle: this.appTitle },
+      });
     },
     updateComponent(model, data) {
+      const historyStore = useModule("history").useStore();
       const componentsStore = useModule("app_components").useStore();
+      const oldValue = Object.keys(data).reduce(
+        (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+        {}
+      );
+
       componentsStore.update(model, data);
+
+      historyStore.push({
+        undo: () => {
+          this.updateComponent(model, oldValue);
+        },
+        redo: () => {
+          this.updateComponent(model, data);
+        },
+      });
     },
     updateComponents(models, data) {
+      const historyStore = useModule("history").useStore();
       const componentsStore = useModule("app_components").useStore();
+      const oldValues = [];
+
       models.forEach((model) => {
+        oldValues.push({
+          model,
+          data: Object.keys(data).reduce(
+            (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+            {}
+          ),
+        });
         componentsStore.update(model, data);
+      });
+
+      historyStore.push({
+        undo: () => {
+          oldValues.forEach(({ model, data }) => {
+            componentsStore.update(model, data);
+          });
+        },
+        redo: () => {
+          this.updateComponents(models, data);
+        },
       });
     },
     addComponent(data, parent) {
@@ -73,16 +129,25 @@ export default defineStore("editor", {
       if (!append) {
         this.deselectAllComponents();
       }
-      this.selectedComponents.add(model);
+      if (!this.isComponentSelected(model)) {
+        this.selectedComponents.push({
+          type: model.type,
+          id: model.id,
+        });
+      }
     },
     deselectComponent(model) {
-      this.selectedComponents.delete(model);
+      this.selectedComponents = this.selectedComponents.filter(
+        ({ type, id }) => {
+          return model.type === type && model.id === id;
+        }
+      );
     },
     deselectComponents(models) {
       models.map(this.deselectComponent);
     },
     deselectAllComponents() {
-      this.selectedComponents.clear();
+      this.selectedComponents = [];
     },
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
@@ -108,16 +173,26 @@ export default defineStore("editor", {
       }
     },
     lockComponent(model) {
-      this.lockedComponents.add(model);
+      if (!this.isComponentLocked(model)) {
+        this.lockedComponents.push({
+          type: model.type,
+          id: model.id,
+        });
+      }
     },
     lockComponents(models) {
       models.map(this.lockComponent);
     },
     unlockComponent(model) {
-      this.lockedComponents.delete(model);
+      this.lockedComponents = this.lockedComponents.filter(({ type, id }) => {
+        return model.type === type && model.id === id;
+      });
     },
     unlockComponents(models) {
       models.map(this.unlockComponent);
+    },
+    unlockAllComponents() {
+      this.lockedComponents = [];
     },
     copyComponent(model) {
       const clipboardStore = useModule("clipboard").useStore();
@@ -217,6 +292,7 @@ export default defineStore("editor", {
       const componentsStore = useModule("app_components").useStore();
       const appRendererStore = useModule("app_renderer").useStore();
       const assetsStore = useModule("assets_library").useStore();
+      const historyStore = useModule("history").useStore();
 
       const data = await load(url);
 
@@ -231,6 +307,8 @@ export default defineStore("editor", {
       appRendererStore.width = data.width;
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
+
+      historyStore.active = true;
 
       this.ready = true;
     },

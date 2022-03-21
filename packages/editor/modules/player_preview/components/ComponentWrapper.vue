@@ -84,7 +84,14 @@ export default {
     const editorStore = useEditorStore();
     const clipboardStore = useModule("clipboard").useStore();
     const contextmenuStore = useModule("contextmenu").useStore();
-    return { store, editorStore, clipboardStore, contextmenuStore };
+    const historyStore = useModule("history").useStore();
+    return {
+      store,
+      editorStore,
+      clipboardStore,
+      contextmenuStore,
+      historyStore,
+    };
   },
   data() {
     return {
@@ -320,6 +327,7 @@ export default {
           this._interactables.draggable({
             allowFrom,
             listeners: {
+              start: this.onDraggableStart,
               move: this.onDraggableMove,
               end: this.onDraggableEnd,
             },
@@ -343,14 +351,20 @@ export default {
         delete this._interactables;
       }
     },
+    onDraggableStart() {
+      this.historyStore.startGroup();
+    },
     onDraggableMove(evt) {
-      const position = this.model.position;
-
-      this.editorStore.updateComponent(this.model, {
-        position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
+      this.editorStore.getSelectedComponents.forEach((model) => {
+        const position = model.position;
+        this.editorStore.updateComponent(model, {
+          position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
+        });
       });
     },
     onDraggableEnd(evt) {
+      this.historyStore.endGroup();
+
       // Prevent the next click event
       evt.target.addEventListener(
         "click",

@@ -95,14 +95,12 @@ export default {
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     const assetsStore = useModule("assets_library").useStore();
-    const historyStore = useModule("history").useStore();
     return {
       store,
       mediaStore,
       playerPreviewStore,
       waveformStore,
       assetsStore,
-      historyStore,
     };
   },
   data() {
@@ -139,13 +137,6 @@ export default {
     },
   },
   watch: {
-    ready(value) {
-      if (value) {
-        this.setupHistoryTracking();
-      } else {
-        this.destroyHistoryTracking();
-      }
-    },
     mediaSource(source) {
       if (source) {
         this.waveformStore.load(source);
@@ -175,9 +166,6 @@ export default {
     this.modalsTarget = this.$el;
     this.store.load(this.url);
   },
-  beforeUnmount() {
-    this.destroyHistoryTracking();
-  },
   methods: {
     onAppTitleFocusin() {
       this.classes["app-title-focused"] = true;
@@ -188,13 +176,6 @@ export default {
     onSharedAssetsImportClick(asset) {
       this.selectedLibrariesTab = 1;
       this.assetsStore.add(asset);
-    },
-    setupHistoryTracking() {
-      this.historyStore.track(this.store, ["setAppTitle"]);
-      this.historyStore.track(this.mediaStore, ["setSource"]);
-    },
-    destroyHistoryTracking() {
-      this.historyStore.untrackAll();
     },
   },
 };

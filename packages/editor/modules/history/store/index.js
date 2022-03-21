@@ -1,128 +1,74 @@
 import { defineStore } from "pinia";
-import { union, difference } from "lodash";
 
 export default defineStore("history", {
   state: () => {
     return {
+      active: false,
       stack: [],
+      group: null,
       index: 0,
       stores: {},
       processing: false,
     };
   },
   getters: {
-    canUndo() {
-      return this.index > 0;
+    canUndo(state) {
+      return state.index > 0;
     },
-    canRedo() {
-      return this.index < this.stack.length;
+    canRedo(state) {
+      return state.index < state.stack.length;
     },
   },
   actions: {
-    onAction(action) {
-      if (this.processing) {
+    push(item) {
+      if (!this.active || this.processing) {
         return;
       }
 
-      const {
-        name, // name of the action
-        store, // store instance
-        //args, // array of parameters passed to the action
-        after, // hook after the action returns or resolves
-        onError, // hook if the action throws or rejects
-      } = action;
-      const storeId = store.$id;
-
-      if (!(storeId in this.stores)) {
-        return;
-      }
-
-      const options = this.stores[storeId];
-      if (!options.tracked.includes(name)) {
-        return;
-      }
-
-      const oldState = options.store.$state;
-      after((result) => {
-        console.log(oldState, result);
-      });
-    },
-    track(store, actions) {
-      const storeId = store.$id;
-
-      if (!(storeId in this.stores)) {
-        this.stores[storeId] = {
-          store,
-          tracked: [],
-        };
-      }
-      if (!("off" in this.stores[storeId])) {
-        this.stores[storeId].off = store.$onAction(this.onAction);
-      }
-      this.stores[storeId].tracked = union(
-        this.stores[storeId].tracked,
-        actions
-      );
-    },
-    untrack(store, actions = null) {
-      const storeId = store.$id;
-
-      if (!(storeId in this.stores)) {
-        return;
-      }
-
-      if (actions === null) {
-        this.stores[storeId].off();
-        delete this.stores[storeId];
+      if (this.group !== null) {
+        this.group.push(item);
       } else {
-        this.stores[storeId].tracked = difference(
-          this.stores[storeId].tracked,
-          actions
-        );
+        this.stack.splice(this.index);
+        this.stack.push(item);
+        this.index++;
       }
     },
-    untrackAll() {
-      Object.values(this.stores).forEach((s) => {
-        if ("off" in s) {
-          s.off();
-        }
-      });
+    startGroup() {
+      if (!this.active || this.processing) {
+        return;
+      }
 
-      this.stores = {};
+      this.group = [];
     },
-    push(value) {
-      this.stack.splice(this.index);
-      this.stack.push(value);
-      this.index++;
+    endGroup() {
+      if (!this.active || this.processing) {
+        return;
+      }
+
+      const group = this.group;
+      if (group && group.length > 0) {
+        this.group = null;
+        this.push({
+          undo: group[0].undo,
+          redo: group[group.length - 1].redo,
+        });
+      }
     },
     undo() {
-      if (this.canUndo()) {
+      if (this.canUndo) {
+        this.processing = true;
         const item = this.stack[--this.index];
-        this.process(item, "undo");
+        item.undo();
+        this.processing = false;
       }
     },
     redo() {
-      if (this.canRedo()) {
+      if (this.canRedo) {
+        this.processing = true;
         const item = this.stack[this.index++];
-        this.process(item, "redo");
+        item.redo();
+        this.processing = false;
       }
-    },
-    process(item, action = "undo") {
-      const { storeId } = item;
-      const store = this.stores.get(storeId);
-      if (!store) {
-        return;
-      }
-
-      this.processing = true;
-      switch (action) {
-        case "redo":
-          break;
-
-        case "undo":
-          break;
-      }
-      this.processing = false;
     },
   },
 });
