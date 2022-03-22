@@ -160,7 +160,7 @@ export default {
       });
     },
     onSubmit() {
-      console.log(this.model.toJson());
+      console.log(this.model.$data);
     },
     onCancel() {
       this.$emit("close");

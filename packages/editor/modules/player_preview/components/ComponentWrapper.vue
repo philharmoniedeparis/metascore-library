@@ -210,7 +210,7 @@ export default {
           items.push({
             label: this.$t("contextmenu.copy"),
             handler: () => {
-              const data = omit(this.model.toJson(), ["id"]);
+              const data = omit(this.model.$data, ["id"]);
               this.clipboardStore.setData(`metascore/component`, data);
             },
           });

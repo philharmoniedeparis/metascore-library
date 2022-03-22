@@ -159,7 +159,7 @@ export default defineStore("editor", {
     },
     copyComponent(model) {
       const clipboardStore = useModule("clipboard").useStore();
-      const data = omit(model.toJson(), ["id"]);
+      const data = omit(model.$data, ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
     copyComponents(models) {
@@ -179,7 +179,7 @@ export default defineStore("editor", {
       models.map(this.deleteComponent);
     },
     arrangeComponent(model, action) {
-      if (model.parent) {
+      if (model.$parent) {
         const componentsStore = useModule("app_components").useStore();
         const parent = componentsStore.getParent(model);
         const children = componentsStore.getChildren(parent);

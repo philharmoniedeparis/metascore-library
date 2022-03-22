@@ -133,6 +133,23 @@ export default class AbstractModel {
   }
 
   /**
+   * Get the model's data
+   *
+   * @returns {object} The data
+   */
+  get $data() {
+    const json = {};
+
+    Object.keys(this.$properties).forEach((key) => {
+      if (key in this) {
+        json[key] = this[key];
+      }
+    });
+
+    return json;
+  }
+
+  /**
    * Get the schema validator.
    *
    * @returns {Function} A validation function returned by Ajv
@@ -155,7 +172,7 @@ export default class AbstractModel {
   update(data) {
     if (
       this.validate({
-        ...this.toJson(),
+        ...this.$data,
         ...data,
       })
     ) {
@@ -169,18 +186,6 @@ export default class AbstractModel {
 
   delete() {
     this.$deleted = true;
-  }
-
-  toJson() {
-    const json = {};
-
-    Object.keys(this.$properties).forEach((key) => {
-      if (key in this) {
-        json[key] = this[key];
-      }
-    });
-
-    return json;
   }
 
   /**

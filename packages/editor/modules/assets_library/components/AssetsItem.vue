@@ -143,7 +143,7 @@ export default {
       }
 
       const component = this.editorStore.createComponent(config);
-      return omit(component.toJson(), ["id"]);
+      return omit(component.$data, ["id"]);
     },
     assetDragData() {
       return JSON.stringify(this.asset);

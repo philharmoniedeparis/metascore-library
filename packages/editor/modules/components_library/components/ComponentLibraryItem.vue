@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     onDragstart(evt) {
-      const data = omit(this.model.toJson(), ["id"]);
+      const data = omit(this.model.$data, ["id"]);
 
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(

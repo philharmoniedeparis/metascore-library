@@ -71,8 +71,8 @@ export default defineStore("app-components", {
     },
     getParent() {
       return (model) => {
-        if (model.parent) {
-          return this.get(model.parent.schema, model.parent.id);
+        if (model.$parent) {
+          return this.get(model.$parent.schema, model.$parent.id);
         }
         return null;
       };
