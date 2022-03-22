@@ -14,6 +14,7 @@ import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
 import * as Models from "./models";
+import * as Composables from "./composables";
 
 export default {
   id: "app_components",
@@ -36,6 +37,7 @@ export default {
       useStore,
       ComponentWrapper,
       Models,
+      Composables,
     };
   },
 };

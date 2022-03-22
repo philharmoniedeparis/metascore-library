@@ -46,8 +46,8 @@ export default defineStore("history", {
       }
 
       const group = this.group;
+      this.group = null;
       if (group && group.length > 0) {
-        this.group = null;
         this.push({
           undo: group[0].undo,
           redo: group[group.length - 1].redo,

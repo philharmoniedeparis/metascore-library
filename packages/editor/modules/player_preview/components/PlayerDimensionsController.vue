@@ -1,37 +1,57 @@
 <template>
   <div class="player-dimensions-controller">
-    <number-control v-model="width" :min="1" :spinners="false" />
+    <number-control
+      v-model.number="width"
+      :min="1"
+      :spinners="false"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
+    />
     <span class="separator">x</span>
-    <number-control v-model="height" :min="1" :spinners="false" />
+    <number-control
+      v-model.number="height"
+      :min="1"
+      :spinners="false"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
+    />
   </div>
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
 import useEditorStore from "@metascore-library/editor/store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   setup() {
     const editorStore = useEditorStore();
-    const appRendererStore = useModule("app_renderer").useStore();
-    return { editorStore, appRendererStore };
+    const historyStore = useModule("history").useStore();
+    return { editorStore, historyStore };
   },
   computed: {
     width: {
       get() {
-        return this.appRendererStore.width;
+        return this.editorStore.appWidth;
       },
-      set(width) {
-        this.editorStore.setPlayerDimensions({ width });
+      set(value) {
+        this.editorStore.setAppWidth(value);
       },
     },
     height: {
       get() {
-        return this.appRendererStore.height;
+        return this.editorStore.appHeight;
       },
-      set(height) {
-        this.editorStore.setPlayerDimensions({ height });
+      set(value) {
+        this.editorStore.setAppHeight(value);
       },
+    },
+  },
+  methods: {
+    onInputFocus() {
+      this.historyStore.startGroup();
+    },
+    onInputBlur() {
+      this.historyStore.endGroup();
     },
   },
 };

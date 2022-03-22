@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export default function (model) {
+export function useBackground(model) {
   if (unref(model).constructor.$isBackgroundable) {
     const background = computed(() => {
       const {
@@ -31,3 +31,5 @@ export default function (model) {
     background: null,
   };
 }
+
+export default useBackground;

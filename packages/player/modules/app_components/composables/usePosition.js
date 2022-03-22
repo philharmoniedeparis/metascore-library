@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export default function (model) {
+export function usePosition(model) {
   if (unref(model).constructor.$isPositionable) {
     const position = computed(() => {
       const { position: value } = unref(model);
@@ -25,3 +25,5 @@ export default function (model) {
     position: null,
   };
 }
+
+export default usePosition;

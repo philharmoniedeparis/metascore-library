@@ -12,7 +12,11 @@
     :label-for="inputId"
     :description="description"
   >
-    <div class="input-container">
+    <div
+      class="input-container"
+      @focusin="onInputFocus"
+      @focusout="onInputBlur"
+    >
       <input
         :id="inputId"
         ref="input"
@@ -24,8 +28,6 @@
         :readonly="readonly"
         :disabled="disabled"
         @change="onInputChange"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
       />
       <div v-if="spinners" class="spinners">
         <button
@@ -116,7 +118,7 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "blur", "focus"],
   data() {
     return {
       inputId: uuid(),
@@ -141,6 +143,14 @@ export default {
     },
   },
   methods: {
+    onInputFocus() {
+      this.isFocused = false;
+      this.$emit("focus");
+    },
+    onInputBlur() {
+      this.isFocused = false;
+      this.$emit("blur");
+    },
     onInputChange(evt) {
       if (this.lazy) {
         this.$emit("update:modelValue", evt.target.value);

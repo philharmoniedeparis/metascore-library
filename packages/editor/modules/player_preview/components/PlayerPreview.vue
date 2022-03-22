@@ -216,9 +216,9 @@ export default {
     },
     contextmenuItems() {
       const items = [];
-      const selection = this.editorStore.getSelectedComponents;
+      const selected = this.editorStore.getSelectedComponents;
 
-      if (selection.length > 0) {
+      if (selected.length > 0) {
         items.push({
           label: this.$t("contextmenu.selection"),
           items: [
@@ -231,25 +231,25 @@ export default {
             {
               label: this.$t("contextmenu.copy"),
               handler: () => {
-                this.editorStore.copyComponents(selection);
+                this.editorStore.copyComponents(selected);
               },
             },
             {
               label: this.$t("contextmenu.delete"),
               handler: () => {
-                this.editorStore.deleteComponents(selection);
+                this.editorStore.deleteComponents(selected);
               },
             },
             {
               label: this.$t("contextmenu.lock"),
               handler: () => {
-                this.editorStore.lockComponents(selection);
+                this.editorStore.lockComponents(selected);
               },
             },
             {
               label: this.$t("contextmenu.unlock"),
               handler: () => {
-                this.editorStore.unlockComponents(selection);
+                this.editorStore.unlockComponents(selected);
               },
             },
           ],

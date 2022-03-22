@@ -85,6 +85,19 @@ export default class AbstractModel {
   }
 
   /**
+   * Get the schema validator.
+   *
+   * @returns {Function} A validation function returned by Ajv
+   */
+  static get validator() {
+    if (!this._validator) {
+      this._validator = this.ajv.compile(this.schema);
+    }
+
+    return this._validator;
+  }
+
+  /**
    * Get the list of required properties from the schema.
    *
    * @returns {string[]} The list of required properties
@@ -94,8 +107,6 @@ export default class AbstractModel {
   }
 
   constructor(data = {}) {
-    this.$deleted = false;
-
     if (this.validate(data)) {
       Object.entries(data).forEach(([key, value]) => {
         this[key] = value;
@@ -150,16 +161,12 @@ export default class AbstractModel {
   }
 
   /**
-   * Get the schema validator.
+   * Alias to the static method of the same name
    *
    * @returns {Function} A validation function returned by Ajv
    */
   get $validator() {
-    if (!this.$_validator) {
-      this.$_validator = this.$ajv.compile(this.$schema);
-    }
-
-    return this.$_validator;
+    return this.constructor.validator;
   }
 
   /**
@@ -182,10 +189,6 @@ export default class AbstractModel {
     } else {
       console.error(this.$errors);
     }
-  }
-
-  delete() {
-    this.$deleted = true;
   }
 
   /**

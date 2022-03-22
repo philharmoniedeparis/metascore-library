@@ -11,6 +11,8 @@
       type="url"
       :readonly="readonly"
       :disabled="disabled"
+      @focus="onInputFocus"
+      @blur="onInputBlur"
       @change="onInputChange"
     />
   </form-group>
@@ -46,7 +48,7 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "blur", "focus"],
   data() {
     return {
       inputId: uuid(),
@@ -65,6 +67,12 @@ export default {
     },
   },
   methods: {
+    onInputFocus() {
+      this.$emit("focus");
+    },
+    onInputBlur() {
+      this.$emit("blur");
+    },
     onInputChange(evt) {
       if (this.lazy) {
         this.$emit("update:modelValue", evt.target.value);

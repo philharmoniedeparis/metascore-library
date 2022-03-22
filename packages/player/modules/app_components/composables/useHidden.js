@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export default function (model) {
+export function useHidden(model) {
   if (unref(model).constructor.$isHideable) {
     const hidden = computed(() => {
       const { hidden: value } = unref(model);
@@ -23,3 +23,5 @@ export default function (model) {
     hidden: null,
   };
 }
+
+export default useHidden;

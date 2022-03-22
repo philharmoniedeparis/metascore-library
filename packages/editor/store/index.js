@@ -14,6 +14,14 @@ export default defineStore("editor", {
     };
   },
   getters: {
+    appWidth() {
+      const appRendererStore = useModule("app_renderer").useStore();
+      return appRendererStore.width;
+    },
+    appHeight() {
+      const appRendererStore = useModule("app_renderer").useStore();
+      return appRendererStore.height;
+    },
     mediaSource() {
       const mediaStore = useModule("media").useStore();
       return mediaStore.source;
@@ -67,6 +75,14 @@ export default defineStore("editor", {
   actions: {
     setAppTitle(value) {
       this.appTitle = value;
+    },
+    setAppWidth(value) {
+      const appRendererStore = useModule("app_renderer").useStore();
+      appRendererStore.width = value;
+    },
+    setAppHeight(value) {
+      const appRendererStore = useModule("app_renderer").useStore();
+      appRendererStore.height = value;
     },
     setMediaSource(value) {
       const mediaStore = useModule("media").useStore();
@@ -173,10 +189,18 @@ export default defineStore("editor", {
       models.map(this.cutComponent);
     },
     deleteComponent(model) {
-      model.delete();
+      const componentsStore = useModule("app_components").useStore();
+      componentsStore.delete(model.type, model.id);
     },
     deleteComponents(models) {
       models.map(this.deleteComponent);
+    },
+    restoreComponent(model) {
+      const componentsStore = useModule("app_components").useStore();
+      componentsStore.restore(model.type, model.id);
+    },
+    restoreComponents(models) {
+      models.map(this.restoreComponent);
     },
     arrangeComponent(model, action) {
       if (model.$parent) {
@@ -241,15 +265,6 @@ export default defineStore("editor", {
         this.updateComponent(model, { position });
       });
     },
-    setPlayerDimensions({ width, height }) {
-      const appRendererStore = useModule("app_renderer").useStore();
-      if (typeof width !== "undefined") {
-        appRendererStore.width = width;
-      }
-      if (typeof height !== "undefined") {
-        appRendererStore.height = height;
-      }
-    },
     async load(url) {
       const mediaStore = useModule("media").useStore();
       const componentsStore = useModule("app_components").useStore();
@@ -284,33 +299,20 @@ export default defineStore("editor", {
 
     switch (name) {
       case "setAppTitle":
-        {
-          const oldValue = this.appTitle;
-          after(() => {
-            const newValue = this.appTitle;
-            push({
-              undo: () => {
-                this.setAppTitle(oldValue);
-              },
-              redo: () => {
-                this.setAppTitle(newValue);
-              },
-            });
-          });
-        }
-        break;
-
+      case "setAppWidth":
+      case "setAppHeight":
       case "setMediaSource":
         {
-          const oldValue = this.mediaSource;
+          const key = name.slice(3, 4).toLowerCase() + name.slice(4);
+          const oldValue = this[key];
           after(() => {
-            const newValue = this.mediaSource;
+            const newValue = this[key];
             push({
               undo: () => {
-                this.setMediaSource(oldValue);
+                this[name](oldValue);
               },
               redo: () => {
-                this.setMediaSource(newValue);
+                this[name](newValue);
               },
             });
           });
@@ -366,6 +368,48 @@ export default defineStore("editor", {
         break;
 
       case "addComponent":
+        after((model) => {
+          push({
+            undo: () => {
+              this.deleteComponent(model);
+            },
+            redo: () => {
+              this.restoreComponent(model);
+            },
+          });
+        });
+        break;
+
+      case "restoreComponent":
+      case "restoreComponents":
+      case "deleteComponent":
+      case "deleteComponents":
+        {
+          const arg = args[0];
+          after(() => {
+            push({
+              undo: () => {
+                switch (name) {
+                  case "restoreComponent":
+                    this.deleteComponent(arg);
+                    break;
+                  case "restoreComponents":
+                    this.deleteComponents(arg);
+                    break;
+                  case "deleteComponent":
+                    this.restoreComponent(arg);
+                    break;
+                  case "deleteComponents":
+                    this.restoreComponents(arg);
+                    break;
+                }
+              },
+              redo: () => {
+                this[name](arg);
+              },
+            });
+          });
+        }
         break;
     }
   },

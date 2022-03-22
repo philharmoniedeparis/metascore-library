@@ -1,5 +1,5 @@
 <template>
-  <div class="timecode-input">
+  <div class="timecode-input" @focusin="onFocus" @focusout="onBlur">
     <input
       ref="input"
       v-model="textualvalue"
@@ -10,8 +10,6 @@
       @mousedown="onMousedown"
       @wheel.prevent="onWheel"
       @click="onClick"
-      @focus="onFocus"
-      @blur="onBlur"
       @dragstart.prevent
       @drop.prevent
       @cut.prevent
@@ -128,7 +126,7 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "focus", "blur"],
   data() {
     return {
       keysPressed: 0,
@@ -208,6 +206,7 @@ export default {
     },
     onFocus() {
       this.focusedSegment = 0;
+      this.$emit("focus");
     },
     onBlur() {
       if (this.dirty) {
@@ -215,6 +214,7 @@ export default {
       }
       this.keysPressed = 0;
       this.focusedSegment = null;
+      this.$emit("blur");
     },
     onPaste(evt) {
       const clipboard_data = evt.clipboardData || window.clipboardData;

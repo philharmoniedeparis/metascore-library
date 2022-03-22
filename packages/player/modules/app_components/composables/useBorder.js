@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export default function (model) {
+export function useBorder(model) {
   if (unref(model).constructor.$isBorderable) {
     const border = computed(() => {
       const {
@@ -41,3 +41,5 @@ export default function (model) {
     border: null,
   };
 }
+
+export default useBorder;

@@ -12,16 +12,32 @@ export default defineStore("app-components", {
     };
   },
   getters: {
+    create() {
+      return (data) => {
+        if (data.type in Models) {
+          return new Models[data.type](data);
+        }
+      };
+    },
     get() {
       return (type, id) => {
         const model = this.components?.[type]?.[id];
         return model && !model.$deleted ? model : null;
       };
     },
-    create() {
-      return (data) => {
-        if (data.type in Models) {
-          return new Models[data.type](data);
+    delete() {
+      return (type, id) => {
+        const model = this.components?.[type]?.[id];
+        if (model) {
+          model.$deleted = true;
+        }
+      };
+    },
+    restore() {
+      return (type, id) => {
+        const model = this.components?.[type]?.[id];
+        if (model) {
+          delete model.$deleted;
         }
       };
     },

@@ -489,10 +489,17 @@ export default {
     &.selected {
       @each $component, $color in $component-colors {
         @if $component == default {
-          box-shadow: 0 0 0.5em 0 $color;
+          outline: 1px solid $color;
+          box-shadow: 0 0 0.25em 0.25em $color;
+        } @else if $component == page {
+          &.#{$component} {
+            outline: 1px solid $color;
+            box-shadow: inset 0 0 0.25em 0.25em $color;
+          }
         } @else {
           &.#{$component} {
-            box-shadow: 0 0 0.5em 0 $color;
+            outline: 1px solid $color;
+            box-shadow: 0 0 0.25em 0.25em $color;
           }
         }
       }
