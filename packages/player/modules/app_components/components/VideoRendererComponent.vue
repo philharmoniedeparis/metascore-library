@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="video-renderer">
+  <component-wrapper :component="component" class="video-renderer">
     <canvas ref="canvas" />
   </component-wrapper>
 </template>
@@ -10,9 +10,9 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },

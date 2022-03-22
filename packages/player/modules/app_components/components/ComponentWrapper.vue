@@ -1,6 +1,6 @@
 <template>
   <div
-    :id="model.id"
+    :id="component.id"
     :class="['metaScore-component', { active, hidden }]"
     :style="{
       ...background,
@@ -17,6 +17,7 @@
 
 <script>
 import { toRef } from "vue";
+import useStore from "../store";
 import useBackground from "../composables/useBackground";
 import useBorder from "../composables/useBorder";
 import useHidden from "../composables/useHidden";
@@ -29,30 +30,33 @@ import useTransform from "../composables/useTransform";
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
   },
   emits: ["activated", "deactivated"],
   setup(props) {
-    const model = toRef(props, "model");
+    const store = useStore();
+    const component = toRef(props, "component");
+    const model = store.getModel(component.value.type);
+
     return {
-      ...useBackground(model),
-      ...useBorder(model),
-      ...useHidden(model),
-      ...useOpacity(model),
-      ...usePosition(model),
-      ...useSize(model),
-      ...useTime(model),
-      ...useTransform(model),
+      ...useBackground(component, model),
+      ...useBorder(component, model),
+      ...useHidden(component, model),
+      ...useOpacity(component, model),
+      ...usePosition(component, model),
+      ...useSize(component, model),
+      ...useTime(component, model),
+      ...useTransform(component, model),
     };
   },
   watch: {
     active(value) {
-      this.$emit(value ? "activated" : "deactivated", this, this.model);
+      this.$emit(value ? "activated" : "deactivated", this.component);
     },
   },
 };

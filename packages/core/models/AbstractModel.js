@@ -98,6 +98,23 @@ export default class AbstractModel {
   }
 
   /**
+   * Validate data against the schema.
+   *
+   * @param {object} data The data to validate
+   * @returns {boolean} True if the data is valid, false otherwise
+   */
+  static validate(data) {
+    return this.validator(data);
+  }
+
+  /**
+   * Get current validation errors.
+   */
+  static get errors() {
+    return this.validator.errors;
+  }
+
+  /**
    * Get the list of required properties from the schema.
    *
    * @returns {string[]} The list of required properties
@@ -192,12 +209,12 @@ export default class AbstractModel {
   }
 
   /**
-   * Validate data against the schema.
+   * Alias to the static method of the same name
    *
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
   validate(data) {
-    return this.$validator(data);
+    return this.constructor.validate(data);
   }
 }

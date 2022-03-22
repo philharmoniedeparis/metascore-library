@@ -41,7 +41,7 @@
 
 <template>
   <component-wrapper
-    :model="model"
+    :component="component"
     :class="{ selected, preview, 'drag-over': dragOver }"
     @contextmenu="onContextmenu"
     @click.stop="onClick"
@@ -71,9 +71,9 @@ export default {
   },
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -83,12 +83,14 @@ export default {
     const store = useStore();
     const editorStore = useEditorStore();
     const clipboardStore = useModule("clipboard").useStore();
+    const componentsStore = useModule("app_components").useStore();
     const contextmenuStore = useModule("contextmenu").useStore();
     const historyStore = useModule("history").useStore();
     return {
       store,
       editorStore,
       clipboardStore,
+      componentsStore,
       contextmenuStore,
       historyStore,
     };
@@ -100,36 +102,39 @@ export default {
     };
   },
   computed: {
+    model() {
+      return this.componentsStore.getModel(this.component.type);
+    },
     preview() {
       return this.store.preview;
     },
     selected() {
-      return this.editorStore.isComponentSelected(this.model);
+      return this.editorStore.isComponentSelected(this.component);
     },
     locked() {
-      return this.editorStore.isComponentLocked(this.model);
+      return this.editorStore.isComponentLocked(this.component);
     },
     isPositionable() {
-      return this.model.constructor.$isPositionable;
+      return this.model.$isPositionable;
     },
     isResizable() {
-      return this.model.constructor.$isResizable;
+      return this.model.$isResizable;
     },
     clipboardDataAvailable() {
       if (this.clipboardStore.format !== "metascore/component") {
         return false;
       }
 
-      const model = this.clipboardStore.data;
+      const component = this.clipboardStore.data;
 
-      switch (this.model.type) {
+      switch (this.component.type) {
         case "Scenario":
         case "Page":
-          return this.model.$schema.properties[
+          return this.model.schema.properties[
             "children"
-          ].items.properties.schema.enum.includes(model.type);
+          ].items.properties.schema.enum.includes(component.type);
         case "Block":
-          return model.type === "Page";
+          return component.type === "Page";
         default:
           return false;
       }
@@ -140,9 +145,9 @@ export default {
           label: this.$t(`contextmenu.${this.selected ? "de" : ""}select`),
           handler: () => {
             if (this.selected) {
-              this.editorStore.deselectComponent(this.model);
+              this.editorStore.deselectComponent(this.component);
             } else {
-              this.editorStore.selectComponent(this.model);
+              this.editorStore.selectComponent(this.component);
             }
           },
         },
@@ -150,9 +155,9 @@ export default {
           label: this.$t(`contextmenu.${this.locked ? "un" : ""}lock`),
           handler: () => {
             if (this.locked) {
-              this.editorStore.unlockComponent(this.model);
+              this.editorStore.unlockComponent(this.component);
             } else {
-              this.editorStore.lockComponent(this.model);
+              this.editorStore.lockComponent(this.component);
             }
           },
         },
@@ -169,11 +174,11 @@ export default {
         });
       }
 
-      switch (this.model.type) {
+      switch (this.component.type) {
         case "Scenario":
           return [
             {
-              label: `${this.model.type} (${this.model.name})`,
+              label: `${this.component.type} (${this.component.name})`,
               items,
             },
           ];
@@ -181,25 +186,25 @@ export default {
         case "Page":
           return [
             {
-              label: this.model.type,
+              label: this.component.type,
               items: [
                 ...items,
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.editorStore.deleteComponent(this.model);
+                    this.editorStore.deleteComponent(this.component);
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_before"),
                   handler: () => {
-                    this.editorStore.addPageBefore(this.model);
+                    this.editorStore.addPageBefore(this.component);
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_after"),
                   handler: () => {
-                    this.editorStore.addPageAfter(this.model);
+                    this.editorStore.addPageAfter(this.component);
                   },
                 },
               ],
@@ -210,20 +215,20 @@ export default {
           items.push({
             label: this.$t("contextmenu.copy"),
             handler: () => {
-              const data = omit(this.model.$data, ["id"]);
+              const data = omit(this.component, ["id"]);
               this.clipboardStore.setData(`metascore/component`, data);
             },
           });
 
           return [
             {
-              label: `${this.model.type} (${this.model.name})`,
+              label: `${this.component.type} (${this.component.name})`,
               items: [
                 ...items,
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.editorStore.deleteComponent(this.model);
+                    this.editorStore.deleteComponent(this.component);
                   },
                 },
                 {
@@ -232,20 +237,26 @@ export default {
                     {
                       label: this.$t("contextmenu.to_front"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(this.model, "front");
+                        this.editorStore.arrangeComponent(
+                          this.component,
+                          "front"
+                        );
                       },
                     },
                     {
                       label: this.$t("contextmenu.to_back"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(this.model, "back");
+                        this.editorStore.arrangeComponent(
+                          this.component,
+                          "back"
+                        );
                       },
                     },
                     {
                       label: this.$t("contextmenu.forward"),
                       handler: () => {
                         this.editorStore.arrangeComponent(
-                          this.model,
+                          this.component,
                           "forward"
                         );
                       },
@@ -254,7 +265,7 @@ export default {
                       label: this.$t("contextmenu.backward"),
                       handler: () => {
                         this.editorStore.arrangeComponent(
-                          this.model,
+                          this.component,
                           "backward"
                         );
                       },
@@ -294,11 +305,11 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.editorStore.deselectComponent(this.model);
+          this.editorStore.deselectComponent(this.component);
           evt.stopImmediatePropagation();
         }
       } else {
-        this.editorStore.selectComponent(this.model, evt.shiftKey);
+        this.editorStore.selectComponent(this.component, evt.shiftKey);
         evt.stopImmediatePropagation();
       }
     },
@@ -315,7 +326,7 @@ export default {
         if (this.isPositionable) {
           let allowFrom = null;
 
-          switch (this.model.type) {
+          switch (this.component.type) {
             case "Block":
               allowFrom = ".pager";
               break;
@@ -355,9 +366,9 @@ export default {
       this.historyStore.startGroup();
     },
     onDraggableMove(evt) {
-      this.editorStore.getSelectedComponents.forEach((model) => {
-        const position = model.position;
-        this.editorStore.updateComponent(model, {
+      this.editorStore.getSelectedComponents.forEach((component) => {
+        const position = component.position;
+        this.editorStore.updateComponent(component, {
           position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
         });
       });
@@ -373,9 +384,9 @@ export default {
       );
     },
     onResizableMove(evt) {
-      const position = this.model.position;
+      const position = this.component.position;
 
-      this.editorStore.updateComponent(this.model, {
+      this.editorStore.updateComponent(this.component, {
         position: [
           position[0] + evt.deltaRect.left,
           position[1] + evt.deltaRect.top,
@@ -394,7 +405,7 @@ export default {
       });
       return type;
     },
-    getModelFromDragEvent(evt) {
+    getComponentFromDragEvent(evt) {
       const type = this.getModelTypeFromDragEvent(evt);
       if (type) {
         const format = `metascore/component:${type}`;
@@ -408,7 +419,7 @@ export default {
       const type = this.getModelTypeFromDragEvent(evt);
 
       if (type) {
-        switch (this.model.type) {
+        switch (this.component.type) {
           case "Scenario":
           case "Page":
             return !["Scenario", "Page"].includes(type);
@@ -443,25 +454,25 @@ export default {
       this.dragOver = false;
 
       if (this.isDropAllowed(evt)) {
-        const droppedModel = this.getModelFromDragEvent(evt);
-        switch (droppedModel.type) {
+        const droppedComponent = this.getComponentFromDragEvent(evt);
+        switch (droppedComponent.type) {
           case "Page":
             break;
 
           default: {
             const { left, top } = this.$el.getBoundingClientRect();
-            droppedModel.position = [
+            droppedComponent.position = [
               Math.round(evt.clientX - left),
               Math.round(evt.clientY - top),
             ];
           }
         }
 
-        const model = await this.editorStore.addComponent(
-          droppedModel,
-          this.model
+        const component = await this.editorStore.addComponent(
+          droppedComponent,
+          this.component
         );
-        this.editorStore.selectComponent(model);
+        this.editorStore.selectComponent(component);
 
         evt.stopPropagation();
         evt.preventDefault();

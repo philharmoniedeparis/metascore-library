@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="block-toggler">
+  <component-wrapper :component="component" class="block-toggler">
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
         :class="{ toggled: isBlockToggled(block) }"
@@ -28,9 +28,9 @@ import { sortBy } from "lodash";
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     blocks() {
-      return this.componentsStore.get(this.model.blocks);
+      return this.componentsStore.get(this.component.blocks);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [

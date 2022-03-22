@@ -3,12 +3,12 @@ import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
-export function useOpacity(model) {
+export function useOpacity(component, model) {
   const mediaStore = useModule("media").useStore();
 
-  if (unref(model).constructor.$isOpacitable) {
+  if (unref(model).$isOpacitable) {
     const opacity = computed(() => {
-      const { opacity } = unref(model);
+      const { opacity } = unref(component);
       let value = null;
 
       if (!isUndefined(opacity) && !isNull(opacity)) {

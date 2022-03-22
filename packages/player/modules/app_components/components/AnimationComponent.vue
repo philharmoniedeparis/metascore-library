@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="animation">
+  <component-wrapper :component="component" class="animation">
     <div ref="animation-wrapper" />
   </component-wrapper>
 </template>
@@ -10,9 +10,9 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -43,24 +43,24 @@ export default {
       return this.mediaStore.time;
     },
     startTime() {
-      return this.model["start-time"] || 0;
+      return this.component["start-time"] || 0;
     },
     endTime() {
-      return this.model["end-time"];
+      return this.component["end-time"];
     },
     src() {
-      return this.model["animation-src"];
+      return this.component["animation-src"];
     },
     startFrame() {
-      return this.model["start-frame"] || 1;
+      return this.component["start-frame"] || 1;
     },
     loopDuration() {
-      return this.model["loop-duration"]
-        ? this.model["loop-duration"]
+      return this.component["loop-duration"]
+        ? this.component["loop-duration"]
         : this.getDuration();
     },
     reversed() {
-      return this.model.reversed;
+      return this.component.reversed;
     },
   },
   watch: {
@@ -70,7 +70,7 @@ export default {
     mediaTime() {
       this.update();
     },
-    model: {
+    component: {
       handler() {
         this.update();
       },

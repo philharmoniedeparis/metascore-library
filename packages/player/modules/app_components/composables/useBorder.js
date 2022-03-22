@@ -1,14 +1,14 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export function useBorder(model) {
-  if (unref(model).constructor.$isBorderable) {
+export function useBorder(component, model) {
+  if (unref(model).$isBorderable) {
     const border = computed(() => {
       const {
         "border-width": borderWidth,
         "border-color": borderColor,
         "border-radius": borderRadius,
-      } = unref(model);
+      } = unref(component);
       const ret = {};
 
       if (

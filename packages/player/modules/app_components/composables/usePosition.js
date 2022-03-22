@@ -1,10 +1,10 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export function usePosition(model) {
-  if (unref(model).constructor.$isPositionable) {
+export function usePosition(component, model) {
+  if (unref(model).$isPositionable) {
     const position = computed(() => {
-      const { position: value } = unref(model);
+      const { position: value } = unref(component);
       const ret = {};
 
       if (!isUndefined(value) && !isNull(value)) {

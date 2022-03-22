@@ -1,7 +1,7 @@
 <template>
-  <component-wrapper :model="model" class="scenario">
+  <component-wrapper :component="component" class="scenario">
     <template v-for="child in children" :key="child.id">
-      <component :is="`${child.type}Component`" :model="child" />
+      <component :is="`${child.type}Component`" :component="child" />
     </template>
   </component-wrapper>
 </template>
@@ -11,7 +11,10 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {
-    model: {
+    /**
+     * The associated component
+     */
+    component: {
       type: Object,
       required: true,
     },
@@ -22,7 +25,7 @@ export default {
   },
   computed: {
     children() {
-      return this.componentsStore.getChildren(this.model);
+      return this.componentsStore.getChildren(this.component);
     },
   },
 };

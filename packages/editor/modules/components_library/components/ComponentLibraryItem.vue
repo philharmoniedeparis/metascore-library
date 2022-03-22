@@ -5,7 +5,7 @@
     @dragstart="onDragstart"
     @dragend="onDragend"
   >
-    <component-icon :model="model" :label="label" />
+    <component-icon :component="component" :label="label" />
     <div class="label">{{ label }}</div>
   </div>
 </template>
@@ -15,7 +15,7 @@ import { omit } from "lodash";
 
 export default {
   props: {
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -31,11 +31,11 @@ export default {
   },
   methods: {
     onDragstart(evt) {
-      const data = omit(this.model.$data, ["id"]);
+      const data = omit(this.component, ["id"]);
 
       evt.dataTransfer.effectAllowed = "copy";
       evt.dataTransfer.setData(
-        `metascore/component:${this.model.type}`,
+        `metascore/component:${this.component.type}`,
         JSON.stringify(data)
       );
 

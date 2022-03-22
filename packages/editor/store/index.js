@@ -27,9 +27,9 @@ export default defineStore("editor", {
       return mediaStore.source;
     },
     isComponentSelected() {
-      return (model) => {
+      return (component) => {
         return this.selectedComponents.find(({ type, id }) => {
-          return model.type === type && model.id === id;
+          return component.type === type && component.id === id;
         });
       };
     },
@@ -40,9 +40,9 @@ export default defineStore("editor", {
       });
     },
     componentHasSelectedDescendents() {
-      return (model) => {
+      return (component) => {
         const componentsStore = useModule("app_components").useStore();
-        const children = componentsStore.getChildren(model);
+        const children = componentsStore.getChildren(component);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
             return true;
@@ -53,9 +53,9 @@ export default defineStore("editor", {
       };
     },
     isComponentLocked() {
-      return (model) => {
+      return (component) => {
         return this.lockedComponents.find(({ type, id }) => {
-          return model.type === type && model.id === id;
+          return component.type === type && component.id === id;
         });
       };
     },
@@ -88,37 +88,37 @@ export default defineStore("editor", {
       const mediaStore = useModule("media").useStore();
       mediaStore.source = value;
     },
-    updateComponent(model, data) {
+    updateComponent(component, data) {
       const componentsStore = useModule("app_components").useStore();
-      componentsStore.update(model, data);
+      componentsStore.update(component, data);
     },
     updateComponents(models, data) {
       const componentsStore = useModule("app_components").useStore();
-      models.forEach((model) => {
-        componentsStore.update(model, data);
+      models.forEach((component) => {
+        componentsStore.update(component, data);
       });
     },
     addComponent(data, parent) {
       const componentsStore = useModule("app_components").useStore();
-      const model = this.createComponent(data);
-      componentsStore.add(model, parent);
-      return model;
+      const component = this.createComponent(data);
+      componentsStore.add(component, parent);
+      return component;
     },
-    selectComponent(model, append = false) {
+    selectComponent(component, append = false) {
       if (!append) {
         this.deselectAllComponents();
       }
-      if (!this.isComponentSelected(model)) {
+      if (!this.isComponentSelected(component)) {
         this.selectedComponents.push({
-          type: model.type,
-          id: model.id,
+          type: component.type,
+          id: component.id,
         });
       }
     },
-    deselectComponent(model) {
+    deselectComponent(component) {
       this.selectedComponents = this.selectedComponents.filter(
         ({ type, id }) => {
-          return model.type === type && model.id === id;
+          return component.type === type && component.id === id;
         }
       );
     },
@@ -151,20 +151,20 @@ export default defineStore("editor", {
         this.selectComponent(children[index]);
       }
     },
-    lockComponent(model) {
-      if (!this.isComponentLocked(model)) {
+    lockComponent(component) {
+      if (!this.isComponentLocked(component)) {
         this.lockedComponents.push({
-          type: model.type,
-          id: model.id,
+          type: component.type,
+          id: component.id,
         });
       }
     },
     lockComponents(models) {
       models.map(this.lockComponent);
     },
-    unlockComponent(model) {
+    unlockComponent(component) {
       this.lockedComponents = this.lockedComponents.filter(({ type, id }) => {
-        return model.type === type && model.id === id;
+        return component.type === type && component.id === id;
       });
     },
     unlockComponents(models) {
@@ -173,43 +173,43 @@ export default defineStore("editor", {
     unlockAllComponents() {
       this.lockedComponents = [];
     },
-    copyComponent(model) {
+    copyComponent(component) {
       const clipboardStore = useModule("clipboard").useStore();
-      const data = omit(model.$data, ["id"]);
+      const data = omit(component, ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
     copyComponents(models) {
       models.map(this.copyComponent);
     },
-    cutComponent(model) {
-      this.copyComponent(model);
-      this.deleteComponent(model);
+    cutComponent(component) {
+      this.copyComponent(component);
+      this.deleteComponent(component);
     },
     cutComponents(models) {
       models.map(this.cutComponent);
     },
-    deleteComponent(model) {
+    deleteComponent(component) {
       const componentsStore = useModule("app_components").useStore();
-      componentsStore.delete(model.type, model.id);
+      componentsStore.delete(component.type, component.id);
     },
     deleteComponents(models) {
       models.map(this.deleteComponent);
     },
-    restoreComponent(model) {
+    restoreComponent(component) {
       const componentsStore = useModule("app_components").useStore();
-      componentsStore.restore(model.type, model.id);
+      componentsStore.restore(component.type, component.id);
     },
     restoreComponents(models) {
       models.map(this.restoreComponent);
     },
-    arrangeComponent(model, action) {
-      if (model.$parent) {
+    arrangeComponent(component, action) {
+      if (component.$parent) {
         const componentsStore = useModule("app_components").useStore();
-        const parent = componentsStore.getParent(model);
+        const parent = componentsStore.getParent(component);
         const children = componentsStore.getChildren(parent);
         const count = children.length;
         const old_index = children.findIndex((child) => {
-          return child === model;
+          return child === component;
         });
 
         let new_index = null;
@@ -248,13 +248,15 @@ export default defineStore("editor", {
       // @todo
       console.log("addPageAfter");
     },
-    moveComponents(models, { left, top }) {
-      models.forEach((model) => {
-        if (!model.constructor.$isPositionable) {
+    moveComponents(components, { left, top }) {
+      const componentsStore = useModule("app_components").useStore();
+      components.forEach((component) => {
+        const model = componentsStore.getModel(component.type);
+        if (!model.$isPositionable) {
           return;
         }
 
-        const position = model.position;
+        const position = component.position;
         if (left) {
           position[0] += left;
         }
@@ -262,7 +264,7 @@ export default defineStore("editor", {
           position[1] += top;
         }
 
-        this.updateComponent(model, { position });
+        this.updateComponent(component, { position });
       });
     },
     async load(url) {
@@ -321,18 +323,18 @@ export default defineStore("editor", {
 
       case "updateComponent":
         {
-          const [model, data] = args;
+          const [component, data] = args;
           const oldValue = Object.keys(data).reduce(
-            (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+            (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
             {}
           );
           after(() => {
             push({
               undo: () => {
-                this.updateComponent(model, oldValue);
+                this.updateComponent(component, oldValue);
               },
               redo: () => {
-                this.updateComponent(model, data);
+                this.updateComponent(component, data);
               },
             });
           });
@@ -341,12 +343,12 @@ export default defineStore("editor", {
 
       case "updateComponents":
         {
-          const [models, data] = args;
-          const oldValues = models.map((model) => {
+          const [components, data] = args;
+          const oldValues = components.map((component) => {
             return {
-              model,
+              component,
               data: Object.keys(data).reduce(
-                (acc, key) => ({ ...acc, [key]: unref(model[key]) }),
+                (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
                 {}
               ),
             };
@@ -355,12 +357,12 @@ export default defineStore("editor", {
           after(() => {
             push({
               undo: () => {
-                oldValues.forEach(({ model, data }) => {
-                  this.updateComponent(model, data);
+                oldValues.forEach(({ component, data }) => {
+                  this.updateComponent(component, data);
                 });
               },
               redo: () => {
-                this.updateComponents(models, data);
+                this.updateComponents(components, data);
               },
             });
           });
@@ -368,13 +370,13 @@ export default defineStore("editor", {
         break;
 
       case "addComponent":
-        after((model) => {
+        after((component) => {
           push({
             undo: () => {
-              this.deleteComponent(model);
+              this.deleteComponent(component);
             },
             redo: () => {
-              this.restoreComponent(model);
+              this.restoreComponent(component);
             },
           });
         });

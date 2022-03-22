@@ -1,13 +1,13 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export function useBackground(model) {
-  if (unref(model).constructor.$isBackgroundable) {
+export function useBackground(component, model) {
+  if (unref(model).$isBackgroundable) {
     const background = computed(() => {
       const {
         "background-color": backgroundColor,
         "background-image": backgroundImage,
-      } = unref(model);
+      } = unref(component);
       const ret = {};
 
       if (!isUndefined(backgroundColor) && !isNull(backgroundColor)) {

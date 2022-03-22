@@ -19,7 +19,7 @@
 
 <template>
   <component-wrapper
-    :model="model"
+    :component="component"
     :class="{ toggled }"
     class="block"
     @mouseenter="onMouseenter"
@@ -66,10 +66,13 @@
     <div ref="pages" class="pages">
       <template v-for="(page, index) in pages" :key="page.id">
         <template v-if="synched">
-          <page-component :model="page" @activated="onTimedPageActivated" />
+          <page-component :component="page" @activated="onTimedPageActivated" />
         </template>
         <template v-else>
-          <page-component v-show="activePageIndex === index" :model="page" />
+          <page-component
+            v-show="activePageIndex === index"
+            :component="page"
+          />
         </template>
       </template>
     </div>
@@ -91,9 +94,9 @@ export default {
   inject: ["$deviceHasTouch"],
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -111,17 +114,17 @@ export default {
   },
   computed: {
     toggled() {
-      return this.componentsStore.isBlockToggled(this.model);
+      return this.componentsStore.isBlockToggled(this.component);
     },
     synched() {
-      return this.model.synched;
+      return this.component.synched;
     },
     pagerVisibe() {
       if (this.pageCount < 2) {
         return false;
       }
 
-      switch (this.model["pager-visibility"]) {
+      switch (this.component["pager-visibility"]) {
         case "visible":
           return true;
 
@@ -133,7 +136,7 @@ export default {
       }
     },
     pages() {
-      return this.componentsStore.getChildren(this.model);
+      return this.componentsStore.getChildren(this.component);
     },
     pageCount() {
       return this.pages.length;
@@ -194,9 +197,9 @@ export default {
       this.hover = false;
     },
 
-    onTimedPageActivated(component, model) {
+    onTimedPageActivated(component) {
       this.activePageIndex = this.pages.findIndex((v) => {
-        return v.id === model.id;
+        return v.id === component.id;
       });
     },
 

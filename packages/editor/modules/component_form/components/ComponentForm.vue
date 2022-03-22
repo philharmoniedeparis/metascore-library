@@ -104,12 +104,12 @@
 </i18n>
 
 <template>
-  <div v-if="masterModel" class="component-form">
+  <div v-if="masterComponent" class="component-form">
     <h2 class="title">{{ title }}</h2>
     <schema-form
       :schema="schema"
       :layout="layout"
-      :values="masterModel"
+      :values="masterComponent"
       :validator="validator"
       @update:model-value="update($event)"
     />
@@ -118,43 +118,45 @@
 
 <script>
 import useEditorStore from "@metascore-library/editor/store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { intersection } from "lodash";
 
 export default {
   setup() {
     const editorStore = useEditorStore();
-    return { editorStore };
+    const componentsStore = useModule("app_components").useStore();
+    return { editorStore, componentsStore };
   },
   computed: {
     selectedComponents() {
       return this.editorStore.getSelectedComponents;
     },
-    masterModel() {
+    masterComponent() {
       return this.selectedComponents[0];
     },
-    validator() {
-      return this.masterModel?.$ajv;
+    masterModel() {
+      return this.componentsStore.getModel(this.selectedComponents[0]);
     },
-    commonModelClasses() {
-      let commonClasses = [];
-      this.selectedComponents.forEach((model, index) => {
-        const modelChain = model.$modelChain;
-        commonClasses =
-          index > 0 ? intersection(commonClasses, modelChain) : modelChain;
+    commonModeles() {
+      let common = [];
+      this.selectedComponents.forEach((component, index) => {
+        const model = this.componentsStore.getModel(component.type);
+        const modelChain = model.modelChain;
+        common = index > 0 ? intersection(common, modelChain) : modelChain;
       });
-      return commonClasses;
+      return common;
     },
-    commonModelClass() {
-      return this.commonModelClasses[0];
-    },
-    commonModelType() {
-      return this.commonModelClass?.type;
+    commonModel() {
+      return this.commonModeles[0];
     },
     title() {
-      return this.commonModelType;
+      return this.commonModel?.type;
     },
     schema() {
-      return this.commonModelClass?.schema;
+      return this.commonModel?.schema;
+    },
+    validator() {
+      return this.commonModel?.ajv;
     },
     layout() {
       const layout = {
@@ -177,7 +179,7 @@ export default {
         }
       );
 
-      if (this.commonModelClass.$isBorderable) {
+      if (this.commonModel.$isBorderable) {
         layout.items[0].items.push({
           type: "markup",
           class: "form-container horizontal",
@@ -198,7 +200,7 @@ export default {
         });
       }
 
-      if (this.commonModelClass.$isPositionable) {
+      if (this.commonModel.$isPositionable) {
         layout.items[0].items.push({
           property: "position",
           label: this.$t("position"),
@@ -213,7 +215,7 @@ export default {
         });
       }
 
-      if (this.commonModelClass.$isResizable) {
+      if (this.commonModel.$isResizable) {
         layout.items[0].items.push({
           property: "dimension",
           label: this.$t("dimension"),
@@ -228,7 +230,7 @@ export default {
         });
       }
 
-      switch (this.commonModelType) {
+      switch (this.commonModel.type) {
         case "Animation":
           ["start-frame", "loop-duration", "reversed", "colors"].forEach(
             (property) => {
@@ -298,7 +300,7 @@ export default {
           break;
       }
 
-      if (this.commonModelClass.$isTimeable) {
+      if (this.commonModel.$isTimeable) {
         layout.items.push({
           type: "markup",
           class: "form-container horizontal time",
@@ -322,13 +324,13 @@ export default {
       }
 
       const animated = [];
-      if (this.commonModelClass.$isOpacitable) {
+      if (this.commonModel.$isOpacitable) {
         animated.push({
           property: "opacity",
           label: this.$t("opacity"),
         });
       }
-      if (this.commonModelClass.$isTransformable) {
+      if (this.commonModel.$isTransformable) {
         animated.push({
           property: "scale",
           label: this.$t("scale"),

@@ -21,34 +21,39 @@ export default defineStore("app-components", {
     },
     get() {
       return (type, id) => {
-        const model = this.components?.[type]?.[id];
-        return model && !model.$deleted ? model : null;
+        const data = this.components?.[type]?.[id];
+        return data && !data.$deleted ? data : null;
+      };
+    },
+    getModel() {
+      return (type) => {
+        return Models[type];
       };
     },
     delete() {
       return (type, id) => {
-        const model = this.components?.[type]?.[id];
-        if (model) {
-          model.$deleted = true;
+        const component = this.components?.[type]?.[id];
+        if (component) {
+          component.$deleted = true;
         }
       };
     },
     restore() {
       return (type, id) => {
-        const model = this.components?.[type]?.[id];
-        if (model) {
-          delete model.$deleted;
+        const component = this.components?.[type]?.[id];
+        if (component) {
+          delete component.$deleted;
         }
       };
     },
     isBlockToggled() {
-      return (model) => {
-        return this.toggledBlocks.includes(model.id);
+      return (block) => {
+        return this.toggledBlocks.includes(block.id);
       };
     },
     getChildrenProperty() {
-      return (model) => {
-        switch (model.type) {
+      return (component) => {
+        switch (component.type) {
           case "Block":
             return "pages";
           case "Page":
@@ -60,35 +65,35 @@ export default defineStore("app-components", {
       };
     },
     hasChildren() {
-      return (model) => {
-        const property = this.getChildrenProperty(model);
-        switch (model.type) {
+      return (component) => {
+        const property = this.getChildrenProperty(component);
+        switch (component.type) {
           case "Block":
-            return model[property]?.length > 0;
+            return component[property]?.length > 0;
           case "Page":
           case "Scenario":
-            return model[property]?.length > 0;
+            return component[property]?.length > 0;
         }
 
         return false;
       };
     },
     getChildren() {
-      return (model) => {
+      return (component) => {
         let children = [];
 
-        if (this.hasChildren(model)) {
-          const property = this.getChildrenProperty(model);
-          children = model[property];
+        if (this.hasChildren(component)) {
+          const property = this.getChildrenProperty(component);
+          children = component[property];
         }
 
         return children.map((c) => this.get(c.schema, c.id)).filter((m) => m);
       };
     },
     getParent() {
-      return (model) => {
-        if (model.$parent) {
-          return this.get(model.$parent.schema, model.$parent.id);
+      return (component) => {
+        if (component.$parent) {
+          return this.get(component.$parent.schema, component.$parent.id);
         }
         return null;
       };
@@ -97,38 +102,44 @@ export default defineStore("app-components", {
   actions: {
     init(data) {
       const normalized = normalize(data);
-
-      Object.entries(normalized.entities).forEach(([type, models]) => {
-        this.components[type] = {};
-        Object.entries(models).forEach(([id, model]) => {
-          this.components[type][id] = new Models[type](model);
-        });
-      });
-
+      this.components = normalized.entities;
       this.scenarios = normalized.result;
       this.activeScenario = this.scenarios[0];
     },
-    update(model, data) {
-      model.update(data);
-    },
-    add(model, parent = null) {
-      this.components[model.type] = this.components[model.type] || {};
-      this.components[model.type][model.id] = model;
+    add(data, parent) {
+      this.components[data.type] = this.components[data.type] || {};
+      this.components[data.type][data.id] = {
+        ...data,
+        $parent: {
+          schema: parent.type,
+          id: parent.id,
+        },
+      };
 
       switch (parent.type) {
         case "Block":
-          parent.pages.push({ schema: model.type, id: model.id });
+          parent.pages.push({ schema: data.type, id: data.id });
           break;
 
         default:
-          parent.children.push({ schema: model.type, id: model.id });
+          parent.children.push({ schema: data.type, id: data.id });
       }
     },
-    toggleBlock(model) {
-      if (this.toggledBlocks.includes(model.id)) {
-        this.toggledBlocks = this.toggledBlocks.filter((v) => v !== model.id);
+    update(component, data) {
+      const merged = {
+        ...component,
+        ...data,
+      };
+      const model = this.getModel(component.type);
+      if (model.validate(merged)) {
+        this.components[component.type][component.id] = merged;
+      }
+    },
+    toggleBlock(block) {
+      if (this.toggledBlocks.includes(block.id)) {
+        this.toggledBlocks = this.toggledBlocks.filter((v) => v !== block.id);
       } else {
-        this.toggledBlocks.push(model.id);
+        this.toggledBlocks.push(block.id);
       }
     },
   },

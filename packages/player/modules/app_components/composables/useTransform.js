@@ -3,12 +3,12 @@ import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
-export function useTransform(model) {
+export function useTransform(component, model) {
   const mediaStore = useModule("media").useStore();
 
-  if (unref(model).constructor.$isTransformable) {
+  if (unref(model).$isTransformable) {
     const transform = computed(() => {
-      const { translate, scale } = unref(model);
+      const { translate, scale } = unref(component);
       const ret = {};
 
       if (!isUndefined(translate) && !isNull(translate)) {

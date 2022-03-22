@@ -18,7 +18,7 @@
 </i18n>
 
 <template>
-  <component-wrapper :model="model" class="controller">
+  <component-wrapper :component="component" class="controller">
     <div class="timer">{{ mediaFormattedTime }}</div>
     <div class="buttons">
       <button type="button" data-action="rewind" @click="onRewindClick">
@@ -60,9 +60,9 @@ export default {
   },
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },

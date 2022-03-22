@@ -2,10 +2,10 @@ import { computed, unref, readonly } from "vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
-export function useTime(model) {
-  if (unref(model).constructor.$isTimeable) {
+export function useTime(component, model) {
+  if (unref(model).$isTimeable) {
     const active = computed(() => {
-      const { "start-time": startTime, "end-time": endTime } = unref(model);
+      const { "start-time": startTime, "end-time": endTime } = unref(component);
 
       if (
         (isUndefined(startTime) || isNull(startTime)) &&

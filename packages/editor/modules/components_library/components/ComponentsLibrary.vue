@@ -25,10 +25,10 @@
 
 <template>
   <div class="components-library">
-    <template v-for="model in models" :key="model.id">
+    <template v-for="component in components" :key="component.id">
       <component-library-item
-        :model="model"
-        :label="$t(model.name) || model.name"
+        :component="component"
+        :label="$t(component.name) || component.name"
       />
     </template>
   </div>
@@ -43,7 +43,7 @@ export default {
     ComponentLibraryItem,
   },
   props: {
-    modelConfigs: {
+    componentConfigs: {
       type: Array,
       default() {
         return [
@@ -91,8 +91,8 @@ export default {
     return { editorStore };
   },
   computed: {
-    models() {
-      return this.modelConfigs.map(this.editorStore.createComponent);
+    components() {
+      return this.componentConfigs.map(this.editorStore.createComponent);
     },
   },
 };

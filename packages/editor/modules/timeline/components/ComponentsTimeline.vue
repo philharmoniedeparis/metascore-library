@@ -2,7 +2,7 @@
   <div class="timeline" tabindex="0">
     <div class="tracks-container">
       <canvas ref="playhead" class="playhead" />
-      <component-track v-if="scenario" :model="scenario" />
+      <component-track v-if="scenario" :component="scenario" />
     </div>
   </div>
 </template>

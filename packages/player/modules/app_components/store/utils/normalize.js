@@ -20,6 +20,12 @@ Object.values(Models).forEach(({ name: type }) => {
         {},
         {
           processStrategy: (entity, parent, key) => {
+            // Validate and assign defualts.
+            const model = Models[entity.type];
+            if (!model.validate(entity)) {
+              console.error(model.errors);
+            }
+
             if (
               parent &&
               Models[parent.type]?.schema?.properties?.[key]?.format ===

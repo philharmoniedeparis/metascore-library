@@ -32,27 +32,27 @@ export default {
     VideoRenderer,
   },
   props: {
-    model: {
+    component: {
       type: Object,
       required: true,
     },
   },
   computed: {
     type() {
-      switch (this.model.type) {
+      switch (this.component.type) {
         case "Scenario":
           return null;
 
         case "Block":
-          return this.model.synched === "video"
+          return this.component.synched === "video"
             ? "SynchedBlock"
             : "NonSynchedBlock";
 
         case "Media":
-          return this.model.tag === "video" ? "MediaVideo" : "MediaAudio";
+          return this.component.tag === "video" ? "MediaVideo" : "MediaAudio";
       }
 
-      return this.model.type;
+      return this.component.type;
     },
   },
 };

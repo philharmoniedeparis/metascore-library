@@ -1,7 +1,7 @@
 <template>
   <div class="metaScore-app" :style="style">
     <media-player v-if="mediaSource" :source="mediaSource" type="video" />
-    <scenario-component v-if="scenario" :model="scenario" />
+    <scenario-component v-if="scenario" :component="scenario" />
   </div>
 </template>
 

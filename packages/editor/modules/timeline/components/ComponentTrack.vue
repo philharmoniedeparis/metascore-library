@@ -2,7 +2,7 @@
   <div
     :class="[
       'component-track',
-      paramCase(model.type),
+      paramCase(component.type),
       {
         'has-children': hasChildren,
         'has-start-time': hasStartTime,
@@ -13,38 +13,38 @@
         dragging,
       },
     ]"
-    :data-type="model.type"
-    :data-id="model.id"
-    :title="model.name"
+    :data-type="component.type"
+    :data-id="component.id"
+    :title="component.name"
   >
     <div ref="handle" class="handle" @click="onClick">
-      <component-icon :model="model" />
+      <component-icon :component="component" />
 
       <div v-if="hasChildren" class="toggle expander" @click.stop>
         <input
-          :id="`handle--expand--${model.id}`"
+          :id="`handle--expand--${component.id}`"
           v-model="expanded"
           type="checkbox"
         />
         <label
-          :for="`handle--expand--${model.id}`"
+          :for="`handle--expand--${component.id}`"
           title="Verrouiller/Déverrouiller"
         >
           <expander-icon class="icon" />
         </label>
       </div>
 
-      <div class="label">{{ model.name }}</div>
+      <div class="label">{{ component.name }}</div>
 
       <div class="togglers" @click.stop>
         <div class="toggle lock">
           <input
-            :id="`handle--lock--${model.id}`"
+            :id="`handle--lock--${component.id}`"
             v-model="locked"
             type="checkbox"
           />
           <label
-            :for="`handle--lock--${model.id}`"
+            :for="`handle--lock--${component.id}`"
             title="Verrouiller/Déverrouiller"
           >
             <lock-icon class="icon" />
@@ -61,7 +61,7 @@
       <component-track
         v-for="child in children"
         :key="child.id"
-        :model="child"
+        :component="child"
       />
     </div>
 
@@ -86,7 +86,7 @@ export default {
     LockIcon,
   },
   props: {
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -105,29 +105,32 @@ export default {
     };
   },
   computed: {
+    model() {
+      return this.componentsStore.getModel(this.component.type);
+    },
     mediaDuration() {
       return this.mediaStore.duration;
     },
     selected() {
-      return this.editorStore.isComponentSelected(this.model);
+      return this.editorStore.isComponentSelected(this.component);
     },
     locked: {
       get() {
-        return this.editorStore.isComponentLocked(this.model);
+        return this.editorStore.isComponentLocked(this.component);
       },
       set(value) {
         this.editorStore[value ? "lockComponent" : "unlockComponent"](
-          this.model
+          this.component
         );
       },
     },
     hasChildren() {
-      return this.componentsStore.hasChildren(this.model);
+      return this.componentsStore.hasChildren(this.component);
     },
     children() {
-      const children = this.componentsStore.getChildren(this.model);
+      const children = this.componentsStore.getChildren(this.component);
 
-      switch (this.model.type) {
+      switch (this.component.type) {
         case "Page":
         case "Scenario":
           return children.slice().reverse();
@@ -137,29 +140,29 @@ export default {
       }
     },
     hasSelectedDescendents() {
-      return this.editorStore.componentHasSelectedDescendents(this.model);
+      return this.editorStore.componentHasSelectedDescendents(this.component);
     },
     isTimeable() {
-      return this.model.constructor.$isTimeable;
+      return this.model.$isTimeable;
     },
     hasStartTime() {
-      return this.isTimeable && this.model.$hasStartTime;
+      return this.isTimeable && this.component["start-time"] !== null;
     },
     hasEndTime() {
-      return this.isTimeable && this.model.$hasEndTime;
+      return this.isTimeable && this.component["end-time"] !== null;
     },
     timeStyle() {
       const style = {};
 
       if (this.hasStartTime) {
         style.left = `${
-          (this.model["start-time"] / this.mediaDuration) * 100
+          (this.component["start-time"] / this.mediaDuration) * 100
         }%`;
       }
 
       if (this.hasEndTime) {
         style.right = `${
-          100 - (this.model["end-time"] / this.mediaDuration) * 100
+          100 - (this.component["end-time"] / this.mediaDuration) * 100
         }%`;
       }
 
@@ -197,14 +200,12 @@ export default {
   methods: {
     paramCase,
     onClick(evt) {
-      const model = this.model;
-
       if (this.selected) {
         if (evt.shiftKey) {
-          this.editorStore.deselectComponent(model);
+          this.editorStore.deselectComponent(this.component);
         }
       } else {
-        this.editorStore.selectComponent(model, evt.shiftKey);
+        this.editorStore.selectComponent(this.component, evt.shiftKey);
       }
     },
     onTimeResizableMove(evt) {
@@ -216,19 +217,19 @@ export default {
 
       if (evt.edges.right) {
         data["end-time"] = round(
-          this.model["end-time"] +
+          this.component["end-time"] +
             deltaRight * (this.mediaDuration / wrapper_width),
           2
         );
       } else {
         data["start-time"] = round(
-          this.model["start-time"] +
+          this.component["start-time"] +
             deltaLeft * (this.mediaDuration / wrapper_width),
           2
         );
       }
 
-      this.editorStore.updateComponent(this.model, data);
+      this.editorStore.updateComponent(this.component, data);
     },
   },
 };

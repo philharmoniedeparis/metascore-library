@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="media">
+  <component-wrapper :component="component" class="media">
     <component :is="tag" :src="src" controls playsinline></component>
   </component-wrapper>
 </template>
@@ -8,19 +8,19 @@
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
   },
   computed: {
     tag() {
-      return this.model.tag;
+      return this.component.tag;
     },
     src() {
-      return this.model.src;
+      return this.component.src;
     },
   },
 };

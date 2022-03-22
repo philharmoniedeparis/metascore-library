@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="content">
+  <component-wrapper :component="component" class="content">
     <div v-dompurify-html="text"></div>
   </component-wrapper>
 </template>
@@ -23,16 +23,16 @@ export default {
   },
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
   },
   computed: {
     text() {
-      return this.model.text;
+      return this.component.text;
     },
   },
 };

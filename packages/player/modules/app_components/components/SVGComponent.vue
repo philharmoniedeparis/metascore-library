@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="svg">
+  <component-wrapper :component="component" class="svg">
     <object
       ref="object"
       type="image/svg+xml"
@@ -35,9 +35,9 @@ const SVG_ELEMENTS = [
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -49,10 +49,10 @@ export default {
   },
   computed: {
     src() {
-      return this.model.src;
+      return this.component.src;
     },
     colors() {
-      return this.model.colors;
+      return this.component.colors;
     },
     svg() {
       if (!this.loaded) {
@@ -87,7 +87,7 @@ export default {
       this.updateProperties();
       this.updateColors();
     },
-    model: {
+    component: {
       handler() {
         this.updateProperties();
         this.updateColors();
@@ -118,7 +118,7 @@ export default {
      */
     updateProperty(property, executeInnerUpdate) {
       if (this.svg) {
-        const value = this.model[property];
+        const value = this.component[property];
 
         this.svg.querySelectorAll(SVG_ELEMENTS.join(",")).forEach((el) => {
           if (property.indexOf("marker-") === 0) {

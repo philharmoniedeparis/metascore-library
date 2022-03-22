@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :model="model" class="cursor" @click="onClick">
+  <component-wrapper :component="component" class="cursor" @click="onClick">
     <canvas ref="canvas" />
   </component-wrapper>
 </template>
@@ -12,9 +12,9 @@ import { map, radians } from "@metascore-library/core/utils/math";
 export default {
   props: {
     /**
-     * The associated component model
+     * The associated component
      */
-    model: {
+    component: {
       type: Object,
       required: true,
     },
@@ -40,40 +40,40 @@ export default {
       return this.canvas.getContext("2d");
     },
     startTime() {
-      return this.model["start-time"] ?? 0;
+      return this.component["start-time"] ?? 0;
     },
     endTime() {
-      return this.model["end-time"] ?? this.mediaDuration;
+      return this.component["end-time"] ?? this.mediaDuration;
     },
     dimension() {
-      return this.model.dimension;
+      return this.component.dimension;
     },
     borderWidth() {
-      return this.model["border-width"];
+      return this.component["border-width"];
     },
     form() {
-      return this.model.form;
+      return this.component.form;
     },
     direction() {
-      return this.model.direction;
+      return this.component.direction;
     },
     cursorWidth() {
-      return this.model["cursor-width"];
+      return this.component["cursor-width"];
     },
     cursorColor() {
-      return this.model["cursor-color"];
+      return this.component["cursor-color"];
     },
     keyframes() {
-      return this.model.keyframes;
+      return this.component.keyframes;
     },
     acceleration() {
-      return this.keyframes ? 1 : this.model.acceleration;
+      return this.keyframes ? 1 : this.component.acceleration;
     },
     loopDuration() {
-      return this.model["loop-duration"] ?? this.endTime - this.startTime;
+      return this.component["loop-duration"] ?? this.endTime - this.startTime;
     },
     startAngle() {
-      return radians(this.model["start-angle"]);
+      return radians(this.component["start-angle"]);
     },
   },
   watch: {
@@ -83,16 +83,16 @@ export default {
     mediaTime() {
       this.update();
     },
-    model: {
+    component: {
       handler() {
         this.update();
       },
       deep: true,
     },
-    "model.dimension"() {
+    "component.dimension"() {
       this.updateSize();
     },
-    "model.border-width"() {
+    "component.border-width"() {
       this.updateSize();
     },
   },
