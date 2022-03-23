@@ -125,7 +125,8 @@ export default {
   setup() {
     const editorStore = useEditorStore();
     const componentsStore = useModule("app_components").useStore();
-    return { editorStore, componentsStore };
+    const playerPreviewStore = useModule("player_preview").useStore();
+    return { editorStore, componentsStore, playerPreviewStore };
   },
   computed: {
     selectedComponents() {
@@ -270,7 +271,6 @@ export default {
             "acceleration",
             "cursor-width",
             "cursor-color",
-            "keyframes",
             "start-angle",
             "loop-duration",
           ].forEach((property) => {
@@ -279,6 +279,16 @@ export default {
               label: this.$t(`Cursor.${property}`),
             });
           });
+          if (this.selectedComponents.length === 1) {
+            layout.items[0].items.push({
+              type: "cursor-keyframes",
+              property: "keyframes",
+              label: null,
+              "component-el": this.playerPreviewStore.getComponentElement(
+                this.masterComponent
+              ),
+            });
+          }
           break;
 
         case "SVG":

@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="block-toggler">
+  <component-wrapper :component="component">
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
         :class="{ toggled: isBlockToggled(block) }"

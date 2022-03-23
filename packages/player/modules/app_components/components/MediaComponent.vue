@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="media">
+  <component-wrapper :component="component">
     <component :is="tag" :src="src" controls playsinline></component>
   </component-wrapper>
 </template>

@@ -1,7 +1,11 @@
 <template>
   <div
     :id="component.id"
-    :class="['metaScore-component', { active, hidden }]"
+    :class="[
+      'metaScore-component',
+      paramCase(component.type),
+      { active, hidden },
+    ]"
     :style="{
       ...background,
       ...border,
@@ -17,6 +21,7 @@
 
 <script>
 import { toRef } from "vue";
+import { paramCase } from "param-case";
 import useStore from "../store";
 import useBackground from "../composables/useBackground";
 import useBorder from "../composables/useBorder";
@@ -58,6 +63,9 @@ export default {
     active(value) {
       this.$emit(value ? "activated" : "deactivated", this.component);
     },
+  },
+  methods: {
+    paramCase,
   },
 };
 </script>

@@ -166,15 +166,15 @@ export default class AbstractModel {
    * @returns {object} The data
    */
   get $data() {
-    const json = {};
+    const data = {};
 
     Object.keys(this.$properties).forEach((key) => {
       if (key in this) {
-        json[key] = this[key];
+        data[key] = this[key];
       }
     });
 
-    return json;
+    return data;
   }
 
   /**

@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="animation">
+  <component-wrapper :component="component">
     <div ref="animation-wrapper" />
   </component-wrapper>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="page">
+  <component-wrapper :component="component">
     <template v-for="child in children" :key="child.id">
       <component :is="`${child.type}Component`" :component="child" />
     </template>

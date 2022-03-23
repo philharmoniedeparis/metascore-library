@@ -97,7 +97,6 @@ export default {
   data() {
     return {
       iframeDocument: null,
-      iframeBody: null,
       playerOffset: {
         x: 0,
         y: 0,
@@ -116,6 +115,14 @@ export default {
     },
     preview() {
       return this.store.preview;
+    },
+    iframeBody: {
+      get() {
+        return this.store.iframeBody;
+      },
+      set(value) {
+        this.store.iframeBody = value;
+      },
     },
     iFrameWrapperStyle() {
       if (this.zoom !== 1) {

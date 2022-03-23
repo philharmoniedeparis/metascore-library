@@ -8,8 +8,14 @@ import {
 import { createUuidField } from "../utils/schema";
 
 export class AbstractComponent extends AbstractModel {
+  /**
+   * The component's type
+   */
   static type = "AbstractComponent";
 
+  /**
+   * The model's base class
+   */
   static baseModel = AbstractModel;
 
   /**
@@ -27,6 +33,9 @@ export class AbstractComponent extends AbstractModel {
     return classes;
   }
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 

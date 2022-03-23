@@ -10,11 +10,13 @@
 </template>
 
 <script>
-import { flatten } from "../utils/schema";
-
 export default {
   inject: ["validator"],
   props: {
+    type: {
+      type: String,
+      default: null,
+    },
     readonly: {
       type: Boolean,
       default: false,
@@ -50,38 +52,39 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
-    flattenedSchema() {
-      return flatten(this.schema, this.validator, this.value);
-    },
     control() {
-      if (this.flattenedSchema.format) {
-        return this.flattenedSchema.format;
+      if (this.type) {
+        return this.type;
       }
 
-      if (this.flattenedSchema.enum) {
+      if (this.schema.format) {
+        return this.schema.format;
+      }
+
+      if (this.schema.enum) {
         return "select";
       }
 
-      if (this.flattenedSchema.type === "integer") {
+      if (this.schema.type === "integer") {
         return "number";
       }
 
-      if (this.flattenedSchema.type === "boolean") {
+      if (this.schema.type === "boolean") {
         return "checkbox";
       }
 
-      if (this.flattenedSchema.type === "string") {
+      if (this.schema.type === "string") {
         return "text";
       }
 
-      return this.flattenedSchema.type || "text";
+      return this.schema.type || "text";
     },
     extraProps() {
-      if (["array", "object"].includes(this.flattenedSchema.type)) {
+      if (["array", "object"].includes(this.schema.type)) {
         // Pass down the property and schema to complex controls.
         return {
           property: this.property,
-          schema: this.flattenedSchema,
+          schema: this.schema,
         };
       }
 
@@ -89,16 +92,16 @@ export default {
         case "number":
           return {
             step:
-              this.flattenedSchema.type === "integer"
+              this.schema.type === "integer"
                 ? 1
-                : this.flattenedSchema.multipleOf || 0.01,
-            min: this.flattenedSchema.minimum,
-            max: this.flattenedSchema.maximum,
+                : this.schema.multipleOf || 0.01,
+            min: this.schema.minimum,
+            max: this.schema.maximum,
           };
 
         case "select":
           return {
-            options: this.flattenedSchema.enum.reduce(
+            options: this.schema.enum.reduce(
               (acc, el) => ({ ...acc, [el]: el }),
               {}
             ),

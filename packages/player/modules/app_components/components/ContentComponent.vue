@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="content">
+  <component-wrapper :component="component">
     <div v-dompurify-html="text"></div>
   </component-wrapper>
 </template>

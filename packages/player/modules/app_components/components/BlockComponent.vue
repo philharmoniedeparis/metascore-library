@@ -21,7 +21,6 @@
   <component-wrapper
     :component="component"
     :class="{ toggled }"
-    class="block"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
   >

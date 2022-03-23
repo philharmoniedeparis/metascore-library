@@ -9,7 +9,7 @@
         v-for="(subLayout, index) in layout.items"
         :key="index"
         :layout="subLayout"
-        :schema="schema"
+        :schema="flattenedSchema"
         :values="values"
         @update:model-value="onSubFormUpdate"
       />
@@ -17,7 +17,7 @@
     <template v-else-if="layout.content">{{ layout.content }}</template>
   </component>
   <control-dispatcher
-    v-else-if="layout.property in schema.properties"
+    v-else-if="layout.property in flattenedSchema.properties"
     v-bind="props"
     @update:model-value="onControlUpdate(layout.property, $event)"
   />
@@ -27,6 +27,7 @@
 import { omit } from "lodash";
 import { computed } from "vue";
 import Ajv from "ajv";
+import { flatten } from "../utils/schema";
 
 export default {
   provide() {
@@ -75,6 +76,9 @@ export default {
   },
   emits: ["update:modelValue"],
   computed: {
+    flattenedSchema() {
+      return flatten(this.schema, this.validator, this.values, true);
+    },
     props() {
       switch (this.layout.type) {
         case "markup":
@@ -82,6 +86,7 @@ export default {
 
         default:
           return {
+            type: this.layout.type,
             property: this.layout.property,
             modelValue: this.values[this.layout.property],
             schema: this.schema.properties[this.layout.property],

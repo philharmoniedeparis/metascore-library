@@ -1,0 +1,135 @@
+<i18n>
+{
+  "fr": {
+    "start_recording": "Enregistrer les positions",
+    "stop_recording": "Arrêter l'enregistrement",
+  },
+  "en": {
+    "start_recording": "Record positions",
+    "stop_recording": "Stop recording",
+  },
+}
+</i18n>
+
+<template>
+  <form-group
+    :class="['control', 'cursor-keyframes', { disabled, recording }]"
+    :data-property="property"
+    :description="description"
+  >
+    <styled-button type="button" @click="onButtonClik">
+      <template v-if="recording">
+        {{ $t("stop_recording") }}
+      </template>
+      <template v-else>
+        {{ $t("start_recording") }}
+      </template>
+    </styled-button>
+
+    <teleport v-if="recording" :to="componentEl">
+      <cursor-keyframes-editor v-model="value" />
+    </teleport>
+  </form-group>
+</template>
+
+<script>
+export default {
+  props: {
+    componentEl: {
+      type: HTMLElement,
+      required: true,
+    },
+    label: {
+      type: String,
+      default: null,
+    },
+    description: {
+      type: String,
+      default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    property: {
+      type: String,
+      required: true,
+    },
+    schema: {
+      type: Object,
+      required: true,
+    },
+    modelValue: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+  },
+  emits: ["update:modelValue"],
+  data() {
+    return {
+      recording: false,
+    };
+  },
+  computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        if (!this.lazy) {
+          this.$emit("update:modelValue", value);
+        }
+      },
+    },
+  },
+  methods: {
+    onButtonClik() {
+      this.recording = !this.recording;
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.control {
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  button {
+    padding: 0.5em 1em 0.5em 0.5em;
+    background: $white;
+    border-radius: 1.5em;
+    opacity: 1;
+
+    &::before {
+      content: "";
+      display: block;
+      background: #f00;
+      width: 1em;
+      height: 1em;
+      border-radius: 100%;
+      margin-right: 0.5em;
+    }
+  }
+
+  &.recording {
+    button {
+      color: $white;
+      background: $darkgray;
+
+      &::before {
+        animation: pulse 1s ease infinite;
+      }
+    }
+  }
+}
+</style>

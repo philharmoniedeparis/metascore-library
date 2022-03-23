@@ -18,7 +18,7 @@
 </i18n>
 
 <template>
-  <component-wrapper :component="component" class="controller">
+  <component-wrapper :component="component">
     <div class="timer">{{ mediaFormattedTime }}</div>
     <div class="buttons">
       <button type="button" data-action="rewind" @click="onRewindClick">

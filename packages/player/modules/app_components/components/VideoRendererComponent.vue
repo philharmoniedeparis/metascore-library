@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="video-renderer">
+  <component-wrapper :component="component">
     <canvas ref="canvas" />
   </component-wrapper>
 </template>

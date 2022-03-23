@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="svg">
+  <component-wrapper :component="component">
     <object
       ref="object"
       type="image/svg+xml"

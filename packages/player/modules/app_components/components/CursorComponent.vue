@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component" class="cursor" @click="onClick">
+  <component-wrapper :component="component" @click="onClick">
     <canvas ref="canvas" />
   </component-wrapper>
 </template>

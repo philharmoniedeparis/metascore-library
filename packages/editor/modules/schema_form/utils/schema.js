@@ -34,9 +34,10 @@ export function merge(schema, ...subSchemas) {
  * @param {object} schema The schema
  * @param {object} ajv An Ajv instance
  * @param {object} value The current associated value
+ * @param {boolean} recursive Whether to flatten sub-object properties
  * @returns {object} The flattened schema
  */
-export function flatten(schema, ajv, value) {
+export function flatten(schema, ajv, value, recursive = false) {
   const flattened = cloneDeep(schema);
 
   if (!flattened.type) {
@@ -72,6 +73,17 @@ export function flatten(schema, ajv, value) {
     delete flattened.if;
     delete flattened.then;
     delete flattened.else;
+
+    if (recursive && flattened.properties) {
+      for (const property in flattened.properties) {
+        flattened.properties[property] = flatten(
+          flattened.properties[property],
+          ajv,
+          value[property],
+          true
+        );
+      }
+    }
   }
 
   return flattened;

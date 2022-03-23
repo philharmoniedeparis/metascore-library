@@ -22,10 +22,19 @@ export class Cursor extends mix(EmbeddableComponent).with(
   Resizable,
   Transformable
 ) {
+  /**
+   * @inheritdoc
+   */
   static type = "Cursor";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = EmbeddableComponent;
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 
@@ -38,7 +47,6 @@ export class Cursor extends mix(EmbeddableComponent).with(
         }),
         direction: createStringField({
           title: "Direction",
-          default: "right",
         }),
         acceleration: createNumberField({
           title: "Acceleration",
@@ -100,6 +108,26 @@ export class Cursor extends mix(EmbeddableComponent).with(
         },
       },
     });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  static validate(data) {
+    switch (data.form) {
+      case "circular":
+        if (!["cw", "ccw"].includes(data.direction)) {
+          data.direction = "cw";
+        }
+        break;
+
+      default:
+        if (!["right", "left", "bottom", "top"].includes(data.direction)) {
+          data.direction = "right";
+        }
+    }
+
+    return super.validate(data);
   }
 }
 

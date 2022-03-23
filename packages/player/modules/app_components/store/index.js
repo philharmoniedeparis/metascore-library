@@ -126,13 +126,16 @@ export default defineStore("app-components", {
       }
     },
     update(component, data) {
-      const merged = {
+      const updated = {
         ...component,
         ...data,
       };
       const model = this.getModel(component.type);
-      if (model.validate(merged)) {
-        this.components[component.type][component.id] = merged;
+      if (model.validate(updated)) {
+        this.components[component.type][component.id] = updated;
+      } else {
+        // @todo: handle errors.
+        console.error(model.errors);
       }
     },
     toggleBlock(block) {
