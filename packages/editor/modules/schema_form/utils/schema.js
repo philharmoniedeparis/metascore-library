@@ -73,16 +73,16 @@ export function flatten(schema, ajv, value, recursive = false) {
     delete flattened.if;
     delete flattened.then;
     delete flattened.else;
+  }
 
-    if (recursive && flattened.properties) {
-      for (const property in flattened.properties) {
-        flattened.properties[property] = flatten(
-          flattened.properties[property],
-          ajv,
-          value[property],
-          true
-        );
-      }
+  if (recursive && flattened.properties) {
+    for (const property in flattened.properties) {
+      flattened.properties[property] = flatten(
+        flattened.properties[property],
+        ajv,
+        value?.[property],
+        true
+      );
     }
   }
 

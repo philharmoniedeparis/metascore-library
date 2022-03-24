@@ -8,8 +8,9 @@
       <schema-form
         v-for="(subLayout, index) in layout.items"
         :key="index"
+        :flatten-schema="false"
+        :schema="flattenSchema ? flattenedSchema : schema"
         :layout="subLayout"
-        :schema="flattenedSchema"
         :values="values"
         @update:model-value="onSubFormUpdate"
       />
@@ -39,6 +40,10 @@ export default {
     schema: {
       type: Object,
       required: true,
+    },
+    flattenSchema: {
+      type: Boolean,
+      default: true,
     },
     values: {
       type: Object,
@@ -86,7 +91,7 @@ export default {
 
         default:
           return {
-            type: this.layout.type,
+            type: this.layout.type || null,
             property: this.layout.property,
             modelValue: this.values[this.layout.property],
             schema: this.schema.properties[this.layout.property],
