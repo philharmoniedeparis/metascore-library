@@ -54,7 +54,7 @@ export default {
     },
     labelFor: {
       type: String,
-      default: "",
+      default: null,
     },
     labelPosition: {
       type: String,

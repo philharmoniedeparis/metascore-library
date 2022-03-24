@@ -9,6 +9,7 @@
     "@interactjs/modifiers": "^1.10.11",
     "@interactjs/pointer-events": "^1.10.11",
     "chroma-js": "^2.4.2",
+    "floating-vue": "2.0.0-beta.11",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "vue-tippy": "^6.0.0-alpha.44"

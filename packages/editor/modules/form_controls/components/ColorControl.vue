@@ -18,35 +18,24 @@
     :label-for="inputId"
     :description="description"
   >
-    <template v-if="readonly || disabled">
+    <floating-vue
+      strategy="fixed"
+      placement="bottom"
+      popper-class="overlay"
+      :triggers="['click']"
+      :disabled="readonly || disabled"
+      :delay="0"
+      :container="overlayTarget"
+      :handle-resize="false"
+    >
       <button
         :id="inputId"
         class="opener"
         :style="`color: ${modelValue};`"
         :disabled="disabled"
       ></button>
-    </template>
-    <tippy
-      v-else
-      trigger="click"
-      role="dialog"
-      content-tag="div"
-      content-class="overlay"
-      append-to="parent"
-      placement="bottom"
-      sticky="reference"
-      max-width="none"
-      :duration="0"
-      :interactive="true"
-      :popper-options="{ strategy: 'fixed' }"
-    >
-      <button
-        :id="inputId"
-        class="opener"
-        :style="`color: ${modelValue};`"
-      ></button>
 
-      <template #content="{ hide }">
+      <template #popper="{ hide }">
         <tabs-container>
           <tabs-item v-if="picker" title="Picker">
             <color-picker v-model="internalValue" />
@@ -71,20 +60,21 @@
           </styled-button>
         </div>
       </template>
-    </tippy>
+    </floating-vue>
   </form-group>
 </template>
 
 <script>
 import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
-import { Tippy } from "vue-tippy";
+import { Dropdown as FloatingVue } from "floating-vue";
 import ColorPicker from "./color/ColorPicker.vue";
 import ColorSwatches from "./color/ColorSwatches.vue";
+import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
   components: {
-    Tippy,
+    FloatingVue,
     ColorPicker,
     ColorSwatches,
   },
@@ -123,6 +113,7 @@ export default {
     return {
       inputId: uuid(),
       internalValue: null,
+      overlayTarget: null,
     };
   },
   watch: {
@@ -132,6 +123,7 @@ export default {
   },
   mounted() {
     this.internalValue = this.modelValue;
+    this.overlayTarget = this.$el;
   },
   methods: {
     isArray,
@@ -171,7 +163,6 @@ export default {
   }
 
   ::v-deep(.overlay) {
-    margin: 0 1em;
     width: 20em;
     background: $lightgray;
     border: 1px solid $mediumgray;
@@ -186,13 +177,13 @@ export default {
       flex-direction: row;
       justify-content: flex-start;
       margin: 0.5em 0.75em;
+      gap: 0.5em;
 
       button {
-        margin-right: 0.25em;
         color: $white;
-        background: $lightgray;
+        background: $darkgray;
 
-        &.apply {
+        &.secondary {
           background: $mediumgray;
         }
       }

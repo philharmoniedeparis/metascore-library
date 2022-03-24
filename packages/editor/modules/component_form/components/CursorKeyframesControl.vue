@@ -17,7 +17,7 @@
     :data-property="property"
     :description="description"
   >
-    <styled-button type="button" @click="onButtonClik">
+    <styled-button type="button" @click="onButtonClick">
       <template v-if="recording">
         {{ $t("stop_recording") }}
       </template>
@@ -85,7 +85,7 @@ export default {
     },
   },
   methods: {
-    onButtonClik() {
+    onButtonClick() {
       this.recording = !this.recording;
     },
   },

@@ -1,0 +1,18 @@
+@import "floating-vue/dist/style.css";
+
+.v-popper--theme-dropdown {
+  .v-popper__inner {
+    color: $white;
+    background: $lightgray;
+    border-color: $mediumgray;
+    border-radius: 0;
+  }
+
+  .v-popper__arrow-inner {
+    border-color: $lightgray;
+  }
+
+  .v-popper__arrow-outer {
+    border-color: $mediumgray;
+  }
+}

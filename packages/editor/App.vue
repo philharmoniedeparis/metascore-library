@@ -17,7 +17,7 @@
     </resizable-pane>
 
     <resizable-pane class="left" :right="{ collapse: true }">
-      <tabs-container ref="libraries" v-model="selectedLibrariesTab">
+      <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
         <tabs-item title="Shared Library">
@@ -26,7 +26,7 @@
             @click:import="onSharedAssetsImportClick"
           />
         </tabs-item>
-        <template v-if="selectedLibrariesTab === 2" #tabs-right>
+        <template v-if="activeLibrariesTab === 2" #tabs-right>
           <keep-alive>
             <shared-assets-toolbar />
           </keep-alive>
@@ -108,7 +108,7 @@ export default {
       modalsTarget: null,
       version: packageInfo.version,
       classes: {},
-      selectedLibrariesTab: 0,
+      activeLibrariesTab: 0,
     };
   },
   computed: {
@@ -149,7 +149,8 @@ export default {
         delete this.classes["preview"];
       }
     },
-    selectedLibrariesTab(index) {
+    activeLibrariesTab(index) {
+      console.log(index);
       const tabs = this.$refs.libraries.$el.querySelector(".tabs-nav");
 
       if (index === 2) {
@@ -174,7 +175,7 @@ export default {
       delete this.classes["app-title-focused"];
     },
     onSharedAssetsImportClick(asset) {
-      this.selectedLibrariesTab = 1;
+      this.activeLibrariesTab = 1;
       this.assetsStore.add(asset);
     },
   },

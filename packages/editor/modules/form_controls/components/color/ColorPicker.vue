@@ -37,7 +37,7 @@
       ></div>
     </div>
     <div class="format">
-      <input ref="text" :value="text" type="text" @change="onTextChange" />
+      <text-control ref="text" v-model="text" :lazy="true" />
       <styled-button
         :class="['hexa', { selected: format == 'hexa' }]"
         type="button"
@@ -64,8 +64,12 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
+import TextControl from "../TextControl.vue";
 
 export default {
+  components: {
+    TextControl,
+  },
   props: {
     modelValue: {
       type: String,
@@ -78,10 +82,18 @@ export default {
       hsv: [0, 0, 0],
       alpha: 1,
       format: "hexa",
-      text: "",
     };
   },
   computed: {
+    text: {
+      get() {
+        return this.format === "rgba" ? this.css : this.hex;
+      },
+      set(value) {
+        this.setColor(value);
+        this.$emit("update:modelValue", this.css);
+      },
+    },
     chroma() {
       return chroma.hsv(...this.hsv).alpha(this.alpha);
     },
@@ -138,24 +150,10 @@ export default {
   watch: {
     modelValue(value) {
       this.setColor(value);
-      this.updateText();
-    },
-    hsv: {
-      handler() {
-        this.updateText();
-      },
-      deep: true,
-    },
-    alpha() {
-      this.updateText();
-    },
-    format() {
-      this.updateText();
     },
   },
   mounted() {
     this.setColor(this.modelValue);
-    this.updateText();
 
     this.$nextTick(function () {
       this.setupInteractions();
@@ -172,9 +170,6 @@ export default {
         this.hsv = [isNaN(h) ? 0 : h, s, v];
         this.alpha = color.alpha();
       }
-    },
-    updateText() {
-      this.text = this.format === "rgba" ? this.css : this.hex;
     },
     setupInteractions() {
       this._interactables = [];
@@ -262,10 +257,6 @@ export default {
       this.alpha = round(x, 2);
       this.$emit("update:modelValue", this.css);
     },
-    onTextChange(evt) {
-      this.setColor(evt.target.value);
-      this.$emit("update:modelValue", this.css);
-    },
   },
 };
 </script>
@@ -273,7 +264,6 @@ export default {
 <style lang="scss" scoped>
 .color-picker {
   display: grid;
-  min-width: 20em;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto auto auto;
   grid-template-areas: "palette palette" "preview hue" "preview opacity" "format format";
@@ -377,19 +367,23 @@ export default {
     flex-direction: row;
     justify-content: flex-end;
     margin: 0.5em 0.75em;
-    gap: 0.5em;
 
-    input {
-      width: 100%;
-      border-radius: 0;
+    ::v-deep(.control.text) {
+      margin-right: 1em;
+
+      input {
+        width: 100%;
+        border-radius: 0;
+      }
     }
 
     button {
       padding: 0.5em;
       color: $white;
+      background: $mediumgray;
 
       &.selected {
-        background: $mediumgray;
+        background: $darkgray;
       }
     }
   }
