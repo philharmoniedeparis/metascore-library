@@ -187,25 +187,27 @@ export default {
       if (this.keyframes) {
         // Calculate position from keyframes
         this.keyframes.forEach((keyframe) => {
+          const [keyframe_time, keyframe_position] = keyframe;
+
           if (reversed) {
-            if (keyframe.time <= time && keyframe.position <= startPosition) {
-              startPosition = keyframe.position;
-              startTime = keyframe.time;
+            if (keyframe_time <= time && keyframe_position <= startPosition) {
+              startPosition = keyframe_position;
+              startTime = keyframe_time;
             }
 
-            if (keyframe.time >= time && keyframe.position >= endPosition) {
-              endPosition = keyframe.position;
-              endTime = keyframe.time;
+            if (keyframe_time >= time && keyframe_position >= endPosition) {
+              endPosition = keyframe_position;
+              endTime = keyframe_time;
             }
           } else {
-            if (keyframe.time <= time && keyframe.position >= startPosition) {
-              startPosition = keyframe.position;
-              startTime = keyframe.time;
+            if (keyframe_time <= time && keyframe_position >= startPosition) {
+              startPosition = keyframe_position;
+              startTime = keyframe_time;
             }
 
-            if (keyframe.time >= time && keyframe.position <= endPosition) {
-              endPosition = keyframe.position;
-              endTime = keyframe.time;
+            if (keyframe_time >= time && keyframe_position <= endPosition) {
+              endPosition = keyframe_position;
+              endTime = keyframe_time;
             }
           }
         });
@@ -374,25 +376,27 @@ export default {
       if (this.keyframes) {
         // Calculate position from keyframes
         this.keyframes.forEach((keyframe) => {
+          const [keyframe_time, keyframe_position] = keyframe;
+
           if (reversed) {
-            if (keyframe.position <= pos && keyframe.time <= startTime) {
-              startPosition = keyframe.position;
-              startTime = keyframe.time;
+            if (keyframe_position <= pos && keyframe_time <= startTime) {
+              startPosition = keyframe_position;
+              startTime = keyframe_time;
             }
 
-            if (keyframe.position >= pos && keyframe.time >= endTime) {
-              endPosition = keyframe.position;
-              endTime = keyframe.time;
+            if (keyframe_position >= pos && keyframe_time >= endTime) {
+              endPosition = keyframe_position;
+              endTime = keyframe_time;
             }
           } else {
-            if (keyframe.position <= pos && keyframe.time >= startTime) {
-              startPosition = keyframe.position;
-              startTime = keyframe.time;
+            if (keyframe_position <= pos && keyframe_time >= startTime) {
+              startPosition = keyframe_position;
+              startTime = keyframe_time;
             }
 
-            if (keyframe.position >= pos && keyframe.time <= endTime) {
-              endPosition = keyframe.position;
-              endTime = keyframe.time;
+            if (keyframe_position >= pos && keyframe_time <= endTime) {
+              endPosition = keyframe_position;
+              endTime = keyframe_time;
             }
           }
         });

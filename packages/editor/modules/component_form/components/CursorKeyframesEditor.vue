@@ -9,7 +9,7 @@
     >
       <floating-vue
         popper-class="overlay"
-        placement="top"
+        placement="top-start"
         :triggers="['hover', 'click']"
         :delay="{ show: 0, hide: 100 }"
         :container="false"
@@ -36,6 +36,11 @@
 <script>
 import { round } from "lodash";
 import { Menu as FloatingVue } from "floating-vue";
+import "@interactjs/auto-start";
+import "@interactjs/actions/drag";
+import "@interactjs/modifiers";
+import "@interactjs/pointer-events";
+import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
 import ClearIcon from "../assets/icons/clear.svg?inline";
@@ -80,6 +85,21 @@ export default {
       return this.mediaStore.time;
     },
   },
+  mounted() {
+    this._interactable = interact(this.$el).draggable({
+      listeners: {
+        move: () => {
+          console.log("on move");
+        },
+      },
+    });
+  },
+  beforeUnmount() {
+    if (this._interactable) {
+      this._interactable.unset();
+      delete this._interactable;
+    }
+  },
   methods: {
     formatTime,
     onClick(evt) {
@@ -88,7 +108,16 @@ export default {
       this.addKeyframe(this.mediaTime, clientX - x);
     },
     addKeyframe(time, position) {
-      this.value.push([round(time, 2), Math.round(position)]);
+      const keyframe = [round(time, 2), Math.round(position)];
+
+      // Replace an existing keyframe if they both share the same time.
+      const index = this.value.findIndex((k) => k[0] === keyframe[0]);
+      if (index > -1) {
+        this.value[index] = keyframe;
+        return;
+      }
+
+      this.value.push(keyframe);
       this.value = this.value.sort((a, b) => {
         return a[1] - b[1];
       });
@@ -118,8 +147,8 @@ export default {
     .marker {
       width: 1px;
       height: 100%;
-      padding: 0 1em;
-      margin-left: -1em;
+      padding: 0 2px;
+      margin-left: -2px;
 
       &::after {
         content: "";
@@ -158,8 +187,9 @@ export default {
       background: $metascore-color;
     }
 
-    button {
-      padding: 0;
+    // #\9 is used here to increase specificity.
+    button:not(#\9) {
+      padding: 0.25em;
       color: $white;
       background: $danger;
 
