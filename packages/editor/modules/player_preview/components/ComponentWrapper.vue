@@ -40,7 +40,7 @@
 </i18n>
 
 <template>
-  <component-wrapper
+  <player-component-wrapper
     :component="component"
     :class="{ selected, preview, 'drag-over': dragOver }"
     @contextmenu="onContextmenu"
@@ -51,7 +51,7 @@
     @drop="onDrop"
   >
     <slot />
-  </component-wrapper>
+  </player-component-wrapper>
 </template>
 
 <script>
@@ -66,9 +66,6 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
 export default {
-  components: {
-    ComponentWrapper: useModule("app_components").ComponentWrapper,
-  },
   props: {
     /**
      * The associated component

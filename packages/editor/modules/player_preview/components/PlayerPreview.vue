@@ -298,18 +298,18 @@ export default {
         this.iframeDocument = iframe.contentDocument;
         this.iframeBody = this.iframeDocument.body;
 
-        // Find the url of the preloaded CSS link tag
-        // (see css.extract options in vue.config.js),
-        // and add it to the iframe.
-        const preloaded = document.querySelector("link#player-preview");
-        if (preloaded) {
-          const url = preloaded.getAttribute("href");
-          const link = document.createElement("link");
-          link.setAttribute("rel", "stylesheet");
-          link.setAttribute("type", "text/css");
-          link.setAttribute("href", url);
-          this.iframeDocument.head.appendChild(link);
-        }
+        // Find all metascore link tags
+        // and add them to the iframe.
+        document
+          .querySelectorAll("link[rel='stylesheet'][data-metascore]")
+          .forEach((tag) => {
+            const url = tag.getAttribute("href");
+            const link = document.createElement("link");
+            link.setAttribute("rel", "stylesheet");
+            link.setAttribute("type", "text/css");
+            link.setAttribute("href", url);
+            this.iframeDocument.head.appendChild(link);
+          });
 
         this.iframeDocument.addEventListener("keydown", this.bubbleIframeEvent);
         this.iframeDocument.addEventListener("keyup", this.bubbleIframeEvent);

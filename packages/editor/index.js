@@ -14,6 +14,7 @@ import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
+import Media from "@metascore-library/player/modules/media";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
@@ -45,10 +46,6 @@ export class Editor {
 
     app.config.performance = process.env.NODE_ENV === "development";
 
-    // Register root modules.
-    const { default: Media } = await import(
-      /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/media"
-    );
     await registerModules(
       [
         AssetsLibrary,

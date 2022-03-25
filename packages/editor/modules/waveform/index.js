@@ -1,18 +1,13 @@
 import useStore from "./store";
 import StyledButton from "@metascore-library/core/modules/styled_button";
+import Media from "@metascore-library/player/modules/media";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
 import WaveformZoomController from "./components/WaveformZoomController";
 
 export default {
   id: "waveform",
-  async dependencies() {
-    const { default: Media } = await import(
-      /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/media"
-    );
-
-    return [Media, StyledButton];
-  },
+  dependencies: [Media, StyledButton],
   install({ app }) {
     app.component("WaveformOverview", WaveformOverview);
     app.component("WaveformZoom", WaveformZoom);

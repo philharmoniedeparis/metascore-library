@@ -39,6 +39,7 @@ import { Menu as FloatingVue } from "floating-vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
 import ClearIcon from "../assets/icons/clear.svg?inline";
+import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
   components: {
@@ -100,8 +101,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@metascore-library/editor/scss/_floating-vue.scss";
-
 .cursor-keyframes-editor {
   position: absolute;
   top: 0;

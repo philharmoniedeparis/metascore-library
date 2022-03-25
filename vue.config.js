@@ -1,4 +1,5 @@
 const { defineConfig } = require("@vue/cli-service");
+const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 
 module.exports = defineConfig({
   lintOnSave: true,
@@ -18,30 +19,23 @@ module.exports = defineConfig({
       chunkFilename: function () {
         return "metaScore.[name].chunk.css";
       },
-      insert: function (linkTag) {
-        var href = linkTag.getAttribute("href");
-        if (href.includes("Editor.PlayerPreview")) {
-          var preview = document.querySelector("iframe.player-preview");
-          if (preview) {
-            // Load CSS into iframe if available.
-            preview.contentDocument.head.appendChild(linkTag);
-            return;
-          } else {
-            // Iframe not yet mounted,
-            // allow the editor to insert it at the correct location.
-            linkTag.setAttribute("id", "player-preview");
-            // Prevent the tag from affecting the main page,
-            // while still allowing it to load to finalize the async import.
-            linkTag.setAttribute("rel", "preload");
-            linkTag.setAttribute("as", "style");
-          }
-        }
-
-        document.head.appendChild(linkTag);
-      },
     },
   },
   chainWebpack: (config) => {
+    // Add the "data-metascore" attribute to all link tags
+    // to be used by the player_preview module.
+    config.plugin("htmllinkattr").use(HtmlWebpackAssetsAttrPlugin, [
+      {
+        attrs(asset) {
+          if (asset.tagName === "link") {
+            return {
+              "data-metascore": true,
+            };
+          }
+        },
+      },
+    ]);
+
     // See https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags
     config.plugin("define").tap((definitions) => {
       definitions[0] = {
@@ -66,16 +60,6 @@ module.exports = defineConfig({
       })
       .filename("[name].js")
       .chunkFilename("metaScore.[name].chunk.js");
-
-    // Extract common dependencies to a separate chunk.
-    config.optimization.splitChunks({
-      cacheGroups: {
-        commons: {
-          name: "metaScore.commons.chunk",
-          chunks: "initial",
-        },
-      },
-    });
 
     // Add inline SVGs support.
     const svgRule = config.module.rule("svg");

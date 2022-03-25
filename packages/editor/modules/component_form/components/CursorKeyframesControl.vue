@@ -33,7 +33,12 @@
 </template>
 
 <script>
+import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
+
 export default {
+  components: {
+    CursorKeyframesEditor,
+  },
   props: {
     componentEl: {
       type: HTMLElement,

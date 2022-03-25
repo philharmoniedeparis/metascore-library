@@ -1,14 +1,9 @@
+import Media from "@metascore-library/player/modules/media";
 import BufferIndicator from "./components/BufferIndicator";
 
 export default {
   id: "buffer_indicator",
-  async dependencies() {
-    const { default: Media } = await import(
-      /* webpackChunkName: "Editor.PlayerPreview" */ "@metascore-library/player/modules/media"
-    );
-
-    return [Media];
-  },
+  dependencies: [Media],
   install({ app }) {
     app.component("BufferIndicator", BufferIndicator);
   },

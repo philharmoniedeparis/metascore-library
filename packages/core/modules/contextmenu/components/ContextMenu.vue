@@ -44,6 +44,7 @@
 import useStore from "../store";
 import { Menu as FloatingVue } from "floating-vue";
 import ContextMenuMenu from "./ContextMenuMenu.vue";
+import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
   components: {
@@ -117,8 +118,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@metascore-library/editor/scss/_floating-vue.scss";
-
 .context-menu {
   position: fixed;
   z-index: 999;
