@@ -9,22 +9,24 @@
     >
       <floating-vue
         popper-class="overlay"
-        placement="right-start"
-        :triggers="['hover']"
-        :delay="{ show: 0, hide: 250 }"
-        :container="overlayTarget"
+        placement="top"
+        :triggers="['hover', 'click']"
+        :delay="{ show: 0, hide: 100 }"
+        :container="false"
         :handle-resize="false"
-        :distance="-10"
+        :prevent-overflow="false"
       >
         <div class="marker"></div>
 
         <template #popper>
-          <div class="time">
-            {{ formatTime(keyframe[0]) }}
+          <div class="overlay--inner">
+            <div class="time" @click.stop>
+              {{ formatTime(keyframe[0]) }}
+            </div>
+            <styled-button type="button" @click.stop="deleteKeyframe(index)">
+              <template #icon><clear-icon /></template>
+            </styled-button>
           </div>
-          <styled-button type="button" @click.stop="deleteKeyframe(index)">
-            x
-          </styled-button>
         </template>
       </floating-vue>
     </div>
@@ -36,10 +38,12 @@ import { round } from "lodash";
 import { Menu as FloatingVue } from "floating-vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
+import ClearIcon from "../assets/icons/clear.svg?inline";
 
 export default {
   components: {
     FloatingVue,
+    ClearIcon,
   },
   props: {
     modelValue: {
@@ -51,13 +55,13 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
+    const StyledButton = useModule("styled_button").StyledButton;
     const mediaStore = useModule("media").useStore();
-    return { mediaStore };
+    return { StyledButton, mediaStore };
   },
   data() {
     return {
       hoveredKeyframe: null,
-      overlayTarget: null,
     };
   },
   computed: {
@@ -74,9 +78,6 @@ export default {
     mediaTime() {
       return this.mediaStore.time;
     },
-  },
-  mounted() {
-    this.overlayTarget = this.$el;
   },
   methods: {
     formatTime,
@@ -113,6 +114,7 @@ export default {
     position: absolute;
     top: 0;
     height: 100%;
+    cursor: default;
 
     .marker {
       width: 1px;
@@ -126,8 +128,10 @@ export default {
         height: 100%;
         background: $metascore-color;
       }
+    }
 
-      &:hover {
+    &:hover {
+      .marker {
         &::after {
           box-shadow: 0 0 0.25em 0 $metascore-color;
         }
@@ -137,9 +141,11 @@ export default {
 
   ::v-deep(.overlay) {
     .v-popper__inner {
-      border-radius: 0;
+      background: none;
       border: none;
+      border-radius: 0;
       box-shadow: none;
+      cursor: default;
     }
 
     .v-popper__arrow-container {
@@ -151,6 +157,18 @@ export default {
       padding: 0.25em 0.5em;
       color: $white;
       background: $metascore-color;
+    }
+
+    button {
+      padding: 0;
+      color: $white;
+      background: $danger;
+
+      .icon {
+        display: block;
+        width: 1em;
+        height: 1em;
+      }
     }
   }
 }

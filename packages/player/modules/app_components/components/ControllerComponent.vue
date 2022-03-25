@@ -104,7 +104,7 @@ export default {
 
 <style lang="scss" scoped>
 .controller {
-  & > .metaScore-component--inner {
+  > .metaScore-component--inner {
     display: flex;
     width: 90px;
     height: 100px;

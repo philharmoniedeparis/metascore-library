@@ -11,29 +11,43 @@
       @contextmenu.prevent
       @blur="hide"
     >
-      <context-menu-menu
-        v-if="items.length || $slots.header || $slots.footer"
-        :items="items"
-        @click:handler="hide"
+      <floating-vue
+        placement="bottom-start"
+        strategy="fixed"
+        :shown="true"
+        :container="false"
+        :handle-resize="false"
+        @apply-hide="hide"
       >
-        <template v-if="$slots.header" #header>
-          <slot name="header" />
-        </template>
+        <div></div>
 
-        <template v-if="$slots.footer" #footer>
-          <slot name="footer" />
+        <template #popper>
+          <context-menu-menu
+            v-if="items.length || $slots.header || $slots.footer"
+            :items="items"
+          >
+            <template v-if="$slots.header" #header>
+              <slot name="header" />
+            </template>
+
+            <template v-if="$slots.footer" #footer>
+              <slot name="footer" />
+            </template>
+          </context-menu-menu>
         </template>
-      </context-menu-menu>
+      </floating-vue>
     </div>
   </div>
 </template>
 
 <script>
 import useStore from "../store";
+import { Menu as FloatingVue } from "floating-vue";
 import ContextMenuMenu from "./ContextMenuMenu.vue";
 
 export default {
   components: {
+    FloatingVue,
     ContextMenuMenu,
   },
   setup() {
@@ -103,9 +117,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@metascore-library/editor/scss/_floating-vue.scss";
+
 .context-menu {
   position: fixed;
   z-index: 999;
   outline: none;
+
+  ::v-deep(.v-popper__inner) {
+    background: $darkgray;
+    border: 1px solid $lightgray;
+    box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
+  }
+
+  ::v-deep(.v-popper__arrow-container) {
+    display: none;
+  }
 }
 </style>

@@ -12,14 +12,24 @@
         'has-subitems': item.items?.length,
       }"
     >
-      <a v-if="item.handler" @click="onItemClick(item)">
-        {{ item.label }}
-      </a>
-      <span v-else>
-        {{ item.label }}
-      </span>
+      <floating-vue
+        placement="right"
+        strategy="fixed"
+        :delay="0"
+        :container="false"
+        :handle-resize="false"
+      >
+        <a v-if="item.handler" @mousedown.prevent @click="onItemClick(item)">
+          {{ item.label }}
+        </a>
+        <div v-else>
+          {{ item.label }}
+        </div>
 
-      <context-menu-menu v-if="item.items?.length" :items="item.items" />
+        <template #popper>
+          <context-menu-menu v-if="item.items?.length" :items="item.items" />
+        </template>
+      </floating-vue>
     </li>
 
     <li v-if="$slots.footer" class="footer">
@@ -30,8 +40,12 @@
 
 <script>
 import useStore from "../store";
+import { Menu as FloatingVue } from "floating-vue";
 
 export default {
+  components: {
+    FloatingVue,
+  },
   props: {
     items: {
       type: Array,
@@ -61,10 +75,7 @@ ul {
   margin: 0;
   padding: 0.25em;
   list-style: none;
-  background: $darkgray;
   color: $white;
-  box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
-  border: 1px solid $lightgray;
 }
 
 li {
@@ -79,10 +90,6 @@ li {
   }
 
   ul {
-    position: absolute;
-    top: -1em;
-    left: 100%;
-    margin-left: -1em;
     z-index: 1;
   }
 
@@ -117,12 +124,6 @@ li {
       border-width: 0.35em 0 0.35em 0.35em;
       transform: translateY(-50%);
       opacity: 0.5;
-    }
-  }
-
-  &:not(:hover) {
-    ul {
-      display: none;
     }
   }
 

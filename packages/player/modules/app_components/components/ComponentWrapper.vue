@@ -7,15 +7,21 @@
       { active, hidden },
     ]"
     :style="{
-      ...background,
-      ...border,
-      opacity,
       ...position,
       ...size,
       transform,
     }"
   >
-    <slot />
+    <div
+      class="metaScore-component--inner"
+      :style="{
+        ...background,
+        ...border,
+        opacity,
+      }"
+    >
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -73,14 +79,24 @@ export default {
 <style lang="scss" scoped>
 .metaScore-component {
   position: absolute;
-  min-width: 1px;
-  min-height: 1px;
   transform-style: preserve-3d;
-  overflow: hidden;
+
+  .metaScore-component--inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 1px;
+    min-height: 1px;
+    overflow: hidden;
+  }
 
   &:not(.active),
   &.hidden {
-    display: none;
+    > .metaScore-component--inner {
+      display: none;
+    }
   }
 }
 </style>

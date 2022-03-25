@@ -25,7 +25,7 @@
       :triggers="['click']"
       :disabled="readonly || disabled"
       :delay="0"
-      :container="overlayTarget"
+      :container="false"
       :handle-resize="false"
     >
       <button
@@ -113,7 +113,6 @@ export default {
     return {
       inputId: uuid(),
       internalValue: null,
-      overlayTarget: null,
     };
   },
   watch: {
@@ -123,7 +122,6 @@ export default {
   },
   mounted() {
     this.internalValue = this.modelValue;
-    this.overlayTarget = this.$el;
   },
   methods: {
     isArray,
