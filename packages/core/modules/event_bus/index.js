@@ -9,6 +9,9 @@ export default {
       on(event, handler) {
         emitter.on(event, handler);
       },
+      off(event, handler) {
+        emitter.off(event, handler);
+      },
       emit(event, payload) {
         emitter.emit(event, payload);
       },
