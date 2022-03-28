@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import Ajv from "ajv";
 import { clone, merge } from "lodash";
 import { markRaw } from "vue";
@@ -68,6 +69,7 @@ export default class AbstractModel {
    */
   static get schema() {
     return {
+      $id: uuid(), // Used for Ajv caching.
       type: "object",
       properties: {},
       unevaluatedProperties: false,
@@ -85,33 +87,20 @@ export default class AbstractModel {
   }
 
   /**
-   * Get the schema validator.
-   *
-   * @returns {Function} A validation function returned by Ajv
-   */
-  static get validator() {
-    if (!this._validator) {
-      this._validator = this.ajv.compile(this.schema);
-    }
-
-    return this._validator;
-  }
-
-  /**
    * Validate data against the schema.
    *
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
   static validate(data) {
-    return this.validator(data);
+    return this.ajv.validate(this.schema, data);
   }
 
   /**
    * Get current validation errors.
    */
   static get errors() {
-    return this.validator.errors;
+    return this.ajv.errors;
   }
 
   /**
@@ -178,19 +167,10 @@ export default class AbstractModel {
   }
 
   /**
-   * Alias to the static method of the same name
-   *
-   * @returns {Function} A validation function returned by Ajv
-   */
-  get $validator() {
-    return this.constructor.validator;
-  }
-
-  /**
    * Get current validation errors.
    */
   get $errors() {
-    return this.$validator.errors;
+    return this.$ajv.errors;
   }
 
   update(data) {

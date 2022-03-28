@@ -41,11 +41,13 @@ export class AbstractComponent extends AbstractModel {
 
     return merge(super.schema, {
       properties: {
-        type: createStringField({
-          title: "Type",
-          description: "The component's type",
+        type: {
+          ...createStringField({
+            title: "Type",
+            description: "The component's type",
+          }),
           const: this.type,
-        }),
+        },
         id: createUuidField({
           ajv,
           title: "ID",

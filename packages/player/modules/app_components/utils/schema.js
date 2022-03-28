@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import urlRegex from "url-regex";
 import {
   createStringField,
@@ -134,6 +135,7 @@ export const createAnimatedField = ({
       }),
     },
     if: {
+      $id: uuid(), // Used for Ajv caching.
       properties: {
         animated: {
           const: false,
