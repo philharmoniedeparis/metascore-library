@@ -110,5 +110,12 @@ export default {
       display: none;
     }
   }
+
+  &.disabled {
+    input + label {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
 }
 </style>

@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { debounce } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useEditorStore from "@metascore-library/editor/store";
@@ -71,6 +72,13 @@ export default {
     PreviewRuler,
     PreviewGrid,
   },
+  provide() {
+    return {
+      disableComponentInteractions: computed(
+        () => this.disableComponentInteractions
+      ),
+    };
+  },
   props: {
     css: {
       type: String,
@@ -79,6 +87,10 @@ export default {
     rulerThikness: {
       type: Number,
       default: 20,
+    },
+    disableComponentInteractions: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ["load"],

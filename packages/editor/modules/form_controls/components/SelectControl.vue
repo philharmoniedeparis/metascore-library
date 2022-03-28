@@ -72,5 +72,11 @@ export default {
       background: $mediumgray;
     }
   }
+
+  &.disabled {
+    select {
+      opacity: 0.5;
+    }
+  }
 }
 </style>

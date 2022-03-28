@@ -29,7 +29,7 @@
         :disabled="disabled"
         @change="onInputChange"
       />
-      <div v-if="spinners" class="spinners">
+      <div v-if="spinners && !readonly && !disabled" class="spinners">
         <button
           type="button"
           @mousedown="onSpinUpMousedown"
@@ -293,6 +293,12 @@ export default {
   &:not(:hover) {
     .spinners {
       display: none;
+    }
+  }
+
+  &.disabled {
+    input {
+      opacity: 0.5;
     }
   }
 }

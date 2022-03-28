@@ -15,8 +15,9 @@
         :container="false"
         :handle-resize="false"
         :prevent-overflow="false"
+        :distance="0"
       >
-        <div class="marker"></div>
+        <div class="marker" :data-index="index"></div>
 
         <template #popper>
           <div class="overlay--inner">
@@ -86,11 +87,12 @@ export default {
     },
   },
   mounted() {
-    this._interactable = interact(this.$el).draggable({
+    this._interactable = interact(".keyframe .marker", {
+      context: this.$el,
+    }).draggable({
       listeners: {
-        move: () => {
-          console.log("on move");
-        },
+        move: this.onDraggableMove,
+        end: this.onDraggableEnd,
       },
     });
   },
@@ -107,16 +109,21 @@ export default {
       const { clientX } = evt;
       this.addKeyframe(this.mediaTime, clientX - x);
     },
+    onDraggableMove(evt) {
+      const index = parseInt(evt.target.dataset.index);
+      const keyframe = this.value[index];
+      keyframe[1] += evt.delta.x;
+    },
+    onDraggableEnd(evt) {
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
+      );
+    },
     addKeyframe(time, position) {
       const keyframe = [round(time, 2), Math.round(position)];
-
-      // Replace an existing keyframe if they both share the same time.
-      const index = this.value.findIndex((k) => k[0] === keyframe[0]);
-      if (index > -1) {
-        this.value[index] = keyframe;
-        return;
-      }
-
       this.value.push(keyframe);
       this.value = this.value.sort((a, b) => {
         return a[1] - b[1];
@@ -142,7 +149,6 @@ export default {
     position: absolute;
     top: 0;
     height: 100%;
-    cursor: default;
 
     .marker {
       width: 1px;

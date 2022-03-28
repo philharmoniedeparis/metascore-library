@@ -128,6 +128,11 @@ export default {
     const playerPreviewStore = useModule("player_preview").useStore();
     return { editorStore, componentsStore, playerPreviewStore };
   },
+  data() {
+    return {
+      cursorKeyframesRecording: false,
+    };
+  },
   computed: {
     selectedComponents() {
       return this.editorStore.getSelectedComponents;
@@ -174,8 +179,7 @@ export default {
       ["name", "hidden", "background-color", "background-image"].forEach(
         (property) => {
           layout.items[0].items.push({
-            property,
-            label: property === "name" ? null : this.$t(property),
+            ...this.getControlProps(property),
           });
         }
       );
@@ -184,27 +188,15 @@ export default {
         layout.items[0].items.push({
           type: "markup",
           class: "form-container horizontal",
-          items: [
-            {
-              property: "border-color",
-              label: this.$t("border"),
-            },
-            {
-              property: "border-width",
-              label: null,
-            },
-            {
-              property: "border-radius",
-              label: this.$t("border-radius"),
-            },
-          ],
+          items: ["border-color", "border-width", "border-radius"].map(
+            (property) => this.getControlProps(property)
+          ),
         });
       }
 
       if (this.commonModel.$isPositionable) {
         layout.items[0].items.push({
-          property: "position",
-          label: this.$t("position"),
+          ...this.getControlProps("position"),
           itemProps: [
             {
               spinnersDirection: "horizontal",
@@ -218,8 +210,7 @@ export default {
 
       if (this.commonModel.$isResizable) {
         layout.items[0].items.push({
-          property: "dimension",
-          label: this.$t("dimension"),
+          ...this.getControlProps("dimension"),
           itemProps: [
             {
               spinnersDirection: "horizontal",
@@ -236,8 +227,7 @@ export default {
           ["start-frame", "loop-duration", "reversed", "colors"].forEach(
             (property) => {
               layout.items[0].items.push({
-                property,
-                label: this.$t(`Animation.${property}`),
+                ...this.getControlProps(property, this.commonModel.type),
               });
             }
           );
@@ -245,22 +235,19 @@ export default {
 
         case "Block":
           layout.items[0].items.push({
-            property: "pager-visibility",
-            label: this.$t("Block.pager-visibility"),
+            ...this.getControlProps("pager-visibility", this.commonModel.type),
           });
           break;
 
         case "BlockToggler":
           layout.items[0].items.push({
-            property: "blocks",
-            label: this.$t("BlockToggler.blocks"),
+            ...this.getControlProps("blocks", this.commonModel.type),
           });
           break;
 
         case "Content":
           layout.items[0].items.push({
-            property: "text",
-            label: this.$t("Content.text"),
+            ...this.getControlProps("text", this.commonModel.type),
           });
           break;
 
@@ -275,15 +262,13 @@ export default {
             "loop-duration",
           ].forEach((property) => {
             layout.items[0].items.push({
-              property,
-              label: this.$t(`Cursor.${property}`),
+              ...this.getControlProps(property, this.commonModel.type),
             });
           });
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
+              ...this.getControlProps("keyframes", this.commonModel.type),
               type: "cursor-keyframes",
-              property: "keyframes",
-              label: null,
               "component-el": this.playerPreviewStore.getComponentElement(
                 this.masterComponent
               ),
@@ -303,8 +288,7 @@ export default {
             "colors",
           ].forEach((property) => {
             layout.items[0].items.push({
-              property,
-              label: this.$t(`SVG.${property}`),
+              ...this.getControlProps(property, this.commonModel.type),
             });
           });
           break;
@@ -316,15 +300,13 @@ export default {
           class: "form-container horizontal time",
           items: [
             {
-              property: "start-time",
-              label: this.$t("start-time"),
+              ...this.getControlProps("start-time"),
               inButton: true,
               outButton: true,
               clearButton: true,
             },
             {
-              property: "end-time",
-              label: this.$t("end-time"),
+              ...this.getControlProps("end-time"),
               inButton: true,
               outButton: true,
               clearButton: true,
@@ -336,14 +318,12 @@ export default {
       const animated = [];
       if (this.commonModel.$isOpacitable) {
         animated.push({
-          property: "opacity",
-          label: this.$t("opacity"),
+          ...this.getControlProps("opacity"),
         });
       }
       if (this.commonModel.$isTransformable) {
         animated.push({
-          property: "scale",
-          label: this.$t("scale"),
+          ...this.getControlProps("scale"),
           itemProps: {
             value: {
               itemProps: [
@@ -356,8 +336,7 @@ export default {
           },
         });
         animated.push({
-          property: "translate",
-          label: this.$t("translate"),
+          ...this.getControlProps("translate"),
           itemProps: {
             value: {
               itemProps: [
@@ -383,18 +362,65 @@ export default {
       return layout;
     },
   },
+  mounted() {
+    this.$eventBus.on(
+      "component_form:cursorkeyframesrecordstart",
+      this.onCursorKeyframesRecordStart
+    );
+    this.$eventBus.on(
+      "component_form:cursorkeyframesrecordstop",
+      this.onCursorKeyframesRecordStop
+    );
+  },
+  beforeUnmount() {
+    this.$eventBus.off(
+      "component_form:cursorkeyframesrecordstart",
+      this.onCursorKeyframesRecordStart
+    );
+    this.$eventBus.off(
+      "component_form:cursorkeyframesrecordstop",
+      this.onCursorKeyframesRecordStop
+    );
+  },
   methods: {
     update({ property, value }) {
       this.editorStore.updateComponents(this.selectedComponents, {
         [property]: value,
       });
     },
-    getControlProps(property) {
+    getControlProps(property, type = null) {
       const props = {
-        label: this.$t(property),
+        property: property,
       };
 
+      switch (property) {
+        case "name":
+        case "border-width":
+        case "keyframes":
+          props.label = null;
+          break;
+
+        case "border-color":
+          props.label = this.$t("border");
+          break;
+
+        default:
+          props.label = type
+            ? this.$t(`${type}.${property}`)
+            : this.$t(property);
+      }
+
+      if (this.cursorKeyframesRecording && property !== "keyframes") {
+        props.disabled = true;
+      }
+
       return props;
+    },
+    onCursorKeyframesRecordStart() {
+      this.cursorKeyframesRecording = true;
+    },
+    onCursorKeyframesRecordStop() {
+      this.cursorKeyframesRecording = false;
     },
   },
 };

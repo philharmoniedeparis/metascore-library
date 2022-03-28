@@ -66,6 +66,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
 export default {
+  inject: ["disableComponentInteractions"],
   props: {
     /**
      * The associated component
@@ -279,7 +280,7 @@ export default {
     preview(value) {
       if (value) {
         this.destroyInteractions();
-      } else if (this.selected) {
+      } else {
         this.setupInteractions();
       }
     },
@@ -288,6 +289,13 @@ export default {
         this.setupInteractions();
       } else {
         this.destroyInteractions();
+      }
+    },
+    disableComponentInteractions(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else {
+        this.setupInteractions();
       }
     },
   },
@@ -311,6 +319,10 @@ export default {
       }
     },
     setupInteractions() {
+      if (this.preview || !this.selected || this.disableComponentInteractions) {
+        return;
+      }
+
       if (this._interactables) {
         return;
       }

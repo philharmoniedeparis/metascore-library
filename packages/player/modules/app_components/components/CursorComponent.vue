@@ -67,7 +67,7 @@ export default {
       return this.component.keyframes;
     },
     acceleration() {
-      return this.keyframes ? 1 : this.component.acceleration;
+      return this.keyframes?.length ? 1 : this.component.acceleration;
     },
     loopDuration() {
       return this.component["loop-duration"] ?? this.endTime - this.startTime;

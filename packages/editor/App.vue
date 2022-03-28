@@ -35,7 +35,9 @@
     </resizable-pane>
 
     <resizable-pane class="center">
-      <player-preview />
+      <player-preview
+        :disable-component-interactions="disableComponentInteractions"
+      />
     </resizable-pane>
 
     <resizable-pane class="right" :left="{ collapse: true }">
@@ -72,9 +74,9 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { computed } from "vue";
 import packageInfo from "../../package.json";
 
 export default {
@@ -109,6 +111,7 @@ export default {
       version: packageInfo.version,
       classes: {},
       activeLibrariesTab: 0,
+      cursorKeyframesRecording: false,
     };
   },
   computed: {
@@ -134,6 +137,9 @@ export default {
     },
     preview() {
       return this.playerPreviewStore.preview;
+    },
+    disableComponentInteractions() {
+      return this.cursorKeyframesRecording;
     },
   },
   watch: {
@@ -165,6 +171,14 @@ export default {
   },
   mounted() {
     this.modalsTarget = this.$el;
+
+    this.$eventBus.on("component_form:cursorkeyframesrecordstart", () => {
+      this.cursorKeyframesRecording = true;
+    });
+    this.$eventBus.on("component_form:cursorkeyframesrecordstop", () => {
+      this.cursorKeyframesRecording = false;
+    });
+
     this.store.load(this.url);
   },
   methods: {

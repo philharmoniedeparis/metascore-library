@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/core-event-bus",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "tiny-emitter": "^2.1.0"
+  }
+}

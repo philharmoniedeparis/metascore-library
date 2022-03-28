@@ -89,9 +89,18 @@ export default {
       },
     },
   },
+  beforeUnmount() {
+    this.$eventBus.emit("component_form:cursorkeyframesrecordstop");
+  },
   methods: {
     onButtonClick() {
       this.recording = !this.recording;
+
+      this.$eventBus.emit(
+        `component_form:cursorkeyframesrecord${
+          this.recording ? "start" : "stop"
+        }`
+      );
     },
   },
 };

@@ -81,3 +81,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.control {
+  &.disabled {
+    input {
+      opacity: 0.5;
+    }
+  }
+}
+</style>

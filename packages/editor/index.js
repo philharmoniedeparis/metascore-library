@@ -12,6 +12,7 @@ import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
+import EventBus from "@metascore-library/core/modules/event_bus";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
 import Media from "@metascore-library/player/modules/media";
@@ -53,6 +54,7 @@ export class Editor {
         ComponentForm,
         ComponentsLibrary,
         ContextMenu,
+        EventBus,
         FormControls,
         History,
         Media,

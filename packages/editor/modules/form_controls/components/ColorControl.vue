@@ -187,5 +187,12 @@ export default {
       }
     }
   }
+
+  &.disabled {
+    .opener {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
 }
 </style>

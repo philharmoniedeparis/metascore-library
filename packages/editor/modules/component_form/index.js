@@ -1,3 +1,4 @@
+import EventBus from "@metascore-library/core/modules/event_bus";
 import FormGroup from "../form_group";
 import Media from "@metascore-library/player/modules/media";
 import PlayerPreview from "../player_preview";
@@ -12,6 +13,7 @@ import ComponentForm from "./components/ComponentForm";
 export default {
   id: "component_form",
   dependencies: [
+    EventBus,
     FormGroup,
     Media,
     PlayerPreview,
