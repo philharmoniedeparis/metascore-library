@@ -9,19 +9,6 @@ export default defineStore("assets-library", {
     };
   },
   getters: {
-    get() {
-      return (id) => {
-        const item = this.items[id];
-        return item && !item.$deleted ? item : null;
-      };
-    },
-    all() {
-      return this.list
-        .map((id) => {
-          return this.get(id);
-        })
-        .filter((i) => i);
-    },
     getName() {
       return (item) => {
         return item.name;
@@ -41,6 +28,26 @@ export default defineStore("assets-library", {
         const file = item.shared ? item.file : item;
         const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
         return matches ? matches[1] : null;
+      };
+    },
+    get() {
+      return (id) => {
+        const item = this.items[id];
+        return item && !item.$deleted ? item : null;
+      };
+    },
+    all() {
+      return this.list
+        .map((id) => {
+          return this.get(id);
+        })
+        .filter((a) => a);
+    },
+    filterByType() {
+      return (type) => {
+        return this.all.filter((a) => {
+          return this.getType(a) === type;
+        });
       };
     },
   },

@@ -41,7 +41,7 @@
     </resizable-pane>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <component-form></component-form>
+      <component-form :available-images="imageAssets"></component-form>
     </resizable-pane>
 
     <resizable-pane
@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, readonly } from "vue";
 import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
@@ -140,6 +140,9 @@ export default {
     },
     disableComponentInteractions() {
       return this.cursorKeyframesRecording;
+    },
+    imageAssets() {
+      return this.assetsStore.filterByType("image").map(readonly);
     },
   },
   watch: {

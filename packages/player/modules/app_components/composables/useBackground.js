@@ -14,7 +14,7 @@ export function useBackground(component, model) {
         ret["background-color"] = backgroundColor;
       }
 
-      if (!isUndefined(backgroundImage) && !isNull(backgroundImage)) {
+      if (backgroundImage) {
         ret["background-image"] = `url(${backgroundImage})`;
       }
 

@@ -100,12 +100,14 @@ export default {
           };
 
         case "select":
-          return {
-            options: this.schema.enum.reduce(
-              (acc, el) => ({ ...acc, [el]: el }),
-              {}
-            ),
-          };
+          if (this.schema.enum) {
+            return {
+              options: this.schema.enum.reduce(
+                (acc, el) => ({ ...acc, [el]: el }),
+                {}
+              ),
+            };
+          }
       }
 
       return null;

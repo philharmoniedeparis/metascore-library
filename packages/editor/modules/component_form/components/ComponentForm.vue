@@ -122,6 +122,14 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { intersection } from "lodash";
 
 export default {
+  props: {
+    availableImages: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+  },
   setup() {
     const editorStore = useEditorStore();
     const componentsStore = useModule("app_components").useStore();
@@ -176,13 +184,28 @@ export default {
         ],
       };
 
-      ["name", "hidden", "background-color", "background-image"].forEach(
-        (property) => {
-          layout.items[0].items.push({
-            ...this.getControlProps(property),
-          });
-        }
-      );
+      ["name", "hidden"].forEach((property) => {
+        layout.items[0].items.push({
+          ...this.getControlProps(property),
+        });
+      });
+
+      if (this.commonModel.$isBackgroundable) {
+        layout.items[0].items.push({
+          ...this.getControlProps("background-color"),
+        });
+        layout.items[0].items.push({
+          ...this.getControlProps("background-image"),
+          type: "select",
+          options: {
+            "": null,
+            ...this.availableImages.reduce(
+              (acc, img) => ({ ...acc, [img.name]: img.url }),
+              {}
+            ),
+          },
+        });
+      }
 
       if (this.commonModel.$isBorderable) {
         layout.items[0].items.push({

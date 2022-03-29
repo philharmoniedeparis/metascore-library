@@ -7,7 +7,6 @@ import CheckboxControl from "./components/CheckboxControl";
 import ColorControl from "./components/ColorControl";
 import FileControl from "./components/FileControl";
 import HtmlControl from "./components/HtmlControl";
-import ImageControl from "./components/ImageControl";
 import NumberControl from "./components/NumberControl";
 import SelectControl from "./components/SelectControl";
 import TextControl from "./components/TextControl";
@@ -23,7 +22,6 @@ export default {
     app.component("ColorControl", ColorControl);
     app.component("FileControl", FileControl);
     app.component("HtmlControl", HtmlControl);
-    app.component("ImageControl", ImageControl);
     app.component("NumberControl", NumberControl);
     app.component("SelectControl", SelectControl);
     app.component("TextControl", TextControl);
