@@ -1,3 +1,14 @@
+<i18n>
+{
+  "fr": {
+    "page_label": "Page {index}/{count}",
+  },
+  "en": {
+    "page_label": "Page {index}/{count}",
+  },
+}
+</i18n>
+
 <template>
   <div
     :class="[
@@ -34,7 +45,7 @@
         </label>
       </div>
 
-      <div class="label">{{ component.name }}</div>
+      <div class="label">{{ label }}</div>
 
       <div class="togglers" @click.stop>
         <div class="toggle lock">
@@ -109,6 +120,20 @@ export default {
     model() {
       return this.componentsStore.getModel(this.component.type);
     },
+    label() {
+      switch (this.component.type) {
+        case "Page": {
+          const block = this.componentsStore.getParent(this.component);
+          const pages = this.componentsStore.getChildren(block);
+          const count = pages.length;
+          const index = pages.findIndex((c) => c.id === this.component.id) + 1;
+          return this.$t("page_label", { index, count });
+        }
+
+        default:
+          return this.component.name;
+      }
+    },
     mediaDuration() {
       return this.mediaStore.duration;
     },
@@ -143,14 +168,14 @@ export default {
     hasSelectedDescendents() {
       return this.editorStore.componentHasSelectedDescendents(this.component);
     },
-    isTimeable() {
+    timeable() {
       return this.model.$isTimeable;
     },
     hasStartTime() {
-      return this.isTimeable && this.component["start-time"] !== null;
+      return this.timeable && this.component["start-time"] !== null;
     },
     hasEndTime() {
-      return this.isTimeable && this.component["end-time"] !== null;
+      return this.timeable && this.component["end-time"] !== null;
     },
     timeStyle() {
       const style = {};
@@ -175,7 +200,7 @@ export default {
       if (value) {
         this._interactables = [];
 
-        if (this.isTimeable) {
+        if (this.timeable) {
           // @todo: skip for locked components and pages of non-synched blocks
 
           const resizable = interact(this.$refs.time);
