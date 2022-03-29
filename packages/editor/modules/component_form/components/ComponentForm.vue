@@ -15,21 +15,29 @@
     "translate": "Translation",
     "scale": "Échelle",
     "Animation": {
+      "title": "Animation",
       "start-frame": "Image de départ",
       "loop-duration": "Durée d'un boucle",
       "reversed": "Inversé",
       "colors": "Couleurs",
     },
     "Block": {
+      "title": "Bloc",
       "pager-visibility": "Visibilité du tourne page",
     },
     "BlockToggler": {
+      "title": "Contrôleur de blocs",
       "blocks": "Blocs",
     },
     "Content": {
+      "title": "Contenu",
       "text": "Éditer le contenu",
     },
+    "Controller": {
+      "title": "Contrôleur",
+    },
     "Cursor": {
+      "title": "Curseur",
       "form": "Forme",
       "direction": "Direction",
       "acceleration": "Accélération",
@@ -39,7 +47,17 @@
       "cursor-width": "Largeur du curseur",
       "cursor-color": "Couleur du curseur",
     },
+    "Media": {
+      "title": "Média",
+    },
+    "Page": {
+      "title": "Page {index}/{count}",
+    },
+    "Scenario": {
+      "title": "Scénario",
+    },
     "SVG": {
+      "title": "SVG",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
       "stroke-dasharray": "Style de trait",
@@ -48,6 +66,9 @@
       "marker-mid": "Marqueurs intermédiaires",
       "marker-end": "Marqueur de fin",
       "colors": "Couleurs",
+    },
+    "VideoRenderer": {
+      "title": "Rendu vidéo",
     },
   },
   "en": {
@@ -65,21 +86,29 @@
     "translate": "Translation",
     "scale": "Scale",
     "Animation": {
+      "title": "Animation",
       "start-frame": "Start frame",
       "loop-duration": "Loop duration",
       "reversed": "Reversed",
       "colors": "Colors",
     },
     "Block": {
+      "title": "Block",
       "pager-visibility": "Pager visibility",
     },
     "BlockToggler": {
+      "title": "Block toggler",
       "blocks": "Blocks",
     },
     "Content": {
+      "title": "Content",
       "text": "Edit the content",
     },
+    "Controller": {
+      "title": "Controller",
+    },
     "Cursor": {
+      "title": "Cursor",
       "form": "Form",
       "direction": "Direction",
       "acceleration": "Acceleration",
@@ -89,7 +118,17 @@
       "cursor-width": "Cursor width",
       "cursor-color": "Cursor color",
     },
+    "Media": {
+      "title": "Media",
+    },
+    "Page": {
+      "title": "Page {index}/{count}",
+    },
+    "Scenario": {
+      "title": "Scenario",
+    },
     "SVG": {
+      "title": "SVG",
       "stroke": "Stroke color",
       "stroke-width": "Stroke width",
       "stroke-dasharray": "Stroke style",
@@ -98,6 +137,9 @@
       "marker-mid": "Marker mid",
       "marker-end": "Marker end",
       "colors": "Colors",
+    },
+    "VideoRenderer": {
+      "title": "Video Renderer",
     },
   },
 }
@@ -164,7 +206,19 @@ export default {
       return this.commonModeles[0];
     },
     title() {
-      return this.commonModel?.type;
+      switch (this.masterComponent.type) {
+        case "Page": {
+          const block = this.componentsStore.getParent(this.masterComponent);
+          const pages = this.componentsStore.getChildren(block);
+          const count = pages.length;
+          const index =
+            pages.findIndex((c) => c.id === this.masterComponent.id) + 1;
+          return this.$t("Page.title", { index, count });
+        }
+
+        default:
+          return this.$t(`${this.masterComponent.type}.title`);
+      }
     },
     schema() {
       return this.commonModel?.schema;
