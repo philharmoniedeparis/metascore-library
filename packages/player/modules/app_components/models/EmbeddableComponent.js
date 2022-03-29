@@ -2,21 +2,38 @@ import { mix } from "mixwith";
 import { merge } from "lodash";
 import { createStringField } from "@metascore-library/core/utils/schema";
 import { AbstractComponent } from ".";
+import Backgroundable from "./mixins/Backgroundable";
+import Borderable from "./mixins/Borderable";
 import Hideable from "./mixins/Hideable";
 import Opacitiable from "./mixins/Opacitiable";
 import Positionable from "./mixins/Positionable";
+import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
+import Transformable from "./mixins/Transformable";
 
 export class EmbeddableComponent extends mix(AbstractComponent).with(
+  Backgroundable,
+  Borderable,
   Hideable,
   Opacitiable,
   Positionable,
-  Timeable
+  Resizable,
+  Timeable,
+  Transformable
 ) {
+  /**
+   * @inheritdoc
+   */
   static type = "EmbeddableComponent";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = AbstractComponent;
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     return merge(super.schema, {
       properties: {

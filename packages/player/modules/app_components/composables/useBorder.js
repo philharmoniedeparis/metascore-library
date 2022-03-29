@@ -22,10 +22,10 @@ export function useBorder(component, model) {
         if (!isUndefined(borderColor) && !isNull(borderColor)) {
           ret["border-color"] = borderColor;
         }
+      }
 
-        if (!isUndefined(borderRadius) && !isNull(borderRadius)) {
-          ret["border-radius"] = borderRadius;
-        }
+      if (!isUndefined(borderRadius) && !isNull(borderRadius)) {
+        ret["border-radius"] = borderRadius;
       }
 
       return ret;

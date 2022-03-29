@@ -32,7 +32,7 @@
             href="#"
             aria-label="First"
             :class="{ disabled: activePageIndex === 0 }"
-            @click.prevent="reset"
+            @click.stop.prevent="reset"
           >
             <span aria-hidden="true"><pager-first-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.first") }}</span>
@@ -43,7 +43,7 @@
             href="#"
             aria-label="Previous"
             :class="{ disabled: activePageIndex === 0 }"
-            @click.prevent="turnPageBackward"
+            @click.stop.prevent="turnPageBackward"
           >
             <span aria-hidden="true"><pager-previous-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.previous") }}</span>
@@ -54,7 +54,7 @@
             href="#"
             aria-label="Next"
             :class="{ disabled: activePageIndex === pageCount - 1 }"
-            @click.prevent="turnPageForward"
+            @click.stop.prevent="turnPageForward"
           >
             <span aria-hidden="true"><pager-next-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.next") }}</span>
@@ -236,11 +236,13 @@ export default {
     left: 0;
     display: flex;
     width: 100%;
-    padding: 0.15em 0;
+    padding: 0.15em 0.5em;
     flex-direction: row;
     align-items: center;
     justify-content: right;
+    gap: 0.2em;
     background-color: rgba(214, 214, 214, 0.6);
+    box-sizing: border-box;
     user-select: none;
     z-index: 1;
 
@@ -255,21 +257,23 @@ export default {
 
     .links {
       display: flex;
-      margin-right: 2px;
+      margin: 0;
+      padding: 0;
       flex-direction: row;
+      gap: 0.2em;
       list-style: none;
 
       a {
         display: flex;
-        width: 1.54em;
-        height: 1.54em;
-        margin: 0 0.2em;
-        padding: 0.35em;
+        width: 1.6em;
+        height: 1.6em;
+        padding: 0.4em;
         align-items: center;
         justify-content: center;
         color: $metascore-color;
         background-color: #fff;
         border-radius: 50%;
+        box-sizing: border-box;
 
         &.disabled {
           color: #ccc;

@@ -9,6 +9,9 @@
     :style="{
       ...position,
       ...size,
+      ...border,
+      borderStyle: null,
+      borderWidth: null,
       transform,
     }"
   >
@@ -89,6 +92,7 @@ export default {
     height: 100%;
     min-width: 1px;
     min-height: 1px;
+    box-sizing: border-box;
     overflow: hidden;
   }
 

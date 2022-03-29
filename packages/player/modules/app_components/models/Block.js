@@ -1,26 +1,25 @@
-import { mix } from "mixwith";
 import { merge } from "lodash";
 import { EmbeddableComponent, Page } from ".";
-import Backgroundable from "./mixins/Backgroundable";
-import Borderable from "./mixins/Borderable";
-import Resizable from "./mixins/Resizable";
-import Transformable from "./mixins/Transformable";
 import {
   createBooleanField,
   createEnumField,
 } from "@metascore-library/core/utils/schema";
 import { createCollectionField } from "../utils/schema";
 
-export class Block extends mix(EmbeddableComponent).with(
-  Backgroundable,
-  Borderable,
-  Resizable,
-  Transformable
-) {
+export class Block extends EmbeddableComponent {
+  /**
+   * @inheritdoc
+   */
   static type = "Block";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = EmbeddableComponent;
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 

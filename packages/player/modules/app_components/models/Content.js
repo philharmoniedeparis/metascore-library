@@ -1,22 +1,21 @@
-import { mix } from "mixwith";
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
-import Backgroundable from "./mixins/Backgroundable";
-import Borderable from "./mixins/Borderable";
-import Resizable from "./mixins/Resizable";
-import Transformable from "./mixins/Transformable";
 import { createHtmlField } from "../utils/schema";
 
-export class Content extends mix(EmbeddableComponent).with(
-  Backgroundable,
-  Borderable,
-  Resizable,
-  Transformable
-) {
+export class Content extends EmbeddableComponent {
+  /**
+   * @inheritdoc
+   */
   static type = "Content";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = EmbeddableComponent;
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 

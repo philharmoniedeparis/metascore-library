@@ -1,21 +1,20 @@
 import { merge } from "lodash";
-import { mix } from "mixwith";
 import { EmbeddableComponent } from ".";
-import Backgroundable from "./mixins/Backgroundable";
-import Borderable from "./mixins/Borderable";
-import Resizable from "./mixins/Resizable";
-import Transformable from "./mixins/Transformable";
 
-export class VideoRenderer extends mix(EmbeddableComponent).with(
-  Backgroundable,
-  Borderable,
-  Resizable,
-  Transformable
-) {
+export class VideoRenderer extends EmbeddableComponent {
+  /**
+   * @inheritdoc
+   */
   static type = "VideoRenderer";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = EmbeddableComponent;
 
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     return merge(super.schema, {
       properties: {

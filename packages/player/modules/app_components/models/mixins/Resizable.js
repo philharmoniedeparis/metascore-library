@@ -14,7 +14,14 @@ export default Mixin(
             dimension: createArrayField({
               title: "Dimension",
               default: [50, 50],
-              items: [createIntegerField(), createIntegerField()],
+              items: [
+                createIntegerField({
+                  minimum: 10,
+                }),
+                createIntegerField({
+                  minimum: 10,
+                }),
+              ],
             }),
           },
         });

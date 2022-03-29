@@ -104,12 +104,10 @@ export default {
 
 <style lang="scss" scoped>
 .controller {
-  > .metaScore-component--inner {
+  ::v-deep(> .metaScore-component--inner) {
     display: flex;
-    width: 90px;
-    height: 100px;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     color: rgb(221, 221, 221);
     font-weight: bold;
@@ -125,48 +123,75 @@ export default {
     flex: 0 0 2.75em;
     justify-content: center;
     align-items: center;
+    color: $white;
     background-color: $metascore-color;
+    font-weight: 700;
+    line-height: 2.7em;
   }
 
   .buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
+    flex: 1 1 auto;
+    padding: 0 5%;
 
     button {
+      position: relative;
+      padding: 0;
       color: $metascore-color;
+      box-sizing: border-box;
+
+      span {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        .icon {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      &::after {
+        content: "";
+        display: block;
+        padding-bottom: 100%;
+      }
 
       &[data-action="rewind"] {
-        padding: 0.5em;
+        width: 10%;
       }
 
       &[data-action="play"],
       &[data-action="pause"] {
-        display: flex;
-        width: 3.7em;
-        height: 3.7em;
-        margin-right: 1.75em;
-        padding: 0.75em;
-        align-items: center;
-        justify-content: center;
+        width: 48%;
         border: 0.5em solid #fff;
         border-radius: 50%;
-      }
 
-      &[data-action="rewind"] {
-        width: 1.75em;
-        padding: 0.5em;
+        span {
+          padding: 10%;
+          box-sizing: border-box;
+        }
       }
 
       &:hover {
         opacity: 0.75;
       }
     }
+
+    &::after {
+      content: "";
+      width: 10%;
+    }
   }
 
   .logo {
     width: 5.75em;
+    align-self: center;
     opacity: 0.5;
   }
 

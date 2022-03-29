@@ -1,10 +1,6 @@
-import { mix } from "mixwith";
+import { v4 as uuid } from "uuid";
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
-import Backgroundable from "./mixins/Backgroundable";
-import Borderable from "./mixins/Borderable";
-import Resizable from "./mixins/Resizable";
-import Transformable from "./mixins/Transformable";
 import {
   createEnumField,
   createStringField,
@@ -16,12 +12,7 @@ import {
 } from "@metascore-library/core/utils/schema";
 import { createAngleField } from "../utils/schema";
 
-export class Cursor extends mix(EmbeddableComponent).with(
-  Backgroundable,
-  Borderable,
-  Resizable,
-  Transformable
-) {
+export class Cursor extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -67,6 +58,7 @@ export class Cursor extends mix(EmbeddableComponent).with(
         }),
       },
       if: {
+        $id: uuid(), // Used for Ajv caching.
         properties: {
           form: {
             const: "linear",
