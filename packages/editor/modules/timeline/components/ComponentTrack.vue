@@ -95,7 +95,8 @@ export default {
     const editorStore = useEditorStore();
     const mediaStore = useModule("media").useStore();
     const componentsStore = useModule("app_components").useStore();
-    return { editorStore, mediaStore, componentsStore };
+    const historyStore = useModule("history").useStore();
+    return { editorStore, mediaStore, componentsStore, historyStore };
   },
   data() {
     return {
@@ -172,7 +173,7 @@ export default {
   watch: {
     selected(value) {
       if (value) {
-        this._time_interactables = [];
+        this._interactables = [];
 
         if (this.isTimeable) {
           // @todo: skip for locked components and pages of non-synched blocks
@@ -181,19 +182,21 @@ export default {
           resizable.resizable({
             edges: { left: true, right: true },
             listeners: {
-              move: this.onTimeResizableMove,
+              start: this.onResizableStart,
+              move: this.onResizableMove,
+              end: this.onResizableEnd,
             },
           });
 
-          this._time_interactables.push(resizable);
+          this._interactables.push(resizable);
         }
 
         this.$nextTick(function () {
           this.$refs.handle.scrollIntoView();
         });
-      } else if (this._time_interactables) {
-        this._time_interactables.forEach((i) => i.unset());
-        delete this._time_interactables;
+      } else if (this._interactables) {
+        this._interactables.forEach((i) => i.unset());
+        delete this._interactables;
       }
     },
   },
@@ -208,7 +211,10 @@ export default {
         this.editorStore.selectComponent(this.component, evt.shiftKey);
       }
     },
-    onTimeResizableMove(evt) {
+    onResizableStart() {
+      this.historyStore.startGroup();
+    },
+    onResizableMove(evt) {
       const time = evt.target;
       const time_wrapper = time.parentNode;
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
@@ -230,6 +236,9 @@ export default {
       }
 
       this.editorStore.updateComponent(this.component, data);
+    },
+    onResizableEnd() {
+      this.historyStore.endGroup();
     },
   },
 };
