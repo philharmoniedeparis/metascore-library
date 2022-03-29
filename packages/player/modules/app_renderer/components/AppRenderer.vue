@@ -53,8 +53,8 @@ export default {
       }
 
       return this.componentsStore.get(
-        this.componentsStore.activeScenario.schema,
-        this.componentsStore.activeScenario.id
+        "Scenario",
+        this.componentsStore.activeScenario
       );
     },
     style() {

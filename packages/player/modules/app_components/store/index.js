@@ -6,7 +6,6 @@ export default defineStore("app-components", {
   state: () => {
     return {
       components: {},
-      scenarios: [],
       activeScenario: null,
       toggledBlocks: [],
     };
@@ -23,6 +22,13 @@ export default defineStore("app-components", {
       return (type, id) => {
         const data = this.components?.[type]?.[id];
         return data && !data.$deleted ? data : null;
+      };
+    },
+    getByType() {
+      return (type) => {
+        return Object.keys(this.components?.[type] || {})
+          .map((id) => this.get(type, id))
+          .filter((c) => c);
       };
     },
     getModel() {
@@ -114,26 +120,28 @@ export default defineStore("app-components", {
     init(data) {
       const normalized = normalize(data);
       this.components = normalized.entities;
-      this.scenarios = normalized.result;
-      this.activeScenario = this.scenarios[0];
+      this.activeScenario = normalized.result[0].id;
     },
-    add(data, parent) {
+    add(data, parent = null) {
       this.components[data.type] = this.components[data.type] || {};
       this.components[data.type][data.id] = {
         ...data,
-        $parent: {
-          schema: parent.type,
-          id: parent.id,
-        },
       };
 
-      switch (parent.type) {
-        case "Block":
-          parent.pages.push({ schema: data.type, id: data.id });
-          break;
+      if (parent) {
+        this.components[data.type][data.id].$parent = {
+          schema: parent.type,
+          id: parent.id,
+        };
 
-        default:
-          parent.children.push({ schema: data.type, id: data.id });
+        switch (parent.type) {
+          case "Block":
+            parent.pages.push({ schema: data.type, id: data.id });
+            break;
+
+          default:
+            parent.children.push({ schema: data.type, id: data.id });
+        }
       }
     },
     update(component, data) {

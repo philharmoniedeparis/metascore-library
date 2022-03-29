@@ -17,7 +17,7 @@
     </resizable-pane>
 
     <resizable-pane class="left" :right="{ collapse: true }">
-      <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
+      <tabs-container ref="libraries" v-model:active="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
         <tabs-item title="Shared Library">
@@ -62,7 +62,12 @@
         <components-timeline :scale="timelineScale" :offset="timelineOffset" />
       </div>
       <div class="bottom">
-        <scenario-manager />
+        <scenario-manager
+          v-model:active="activeScenario"
+          :scenarios="scenarios"
+          @add="onScnearioManagerAdd"
+          @clone="onScnearioManagerClone"
+        />
         <waveform-zoom-controller />
       </div>
     </resizable-pane>
@@ -93,12 +98,14 @@ export default {
   },
   setup() {
     const store = useStore();
+    const componentsStore = useModule("app_components").useStore();
     const assetsStore = useModule("assets_library").useStore();
     const mediaStore = useModule("media").useStore();
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     return {
       store,
+      componentsStore,
       assetsStore,
       mediaStore,
       playerPreviewStore,
@@ -143,6 +150,18 @@ export default {
     },
     imageAssets() {
       return this.assetsStore.filterByType("image").map(readonly);
+    },
+    scenarios() {
+      console.log(this.store.scenarios);
+      return this.store.scenarios;
+    },
+    activeScenario: {
+      get() {
+        return this.componentsStore.activeScenario;
+      },
+      set(value) {
+        this.componentsStore.activeScenario = value;
+      },
     },
   },
   watch: {
@@ -194,6 +213,17 @@ export default {
     onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
       this.assetsStore.add(asset);
+    },
+    onScnearioManagerAdd(data) {
+      const scenario = this.store.createComponent({
+        ...data,
+        type: "Scenario",
+      });
+      console.log(scenario);
+      this.store.addComponent(scenario);
+    },
+    onScnearioManagerClone({ id, ...data }) {
+      this.store.cloneScenario(id, data);
     },
   },
 };

@@ -26,6 +26,10 @@ export default defineStore("editor", {
       const mediaStore = useModule("media").useStore();
       return mediaStore.source;
     },
+    scenarios() {
+      const componentsStore = useModule("app_components").useStore();
+      return componentsStore.getByType("Scenario");
+    },
     isComponentSelected() {
       return (component) => {
         return this.selectedComponents.find(({ type, id }) => {
@@ -98,7 +102,7 @@ export default defineStore("editor", {
         componentsStore.update(component, data);
       });
     },
-    addComponent(data, parent) {
+    addComponent(data, parent = null) {
       const componentsStore = useModule("app_components").useStore();
       const component = this.createComponent(data);
       componentsStore.add(component, parent);

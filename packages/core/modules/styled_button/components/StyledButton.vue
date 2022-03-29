@@ -112,8 +112,10 @@ export default {
     height: 1em;
     align-items: center;
     justify-content: center;
-    svg {
-      fill: currentColor;
+
+    ::v-deep(svg) {
+      width: 100%;
+      height: 100%;
     }
   }
 
