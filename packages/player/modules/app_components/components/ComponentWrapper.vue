@@ -9,9 +9,6 @@
     :style="{
       ...position,
       ...size,
-      ...border,
-      borderStyle: null,
-      borderWidth: null,
       transform,
     }"
   >
@@ -25,6 +22,8 @@
     >
       <slot />
     </div>
+
+    <slot name="outer"></slot>
   </div>
 </template>
 
@@ -98,9 +97,7 @@ export default {
 
   &:not(.active),
   &.hidden {
-    > .metaScore-component--inner {
-      display: none;
-    }
+    display: none;
   }
 }
 </style>

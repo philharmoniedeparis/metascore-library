@@ -42,7 +42,7 @@
 <template>
   <player-component-wrapper
     :component="component"
-    :class="{ selected, preview, 'drag-over': dragOver }"
+    :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
     @contextmenu="onContextmenu"
     @click.stop="onClick"
     @dragenter="onDragenter"
@@ -51,6 +51,17 @@
     @drop="onDrop"
   >
     <slot />
+
+    <template v-if="selected && resizable" #outer>
+      <div class="resize-handle top left"></div>
+      <div class="resize-handle top"></div>
+      <div class="resize-handle top right"></div>
+      <div class="resize-handle right"></div>
+      <div class="resize-handle bottom right"></div>
+      <div class="resize-handle bottom"></div>
+      <div class="resize-handle bottom left"></div>
+      <div class="resize-handle left"></div>
+    </template>
   </player-component-wrapper>
 </template>
 
@@ -75,6 +86,10 @@ export default {
       type: Object,
       required: true,
     },
+    snapRange: {
+      type: Number,
+      default: 5,
+    },
   },
   emits: ["componentclick"],
   setup() {
@@ -97,6 +112,8 @@ export default {
     return {
       dragOver: false,
       dragEnterCounter: 0,
+      dragging: false,
+      resizing: false,
     };
   },
   computed: {
@@ -112,11 +129,14 @@ export default {
     locked() {
       return this.editorStore.isComponentLocked(this.component);
     },
-    isPositionable() {
+    positionable() {
       return this.model.$isPositionable;
     },
-    isResizable() {
+    resizable() {
       return this.model.$isResizable;
+    },
+    siblings() {
+      return this.componentsStore.getSiblings(this.component);
     },
     clipboardDataAvailable() {
       if (this.clipboardStore.format !== "metascore/component") {
@@ -327,12 +347,12 @@ export default {
         return;
       }
 
-      if (this.isPositionable || this.isResizable) {
+      if (this.positionable || this.resizable) {
         this._interactables = interact(this.$el, {
           context: this.$el.ownerDocument,
         });
 
-        if (this.isPositionable) {
+        if (this.positionable) {
           let allowFrom = null;
 
           switch (this.component.type) {
@@ -354,12 +374,18 @@ export default {
           });
         }
 
-        if (this.isResizable) {
+        if (this.resizable) {
           this._interactables.resizable({
-            edges: { top: true, left: true, bottom: true, right: true },
-            margin: 5,
+            edges: {
+              top: ".resize-handle.top",
+              right: ".resize-handle.right",
+              bottom: ".resize-handle.bottom",
+              left: ".resize-handle.left",
+            },
             listeners: {
+              start: this.onResizableStart,
               move: this.onResizableMove,
+              end: this.onResizableEnd,
             },
           });
         }
@@ -371,18 +397,57 @@ export default {
         delete this._interactables;
       }
     },
+    getInteractableSnapTargets() {
+      const targets = [];
+      const x_values = [];
+      const y_values = [];
+
+      const { top, left } = this.$el.getBoundingClientRect();
+      const offset_x = left - this.component.position[0];
+      const offset_y = top - this.component.position[1];
+
+      this.siblings.forEach((sibling) => {
+        if (this.editorStore.isComponentSelected(sibling)) {
+          return;
+        }
+
+        let [left, top] = sibling.position;
+        const [width, height] = sibling.dimension;
+        left += offset_x;
+        top += offset_y;
+        x_values.push(left, left + width / 2, left + width);
+        y_values.push(top, top + height / 2, top + height);
+      });
+
+      x_values.forEach((x) => {
+        targets.push({ x });
+        y_values.forEach((y) => {
+          targets.push({ x, y });
+        });
+      });
+      y_values.forEach((y) => {
+        targets.push({ y });
+      });
+
+      return targets;
+    },
     onDraggableStart() {
+      this.dragging = true;
       this.historyStore.startGroup();
     },
     onDraggableMove(evt) {
       this.editorStore.getSelectedComponents.forEach((component) => {
         const position = component.position;
         this.editorStore.updateComponent(component, {
-          position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
+          position: [
+            Math.round(position[0] + evt.delta.x),
+            Math.round(position[1] + evt.delta.y),
+          ],
         });
       });
     },
     onDraggableEnd(evt) {
+      this.dragging = false;
       this.historyStore.endGroup();
 
       // Prevent the next click event
@@ -391,6 +456,9 @@ export default {
         (evt) => evt.stopImmediatePropagation(),
         { capture: true, once: true }
       );
+    },
+    onResizableStart() {
+      this.resizing = true;
     },
     onResizableMove(evt) {
       const position = this.component.position;
@@ -402,6 +470,16 @@ export default {
         ],
         dimension: [round(evt.rect.width), round(evt.rect.height)],
       });
+    },
+    onResizableEnd(evt) {
+      this.resizing = false;
+
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
+      );
     },
     getModelTypeFromDragEvent(evt) {
       let type = null;
@@ -500,33 +578,91 @@ export default {
     touch-action: none;
     user-select: none;
 
+    .resize-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1em;
+      height: 1em;
+      margin-top: -0.45em;
+      margin-left: -0.45em;
+      background: $white;
+      border: 0.25em solid $metascore-color;
+      box-sizing: border-box;
+      z-index: 2;
+
+      &.top {
+        top: 0;
+      }
+      &.right {
+        left: 100%;
+      }
+      &.bottom {
+        top: 100%;
+      }
+      &.left {
+        left: 0;
+      }
+    }
+    @each $component, $color in $component-colors {
+      @if $component == default {
+        .resize-handle {
+          border-color: $color;
+        }
+      } @else {
+        &.#{$component} .resize-handle {
+          border-color: $color;
+        }
+      }
+    }
+
     &.block {
-      &:hover::v-deep(> .pager) {
+      &:hover::v-deep(> .metaScore-component--inner .pager) {
         display: flex !important;
       }
     }
 
     &.selected {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border: 0.25em dashed $metascore-color;
+        pointer-events: none;
+        z-index: 1;
+      }
+
       @each $component, $color in $component-colors {
         @if $component == default {
-          outline: 1px solid $color;
-          box-shadow: 0 0 0.25em 0.25em $color;
+          &:after {
+            border-color: $color;
+          }
         } @else if $component == page {
           &.#{$component} {
-            outline: 1px solid $color;
-            box-shadow: inset 0 0 0.25em 0.25em $color;
+            &:after {
+              border-color: $color;
+            }
           }
         } @else {
           &.#{$component} {
-            outline: 1px solid $color;
-            box-shadow: 0 0 0.25em 0.25em $color;
+            &:after {
+              border-color: $color;
+            }
           }
         }
       }
     }
 
     &.drag-over {
-      box-shadow: inset 0px 0px 1em 0.25em rgba(0, 0, 0, 0.75);
+      box-shadow: inset 0px 0px 1em 0.25em $metascore-color;
+    }
+
+    &.dragging,
+    &.resizing {
+      z-index: 999;
     }
   }
 }
