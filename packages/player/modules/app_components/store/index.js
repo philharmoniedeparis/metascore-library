@@ -98,6 +98,17 @@ export default defineStore("app-components", {
         return null;
       };
     },
+    getSiblings() {
+      return (component) => {
+        const parent = this.getParent(component);
+        if (parent) {
+          return this.getChildren(parent).filter((c) => {
+            return !(c.type === component.type && c.id === component.id);
+          });
+        }
+        return [];
+      };
+    },
   },
   actions: {
     init(data) {
@@ -133,6 +144,23 @@ export default defineStore("app-components", {
       const model = this.getModel(component.type);
       if (model.validate(updated)) {
         this.components[component.type][component.id] = updated;
+
+        if (model.type === "Page") {
+          if ("start-time" in data || "end-time" in data) {
+            const block = this.getParent(component);
+            if (block.synched) {
+              const pages = this.getChildren(block);
+              const index = pages.findIndex((c) => c.id === component.id);
+
+              if ("start-time" in data && index > 0) {
+                pages[index - 1]["end-time"] = data["start-time"];
+              }
+              if ("end-time" in data && index < pages.length - 1) {
+                pages[index + 1]["start-time"] = data["end-time"];
+              }
+            }
+          }
+        }
       } else {
         // @todo: handle errors.
         console.error(model.errors);
