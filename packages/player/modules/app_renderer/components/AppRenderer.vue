@@ -1,7 +1,12 @@
 <template>
   <div class="metaScore-app" :style="style">
     <media-player v-if="mediaSource" :source="mediaSource" type="video" />
-    <scenario-component v-if="scenario" :component="scenario" />
+    <template v-for="scenario in scenarios" :key="scenario.id">
+      <scenario-component
+        :component="scenario"
+        :active="scenario.id === activeScenario"
+      />
+    </template>
   </div>
 </template>
 
@@ -47,15 +52,11 @@ export default {
     mediaSource() {
       return this.mediaStore.source;
     },
-    scenario() {
-      if (!this.componentsStore.activeScenario) {
-        return null;
-      }
-
-      return this.componentsStore.get(
-        "Scenario",
-        this.componentsStore.activeScenario
-      );
+    scenarios() {
+      return this.componentsStore.getByType("Scenario");
+    },
+    activeScenario() {
+      return this.componentsStore.activeScenario;
     },
     style() {
       if (this.responsive) {

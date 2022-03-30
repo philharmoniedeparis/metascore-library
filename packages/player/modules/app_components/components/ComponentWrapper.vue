@@ -1,5 +1,6 @@
 <template>
   <div
+    v-show="active && !hidden"
     :id="component.id"
     :class="[
       'metaScore-component',
@@ -49,12 +50,17 @@ export default {
       type: Object,
       required: true,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["activated", "deactivated"],
   setup(props) {
     const store = useStore();
     const component = toRef(props, "component");
     const model = store.getModel(component.value.type);
+    const defaultActive = toRef(props, "active");
 
     return {
       ...useBackground(component, model),
@@ -63,7 +69,7 @@ export default {
       ...useOpacity(component, model),
       ...usePosition(component, model),
       ...useSize(component, model),
-      ...useTime(component, model),
+      ...useTime(component, model, defaultActive),
       ...useTransform(component, model),
     };
   },
@@ -93,11 +99,6 @@ export default {
     min-height: 1px;
     box-sizing: border-box;
     overflow: hidden;
-  }
-
-  &:not(.active),
-  &.hidden {
-    display: none;
   }
 }
 </style>

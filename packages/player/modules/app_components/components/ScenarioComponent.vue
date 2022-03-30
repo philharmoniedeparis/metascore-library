@@ -1,5 +1,5 @@
 <template>
-  <component-wrapper :component="component">
+  <component-wrapper :active="active" :component="component">
     <template v-for="child in children" :key="child.id">
       <component :is="`${child.type}Component`" :component="child" />
     </template>
@@ -17,6 +17,10 @@ export default {
     component: {
       type: Object,
       required: true,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   setup() {
