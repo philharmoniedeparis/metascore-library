@@ -497,8 +497,8 @@ export default {
       if (type) {
         const format = `metascore/component:${type}`;
         if (evt.dataTransfer.types.includes(format)) {
-          const data = evt.dataTransfer.getData(format);
-          return JSON.parse(data);
+          const data = JSON.parse(evt.dataTransfer.getData(format));
+          return this.componentsStore.create(data);
         }
       }
     },

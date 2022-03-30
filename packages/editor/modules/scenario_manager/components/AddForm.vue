@@ -63,7 +63,9 @@ export default {
     layout() {
       return {
         type: "markup",
-        items: [{ property: "name", label: this.$t("name_label") }],
+        items: [
+          { property: "name", label: this.$t("name_label"), autofocus: true },
+        ],
       };
     },
   },

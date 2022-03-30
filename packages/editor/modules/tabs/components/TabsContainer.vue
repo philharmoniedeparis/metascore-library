@@ -33,12 +33,12 @@ export default {
     };
   },
   props: {
-    active: {
+    activeTab: {
       type: Number,
       default: 0,
     },
   },
-  emits: ["update:active"],
+  emits: ["update:activeTab"],
   data() {
     return {
       tabs: [],
@@ -46,7 +46,7 @@ export default {
     };
   },
   watch: {
-    active(value) {
+    activeTab(value) {
       this.internalValue = value;
     },
     internalValue(value) {
@@ -54,11 +54,11 @@ export default {
         if (i === value) tab.activate();
         else tab.deactivate();
       });
-      this.$emit("update:active", value);
+      this.$emit("update:activeTab", value);
     },
   },
   mounted() {
-    this.internalValue = this.active;
+    this.internalValue = this.activeTab;
   },
 };
 </script>

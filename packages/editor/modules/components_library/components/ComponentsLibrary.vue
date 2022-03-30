@@ -43,7 +43,7 @@ export default {
     ComponentLibraryItem,
   },
   props: {
-    componentConfigs: {
+    components: {
       type: Array,
       default() {
         return [
@@ -89,11 +89,6 @@ export default {
   setup() {
     const editorStore = useEditorStore();
     return { editorStore };
-  },
-  computed: {
-    components() {
-      return this.componentConfigs.map(this.editorStore.createComponent);
-    },
   },
 };
 </script>

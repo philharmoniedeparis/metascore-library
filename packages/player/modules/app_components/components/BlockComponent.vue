@@ -113,7 +113,7 @@ export default {
   },
   computed: {
     toggled() {
-      return this.componentsStore.isBlockToggled(this.component);
+      return this.componentsStore.isToggled(this.component);
     },
     synched() {
       return this.component.synched;

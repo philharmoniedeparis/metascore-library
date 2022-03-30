@@ -67,10 +67,10 @@ export default {
   },
   methods: {
     isBlockToggled(block) {
-      return this.componentsStore.isBlockToggled(block);
+      return this.componentsStore.isToggled(block);
     },
     toggleBlock(block) {
-      this.componentsStore.toggleBlock(block);
+      this.componentsStore.toggle(block);
     },
   },
 };

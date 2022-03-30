@@ -1,11 +1,9 @@
 import { merge } from "lodash";
-import { v4 as uuid } from "uuid";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createStringField,
   createBooleanField,
 } from "@metascore-library/core/utils/schema";
-import { createUuidField } from "../utils/schema";
 
 export class AbstractComponent extends AbstractModel {
   /**
@@ -37,8 +35,6 @@ export class AbstractComponent extends AbstractModel {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         type: {
@@ -48,8 +44,7 @@ export class AbstractComponent extends AbstractModel {
           }),
           const: this.type,
         },
-        id: createUuidField({
-          ajv,
+        id: createStringField({
           title: "ID",
           description: "The component's unique identifier",
         }),
@@ -67,17 +62,6 @@ export class AbstractComponent extends AbstractModel {
       },
       required: ["type", "id"],
     });
-  }
-
-  /**
-   * @inheritdoc
-   */
-  constructor(data) {
-    if (!data.id) {
-      data.id = `component-${uuid()}`;
-    }
-
-    super(data);
   }
 
   /**

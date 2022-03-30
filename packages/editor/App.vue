@@ -17,7 +17,7 @@
     </resizable-pane>
 
     <resizable-pane class="left" :right="{ collapse: true }">
-      <tabs-container ref="libraries" v-model:active="activeLibrariesTab">
+      <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library"><assets-library /></tabs-item>
         <tabs-item title="Shared Library">
@@ -63,10 +63,11 @@
       </div>
       <div class="bottom">
         <scenario-manager
-          v-model:active="activeScenario"
+          v-model:activeId="activeScenario"
           :scenarios="scenarios"
           @add="onScnearioManagerAdd"
           @clone="onScnearioManagerClone"
+          @delete="onScnearioManagerDelete"
         />
         <waveform-zoom-controller />
       </div>
@@ -152,7 +153,6 @@ export default {
       return this.assetsStore.filterByType("image").map(readonly);
     },
     scenarios() {
-      console.log(this.store.scenarios);
       return this.store.scenarios;
     },
     activeScenario: {
@@ -178,7 +178,6 @@ export default {
       }
     },
     activeLibrariesTab(index) {
-      console.log(index);
       const tabs = this.$refs.libraries.$el.querySelector(".tabs-nav");
 
       if (index === 2) {
@@ -215,15 +214,20 @@ export default {
       this.assetsStore.add(asset);
     },
     onScnearioManagerAdd(data) {
-      const scenario = this.store.createComponent({
-        ...data,
-        type: "Scenario",
-      });
-      console.log(scenario);
-      this.store.addComponent(scenario);
+      const scenario = this.store.addComponent(
+        this.store.createComponent({
+          ...data,
+          type: "Scenario",
+        })
+      );
+      this.activeScenario = scenario.id;
     },
-    onScnearioManagerClone({ id, ...data }) {
-      this.store.cloneScenario(id, data);
+    onScnearioManagerClone({ scenario, data }) {
+      const clone = this.store.cloneComponent(scenario, data);
+      this.activeScenario = clone.id;
+    },
+    onScnearioManagerDelete(scenario) {
+      this.store.deleteComponent(scenario);
     },
   },
 };

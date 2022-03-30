@@ -3,10 +3,14 @@
   "fr": {
     "add_button_title": "Ajouter un nouveau scénario",
     "clone_button_title": "Dupliquer le scénario actif",
+    "delete_button_title": "Supprimer le scénario actif",
+    "delete_text": "Êtes-vous sûr de vouloir supprimer le scénario <em>{name}</em>\xa0?",
   },
   "en": {
     "add_button_title": "Add a new scenario",
     "clone_button_title": "Clone the active scenario",
+    "delete_button_title": "Delete the active scenario",
+    "delete_text": "Are you sure you want to delete the scenario <em>{name}</em>?",
   },
 }
 </i18n>
@@ -15,27 +19,27 @@
   <div class="scenario-manager">
     <styled-button
       type="button"
-      class="previous"
-      :disabled="!hasPrevious"
-      @click="onPreviousClick"
+      class="scroll-left"
+      :disabled="!canScrollLeft"
+      @click="onScrollLeftClick"
     >
       <template #icon><arrow-icon /></template>
     </styled-button>
 
     <styled-button
       type="button"
-      class="next"
-      :disabled="!hasNext"
-      @click="onNextClick"
+      class="scroll-right"
+      :disabled="!canScrollRight"
+      @click="onScrollRightClick"
     >
       <template #icon><arrow-icon /></template>
     </styled-button>
 
-    <ul class="list">
+    <ul ref="list" class="list" @scroll="onListScroll">
       <li
         v-for="scenario in scenarios"
         :key="scenario.id"
-        :class="['item', { active: active === scenario.id }]"
+        :class="['item', { active: activeId === scenario.id }]"
       >
         <a href="#" @click.prevent="onItemClick(scenario)">
           {{ scenario.name }}
@@ -53,7 +57,7 @@
     </styled-button>
     <add-form
       v-if="showAddForm"
-      @submit="onAddFormSubmit"
+      @submit="onAddSubmit"
       @close="showAddForm = false"
     />
 
@@ -67,18 +71,40 @@
     </styled-button>
     <clone-form
       v-if="showCloneForm"
-      @submit="onCloneFormSubmit"
+      @submit="onCloneSubmit"
       @close="showCloneForm = false"
     />
+
+    <styled-button
+      type="button"
+      class="delete"
+      :title="$t('delete_button_title')"
+      :disabled="scenariosCount <= 1"
+      @click="showDeleteConfirm = true"
+    >
+      <template #icon><delete-icon /></template>
+    </styled-button>
+    <confirm-dialog
+      v-if="showDeleteConfirm"
+      @submit="onDeleteSubmit"
+      @cancel="showDeleteConfirm = false"
+    >
+      <template #text>
+        <p v-dompurify-html="$t('delete_text', { name: activeName })"></p>
+      </template>
+    </confirm-dialog>
   </div>
 </template>
 
 <script>
+import { debounce } from "lodash";
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import ArrowIcon from "../assets/icons/arrow.svg?inline";
 import AddIcon from "../assets/icons/add.svg?inline";
 import AddForm from "./AddForm.vue";
 import CloneIcon from "../assets/icons/clone.svg?inline";
 import CloneForm from "./CloneForm.vue";
+import DeleteIcon from "../assets/icons/delete.svg?inline";
 
 export default {
   components: {
@@ -87,59 +113,124 @@ export default {
     AddForm,
     CloneIcon,
     CloneForm,
+    DeleteIcon,
+  },
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
   props: {
     scenarios: {
       type: Array,
       required: true,
     },
-    active: {
+    activeId: {
       type: String,
       default: null,
     },
   },
-  emits: ["update:active", "add", "clone"],
+  emits: ["update:activeId", "add", "clone", "delete"],
   data() {
     return {
+      listWidth: null,
+      listScrollWidth: null,
+      listScrollLeft: 0,
       showAddForm: false,
       showCloneForm: false,
+      showDeleteConfirm: false,
     };
   },
   computed: {
-    activeIndex() {
-      return this.scenarios.findIndex((s) => s.id === this.active);
+    canScrollLeft() {
+      return this.listScrollLeft > 0;
     },
-    hasPrevious() {
-      return this.activeIndex > 0;
+    canScrollRight() {
+      return this.listScrollLeft < this.listScrollWidth - this.listWidth;
     },
-    hasNext() {
-      return (
-        this.activeIndex > -1 && this.activeIndex < this.scenarios.length - 1
-      );
+    scenariosCount() {
+      return this.scenarios.length;
+    },
+    active() {
+      return this.getScenarioById(this.activeId);
+    },
+    activeName() {
+      return this.active?.name;
     },
   },
-  methods: {
-    onPreviousClick() {
-      const scenario = this.scenarios[this.activeIndex - 1];
-      this.$emit("update:active", scenario.id);
+  watch: {
+    scenariosCount() {
+      this.updateListWidths();
     },
-    onNextClick() {
-      const scenario = this.scenarios[this.activeIndex + 1];
-      this.$emit("update:active", scenario.id);
+  },
+  mounted() {
+    this.$nextTick(function () {
+      this._resize_observer = new ResizeObserver(
+        debounce(() => {
+          this.updateListWidths();
+        }, 500)
+      );
+      this._resize_observer.observe(this.$refs.list);
+
+      this.updateListWidths();
+    });
+  },
+  beforeUnmount() {
+    if (this._resize_observer) {
+      this._resize_observer.disconnect();
+    }
+  },
+  methods: {
+    getScenarioById(id) {
+      return this.scenarios.find((s) => s.id === id);
+    },
+    updateListWidths() {
+      this.$nextTick(function () {
+        this.listWidth = this.$refs.list.clientWidth;
+        this.listScrollWidth = this.$refs.list.scrollWidth;
+      });
+    },
+    onListScroll(evt) {
+      this.listScrollLeft = evt.target.scrollLeft;
+    },
+    onScrollLeftClick() {
+      const list = this.$refs.list;
+      const items = list.querySelectorAll(".item");
+      for (let i = 1; i < items.length; i++) {
+        const item = items[i];
+        if (item.offsetLeft >= list.scrollLeft) {
+          items[i - 1].scrollIntoView();
+          return;
+        }
+      }
+
+      list.scrollLeft = 0;
+    },
+    onScrollRightClick() {
+      const list = this.$refs.list;
+      const items = list.querySelectorAll(".item");
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.offsetLeft > list.scrollLeft + list.clientWidth) {
+          item.scrollIntoView();
+          return;
+        }
+      }
+
+      list.scrollLeft = list.scrollWidth - list.clientWidth;
     },
     onItemClick(scenario) {
-      this.$emit("update:active", scenario.id);
+      this.$emit("update:activeId", scenario.id);
     },
-    onAddFormSubmit(data) {
+    onAddSubmit(data) {
       this.showAddForm = false;
       this.$emit("add", data);
     },
-    onCloneFormSubmit(data) {
+    onCloneSubmit(data) {
       this.showCloneForm = false;
-      this.$emit("clone", {
-        ...data,
-        id: this.active,
-      });
+      this.$emit("clone", { scenario: this.active, data });
+    },
+    onDeleteSubmit() {
+      this.showDeleteConfirm = false;
+      this.$emit("delete", this.active);
     },
   },
 };
@@ -153,16 +244,17 @@ export default {
   padding: 0 0.25em;
   font-size: 0.75em;
   overflow: hidden;
+  user-select: none;
 
   button {
     color: $white;
 
-    &.previous,
-    &.next {
+    &.scroll-left,
+    &.scroll-right {
       font-size: 0.75em;
     }
 
-    &.previous {
+    &.scroll-left {
       ::v-deep(.icon) {
         transform: rotate(180deg);
       }
@@ -170,6 +262,7 @@ export default {
   }
 
   .list {
+    position: relative;
     display: flex;
     flex-direction: row;
     margin: 0;
@@ -183,18 +276,17 @@ export default {
       border-right: 1px solid $darkgray;
       border-left: 1px solid $darkgray;
       white-space: nowrap;
-      opacity: 0.5;
 
       a {
         color: $white;
         border-bottom: 1px solid transparent;
+        opacity: 0.5;
       }
 
       &.active {
-        opacity: 1;
-
         a {
           border-bottom-color: $white;
+          opacity: 1;
           cursor: default;
         }
       }

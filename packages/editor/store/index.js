@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { omit } from "lodash";
+import { omit, cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { load } from "@metascore-library/core/utils/ajax";
 
@@ -32,7 +32,7 @@ export default defineStore("editor", {
     },
     isComponentSelected() {
       return (component) => {
-        return this.selectedComponents.find(({ type, id }) => {
+        return this.selectedComponents.some(({ type, id }) => {
           return component.type === type && component.id === id;
         });
       };
@@ -58,7 +58,7 @@ export default defineStore("editor", {
     },
     isComponentLocked() {
       return (component) => {
-        return this.lockedComponents.find(({ type, id }) => {
+        return this.lockedComponents.some(({ type, id }) => {
           return component.type === type && component.id === id;
         });
       };
@@ -68,12 +68,6 @@ export default defineStore("editor", {
       return this.lockedComponents.map(({ type, id }) => {
         return componentsStore.get(type, id);
       });
-    },
-    createComponent() {
-      return (data) => {
-        const componentsStore = useModule("app_components").useStore();
-        return componentsStore.create(data);
-      };
     },
   },
   actions: {
@@ -92,17 +86,22 @@ export default defineStore("editor", {
       const mediaStore = useModule("media").useStore();
       mediaStore.source = value;
     },
+    createComponent(data) {
+      const componentsStore = useModule("app_components").useStore();
+      return componentsStore.create(data);
+    },
     updateComponent(component, data) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.update(component, data);
     },
-    updateComponents(models, data) {
+    updateComponents(components, data) {
       const componentsStore = useModule("app_components").useStore();
-      models.forEach((component) => {
+      components.forEach((component) => {
         componentsStore.update(component, data);
       });
     },
     addComponent(data, parent = null) {
+      // @todo: deal with omitted ids and childnre from clone
       const componentsStore = useModule("app_components").useStore();
       const component = this.createComponent(data);
       componentsStore.add(component, parent);
@@ -126,8 +125,8 @@ export default defineStore("editor", {
         }
       );
     },
-    deselectComponents(models) {
-      models.map(this.deselectComponent);
+    deselectComponents(components) {
+      components.map(this.deselectComponent);
     },
     deselectAllComponents() {
       this.selectedComponents = [];
@@ -163,16 +162,16 @@ export default defineStore("editor", {
         });
       }
     },
-    lockComponents(models) {
-      models.map(this.lockComponent);
+    lockComponents(components) {
+      components.map(this.lockComponent);
     },
     unlockComponent(component) {
       this.lockedComponents = this.lockedComponents.filter(({ type, id }) => {
         return component.type === type && component.id === id;
       });
     },
-    unlockComponents(models) {
-      models.map(this.unlockComponent);
+    unlockComponents(components) {
+      components.map(this.unlockComponent);
     },
     unlockAllComponents() {
       this.lockedComponents = [];
@@ -182,29 +181,71 @@ export default defineStore("editor", {
       const data = omit(component, ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
-    copyComponents(models) {
-      models.map(this.copyComponent);
+    copyComponents(components) {
+      components.map(this.copyComponent);
     },
     cutComponent(component) {
       this.copyComponent(component);
       this.deleteComponent(component);
     },
-    cutComponents(models) {
-      models.map(this.cutComponent);
+    cutComponents(components) {
+      components.map(this.cutComponent);
+    },
+    pasteComponent(component, parent) {
+      // @todo: implement
+    },
+    pasteComponents(components, parent) {
+      components.map((c) => this.pasteComponent(c, parent));
     },
     deleteComponent(component) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.delete(component.type, component.id);
+
+      if (
+        component.type === "Scenario" &&
+        component.id === componentsStore.activeScenario
+      ) {
+        componentsStore.activeScenario = this.scenarios[0]?.id;
+      }
     },
-    deleteComponents(models) {
-      models.map(this.deleteComponent);
+    deleteComponents(components) {
+      components.map(this.deleteComponent);
     },
     restoreComponent(component) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.restore(component.type, component.id);
     },
-    restoreComponents(models) {
-      models.map(this.restoreComponent);
+    restoreComponents(components) {
+      components.map(this.restoreComponent);
+    },
+    cloneComponent(component, data = {}) {
+      const componentsStore = useModule("app_components").useStore();
+      const clone = componentsStore.create(
+        {
+          ...omit(cloneDeep(component), ["id"]),
+          ...data,
+        },
+        false
+      );
+
+      if (componentsStore.hasChildren(component)) {
+        const children = [];
+        const children_prop = componentsStore.getChildrenProperty(component);
+        componentsStore.getChildren(component).forEach((c) => {
+          const child = this.cloneComponent(c, {
+            $parent: { schema: clone.type, id: clone.id },
+          });
+          children.push({
+            schema: child.type,
+            id: child.id,
+          });
+        });
+        clone[children_prop] = children;
+      }
+
+      componentsStore.add(clone);
+
+      return clone;
     },
     arrangeComponent(component, action) {
       if (component.$parent) {

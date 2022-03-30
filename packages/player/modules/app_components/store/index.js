@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { v4 as uuid } from "uuid";
 import { normalize } from "./utils/normalize";
 import * as Models from "../models";
 
@@ -7,17 +8,10 @@ export default defineStore("app-components", {
     return {
       components: {},
       activeScenario: null,
-      toggledBlocks: [],
+      toggled: [],
     };
   },
   getters: {
-    create() {
-      return (data) => {
-        if (data.type in Models) {
-          return new Models[data.type](data);
-        }
-      };
-    },
     get() {
       return (type, id) => {
         const data = this.components?.[type]?.[id];
@@ -36,25 +30,11 @@ export default defineStore("app-components", {
         return Models[type];
       };
     },
-    delete() {
-      return (type, id) => {
-        const component = this.components?.[type]?.[id];
-        if (component) {
-          component.$deleted = true;
-        }
-      };
-    },
-    restore() {
-      return (type, id) => {
-        const component = this.components?.[type]?.[id];
-        if (component) {
-          delete component.$deleted;
-        }
-      };
-    },
-    isBlockToggled() {
-      return (block) => {
-        return this.toggledBlocks.includes(block.id);
+    isToggled() {
+      return (component) => {
+        return this.toggled.some(({ type, id }) => {
+          return component.type === type && component.id === id;
+        });
       };
     },
     getChildrenProperty() {
@@ -122,26 +102,54 @@ export default defineStore("app-components", {
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
     },
-    add(data, parent = null) {
-      this.components[data.type] = this.components[data.type] || {};
-      this.components[data.type][data.id] = {
-        ...data,
-      };
+    create(data, validate = true) {
+      if (data.type in Models) {
+        if (!("id" in data)) {
+          switch (data.type) {
+            case "Scenario":
+              {
+                // Generate a user-freindly ID.
+                const next_id = this.getByType("Scenario").reduce((acc, s) => {
+                  const id = parseInt(s.id.replace("scenario-", ""), 10);
+                  return !isNaN(id) ? Math.max(acc, id + 1) : acc;
+                }, 1);
+                data.id = `scenario-${next_id}`;
+              }
+              break;
+
+            default:
+              data.id = `component-${uuid()}`;
+          }
+        }
+
+        return validate ? new Models[data.type](data) : data;
+      }
+    },
+    add(component, parent = null) {
+      this.components[component.type] = this.components[component.type] || {};
+      this.components[component.type][component.id] = component;
 
       if (parent) {
-        this.components[data.type][data.id].$parent = {
+        component.$parent = {
           schema: parent.type,
           id: parent.id,
         };
 
-        switch (parent.type) {
-          case "Block":
-            parent.pages.push({ schema: data.type, id: data.id });
-            break;
+        const children_prop = this.getChildrenProperty(parent);
+        parent[children_prop].push({
+          schema: component.type,
+          id: component.id,
+        });
+      }
 
-          default:
-            parent.children.push({ schema: data.type, id: data.id });
-        }
+      switch (component.type) {
+        case "Block":
+          {
+            if (component.pages.length < 1) {
+              this.add(this.create({ type: "Page" }), component);
+            }
+          }
+          break;
       }
     },
     update(component, data) {
@@ -174,11 +182,26 @@ export default defineStore("app-components", {
         console.error(model.errors);
       }
     },
-    toggleBlock(block) {
-      if (this.toggledBlocks.includes(block.id)) {
-        this.toggledBlocks = this.toggledBlocks.filter((v) => v !== block.id);
+    delete(type, id) {
+      const component = this.components?.[type]?.[id];
+      if (component) {
+        component.$deleted = true;
+      }
+    },
+    restore(type, id) {
+      const component = this.components?.[type]?.[id];
+      if (component) {
+        delete component.$deleted;
+      }
+    },
+    toggle(component) {
+      const { type, id } = component;
+      if (this.isToggled(component)) {
+        this.toggled = this.toggled.filter(
+          (t) => t.type === type && t.id === id
+        );
       } else {
-        this.toggledBlocks.push(block.id);
+        this.toggled.push({ type, id });
       }
     },
   },

@@ -8,26 +8,6 @@ import {
   createTimeField,
 } from "@metascore-library/core/utils/schema";
 
-export const createUuidField = ({
-  ajv,
-  title = "",
-  description = "",
-  default: default_value = "",
-  nullable = false,
-} = {}) => {
-  ajv.addFormat("uuid", { validate: () => true });
-
-  return {
-    ...createStringField({
-      title,
-      description,
-      default: default_value,
-      nullable,
-    }),
-    format: "uuid",
-  };
-};
-
 export const createCollectionField = ({
   ajv,
   title = "",
