@@ -8,6 +8,7 @@
     <timecode-input
       :id="inputId"
       v-model="value"
+      v-autofocus="autofocus"
       :readonly="readonly"
       :disabled="disabled"
       :min="min"
@@ -40,6 +41,10 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

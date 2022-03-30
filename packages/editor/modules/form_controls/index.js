@@ -1,3 +1,4 @@
+import AutoFocus from "@metascore-library/core/modules/auto_focus";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import FormGroup from "../form_group";
 import TimecodeInput from "../timecode_input";
@@ -15,7 +16,7 @@ import UrlControl from "./components/UrlControl";
 
 export default {
   id: "form_controls",
-  dependencies: [StyledButton, FormGroup, TimecodeInput],
+  dependencies: [AutoFocus, StyledButton, FormGroup, TimecodeInput],
   install({ app }) {
     app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CheckboxControl", CheckboxControl);

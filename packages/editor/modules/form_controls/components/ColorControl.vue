@@ -30,6 +30,7 @@
     >
       <button
         :id="inputId"
+        v-autofocus="autofocus"
         class="opener"
         :style="`color: ${modelValue};`"
         :disabled="disabled"
@@ -92,6 +93,10 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

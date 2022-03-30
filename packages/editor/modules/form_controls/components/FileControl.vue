@@ -7,6 +7,7 @@
   >
     <input
       :id="inputId"
+      v-autofocus="autofocus"
       type="file"
       :accept="accept"
       :multiple="multiple"
@@ -30,6 +31,10 @@ export default {
       default: null,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

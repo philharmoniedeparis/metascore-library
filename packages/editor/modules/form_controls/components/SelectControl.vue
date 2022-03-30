@@ -5,7 +5,12 @@
     :label-for="inputId"
     :description="description"
   >
-    <select :id="inputId" v-model="value" :disabled="disabled">
+    <select
+      :id="inputId"
+      v-model="value"
+      v-autofocus="autofocus"
+      :disabled="disabled"
+    >
       <option v-for="(v, l) in options" :key="v" :value="v">
         {{ l }}
       </option>
@@ -27,6 +32,10 @@ export default {
       default: null,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

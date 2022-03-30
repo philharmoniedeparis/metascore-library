@@ -10,6 +10,7 @@
       <input
         :id="inputId"
         v-model="value"
+        v-autofocus="autofocus"
         :disabled="disabled"
         type="checkbox"
       />
@@ -40,6 +41,10 @@ export default {
       default: null,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

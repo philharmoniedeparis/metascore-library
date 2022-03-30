@@ -8,6 +8,7 @@
     <input
       :id="inputId"
       v-model="value"
+      v-autofocus="autofocus"
       type="url"
       :readonly="readonly"
       :disabled="disabled"
@@ -36,6 +37,10 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },

@@ -21,6 +21,7 @@
         :id="inputId"
         ref="input"
         v-model="value"
+        v-autofocus="autofocus"
         type="number"
         :step="step"
         :min="min"
@@ -79,6 +80,10 @@ export default {
       default: false,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
       type: Boolean,
       default: false,
     },
