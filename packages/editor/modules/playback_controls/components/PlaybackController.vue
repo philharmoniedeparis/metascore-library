@@ -1,42 +1,21 @@
-<i18n>
-{
-  "en": {
-    "buttons": {
-      "rewind": "Rewind",
-      "pause": "Pause",
-      "play": "Play",
-    }
-  },
-  "fr": {
-    "buttons": {
-      "rewind": "Rembobiner",
-      "pause": "Pause",
-      "play": "Jouer",
-    }
-  },
-}
-</i18n>
-
 <template>
   <div v-hotkey="hotkeys" class="playback-controller">
-    <button type="button" class="rewind" @click="onRewindClick">
-      <rewind-icon class="icon" aria-hidden="true" />
-      <span class="sr-only">{{ $t("buttons.rewind") }}</span>
-    </button>
+    <styled-button type="button" class="rewind" @click="onRewindClick">
+      <template #icon><rewind-icon /></template>
+    </styled-button>
 
-    <button
+    <styled-button
       v-if="mediaPlaying"
       type="button"
       class="pause"
       @click="onPauseClick"
     >
-      <pause-icon aria-hidden="true" class="icon" />
-      <span class="sr-only">{{ $t("buttons.pause") }}</span>
-    </button>
-    <button v-else type="button" class="play" @click="onPlayClick">
-      <play-icon aria-hidden="true" class="icon" />
-      <span class="sr-only">{{ $t("buttons.play") }}</span>
-    </button>
+      <template #icon><pause-icon /></template>
+    </styled-button>
+
+    <styled-button v-else type="button" class="play" @click="onPlayClick">
+      <template #icon><play-icon /></template>
+    </styled-button>
   </div>
 </template>
 

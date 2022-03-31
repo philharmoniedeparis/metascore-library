@@ -20,6 +20,7 @@ import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
 import ResizablePane from "./modules/resizable_pane";
+import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
@@ -62,6 +63,7 @@ export class Editor {
         PlaybackControls,
         PlayerPreview,
         ResizablePane,
+        RevisionSelector,
         ScenarioManager,
         SharedAssetsLibrary,
         Tabs,

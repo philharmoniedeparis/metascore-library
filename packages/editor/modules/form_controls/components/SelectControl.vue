@@ -11,8 +11,13 @@
       v-autofocus="autofocus"
       :disabled="disabled"
     >
-      <option v-for="(v, l) in options" :key="v" :value="v">
-        {{ l }}
+      <option
+        v-for="option in normalizedOptions"
+        :key="option.value"
+        :value="option.value"
+        :disabled="option.disabled"
+      >
+        {{ option.label }}
       </option>
     </select>
   </form-group>
@@ -55,6 +60,14 @@ export default {
     };
   },
   computed: {
+    normalizedOptions() {
+      return Object.entries(this.options).map(([label, option]) => {
+        if (typeof option === "object" && "value" in option) {
+          return { label, ...option };
+        }
+        return { label, value: option };
+      });
+    },
     value: {
       get() {
         return this.modelValue;

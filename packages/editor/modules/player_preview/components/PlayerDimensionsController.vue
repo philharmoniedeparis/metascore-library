@@ -1,7 +1,8 @@
 <template>
   <div class="player-dimensions-controller">
     <number-control
-      v-model.number="width"
+      v-model="width"
+      class="width"
       :min="1"
       :spinners="false"
       @focus="onInputFocus"
@@ -9,7 +10,8 @@
     />
     <span class="separator">x</span>
     <number-control
-      v-model.number="height"
+      v-model="height"
+      class="height"
       :min="1"
       :spinners="false"
       @focus="onInputFocus"
@@ -60,12 +62,12 @@ export default {
 <style lang="scss" scoped>
 .player-dimensions-controller {
   display: flex;
-  gap: 0.5em;
   align-items: center;
 
   ::v-deep(.form-group) {
     input {
-      width: 4em;
+      width: 3em;
+      text-align: center;
     }
   }
 }

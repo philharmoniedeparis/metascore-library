@@ -40,3 +40,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.player-zoom-controller {
+  ::v-deep(select) {
+    text-align: center;
+  }
+}
+</style>

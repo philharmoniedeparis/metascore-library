@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-revisions-manager",
+  "name": "@metascore-library/editor-revision-selector",
   "private": true,
   "description": "",
   "dependencies": {

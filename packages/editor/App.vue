@@ -13,6 +13,7 @@
         <player-zoom-controller />
         <player-dimensions-controller />
         <player-preview-toggler />
+        <revision-selector />
       </nav>
     </resizable-pane>
 
@@ -321,12 +322,10 @@ export default {
       ::v-deep(.form-group) {
         margin: 0;
 
-        &:not(:focus, :hover) {
-          input,
-          select {
-            background-color: transparent;
-            border-color: transparent;
-          }
+        input:not(:focus, :hover),
+        select:not(:focus, :hover) {
+          background-color: transparent;
+          border-color: transparent;
         }
       }
     }

@@ -313,25 +313,31 @@ export default defineStore("editor", {
       });
     },
     async load(url) {
-      const mediaStore = useModule("media").useStore();
-      const componentsStore = useModule("app_components").useStore();
-      const appRendererStore = useModule("app_renderer").useStore();
-      const assetsStore = useModule("assets_library").useStore();
-      const historyStore = useModule("history").useStore();
-
       const data = await load(url);
 
       this.appTitle = data.title;
+
+      const mediaStore = useModule("media").useStore();
       mediaStore.source = data.media;
 
+      const componentsStore = useModule("app_components").useStore();
       componentsStore.init(data.components);
+
+      const assetsStore = useModule("assets_library").useStore();
       assetsStore.init(data.assets);
 
+      const appRendererStore = useModule("app_renderer").useStore();
       appRendererStore.width = data.width;
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
 
+      const historyStore = useModule("history").useStore();
       historyStore.active = true;
+
+      const revisionsStore = useModule("revision_selector").useStore();
+      revisionsStore.list = data.revisions;
+      revisionsStore.latest = data.latest_revision;
+      revisionsStore.active = data.vid;
 
       this.ready = true;
     },
