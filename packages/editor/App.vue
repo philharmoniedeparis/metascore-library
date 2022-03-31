@@ -2,18 +2,24 @@
   <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
       <nav class="main-menu">
-        <history-controller />
-        <text-control
-          v-model="appTitle"
-          :lazy="true"
-          class="app-title"
-          @focusin="onAppTitleFocusin"
-          @focusout="onAppTitleFocusout"
-        />
-        <player-zoom-controller />
-        <player-dimensions-controller />
-        <player-preview-toggler />
-        <revision-selector />
+        <div class="left">
+          <history-controller />
+          <text-control
+            v-model="appTitle"
+            :lazy="true"
+            class="app-title"
+            @focusin="onAppTitleFocusin"
+            @focusout="onAppTitleFocusout"
+          />
+        </div>
+        <div class="center">
+          <player-zoom-controller />
+          <player-dimensions-controller />
+          <player-preview-toggler />
+        </div>
+        <div class="right">
+          <revision-selector />
+        </div>
       </nav>
     </resizable-pane>
 
@@ -314,9 +320,25 @@ export default {
       padding: 0 1em;
       justify-content: flex-start;
       align-items: center;
+      gap: 1em;
 
-      .app-title {
-        flex: 1 1 auto;
+      > .left,
+      > .center,
+      > .right {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1em;
+      }
+
+      > .center {
+        justify-content: center;
+      }
+
+      > .right {
+        justify-content: flex-end;
       }
 
       ::v-deep(.form-group) {
@@ -326,6 +348,18 @@ export default {
         select:not(:focus, :hover) {
           background-color: transparent;
           border-color: transparent;
+        }
+      }
+
+      .app-title {
+        flex: 1 1 auto;
+
+        ::v-deep(input) {
+          &:not(:focus) {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
         }
       }
     }
@@ -520,7 +554,9 @@ export default {
 
   &.app-title-focused {
     .main-menu {
-      > :not(.app-title) {
+      > .left > :not(.app-title),
+      > .center,
+      > .right {
         display: none;
       }
     }
