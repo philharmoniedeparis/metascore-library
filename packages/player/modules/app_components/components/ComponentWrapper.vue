@@ -50,17 +50,12 @@ export default {
       type: Object,
       required: true,
     },
-    active: {
-      type: Boolean,
-      default: true,
-    },
   },
   emits: ["activated", "deactivated"],
   setup(props) {
     const store = useStore();
     const component = toRef(props, "component");
     const model = store.getModel(component.value.type);
-    const defaultActive = toRef(props, "active");
 
     return {
       ...useBackground(component, model),
@@ -69,7 +64,7 @@ export default {
       ...useOpacity(component, model),
       ...usePosition(component, model),
       ...useSize(component, model),
-      ...useTime(component, model, defaultActive),
+      ...useTime(component, model),
       ...useTransform(component, model),
     };
   },

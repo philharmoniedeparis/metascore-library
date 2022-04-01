@@ -2,7 +2,7 @@ import { computed, unref, readonly } from "vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
-export function useTime(component, model, defaultActive) {
+export function useTime(component, model) {
   if (unref(model).$isTimeable) {
     const active = computed(() => {
       const { "start-time": startTime, "end-time": endTime } = unref(component);
@@ -34,7 +34,7 @@ export function useTime(component, model, defaultActive) {
 
   // Default value.
   return {
-    active: readonly(defaultActive),
+    active: true,
   };
 }
 
