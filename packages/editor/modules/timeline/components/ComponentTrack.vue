@@ -27,6 +27,7 @@
     :data-type="component.type"
     :data-id="component.id"
     :title="component.name"
+    :style="{ '--depth': depth }"
   >
     <div ref="handle" class="handle" @click="onClick">
       <component-icon :component="component" />
@@ -73,6 +74,7 @@
         v-for="child in children"
         :key="child.id"
         :component="child"
+        :depth="depth + 1"
       />
     </div>
 
@@ -110,6 +112,10 @@ export default {
     component: {
       type: Object,
       required: true,
+    },
+    depth: {
+      type: Number,
+      default: 0,
     },
   },
   setup() {
@@ -303,42 +309,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* darken and shift to the right sub-handles */
-$handles-initial-level: 2;
-$handles-final-level: 3;
-$handles-lighten-scale: -10%;
-$handles-margin: 0.5em;
-
 .component-track {
   display: contents;
   user-select: none;
 
-  @for $i from $handles-initial-level through $handles-final-level {
-    $selector: "";
-    @for $j from 1 through $i {
-      $selector: $selector #{&};
-    }
-    #{$selector} .handle {
-      border-left: $handles-margin *
-        ($i - $handles-initial-level + 1)
-        solid
-        $darkgray;
-      background: scale-color(
-        $mediumgray,
-        $lightness: $handles-lighten-scale * ($i - $handles-initial-level + 1)
-      );
-    }
-  }
-
   .handle,
-  .time-wrapper {
+  .time-wrapper,
+  .aniamted-properties ::v-deep(.handle) {
     height: 2em;
     border-top: 1px solid $darkgray;
     border-bottom: 1px solid $darkgray;
     box-sizing: border-box;
   }
 
-  .handle {
+  .handle,
+  .aniamted-properties ::v-deep(.handle) {
     display: flex;
     position: sticky;
     left: 0;
@@ -348,10 +333,22 @@ $handles-margin: 0.5em;
     justify-content: flex-start;
     align-items: center;
     background: $mediumgray;
+    margin-left: calc(var(--depth) * 0.25em);
     border-right: 2px solid $darkgray;
     touch-action: none;
     user-select: none;
     z-index: 2;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: $black;
+      opacity: min(calc(var(--depth) * 0.05), 0.5);
+    }
 
     > .icon {
       width: 1.5em;
@@ -360,6 +357,18 @@ $handles-margin: 0.5em;
       color: white;
     }
 
+    .label {
+      flex: 1 1 auto;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select: none;
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
+  .handle {
     .toggle {
       input {
         position: absolute;
@@ -391,15 +400,6 @@ $handles-margin: 0.5em;
       }
     }
 
-    .label {
-      flex: 1 1 auto;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: none;
-      pointer-events: none;
-    }
-
     .togglers {
       display: flex;
       flex-direction: row;
@@ -419,6 +419,15 @@ $handles-margin: 0.5em;
           }
         }
       }
+    }
+  }
+
+  .aniamted-properties ::v-deep(.handle) {
+    margin-left: calc(var(--depth) * 0.25em + 1em);
+
+    > .icon {
+      height: 1em;
+      opacity: 0.5;
     }
   }
 

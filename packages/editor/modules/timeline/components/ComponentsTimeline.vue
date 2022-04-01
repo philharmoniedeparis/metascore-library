@@ -237,7 +237,7 @@ export default {
 .timeline {
   display: flex;
   flex-direction: row;
-  background: $mediumgray;
+  background: $darkgray;
   z-index: 0;
 
   .tracks-container {

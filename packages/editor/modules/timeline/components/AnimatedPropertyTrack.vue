@@ -126,31 +126,9 @@ export default {
 .animated-property-track {
   display: contents;
 
-  .handle {
-    display: flex;
-    position: sticky;
-    left: 0;
-    grid-column: 1;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: center;
-    background: $mediumgray;
-    border-right: 2px solid $darkgray;
-    touch-action: none;
-    user-select: none;
-    z-index: 2;
-
-    > .icon {
-      width: 1.5em;
-      flex: 0 0 auto;
-      margin: 0 0.25em;
-      color: white;
-    }
-  }
-
   .keyframes-wrapper {
     position: relative;
+    background: $mediumgray;
   }
 
   .keyframe {
