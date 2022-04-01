@@ -19,9 +19,9 @@ export default defineStore("waveform", {
   },
   actions: {
     setData(data) {
-      this.data = markRaw(data);
-
       if (data) {
+        this.data = markRaw(data);
+
         let range = 0;
         const channel = data.channel(0);
         for (let index = 0; index < data.length; index++) {
@@ -31,6 +31,8 @@ export default defineStore("waveform", {
         }
 
         this.range = range;
+      } else {
+        this.data = null;
       }
     },
     async load({ audiowaveform, url }) {
