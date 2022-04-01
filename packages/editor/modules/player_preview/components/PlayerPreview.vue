@@ -80,10 +80,6 @@ export default {
     };
   },
   props: {
-    css: {
-      type: String,
-      default: null,
-    },
     rulerThikness: {
       type: Number,
       default: 20,

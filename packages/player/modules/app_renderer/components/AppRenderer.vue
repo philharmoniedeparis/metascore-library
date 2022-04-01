@@ -87,8 +87,9 @@ export default {
   watch: {
     css(value) {
       if (!this.sheet) {
-        this.sheet = document.createElement("style");
-        document.head.appendChild(this.sheet);
+        const doc = this.$el.ownerDocument;
+        this.sheet = doc.createElement("style");
+        doc.head.appendChild(this.sheet);
       }
 
       this.sheet.innerHTML = value ?? "";
