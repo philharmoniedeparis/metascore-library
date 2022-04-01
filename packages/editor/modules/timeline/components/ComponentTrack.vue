@@ -76,7 +76,15 @@
       />
     </div>
 
-    <div class="properties"></div>
+    <div class="aniamted-properties">
+      <animated-property-track
+        v-for="(value, property) in animatedProperties"
+        :key="property"
+        :model-value="value"
+        :property="property"
+        @update:model-value="onAnimatedPropertyUpdate(property, $event)"
+      />
+    </div>
   </div>
 </template>
 
@@ -90,11 +98,13 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import useEditorStore from "@metascore-library/editor/store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
+import AnimatedPropertyTrack from "./AnimatedPropertyTrack.vue";
 
 export default {
   components: {
     ExpanderIcon,
     LockIcon,
+    AnimatedPropertyTrack,
   },
   props: {
     component: {
@@ -194,6 +204,21 @@ export default {
 
       return style;
     },
+    animatedProperties() {
+      return Object.entries(this.model.properties)
+        .filter(([prop, definition]) => {
+          return (
+            "format" in definition &&
+            definition.format === "animated" &&
+            prop in this.component &&
+            this.component[prop].animated
+          );
+        })
+        .reduce(
+          (acc, [prop]) => ({ ...acc, [prop]: this.component[prop].value }),
+          {}
+        );
+    },
   },
   watch: {
     selected(value) {
@@ -264,6 +289,9 @@ export default {
     },
     onResizableEnd() {
       this.historyStore.endGroup();
+    },
+    onAnimatedPropertyUpdate(property, value) {
+      console.log("onAnimatedPropertyUpdate", property, value);
     },
   },
 };
@@ -433,7 +461,7 @@ $handles-margin: 0.5em;
     display: none;
   }
 
-  .properties {
+  .aniamted-properties {
     display: contents;
   }
 
