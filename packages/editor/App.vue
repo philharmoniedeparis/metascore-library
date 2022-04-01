@@ -311,16 +311,32 @@ export default {
 
   > .top {
     grid-area: top;
-    height: 2.5em;
     background: $darkgray;
 
     .main-menu {
       display: flex;
-      height: 100%;
-      padding: 0 1em;
+      height: 2.5em;
+      padding: 0.25em 1em;
       justify-content: flex-start;
-      align-items: center;
       gap: 1em;
+      box-sizing: border-box;
+
+      ::v-deep(button) {
+        padding-top: 0;
+        padding-bottom: 0;
+        align-self: stretch;
+      }
+
+      ::v-deep(.form-group) {
+        margin: 0;
+        justify-content: center;
+
+        input:not(:focus, :hover),
+        select:not(:focus, :hover) {
+          background-color: transparent;
+          border-color: transparent;
+        }
+      }
 
       > .left,
       > .center,
@@ -329,7 +345,7 @@ export default {
         flex-direction: row;
         flex: 1;
         justify-content: flex-start;
-        align-items: center;
+        align-items: stretch;
         gap: 1em;
       }
 
@@ -339,16 +355,6 @@ export default {
 
       > .right {
         justify-content: flex-end;
-      }
-
-      ::v-deep(.form-group) {
-        margin: 0;
-
-        input:not(:focus, :hover),
-        select:not(:focus, :hover) {
-          background-color: transparent;
-          border-color: transparent;
-        }
       }
 
       .app-title {

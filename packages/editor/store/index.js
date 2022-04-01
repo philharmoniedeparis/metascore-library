@@ -317,6 +317,11 @@ export default defineStore("editor", {
 
       this.appTitle = data.title;
 
+      const appRendererStore = useModule("app_renderer").useStore();
+      appRendererStore.width = data.width;
+      appRendererStore.height = data.height;
+      appRendererStore.css = data.css;
+
       const mediaStore = useModule("media").useStore();
       mediaStore.source = data.media;
 
@@ -325,11 +330,6 @@ export default defineStore("editor", {
 
       const assetsStore = useModule("assets_library").useStore();
       assetsStore.init(data.assets);
-
-      const appRendererStore = useModule("app_renderer").useStore();
-      appRendererStore.width = data.width;
-      appRendererStore.height = data.height;
-      appRendererStore.css = data.css;
 
       const historyStore = useModule("history").useStore();
       historyStore.active = true;
