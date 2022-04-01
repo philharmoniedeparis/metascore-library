@@ -1,8 +1,8 @@
 <template>
   <div class="timeline" tabindex="0">
     <div class="tracks-container">
-      <canvas ref="playhead" class="playhead" />
       <component-track v-if="scenario" :component="scenario" />
+      <div class="playhead" :style="playheadStyle"></div>
     </div>
   </div>
 </template>
@@ -29,6 +29,14 @@ export default {
     offset: {
       type: Number,
       default: 0,
+    },
+    playheadWidth: {
+      type: Number,
+      default: 2,
+    },
+    playheadColor: {
+      type: String,
+      default: "#0000fe",
     },
   },
   setup() {
@@ -64,6 +72,19 @@ export default {
     },
     trackTimeOffset() {
       return `${-this.offset * this.scale * 100}%`;
+    },
+    playheadPosition() {
+      console.log(this.mediaTime, this.mediaDuration);
+      return this.mediaDuration
+        ? (this.mediaTime / this.mediaDuration) * 100
+        : null;
+    },
+    playheadStyle() {
+      return {
+        borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
+        left: `${this.playheadPosition}%`,
+        marginRight: `-${this.playheadWidth / 2}px`,
+      };
     },
   },
   mounted() {
@@ -229,11 +250,10 @@ export default {
     .playhead {
       position: absolute;
       grid-area: 1/2;
-      width: 100%;
+      top: 0;
+      left: 0;
       height: 100%;
-      box-sizing: border-box;
       pointer-events: none;
-      z-index: 10;
     }
   }
 
