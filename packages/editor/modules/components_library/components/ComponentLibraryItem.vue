@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="['components-library--item', { dragging }]"
+    :class="['components-library--item', component.name, { dragging }]"
     draggable="true"
     @dragstart="onDragstart"
     @dragend="onDragend"

@@ -25,10 +25,10 @@
 
 <template>
   <div class="components-library">
-    <template v-for="component in components" :key="component.id">
+    <template v-for="(item, index) in items" :key="index">
       <component-library-item
-        :component="component"
-        :label="$t(component.name) || component.name"
+        :component="item"
+        :label="$t(item.name) || item.name"
       />
     </template>
   </div>
@@ -43,25 +43,10 @@ export default {
     ComponentLibraryItem,
   },
   props: {
-    components: {
+    items: {
       type: Array,
       default() {
         return [
-          {
-            type: "Block",
-            name: "synched_block",
-            synched: true,
-          },
-          {
-            type: "Block",
-            name: "non_synched_block",
-            synched: false,
-          },
-          {
-            type: "Page",
-            name: "page",
-            position: "before",
-          },
           {
             type: "Cursor",
             name: "cursor",
@@ -77,6 +62,20 @@ export default {
           {
             type: "VideoRenderer",
             name: "video_renderer",
+          },
+          {
+            type: "Block",
+            name: "synched_block",
+            synched: true,
+          },
+          {
+            type: "Block",
+            name: "non_synched_block",
+            synched: false,
+          },
+          {
+            type: "Page",
+            name: "page",
           },
           {
             type: "BlockToggler",
@@ -98,11 +97,15 @@ export default {
   display: flex;
   position: relative;
   flex-direction: column;
-  height: 100%;
+  background: $mediumgray;
   overflow-y: auto;
 
   ::v-deep(.components-library--item) {
     flex: 0 0 auto;
+
+    &.synched_block {
+      margin-top: 2px;
+    }
   }
 }
 </style>
