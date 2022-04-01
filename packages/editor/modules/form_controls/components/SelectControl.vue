@@ -25,6 +25,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
+import { isObject } from "lodash";
 
 export default {
   props: {
@@ -62,7 +63,7 @@ export default {
   computed: {
     normalizedOptions() {
       return Object.entries(this.options).map(([label, option]) => {
-        if (typeof option === "object" && "value" in option) {
+        if (isObject(option) && "value" in option) {
           return { label, ...option };
         }
         return { label, value: option };
