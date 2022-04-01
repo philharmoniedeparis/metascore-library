@@ -74,7 +74,6 @@ export default {
       return `${-this.offset * this.scale * 100}%`;
     },
     playheadPosition() {
-      console.log(this.mediaTime, this.mediaDuration);
       return this.mediaDuration
         ? (this.mediaTime / this.mediaDuration) * 100
         : null;

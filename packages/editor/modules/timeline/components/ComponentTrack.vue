@@ -291,7 +291,12 @@ export default {
       this.historyStore.endGroup();
     },
     onAnimatedPropertyUpdate(property, value) {
-      console.log("onAnimatedPropertyUpdate", property, value);
+      this.editorStore.updateComponent(this.component, {
+        [property]: {
+          value,
+          animated: true,
+        },
+      });
     },
   },
 };
