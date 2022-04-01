@@ -6,7 +6,9 @@ import axios from "axios";
 export default defineStore("waveform", {
   state: () => {
     return {
+      loading: false,
       data: null,
+      error: false,
       range: 0,
       offset: {
         start: 0,
@@ -36,6 +38,8 @@ export default defineStore("waveform", {
       }
     },
     async load({ audiowaveform, url }) {
+      this.loading = true;
+
       if (!audiowaveform && !url) {
         throw Error("Source doen't have a url or audiowaveform key");
       }
@@ -66,7 +70,11 @@ export default defineStore("waveform", {
         })
         .catch((e) => {
           this.setData(null);
+          this.error = true;
           console.error(e);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
   },

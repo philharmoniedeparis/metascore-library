@@ -201,10 +201,6 @@ export default {
      * Set the time to the mouse position
      */
     gotToMousePosition(evt) {
-      if (!this.resampledData) {
-        return;
-      }
-
       const offset = this.$el.getBoundingClientRect();
       const x = evt.pageX - offset.left;
       const time = this.getTimeAt(x);

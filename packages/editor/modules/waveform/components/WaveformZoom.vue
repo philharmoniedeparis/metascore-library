@@ -1,8 +1,20 @@
+<i18n>
+{
+  "fr": {
+    "loading_message": "Chargement ...",
+    "error_message": "Aucune donnée de forme d'onde disponible",
+  },
+  "en": {
+    "loading_message": "Loading...",
+    "error_message": "No waveform data available",
+  },
+}
+</i18n>
+
 <template>
   <div class="waveform--zoom">
     <div v-if="message" class="message">{{ message }}</div>
     <div
-      v-else-if="waveformData"
       class="layers"
       @mousedown="onMousedown"
       @wheel.prevent="onWheel"
@@ -78,7 +90,6 @@ export default {
       offsetX: 0,
       mousedownX: null,
       dragging: false,
-      message: null,
     };
   },
   computed: {
@@ -111,6 +122,15 @@ export default {
         borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
         left: `${this.playheadPosition - this.playheadWidth / 2}px`,
       };
+    },
+    message() {
+      if (this.store.loading) {
+        return this.$t("loading_message");
+      }
+      if (this.store.error) {
+        return this.$t("error_message");
+      }
+      return null;
     },
   },
   watch: {
@@ -504,10 +524,6 @@ export default {
      * @param {Event} evt The event object
      */
     onClick(evt) {
-      if (!this.resampledData) {
-        return;
-      }
-
       if (!this.dragging) {
         const { left } = evt.target.getBoundingClientRect();
         const x = evt.pageX - left;
