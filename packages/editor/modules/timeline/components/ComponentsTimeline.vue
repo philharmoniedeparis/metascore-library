@@ -88,7 +88,7 @@ export default {
   },
   mounted() {
     this.$nextTick(function () {
-      this._sorting_interactable = interact(
+      this._interactable = interact(
         ".component-track:not([data-type='page']) > .handle"
       )
         .draggable({
@@ -116,9 +116,9 @@ export default {
     });
   },
   beforeUnmount() {
-    if (this._sorting_interactable) {
-      this._sorting_interactable.unset();
-      delete this._sorting_interactable;
+    if (this._interactable) {
+      this._interactable.unset();
+      delete this._interactable;
     }
   },
   methods: {

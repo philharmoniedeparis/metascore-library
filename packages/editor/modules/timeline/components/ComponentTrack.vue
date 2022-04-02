@@ -78,7 +78,7 @@
       />
     </div>
 
-    <div class="aniamted-properties">
+    <div class="aniamted-properties" @click.capture="onClick">
       <animated-property-track
         v-for="(value, property) in animatedProperties"
         :key="property"

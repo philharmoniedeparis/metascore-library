@@ -93,8 +93,13 @@ export default {
     };
   },
   computed: {
-    mediaTime() {
-      return this.mediaStore.time;
+    mediaTime: {
+      get() {
+        return this.mediaStore.time;
+      },
+      set(value) {
+        this.mediaStore.seekTo(value);
+      },
     },
     mediaDuration() {
       return this.mediaStore.duration;
@@ -527,9 +532,7 @@ export default {
       if (!this.dragging) {
         const { left } = evt.target.getBoundingClientRect();
         const x = evt.pageX - left;
-        const time = this.getTimeAt(x);
-
-        this.mediaStore.seekTo(time);
+        this.mediaTime = this.getTimeAt(x);
       } else {
         this.dragging = false;
       }

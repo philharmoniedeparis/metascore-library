@@ -24,23 +24,28 @@
       <div class="label">{{ $t(property) || property }}</div>
     </div>
 
-    <div class="keyframes-wrapper" @click="onWrapperClick">
+    <div ref="wrapper" class="keyframes-wrapper" @click="onWrapperClick">
       <div
-        v-for="([time], index) in modelValue"
+        v-for="(keyframe, index) in modelValue"
         :key="index"
         :style="{
-          left: `${(time / mediaDuration) * 100}%`,
+          left: `${(keyframe[0] / mediaDuration) * 100}%`,
         }"
-        :title="`${value} @ ${formatTime(time)}`"
-        :class="['keyframe', { selected: time === selected }]"
+        :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
+        :class="['keyframe', { selected: selectedIndex === index }]"
         tabindex="0"
-        @click.stop="onKeyframeClick(time)"
+        @click.stop="onKeyframeClick(keyframe)"
       />
     </div>
   </div>
 </template>
 
 <script>
+import "@interactjs/auto-start";
+import "@interactjs/actions/drag";
+import "@interactjs/actions/drop";
+import "@interactjs/modifiers";
+import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
@@ -68,12 +73,17 @@ export default {
   },
   data() {
     return {
-      selected: null,
+      selectedIndex: null,
     };
   },
   computed: {
-    mediaTime() {
-      return this.mediaStore.time;
+    mediaTime: {
+      get() {
+        return this.mediaStore.time;
+      },
+      set(value) {
+        this.mediaStore.seekTo(value);
+      },
     },
     mediaDuration() {
       return this.mediaStore.duration;
@@ -83,8 +93,18 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.$emit(
+          "update:modelValue",
+          value.sort((a, b) => {
+            return a[0] - b[0];
+          })
+        );
       },
+    },
+    selectedKeyframe() {
+      return this.selectedIndex !== null
+        ? this.value[this.selectedIndex]
+        : null;
     },
     hotkeys() {
       return {
@@ -92,6 +112,23 @@ export default {
         backspace: this.deleteSelectedKeyframe,
       };
     },
+  },
+  mounted() {
+    this._interactable = interact(".keyframe.selected").draggable({
+      context: this.$el,
+      startAxis: "x",
+      lockAxis: "x",
+      listeners: {
+        move: this.onKeyframeDraggableMove,
+        end: this.onKeyframeDraggableEnd,
+      },
+    });
+  },
+  beforeUnmount() {
+    if (this._interactable) {
+      this._interactable.unset();
+      delete this._interactable;
+    }
   },
   methods: {
     formatTime,
@@ -101,21 +138,53 @@ export default {
       const time = round((x / width) * this.mediaDuration, 2);
       const value = getAnimatedValueAtTime(this.value, time);
 
-      this.addKeyframe(time, value);
+      const keyframe = [time, value];
+      this.value = [...this.value, keyframe];
+
+      this.selectKeyframe(keyframe);
+      this.mediaTime = keyframe[0];
     },
-    onKeyframeClick(time) {
-      this.selected = time;
+    onKeyframeClick(keyframe) {
+      this.selectKeyframe(keyframe);
+      this.mediaTime = keyframe[0];
     },
-    addKeyframe(time, value) {
-      this.value = [...this.value, [time, value]].sort((a, b) => {
-        return a[0] - b[0];
+    onKeyframeDraggableMove(evt) {
+      const { width } = this.$refs.wrapper.getBoundingClientRect();
+      const delta_x = evt.delta.x;
+      const delta_time = (delta_x / width) * this.mediaDuration;
+      const keyframe = [
+        round(this.selectedKeyframe[0] + delta_time, 2),
+        this.selectedKeyframe[1],
+      ];
+
+      this.value = [
+        ...this.value.slice(0, this.selectedIndex),
+        ...this.value.slice(this.selectedIndex + 1),
+        keyframe,
+      ];
+
+      this.selectKeyframe(keyframe);
+    },
+    onKeyframeDraggableEnd() {
+      this.mediaTime = this.selectedKeyframe[0];
+    },
+    selectKeyframe(keyframe) {
+      this.$nextTick(function () {
+        this.selectedIndex = this.value.findIndex(
+          (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
+        );
       });
-      this.selected = time;
     },
     deleteSelectedKeyframe() {
-      if (this.selected !== null) {
-        this.value = this.value.filter((k) => k[0] !== this.selected);
-        this.selected = null;
+      if (this.selectedKeyframe !== null) {
+        this.value = this.value.filter(
+          (k) =>
+            !(
+              k[0] === this.selectedKeyframe[0] &&
+              k[1] === this.selectedKeyframe[1]
+            )
+        );
+        this.selectedIndex = null;
       }
     },
   },
@@ -129,16 +198,17 @@ export default {
   .keyframes-wrapper {
     position: relative;
     background: $mediumgray;
+    cursor: copy;
   }
 
   .keyframe {
     display: flex;
     position: absolute;
     top: 0;
-    width: 1.5em;
-    height: 1.5em;
-    margin-left: -0.75em;
-    padding: 0.4em;
+    width: 2em;
+    height: 2em;
+    margin-left: -1em;
+    padding: 0.6em;
     align-content: center;
     align-items: center;
     opacity: 0.5;

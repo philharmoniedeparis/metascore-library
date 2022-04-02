@@ -44,8 +44,13 @@ export default {
     };
   },
   computed: {
-    mediaTime() {
-      return this.mediaStore.time;
+    mediaTime: {
+      get() {
+        return this.mediaStore.time;
+      },
+      set(value) {
+        this.mediaStore.seekTo(value);
+      },
     },
     mediaDuration() {
       return this.mediaStore.duration;
@@ -121,9 +126,6 @@ export default {
     }
   },
   methods: {
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
     /**
      * Update the wave layer
      */
@@ -203,9 +205,7 @@ export default {
     gotToMousePosition(evt) {
       const offset = this.$el.getBoundingClientRect();
       const x = evt.pageX - offset.left;
-      const time = this.getTimeAt(x);
-
-      this.seekMediaTo(time);
+      this.mediaTime = this.getTimeAt(x);
     },
 
     /**
