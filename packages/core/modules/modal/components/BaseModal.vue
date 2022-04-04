@@ -19,7 +19,7 @@
             <div class="dialog" role="document">
               <div class="content">
                 <div v-if="header || $slots.title || title" class="header">
-                  <h3 class="title">
+                  <h3 v-if="$slots.title || title" class="title">
                     <slot v-if="$slots.title" name="title" />
                     <template v-else>{{ title }} </template>
                   </h3>
@@ -32,10 +32,12 @@
                     <template #icon><close-icon /></template>
                   </styled-button>
                 </div>
+
                 <div class="body">
                   <slot />
                 </div>
-                <div class="footer">
+
+                <div v-if="$slots.footer" class="footer">
                   <slot name="footer" />
                 </div>
               </div>
