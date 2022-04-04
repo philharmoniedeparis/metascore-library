@@ -20,6 +20,10 @@
         {{ option.label }}
       </option>
     </select>
+
+    <template #label>
+      <slot name="label" />
+    </template>
   </form-group>
 </template>
 

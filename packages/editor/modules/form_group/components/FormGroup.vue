@@ -1,13 +1,5 @@
 <template>
-  <div
-    :class="[
-      'form-group',
-      {
-        required: validation && validation.required,
-        error: validation && validation.$errors.length,
-      },
-    ]"
-  >
+  <div :class="['form-group', { error: errors.length }]">
     <div class="input-wrapper">
       <template v-if="labelPosition === 'after'">
         <slot />
@@ -32,9 +24,9 @@
       class="description"
     />
 
-    <template v-if="validation">
-      <div v-for="error of validation.$errors" :key="error.$uid" class="errors">
-        <div class="error-msg">{{ error.$message }}</div>
+    <template v-if="errors.length">
+      <div v-for="(error, index) of errors" :key="index" class="errors">
+        <div class="error">{{ error }}</div>
       </div>
     </template>
   </div>
@@ -64,9 +56,11 @@ export default {
       type: String,
       default: null,
     },
-    validation: {
-      type: Object,
-      default: null,
+    errors: {
+      type: Array,
+      default() {
+        return [];
+      },
     },
   },
 };

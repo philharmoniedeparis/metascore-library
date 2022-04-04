@@ -62,6 +62,10 @@
         </div>
       </template>
     </floating-vue>
+
+    <template #label>
+      <slot name="label" />
+    </template>
   </form-group>
 </template>
 

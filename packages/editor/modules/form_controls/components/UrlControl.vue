@@ -16,6 +16,10 @@
       @blur="onInputBlur"
       @change="onInputChange"
     />
+
+    <template #label>
+      <slot name="label" />
+    </template>
   </form-group>
 </template>
 

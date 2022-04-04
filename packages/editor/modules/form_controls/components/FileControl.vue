@@ -14,6 +14,10 @@
       :disabled="disabled"
       @change="onChange"
     />
+
+    <template #label>
+      <slot name="label" />
+    </template>
   </form-group>
 </template>
 

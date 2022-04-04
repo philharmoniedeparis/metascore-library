@@ -20,6 +20,10 @@
         </slot>
       </label>
     </div>
+
+    <template #label>
+      <slot name="label" />
+    </template>
   </form-group>
 </template>
 
