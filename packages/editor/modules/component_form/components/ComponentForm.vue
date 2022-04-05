@@ -165,7 +165,13 @@ import { intersection } from "lodash";
 
 export default {
   props: {
-    availableImages: {
+    images: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+    colorSwatches: {
       type: Array,
       default() {
         return [];
@@ -246,18 +252,19 @@ export default {
 
       if (this.commonModel.$isBackgroundable) {
         layout.items[0].items.push({
+          swatches: this.colorSwatches,
           ...this.getControlProps("background-color"),
         });
         layout.items[0].items.push({
-          ...this.getControlProps("background-image"),
           type: "select",
           options: {
             "": null,
-            ...this.availableImages.reduce(
+            ...this.images.reduce(
               (acc, img) => ({ ...acc, [img.name]: img.url }),
               {}
             ),
           },
+          ...this.getControlProps("background-image"),
         });
       }
 
@@ -265,15 +272,20 @@ export default {
         layout.items[0].items.push({
           type: "markup",
           class: "form-container horizontal",
-          items: ["border-color", "border-width", "border-radius"].map(
-            (property) => this.getControlProps(property)
-          ),
+          items: [
+            {
+              ...this.getControlProps("border-color"),
+              swatches: this.colorSwatches,
+            },
+            ...["border-width", "border-radius"].map((property) =>
+              this.getControlProps(property)
+            ),
+          ],
         });
       }
 
       if (this.commonModel.$isPositionable) {
         layout.items[0].items.push({
-          ...this.getControlProps("position"),
           itemProps: [
             {
               spinnersDirection: "horizontal",
@@ -282,12 +294,12 @@ export default {
               flipSpinners: true,
             },
           ],
+          ...this.getControlProps("position"),
         });
       }
 
       if (this.commonModel.$isResizable) {
         layout.items[0].items.push({
-          ...this.getControlProps("dimension"),
           itemProps: [
             {
               spinnersDirection: "horizontal",
@@ -296,6 +308,7 @@ export default {
               flipSpinners: true,
             },
           ],
+          ...this.getControlProps("dimension"),
         });
       }
 
@@ -344,11 +357,11 @@ export default {
           });
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
-              ...this.getControlProps("keyframes", this.commonModel.type),
               type: "cursor-keyframes",
               "component-el": this.playerPreviewStore.getComponentElement(
                 this.masterComponent
               ),
+              ...this.getControlProps("keyframes", this.commonModel.type),
             });
           }
           break;
@@ -377,16 +390,16 @@ export default {
           class: "form-container horizontal time",
           items: [
             {
-              ...this.getControlProps("start-time"),
               inButton: true,
               outButton: true,
               clearButton: true,
+              ...this.getControlProps("start-time"),
             },
             {
-              ...this.getControlProps("end-time"),
               inButton: true,
               outButton: true,
               clearButton: true,
+              ...this.getControlProps("end-time"),
             },
           ],
         });
@@ -400,7 +413,6 @@ export default {
       }
       if (this.commonModel.$isTransformable) {
         animated.push({
-          ...this.getControlProps("scale"),
           itemProps: {
             value: {
               itemProps: [
@@ -411,9 +423,9 @@ export default {
               ],
             },
           },
+          ...this.getControlProps("scale"),
         });
         animated.push({
-          ...this.getControlProps("translate"),
           itemProps: {
             value: {
               itemProps: [
@@ -426,6 +438,7 @@ export default {
               ],
             },
           },
+          ...this.getControlProps("translate"),
         });
       }
       if (animated.length > 0) {
@@ -465,7 +478,7 @@ export default {
         [property]: value,
       });
     },
-    getControlProps(property, type = null) {
+    getControlProps(property, model_type = null) {
       const props = {
         property: property,
       };
@@ -482,8 +495,8 @@ export default {
           break;
 
         default:
-          props.label = type
-            ? this.$t(`${type}.${property}`)
+          props.label = model_type
+            ? this.$t(`${model_type}.${property}`)
             : this.$t(property);
       }
 

@@ -89,9 +89,7 @@
       @submit="onDeleteSubmit"
       @cancel="showDeleteConfirm = false"
     >
-      <template #text>
-        <p v-dompurify-html="$t('delete_text', { name: activeName })"></p>
-      </template>
+      <p v-dompurify-html="$t('delete_text', { name: activeName })"></p>
     </confirm-dialog>
   </div>
 </template>

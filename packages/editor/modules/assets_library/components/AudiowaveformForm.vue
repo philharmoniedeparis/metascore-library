@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import Model from "../models/Waveform";
+import Model from "../models/Audiowaveform";
 
 export default {
   emits: ["submit", "close"],
@@ -118,8 +118,18 @@ export default {
                 tag: "legend",
                 content: this.$t("time_group_label"),
               },
-              { property: "start", label: this.$t("start_label") },
-              { property: "end", label: this.$t("end_label") },
+              {
+                property: "start",
+                label: this.$t("start_label"),
+                inButton: true,
+                clearButton: true,
+              },
+              {
+                property: "end",
+                label: this.$t("end_label"),
+                inButton: true,
+                clearButton: true,
+              },
             ],
           },
           {
@@ -160,7 +170,27 @@ export default {
       });
     },
     onSubmit() {
-      console.log(this.model.$data);
+      const data = this.model.$data;
+
+      if (!data.end) {
+        data.zoom = "auto";
+        delete data.end;
+      }
+
+      ["split-channels", "no-axis-labels"].forEach((key) => {
+        data[key] = data[key] ? 1 : 0;
+      });
+
+      [
+        "background-color",
+        "waveform-color",
+        "axis-label-color",
+        "border-color",
+      ].forEach((key) => {
+        data[key] = data[key].replace("#", "");
+      });
+
+      this.$emit("submit", data);
     },
     onCancel() {
       this.$emit("close");

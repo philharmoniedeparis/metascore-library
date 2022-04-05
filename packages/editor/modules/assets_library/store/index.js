@@ -1,11 +1,15 @@
 import { defineStore } from "pinia";
 import { normalize } from "./utils/normalize";
+import { load } from "@metascore-library/core/services/ajax";
 
 export default defineStore("assets-library", {
   state: () => {
     return {
       list: [],
       items: {},
+      processing: false,
+      upload_progress: null,
+      error: null,
     };
   },
   getters: {
@@ -71,7 +75,48 @@ export default defineStore("assets-library", {
         item.$deleted = true;
       }
     },
-    createSpectrogram(data) {},
-    createWaveform(data) {},
+    upload(url, files) {
+      this.processing = true;
+      this.upload_progress = 0;
+
+      const data = new FormData();
+      files.forEach((file) => {
+        data.append(`files[asset][]`, file);
+      });
+
+      return load(url, {
+        method: "post",
+        data,
+        onUploadProgress: (evt) => {
+          this.upload_progress = evt.loaded / evt.total;
+        },
+      })
+        .then((items) => {
+          items.map(this.add);
+          return items;
+        })
+        .catch((e) => {
+          this.error = e;
+        })
+        .finally(() => {
+          this.processing = false;
+          this.upload_progress = null;
+        });
+    },
+    generate(url, data) {
+      this.processing = true;
+
+      return load(url, { method: "post", data })
+        .then((item) => {
+          this.add(item);
+          return item;
+        })
+        .catch((e) => {
+          this.error = e;
+        })
+        .finally(() => {
+          this.processing = false;
+        });
+    },
   },
 });

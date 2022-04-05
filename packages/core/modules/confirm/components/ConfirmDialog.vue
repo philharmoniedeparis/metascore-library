@@ -14,8 +14,8 @@
 <template>
   <base-modal class="confirm-dialog" @close="$emit('cancel')">
     <div class="text">
-      <p v-if="text">{{ text }}</p>
-      <slot v-else name="text" />
+      <slot v-if="$slots.default" />
+      <template v-else>{{ text }}</template>
     </div>
 
     <template #footer>

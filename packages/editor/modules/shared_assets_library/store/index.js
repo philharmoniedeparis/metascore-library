@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import Fuse from "fuse.js";
 import { markRaw } from "vue";
-import { load } from "@metascore-library/core/utils/ajax";
+import { load } from "@metascore-library/core/services/ajax";
 import { normalize } from "./utils/normalize";
 
 const fuse = markRaw(

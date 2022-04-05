@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { markRaw } from "vue";
 import WaveformData from "waveform-data";
-import axios from "axios";
+import { load } from "@metascore-library/core/services/ajax";
 
 export default defineStore("waveform", {
   state: () => {
@@ -46,26 +46,24 @@ export default defineStore("waveform", {
 
       const from_web_audio = !audiowaveform;
 
-      axios({
-        url: from_web_audio ? url : audiowaveform,
-        method: "get",
+      load(from_web_audio ? url : audiowaveform, {
         responseType: "arraybuffer",
       })
-        .then((response) => {
-          if (!response.data) {
+        .then((data) => {
+          if (!data) {
             this.setData(null);
           }
 
           if (from_web_audio) {
             const options = {
               audio_context: new AudioContext(),
-              array_buffer: response.data,
+              array_buffer: data,
             };
             WaveformData.createFromAudio(options, (err, waveform) => {
               this.setData(err ? null : waveform);
             });
           } else {
-            this.setData(WaveformData.create(response.data));
+            this.setData(WaveformData.create(data));
           }
         })
         .catch((e) => {

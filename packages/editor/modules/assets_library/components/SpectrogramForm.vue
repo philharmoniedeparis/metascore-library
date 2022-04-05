@@ -124,8 +124,18 @@ export default {
                 tag: "legend",
                 content: this.$t("time_group_label"),
               },
-              { property: "start_time", label: this.$t("start_time_label") },
-              { property: "end_time", label: this.$t("end_time_label") },
+              {
+                property: "start_time",
+                label: this.$t("start_time_label"),
+                inButton: true,
+                clearButton: true,
+              },
+              {
+                property: "end_time",
+                label: this.$t("end_time_label"),
+                inButton: true,
+                clearButton: true,
+              },
             ],
           },
           {
@@ -180,7 +190,15 @@ export default {
       });
     },
     onSubmit() {
-      console.log(this.model.$data);
+      const data = this.model.$data;
+
+      data.size = `${data.width}x${data.height}`;
+      delete data.width;
+      delete data.height;
+
+      data.legend = data.legend ? 1 : 0;
+
+      this.$emit("submit", data);
     },
     onCancel() {
       this.$emit("close");

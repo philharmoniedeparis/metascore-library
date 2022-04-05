@@ -7,6 +7,7 @@ import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/services/module-manager";
+import { setDefaults as setAjaxDefaults } from "@metascore-library/core/services/ajax";
 import AssetsLibrary from "./modules/assets_library";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
@@ -33,12 +34,21 @@ export class Editor {
    */
   static version = packageInfo.version;
 
-  static async create({ url, el = null, locale = "fr" } = {}) {
+  static async create({
+    url,
+    el = null,
+    locale = "fr",
+    ajax = {},
+    ...configs
+  } = {}) {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
     const events = new Emitter();
-    const app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);
+    const app = createApp(App, { url, configs })
+      .use(pinia)
+      .use(i18n)
+      .use(hotkey);
 
     // See https://github.com/vuejs/core/pull/5474
     app.config.skipEventsTimestampCheck = true;
@@ -72,6 +82,8 @@ export class Editor {
       ],
       { app, pinia }
     );
+
+    setAjaxDefaults(ajax);
 
     return new Editor(app, events, el);
   }

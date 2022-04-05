@@ -26,10 +26,12 @@
     <resizable-pane class="left" :right="{ collapse: true }">
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
-        <tabs-item title="Library"><assets-library /></tabs-item>
+        <tabs-item title="Library">
+          <assets-library v-bind="configs.assets_library" />
+        </tabs-item>
         <tabs-item title="Shared Library">
           <shared-assets-library
-            url="./assets/shared-assets.json"
+            v-bind="configs.shared_assets_library"
             @click:import="onSharedAssetsImportClick"
           />
         </tabs-item>
@@ -48,7 +50,10 @@
     </resizable-pane>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <component-form :available-images="imageAssets"></component-form>
+      <component-form
+        :images="imageAssets"
+        v-bind="configs.component_form"
+      ></component-form>
     </resizable-pane>
 
     <resizable-pane
@@ -102,6 +107,12 @@ export default {
     url: {
       type: String,
       required: true,
+    },
+    configs: {
+      type: Object,
+      default() {
+        return {};
+      },
     },
   },
   setup() {

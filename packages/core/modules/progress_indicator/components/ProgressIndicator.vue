@@ -2,7 +2,7 @@
   <base-modal class="progress-indicator">
     <label>
       <div v-if="text || $slots.text" class="text">
-        <tempalte v-if="text">{{ text }}</tempalte>
+        <template v-if="text">{{ text }}</template>
         <slot v-else name="text" />
       </div>
 

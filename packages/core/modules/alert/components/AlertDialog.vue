@@ -1,0 +1,54 @@
+<i18n>
+{
+  "fr": {
+    "button": "OK",
+  },
+  "en": {
+    "button": "OK",
+  },
+}
+</i18n>
+
+<template>
+  <base-modal class="alert-dialog" @close="$emit('close')">
+    <div class="text">
+      <slot v-if="$slots.default" />
+      <template v-else>{{ text }}</template>
+    </div>
+
+    <template #footer>
+      <styled-button type="button" role="primary" @click="$emit('close')">
+        {{ submitLabelWithDefault }}
+      </styled-button>
+    </template>
+  </base-modal>
+</template>
+
+<script>
+export default {
+  props: {
+    text: {
+      type: String,
+      default: null,
+    },
+    buttonLabel: {
+      type: String,
+      default: null,
+    },
+  },
+  emits: ["close"],
+  computed: {
+    buttonLabelWithDefault() {
+      return this.buttonLabel ?? this.$t("button");
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.alert-dialog {
+  .text {
+    color: $white;
+  }
+}
+</style>

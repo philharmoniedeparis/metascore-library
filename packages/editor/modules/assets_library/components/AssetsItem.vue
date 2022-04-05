@@ -38,9 +38,7 @@
       @submit="onDeleteSubmit"
       @cancel="onDeleteCancel"
     >
-      <template #text>
-        <p v-dompurify-html="$t('delete_text', { label })"></p>
-      </template>
+      <p v-dompurify-html="$t('delete_text', { label })"></p>
     </confirm-dialog>
   </div>
 </template>
@@ -224,6 +222,7 @@ export default {
     height: 100%;
     margin: 0;
     color: $mediumgray;
+    overflow: hidden;
     pointer-events: none;
 
     img,
@@ -262,6 +261,7 @@ export default {
     display: inline-block;
     width: 1em;
     height: 100%;
+    flex: 0 0 auto;
     margin-right: 0.5em;
     background: url(../assets/icons/drag-handle.svg) 50% 50% no-repeat;
     vertical-align: middle;

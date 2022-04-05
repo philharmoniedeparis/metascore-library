@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { unref } from "vue";
 import { omit, cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { load } from "@metascore-library/core/utils/ajax";
+import { load } from "@metascore-library/core/services/ajax";
 
 export default defineStore("editor", {
   state: () => {
