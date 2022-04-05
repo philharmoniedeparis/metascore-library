@@ -172,7 +172,7 @@ export default {
       return this.store.processing;
     },
     uploadProgress() {
-      return this.store.upload_progress;
+      return this.store.uploadProgress;
     },
     error() {
       return this.store.error;

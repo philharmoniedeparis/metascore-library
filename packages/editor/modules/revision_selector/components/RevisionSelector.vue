@@ -13,7 +13,7 @@
 
 <template>
   <div class="revision-selector">
-    <select-control v-model="active" :options="options" />
+    <select-control v-model="internalValue" :options="options" />
 
     <styled-button
       type="button"
@@ -26,10 +26,20 @@
 </template>
 
 <script>
-import useStore from "../store";
-
 export default {
   props: {
+    revisions: {
+      type: Array,
+      required: true,
+    },
+    latest: {
+      type: String,
+      required: true,
+    },
+    active: {
+      type: String,
+      default: null,
+    },
     dateFormatter: {
       type: Object,
       default() {
@@ -48,17 +58,10 @@ export default {
       },
     },
   },
-  emits: ["update:modelValue"],
-  setup() {
-    const store = useStore();
-    return { store };
-  },
+  emits: ["update:active"],
   computed: {
-    latest() {
-      return this.store.latest;
-    },
     options() {
-      return this.store.list.reduce((acc, revision) => {
+      return this.revisions.reduce((acc, revision) => {
         const label = this.$t("option_label", {
           id: revision.vid,
           date: this.dateFormatter.format(new Date(revision.created * 1000)),
@@ -73,12 +76,12 @@ export default {
         };
       }, {});
     },
-    active: {
+    internalValue: {
       get() {
-        return this.store.active;
+        return this.active;
       },
       set(value) {
-        this.store.active = value;
+        this.$emit("update:active", value);
       },
     },
     canRestore() {

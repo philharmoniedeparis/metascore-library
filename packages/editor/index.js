@@ -7,7 +7,6 @@ import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/services/module-manager";
-import { setDefaults as setAjaxDefaults } from "@metascore-library/core/services/ajax";
 import AssetsLibrary from "./modules/assets_library";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
@@ -20,6 +19,7 @@ import Media from "@metascore-library/player/modules/media";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
+import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
@@ -34,13 +34,7 @@ export class Editor {
    */
   static version = packageInfo.version;
 
-  static async create({
-    url,
-    el = null,
-    locale = "fr",
-    ajax = {},
-    ...configs
-  } = {}) {
+  static async create({ url, el = null, locale = "fr", ...configs } = {}) {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
@@ -72,6 +66,7 @@ export class Editor {
         MediaSelector,
         PlaybackControls,
         PlayerPreview,
+        ProgressIndicator,
         ResizablePane,
         RevisionSelector,
         ScenarioManager,
@@ -82,8 +77,6 @@ export class Editor {
       ],
       { app, pinia }
     );
-
-    setAjaxDefaults(ajax);
 
     return new Editor(app, events, el);
   }

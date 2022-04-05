@@ -7,8 +7,11 @@ import { load } from "@metascore-library/core/services/ajax";
 export default defineStore("editor", {
   state: () => {
     return {
-      ready: false,
+      loading: false,
       appTitle: null,
+      revisions: [],
+      latestRevision: null,
+      activeRevision: null,
       selectedComponents: [],
       lockedComponents: [],
     };
@@ -313,9 +316,15 @@ export default defineStore("editor", {
       });
     },
     async load(url) {
+      this.loading = true;
+
       const data = await load(url);
 
       this.appTitle = data.title;
+
+      this.revisions = data.revisions;
+      this.latestRevision = data.latest_revision;
+      this.activeRevision = data.vid;
 
       const appRendererStore = useModule("app_renderer").useStore();
       appRendererStore.width = data.width;
@@ -334,12 +343,13 @@ export default defineStore("editor", {
       const historyStore = useModule("history").useStore();
       historyStore.active = true;
 
-      const revisionsStore = useModule("revision_selector").useStore();
-      revisionsStore.list = data.revisions;
-      revisionsStore.latest = data.latest_revision;
-      revisionsStore.active = data.vid;
-
-      this.ready = true;
+      this.loading = false;
+    },
+    async loadRevision(vid) {
+      const revision = this.revisions.find((r) => r.vid === vid);
+      if (revision) {
+        await this.load(revision.url);
+      }
     },
   },
   history(context) {

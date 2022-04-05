@@ -8,7 +8,7 @@ export default defineStore("assets-library", {
       list: [],
       items: {},
       processing: false,
-      upload_progress: null,
+      uploadProgress: null,
       error: null,
     };
   },
@@ -77,7 +77,7 @@ export default defineStore("assets-library", {
     },
     upload(url, files) {
       this.processing = true;
-      this.upload_progress = 0;
+      this.uploadProgress = 0;
 
       const data = new FormData();
       files.forEach((file) => {
@@ -88,7 +88,7 @@ export default defineStore("assets-library", {
         method: "post",
         data,
         onUploadProgress: (evt) => {
-          this.upload_progress = evt.loaded / evt.total;
+          this.uploadProgress = evt.loaded / evt.total;
         },
       })
         .then((items) => {
@@ -100,7 +100,7 @@ export default defineStore("assets-library", {
         })
         .finally(() => {
           this.processing = false;
-          this.upload_progress = null;
+          this.uploadProgress = null;
         });
     },
     generate(url, data) {

@@ -1,3 +1,14 @@
+<i18n>
+{
+  "fr": {
+    "loading_indicator_label": "Chargement ...",
+  },
+  "en": {
+    "loading_indicator_label": "Loading...",
+  },
+}
+</i18n>
+
 <template>
   <context-menu :class="['metaScore-editor', classes]">
     <resizable-pane class="top">
@@ -18,7 +29,11 @@
           <player-preview-toggler />
         </div>
         <div class="right">
-          <revision-selector />
+          <revision-selector
+            v-model:active="activeRevision"
+            :revisions="revisions"
+            :latest="latestRevision"
+          />
         </div>
       </nav>
     </resizable-pane>
@@ -27,11 +42,11 @@
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library">
-          <assets-library v-bind="configs.assets_library" />
+          <assets-library v-bind="configs.modules?.assets_library" />
         </tabs-item>
         <tabs-item title="Shared Library">
           <shared-assets-library
-            v-bind="configs.shared_assets_library"
+            v-bind="configs.modules?.shared_assets_library"
             @click:import="onSharedAssetsImportClick"
           />
         </tabs-item>
@@ -52,7 +67,7 @@
     <resizable-pane class="right" :left="{ collapse: true }">
       <component-form
         :images="imageAssets"
-        v-bind="configs.component_form"
+        v-bind="configs.modules?.component_form"
       ></component-form>
     </resizable-pane>
 
@@ -85,6 +100,8 @@
       </div>
     </resizable-pane>
 
+    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
+
     <template #footer>
       {{ `metaScore Editor ${version}` }}
     </template>
@@ -94,6 +111,7 @@
 <script>
 import { computed, readonly } from "vue";
 import useStore from "./store";
+import { setDefaults as setAjaxDefaults } from "@metascore-library/core/services/ajax";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
 
@@ -141,8 +159,8 @@ export default {
     };
   },
   computed: {
-    ready() {
-      return this.store.ready;
+    loading() {
+      return this.store.loading;
     },
     appTitle: {
       get() {
@@ -181,6 +199,20 @@ export default {
         this.componentsStore.activeScenario = value;
       },
     },
+    revisions() {
+      return this.store.revisions;
+    },
+    latestRevision() {
+      return this.store.latestRevision;
+    },
+    activeRevision: {
+      get() {
+        return this.store.activeRevision;
+      },
+      set(value) {
+        this.store.loadRevision(value);
+      },
+    },
   },
   watch: {
     mediaSource(source) {
@@ -207,6 +239,11 @@ export default {
         delete this.classes["libraries-expanded"];
       }
     },
+  },
+  beforeMount() {
+    if (this.configs.services?.ajax) {
+      setAjaxDefaults(this.configs.services.ajax);
+    }
   },
   mounted() {
     this.modalsTarget = this.$el;
