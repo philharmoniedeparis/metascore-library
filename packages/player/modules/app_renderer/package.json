@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/player-app-renderer",
+  "name": "@metascore-library/app-renderer",
   "private": true,
   "description": "",
   "dependencies": {

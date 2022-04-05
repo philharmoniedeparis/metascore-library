@@ -1,9 +1,9 @@
 {
-  "name": "@metascore-library/editor-component-form",
+  "name": "@metascore-library/component-form",
   "private": true,
   "description": "",
   "dependencies": {
-    "floating-vue": "2.0.0-beta.11",
+    "floating-vue": "^2.0.0-beta.12",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   }

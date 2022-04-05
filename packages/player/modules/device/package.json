@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/player-device",
+  "name": "@metascore-library/device",
   "private": true,
   "description": "",
   "dependencies": {

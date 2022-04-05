@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-shared-assets-library",
+  "name": "@metascore-library/shared-assets-library",
   "private": true,
   "description": "",
   "dependencies": {

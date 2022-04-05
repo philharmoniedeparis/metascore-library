@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-history",
+  "name": "@metascore-library/history",
   "private": true,
   "description": "",
   "dependencies": {

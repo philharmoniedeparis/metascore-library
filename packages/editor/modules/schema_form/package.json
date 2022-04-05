@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-schema-form",
+  "name": "@metascore-library/schema-form",
   "private": true,
   "description": "",
   "dependencies": {

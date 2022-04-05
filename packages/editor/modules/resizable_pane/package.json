@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-panes",
+  "name": "@metascore-library/panes",
   "private": true,
   "description": "",
   "dependencies": {

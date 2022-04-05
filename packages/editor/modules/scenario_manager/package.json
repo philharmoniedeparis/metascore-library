@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-scenario-manager",
+  "name": "@metascore-library/scenario-manager",
   "private": true,
   "description": "",
   "dependencies": {

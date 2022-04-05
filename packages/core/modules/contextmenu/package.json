@@ -1,9 +1,9 @@
 {
-  "name": "@metascore-library/core-contextmenu",
+  "name": "@metascore-library/contextmenu",
   "private": true,
   "description": "",
   "dependencies": {
     "pinia": "^2.0.11",
-    "floating-vue": "2.0.0-beta.11"
+    "floating-vue": "^2.0.0-beta.12"
   }
 }

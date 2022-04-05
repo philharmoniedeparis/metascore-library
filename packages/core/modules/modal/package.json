@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/core-modal",
+  "name": "@metascore-library/modal",
   "private": true,
   "description": "",
   "dependencies": {

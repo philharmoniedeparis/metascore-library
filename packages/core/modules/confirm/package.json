@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/core-confirm",
+  "name": "@metascore-library/confirm",
   "private": true,
   "description": "",
   "dependencies": {

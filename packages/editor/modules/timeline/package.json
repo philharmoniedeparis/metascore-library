@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-timeline",
+  "name": "@metascore-library/timeline",
   "private": true,
   "description": "",
   "dependencies": {

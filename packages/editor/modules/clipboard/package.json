@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-clipboard",
+  "name": "@metascore-library/clipboard",
   "private": true,
   "description": "",
   "dependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/core-event-bus",
+  "name": "@metascore-library/event-bus",
   "private": true,
   "description": "",
   "dependencies": {

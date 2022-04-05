@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/editor-player-preview",
+  "name": "@metascore-library/preview",
   "private": true,
   "description": "",
   "dependencies": {
