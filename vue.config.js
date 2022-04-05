@@ -5,6 +5,18 @@ module.exports = defineConfig({
   lintOnSave: true,
   publicPath: "./",
   transpileDependencies: true,
+  devServer: {
+    host: process.env.DEV_SERVER_HOST || "local-ip",
+    port: process.env.DEV_SERVER_PORT || "auto",
+    proxy: process.env.DEV_SERVER_PROXY
+      ? {
+          "^/": {
+            target: process.env.DEV_SERVER_PROXY,
+            ws: false,
+          },
+        }
+      : null,
+  },
   css: {
     loaderOptions: {
       scss: {
