@@ -21,7 +21,6 @@
         'has-selected-descendents': hasSelectedDescendents,
         expanded,
         selected,
-        dragging,
       },
     ]"
     :data-type="component.type"
@@ -128,8 +127,6 @@ export default {
   data() {
     return {
       expanded: false,
-      dragging: false,
-      dragDelta: null,
     };
   },
   computed: {
@@ -328,10 +325,12 @@ export default {
     position: sticky;
     left: 0;
     grid-column: 1;
+    padding: 0 0.25em 0 0.5em;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
+    gap: 0.25em;
     background: $mediumgray;
     margin-left: calc(var(--depth) * 0.25em);
     border-right: 2px solid $darkgray;
@@ -353,7 +352,6 @@ export default {
     > .icon {
       width: 1.5em;
       flex: 0 0 auto;
-      margin: 0 0.25em;
       color: white;
     }
 
@@ -404,8 +402,7 @@ export default {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
-      margin-left: 0.25em;
-      padding: 0 0.25em;
+      gap: 0.25em;
 
       .toggle {
         label {
@@ -511,11 +508,10 @@ export default {
   }
 
   &.scenario {
-    border-top: 0;
-
-    > .handle,
-    > .time-wrapper {
-      display: none;
+    > .handle {
+      .expander {
+        display: none;
+      }
     }
 
     > .children {

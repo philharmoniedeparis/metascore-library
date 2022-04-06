@@ -1,7 +1,12 @@
 <template>
   <div class="timeline" tabindex="0">
     <div class="tracks-container">
-      <component-track v-if="scenario" :component="scenario" />
+      <template v-for="scenario in scenarios" :key="scenario.id">
+        <component-track
+          v-show="scenario.id === activeScenario"
+          :component="scenario"
+        />
+      </template>
       <div class="playhead" :style="playheadStyle"></div>
     </div>
   </div>
@@ -57,15 +62,11 @@ export default {
     mediaDuration() {
       return this.mediaStore.duration;
     },
-    scenario() {
-      if (!this.componentsStore.activeScenario) {
-        return null;
-      }
-
-      return this.componentsStore.get(
-        "Scenario",
-        this.componentsStore.activeScenario
-      );
+    scenarios() {
+      return this.componentsStore.getByType("Scenario");
+    },
+    activeScenario() {
+      return this.componentsStore.activeScenario;
     },
     trackTimeWidth() {
       return `${this.scale * 100}%`;
@@ -89,7 +90,7 @@ export default {
   mounted() {
     this.$nextTick(function () {
       this._interactable = interact(
-        ".component-track:not([data-type='page']) > .handle"
+        ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle"
       )
         .draggable({
           context: this.$el,
