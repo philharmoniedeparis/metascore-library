@@ -101,7 +101,7 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media").useStore();
+    const mediaStore = useModule("media_player").useStore();
     const componentsStore = useModule("app_components").useStore();
     return { mediaStore, componentsStore };
   },

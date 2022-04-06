@@ -1,12 +1,11 @@
 import useStore from "./store";
-import Media from "../media";
-import AppComponents from "../app_components";
-import PostMessage from "../post_message";
+import MediaPlayer from "@metascore-library/core/modules/media_player";
+import AppComponents from "@metascore-library/core/modules/app_components";
 import AppRenderer from "./components/AppRenderer.vue";
 
 export default {
   id: "app_renderer",
-  dependencies: [Media, AppComponents, PostMessage],
+  dependencies: [MediaPlayer, AppComponents],
   install({ app }) {
     app.component("AppRenderer", AppRenderer);
 

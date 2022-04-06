@@ -10,7 +10,7 @@ export default defineStore("player", {
   },
   actions: {
     async load(url) {
-      const mediaStore = useModule("media").useStore();
+      const mediaStore = useModule("media_player").useStore();
       const componentsStore = useModule("app_components").useStore();
       const appRendererStore = useModule("app_renderer").useStore();
 

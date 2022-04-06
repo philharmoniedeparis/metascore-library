@@ -26,7 +26,7 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media").useStore();
+    const mediaStore = useModule("media_player").useStore();
     return { mediaStore };
   },
   data() {

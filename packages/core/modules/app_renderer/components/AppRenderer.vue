@@ -28,7 +28,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media").useStore();
+    const mediaStore = useModule("media_player").useStore();
     const componentsStore = useModule("app_components").useStore();
     return { store, mediaStore, componentsStore };
   },

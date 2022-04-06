@@ -26,7 +26,7 @@ export default defineStore("editor", {
       return appRendererStore.height;
     },
     mediaSource() {
-      const mediaStore = useModule("media").useStore();
+      const mediaStore = useModule("media_player").useStore();
       return mediaStore.source;
     },
     scenarios() {
@@ -86,7 +86,7 @@ export default defineStore("editor", {
       appRendererStore.height = value;
     },
     setMediaSource(value) {
-      const mediaStore = useModule("media").useStore();
+      const mediaStore = useModule("media_player").useStore();
       mediaStore.source = value;
     },
     createComponent(data) {
@@ -331,7 +331,7 @@ export default defineStore("editor", {
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
 
-      const mediaStore = useModule("media").useStore();
+      const mediaStore = useModule("media_player").useStore();
       mediaStore.source = data.media;
 
       const componentsStore = useModule("app_components").useStore();

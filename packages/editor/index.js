@@ -15,7 +15,7 @@ import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import EventBus from "@metascore-library/core/modules/event_bus";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
-import Media from "@metascore-library/player/modules/media";
+import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
 import PlayerPreview from "./modules/player_preview";
@@ -62,7 +62,7 @@ export class Editor {
         EventBus,
         FormControls,
         History,
-        Media,
+        MediaPlayer,
         MediaSelector,
         PlaybackControls,
         PlayerPreview,

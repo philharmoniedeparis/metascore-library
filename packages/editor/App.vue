@@ -137,7 +137,7 @@ export default {
     const store = useStore();
     const componentsStore = useModule("app_components").useStore();
     const assetsStore = useModule("assets_library").useStore();
-    const mediaStore = useModule("media").useStore();
+    const mediaStore = useModule("media_player").useStore();
     const playerPreviewStore = useModule("player_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     return {

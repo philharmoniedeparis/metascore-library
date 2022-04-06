@@ -4,7 +4,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
 export function useTransform(component, model) {
-  const mediaStore = useModule("media").useStore();
+  const mediaStore = useModule("media_player").useStore();
 
   if (unref(model).$isTransformable) {
     const transform = computed(() => {

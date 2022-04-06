@@ -1,6 +1,6 @@
 import EventBus from "@metascore-library/core/modules/event_bus";
 import FormGroup from "../form_group";
-import Media from "@metascore-library/player/modules/media";
+import MediaPlayer from "@metascore-library/core/modules/media_player";
 import PlayerPreview from "../player_preview";
 import SchemaForm from "../schema_form";
 import StyledButton from "@metascore-library/core/modules/styled_button";
@@ -15,7 +15,7 @@ export default {
   dependencies: [
     EventBus,
     FormGroup,
-    Media,
+    MediaPlayer,
     PlayerPreview,
     SchemaForm,
     StyledButton,

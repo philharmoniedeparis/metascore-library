@@ -14,7 +14,7 @@ export function useTime(component, model) {
         return true;
       }
 
-      const mediaStore = useModule("media").useStore();
+      const mediaStore = useModule("media_player").useStore();
       const mediaTime = mediaStore.time;
       if (isUndefined(endTime) || isNull(endTime)) {
         return mediaTime >= startTime;

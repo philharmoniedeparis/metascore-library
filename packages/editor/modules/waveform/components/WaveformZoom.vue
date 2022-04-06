@@ -79,7 +79,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media").useStore();
+    const mediaStore = useModule("media_player").useStore();
     return { store, mediaStore };
   },
   data() {

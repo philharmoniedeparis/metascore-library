@@ -6,7 +6,7 @@ import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/services/module-manager";
-import AppRenderer from "./modules/app_renderer";
+import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 
 export class Player {

@@ -1,7 +1,7 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "./store";
-import AppComponents from "@metascore-library/player/modules/app_components";
-import AppRenderer from "@metascore-library/player/modules/app_renderer";
+import AppComponents from "@metascore-library/core/modules/app_components";
+import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
