@@ -3,7 +3,6 @@ import StyledButton from "@metascore-library/core/modules/styled_button";
 import FormGroup from "../form_group";
 import TimecodeInput from "../timecode_input";
 
-import BorderRadiusControl from "./components/BorderRadiusControl";
 import CheckboxControl from "./components/CheckboxControl";
 import ColorControl from "./components/ColorControl";
 import FileControl from "./components/FileControl";
@@ -18,7 +17,6 @@ export default {
   id: "form_controls",
   dependencies: [AutoFocus, StyledButton, FormGroup, TimecodeInput],
   install({ app }) {
-    app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CheckboxControl", CheckboxControl);
     app.component("ColorControl", ColorControl);
     app.component("FileControl", FileControl);

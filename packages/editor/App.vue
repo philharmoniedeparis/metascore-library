@@ -443,7 +443,7 @@ export default {
     flex-direction: column;
     flex-wrap: nowrap;
     height: 300px;
-    min-height: 150px;
+    min-height: 12.5em;
     max-height: 75vh;
     overflow-y: hidden;
 

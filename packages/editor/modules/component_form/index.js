@@ -7,6 +7,7 @@ import StyledButton from "@metascore-library/core/modules/styled_button";
 import Tabs from "../tabs";
 
 import AnimatedControl from "./components/AnimatedControl";
+import BorderRadiusControl from "./components/BorderRadiusControl";
 import CursorKeyframesControl from "./components/CursorKeyframesControl";
 import ComponentForm from "./components/ComponentForm";
 
@@ -23,6 +24,7 @@ export default {
   ],
   install({ app }) {
     app.component("AnimatedControl", AnimatedControl);
+    app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CursorKeyframesControl", CursorKeyframesControl);
     app.component("ComponentForm", ComponentForm);
   },

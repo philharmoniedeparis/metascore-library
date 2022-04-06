@@ -21,7 +21,7 @@
       </label>
     </div>
 
-    <template #label>
+    <template v-if="$slots.label" #label>
       <slot name="label" />
     </template>
   </form-group>
