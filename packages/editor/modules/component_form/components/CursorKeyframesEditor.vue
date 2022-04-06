@@ -77,9 +77,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        if (!this.lazy) {
-          this.$emit("update:modelValue", value);
-        }
+        this.$emit("update:modelValue", value);
       },
     },
     mediaTime() {
@@ -112,7 +110,11 @@ export default {
     onDraggableMove(evt) {
       const index = parseInt(evt.target.dataset.index);
       const keyframe = this.value[index];
-      keyframe[1] += evt.delta.x;
+      this.value = [
+        ...this.value.slice(0, index),
+        [keyframe[0], keyframe[1] + evt.delta.x],
+        ...this.value.slice(index + 1),
+      ];
     },
     onDraggableEnd(evt) {
       // Prevent the next click event
@@ -124,13 +126,15 @@ export default {
     },
     addKeyframe(time, position) {
       const keyframe = [round(time, 2), Math.round(position)];
-      this.value.push(keyframe);
-      this.value = this.value.sort((a, b) => {
+      this.value = [...this.value, keyframe].sort((a, b) => {
         return a[1] - b[1];
       });
     },
     deleteKeyframe(index) {
-      this.value.splice(index, 1);
+      this.value = [
+        ...this.value.slice(0, index),
+        ...this.value.slice(index + 1),
+      ];
     },
   },
 };

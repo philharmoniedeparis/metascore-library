@@ -83,9 +83,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        if (!this.lazy) {
-          this.$emit("update:modelValue", value);
-        }
+        this.$emit("update:modelValue", value);
       },
     },
   },

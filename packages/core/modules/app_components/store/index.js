@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { readonly } from "vue";
 import { v4 as uuid } from "uuid";
 import { normalize } from "./utils/normalize";
 import * as Models from "../models";
@@ -15,7 +16,7 @@ export default defineStore("app-components", {
     get() {
       return (type, id) => {
         const data = this.components?.[type]?.[id];
-        return data && !data.$deleted ? data : null;
+        return data && !data.$deleted ? readonly(data) : null;
       };
     },
     getByType() {
@@ -130,15 +131,22 @@ export default defineStore("app-components", {
       this.components[component.type][component.id] = component;
 
       if (parent) {
-        component.$parent = {
-          schema: parent.type,
-          id: parent.id,
-        };
+        this.update(component, {
+          $parent: {
+            schema: parent.type,
+            id: parent.id,
+          },
+        });
 
         const children_prop = this.getChildrenProperty(parent);
-        parent[children_prop].push({
-          schema: component.type,
-          id: component.id,
+        this.update(parent, {
+          [children_prop]: [
+            ...parent[children_prop],
+            {
+              schema: component.type,
+              id: component.id,
+            },
+          ],
         });
       }
 
