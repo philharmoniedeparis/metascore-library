@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { unref } from "vue";
 import { omit, cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { load } from "@metascore-library/core/services/ajax";
+import * as api from "../api";
 
 export default defineStore("editor", {
   state: () => {
@@ -318,7 +318,7 @@ export default defineStore("editor", {
     async load(url) {
       this.loading = true;
 
-      const data = await load(url);
+      const data = await api.get(url);
 
       this.appTitle = data.title;
 

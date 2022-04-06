@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { load } from "@metascore-library/core/utils/ajax";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import * as api from "../api";
 
 export default defineStore("player", {
   state: () => {
@@ -14,7 +14,7 @@ export default defineStore("player", {
       const componentsStore = useModule("app_components").useStore();
       const appRendererStore = useModule("app_renderer").useStore();
 
-      const data = await load(url);
+      const data = await api.get(url);
 
       mediaStore.source = data.media;
 

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { markRaw } from "vue";
 import WaveformData from "waveform-data";
-import { load } from "@metascore-library/core/services/ajax";
+import * as api from "../api";
 
 export default defineStore("waveform", {
   state: () => {
@@ -44,17 +44,14 @@ export default defineStore("waveform", {
         throw Error("Source doen't have a url or audiowaveform key");
       }
 
-      const from_web_audio = !audiowaveform;
-
-      load(from_web_audio ? url : audiowaveform, {
-        responseType: "arraybuffer",
-      })
+      api
+        .get(audiowaveform ?? url)
         .then((data) => {
           if (!data) {
             this.setData(null);
           }
 
-          if (from_web_audio) {
+          if (!audiowaveform) {
             const options = {
               audio_context: new AudioContext(),
               array_buffer: data,

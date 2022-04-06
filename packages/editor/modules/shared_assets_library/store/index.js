@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import Fuse from "fuse.js";
 import { markRaw } from "vue";
-import { load } from "@metascore-library/core/services/ajax";
 import { normalize } from "./utils/normalize";
+import * as api from "../api";
 
 const fuse = markRaw(
   new Fuse([], {
@@ -78,7 +78,7 @@ export default defineStore("shared-assets-library", {
         return;
       }
 
-      const data = await load(url);
+      const data = await api.loadItems(url);
       const normalized = normalize(data.assets);
 
       this.items = normalized.entities.items;

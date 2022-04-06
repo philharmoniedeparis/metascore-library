@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { normalize } from "./utils/normalize";
-import { load } from "@metascore-library/core/services/ajax";
+import * as api from "../api";
 
 export default defineStore("assets-library", {
   state: () => {
@@ -79,18 +79,10 @@ export default defineStore("assets-library", {
       this.processing = true;
       this.uploadProgress = 0;
 
-      const data = new FormData();
-      files.forEach((file) => {
-        data.append(`files[asset][]`, file);
-      });
-
-      return load(url, {
-        method: "post",
-        data,
-        onUploadProgress: (evt) => {
+      return api
+        .uploadFiles(url, files, (evt) => {
           this.uploadProgress = evt.loaded / evt.total;
-        },
-      })
+        })
         .then((items) => {
           items.map(this.add);
           return items;
@@ -106,7 +98,8 @@ export default defineStore("assets-library", {
     generate(url, data) {
       this.processing = true;
 
-      return load(url, { method: "post", data })
+      return api
+        .generateAsset(url, data)
         .then((item) => {
           this.add(item);
           return item;
