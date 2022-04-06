@@ -33,11 +33,11 @@ export default {
       required: true,
     },
     latest: {
-      type: String,
-      required: true,
+      type: [String, Number],
+      default: null,
     },
     active: {
-      type: String,
+      type: [String, Number],
       default: null,
     },
     dateFormatter: {
