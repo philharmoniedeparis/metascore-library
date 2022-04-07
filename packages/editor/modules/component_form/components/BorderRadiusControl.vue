@@ -27,7 +27,8 @@
       :delay="0"
       :container="false"
       :handle-resize="false"
-      @apply-show="onOverlayApplyShow"
+      @apply-show="onOverlayShow"
+      @apply-hide="onOverlayHide"
     >
       <text-control
         :autofocus="autofocus"
@@ -38,55 +39,88 @@
       />
 
       <template #popper="{ hide }">
-        <div ref="shape" class="shape" :style="{ borderRadius: modelValue }">
-          <div
-            class="resize-handle"
-            data-prop="top-left"
-            data-axis="x"
-            :style="{ left: `${parsedValue['top-left'][0]}px`, top: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-left"
-            data-axis="y"
-            :style="{ left: 0, top: `${parsedValue['top-left'][1]}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-right"
-            data-axis="x"
-            :style="{ right: `${parsedValue['top-right'][0]}px`, top: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-right"
-            data-axis="y"
-            :style="{ right: 0, top: `${parsedValue['top-right'][1]}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-left"
-            data-axis="x"
-            :style="{ left: `${parsedValue['bottom-left'][0]}px`, bottom: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-left"
-            data-axis="y"
-            :style="{ left: 0, bottom: `${parsedValue['bottom-left'][1]}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-right"
-            data-axis="x"
-            :style="{ right: `${parsedValue['bottom-right'][0]}px`, bottom: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-right"
-            data-axis="y"
-            :style="{ right: 0, bottom: `${parsedValue['bottom-right'][1]}px` }"
-          ></div>
+        <div class="shape">
+          <template v-if="values">
+            <template v-for="prop in props" :key="prop">
+              <number-control
+                v-model="values[prop].x"
+                class="prop-control"
+                :min="0"
+                :data-prop="prop"
+                data-axis="x"
+              />
+              <number-control
+                v-model="values[prop].y"
+                class="prop-control"
+                :min="0"
+                :data-prop="prop"
+                data-axis="y"
+              />
+            </template>
+          </template>
+
+          <div ref="preview" class="preview" :style="previewStyle">
+            <template v-if="values">
+              <div
+                class="resize-handle"
+                data-prop="top-left"
+                data-axis="x"
+                :style="{ left: `${values['top-left'].x}px`, top: 0 }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="top-left"
+                data-axis="y"
+                :style="{ left: 0, top: `${values['top-left'].y}px` }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="top-right"
+                data-axis="x"
+                data-reversed
+                :style="{ right: `${values['top-right'].x}px`, top: 0 }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="top-right"
+                data-axis="y"
+                :style="{ right: 0, top: `${values['top-right'].y}px` }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="bottom-left"
+                data-axis="x"
+                :style="{ left: `${values['bottom-left'].x}px`, bottom: 0 }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="bottom-left"
+                data-axis="y"
+                data-reversed
+                :style="{ left: 0, bottom: `${values['bottom-left'].y}px` }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="bottom-right"
+                data-axis="x"
+                data-reversed
+                :style="{
+                  right: `${values['bottom-right'].x}px`,
+                  bottom: 0,
+                }"
+              ></div>
+              <div
+                class="resize-handle"
+                data-prop="bottom-right"
+                data-axis="y"
+                data-reversed
+                :style="{
+                  right: 0,
+                  bottom: `${values['bottom-right'].y}px`,
+                }"
+              ></div>
+            </template>
+          </div>
         </div>
 
         <div class="buttons">
@@ -155,28 +189,47 @@ export default {
       inputId: uuid(),
       internalValue: null,
       overlayOpen: false,
-      parsedValue: {
-        "top-left": [0, 0],
-        "top-right": [0, 0],
-        "bottom-left": [0, 0],
-        "bottom-right": [0, 0],
-      },
+      props: ["top-left", "top-right", "bottom-right", "bottom-left"],
+      values: null,
     };
+  },
+  computed: {
+    previewStyle() {
+      let borderRadius = null;
+
+      if (!this.values) {
+        borderRadius = this.internalValue;
+      } else {
+        const x = [];
+        const y = [];
+        this.props.forEach((prop) => {
+          x.push(`${this.values[prop].x}px`);
+          y.push(`${this.values[prop].y}px`);
+        });
+
+        borderRadius = `${x.join(" ")} / ${y.join(" ")}`;
+      }
+
+      return { borderRadius };
+    },
   },
   watch: {
     modelValue(value) {
       this.internalValue = value;
     },
-    internalValue() {
-      if (!this.overlayOpen) {
-        return;
-      }
-
-      this.parseValue();
+    previewStyle() {
+      this.$nextTick(function () {
+        const preview = this.$refs.preview;
+        if (preview) {
+          this.internalValue = preview.style.getPropertyValue("border-radius");
+        }
+      });
     },
     overlayOpen(value) {
       if (value) {
         this.parseValue();
+      } else {
+        this.values = null;
       }
     },
   },
@@ -205,44 +258,36 @@ export default {
   },
   methods: {
     parseValue() {
-      const shape = this.$refs.shape;
+      const preview = this.$refs.preview;
+      this.values = {};
 
-      Object.keys(this.parsedValue).forEach((prop) => {
-        const value = [0, 0];
-        const css = shape.style.getPropertyValue(`border-${prop}-radius`);
-
+      this.props.forEach((prop) => {
+        const css = preview.style.getPropertyValue(`border-${prop}-radius`);
         if (css !== null) {
           const matches = css.match(/(\d*)px/g);
-
           if (matches) {
-            if (matches.length > 1) {
-              value[0] = parseInt(matches[0], 10);
-              value[1] = parseInt(matches[1], 10);
-            } else {
-              value[0] = value[1] = parseInt(matches[0], 10);
-            }
+            this.values[prop] = {
+              x: parseInt(matches[0], 10),
+              y: parseInt(matches[matches.length > 1 ? 1 : 0], 10),
+            };
           }
         }
-
-        this.parsedValue[prop] = value;
       });
     },
-    onOverlayApplyShow() {
+    onOverlayShow() {
       this.overlayOpen = true;
+    },
+    onOverlayHide() {
+      this.overlayOpen = false;
     },
     onHandleDraggableMove(evt) {
       const { target: handle, dx, dy } = evt;
       const prop = handle.dataset.prop;
       const axis = handle.dataset.axis;
+      const reversed = "reversed" in handle.dataset;
+      const delta = axis === "x" ? dx : dy;
 
-      switch (axis) {
-        case "x":
-          this.parsedValue[prop][0] += dx;
-          break;
-        case "y":
-          this.parsedValue[prop][1] += dy;
-          break;
-      }
+      this.values[prop][axis] += delta * (reversed ? -1 : 1);
     },
     onApplyClick(hide) {
       this.$emit("update:modelValue", this.internalValue);
@@ -260,8 +305,59 @@ export default {
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
 
     .shape {
+      display: grid;
+      grid-auto-columns: 1fr;
+      grid-template-columns: 3em 3em 1fr 3em 3em;
+      grid-template-rows: min-content min-content 1fr min-content min-content;
+      grid-template-areas:
+        ". top-left-x . top-right-x ."
+        "top-left-y preview preview preview top-right-y"
+        ". preview preview preview ."
+        "bottom-left-y preview preview preview bottom-right-y"
+        ". bottom-left-x . bottom-right-x .";
+      margin: 1em;
+    }
+
+    .prop-control {
+      &[data-prop="top-left"][data-axis="x"] {
+        grid-area: top-left-x;
+        align-self: flex-start;
+      }
+      &[data-prop="top-left"][data-axis="y"] {
+        grid-area: top-left-y;
+        align-self: flex-start;
+      }
+      &[data-prop="top-right"][data-axis="x"] {
+        grid-area: top-right-x;
+        align-self: flex-start;
+      }
+      &[data-prop="top-right"][data-axis="y"] {
+        grid-area: top-right-y;
+        align-self: flex-start;
+      }
+      &[data-prop="bottom-left"][data-axis="x"] {
+        grid-area: bottom-left-x;
+        align-self: flex-end;
+      }
+      &[data-prop="bottom-left"][data-axis="y"] {
+        grid-area: bottom-left-y;
+        align-self: flex-end;
+      }
+      &[data-prop="bottom-right"][data-axis="x"] {
+        grid-area: bottom-right-x;
+        align-self: flex-end;
+      }
+      &[data-prop="bottom-right"][data-axis="y"] {
+        grid-area: bottom-right-y;
+        align-self: flex-end;
+      }
+    }
+
+    .preview {
       position: relative;
-      margin: 2em;
+      grid-area: preview;
+      width: 10em;
+      margin: 1em;
       background: $mediumgray;
       border: 1px solid $white;
       box-sizing: border-box;
@@ -273,6 +369,7 @@ export default {
         margin: -0.35em;
         background: $white;
         box-sizing: border-box;
+        opacity: 0.5;
         z-index: 2;
 
         &.top {
@@ -286,6 +383,10 @@ export default {
         }
         &.left {
           left: 0;
+        }
+
+        &:hover {
+          opacity: 1;
         }
       }
 
