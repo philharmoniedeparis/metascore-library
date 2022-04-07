@@ -124,7 +124,7 @@ export default defineStore("editor", {
     deselectComponent(component) {
       this.selectedComponents = this.selectedComponents.filter(
         ({ type, id }) => {
-          return component.type === type && component.id === id;
+          return !(component.type === type && component.id === id);
         }
       );
     },
@@ -170,7 +170,7 @@ export default defineStore("editor", {
     },
     unlockComponent(component) {
       this.lockedComponents = this.lockedComponents.filter(({ type, id }) => {
-        return component.type === type && component.id === id;
+        return !(component.type === type && component.id === id);
       });
     },
     unlockComponents(components) {
