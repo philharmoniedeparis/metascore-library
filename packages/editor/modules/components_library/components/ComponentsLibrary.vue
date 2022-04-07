@@ -5,7 +5,7 @@
     "non_synched_block": "Bloc non-synchronisé",
     "page": "Page",
     "cursor": "Curseur",
-    "content": "Contenu",
+    "content": "Texte",
     "controller": "Contrôleur",
     "video_renderer": "Rendu vidéo",
     "block_toggler": "Contrôleur de blocs",
@@ -15,7 +15,7 @@
     "non_synched_block": "Non-synchronized block",
     "page": "Page",
     "cursor": "Cursor",
-    "content": "Content",
+    "content": "Text",
     "controller": "Controller",
     "video_renderer": "Video renderer",
     "block_toggler": "Block Toggler",
@@ -26,10 +26,7 @@
 <template>
   <div class="components-library">
     <template v-for="(item, index) in items" :key="index">
-      <component-library-item
-        :component="item"
-        :label="$t(item.name) || item.name"
-      />
+      <component-library-item :component="item" :label="item.name" />
     </template>
   </div>
 </template>
@@ -42,52 +39,49 @@ export default {
   components: {
     ComponentLibraryItem,
   },
-  props: {
-    items: {
-      type: Array,
-      default() {
-        return [
-          {
-            type: "Cursor",
-            name: "cursor",
-          },
-          {
-            type: "Content",
-            name: "content",
-          },
-          {
-            type: "Controller",
-            name: "controller",
-          },
-          {
-            type: "VideoRenderer",
-            name: "video_renderer",
-          },
-          {
-            type: "Block",
-            name: "synched_block",
-            synched: true,
-          },
-          {
-            type: "Block",
-            name: "non_synched_block",
-            synched: false,
-          },
-          {
-            type: "Page",
-            name: "page",
-          },
-          {
-            type: "BlockToggler",
-            name: "block_toggler",
-          },
-        ];
-      },
-    },
-  },
   setup() {
     const editorStore = useEditorStore();
     return { editorStore };
+  },
+  computed: {
+    items() {
+      return [
+        {
+          type: "Cursor",
+          name: this.$t("cursor"),
+        },
+        {
+          type: "Content",
+          name: this.$t("content"),
+        },
+        {
+          type: "Controller",
+          name: this.$t("controller"),
+        },
+        {
+          type: "VideoRenderer",
+          name: this.$t("video_renderer"),
+        },
+        {
+          type: "Block",
+          name: this.$t("synched_block"),
+          synched: true,
+        },
+        {
+          type: "Block",
+          name: this.$t("non_synched_block"),
+          synched: false,
+        },
+        {
+          type: "Page",
+          name: this.$t("page"),
+        },
+        {
+          type: "BlockToggler",
+          name: this.$t("block_toggler"),
+        },
+      ];
+    },
   },
 };
 </script>

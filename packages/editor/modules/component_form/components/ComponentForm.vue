@@ -30,7 +30,7 @@
       "blocks": "Blocs",
     },
     "Content": {
-      "title": "Contenu",
+      "title": "Texte",
       "text": "Éditer le contenu",
     },
     "Controller": {
@@ -101,7 +101,7 @@
       "blocks": "Blocks",
     },
     "Content": {
-      "title": "Content",
+      "title": "Text",
       "text": "Edit the content",
     },
     "Controller": {
