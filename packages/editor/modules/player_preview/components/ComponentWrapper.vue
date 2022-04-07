@@ -41,9 +41,9 @@
 
 <template>
   <player-component-wrapper
+    v-contextmenu="contextmenuItems"
     :component="component"
     :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
-    @contextmenu="onContextmenu"
     @click.stop="onClick"
     @dragenter="onDragenter"
     @dragover="onDragover"
@@ -97,14 +97,12 @@ export default {
     const editorStore = useEditorStore();
     const clipboardStore = useModule("clipboard").useStore();
     const componentsStore = useModule("app_components").useStore();
-    const contextmenuStore = useModule("contextmenu").useStore();
     const historyStore = useModule("history").useStore();
     return {
       store,
       editorStore,
       clipboardStore,
       componentsStore,
-      contextmenuStore,
       historyStore,
     };
   },
@@ -564,9 +562,6 @@ export default {
         evt.stopPropagation();
         evt.preventDefault();
       }
-    },
-    onContextmenu() {
-      this.contextmenuStore.addItems(this.contextmenuItems);
     },
   },
 };

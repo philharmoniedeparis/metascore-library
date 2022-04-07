@@ -3,28 +3,23 @@
     <slot />
 
     <div
-      v-if="isOpen"
-      ref="menu"
+      ref="conainer"
       class="context-menu"
-      tabindex="0"
       :style="style"
       @contextmenu.prevent
-      @blur="hide"
     >
       <floating-vue
         placement="bottom-start"
-        strategy="fixed"
-        :shown="true"
-        :container="false"
-        :handle-resize="false"
-        @apply-hide="hide"
+        :shown="isOpen"
+        :triggers="[]"
+        :container="$refs.conainer"
+        @apply-hide="onMenuHide"
       >
-        <div></div>
-
         <template #popper>
           <context-menu-menu
             v-if="items.length || $slots.header || $slots.footer"
             :items="items"
+            :container="$refs.conainer"
           >
             <template v-if="$slots.header" #header>
               <slot name="header" />
@@ -89,9 +84,9 @@ export default {
     },
     show() {
       this.store.open();
-      this.$nextTick(function () {
-        this.$refs.menu.focus();
-      });
+    },
+    onMenuHide() {
+      this.hide();
     },
     onContextmenu(evt) {
       // Show the native menu if the Ctrl key is down.

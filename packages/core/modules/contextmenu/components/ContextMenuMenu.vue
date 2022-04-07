@@ -12,13 +12,7 @@
         'has-subitems': item.items?.length,
       }"
     >
-      <floating-vue
-        placement="right"
-        strategy="fixed"
-        :delay="0"
-        :container="false"
-        :handle-resize="false"
-      >
+      <floating-vue placement="right-start" :container="container" instant-move>
         <a v-if="item.handler" @mousedown.prevent @click="onItemClick(item)">
           {{ item.label }}
         </a>
@@ -27,7 +21,11 @@
         </div>
 
         <template #popper>
-          <context-menu-menu v-if="item.items?.length" :items="item.items" />
+          <context-menu-menu
+            v-if="item.items?.length"
+            :items="item.items"
+            :container="container"
+          />
         </template>
       </floating-vue>
     </li>
@@ -51,7 +49,12 @@ export default {
       type: Array,
       required: true,
     },
+    container: {
+      type: [String, HTMLElement, Boolean],
+      required: true,
+    },
   },
+  emits: ["focus", "blur"],
   setup() {
     const store = useStore();
     return { store };
