@@ -5,12 +5,20 @@
     "clone_button_title": "Dupliquer le scénario actif",
     "delete_button_title": "Supprimer le scénario actif",
     "delete_text": "Êtes-vous sûr de vouloir supprimer le scénario <em>{name}</em>\xa0?",
+    "contextmenu": {
+      "clone": "Dupliquer",
+      "delete": "Supprimer",
+    },
   },
   "en": {
     "add_button_title": "Add a new scenario",
     "clone_button_title": "Clone the active scenario",
     "delete_button_title": "Delete the active scenario",
     "delete_text": "Are you sure you want to delete the scenario <em>{name}</em>?",
+    "contextmenu": {
+      "clone": "Clone",
+      "delete": "Delete",
+    },
   },
 }
 </i18n>
@@ -40,6 +48,7 @@
         v-for="scenario in scenarios"
         :key="scenario.id"
         :class="['item', { active: activeId === scenario.id }]"
+        @contextmenu="onContextmenu(scenario)"
       >
         <a href="#" @click.prevent="onItemClick(scenario)">
           {{ scenario.name }}
@@ -71,6 +80,7 @@
     </styled-button>
     <clone-form
       v-if="showCloneForm"
+      :name="activeName"
       @submit="onCloneSubmit"
       @close="showCloneForm = false"
     />
@@ -97,6 +107,7 @@
 <script>
 import { debounce } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import ArrowIcon from "../assets/icons/arrow.svg?inline";
 import AddIcon from "../assets/icons/add.svg?inline";
 import AddForm from "./AddForm.vue";
@@ -127,6 +138,12 @@ export default {
     },
   },
   emits: ["update:activeId", "add", "clone", "delete"],
+  setup() {
+    const contextmenuStore = useModule("contextmenu").useStore();
+    return {
+      contextmenuStore,
+    };
+  },
   data() {
     return {
       listWidth: null,
@@ -135,6 +152,7 @@ export default {
       showAddForm: false,
       showCloneForm: false,
       showDeleteConfirm: false,
+      contextmenuId: null,
     };
   },
   computed: {
@@ -148,15 +166,49 @@ export default {
       return this.scenarios.length;
     },
     active() {
-      return this.getScenarioById(this.activeId);
+      return this.getScenarioById(this.contextmenuId || this.activeId);
     },
     activeName() {
       return this.active?.name;
+    },
+    contextmenuItems(scenario) {
+      const items = [
+        {
+          label: this.$t("contextmenu.clone"),
+          handler: () => {
+            this.contextmenuId = scenario.id;
+            this.showCloneForm = true;
+          },
+        },
+      ];
+
+      console.log(this.scenariosCount);
+      if (this.scenariosCount > 1) {
+        items.push({
+          label: this.$t("contextmenu.delete"),
+          handler: () => {
+            this.contextmenuId = scenario.id;
+            this.showDeleteConfirm = true;
+          },
+        });
+      }
+
+      return items;
     },
   },
   watch: {
     scenariosCount() {
       this.updateListWidths();
+    },
+    showCloneForm(value) {
+      if (!value) {
+        this.contextmenuId = null;
+      }
+    },
+    showDeleteConfirm(value) {
+      if (!value) {
+        this.contextmenuId = null;
+      }
     },
   },
   mounted() {
@@ -224,11 +276,39 @@ export default {
     },
     onCloneSubmit(data) {
       this.showCloneForm = false;
-      this.$emit("clone", { scenario: this.active, data });
+      this.$emit("clone", {
+        scenario: this.active,
+        data,
+      });
     },
     onDeleteSubmit() {
       this.showDeleteConfirm = false;
-      this.$emit("delete", this.active);
+      this.$emit("delete", {
+        scenario: this.active,
+      });
+    },
+    onContextmenu(scenario) {
+      const items = [
+        {
+          label: this.$t("contextmenu.clone"),
+          handler: () => {
+            this.contextmenuId = scenario.id;
+            this.showCloneForm = true;
+          },
+        },
+      ];
+
+      if (this.scenariosCount > 1) {
+        items.push({
+          label: this.$t("contextmenu.delete"),
+          handler: () => {
+            this.contextmenuId = scenario.id;
+            this.showDeleteConfirm = true;
+          },
+        });
+      }
+
+      this.contextmenuStore.addItems(items);
     },
   },
 };

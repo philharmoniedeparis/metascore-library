@@ -281,7 +281,7 @@ export default {
       const clone = this.store.cloneComponent(scenario, data);
       this.activeScenario = clone.id;
     },
-    onScnearioManagerDelete(scenario) {
+    onScnearioManagerDelete({ scenario }) {
       this.store.deleteComponent(scenario);
     },
   },

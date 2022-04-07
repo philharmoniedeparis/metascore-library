@@ -1,5 +1,9 @@
 <template>
   <base-modal class="modal-form" @close="$emit('close')">
+    <template v-if="$slots.title" #title>
+      <slot name="title" />
+    </template>
+
     <div v-if="description || $slots.description" class="description">
       <p v-if="description">{{ description }}</p>
       <slot v-else name="description" />

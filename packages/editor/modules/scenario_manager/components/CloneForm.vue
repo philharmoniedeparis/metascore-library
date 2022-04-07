@@ -1,13 +1,13 @@
 <i18n>
 {
   "fr": {
-    "title": "Dupliquer le scénario actif",
+    "title": "Dupliquer le scénario <em>{name}</em>",
     "name_label": "Nom du nouvea scénario",
     "apply_button": "Dupliquer",
     "cancel_button": "Annuler",
   },
   "en": {
-    "title": "Clone the active scenario",
+    "title": "Clone the scenario <em>{name}</em>",
     "name_label": "Name of new scenario",
     "apply_button": "Clone",
     "cancel_button": "Cancel",
@@ -16,7 +16,11 @@
 </i18n>
 
 <template>
-  <modal-form :title="$t('title')" @submit="onSubmit" @close="onCancel">
+  <modal-form @submit="onSubmit" @close="onCancel">
+    <template #title>
+      <span v-dompurify-html="$t('title', { name })"></span>
+    </template>
+
     <schema-form
       class="scenario-manager--clone-form"
       :schema="schema"
@@ -44,9 +48,19 @@
 </template>
 
 <script>
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import Model from "../models/ScenarioName";
 
 export default {
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+  },
   emits: ["submit", "close"],
   data() {
     return {
