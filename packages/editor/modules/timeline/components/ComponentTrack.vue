@@ -347,6 +347,7 @@ export default {
       height: 100%;
       background: $black;
       opacity: min(calc(var(--depth) * 0.05), 0.5);
+      pointer-events: none;
     }
 
     > .icon {

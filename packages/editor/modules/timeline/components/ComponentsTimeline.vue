@@ -88,33 +88,31 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(function () {
-      this._interactable = interact(
-        ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle"
-      )
-        .draggable({
-          context: this.$el,
-          startAxis: "y",
-          lockAxis: "y",
-          modifiers: [
-            interact.modifiers.restrict({
-              restriction: ".children",
-            }),
-          ],
-          listeners: {
-            start: this.onHandleDraggableStart,
-            move: this.onHandleDraggableMove,
-            end: this.onHandleDraggableEnd,
-          },
-        })
-        .dropzone({
-          context: this.$el,
-          checker: this.handleDropzoneChecker,
-          listeners: {
-            dropmove: this.onHandleDropzoneDropmove,
-          },
-        });
-    });
+    this._interactable = interact(
+      ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle"
+    )
+      .draggable({
+        context: this.$el,
+        startAxis: "y",
+        lockAxis: "y",
+        modifiers: [
+          interact.modifiers.restrict({
+            restriction: ".children",
+          }),
+        ],
+        listeners: {
+          start: this.onHandleDraggableStart,
+          move: this.onHandleDraggableMove,
+          end: this.onHandleDraggableEnd,
+        },
+      })
+      .dropzone({
+        context: this.$el,
+        checker: this.handleDropzoneChecker,
+        listeners: {
+          dropmove: this.onHandleDropzoneDropmove,
+        },
+      });
   },
   beforeUnmount() {
     if (this._interactable) {
