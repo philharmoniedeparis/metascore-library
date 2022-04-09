@@ -1,111 +1,114 @@
 <template>
-  <div @contextmenu="onContextmenu">
-    <slot />
+  <div
+    v-show="show"
+    class="context-menu"
+    tabindex="-1"
+    :style="style"
+    @contextmenu.stop.prevent
+    @blur="onBlur"
+    @keyup="onKeyup"
+  >
+    <ul>
+      <li v-if="$slots.header" class="header">
+        <slot name="header" />
+      </li>
 
-    <div
-      ref="conainer"
-      class="context-menu"
-      :style="style"
-      @contextmenu.prevent
-    >
-      <floating-vue
-        placement="bottom-start"
-        :shown="isOpen"
-        :triggers="[]"
-        :container="$refs.conainer"
-        @apply-hide="onMenuHide"
-      >
-        <template #popper>
-          <context-menu-menu
-            v-if="items.length || $slots.header || $slots.footer"
-            :items="items"
-            :container="$refs.conainer"
-          >
-            <template v-if="$slots.header" #header>
-              <slot name="header" />
-            </template>
+      <context-menu-item
+        v-for="(item, index) in items"
+        :key="index"
+        :item="item"
+        @click="onItemClick"
+      />
 
-            <template v-if="$slots.footer" #footer>
-              <slot name="footer" />
-            </template>
-          </context-menu-menu>
-        </template>
-      </floating-vue>
-    </div>
+      <li v-if="$slots.footer" class="footer">
+        <slot name="footer" />
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
+import { computePosition, flip, shift } from "@floating-ui/dom";
 import useStore from "../store";
-import { Menu as FloatingVue } from "floating-vue";
-import ContextMenuMenu from "./ContextMenuMenu.vue";
-import "@metascore-library/editor/scss/_floating-vue.scss";
+import ContextMenuItem from "./ContextMenuItem.vue";
 
 export default {
   components: {
-    FloatingVue,
-    ContextMenuMenu,
+    ContextMenuItem,
   },
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
+    position: {
+      type: Object,
+      required: true,
+    },
+  },
+  emits: ["update:show"],
   setup() {
     const store = useStore();
     return { store };
   },
   data() {
     return {
-      position: {
-        x: 0,
-        y: 0,
-      },
+      style: null,
     };
   },
   computed: {
-    isOpen() {
-      return this.store.isOpen;
-    },
     items() {
       return this.store.items;
     },
-    style() {
-      return {
-        left: `${this.position.x}px`,
-        top: `${this.position.y}px`,
-      };
+  },
+  watch: {
+    show(value) {
+      if (value) {
+        this.$nextTick(function () {
+          this.updatePosition();
+          this.$el.focus();
+        });
+      } else {
+        this.store.clear();
+      }
     },
-  },
-  mounted() {
-    window.addEventListener("keyup", this.onWindowKeyup);
-  },
-  beforeUnmount() {
-    window.removeEventListener("keyup", this.onWindowKeyup);
   },
   methods: {
-    hide() {
-      this.store.close();
+    close() {
+      this.$emit("update:show", false);
     },
-    show() {
-      this.store.open();
-    },
-    onMenuHide() {
-      this.hide();
-    },
-    onContextmenu(evt) {
-      // Show the native menu if the Ctrl key is down.
-      if (evt.ctrlKey) {
-        return;
-      }
-
-      this.position = {
-        x: evt.pageX,
-        y: evt.pageY,
+    getBoundingClientRect() {
+      return {
+        width: 0,
+        height: 0,
+        x: this.position.x,
+        y: this.position.y,
+        top: this.position.y,
+        left: this.position.x,
+        right: this.position.x,
+        bottom: this.position.y,
       };
-
-      this.show();
-
-      evt.preventDefault();
     },
-    onWindowKeyup(evt) {
+    updatePosition() {
+      computePosition(this, this.$el, {
+        placement: "right-start",
+        middleware: [flip(), shift()],
+      }).then(({ x, y }) => {
+        this.style = {
+          left: `${x}px`,
+          top: `${y}px`,
+        };
+      });
+    },
+    onItemClick() {
+      this.close();
+    },
+    onBlur() {
+      this.close();
+    },
+    onKeyup(evt) {
       if (evt.key === "Escape") {
-        this.hide();
+        this.close();
       }
     },
   },
@@ -114,18 +117,34 @@ export default {
 
 <style lang="scss" scoped>
 .context-menu {
-  position: fixed;
+  position: absolute;
   z-index: 999;
   outline: none;
 
-  ::v-deep(.v-popper__inner) {
-    background: $darkgray;
+  ::v-deep(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0.25em;
     border: 1px solid $lightgray;
+    background: $darkgray;
     box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
   }
 
-  ::v-deep(.v-popper__arrow-container) {
-    display: none;
+  .header,
+  .footer {
+    padding: 0.5em;
+    color: $white;
+    opacity: 0.5;
+  }
+  .header {
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    }
+  }
+  .footer {
+    &:not(:first-child) {
+      border-top: 1px solid rgba(255, 255, 255, 0.5);
+    }
   }
 }
 </style>

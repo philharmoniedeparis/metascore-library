@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 export default defineStore("contextmenu", {
   state: () => {
     return {
-      isOpen: false,
       items: [],
     };
   },
@@ -14,11 +13,7 @@ export default defineStore("contextmenu", {
     addItems(items) {
       this.items.push(...items);
     },
-    open() {
-      this.isOpen = true;
-    },
-    close() {
-      this.isOpen = false;
+    clear() {
       this.items = [];
     },
   },

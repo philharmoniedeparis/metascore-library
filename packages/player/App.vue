@@ -1,19 +1,23 @@
 <template>
-  <context-menu class="metaScore-player">
+  <div class="metaScore-player" @contextmenu.prevent="onContextmenu">
     <app-renderer
       :url="url"
       :responsive="responsive"
       :allow-upscaling="allowUpscaling"
     />
 
-    <template #footer>
-      {{ `metaScore Player ${version}` }}
-    </template>
-  </context-menu>
+    <context-menu
+      v-model:show="showContextmenu"
+      :position="contextmenuPosition"
+    >
+      <template #footer>
+        {{ `metaScore Player ${version}` }}
+      </template>
+    </context-menu>
+  </div>
 </template>
 
 <script>
-import useEditorStore from "@metascore-library/editor/store";
 import packageInfo from "../../package.json";
 
 export default {
@@ -39,17 +43,30 @@ export default {
       default: false,
     },
   },
-  setup() {
-    const editorStore = useEditorStore();
-    return { editorStore };
-  },
   date() {
     return {
       version: packageInfo.version,
+      showContextmenu: false,
+      contextmenuPosition: { x: 0, y: 0 },
     };
   },
   async mounted() {
     await this.editorStore.load(this.url);
   },
+  methods: {
+    onContextmenu(evt) {
+      this.contextmenuPosition = {
+        x: evt.pageX,
+        y: evt.pageY,
+      };
+      this.showContextmenu = true;
+    },
+  },
 };
 </script>
+
+<style lang="scss" scoped>
+.metaScore-player {
+  position: relative;
+}
+</style>

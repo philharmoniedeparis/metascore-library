@@ -10,7 +10,10 @@
 </i18n>
 
 <template>
-  <context-menu :class="['metaScore-editor', classes]">
+  <div
+    :class="['metaScore-editor', classes]"
+    @contextmenu.prevent="onContextmenu"
+  >
     <resizable-pane class="top">
       <nav class="main-menu">
         <div class="left">
@@ -102,10 +105,15 @@
 
     <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
 
-    <template #footer>
-      {{ `metaScore Editor ${version}` }}
-    </template>
-  </context-menu>
+    <context-menu
+      v-model:show="showContextmenu"
+      :position="contextmenuPosition"
+    >
+      <template #footer>
+        {{ `metaScore Editor ${version}` }}
+      </template>
+    </context-menu>
+  </div>
 </template>
 
 <script>
@@ -151,11 +159,13 @@ export default {
   },
   data() {
     return {
-      modalsTarget: null,
       version: packageInfo.version,
+      modalsTarget: null,
       classes: {},
       activeLibrariesTab: 0,
       cursorKeyframesRecording: false,
+      showContextmenu: false,
+      contextmenuPosition: { x: 0, y: 0 },
     };
   },
   computed: {
@@ -284,6 +294,13 @@ export default {
     onScnearioManagerDelete({ scenario }) {
       this.store.deleteComponent(scenario);
     },
+    onContextmenu(evt) {
+      this.contextmenuPosition = {
+        x: evt.pageX,
+        y: evt.pageY,
+      };
+      this.showContextmenu = true;
+    },
   },
 };
 </script>
@@ -294,6 +311,7 @@ export default {
 @import "./scss/variables.scss";
 
 .metaScore-editor {
+  position: relative;
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
@@ -597,12 +615,6 @@ export default {
       > .bottom {
         display: none;
       }
-    }
-  }
-
-  ::v-deep(.context-menu) {
-    .footer {
-      opacity: 0.5;
     }
   }
 
