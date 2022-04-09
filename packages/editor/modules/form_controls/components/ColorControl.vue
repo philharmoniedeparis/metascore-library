@@ -18,68 +18,61 @@
     :label-for="inputId"
     :description="description"
   >
-    <floating-vue
-      strategy="fixed"
-      placement="bottom"
-      popper-class="overlay"
-      :triggers="['click']"
-      :disabled="readonly || disabled"
-      :delay="0"
-      :container="false"
-      :handle-resize="false"
-    >
-      <button
-        :id="inputId"
-        v-autofocus="autofocus"
-        class="opener"
-        :style="`color: ${modelValue};`"
-        :disabled="disabled"
-      ></button>
-
-      <template #popper="{ hide }">
-        <tabs-container>
-          <tabs-item v-if="picker" title="Picker">
-            <color-picker v-model="internalValue" />
-          </tabs-item>
-          <tabs-item v-if="swatches" title="Swatches">
-            <color-swatches
-              v-model="internalValue"
-              v-bind="isArray(swatches) ? { swatches } : null"
-            />
-          </tabs-item>
-        </tabs-container>
-        <div class="buttons">
-          <styled-button
-            class="apply"
-            role="primary"
-            @click="onApplyClick(hide)"
-          >
-            {{ $t("apply_button") }}
-          </styled-button>
-          <styled-button class="cancel" role="secondary" @click="hide">
-            {{ $t("cancel_button") }}
-          </styled-button>
-        </div>
-      </template>
-    </floating-vue>
+    <button
+      :id="inputId"
+      ref="opener"
+      v-autofocus="autofocus"
+      class="opener"
+      :style="`color: ${modelValue};`"
+      :disabled="disabled"
+      @click="onOpenerClick"
+    ></button>
 
     <template v-if="$slots.label" #label>
       <slot name="label" />
     </template>
+
+    <div
+      v-if="showOverlay"
+      ref="overlay"
+      class="overlay"
+      tabindex="-1"
+      :style="overlayStyle"
+      @blur="onOverlayBlur"
+      @mousedown.prevent
+    >
+      <tabs-container>
+        <tabs-item v-if="picker" title="Picker">
+          <color-picker v-model="internalValue" />
+        </tabs-item>
+        <tabs-item v-if="swatches" title="Swatches">
+          <color-swatches
+            v-model="internalValue"
+            v-bind="isArray(swatches) ? { swatches } : null"
+          />
+        </tabs-item>
+      </tabs-container>
+      <div class="buttons">
+        <styled-button class="apply" role="primary" @click="onApplyClick(hide)">
+          {{ $t("apply_button") }}
+        </styled-button>
+        <styled-button class="cancel" role="secondary" @click="onCancelClick">
+          {{ $t("cancel_button") }}
+        </styled-button>
+      </div>
+    </div>
   </form-group>
 </template>
 
 <script>
+import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
-import { Dropdown as FloatingVue } from "floating-vue";
 import ColorPicker from "./color/ColorPicker.vue";
 import ColorSwatches from "./color/ColorSwatches.vue";
-import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
   components: {
-    FloatingVue,
     ColorPicker,
     ColorSwatches,
   },
@@ -122,11 +115,21 @@ export default {
     return {
       inputId: uuid(),
       internalValue: null,
+      showOverlay: false,
+      overlayStyle: null,
     };
   },
   watch: {
     modelValue(value) {
       this.internalValue = value;
+    },
+    showOverlay(value) {
+      if (value) {
+        this.$nextTick(function () {
+          this.updateOverlayStyle();
+          this.$refs.overlay.focus();
+        });
+      }
     },
   },
   mounted() {
@@ -134,9 +137,30 @@ export default {
   },
   methods: {
     isArray,
-    onApplyClick(hide) {
+    updateOverlayStyle() {
+      computePosition(this.$refs.opener, this.$refs.overlay, {
+        strategy: "fixed",
+        placement: "bottom",
+        middleware: [offset(10), flip(), shift({ padding: 10 })],
+      }).then(({ x, y }) => {
+        this.overlayStyle = {
+          left: `${x}px`,
+          top: `${y}px`,
+        };
+      });
+    },
+    onOpenerClick() {
+      this.showOverlay = true;
+    },
+    onOverlayBlur() {
+      this.showOverlay = false;
+    },
+    onApplyClick() {
+      this.showOverlay = false;
       this.$emit("update:modelValue", this.internalValue);
-      hide();
+    },
+    onCancelClick() {
+      this.showOverlay = false;
     },
   },
 };
@@ -144,6 +168,8 @@ export default {
 
 <style lang="scss" scoped>
 .control {
+  position: relative;
+
   .opener {
     position: relative;
     width: 1.5em;
@@ -169,11 +195,13 @@ export default {
     }
   }
 
-  ::v-deep(.overlay) {
+  .overlay {
+    position: fixed;
     width: 20em;
     background: $lightgray;
     border: 1px solid $mediumgray;
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+    z-index: 9999;
 
     .tabs-nav {
       border: none;

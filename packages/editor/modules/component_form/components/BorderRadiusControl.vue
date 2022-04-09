@@ -18,145 +18,134 @@
     :label-for="inputId"
     :description="description"
   >
-    <floating-vue
-      strategy="fixed"
-      placement="bottom"
-      popper-class="overlay"
-      :triggers="['click']"
-      :disabled="readonly || disabled"
-      :delay="0"
-      :container="false"
-      :handle-resize="false"
-      @apply-show="onOverlayShow"
-      @apply-hide="onOverlayHide"
-    >
-      <text-control
-        :autofocus="autofocus"
-        :readonly="true"
-        :disabled="disabled"
-        :model-value="modelValue"
-        class="opener"
-      />
-
-      <template #popper="{ hide }">
-        <div class="shape">
-          <template v-if="values">
-            <template v-for="prop in props" :key="prop">
-              <number-control
-                v-model="values[prop].x"
-                class="prop-control"
-                :min="0"
-                :data-prop="prop"
-                data-axis="x"
-              />
-              <number-control
-                v-model="values[prop].y"
-                class="prop-control"
-                :min="0"
-                :data-prop="prop"
-                data-axis="y"
-              />
-            </template>
-          </template>
-
-          <div ref="preview" class="preview" :style="previewStyle">
-            <template v-if="values">
-              <div
-                class="resize-handle"
-                data-prop="top-left"
-                data-axis="x"
-                :style="{ left: `${values['top-left'].x}px`, top: 0 }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="top-left"
-                data-axis="y"
-                :style="{ left: 0, top: `${values['top-left'].y}px` }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="top-right"
-                data-axis="x"
-                data-reversed
-                :style="{ right: `${values['top-right'].x}px`, top: 0 }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="top-right"
-                data-axis="y"
-                :style="{ right: 0, top: `${values['top-right'].y}px` }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="bottom-left"
-                data-axis="x"
-                :style="{ left: `${values['bottom-left'].x}px`, bottom: 0 }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="bottom-left"
-                data-axis="y"
-                data-reversed
-                :style="{ left: 0, bottom: `${values['bottom-left'].y}px` }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="bottom-right"
-                data-axis="x"
-                data-reversed
-                :style="{
-                  right: `${values['bottom-right'].x}px`,
-                  bottom: 0,
-                }"
-              ></div>
-              <div
-                class="resize-handle"
-                data-prop="bottom-right"
-                data-axis="y"
-                data-reversed
-                :style="{
-                  right: 0,
-                  bottom: `${values['bottom-right'].y}px`,
-                }"
-              ></div>
-            </template>
-          </div>
-        </div>
-
-        <div class="buttons">
-          <styled-button
-            class="apply"
-            role="primary"
-            @click="onApplyClick(hide)"
-          >
-            {{ $t("apply_button") }}
-          </styled-button>
-          <styled-button class="cancel" role="secondary" @click="hide">
-            {{ $t("cancel_button") }}
-          </styled-button>
-        </div>
-      </template>
-    </floating-vue>
+    <text-control
+      ref="opener"
+      class="opener"
+      :autofocus="autofocus"
+      :readonly="true"
+      :disabled="disabled"
+      :model-value="modelValue"
+      @click="onOpenerClick"
+    />
 
     <template v-if="$slots.label" #label>
       <slot name="label" />
     </template>
+
+    <div
+      v-if="showOverlay"
+      ref="overlay"
+      class="overlay"
+      tabindex="-1"
+      :style="overlayStyle"
+      @blur="onOverlayBlur"
+      @mousedown.prevent
+    >
+      <div class="shape">
+        <template v-if="values">
+          <template v-for="prop in props" :key="prop">
+            <number-control
+              v-model="values[prop].x"
+              class="prop-control"
+              :min="0"
+              :data-prop="prop"
+              data-axis="x"
+            />
+            <number-control
+              v-model="values[prop].y"
+              class="prop-control"
+              :min="0"
+              :data-prop="prop"
+              data-axis="y"
+            />
+          </template>
+        </template>
+
+        <div ref="preview" class="preview" :style="previewStyle">
+          <template v-if="values">
+            <div
+              class="resize-handle"
+              data-prop="top-left"
+              data-axis="x"
+              :style="{ left: `${values['top-left'].x}px`, top: 0 }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="top-left"
+              data-axis="y"
+              :style="{ left: 0, top: `${values['top-left'].y}px` }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="top-right"
+              data-axis="x"
+              data-reversed
+              :style="{ right: `${values['top-right'].x}px`, top: 0 }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="top-right"
+              data-axis="y"
+              :style="{ right: 0, top: `${values['top-right'].y}px` }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="bottom-left"
+              data-axis="x"
+              :style="{ left: `${values['bottom-left'].x}px`, bottom: 0 }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="bottom-left"
+              data-axis="y"
+              data-reversed
+              :style="{ left: 0, bottom: `${values['bottom-left'].y}px` }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="bottom-right"
+              data-axis="x"
+              data-reversed
+              :style="{
+                right: `${values['bottom-right'].x}px`,
+                bottom: 0,
+              }"
+            ></div>
+            <div
+              class="resize-handle"
+              data-prop="bottom-right"
+              data-axis="y"
+              data-reversed
+              :style="{
+                right: 0,
+                bottom: `${values['bottom-right'].y}px`,
+              }"
+            ></div>
+          </template>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <styled-button class="apply" role="primary" @click="onApplyClick">
+          {{ $t("apply_button") }}
+        </styled-button>
+        <styled-button class="cancel" role="secondary" @click="onCancelClick">
+          {{ $t("cancel_button") }}
+        </styled-button>
+      </div>
+    </div>
   </form-group>
 </template>
 
 <script>
 import { v4 as uuid } from "uuid";
+import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 import "@interactjs/auto-start";
 import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { Dropdown as FloatingVue } from "floating-vue";
-import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
-  components: {
-    FloatingVue,
-  },
   props: {
     label: {
       type: String,
@@ -187,8 +176,8 @@ export default {
   data() {
     return {
       inputId: uuid(),
-      internalValue: null,
-      overlayOpen: false,
+      showOverlay: false,
+      overlayStyle: null,
       props: ["top-left", "top-right", "bottom-right", "bottom-left"],
       values: null,
     };
@@ -198,13 +187,13 @@ export default {
       let borderRadius = null;
 
       if (!this.values) {
-        borderRadius = this.internalValue;
+        borderRadius = this.modelValue;
       } else {
         const x = [];
         const y = [];
         this.props.forEach((prop) => {
-          x.push(`${this.values[prop].x}px`);
-          y.push(`${this.values[prop].y}px`);
+          x.push(prop in this.values ? `${this.values[prop].x}px` : 0);
+          y.push(prop in this.values ? `${this.values[prop].y}px` : 0);
         });
 
         borderRadius = `${x.join(" ")} / ${y.join(" ")}`;
@@ -214,28 +203,19 @@ export default {
     },
   },
   watch: {
-    modelValue(value) {
-      this.internalValue = value;
-    },
-    previewStyle() {
-      this.$nextTick(function () {
-        const preview = this.$refs.preview;
-        if (preview) {
-          this.internalValue = preview.style.getPropertyValue("border-radius");
-        }
-      });
-    },
-    overlayOpen(value) {
+    showOverlay(value) {
       if (value) {
-        this.parseValue();
+        this.$nextTick(function () {
+          this.parseValue();
+          this.updateOverlayStyle();
+          this.$refs.overlay.focus();
+        });
       } else {
         this.values = null;
       }
     },
   },
   mounted() {
-    this.internalValue = this.modelValue;
-
     this.$nextTick(function () {
       this._interactable = interact(".resize-handle").draggable({
         context: this.$el,
@@ -274,11 +254,23 @@ export default {
         }
       });
     },
-    onOverlayShow() {
-      this.overlayOpen = true;
+    updateOverlayStyle() {
+      computePosition(this.$refs.opener.$el, this.$refs.overlay, {
+        strategy: "fixed",
+        placement: "bottom",
+        middleware: [offset(10), flip(), shift({ padding: 10 })],
+      }).then(({ x, y }) => {
+        this.overlayStyle = {
+          left: `${x}px`,
+          top: `${y}px`,
+        };
+      });
     },
-    onOverlayHide() {
-      this.overlayOpen = false;
+    onOpenerClick() {
+      this.showOverlay = true;
+    },
+    onOverlayBlur() {
+      this.showOverlay = false;
     },
     onHandleDraggableMove(evt) {
       const { target: handle, dx, dy } = evt;
@@ -289,9 +281,16 @@ export default {
 
       this.values[prop][axis] += delta * (reversed ? -1 : 1);
     },
-    onApplyClick(hide) {
-      this.$emit("update:modelValue", this.internalValue);
-      hide();
+    onApplyClick() {
+      const preview = this.$refs.preview;
+      this.$emit(
+        "update:modelValue",
+        preview.style.getPropertyValue("border-radius")
+      );
+      this.showOverlay = false;
+    },
+    onCancelClick() {
+      this.showOverlay = false;
     },
   },
 };
@@ -299,10 +298,15 @@ export default {
 
 <style lang="scss" scoped>
 .control {
-  ::v-deep(.overlay) {
+  position: relative;
+
+  .overlay {
+    position: fixed;
+    width: 20em;
     background: $lightgray;
     border: 1px solid $mediumgray;
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+    z-index: 9999;
 
     .shape {
       display: grid;
@@ -356,7 +360,6 @@ export default {
     .preview {
       position: relative;
       grid-area: preview;
-      width: 10em;
       margin: 1em;
       background: $mediumgray;
       border: 1px solid $white;
