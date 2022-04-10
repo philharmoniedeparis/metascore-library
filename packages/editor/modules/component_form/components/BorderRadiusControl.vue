@@ -139,7 +139,13 @@
 
 <script>
 import { v4 as uuid } from "uuid";
-import { computePosition, offset, flip, shift } from "@floating-ui/dom";
+import {
+  computePosition,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+} from "@floating-ui/dom";
 import "@interactjs/auto-start";
 import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
@@ -178,6 +184,7 @@ export default {
       inputId: uuid(),
       showOverlay: false,
       overlayStyle: null,
+      overlayUpdateCleanup: null,
       props: ["top-left", "top-right", "bottom-right", "bottom-left"],
       values: null,
     };
@@ -207,10 +214,22 @@ export default {
       if (value) {
         this.$nextTick(function () {
           this.parseValue();
-          this.updateOverlayStyle();
           this.$refs.overlay.focus();
+          this.updateOverlayStyle();
+          this.overlayUpdateCleanup = autoUpdate(
+            this.$refs.opener,
+            this.$refs.overlay,
+            this.updateOverlayStyle,
+            {
+              elementResize: false,
+            }
+          );
         });
       } else {
+        if (this.overlayUpdateCleanup) {
+          this.overlayUpdateCleanup();
+          this.overlayUpdateCleanup = null;
+        }
         this.values = null;
       }
     },
@@ -254,17 +273,21 @@ export default {
         }
       });
     },
-    updateOverlayStyle() {
-      computePosition(this.$refs.opener.$el, this.$refs.overlay, {
-        strategy: "fixed",
-        placement: "bottom",
-        middleware: [offset(10), flip(), shift({ padding: 10 })],
-      }).then(({ x, y }) => {
-        this.overlayStyle = {
-          left: `${x}px`,
-          top: `${y}px`,
-        };
-      });
+    async updateOverlayStyle() {
+      const { x, y } = await computePosition(
+        this.$refs.opener.$el,
+        this.$refs.overlay,
+        {
+          strategy: "fixed",
+          placement: "bottom",
+          middleware: [offset(10), flip(), shift({ padding: 10 })],
+        }
+      );
+
+      this.overlayStyle = {
+        left: `${x}px`,
+        top: `${y}px`,
+      };
     },
     onOpenerClick() {
       this.showOverlay = true;

@@ -3,40 +3,35 @@
     <div
       v-for="(keyframe, index) in value"
       :key="index"
-      class="keyframe"
+      :class="['keyframe', { active: activeKeyframe === index }]"
       :style="{ left: `${keyframe[1]}px` }"
-      @click.stop
+      :data-index="index"
+      @mouseover="activeKeyframe = index"
+      @mouseleave="activeKeyframe = null"
+      @mousedown.prevent
     >
-      <floating-vue
-        popper-class="overlay"
-        placement="top-start"
-        :triggers="['hover', 'click']"
-        :delay="{ show: 0, hide: 100 }"
-        :container="false"
-        :handle-resize="false"
-        :prevent-overflow="false"
-        :distance="0"
-      >
-        <div class="marker" :data-index="index"></div>
+      <div class="marker"></div>
 
-        <template #popper>
-          <div class="overlay--inner">
-            <div class="time" @click.stop>
-              {{ formatTime(keyframe[0]) }}
-            </div>
-            <styled-button type="button" @click.stop="deleteKeyframe(index)">
-              <template #icon><clear-icon /></template>
-            </styled-button>
-          </div>
-        </template>
-      </floating-vue>
+      <div
+        v-show="!draggingKeyframe && activeKeyframe === index"
+        class="overlay"
+        :data-placement="overlayPlacement"
+        :style="overlayStyle"
+      >
+        <div class="time" @click.stop>
+          {{ ovelayLabel }}
+        </div>
+        <styled-button type="button" @click.stop="deleteActiveKeyframe">
+          <template #icon><clear-icon /></template>
+        </styled-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { round } from "lodash";
-import { Menu as FloatingVue } from "floating-vue";
+import { computePosition, flip } from "@floating-ui/dom";
 import "@interactjs/auto-start";
 import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
@@ -45,11 +40,9 @@ import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
 import ClearIcon from "../assets/icons/clear.svg?inline";
-import "@metascore-library/editor/scss/_floating-vue.scss";
 
 export default {
   components: {
-    FloatingVue,
     ClearIcon,
   },
   props: {
@@ -68,7 +61,10 @@ export default {
   },
   data() {
     return {
-      hoveredKeyframe: null,
+      activeKeyframe: null,
+      overlayPlacement: null,
+      overlayStyle: null,
+      draggingKeyframe: false,
     };
   },
   computed: {
@@ -83,12 +79,43 @@ export default {
     mediaTime() {
       return this.mediaStore.time;
     },
+    ovelayLabel() {
+      if (this.activeKeyframe === null) {
+        return null;
+      }
+
+      return formatTime(this.value[this.activeKeyframe]?.[0]);
+    },
+  },
+  watch: {
+    activeKeyframe(value) {
+      if (value !== null) {
+        this.$nextTick(function () {
+          const keyframe = this.$el.querySelector(".keyframe.active");
+          const overlay = keyframe.querySelector(".overlay");
+          computePosition(keyframe, overlay, {
+            placement: "right-start",
+            middleware: [flip()],
+          }).then(({ x, y, placement }) => {
+            this.overlayPlacement = placement;
+            this.overlayStyle = {
+              left: `${x}px`,
+              top: `${y}px`,
+            };
+          });
+        });
+      } else {
+        this.overlayPlacement = null;
+        this.overlayStyle = null;
+      }
+    },
   },
   mounted() {
-    this._interactable = interact(".keyframe .marker", {
+    this._interactable = interact(".keyframe", {
       context: this.$el,
     }).draggable({
       listeners: {
+        start: this.onDraggableStart,
         move: this.onDraggableMove,
         end: this.onDraggableEnd,
       },
@@ -107,6 +134,9 @@ export default {
       const { clientX } = evt;
       this.addKeyframe(this.mediaTime, clientX - x);
     },
+    onDraggableStart() {
+      this.draggingKeyframe = true;
+    },
     onDraggableMove(evt) {
       const index = parseInt(evt.target.dataset.index);
       const keyframe = this.value[index];
@@ -117,6 +147,8 @@ export default {
       ];
     },
     onDraggableEnd(evt) {
+      this.draggingKeyframe = false;
+
       // Prevent the next click event
       evt.target.addEventListener(
         "click",
@@ -130,10 +162,14 @@ export default {
         return a[1] - b[1];
       });
     },
-    deleteKeyframe(index) {
+    deleteActiveKeyframe() {
+      if (this.activeKeyframe === null) {
+        return;
+      }
+
       this.value = [
-        ...this.value.slice(0, index),
-        ...this.value.slice(index + 1),
+        ...this.value.slice(0, this.activeKeyframe),
+        ...this.value.slice(this.activeKeyframe + 1),
       ];
     },
   },
@@ -155,10 +191,12 @@ export default {
     height: 100%;
 
     .marker {
+      position: absolute;
+      top: 0;
+      left: -2px;
       width: 1px;
       height: 100%;
       padding: 0 2px;
-      margin-left: -2px;
 
       &::after {
         content: "";
@@ -168,7 +206,7 @@ export default {
       }
     }
 
-    &:hover {
+    &.active {
       .marker {
         &::after {
           box-shadow: 0 0 0.25em 0 $metascore-color;
@@ -177,18 +215,12 @@ export default {
     }
   }
 
-  ::v-deep(.overlay) {
-    .v-popper__inner {
-      background: none;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      cursor: default;
-    }
-
-    .v-popper__arrow-container {
-      display: none;
-    }
+  .overlay {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 9999;
 
     .time {
       font-size: 0.9em;
@@ -208,6 +240,10 @@ export default {
         width: 1em;
         height: 1em;
       }
+    }
+
+    &[data-placement="left-start"] {
+      align-items: flex-end;
     }
   }
 }

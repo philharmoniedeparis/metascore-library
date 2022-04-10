@@ -65,7 +65,13 @@
 </template>
 
 <script>
-import { computePosition, offset, flip, shift } from "@floating-ui/dom";
+import {
+  computePosition,
+  offset,
+  flip,
+  shift,
+  autoUpdate,
+} from "@floating-ui/dom";
 import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import ColorPicker from "./color/ColorPicker.vue";
@@ -117,6 +123,7 @@ export default {
       internalValue: null,
       showOverlay: false,
       overlayStyle: null,
+      overlayUpdateCleanup: null,
     };
   },
   watch: {
@@ -126,9 +133,20 @@ export default {
     showOverlay(value) {
       if (value) {
         this.$nextTick(function () {
-          this.updateOverlayStyle();
           this.$refs.overlay.focus();
+          this.updateOverlayStyle();
+          this.overlayUpdateCleanup = autoUpdate(
+            this.$refs.opener,
+            this.$refs.overlay,
+            this.updateOverlayStyle,
+            {
+              elementResize: false,
+            }
+          );
         });
+      } else if (this.overlayUpdateCleanup) {
+        this.overlayUpdateCleanup();
+        this.overlayUpdateCleanup = null;
       }
     },
   },
@@ -137,17 +155,23 @@ export default {
   },
   methods: {
     isArray,
-    updateOverlayStyle() {
-      computePosition(this.$refs.opener, this.$refs.overlay, {
-        strategy: "fixed",
-        placement: "bottom",
-        middleware: [offset(10), flip(), shift({ padding: 10 })],
-      }).then(({ x, y }) => {
-        this.overlayStyle = {
-          left: `${x}px`,
-          top: `${y}px`,
-        };
-      });
+    async updateOverlayStyle() {
+      const { x, y } = await computePosition(
+        this.$refs.opener,
+        this.$refs.overlay,
+        {
+          strategy: "fixed",
+          placement: "bottom",
+          middleware: [offset(10), flip(), shift({ padding: 10 })],
+        }
+      );
+
+      this.overlayStyle = {
+        left: `${x}px`,
+        top: `${y}px`,
+      };
+
+      console.log(x, y);
     },
     onOpenerClick() {
       this.showOverlay = true;
