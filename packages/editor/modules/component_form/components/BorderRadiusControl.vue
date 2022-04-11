@@ -431,7 +431,6 @@ export default {
       gap: 0.5em;
 
       button {
-        color: $white;
         background: $darkgray;
 
         &.secondary {

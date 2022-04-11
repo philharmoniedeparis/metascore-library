@@ -500,7 +500,6 @@ export default {
     button {
       padding: 0.25em;
       font-size: 0.75em;
-      color: $white;
 
       .icon {
         width: 1em;

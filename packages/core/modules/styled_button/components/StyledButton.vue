@@ -44,7 +44,7 @@ export default {
   padding: 0.5em 2em;
   flex-direction: row;
   align-items: center;
-  color: $black;
+  color: $white;
   border: none;
   border-radius: 2px;
   text-align: center;

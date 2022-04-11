@@ -322,7 +322,6 @@ export default {
       width: 100%;
       flex: 0 0 2.5em;
       padding: 0.25em 0.5em;
-      color: $white;
       opacity: 1;
 
       .icon {

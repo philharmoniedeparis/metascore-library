@@ -162,7 +162,6 @@ export default {
 
   // #\9 is used here to increase specificity.
   button:not(#\9) {
-    color: $white;
     padding: 0 0.5em;
 
     &.zoom-out {

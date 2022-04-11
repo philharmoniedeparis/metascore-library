@@ -88,7 +88,6 @@ export default {
       width: 2em;
       margin-right: 0.5em;
       padding: 0.5em;
-      color: $white;
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.75));
 
       &:active {

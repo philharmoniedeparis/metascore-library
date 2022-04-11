@@ -325,8 +325,6 @@ export default {
   user-select: none;
 
   button {
-    color: $white;
-
     &.scroll-left,
     &.scroll-right {
       font-size: 0.75em;

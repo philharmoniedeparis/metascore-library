@@ -147,7 +147,6 @@ export default {
 
     ::v-deep(.styled-button) {
       font-size: 0.75em;
-      color: $white;
     }
   }
 
@@ -167,6 +166,14 @@ export default {
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5em;
+
+    ::v-deep(.styled-button) {
+      background: $mediumgray;
+
+      &.primary {
+        background: $darkgray;
+      }
+    }
   }
 
   .body ~ .footer {

@@ -135,7 +135,6 @@ export default {
 
   &.recording {
     button {
-      color: $white;
       background: $darkgray;
 
       &::before {

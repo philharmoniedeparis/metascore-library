@@ -379,7 +379,6 @@ export default {
 
     button {
       padding: 0.5em;
-      color: $white;
       background: $mediumgray;
 
       &.selected {

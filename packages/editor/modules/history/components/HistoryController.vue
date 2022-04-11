@@ -48,9 +48,5 @@ export default {
   display: flex;
   flex-direction: row;
   background-color: $darkgray;
-
-  button {
-    color: $white;
-  }
 }
 </style>
