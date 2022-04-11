@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { readonly } from "vue";
 import { v4 as uuid } from "uuid";
-import { normalize } from "./utils/normalize";
+import { normalize, denormalize } from "./utils/normalize";
 import * as Models from "../models";
 
 export default defineStore("app-components", {
@@ -96,35 +96,48 @@ export default defineStore("app-components", {
         return [];
       };
     },
+    create() {
+      return (data, validate = true) => {
+        if (data.type in Models) {
+          if (!("id" in data)) {
+            switch (data.type) {
+              case "Scenario":
+                {
+                  // Generate a user-freindly ID.
+                  const next_id = this.getByType("Scenario").reduce(
+                    (acc, s) => {
+                      const id = parseInt(s.id.replace("scenario-", ""), 10);
+                      return !isNaN(id) ? Math.max(acc, id + 1) : acc;
+                    },
+                    1
+                  );
+                  data.id = `scenario-${next_id}`;
+                }
+                break;
+
+              default:
+                data.id = `component-${uuid()}`;
+            }
+          }
+
+          return validate ? new Models[data.type](data) : data;
+        }
+      };
+    },
+    toJson() {
+      return () => {
+        const input = this.getByType("Scenario").map((scenario) => {
+          return { id: scenario.id, schema: "Scenario" };
+        });
+        return denormalize(input, this.components);
+      };
+    },
   },
   actions: {
     init(data) {
       const normalized = normalize(data);
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
-    },
-    create(data, validate = true) {
-      if (data.type in Models) {
-        if (!("id" in data)) {
-          switch (data.type) {
-            case "Scenario":
-              {
-                // Generate a user-freindly ID.
-                const next_id = this.getByType("Scenario").reduce((acc, s) => {
-                  const id = parseInt(s.id.replace("scenario-", ""), 10);
-                  return !isNaN(id) ? Math.max(acc, id + 1) : acc;
-                }, 1);
-                data.id = `scenario-${next_id}`;
-              }
-              break;
-
-            default:
-              data.id = `component-${uuid()}`;
-          }
-        }
-
-        return validate ? new Models[data.type](data) : data;
-      }
     },
     add(component, parent = null) {
       this.components[component.type] = this.components[component.type] || {};

@@ -1,11 +1,9 @@
 import { defineStore } from "pinia";
-import { normalize } from "./utils/normalize";
 import * as api from "../api";
 
 export default defineStore("assets-library", {
   state: () => {
     return {
-      list: [],
       items: {},
       processing: false,
       uploadProgress: null,
@@ -41,10 +39,8 @@ export default defineStore("assets-library", {
       };
     },
     all() {
-      return this.list
-        .map((id) => {
-          return this.get(id);
-        })
+      return Object.keys(this.items)
+        .map(this.get)
         .filter((a) => a);
     },
     filterByType() {
@@ -57,17 +53,17 @@ export default defineStore("assets-library", {
   },
   actions: {
     init(data) {
-      const normalized = normalize(data);
-      this.items = normalized.entities.items;
-      this.list = normalized.result;
+      this.items = Object.values(data).reduce(
+        (acc, item) => ({ ...acc, [item.id]: item }),
+        {}
+      );
     },
     add(item) {
-      if (this.list.includes(item.id)) {
+      if (item.id in this.items) {
         return;
       }
 
       this.items[item.id] = item;
-      this.list.push(item.id);
     },
     delete(id) {
       const item = this.items[id];

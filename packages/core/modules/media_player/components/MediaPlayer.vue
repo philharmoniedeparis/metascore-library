@@ -102,17 +102,13 @@ export default {
     },
   },
   mounted() {
-    this.initMediaElement(this.$refs.media);
+    this.mediaStore.initElement(this.$refs.media);
     this.setupMedia();
   },
   beforeUnmount() {
-    this.initMediaElement(null);
+    this.mediaStore.initElement(null);
   },
   methods: {
-    initMediaElement(element) {
-      this.mediaStore.initElement(element);
-    },
-
     /**
      * Get a renderer type from a source's mime type
      * @param {String} mime The mime type

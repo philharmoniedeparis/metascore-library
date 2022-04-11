@@ -7,6 +7,7 @@ import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import { registerModules } from "@metascore-library/core/services/module-manager";
+import AutoSave from "./modules/auto_save";
 import AssetsLibrary from "./modules/assets_library";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
@@ -24,6 +25,7 @@ import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
+import StyledButton from "@metascore-library/core/modules/styled_button";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
 import Waveform from "./modules/waveform";
@@ -54,6 +56,7 @@ export class Editor {
 
     await registerModules(
       [
+        AutoSave,
         AssetsLibrary,
         BufferIndicator,
         ComponentForm,
@@ -71,6 +74,7 @@ export class Editor {
         RevisionSelector,
         ScenarioManager,
         SharedAssetsLibrary,
+        StyledButton,
         Tabs,
         Timeline,
         Waveform,

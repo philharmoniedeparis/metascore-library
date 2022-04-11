@@ -94,6 +94,7 @@ export default {
         size: file.size,
         mime: file.type,
         url: URL.createObjectURL(file),
+        file,
       };
     },
   },

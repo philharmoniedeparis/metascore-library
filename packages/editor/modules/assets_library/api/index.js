@@ -7,7 +7,7 @@ function uploadFiles(url, files, progress_callback) {
   });
 
   return load(url, {
-    method: "post",
+    method: "POST",
     data,
     onUploadProgress: progress_callback,
   });
@@ -15,7 +15,7 @@ function uploadFiles(url, files, progress_callback) {
 
 function generateAsset(url, data) {
   return load(url, {
-    method: "post",
+    method: "POST",
     data,
   });
 }

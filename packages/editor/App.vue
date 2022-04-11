@@ -2,9 +2,11 @@
 {
   "fr": {
     "loading_indicator_label": "Chargement ...",
+    "saving_indicator_label": "Sauvegarde en cours ...",
   },
   "en": {
     "loading_indicator_label": "Loading...",
+    "saving_indicator_label": "Saving...",
   },
 }
 </i18n>
@@ -17,6 +19,9 @@
     <resizable-pane class="top">
       <nav class="main-menu">
         <div class="left">
+          <styled-button :disabled="!dirty" @click="onSaveClick">
+            <template #icon><save-icon /></template>
+          </styled-button>
           <history-controller />
           <text-control
             v-model="appTitle"
@@ -104,6 +109,12 @@
     </resizable-pane>
 
     <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
+    <progress-indicator
+      v-else-if="saving"
+      :text="$t('saving_indicator_label')"
+    />
+
+    <auto-save-indicator v-bind="configs.modules?.auto_save" />
 
     <context-menu
       v-model:show="showContextmenu"
@@ -122,8 +133,12 @@ import useStore from "./store";
 import { setDefaults as setAjaxDefaults } from "@metascore-library/core/services/ajax";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
+import SaveIcon from "./assets/icons/save.svg?inline";
 
 export default {
+  components: {
+    SaveIcon,
+  },
   provide() {
     return {
       modalsTarget: computed(() => this.modalsTarget),
@@ -171,6 +186,12 @@ export default {
   computed: {
     loading() {
       return this.store.loading;
+    },
+    saving() {
+      return this.store.saving;
+    },
+    dirty() {
+      return this.store.isDirty();
     },
     appTitle: {
       get() {
@@ -223,6 +244,9 @@ export default {
         this.store.loadRevision(value);
       },
     },
+    autoSaveUrl() {
+      return this.store.autoSaveUrl;
+    },
   },
   watch: {
     mediaSource(source) {
@@ -268,6 +292,9 @@ export default {
     this.store.load(this.url);
   },
   methods: {
+    onSaveClick() {
+      this.store.save(this.url);
+    },
     onAppTitleFocusin() {
       this.classes["app-title-focused"] = true;
     },
@@ -655,6 +682,17 @@ export default {
     > .right {
       display: none;
     }
+  }
+
+  .auto-save-indicator {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    border-radius: 0.5em 0.5em 0 0;
+    box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+    transform: translateX(-50%);
+    opacity: 0.75;
+    z-index: 1;
   }
 }
 </style>

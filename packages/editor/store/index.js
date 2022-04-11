@@ -8,12 +8,14 @@ export default defineStore("editor", {
   state: () => {
     return {
       loading: false,
+      saving: false,
       appTitle: null,
       revisions: [],
       latestRevision: null,
       activeRevision: null,
       selectedComponents: [],
       lockedComponents: [],
+      dirty: new Map(),
     };
   },
   getters: {
@@ -72,6 +74,63 @@ export default defineStore("editor", {
         return componentsStore.get(type, id);
       });
     },
+    createComponent() {
+      return (data) => {
+        const componentsStore = useModule("app_components").useStore();
+        return componentsStore.create(data);
+      };
+    },
+    isDirty() {
+      return (key, after = null) => {
+        if (after) {
+          if (typeof key !== "undefined") {
+            return this.dirty.has(key) && this.dirty.get(key) >= after;
+          }
+
+          return Array.from(this.dirty.values()).some((value) => {
+            return value >= after;
+          });
+        }
+
+        return typeof key !== "undefined"
+          ? this.dirty.has(key)
+          : this.dirty.size > 0;
+      };
+    },
+    getDirtyData() {
+      return (after = null) => {
+        const data = new FormData();
+        if (this.isDirty("metadata", after)) {
+          data.set("title", this.appTitle);
+          data.set("width", this.appWidth);
+          data.set("height", this.appHeight);
+        }
+        if (this.isDirty("media", after)) {
+          const mediaStore = useModule("media_player").useStore();
+          const source = mediaStore.source;
+          if ("file" in source) {
+            data.set("files[media]", source.file);
+          }
+          data.set("media", JSON.stringify(omit(source, ["file"])));
+        }
+        if (this.isDirty("components", after)) {
+          const componentsStore = useModule("app_components").useStore();
+          data.set("components", JSON.stringify(componentsStore.toJson()));
+        }
+        if (this.isDirty("assets", after)) {
+          const assetsStore = useModule("assets_library").useStore();
+          const assets = assetsStore.all;
+          if (assets.length > 0) {
+            assets.forEach((asset) => {
+              data.append("assets[]", JSON.stringify(asset));
+            });
+          } else {
+            data.set("assets", []);
+          }
+        }
+        return data;
+      };
+    },
   },
   actions: {
     setAppTitle(value) {
@@ -85,22 +144,21 @@ export default defineStore("editor", {
       const appRendererStore = useModule("app_renderer").useStore();
       appRendererStore.height = value;
     },
+    setAppCss(value) {
+      const appRendererStore = useModule("app_renderer").useStore();
+      appRendererStore.css = value;
+    },
     setMediaSource(value) {
       const mediaStore = useModule("media_player").useStore();
-      mediaStore.source = value;
-    },
-    createComponent(data) {
-      const componentsStore = useModule("app_components").useStore();
-      return componentsStore.create(data);
+      mediaStore.setSource(value);
     },
     updateComponent(component, data) {
       const componentsStore = useModule("app_components").useStore();
       componentsStore.update(component, data);
     },
     updateComponents(components, data) {
-      const componentsStore = useModule("app_components").useStore();
       components.forEach((component) => {
-        componentsStore.update(component, data);
+        this.updateComponent(component, data);
       });
     },
     addComponent(data, parent = null) {
@@ -315,41 +373,83 @@ export default defineStore("editor", {
         this.updateComponent(component, { position });
       });
     },
+    setDirty(key) {
+      this.dirty.set(key, Date.now());
+    },
     async load(url) {
       this.loading = true;
 
       const data = await api.get(url);
 
-      this.appTitle = data.title;
-
       this.revisions = data.revisions;
       this.latestRevision = data.latest_revision;
       this.activeRevision = data.vid;
 
-      const appRendererStore = useModule("app_renderer").useStore();
-      appRendererStore.width = data.width;
-      appRendererStore.height = data.height;
-      appRendererStore.css = data.css;
+      this.setAppTitle(data.title);
+      this.setAppWidth(data.width);
+      this.setAppHeight(data.height);
+      this.setAppCss(data.css);
+      this.$onAction(({ name }) => {
+        switch (name) {
+          case "setAppTitle":
+          case "setAppWidth":
+          case "setAppHeight":
+            this.setDirty("metadata");
+            break;
+        }
+      });
 
       const mediaStore = useModule("media_player").useStore();
-      mediaStore.source = data.media;
+      mediaStore.setSource(data.media);
+      mediaStore.$onAction(({ name }) => {
+        if (["setSource"].includes(name)) {
+          this.setDirty("media");
+        }
+      });
 
       const componentsStore = useModule("app_components").useStore();
       componentsStore.init(data.components);
+      componentsStore.$onAction(({ name }) => {
+        if (["add", "update", "delete"].includes(name)) {
+          this.setDirty("components");
+        }
+      });
 
       const assetsStore = useModule("assets_library").useStore();
       assetsStore.init(data.assets);
+      assetsStore.$onAction(({ name }) => {
+        if (["add", "delete"].includes(name)) {
+          this.setDirty("assets");
+        }
+      });
 
       const historyStore = useModule("history").useStore();
       historyStore.active = true;
 
       this.loading = false;
     },
+    async save(url) {
+      this.saving = true;
+
+      api
+        .save(url, this.getDirtyData())
+        .then(() => {
+          this.dirty.clear();
+        })
+        .catch(() => {
+          // @todo: handle errors
+        })
+        .finally(() => {
+          this.saving = false;
+        });
+    },
     async loadRevision(vid) {
       const revision = this.revisions.find((r) => r.vid === vid);
       if (revision) {
         await this.load(revision.url);
       }
+    },
+    async restoreRevision(vid) {
     },
   },
   history(context) {

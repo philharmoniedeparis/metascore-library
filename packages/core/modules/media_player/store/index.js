@@ -4,10 +4,10 @@ import { formatTime } from "@metascore-library/core/utils/media";
 export default defineStore("media_player", {
   state: () => {
     return {
+      ready: false,
       useRequestAnimationFrame: true,
       source: null,
       element: null,
-      ready: false,
       time: 0,
       duration: 0,
       playing: false,
@@ -74,6 +74,16 @@ export default defineStore("media_player", {
         this.width = null;
         this.height = null;
       }
+    },
+    setSource(source) {
+      this.ready = false;
+      this.source = source;
+      this.time = 0;
+      this.duration = 0;
+      this.playing = false;
+      this.width = null;
+      this.height = null;
+      this.buffered = [];
     },
     play() {
       if (this.element) {

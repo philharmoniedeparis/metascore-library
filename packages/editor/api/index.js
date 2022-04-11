@@ -4,4 +4,8 @@ function get(url) {
   return load(url);
 }
 
-export { get };
+function save(url, data) {
+  return load(url, { method: "PATCH", data });
+}
+
+export { get, save };

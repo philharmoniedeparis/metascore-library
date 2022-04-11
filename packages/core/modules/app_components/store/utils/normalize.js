@@ -1,10 +1,10 @@
-import * as Models from "../../models";
-
+import { isObject } from "lodash";
 import {
   schema as _schema,
   normalize as _normalize,
   denormalize as _denormalize,
 } from "normalizr";
+import * as Models from "../../models";
 
 const schemas = {};
 
@@ -67,6 +67,18 @@ export function normalize(data) {
   return _normalize(data, schema);
 }
 
+function postDenormalize(data) {
+  for (const key in data) {
+    if (key === "$parent") {
+      delete data.$parent;
+    } else if (isObject(data[key])) {
+      postDenormalize(data[key]);
+    }
+  }
+}
+
 export function denormalize(input, data) {
-  return _denormalize(input, data, schema);
+  const denormalized = _denormalize(input, schema, data);
+  postDenormalize(denormalized);
+  return denormalized;
 }
