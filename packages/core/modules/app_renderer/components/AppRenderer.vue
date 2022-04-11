@@ -151,8 +151,6 @@ body {
 </style>
 
 <style lang="scss" scoped>
-@import "normalize.css";
-
 .metaScore-app {
   position: relative;
   width: 100%;

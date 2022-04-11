@@ -66,6 +66,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "normalize.css";
+
 .metaScore-player {
   position: relative;
 }
