@@ -44,7 +44,6 @@
 </template>
 
 <script>
-import { omit } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "../store";
 import useEditorStore from "@metascore-library/editor/store";
@@ -94,53 +93,57 @@ export default {
       return this.store.getType(this.asset);
     },
     componentDragData() {
-      const config = {
+      let config = {
         name: this.label,
       };
 
       switch (this.type) {
         case "image":
-          Object.assign(config, {
+          config = {
+            ...config,
             type: "Content",
             "background-image": this.file.url,
             dimension: [this.file.width, this.file.height],
-          });
+          };
           break;
 
         case "lottie_animation":
-          Object.assign(config, {
+          config = {
+            ...config,
             type: "Animation",
             src: this.file.url,
-          });
+          };
           break;
 
         case "svg":
-          Object.assign(config, {
+          config = {
+            ...config,
             type: "SVG",
             src: this.file.url,
-          });
+          };
           break;
 
         case "audio":
-          Object.assign(config, {
+          config = {
+            ...config,
             type: "Media",
             tag: this.type,
             src: this.file.url,
-          });
+          };
           break;
 
         case "video":
-          Object.assign(config, {
+          config = {
+            ...config,
             type: "Media",
             tag: this.type,
             src: this.file.url,
             dimension: [this.file.width, this.file.height],
-          });
+          };
           break;
       }
 
-      const component = this.editorStore.createComponent(config);
-      return omit(component.$data, ["id"]);
+      return config;
     },
     assetDragData() {
       return JSON.stringify(this.asset);

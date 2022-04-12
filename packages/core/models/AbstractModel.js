@@ -3,14 +3,6 @@ import Ajv from "ajv";
 import { clone, merge } from "lodash";
 import { markRaw } from "vue";
 
-const ajv = new Ajv({
-  allErrors: true,
-  verbose: true,
-  strict: false,
-  useDefaults: true,
-  multipleOfPrecision: 2,
-});
-
 /**
  * Retreive properties from a JSON schema.
  *
@@ -59,7 +51,19 @@ export default class AbstractModel {
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    return markRaw(ajv);
+    if (!this._ajv) {
+      this._ajv = new Ajv({
+        allErrors: true,
+        verbose: true,
+        strict: false,
+        useDefaults: true,
+        multipleOfPrecision: 2,
+      });
+
+      markRaw(this._ajv);
+    }
+
+    return this._ajv;
   }
 
   /**
@@ -92,8 +96,8 @@ export default class AbstractModel {
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
-  static validate(data) {
-    return this.ajv.validate(this.schema, data);
+  static async validate(data) {
+    return await this.ajv.validate(this.schema, data);
   }
 
   /**
@@ -112,14 +116,22 @@ export default class AbstractModel {
     return this.schema.required;
   }
 
-  constructor(data = {}) {
-    if (this.validate(data)) {
-      Object.entries(data).forEach(([key, value]) => {
-        this[key] = value;
-      });
-    } else {
-      console.error(this.$errors);
+  static async create(data = {}, validate = true) {
+    if (validate) {
+      const valid = await this.validate(data);
+      if (!valid) {
+        console.error(this.$errors);
+        return null;
+      }
     }
+
+    return new this(data);
+  }
+
+  constructor(data = {}) {
+    Object.entries(data).forEach(([key, value]) => {
+      this[key] = value;
+    });
   }
 
   /**
@@ -173,9 +185,9 @@ export default class AbstractModel {
     return this.$ajv.errors;
   }
 
-  update(data) {
+  async update(data) {
     if (
-      this.validate({
+      await this.validate({
         ...this.$data,
         ...data,
       })
@@ -194,7 +206,7 @@ export default class AbstractModel {
    * @param {object} data The data to validate
    * @returns {boolean} True if the data is valid, false otherwise
    */
-  validate(data) {
-    return this.constructor.validate(data);
+  async validate(data) {
+    return await this.constructor.validate(data);
   }
 }

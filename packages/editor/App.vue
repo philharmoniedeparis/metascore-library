@@ -302,13 +302,12 @@ export default {
       this.activeLibrariesTab = 1;
       this.assetsStore.add(asset);
     },
-    onScnearioManagerAdd(data) {
-      const scenario = this.store.addComponent(
-        this.store.createComponent({
-          ...data,
-          type: "Scenario",
-        })
-      );
+    async onScnearioManagerAdd(data) {
+      const scenario = await this.store.createComponent({
+        ...data,
+        type: "Scenario",
+      });
+      await this.store.addComponent(scenario);
       this.activeScenario = scenario.id;
     },
     onScnearioManagerClone({ scenario, data }) {

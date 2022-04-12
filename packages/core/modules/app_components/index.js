@@ -30,7 +30,7 @@ export default {
     app.component("MediaComponent", MediaComponent);
     app.component("PageComponent", PageComponent);
     app.component("ScenarioComponent", ScenarioComponent);
-    app.component("SVGcomponent", SVGComponent);
+    app.component("SVGComponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
 
     return {

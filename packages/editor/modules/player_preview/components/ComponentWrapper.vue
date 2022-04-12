@@ -490,16 +490,6 @@ export default {
       });
       return type;
     },
-    getComponentFromDragEvent(evt) {
-      const type = this.getModelTypeFromDragEvent(evt);
-      if (type) {
-        const format = `metascore/component:${type}`;
-        if (evt.dataTransfer.types.includes(format)) {
-          const data = JSON.parse(evt.dataTransfer.getData(format));
-          return this.componentsStore.create(data);
-        }
-      }
-    },
     isDropAllowed(evt) {
       const type = this.getModelTypeFromDragEvent(evt);
 
@@ -534,34 +524,47 @@ export default {
         this.dragOver = false;
       }
     },
-    async onDrop(evt) {
+    onDrop(evt) {
       this.dragEnterCounter = 0;
       this.dragOver = false;
 
       if (this.isDropAllowed(evt)) {
-        const droppedComponent = this.getComponentFromDragEvent(evt);
-        switch (droppedComponent.type) {
-          case "Page":
-            break;
-
-          default: {
-            const { left, top } = this.$el.getBoundingClientRect();
-            droppedComponent.position = [
-              Math.round(evt.clientX - left),
-              Math.round(evt.clientY - top),
-            ];
-          }
-        }
-
-        const component = await this.editorStore.addComponent(
-          droppedComponent,
-          this.component
-        );
-        this.editorStore.selectComponent(component);
-
+        this.addDroppedComponent(evt);
         evt.stopPropagation();
         evt.preventDefault();
       }
+    },
+    async getComponentFromDragEvent(evt) {
+      const type = this.getModelTypeFromDragEvent(evt);
+      if (type) {
+        const format = `metascore/component:${type}`;
+        if (evt.dataTransfer.types.includes(format)) {
+          const data = JSON.parse(evt.dataTransfer.getData(format));
+          return await this.componentsStore.create(data, false);
+        }
+      }
+    },
+    async addDroppedComponent(evt) {
+      const droppedComponent = await this.getComponentFromDragEvent(evt);
+      switch (droppedComponent.type) {
+        case "Page":
+          break;
+
+        default: {
+          const { left, top } = this.$el.getBoundingClientRect();
+          droppedComponent.position = [
+            Math.round(evt.clientX - left),
+            Math.round(evt.clientY - top),
+          ];
+        }
+      }
+
+      const component = await this.editorStore.addComponent(
+        droppedComponent,
+        this.component
+      );
+
+      this.editorStore.selectComponent(component);
     },
   },
 };

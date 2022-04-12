@@ -96,34 +96,6 @@ export default defineStore("app-components", {
         return [];
       };
     },
-    create() {
-      return (data, validate = true) => {
-        if (data.type in Models) {
-          if (!("id" in data)) {
-            switch (data.type) {
-              case "Scenario":
-                {
-                  // Generate a user-freindly ID.
-                  const next_id = this.getByType("Scenario").reduce(
-                    (acc, s) => {
-                      const id = parseInt(s.id.replace("scenario-", ""), 10);
-                      return !isNaN(id) ? Math.max(acc, id + 1) : acc;
-                    },
-                    1
-                  );
-                  data.id = `scenario-${next_id}`;
-                }
-                break;
-
-              default:
-                data.id = `component-${uuid()}`;
-            }
-          }
-
-          return validate ? new Models[data.type](data) : data;
-        }
-      };
-    },
     toJson() {
       return () => {
         const input = this.getByType("Scenario").map((scenario) => {
@@ -139,12 +111,35 @@ export default defineStore("app-components", {
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
     },
-    add(component, parent = null) {
+    async create(data, validate = true) {
+      if (data.type in Models) {
+        if (!("id" in data)) {
+          switch (data.type) {
+            case "Scenario":
+              {
+                // Generate a user-freindly ID.
+                const next_id = this.getByType("Scenario").reduce((acc, s) => {
+                  const id = parseInt(s.id.replace("scenario-", ""), 10);
+                  return !isNaN(id) ? Math.max(acc, id + 1) : acc;
+                }, 1);
+                data.id = `scenario-${next_id}`;
+              }
+              break;
+
+            default:
+              data.id = `component-${uuid()}`;
+          }
+        }
+
+        return await Models[data.type].create(data, validate);
+      }
+    },
+    async add(component, parent = null) {
       this.components[component.type] = this.components[component.type] || {};
       this.components[component.type][component.id] = component;
 
       if (parent) {
-        this.update(component, {
+        await this.update(component, {
           $parent: {
             schema: parent.type,
             id: parent.id,
@@ -152,7 +147,7 @@ export default defineStore("app-components", {
         });
 
         const children_prop = this.getChildrenProperty(parent);
-        this.update(parent, {
+        await this.update(parent, {
           [children_prop]: [
             ...parent[children_prop],
             {
@@ -167,19 +162,22 @@ export default defineStore("app-components", {
         case "Block":
           {
             if (component.pages.length < 1) {
-              this.add(this.create({ type: "Page" }), component);
+              const page = await this.create({ type: "Page" });
+              await this.add(page, component);
             }
           }
           break;
       }
+
+      return component;
     },
-    update(component, data) {
+    async update(component, data) {
       const updated = {
         ...component,
         ...data,
       };
       const model = this.getModel(component.type);
-      if (model.validate(updated)) {
+      if (await model.validate(updated)) {
         this.components[component.type][component.id] = updated;
 
         if (model.type === "Page") {
@@ -202,6 +200,8 @@ export default defineStore("app-components", {
         // @todo: handle errors.
         console.error(model.errors);
       }
+
+      return updated;
     },
     delete(type, id) {
       const component = this.components?.[type]?.[id];

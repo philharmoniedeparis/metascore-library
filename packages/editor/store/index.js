@@ -74,12 +74,6 @@ export default defineStore("editor", {
         return componentsStore.get(type, id);
       });
     },
-    createComponent() {
-      return (data) => {
-        const componentsStore = useModule("app_components").useStore();
-        return componentsStore.create(data);
-      };
-    },
     isDirty() {
       return (key, after = null) => {
         if (after) {
@@ -152,20 +146,24 @@ export default defineStore("editor", {
       const mediaStore = useModule("media_player").useStore();
       mediaStore.setSource(value);
     },
-    updateComponent(component, data) {
+    async createComponent(data) {
       const componentsStore = useModule("app_components").useStore();
-      componentsStore.update(component, data);
+      return await componentsStore.create(data);
     },
-    updateComponents(components, data) {
-      components.forEach((component) => {
-        this.updateComponent(component, data);
-      });
+    async updateComponent(component, data) {
+      const componentsStore = useModule("app_components").useStore();
+      await componentsStore.update(component, data);
     },
-    addComponent(data, parent = null) {
+    async updateComponents(components, data) {
+      for (const component of components) {
+        await this.updateComponent(component, data);
+      }
+    },
+    async addComponent(data, parent = null) {
       // @todo: deal with omitted ids and childnre from clone
       const componentsStore = useModule("app_components").useStore();
-      const component = this.createComponent(data);
-      componentsStore.add(component, parent);
+      const component = await this.createComponent(data);
+      await componentsStore.add(component, parent);
       return component;
     },
     selectComponent(component, append = false) {
@@ -279,9 +277,9 @@ export default defineStore("editor", {
     restoreComponents(components) {
       components.map(this.restoreComponent);
     },
-    cloneComponent(component, data = {}) {
+    async cloneComponent(component, data = {}) {
       const componentsStore = useModule("app_components").useStore();
-      const clone = componentsStore.create(
+      const clone = await componentsStore.create(
         {
           ...omit(cloneDeep(component), ["id"]),
           ...data,
@@ -304,7 +302,7 @@ export default defineStore("editor", {
         clone[children_prop] = children;
       }
 
-      componentsStore.add(clone);
+      await componentsStore.add(clone);
 
       return clone;
     },

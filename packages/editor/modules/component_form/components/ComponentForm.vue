@@ -372,10 +372,10 @@ export default {
             "stroke-width",
             "stroke-dasharray",
             "fill",
+            "colors",
             "marker-start",
             "marker-mid",
             "marker-end",
-            "colors",
           ].forEach((property) => {
             layout.items[0].items.push({
               ...this.getControlProps(property, this.commonModel.type),
