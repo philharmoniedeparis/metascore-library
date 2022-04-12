@@ -31,8 +31,6 @@ function getDefaults() {
 }
 
 async function load(url, { method = "get", ...config } = {}) {
-  console.log(getDefaults());
-
   const response = await instance.request(url, {
     method,
     ...config,

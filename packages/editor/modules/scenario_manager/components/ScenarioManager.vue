@@ -182,7 +182,6 @@ export default {
         },
       ];
 
-      console.log(this.scenariosCount);
       if (this.scenariosCount > 1) {
         items.push({
           label: this.$t("contextmenu.delete"),

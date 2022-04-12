@@ -170,8 +170,6 @@ export default {
         left: `${x}px`,
         top: `${y}px`,
       };
-
-      console.log(x, y);
     },
     onOpenerClick() {
       this.showOverlay = true;
