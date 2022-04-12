@@ -1,5 +1,5 @@
 <template>
-  <div class="metaScore-player" @contextmenu.prevent="onContextmenu">
+  <div class="metaScore-player" @contextmenu="onContextmenu">
     <app-renderer
       :url="url"
       :responsive="responsive"
@@ -55,11 +55,18 @@ export default {
   },
   methods: {
     onContextmenu(evt) {
+      // Show the native menu if the Ctrl key is down.
+      if (evt.ctrlKey) {
+        return;
+      }
+
       this.contextmenuPosition = {
         x: evt.pageX,
         y: evt.pageY,
       };
       this.showContextmenu = true;
+
+      evt.preventDefault();
     },
   },
 };

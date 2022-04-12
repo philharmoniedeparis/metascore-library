@@ -12,10 +12,7 @@
 </i18n>
 
 <template>
-  <div
-    :class="['metaScore-editor', classes]"
-    @contextmenu.prevent="onContextmenu"
-  >
+  <div :class="['metaScore-editor', classes]" @contextmenu="onContextmenu">
     <resizable-pane class="top">
       <nav class="main-menu">
         <div class="left">
@@ -322,11 +319,18 @@ export default {
       this.store.deleteComponent(scenario);
     },
     onContextmenu(evt) {
+      // Show the native menu if the Ctrl key is down.
+      if (evt.ctrlKey) {
+        return;
+      }
+
       this.contextmenuPosition = {
         x: evt.pageX,
         y: evt.pageY,
       };
       this.showContextmenu = true;
+
+      evt.preventDefault();
     },
   },
 };
