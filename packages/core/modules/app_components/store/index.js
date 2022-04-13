@@ -15,8 +15,8 @@ export default defineStore("app-components", {
   getters: {
     get() {
       return (type, id) => {
-        const data = this.components?.[type]?.[id];
-        return data && !data.$deleted ? readonly(data) : null;
+        const component = this.components?.[type]?.[id];
+        return component && !component.$deleted ? readonly(component) : null;
       };
     },
     getByType() {
@@ -74,13 +74,13 @@ export default defineStore("app-components", {
           children = component[property];
         }
 
-        return children.map((c) => this.get(c.schema, c.id)).filter((m) => m);
+        return children.map((c) => this.get(c.type, c.id)).filter((m) => m);
       };
     },
     getParent() {
       return (component) => {
         if (component.$parent) {
-          return this.get(component.$parent.schema, component.$parent.id);
+          return this.get(component.$parent.type, component.$parent.id);
         }
         return null;
       };
@@ -99,15 +99,15 @@ export default defineStore("app-components", {
     toJson() {
       return () => {
         const input = this.getByType("Scenario").map((scenario) => {
-          return { id: scenario.id, schema: "Scenario" };
+          return { id: scenario.id, type: "Scenario" };
         });
         return denormalize(input, this.components);
       };
     },
   },
   actions: {
-    init(data) {
-      const normalized = normalize(data);
+    async init(data) {
+      const normalized = await normalize(data);
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
     },
@@ -141,7 +141,7 @@ export default defineStore("app-components", {
       if (parent) {
         await this.update(component, {
           $parent: {
-            schema: parent.type,
+            type: parent.type,
             id: parent.id,
           },
         });
@@ -151,7 +151,7 @@ export default defineStore("app-components", {
           [children_prop]: [
             ...parent[children_prop],
             {
-              schema: component.type,
+              type: component.type,
               id: component.id,
             },
           ],
@@ -176,11 +176,13 @@ export default defineStore("app-components", {
         ...component,
         ...data,
       };
-      const model = this.getModel(component.type);
-      if (await model.validate(updated)) {
+
+      try {
+        await Models[component.type].validate(updated);
+
         this.components[component.type][component.id] = updated;
 
-        if (model.type === "Page") {
+        if (component.type === "Page") {
           if ("start-time" in data || "end-time" in data) {
             const block = this.getParent(component);
             if (block.synched) {
@@ -196,12 +198,10 @@ export default defineStore("app-components", {
             }
           }
         }
-      } else {
+      } catch (e) {
         // @todo: handle errors.
-        console.error(model.errors);
+        console.error(e);
       }
-
-      return updated;
     },
     delete(type, id) {
       const component = this.components?.[type]?.[id];

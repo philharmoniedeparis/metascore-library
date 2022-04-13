@@ -406,7 +406,7 @@ export default defineStore("editor", {
       });
 
       const componentsStore = useModule("app_components").useStore();
-      componentsStore.init(data.components);
+      await componentsStore.init(data.components);
       componentsStore.$onAction(({ name }) => {
         if (["add", "update", "delete"].includes(name)) {
           this.setDirty("components");

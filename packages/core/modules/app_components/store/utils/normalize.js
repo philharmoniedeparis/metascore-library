@@ -1,84 +1,90 @@
-import { isObject } from "lodash";
-import {
-  schema as _schema,
-  normalize as _normalize,
-  denormalize as _denormalize,
-} from "normalizr";
 import * as Models from "../../models";
+import { cloneDeep } from "lodash";
 
-const schemas = {};
-
-Object.values(Models).forEach(({ name: type }) => {
-  switch (type) {
-    case "AbstractComponent":
-    case "EmbeddableComponent":
-      break;
-
-    default:
-      schemas[type] = new _schema.Entity(
-        type,
-        {},
-        {
-          processStrategy: (entity, parent, key) => {
-            // Validate and assign defualts.
-            const model = Models[entity.type];
-            if (!model.validate(entity)) {
-              console.error(model.errors);
-            }
-
-            if (
-              parent &&
-              Models[parent.type]?.schema?.properties?.[key]?.format ===
-                "collection"
-            ) {
-              // Add reference to parent entity via "parent" property.
-              return {
-                ...entity,
-                $parent: { id: parent.id, schema: parent.type },
-              };
-            }
-
-            return { ...entity };
-          },
-        }
-      );
-      break;
-  }
-});
-
-// Map collection properties to schema references.
+// Get collection properties.
+const collections = {};
 Object.values(Models).forEach(({ name: type, schema }) => {
   Object.entries(schema.properties).forEach(([key, value]) => {
     if (value.format === "collection") {
-      const mapping = {};
-      value.items.properties.schema.enum.forEach((related_type) => {
-        mapping[related_type] = schemas[related_type];
-      });
-      schemas[type].define({
-        [key]: new _schema.Array(mapping, "type"),
-      });
+      collections[type] = collections[type] || [];
+      collections[type].push(key);
     }
   });
 });
 
-const schema = new _schema.Array(schemas, "type");
+async function normalizeItem(data, entities, parent = null) {
+  const component = await Models[data.type].create(data);
+  const item = component.$data;
 
-export function normalize(data) {
-  return _normalize(data, schema);
-}
+  if (item.type in collections) {
+    for (const key of collections[item.type]) {
+      if (item[key]) {
+        item[key] = await Promise.all(
+          item[key].map(async (child) => {
+            await normalizeItem(
+              {
+                ...child,
+              },
+              entities,
+              item
+            );
 
-function postDenormalize(data) {
-  for (const key in data) {
-    if (key === "$parent") {
-      delete data.$parent;
-    } else if (isObject(data[key])) {
-      postDenormalize(data[key]);
+            return {
+              id: child.id,
+              type: child.type,
+            };
+          })
+        );
+      }
     }
   }
+
+  if (parent) {
+    item.$parent = {
+      id: parent.id,
+      type: parent.type,
+    };
+  }
+
+  entities[item.type] = { ...entities[item.type], [item.id]: item };
+}
+
+export async function normalize(data) {
+  const entities = {};
+  const result = [];
+
+  for (const item of data) {
+    await normalizeItem(item, entities);
+
+    result.push({
+      id: item.id,
+      type: item.type,
+    });
+  }
+
+  return { entities, result };
+}
+
+function denormalizeItem(item, all) {
+  const data = cloneDeep(all[item.type][item.id]);
+
+  if (data.type in collections) {
+    collections[data.type].forEach((key) => {
+      if (data[key]) {
+        data[key] = data[key].map((subitem) => {
+          return denormalizeItem(subitem, all);
+        });
+      }
+    });
+  }
+
+  delete data.$parent;
+
+  return data;
 }
 
 export function denormalize(input, data) {
-  const denormalized = _denormalize(input, schema, data);
-  postDenormalize(denormalized);
-  return denormalized;
+  return input.map((i) => {
+    return denormalizeItem(i, data);
+  });
 }

@@ -16,7 +16,6 @@ const fuse = markRaw(
 export default defineStore("shared-assets-library", {
   state: () => {
     return {
-      list: [],
       items: {},
       loaded: false,
       filters: {
@@ -32,7 +31,7 @@ export default defineStore("shared-assets-library", {
       };
     },
     all() {
-      return this.list.map(this.get);
+      return Object.values(this.items);
     },
     filtered() {
       let items = this.all;
@@ -79,10 +78,7 @@ export default defineStore("shared-assets-library", {
       }
 
       const data = await api.loadItems(url);
-      const normalized = normalize(data.assets);
-
-      this.items = normalized.entities.items;
-      this.list = normalized.result;
+      this.items = normalize(data.assets);
 
       this.loaded = true;
     },

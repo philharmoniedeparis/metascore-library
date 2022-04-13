@@ -1,15 +1,7 @@
-import {
-  schema as _schema,
-  normalize as _normalize,
-  denormalize as _denormalize,
-} from "normalizr";
-
-const schema = new _schema.Array(new _schema.Entity("items"));
-
 export function normalize(data) {
-  return _normalize(data, schema);
+  return data.reduce((acc, item) => ({ ...acc, [item.id]: item }), {});
 }
 
-export function denormalize(input, data) {
-  return _denormalize(input, data, schema);
+export function denormalize(input) {
+  return Object.values(input);
 }
