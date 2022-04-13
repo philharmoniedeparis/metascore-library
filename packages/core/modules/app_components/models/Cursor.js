@@ -61,11 +61,27 @@ export class Cursor extends EmbeddableComponent {
         $id: uuid(), // Used for Ajv caching.
         properties: {
           form: {
-            const: "linear",
+            const: "circular",
           },
         },
       },
       then: {
+        properties: {
+          direction: {
+            enum: ["cw", "ccw"],
+            default: "cw",
+          },
+          "start-angle": createAngleField({
+            ajv,
+            title: "Start angle",
+          }),
+          "loop-duration": createTimeField({
+            ajv,
+            title: "Loop duration",
+          }),
+        },
+      },
+      else: {
         properties: {
           direction: {
             enum: ["right", "left", "bottom", "top"],
@@ -80,22 +96,6 @@ export class Cursor extends EmbeddableComponent {
               minItems: 2,
               additionalItems: false,
             },
-          }),
-        },
-      },
-      else: {
-        properties: {
-          direction: {
-            enum: ["cw", "ccw"],
-            default: "cw",
-          },
-          "start-angle": createAngleField({
-            ajv,
-            title: "Start angle",
-          }),
-          "loop-duration": createTimeField({
-            ajv,
-            title: "Loop duration",
           }),
         },
       },

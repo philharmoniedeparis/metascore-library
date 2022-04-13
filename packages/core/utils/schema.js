@@ -4,7 +4,7 @@ import validateColor from "validate-color";
 export const createStringField = ({
   title = "",
   description = "",
-  default: default_value = "",
+  default: default_value,
   nullable = false,
 } = {}) => {
   return {
@@ -18,7 +18,7 @@ export const createStringField = ({
 export const createNumberField = ({
   title = "",
   description = "",
-  default: default_value = 0,
+  default: default_value,
   nullable = false,
   multipleOf = 0.01,
   minimum = null,
@@ -45,7 +45,7 @@ export const createNumberField = ({
 export const createIntegerField = ({
   title = "",
   description = "",
-  default: default_value = 0,
+  default: default_value,
   nullable = false,
   minimum = null,
   maximum = null,
@@ -70,7 +70,7 @@ export const createIntegerField = ({
 export const createBooleanField = ({
   title = "",
   description = "",
-  default: default_value = false,
+  default: default_value,
   nullable = false,
 } = {}) => {
   return {
@@ -84,7 +84,7 @@ export const createBooleanField = ({
 export const createArrayField = ({
   title = "",
   description = "",
-  default: default_value = [],
+  default: default_value,
   nullable = false,
   minItems = null,
   maxItems = null,
@@ -121,7 +121,7 @@ export const createArrayField = ({
 export const createEnumField = ({
   title = "",
   description = "",
-  default: default_value = null,
+  default: default_value,
   nullable = true,
   enum: allowed_values = [],
 } = {}) => {
@@ -140,7 +140,7 @@ export const createUrlField = ({
   ajv,
   title = "",
   description = "",
-  default: default_value = "",
+  default: default_value,
   nullable = false,
 } = {}) => {
   ajv.addFormat("url", urlRegex);
@@ -159,7 +159,7 @@ export const createTimeField = ({
   ajv,
   title = "",
   description = "",
-  default: default_value = 0,
+  default: default_value,
   nullable = false,
 } = {}) => {
   ajv.addFormat("time", { validate: () => true });
@@ -178,7 +178,7 @@ export const createColorField = ({
   ajv,
   title = "",
   description = "",
-  default: default_value = null,
+  default: default_value,
   nullable = true,
 } = {}) => {
   ajv.addFormat("color", { validate: validateColor });
@@ -195,7 +195,7 @@ export const createImageField = ({
   ajv,
   title = "",
   description = "",
-  default: default_value = null,
+  default: default_value,
   nullable = true,
 } = {}) => {
   ajv.addFormat("image", urlRegex);

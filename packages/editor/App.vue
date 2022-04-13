@@ -298,7 +298,7 @@ export default {
     onAppTitleFocusout() {
       delete this.classes["app-title-focused"];
     },
-    onSharedAssetsImportClick(asset) {
+    async onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
       this.assetsStore.add(asset);
     },

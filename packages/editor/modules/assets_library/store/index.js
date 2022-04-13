@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { normalize } from "./utils/normalize";
 import * as api from "../api";
 
 export default defineStore("assets-library", {
@@ -53,10 +54,7 @@ export default defineStore("assets-library", {
   },
   actions: {
     init(data) {
-      this.items = Object.values(data).reduce(
-        (acc, item) => ({ ...acc, [item.id]: item }),
-        {}
-      );
+      this.items = normalize(data);
     },
     add(item) {
       if (item.id in this.items) {

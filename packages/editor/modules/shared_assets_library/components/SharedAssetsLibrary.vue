@@ -57,6 +57,6 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(10em, 1fr));
   grid-gap: 1rem;
   padding: 1em;
-  overflow-y: auto;
+  overflow: hidden;
 }
 </style>

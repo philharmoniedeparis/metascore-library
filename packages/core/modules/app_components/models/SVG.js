@@ -21,30 +21,6 @@ export class SVG extends EmbeddableComponent {
    */
   static baseModel = EmbeddableComponent;
 
-  static get ajv() {
-    const ajv = super.ajv;
-
-    if (!ajv.getKeyword("generate")) {
-      ajv.addKeyword("generate", {
-        modifying: true,
-        errors: true,
-        async: true,
-        compile(schema) {
-          return async (data, path, parent, key) => {
-            for (const [field, generator] of Object.entries(schema)) {
-              if (!(field in data)) {
-                data[field] = await generator(data, path, parent, key);
-              }
-            }
-            return true;
-          };
-        },
-      });
-    }
-
-    return ajv;
-  }
-
   /**
    * @inheritdoc
    */
@@ -52,91 +28,101 @@ export class SVG extends EmbeddableComponent {
     const ajv = this.ajv;
 
     return merge(super.schema, {
-      $async: true,
-      generate: {
-        $colors_count: async (data) => {
-          try {
-            const response = await fetch(data.src);
-            const content = await response.text();
-            console.log(content);
-            return 2;
-          } catch (e) {
-            return 0;
-          }
+      properties: {
+        src: createUrlField({
+          ajv,
+          title: "Source",
+        }),
+      },
+      if: {
+        $id: uuid(), // Used for Ajv caching.
+        properties: {
+          colors: createArrayField({
+            items: createColorField({ ajv, nullable: false }),
+            minItems: 2,
+            maxItems: 2,
+          }),
+        },
+        required: ["colors"],
+      },
+      then: {
+        properties: {
+          colors: createArrayField({
+            title: "Colors",
+            items: [
+              createColorField({ ajv, nullable: false }),
+              createColorField({ ajv, nullable: false }),
+            ],
+          }),
         },
       },
-      properties: {
-        src: {
-          ...createUrlField({
-            ajv,
-            title: "Source",
-          }),
-          //"metaScore-hasColors": { property: "$colors_count" },
-        },
-        $colors_count: {
-          type: "number",
-        },
-        stroke: createColorField({
-          ajv,
-          title: "Stroke",
-        }),
-        "stroke-width": createNumberField({
-          ajv,
-          title: "Stroke width",
-          multipleOf: 1,
-          minimum: 0,
-        }),
-        "stroke-dasharray": createEnumField({
-          title: "Stroke width",
-          enum: [null, "2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
-        }),
-        "marker-start": createStringField({
-          title: "Marker start",
-        }),
-        "marker-mid": createStringField({
-          title: "Marker mid",
-        }),
-        "marker-end": createStringField({
-          title: "Marker end",
-        }),
-        $colors_count: {
-          type: "number",
-        },
+      else: {
         if: {
           $id: uuid(), // Used for Ajv caching.
           properties: {
-            $colors_count: { const: 1 },
+            colors: createArrayField({
+              items: createColorField({ ajv, nullable: false }),
+              minItems: 1,
+              maxItems: 1,
+            }),
           },
+          required: ["colors"],
         },
         then: {
           properties: {
             colors: createArrayField({
               title: "Colors",
-              items: [createColorField({ ajv })],
+              items: [createColorField({ ajv, nullable: false })],
             }),
           },
         },
         else: {
+          properties: {
+            stroke: createColorField({
+              ajv,
+              title: "Stroke",
+              nullable: true,
+            }),
+            "stroke-width": createNumberField({
+              ajv,
+              title: "Stroke width",
+              multipleOf: 1,
+              minimum: 0,
+              nullable: true,
+            }),
+            "stroke-dasharray": createEnumField({
+              title: "Stroke dasharray",
+              enum: [null, "2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
+              nullable: true,
+              default: null,
+            }),
+            fill: createColorField({
+              ajv,
+              title: "Fill",
+              nullable: true,
+            }),
+          },
           if: {
             $id: uuid(), // Used for Ajv caching.
-            $async: true,
             properties: {
-              $colors_count: { const: 2 },
+              markers: createArrayField({
+                minItems: 1,
+              }),
             },
           },
           then: {
             properties: {
-              colors: createArrayField({
-                title: "Colors",
-                items: [createColorField({ ajv }), createColorField({ ajv })],
+              "marker-start": createStringField({
+                title: "Marker start",
+                nullable: true,
               }),
-            },
-          },
-          else: {
-            properties: {
-              fill: createColorField({
-                ajv,
-                title: "Fill",
+              "marker-mid": createStringField({
+                title: "Marker mid",
+                nullable: true,
+              }),
+              "marker-end": createStringField({
+                title: "Marker end",
+                nullable: true,
               }),
             },
           },

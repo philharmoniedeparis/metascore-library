@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import Ajv from "ajv";
-import { clone, merge } from "lodash";
+import { clone, cloneDeep, merge, isString } from "lodash";
 import { markRaw } from "vue";
 
 /**
@@ -125,13 +125,56 @@ export default class AbstractModel {
       }
     }
 
-    return new this(data);
+    const instance = new this();
+
+    for (const [name, value] of Object.entries(data)) {
+      await (instance[name] = value);
+    }
+
+    return instance;
   }
 
-  constructor(data = {}) {
-    Object.entries(data).forEach(([key, value]) => {
-      this[key] = value;
+  constructor() {
+    this._data = {};
+
+    const proxy = new Proxy(this, {
+      get(target, name) {
+        if (isString(name) && !(name.startsWith("$") || name.startsWith("_"))) {
+          return target.getPropertyValue(name);
+        }
+        return Reflect.get(...arguments);
+      },
+      async set(target, name, value) {
+        if (isString(name) && !(name.startsWith("$") || name.startsWith("_"))) {
+          return target.setPropertyValue(name, value);
+        }
+        return Reflect.set(...arguments);
+      },
     });
+
+    return proxy;
+  }
+
+  /**
+   * Get a property value, used by the proxy.
+   *
+   * @protected
+   * @param {string} name The property's name
+   * @returns {mixed} The value or undefined if not found
+   */
+  getPropertyValue(name) {
+    return this._data[name];
+  }
+
+  /**
+   * Set a property value, used by the proxy.
+   *
+   * @protected
+   * @param {string} name The property's name
+   * @param {mixed} value The value to set
+   */
+  async setPropertyValue(name, value) {
+    this._data[name] = value;
   }
 
   /**
@@ -167,15 +210,7 @@ export default class AbstractModel {
    * @returns {object} The data
    */
   get $data() {
-    const data = {};
-
-    Object.keys(this.$properties).forEach((key) => {
-      if (key in this) {
-        data[key] = this[key];
-      }
-    });
-
-    return data;
+    return cloneDeep(this._data);
   }
 
   /**
@@ -186,18 +221,15 @@ export default class AbstractModel {
   }
 
   async update(data) {
-    if (
-      await this.validate({
-        ...this.$data,
-        ...data,
-      })
-    ) {
-      Object.entries(data).forEach(([key, value]) => {
-        this[key] = value;
-      });
-    } else {
-      console.error(this.$errors);
-    }
+    const updated = {
+      ...this.$data,
+      ...data,
+    };
+
+    return this.validate(updated).then(() => {
+      this._data = updated;
+      return this;
+    });
   }
 
   /**

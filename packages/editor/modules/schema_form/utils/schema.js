@@ -20,11 +20,46 @@ export function merge(schema, ...subSchemas) {
     if (subSchema.oneOf) {
       schema.oneOf = (schema.oneOf || []).concat(subSchema.oneOf);
     }
-
     if (subSchema.allOf) {
       schema.allOf = (schema.allOf || []).concat(subSchema.allOf);
     }
+
+    if (subSchema.if) {
+      schema.if = assign(schema.if || {}, subSchema.if);
+    }
+    if (subSchema.then) {
+      schema.then = assign(schema.then || {}, subSchema.then);
+    }
+    if (subSchema.else) {
+      schema.else = assign(schema.else || {}, subSchema.else);
+    }
   });
+}
+
+/**
+ * Flatten if/then/else conditions recursively
+ *
+ * @param {object} schema The schema
+ * @param {object} ajv An Ajv instance
+ * @param {object} value The current associated value
+ */
+function flattenConditions(schema, ajv, value) {
+  if (schema.if) {
+    const { if: _if, then: _then, else: _else } = schema;
+
+    delete schema.if;
+    delete schema.then;
+    delete schema.else;
+
+    const valid = ajv.validate(_if, value);
+    if (valid && _then) {
+      merge(schema, _then);
+    } else if (!valid && _else) {
+      merge(schema, _else);
+    }
+
+    flattenConditions(schema, ajv, value);
+  }
 }
 
 /**
@@ -61,19 +96,7 @@ export function flatten(schema, ajv, value, recursive = false) {
     }
   }
 
-  // extend schema based on conditions
-  if (flattened.if) {
-    const valid = ajv.validate(flattened.if, value);
-    if (valid && flattened.then) {
-      merge(flattened, flattened.then);
-    } else if (!valid && flattened.else) {
-      merge(flattened, flattened.else);
-    }
-
-    delete flattened.if;
-    delete flattened.then;
-    delete flattened.else;
-  }
+  flattenConditions(flattened, ajv, value);
 
   if (recursive && flattened.properties) {
     for (const property in flattened.properties) {

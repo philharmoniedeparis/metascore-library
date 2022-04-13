@@ -1,7 +1,7 @@
 <template>
-  <keep-alive>
-    <slot v-if="active" />
-  </keep-alive>
+  <div v-show="active" class="tab-item">
+    <slot />
+  </div>
 </template>
 
 <script>

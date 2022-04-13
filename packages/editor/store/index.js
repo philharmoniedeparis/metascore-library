@@ -146,9 +146,9 @@ export default defineStore("editor", {
       const mediaStore = useModule("media_player").useStore();
       mediaStore.setSource(value);
     },
-    async createComponent(data) {
+    async createComponent(data, validate) {
       const componentsStore = useModule("app_components").useStore();
-      return await componentsStore.create(data);
+      return await componentsStore.create(data, validate);
     },
     async updateComponent(component, data) {
       const componentsStore = useModule("app_components").useStore();
@@ -159,10 +159,9 @@ export default defineStore("editor", {
         await this.updateComponent(component, data);
       }
     },
-    async addComponent(data, parent = null) {
+    async addComponent(component, parent = null) {
       // @todo: deal with omitted ids and childnre from clone
       const componentsStore = useModule("app_components").useStore();
-      const component = await this.createComponent(data);
       await componentsStore.add(component, parent);
       return component;
     },

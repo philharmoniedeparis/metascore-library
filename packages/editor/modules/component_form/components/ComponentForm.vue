@@ -58,6 +58,7 @@
     },
     "SVG": {
       "title": "SVG",
+      "colors": "Couleurs",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
       "stroke-dasharray": "Style de trait",
@@ -65,7 +66,6 @@
       "marker-start": "Marqueur de début",
       "marker-mid": "Marqueurs intermédiaires",
       "marker-end": "Marqueur de fin",
-      "colors": "Couleurs",
     },
     "VideoRenderer": {
       "title": "Rendu vidéo",
@@ -159,9 +159,9 @@
 </template>
 
 <script>
+import { intersection } from "lodash";
 import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { intersection } from "lodash";
 
 export default {
   props: {
@@ -196,23 +196,17 @@ export default {
     masterComponent() {
       return this.selectedComponents[0];
     },
-    masterModel() {
-      return this.componentsStore.getModel(this.selectedComponents[0]);
-    },
-    commonModeles() {
-      let common = [];
+    commonModel() {
+      let models = [];
       this.selectedComponents.forEach((component, index) => {
         const model = this.componentsStore.getModel(component.type);
         const modelChain = model.modelChain;
-        common = index > 0 ? intersection(common, modelChain) : modelChain;
+        models = index > 0 ? intersection(models, modelChain) : modelChain;
       });
-      return common;
-    },
-    commonModel() {
-      return this.commonModeles[0];
+      return models[0];
     },
     title() {
-      switch (this.masterComponent.type) {
+      switch (this.masterComponent?.type) {
         case "Page": {
           const block = this.componentsStore.getParent(this.masterComponent);
           const pages = this.componentsStore.getChildren(block);
@@ -233,6 +227,10 @@ export default {
       return this.commonModel?.ajv;
     },
     layout() {
+      if (!this.commonModel) {
+        return;
+      }
+
       const layout = {
         type: "markup",
         items: [
@@ -367,20 +365,43 @@ export default {
           break;
 
         case "SVG":
-          [
-            "stroke",
-            "stroke-width",
-            "stroke-dasharray",
-            "fill",
-            "colors",
-            "marker-start",
-            "marker-mid",
-            "marker-end",
-          ].forEach((property) => {
+          if (
+            this.masterComponent.colors &&
+            this.masterComponent.colors.length > 0
+          ) {
             layout.items[0].items.push({
-              ...this.getControlProps(property, this.commonModel.type),
+              ...this.getControlProps("colors", this.commonModel.type),
             });
-          });
+          } else {
+            ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach(
+              (property) => {
+                layout.items[0].items.push({
+                  ...this.getControlProps(property, this.commonModel.type),
+                });
+              }
+            );
+
+            if (
+              this.masterComponent.markers &&
+              this.masterComponent.markers.length > 0
+            ) {
+              ["marker-start", "marker-mid", "marker-end"].forEach(
+                (property) => {
+                  layout.items[0].items.push({
+                    type: "select",
+                    options: {
+                      "": null,
+                      ...this.masterComponent.markers.reduce(
+                        (acc, marker) => ({ ...acc, [marker]: marker }),
+                        {}
+                      ),
+                    },
+                    ...this.getControlProps(property, this.commonModel.type),
+                  });
+                }
+              );
+            }
+          }
           break;
       }
 
