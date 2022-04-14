@@ -3,7 +3,7 @@ import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
   createUrlField,
-  createNumberField,
+  createIntegerField,
   createTimeField,
   createBooleanField,
   createArrayField,
@@ -33,9 +33,10 @@ export class Animation extends EmbeddableComponent {
           ajv,
           title: "Source",
         }),
-        "start-frame": createNumberField({
+        "start-frame": createIntegerField({
           title: "Start frame",
           default: 1,
+          minimum: 1,
         }),
         "loop-duration": createTimeField({
           ajv,

@@ -1,6 +1,6 @@
 <template>
   <component-wrapper :component="component">
-    <div ref="animation-wrapper" />
+    <div ref="animation-wrapper" :style="style" />
   </component-wrapper>
 </template>
 
@@ -49,7 +49,7 @@ export default {
       return this.component["end-time"];
     },
     src() {
-      return this.component["animation-src"];
+      return this.component.src;
     },
     startFrame() {
       return this.component["start-frame"] || 1;
@@ -61,6 +61,17 @@ export default {
     },
     reversed() {
       return this.component.reversed;
+    },
+    colors() {
+      return this.component.colors;
+    },
+    style() {
+      return this.colors.reduce((acc, color, index) => {
+        return {
+          ...acc,
+          [`--color${index + 1}`]: color,
+        };
+      }, {});
     },
   },
   watch: {
@@ -180,3 +191,14 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.animation {
+  ::v-deep(.color1 path) {
+    fill: var(--color1);
+  }
+  ::v-deep(.color2 path) {
+    fill: var(--color2);
+  }
+}
+</style>
