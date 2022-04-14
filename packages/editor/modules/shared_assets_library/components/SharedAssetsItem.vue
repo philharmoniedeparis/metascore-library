@@ -80,7 +80,8 @@ export default {
     margin: 0;
 
     img,
-    svg {
+    svg,
+    .lottie-animation-icon {
       width: 100%;
       height: 100%;
       padding: 1em 1em 3em 1em;
