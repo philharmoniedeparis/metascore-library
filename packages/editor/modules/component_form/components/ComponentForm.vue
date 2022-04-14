@@ -376,13 +376,28 @@ export default {
               ...this.getControlProps("colors", this.commonModel.type),
             });
           } else {
-            ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach(
-              (property) => {
-                layout.items[0].items.push({
-                  ...this.getControlProps(property, this.commonModel.type),
-                });
-              }
-            );
+            ["stroke", "stroke-width"].forEach((property) => {
+              layout.items[0].items.push({
+                ...this.getControlProps(property, this.commonModel.type),
+              });
+            });
+            layout.items[0].items.push({
+              type: "select",
+              options: {
+                "—": null,
+                "···": "2,2",
+                "- -": "5,5",
+                "-·-": "5,2,2,2",
+                "-··-": "5,2,2,2,2,2",
+              },
+              ...this.getControlProps(
+                "stroke-dasharray",
+                this.commonModel.type
+              ),
+            });
+            layout.items[0].items.push({
+              ...this.getControlProps("fill", this.commonModel.type),
+            });
 
             if (
               this.masterComponent.markers &&

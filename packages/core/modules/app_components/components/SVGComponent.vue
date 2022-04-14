@@ -99,7 +99,6 @@ export default {
     onLoad() {
       this.loaded = true;
     },
-
     /**
      * Update SVG properties with component property values.
      */
@@ -112,7 +111,6 @@ export default {
         this.executeInnerUpdate();
       }
     },
-
     /**
      * Update an SVG property with corresponding component property value.
      */
@@ -133,7 +131,6 @@ export default {
         }
       }
     },
-
     /**
      * Update the svg's colors.
      */
@@ -146,7 +143,6 @@ export default {
         });
       }
     },
-
     /**
      * Execute the embedded update function if it exists.
      */
