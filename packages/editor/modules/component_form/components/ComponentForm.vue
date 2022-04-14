@@ -250,7 +250,7 @@ export default {
 
       if (this.commonModel.$isBackgroundable) {
         layout.items[0].items.push({
-          swatches: this.colorSwatches,
+          itemProps: { swatches: this.colorSwatches },
           ...this.getControlProps("background-color"),
         });
         layout.items[0].items.push({
@@ -272,8 +272,8 @@ export default {
           class: "form-container horizontal",
           items: [
             {
-              ...this.getControlProps("border-color"),
               swatches: this.colorSwatches,
+              ...this.getControlProps("border-color"),
             },
             ...["border-width", "border-radius"].map((property) =>
               this.getControlProps(property)
@@ -285,12 +285,8 @@ export default {
       if (this.commonModel.$isPositionable) {
         layout.items[0].items.push({
           itemProps: [
-            {
-              spinnersDirection: "horizontal",
-            },
-            {
-              flipSpinners: true,
-            },
+            { spinnersDirection: "horizontal" },
+            { flipSpinners: true },
           ],
           ...this.getControlProps("position"),
         });
@@ -299,12 +295,8 @@ export default {
       if (this.commonModel.$isResizable) {
         layout.items[0].items.push({
           itemProps: [
-            {
-              spinnersDirection: "horizontal",
-            },
-            {
-              flipSpinners: true,
-            },
+            { spinnersDirection: "horizontal" },
+            { flipSpinners: true },
           ],
           ...this.getControlProps("dimension"),
         });
@@ -324,21 +316,21 @@ export default {
           break;
 
         case "Block":
-          layout.items[0].items.push({
-            ...this.getControlProps("pager-visibility", this.commonModel.type),
-          });
+          layout.items[0].items.push(
+            this.getControlProps("pager-visibility", this.commonModel.type)
+          );
           break;
 
         case "BlockToggler":
-          layout.items[0].items.push({
-            ...this.getControlProps("blocks", this.commonModel.type),
-          });
+          layout.items[0].items.push(
+            this.getControlProps("blocks", this.commonModel.type)
+          );
           break;
 
         case "Content":
-          layout.items[0].items.push({
-            ...this.getControlProps("text", this.commonModel.type),
-          });
+          layout.items[0].items.push(
+            this.getControlProps("text", this.commonModel.type)
+          );
           break;
 
         case "Cursor":
@@ -351,9 +343,9 @@ export default {
             "start-angle",
             "loop-duration",
           ].forEach((property) => {
-            layout.items[0].items.push({
-              ...this.getControlProps(property, this.commonModel.type),
-            });
+            layout.items[0].items.push(
+              this.getControlProps(property, this.commonModel.type)
+            );
           });
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
@@ -372,14 +364,16 @@ export default {
             this.masterComponent.colors.length > 0
           ) {
             layout.items[0].items.push({
-              swatches: this.colorSwatches,
+              itemProps: {
+                swatches: this.colorSwatches,
+              },
               ...this.getControlProps("colors", this.commonModel.type),
             });
           } else {
             ["stroke", "stroke-width"].forEach((property) => {
-              layout.items[0].items.push({
-                ...this.getControlProps(property, this.commonModel.type),
-              });
+              layout.items[0].items.push(
+                this.getControlProps(property, this.commonModel.type)
+              );
             });
             layout.items[0].items.push({
               type: "select",
@@ -395,9 +389,9 @@ export default {
                 this.commonModel.type
               ),
             });
-            layout.items[0].items.push({
-              ...this.getControlProps("fill", this.commonModel.type),
-            });
+            layout.items[0].items.push(
+              this.getControlProps("fill", this.commonModel.type)
+            );
 
             if (
               this.masterComponent.markers &&
@@ -446,20 +440,13 @@ export default {
 
       const animated = [];
       if (this.commonModel.$isOpacitable) {
-        animated.push({
-          ...this.getControlProps("opacity"),
-        });
+        animated.push(this.getControlProps("opacity"));
       }
       if (this.commonModel.$isTransformable) {
         animated.push({
           itemProps: {
             value: {
-              itemProps: [
-                {
-                  spinnersDirection: "horizontal",
-                },
-                {},
-              ],
+              itemProps: [{ spinnersDirection: "horizontal" }, {}],
             },
           },
           ...this.getControlProps("scale"),
@@ -468,12 +455,8 @@ export default {
           itemProps: {
             value: {
               itemProps: [
-                {
-                  spinnersDirection: "horizontal",
-                },
-                {
-                  flipSpinners: true,
-                },
+                { spinnersDirection: "horizontal" },
+                { flipSpinners: true },
               ],
             },
           },
