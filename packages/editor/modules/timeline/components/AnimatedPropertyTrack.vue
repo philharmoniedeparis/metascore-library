@@ -4,11 +4,21 @@
     "opacity": "Opacité",
     "scale": "Échelle",
     "translate": "Translation",
+    "contextmenu": {
+      "keyframe": {
+        "delete": "Supprimer",
+      },
+    },
   },
   "en": {
     "opacity": "Opacity",
     "scale": "Scale",
     "translate": "Translation",
+    "contextmenu": {
+      "keyframe": {
+        "delete": "Delete",
+      },
+    },
   },
 }
 </i18n>
@@ -42,6 +52,7 @@
         ]"
         tabindex="0"
         @click.stop="onKeyframeClick(keyframe)"
+        @contextmenu="onKeyframeContextmenu(keyframe)"
       />
     </div>
   </div>
@@ -76,7 +87,8 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const mediaStore = useModule("media_player").useStore();
-    return { mediaStore };
+    const contextmenuStore = useModule("contextmenu").useStore();
+    return { mediaStore, contextmenuStore };
   },
   data() {
     return {
@@ -148,6 +160,14 @@ export default {
       this.selectedKeyframe = keyframe;
       this.mediaTime = keyframe[0];
     },
+    onKeyframeContextmenu(keyframe) {
+      this.contextmenuStore.addItem({
+        label: this.$t("contextmenu.keyframe.delete"),
+        handler: () => {
+          this.deleteKeyframe(keyframe);
+        },
+      });
+    },
     onKeyframeDraggableMove(evt) {
       const { width } = this.$refs.wrapper.getBoundingClientRect();
       const delta_x = evt.delta.x;
@@ -173,16 +193,22 @@ export default {
 
       this.selectedKeyframe = keyframe;
     },
+    deleteKeyframe(keyframe) {
+      this.value = this.value.filter(
+        (k) => !(k[0] === keyframe[0] && k[1] === keyframe[1])
+      );
+
+      if (
+        this.selectedKeyframe &&
+        keyframe[0] === this.selectedKeyframe[0] &&
+        keyframe[1] === this.selectedKeyframe[1]
+      ) {
+        this.selectedKeyframe = null;
+      }
+    },
     deleteSelectedKeyframe() {
       if (this.selectedKeyframe !== null) {
-        this.value = this.value.filter(
-          (k) =>
-            !(
-              k[0] === this.selectedKeyframe[0] &&
-              k[1] === this.selectedKeyframe[1]
-            )
-        );
-        this.selectedKeyframe = null;
+        this.deleteKeyframe(this.selectedKeyframe);
       }
     },
   },
