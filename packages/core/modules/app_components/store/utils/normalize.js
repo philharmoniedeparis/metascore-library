@@ -13,8 +13,7 @@ Object.values(Models).forEach(({ name: type, schema }) => {
 });
 
 async function normalizeItem(data, entities, parent = null) {
-  const component = await Models[data.type].create(data);
-  const item = component.$data;
+  const item = await Models[data.type].create(data);
 
   if (item.type in collections) {
     for (const key of collections[item.type]) {
@@ -66,7 +65,7 @@ export async function normalize(data) {
 }
 
 function denormalizeItem(item, all) {
-  const data = cloneDeep(all[item.type][item.id]);
+  const data = cloneDeep(all[item.type][item.id].data);
 
   if (data.type in collections) {
     collections[data.type].forEach((key) => {
@@ -77,8 +76,6 @@ function denormalizeItem(item, all) {
       }
     });
   }
-
-  delete data.$parent;
 
   return data;
 }

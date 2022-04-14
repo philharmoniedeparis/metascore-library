@@ -55,10 +55,10 @@ export default {
   },
   computed: {
     schema() {
-      return this.model.$schema;
+      return this.model.schema;
     },
     validator() {
-      return this.model.$ajv;
+      return this.model.ajv;
     },
     layout() {
       return {
@@ -76,7 +76,7 @@ export default {
       });
     },
     onSubmit() {
-      this.$emit("submit", this.model.$data);
+      this.$emit("submit", this.model.data);
     },
     onCancel() {
       this.$emit("close");

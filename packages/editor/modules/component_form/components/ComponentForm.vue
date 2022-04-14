@@ -312,13 +312,15 @@ export default {
 
       switch (this.commonModel.type) {
         case "Animation":
-          ["start-frame", "loop-duration", "reversed", "colors"].forEach(
-            (property) => {
-              layout.items[0].items.push({
-                ...this.getControlProps(property, this.commonModel.type),
-              });
-            }
-          );
+          ["start-frame", "loop-duration", "reversed"].forEach((property) => {
+            layout.items[0].items.push({
+              ...this.getControlProps(property, this.commonModel.type),
+            });
+          });
+          layout.items[0].items.push({
+            swatches: this.colorSwatches,
+            ...this.getControlProps("colors"),
+          });
           break;
 
         case "Block":
@@ -370,6 +372,7 @@ export default {
             this.masterComponent.colors.length > 0
           ) {
             layout.items[0].items.push({
+              swatches: this.colorSwatches,
               ...this.getControlProps("colors", this.commonModel.type),
             });
           } else {

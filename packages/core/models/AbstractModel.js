@@ -1,16 +1,18 @@
 import { v4 as uuid } from "uuid";
 import Ajv from "ajv";
-import { clone, cloneDeep, merge, isString } from "lodash";
+import { isString } from "lodash";
 import { markRaw } from "vue";
 
 /**
  * Retreive properties from a JSON schema.
  *
- * @param {object} schema The schema
+ * @param {Object} schema The schema
  * @param {Ajv?} validator An Ajv instance
- * @returns {object} The list of properties
+ * @returns {Object} The list of properties
  */
 function getProperties(schema, validator = null) {
+  let properties = {};
+
   const root = !validator;
   if (root) {
     validator = new Ajv();
@@ -24,17 +26,25 @@ function getProperties(schema, validator = null) {
   if (schema.$ref) {
     schema = validator.getSchema(schema.$ref).schema;
   }
+
   if (schema.properties) {
-    return clone(schema.properties);
+    properties = { ...properties, ...schema.properties };
   }
-  let res = {};
+  if (schema.then) {
+    properties = { ...properties, ...getProperties(schema.then, validator) };
+  }
+  if (schema.else) {
+    properties = { ...properties, ...getProperties(schema.else, validator) };
+  }
+
   const defs = schema["anyOf"] || schema["allOf"] || (root && schema["oneOf"]);
   if (defs) {
     defs.forEach((def) => {
-      res = merge(res, getProperties(def, validator));
+      properties = { ...properties, ...getProperties(def, validator) };
     });
   }
-  return res;
+
+  return properties;
 }
 
 /**
@@ -69,7 +79,7 @@ export default class AbstractModel {
   /**
    * Get the JSON Schema definition for this model
    *
-   * @returns {object} The schema definition
+   * @returns {Object} The schema definition
    */
   static get schema() {
     return {
@@ -84,20 +94,14 @@ export default class AbstractModel {
    * Get all properties from the schema
    * with all definitions merged.
    *
-   * @returns {object} The list of properties in JSON schema format
+   * @returns {Object} The list of properties in JSON schema format
    */
   static get properties() {
-    return getProperties(this.schema);
-  }
+    if (!this._properties) {
+      this._properties = getProperties(this.schema);
+    }
 
-  /**
-   * Validate data against the schema.
-   *
-   * @param {object} data The data to validate
-   * @returns {boolean} True if the data is valid, false otherwise
-   */
-  static async validate(data) {
-    return await this.ajv.validate(this.schema, data);
+    return this._properties;
   }
 
   /**
@@ -117,64 +121,42 @@ export default class AbstractModel {
   }
 
   static async create(data = {}, validate = true) {
-    if (validate) {
-      const valid = await this.validate(data);
-      if (!valid) {
-        console.error(this.$errors);
-        return null;
-      }
-    }
-
     const instance = new this();
 
-    for (const [name, value] of Object.entries(data)) {
-      await (instance[name] = value);
+    if (validate) {
+      return instance.update(data);
     }
 
+    for (const [name, value] of Object.entries(data)) {
+      instance[name] = value;
+    }
     return instance;
   }
 
   constructor() {
     this._data = {};
 
-    const proxy = new Proxy(this, {
+    return new Proxy(this, {
       get(target, name) {
-        if (isString(name) && !(name.startsWith("$") || name.startsWith("_"))) {
-          return target.getPropertyValue(name);
+        if (
+          isString(name) &&
+          Object.prototype.hasOwnProperty.call(target.properties, name)
+        ) {
+          return target._data[name];
         }
         return Reflect.get(...arguments);
       },
-      async set(target, name, value) {
-        if (isString(name) && !(name.startsWith("$") || name.startsWith("_"))) {
-          return target.setPropertyValue(name, value);
+      set(target, name, value) {
+        if (
+          isString(name) &&
+          Object.prototype.hasOwnProperty.call(target.properties, name)
+        ) {
+          target._data[name] = value;
+          return true;
         }
         return Reflect.set(...arguments);
       },
     });
-
-    return proxy;
-  }
-
-  /**
-   * Get a property value, used by the proxy.
-   *
-   * @protected
-   * @param {string} name The property's name
-   * @returns {mixed} The value or undefined if not found
-   */
-  getPropertyValue(name) {
-    return this._data[name];
-  }
-
-  /**
-   * Set a property value, used by the proxy.
-   *
-   * @protected
-   * @param {string} name The property's name
-   * @param {mixed} value The value to set
-   */
-  async setPropertyValue(name, value) {
-    this._data[name] = value;
   }
 
   /**
@@ -182,47 +164,63 @@ export default class AbstractModel {
    *
    * @returns {Ajv} The Ajv instance
    */
-  get $ajv() {
+  get ajv() {
     return this.constructor.ajv;
   }
 
   /**
    * Alias to the static method of the same name
    *
-   * @returns {object} The schema definition
+   * @returns {Object} The schema definition
    */
-  get $schema() {
+  get schema() {
     return this.constructor.schema;
   }
 
   /**
    * Alias to the static method of the same name
    *
-   * @returns {object} The list of properties in JSON schema format
+   * @returns {Object} The list of properties in JSON schema format
    */
-  get $properties() {
+  get properties() {
     return this.constructor.properties;
   }
 
   /**
    * Get the model's data
    *
-   * @returns {object} The data
+   * @returns {Object} The data
    */
-  get $data() {
-    return cloneDeep(this._data);
+  get data() {
+    return this._data;
   }
 
   /**
    * Get current validation errors.
    */
-  get $errors() {
-    return this.$ajv.errors;
+  get errors() {
+    return this.ajv.errors;
   }
 
+  /**
+   * Alias to the static method of the same name
+   *
+   * @param {Object} data The data to validate
+   * @returns {boolean} True if the data is valid, false otherwise
+   */
+  async validate(data) {
+    return await this.ajv.validate(this.schema, data);
+  }
+
+  /**
+   * Update internal data
+   *
+   * @param {Object} data The data to update
+   * @returns {Promise<this, Error>} True if the data is valid, false otherwise
+   */
   async update(data) {
     const updated = {
-      ...this.$data,
+      ...this._data,
       ...data,
     };
 
@@ -230,15 +228,5 @@ export default class AbstractModel {
       this._data = updated;
       return this;
     });
-  }
-
-  /**
-   * Alias to the static method of the same name
-   *
-   * @param {object} data The data to validate
-   * @returns {boolean} True if the data is valid, false otherwise
-   */
-  async validate(data) {
-    return await this.constructor.validate(data);
   }
 }

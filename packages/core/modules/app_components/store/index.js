@@ -16,7 +16,9 @@ export default defineStore("app-components", {
     get() {
       return (type, id) => {
         const component = this.components?.[type]?.[id];
-        return component && !component.$deleted ? readonly(component) : null;
+        return component && !component.$deleted
+          ? readonly(component.data)
+          : null;
       };
     },
     getByType() {
@@ -79,8 +81,10 @@ export default defineStore("app-components", {
     },
     getParent() {
       return (component) => {
-        if (component.$parent) {
-          return this.get(component.$parent.type, component.$parent.id);
+        const parent =
+          this.components?.[component.type]?.[component.id]?.$parent;
+        if (parent) {
+          return this.get(parent.type, parent.id);
         }
         return null;
       };
@@ -139,12 +143,10 @@ export default defineStore("app-components", {
       this.components[component.type][component.id] = component;
 
       if (parent) {
-        await this.update(component, {
-          $parent: {
-            type: parent.type,
-            id: parent.id,
-          },
-        });
+        component.$parent = {
+          type: parent.type,
+          id: parent.id,
+        };
 
         const children_prop = this.getChildrenProperty(parent);
         await this.update(parent, {
@@ -172,15 +174,8 @@ export default defineStore("app-components", {
       return component;
     },
     async update(component, data) {
-      const updated = {
-        ...component,
-        ...data,
-      };
-
       try {
-        await Models[component.type].validate(updated);
-
-        this.components[component.type][component.id] = updated;
+        await this.components[component.type][component.id].update(data);
 
         if (component.type === "Page") {
           if ("start-time" in data || "end-time" in data) {

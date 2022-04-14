@@ -559,7 +559,7 @@ export default {
     async addDroppedComponent(evt) {
       const droppedComponent = await this.getComponentFromDragEvent(evt);
       const component = await this.editorStore.addComponent(
-        droppedComponent.$data,
+        droppedComponent,
         this.component
       );
 

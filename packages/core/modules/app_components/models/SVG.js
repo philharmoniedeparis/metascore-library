@@ -131,6 +131,84 @@ export class SVG extends EmbeddableComponent {
       required: ["src"],
     });
   }
+
+  /**
+   * Get data embedded in the SVG content
+   *
+   * @param {string} url The SVG's Url
+   * @returns {Promise<object>} A promise that resolves with the embedded data
+   */
+  static async getEmbeddedData(url) {
+    return new Promise((resolve) => {
+      const data = {};
+
+      const obj = document.createElement("object");
+      obj.style.visibility = "hidden";
+      obj.style.pointerEvents = "none";
+      obj.addEventListener("load", (evt) => {
+        const svg = evt.target.contentDocument.querySelector("svg");
+
+        // Get colors.
+        const colors = [];
+        [".color1", ".color2"].forEach((c) => {
+          const el = svg.querySelector(c);
+          if (el) {
+            const style = getComputedStyle(el);
+            colors.push(style.fill);
+          }
+        });
+        if (colors.length > 0) {
+          data.colors = colors;
+        } else {
+          data.stroke = null;
+          data["stroke-width"] = null;
+          data["stroke-dasharray"] = null;
+          data.fill = null;
+
+          // Get markers
+          const markers = [];
+          svg.querySelectorAll("defs marker").forEach((marker) => {
+            markers.push(marker.getAttribute("id"));
+          });
+          if (markers.length > 0) {
+            data.markers = markers;
+            data["marker-start"] = null;
+            data["marker-mid"] = null;
+            data["marker-end"] = null;
+          }
+        }
+
+        evt.target.remove();
+        resolve(data);
+      });
+
+      obj.addEventListener("error", (evt) => {
+        evt.target.remove();
+        resolve({
+          stroke: null,
+          "stroke-width": null,
+          "stroke-dasharray": null,
+          fill: null,
+        });
+      });
+
+      obj.setAttribute("type", "image/svg+xml");
+      obj.setAttribute("data", url);
+      document.body.appendChild(obj);
+    });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  async validate(data) {
+    if ("src" in data && data.src && this.src !== data.src) {
+      const embedded_data = await this.constructor.getEmbeddedData(data.src);
+      Object.assign(data, embedded_data);
+    }
+
+    return super.validate(data);
+  }
 }
 
 export default SVG;

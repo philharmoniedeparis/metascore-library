@@ -105,7 +105,7 @@ export class Cursor extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static async validate(data) {
+  async validate(data) {
     switch (data.form) {
       case "circular":
         if (!["cw", "ccw"].includes(data.direction)) {
@@ -119,7 +119,7 @@ export class Cursor extends EmbeddableComponent {
         }
     }
 
-    return await super.validate(data);
+    return super.validate(data);
   }
 }
 

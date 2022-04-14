@@ -79,10 +79,10 @@ export default {
   },
   computed: {
     schema() {
-      return this.model.$schema;
+      return this.model.schema;
     },
     validator() {
-      return this.model.$ajv;
+      return this.model.ajv;
     },
     layout() {
       return {
@@ -170,7 +170,7 @@ export default {
       });
     },
     onSubmit() {
-      const data = this.model.$data;
+      const data = this.model.data;
 
       if (!data.end) {
         data.zoom = "auto";
