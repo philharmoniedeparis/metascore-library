@@ -32,7 +32,14 @@
           left: `${(keyframe[0] / mediaDuration) * 100}%`,
         }"
         :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
-        :class="['keyframe', { selected: selectedIndex === index }]"
+        :class="[
+          'keyframe',
+          {
+            selected:
+              selectedKeyframe?.[0] === keyframe[0] &&
+              selectedKeyframe?.[1] === keyframe[1],
+          },
+        ]"
         tabindex="0"
         @click.stop="onKeyframeClick(keyframe)"
       />
@@ -73,7 +80,7 @@ export default {
   },
   data() {
     return {
-      selectedIndex: null,
+      selectedKeyframe: null,
     };
   },
   computed: {
@@ -96,11 +103,6 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
-    selectedKeyframe() {
-      return this.selectedIndex !== null
-        ? this.value[this.selectedIndex]
-        : null;
-    },
     hotkeys() {
       return {
         delete: this.deleteSelectedKeyframe,
@@ -116,7 +118,6 @@ export default {
       lockAxis: "x",
       listeners: {
         move: this.onKeyframeDraggableMove,
-        end: this.onKeyframeDraggableEnd,
       },
     });
   },
@@ -133,22 +134,18 @@ export default {
       const x = evt.pageX - left;
       const time = round((x / width) * this.mediaDuration, 2);
       const value = getAnimatedValueAtTime(this.value, time);
+      const keyframe = [time, value];
 
-      const new_value = this.value.concat([[time, value]]).sort((a, b) => {
+      this.value = this.value.concat([keyframe]).sort((a, b) => {
         return a[0] - b[0];
       });
-      this.selectedIndex = new_value.findIndex(
-        (k) => k[0] === time && k[1] === value
-      );
 
-      this.value = new_value;
+      this.selectedKeyframe = keyframe;
 
       this.mediaTime = time;
     },
     onKeyframeClick(keyframe) {
-      this.selectedIndex = this.value.findIndex(
-        (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
-      );
+      this.selectedKeyframe = keyframe;
       this.mediaTime = keyframe[0];
     },
     onKeyframeDraggableMove(evt) {
@@ -160,22 +157,21 @@ export default {
         this.selectedKeyframe[1],
       ];
 
-      const new_value = [
-        ...this.value.slice(0, this.selectedIndex),
-        ...this.value.slice(this.selectedIndex + 1),
-        keyframe,
-      ].sort((a, b) => {
-        return a[0] - b[0];
-      });
+      this.value = this.value
+        .map((k) => {
+          if (
+            k[0] === this.selectedKeyframe[0] &&
+            k[1] === this.selectedKeyframe[1]
+          ) {
+            return keyframe;
+          }
+          return k;
+        })
+        .sort((a, b) => {
+          return a[0] - b[0];
+        });
 
-      this.selectedIndex = new_value.findIndex(
-        (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
-      );
-
-      this.value = new_value;
-    },
-    onKeyframeDraggableEnd() {
-      this.mediaTime = this.selectedKeyframe[0];
+      this.selectedKeyframe = keyframe;
     },
     deleteSelectedKeyframe() {
       if (this.selectedKeyframe !== null) {
@@ -186,7 +182,7 @@ export default {
               k[1] === this.selectedKeyframe[1]
             )
         );
-        this.selectedIndex = null;
+        this.selectedKeyframe = null;
       }
     },
   },
