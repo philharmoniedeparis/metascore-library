@@ -171,29 +171,6 @@ export default {
     activeName() {
       return this.active?.name;
     },
-    contextmenuItems(scenario) {
-      const items = [
-        {
-          label: this.$t("contextmenu.clone"),
-          handler: () => {
-            this.contextmenuId = scenario.id;
-            this.showCloneForm = true;
-          },
-        },
-      ];
-
-      if (this.scenariosCount > 1) {
-        items.push({
-          label: this.$t("contextmenu.delete"),
-          handler: () => {
-            this.contextmenuId = scenario.id;
-            this.showDeleteConfirm = true;
-          },
-        });
-      }
-
-      return items;
-    },
   },
   watch: {
     scenariosCount() {
