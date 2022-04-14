@@ -38,5 +38,28 @@ export default Mixin(
       static get $isTransformable() {
         return true;
       }
+
+      /**
+       * @inheritdoc
+       */
+      async update(data) {
+        ["translate", "scale"].forEach((property) => {
+          // If the last keyframe has been deleted,
+          // mark the property as unanimated.
+          if (
+            property in data &&
+            data[property].animated &&
+            Array.isArray(data[property].value) &&
+            data[property].value.length === 0
+          ) {
+            data[property] = {
+              value: this[property]?.value?.[0]?.[1],
+              animated: false,
+            };
+          }
+        });
+
+        return super.update(data);
+      }
     }
 );

@@ -106,6 +106,7 @@ export class Cursor extends EmbeddableComponent {
    * @inheritdoc
    */
   async validate(data) {
+    // Update direction options depending on form.
     switch (data.form) {
       case "circular":
         if (!["cw", "ccw"].includes(data.direction)) {

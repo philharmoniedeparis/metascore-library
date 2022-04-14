@@ -27,5 +27,26 @@ export default Mixin(
       static get $isOpacitable() {
         return true;
       }
+
+      /**
+       * @inheritdoc
+       */
+      async update(data) {
+        // If the last keyframe has been deleted,
+        // mark the property as unanimated.
+        if (
+          "opacity" in data &&
+          data.opacity.animated &&
+          Array.isArray(data.opacity.value) &&
+          data.opacity.value.length === 0
+        ) {
+          data.opacity = {
+            value: this.opacity?.value?.[0]?.[1],
+            animated: false,
+          };
+        }
+
+        return super.update(data);
+      }
     }
 );
