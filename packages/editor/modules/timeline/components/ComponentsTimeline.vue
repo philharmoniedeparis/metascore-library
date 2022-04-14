@@ -89,10 +89,10 @@ export default {
   },
   mounted() {
     this._interactable = interact(
-      ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle"
+      ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle",
+      { context: this.$el }
     )
       .draggable({
-        context: this.$el,
         startAxis: "y",
         lockAxis: "y",
         modifiers: [
@@ -107,7 +107,6 @@ export default {
         },
       })
       .dropzone({
-        context: this.$el,
         checker: this.handleDropzoneChecker,
         listeners: {
           dropmove: this.onHandleDropzoneDropmove,

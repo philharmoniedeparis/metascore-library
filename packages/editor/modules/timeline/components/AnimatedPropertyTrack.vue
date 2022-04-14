@@ -93,12 +93,7 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit(
-          "update:modelValue",
-          value.sort((a, b) => {
-            return a[0] - b[0];
-          })
-        );
+        this.$emit("update:modelValue", value);
       },
     },
     selectedKeyframe() {
@@ -114,8 +109,9 @@ export default {
     },
   },
   mounted() {
-    this._interactable = interact(".keyframe.selected").draggable({
+    this._interactable = interact(".keyframe.selected", {
       context: this.$el,
+    }).draggable({
       startAxis: "x",
       lockAxis: "x",
       listeners: {
@@ -138,14 +134,21 @@ export default {
       const time = round((x / width) * this.mediaDuration, 2);
       const value = getAnimatedValueAtTime(this.value, time);
 
-      const keyframe = [time, value];
-      this.value = [...this.value, keyframe];
+      const new_value = this.value.concat([[time, value]]).sort((a, b) => {
+        return a[0] - b[0];
+      });
+      this.selectedIndex = new_value.findIndex(
+        (k) => k[0] === time && k[1] === value
+      );
 
-      this.selectKeyframe(keyframe);
-      this.mediaTime = keyframe[0];
+      this.value = new_value;
+
+      this.mediaTime = time;
     },
     onKeyframeClick(keyframe) {
-      this.selectKeyframe(keyframe);
+      this.selectedIndex = this.value.findIndex(
+        (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
+      );
       this.mediaTime = keyframe[0];
     },
     onKeyframeDraggableMove(evt) {
@@ -157,23 +160,22 @@ export default {
         this.selectedKeyframe[1],
       ];
 
-      this.value = [
+      const new_value = [
         ...this.value.slice(0, this.selectedIndex),
         ...this.value.slice(this.selectedIndex + 1),
         keyframe,
-      ];
+      ].sort((a, b) => {
+        return a[0] - b[0];
+      });
 
-      this.selectKeyframe(keyframe);
+      this.selectedIndex = new_value.findIndex(
+        (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
+      );
+
+      this.value = new_value;
     },
     onKeyframeDraggableEnd() {
       this.mediaTime = this.selectedKeyframe[0];
-    },
-    selectKeyframe(keyframe) {
-      this.$nextTick(function () {
-        this.selectedIndex = this.value.findIndex(
-          (k) => k[0] === keyframe[0] && k[1] === keyframe[1]
-        );
-      });
     },
     deleteSelectedKeyframe() {
       if (this.selectedKeyframe !== null) {

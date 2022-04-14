@@ -236,8 +236,9 @@ export default {
   },
   mounted() {
     this.$nextTick(function () {
-      this._interactable = interact(".resize-handle").draggable({
+      this._interactable = interact(".resize-handle", {
         context: this.$el,
+      }).draggable({
         modifiers: [
           interact.modifiers.restrict({
             restriction: "parent",
