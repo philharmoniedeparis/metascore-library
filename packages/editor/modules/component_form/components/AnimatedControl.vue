@@ -131,10 +131,13 @@ export default {
         const time = this.roundedMediaTime;
         const index = this.value.value.findIndex((v) => v[0] === time);
         if (index >= 0) {
-          value[index][1] = input;
+          value = [
+            ...value.slice(0, index),
+            [value[index][0], input],
+            ...value.slice(index + 1),
+          ];
         } else {
-          value.push([time, input]);
-          value.sort((a, b) => a[0] - b[0]);
+          value = value.concat([[time, input]]).sort((a, b) => a[0] - b[0]);
         }
       } else {
         value = input;

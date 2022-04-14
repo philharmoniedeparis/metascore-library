@@ -312,7 +312,8 @@ export default {
 
   .handle,
   .time-wrapper,
-  .aniamted-properties ::v-deep(.handle) {
+  .aniamted-properties ::v-deep(.handle),
+  .aniamted-properties ::v-deep(.keyframes-wrapper) {
     height: 2em;
     border-top: 1px solid $darkgray;
     border-bottom: 1px solid $darkgray;
