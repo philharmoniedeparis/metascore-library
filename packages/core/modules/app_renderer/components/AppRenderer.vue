@@ -72,6 +72,7 @@ export default {
         return {
           width: `${this.width}px`,
           height: `${this.height}px`,
+          transformOrigin: "left top 0px",
           transform: `scale(${scale})`,
           marginRight: `${this.width * scale - this.width}px`,
           marginBottom: `${this.height * scale - this.height}px`,
@@ -118,12 +119,12 @@ export default {
 
       const container = this.$el.parentNode;
       this.containerWidth = container.clientWidth;
-      this.containerHeight = container.clientWidth;
+      this.containerHeight = container.clientHeight;
 
       this._resize_observer = new ResizeObserver(
         debounce(() => {
           this.containerWidth = container.clientWidth;
-          this.containerHeight = container.clientWidth;
+          this.containerHeight = container.clientHeight;
         }, 500)
       );
       this._resize_observer.observe(container);
@@ -157,7 +158,6 @@ body {
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  transform-origin: "top left";
 
   ::v-deep(.sr-only) {
     @include sr-only;

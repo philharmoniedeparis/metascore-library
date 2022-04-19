@@ -15,11 +15,21 @@ export class Player {
    */
   static version = packageInfo.version;
 
-  static async create({ url, el, api = false, locale = "fr" } = {}) {
+  static async create({
+    url,
+    el,
+    api = false,
+    responsive = false,
+    allowUpscaling = false,
+    locale = "fr",
+  } = {}) {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
-    const app = createApp(App, { url, api }).use(pinia).use(i18n).use(hotkey);
+    const app = createApp(App, { url, api, responsive, allowUpscaling })
+      .use(pinia)
+      .use(i18n)
+      .use(hotkey);
 
     // Register root modules.
     await registerModules([AppRenderer, ContextMenu], { app, pinia });

@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import useStore from "./store";
 import packageInfo from "../../package.json";
 
 export default {
@@ -43,15 +44,19 @@ export default {
       default: false,
     },
   },
-  date() {
+  setup() {
+    const store = useStore();
+    return { store };
+  },
+  data() {
     return {
       version: packageInfo.version,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
   },
-  async mounted() {
-    await this.editorStore.load(this.url);
+  mounted() {
+    this.store.load(this.url);
   },
   methods: {
     onContextmenu(evt) {
