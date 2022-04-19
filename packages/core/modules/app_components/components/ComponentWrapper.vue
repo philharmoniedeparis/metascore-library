@@ -1,11 +1,11 @@
 <template>
   <div
-    v-show="active && !hidden"
+    v-show="active && !hidden && !toggled"
     :id="component.id"
     :class="[
       'metaScore-component',
       paramCase(component.type),
-      { active, hidden },
+      { active, hidden, toggled },
     ]"
     :style="{
       ...position,
@@ -66,7 +66,13 @@ export default {
       ...useSize(component, model),
       ...useTime(component, model),
       ...useTransform(component, model),
+      store,
     };
+  },
+  computed: {
+    toggled() {
+      return this.store.isToggled(this.component);
+    },
   },
   watch: {
     active(value) {

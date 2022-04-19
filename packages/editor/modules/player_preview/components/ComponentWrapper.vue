@@ -614,7 +614,7 @@ export default {
     }
 
     &.block {
-      &:hover::v-deep(> .metaScore-component--inner .pager) {
+      &:hover > ::v-deep(.metaScore-component--inner .pager) {
         display: flex !important;
       }
     }

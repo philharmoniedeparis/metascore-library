@@ -80,14 +80,6 @@ export default {
       return this.schema.type || "text";
     },
     extraProps() {
-      if (["array", "object"].includes(this.schema.type)) {
-        // Pass down the property and schema to complex controls.
-        return {
-          property: this.property,
-          schema: this.schema,
-        };
-      }
-
       switch (this.control) {
         case "number":
           return {
@@ -102,12 +94,17 @@ export default {
         case "select":
           if (this.schema.enum) {
             return {
-              options: this.schema.enum.reduce(
-                (acc, el) => ({ ...acc, [el]: el }),
-                {}
-              ),
+              options: this.schema.enum,
             };
           }
+      }
+
+      if (!this.type && ["array", "object"].includes(this.schema.type)) {
+        // Pass down the property and schema to complex controls.
+        return {
+          property: this.property,
+          schema: this.schema,
+        };
       }
 
       return null;

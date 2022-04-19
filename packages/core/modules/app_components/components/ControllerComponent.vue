@@ -104,7 +104,7 @@ export default {
 
 <style lang="scss" scoped>
 .controller {
-  ::v-deep(> .metaScore-component--inner) {
+  > ::v-deep(.metaScore-component--inner) {
     display: flex;
     flex-direction: column;
     align-items: stretch;

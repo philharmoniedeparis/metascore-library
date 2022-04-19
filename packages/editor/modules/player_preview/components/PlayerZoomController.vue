@@ -32,10 +32,12 @@ export default {
       },
     },
     options() {
-      return this.zoomLevels.reduce(
-        (acc, z) => ({ ...acc, [`${z * 100}%`]: z }),
-        {}
-      );
+      return this.zoomLevels.map((level) => {
+        return {
+          label: `${level * 100}%`,
+          value: level,
+        };
+      });
     },
   },
 };

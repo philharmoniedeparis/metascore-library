@@ -72,6 +72,7 @@
     <resizable-pane class="right" :left="{ collapse: true }">
       <component-form
         :images="imageAssets"
+        :first-level-components="firstLevelComponents"
         v-bind="configs.modules?.component_form"
       ></component-form>
     </resizable-pane>
@@ -226,6 +227,12 @@ export default {
       set(value) {
         this.componentsStore.activeScenario = value;
       },
+    },
+    firstLevelComponents() {
+      const scenario = this.activeScenario
+        ? this.componentsStore.get("Scenario", this.activeScenario)
+        : null;
+      return scenario ? this.componentsStore.getChildren(scenario) : [];
     },
     revisions() {
       return this.store.revisions;

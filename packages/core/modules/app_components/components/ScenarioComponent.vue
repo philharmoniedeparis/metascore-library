@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 
 export default {
   props: {
@@ -20,12 +20,12 @@ export default {
     },
   },
   setup() {
-    const componentsStore = useModule("app_components").useStore();
-    return { componentsStore };
+    const store = useStore();
+    return { store };
   },
   computed: {
     children() {
-      return this.componentsStore.getChildren(this.component);
+      return this.store.getChildren(this.component);
     },
   },
 };

@@ -1,14 +1,16 @@
 <template>
   <form-group
-    :class="['control', 'select', { disabled }]"
+    :class="['control', 'select', { multiple, disabled }]"
     :label="label"
     :label-for="inputId"
     :description="description"
   >
     <select
       :id="inputId"
+      ref="input"
       v-model="value"
       v-autofocus="autofocus"
+      :multiple="multiple"
       :disabled="disabled"
     >
       <option
@@ -16,6 +18,7 @@
         :key="option.value"
         :value="option.value"
         :disabled="option.disabled"
+        @mousedown="onOptionMousedown"
       >
         {{ option.label }}
       </option>
@@ -53,9 +56,37 @@ export default {
       type: Object,
       required: true,
     },
+    multiple: {
+      type: Boolean,
+      default: false,
+    },
     modelValue: {
-      type: [String, Number],
+      type: [String, Number, Array],
       default: null,
+    },
+    optionLabel: {
+      type: Function,
+      default: (o) => {
+        return o.label;
+      },
+    },
+    optionKey: {
+      type: Function,
+      default: (o) => {
+        return o.value;
+      },
+    },
+    optionValue: {
+      type: Function,
+      default: (o) => {
+        return o.value;
+      },
+    },
+    optionDisabled: {
+      type: Function,
+      default: (o) => {
+        return o.disabled;
+      },
     },
   },
   emits: ["update:modelValue"],
@@ -66,20 +97,51 @@ export default {
   },
   computed: {
     normalizedOptions() {
-      return Object.entries(this.options).map(([label, option]) => {
-        if (isObject(option) && "value" in option) {
-          return { label, ...option };
-        }
-        return { label, value: option };
+      return this.options.map((option) => {
+        return isObject(option)
+          ? {
+              label: this.optionLabel(option),
+              value: this.optionKey(option),
+              disabled: this.optionDisabled(option),
+            }
+          : { label: option, value: option };
       });
     },
     value: {
       get() {
-        return this.modelValue;
+        if (this.multiple) {
+          return this.modelValue?.map((v) => {
+            return isObject(v) ? this.optionKey(v) : v;
+          });
+        }
+        return isObject(this.modelValue)
+          ? this.optionKey(this.modelValue)
+          : this.modelValue;
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        if (this.multiple) {
+          const options = this.options.filter((o) => {
+            return value.includes(isObject(o) ? this.optionKey(o) : o);
+          });
+          this.$emit("update:modelValue", options.map(this.optionValue));
+        }
+
+        const option = this.options.find((o) => {
+          return value === (isObject(o) ? this.optionKey(o) : o);
+        });
+        this.$emit("update:modelValue", this.optionValue(option));
       },
+    },
+  },
+  methods: {
+    onOptionMousedown(evt) {
+      if (!this.multiple) {
+        return;
+      }
+
+      evt.target.selected = !evt.target.selected;
+      this.$refs.input.dispatchEvent(new Event("change"));
+      evt.preventDefault();
     },
   },
 };
@@ -97,6 +159,12 @@ export default {
     option {
       font-weight: normal;
       background: $mediumgray;
+    }
+  }
+
+  &.multiple {
+    ::v-deep(label) {
+      align-self: flex-start;
     }
   }
 

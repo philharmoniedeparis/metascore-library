@@ -214,7 +214,7 @@ export default defineStore("app-components", {
       const { type, id } = component;
       if (this.isToggled(component)) {
         this.toggled = this.toggled.filter(
-          (t) => t.type === type && t.id === id
+          (t) => !(t.type === type && t.id === id)
         );
       } else {
         this.toggled.push({ type, id });

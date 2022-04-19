@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 import { sortBy } from "lodash";
 
 export default {
@@ -36,12 +36,14 @@ export default {
     },
   },
   setup() {
-    const componentsStore = useModule("app_components").useStore();
-    return { componentsStore };
+    const store = useStore();
+    return { store };
   },
   computed: {
     blocks() {
-      return this.componentsStore.get(this.component.blocks);
+      return this.component.blocks.map(({ type, id }) => {
+        return this.store.get(type, id);
+      });
     },
     sortedBlocks() {
       return sortBy(this.blocks, [
@@ -67,10 +69,10 @@ export default {
   },
   methods: {
     isBlockToggled(block) {
-      return this.componentsStore.isToggled(block);
+      return this.store.isToggled(block);
     },
     toggleBlock(block) {
-      this.componentsStore.toggle(block);
+      this.store.toggle(block);
     },
   },
 };
@@ -78,7 +80,7 @@ export default {
 
 <style lang="scss" scoped>
 .block-toggler {
-  > .metaScore-component--inner {
+  > ::v-deep(.metaScore-component--inner) {
     display: flex;
     width: 100%;
     height: 100%;
@@ -88,6 +90,9 @@ export default {
   }
 
   button {
+    margin: 1px 2px;
+    padding: 0;
+
     svg {
       width: 100%;
       height: 100%;

@@ -20,7 +20,6 @@
 <template>
   <component-wrapper
     :component="component"
-    :class="{ toggled }"
     @mouseenter="onMouseenter"
     @mouseleave="onMouseleave"
   >
@@ -79,6 +78,7 @@
 </template>
 
 <script>
+import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
@@ -101,9 +101,9 @@ export default {
     },
   },
   setup() {
+    const store = useStore();
     const mediaStore = useModule("media_player").useStore();
-    const componentsStore = useModule("app_components").useStore();
-    return { mediaStore, componentsStore };
+    return { store, mediaStore };
   },
   data() {
     return {
@@ -112,9 +112,6 @@ export default {
     };
   },
   computed: {
-    toggled() {
-      return this.componentsStore.isToggled(this.component);
-    },
     synched() {
       return this.component.synched;
     },
@@ -135,7 +132,7 @@ export default {
       }
     },
     pages() {
-      return this.componentsStore.getChildren(this.component);
+      return this.store.getChildren(this.component);
     },
     pageCount() {
       return this.pages.length;
@@ -221,7 +218,7 @@ export default {
 
 <style lang="scss" scoped>
 .block {
-  > .metaScore-component--inner {
+  > ::v-deep(.metaScore-component--inner) {
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: left top;
@@ -281,10 +278,6 @@ export default {
         }
       }
     }
-  }
-
-  &.toggled {
-    display: none;
   }
 }
 </style>

@@ -171,6 +171,12 @@ export default {
         return [];
       },
     },
+    firstLevelComponents: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
     colorSwatches: {
       type: Array,
       default() {
@@ -250,18 +256,15 @@ export default {
 
       if (this.commonModel.$isBackgroundable) {
         layout.items[0].items.push({
-          itemProps: { swatches: this.colorSwatches },
+          swatches: this.colorSwatches,
           ...this.getControlProps("background-color"),
         });
         layout.items[0].items.push({
           type: "select",
-          options: {
-            "": null,
-            ...this.images.reduce(
-              (acc, img) => ({ ...acc, [img.name]: img.url }),
-              {}
-            ),
-          },
+          options: this.images,
+          optionLabel: (o) => o.name,
+          optionKey: (o) => o.id,
+          optionValue: (o) => o.url,
           ...this.getControlProps("background-image"),
         });
       }
@@ -322,9 +325,15 @@ export default {
           break;
 
         case "BlockToggler":
-          layout.items[0].items.push(
-            this.getControlProps("blocks", this.commonModel.type)
-          );
+          layout.items[0].items.push({
+            type: "select",
+            multiple: true,
+            options: this.firstLevelComponents,
+            optionLabel: (o) => o.name,
+            optionKey: (o) => o.id,
+            optionValue: (o) => ({ type: o.type, id: o.id }),
+            ...this.getControlProps("blocks", this.commonModel.type),
+          });
           break;
 
         case "Content":
@@ -377,13 +386,14 @@ export default {
             });
             layout.items[0].items.push({
               type: "select",
-              options: {
-                "—": null,
-                "···": "2,2",
-                "- -": "5,5",
-                "-·-": "5,2,2,2",
-                "-··-": "5,2,2,2,2,2",
-              },
+              options: [
+                { label: "—", value: null },
+                { label: "···", value: "2,2" },
+                { label: "···", value: "2,2" },
+                { label: "- -", value: "5,5" },
+                { label: "-·-", value: "5,2,2,2" },
+                { label: "-··-", value: "5,2,2,2,2,2" },
+              ],
               ...this.getControlProps(
                 "stroke-dasharray",
                 this.commonModel.type
@@ -401,13 +411,7 @@ export default {
                 (property) => {
                   layout.items[0].items.push({
                     type: "select",
-                    options: {
-                      "": null,
-                      ...this.masterComponent.markers.reduce(
-                        (acc, marker) => ({ ...acc, [marker]: marker }),
-                        {}
-                      ),
-                    },
+                    options: this.masterComponent.markers,
                     ...this.getControlProps(property, this.commonModel.type),
                   });
                 }

@@ -30,17 +30,19 @@ export class BlockToggler extends EmbeddableComponent {
         },
         dimension: {
           default: [100, 20],
-          items: [
-            {
-              minimum: 10,
-            },
-            {
-              minimum: 10,
-            },
-          ],
+          items: [{ minimum: 10 }, { minimum: 10 }],
         },
         blocks: createArrayField({
-          items: { type: "string" },
+          items: {
+            type: "object",
+            properties: {
+              type: { type: "string" },
+              id: { type: "string" },
+            },
+            additionalProperties: false,
+            required: ["type", "id"],
+          },
+          default: [],
         }),
       },
     });

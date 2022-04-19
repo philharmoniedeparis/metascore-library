@@ -61,20 +61,16 @@ export default {
   emits: ["update:active"],
   computed: {
     options() {
-      return this.revisions.reduce((acc, revision) => {
-        const label = this.$t("option_label", {
-          id: revision.vid,
-          date: this.dateFormatter.format(new Date(revision.created * 1000)),
-        });
-
+      return this.revisions.map((revision) => {
         return {
-          ...acc,
-          [label]: {
-            value: revision.vid,
-            disabled: revision.vid === this.active,
-          },
+          label: this.$t("option_label", {
+            id: revision.vid,
+            date: this.dateFormatter.format(new Date(revision.created * 1000)),
+          }),
+          value: revision.vid,
+          disabled: revision.vid === this.active,
         };
-      }, {});
+      });
     },
     internalValue: {
       get() {
