@@ -15,8 +15,8 @@
     >
       <option
         v-for="option in normalizedOptions"
-        :key="option.value"
-        :value="option.value"
+        :key="option.key"
+        :value="option.key"
         :disabled="option.disabled"
         @mousedown="onOptionMousedown"
       >
@@ -66,27 +66,19 @@ export default {
     },
     optionLabel: {
       type: Function,
-      default: (o) => {
-        return o.label;
-      },
+      default: (o) => (isObject(o) ? o.label : o),
     },
     optionKey: {
       type: Function,
-      default: (o) => {
-        return o.value;
-      },
+      default: (o) => (isObject(o) ? o.value : o),
     },
     optionValue: {
       type: Function,
-      default: (o) => {
-        return o.value;
-      },
+      default: (o) => (isObject(o) ? o.value : o),
     },
     optionDisabled: {
       type: Function,
-      default: (o) => {
-        return o.disabled;
-      },
+      default: (o) => (isObject(o) ? o.disabled : false),
     },
   },
   emits: ["update:modelValue"],
@@ -101,35 +93,41 @@ export default {
         return isObject(option)
           ? {
               label: this.optionLabel(option),
-              value: this.optionKey(option),
+              key: this.optionKey(option),
+              value: this.optionValue(option),
               disabled: this.optionDisabled(option),
             }
-          : { label: option, value: option };
+          : { label: option, key: option, value: option };
       });
     },
     value: {
       get() {
         if (this.multiple) {
-          return this.modelValue?.map((v) => {
-            return isObject(v) ? this.optionKey(v) : v;
+          const options = this.normalizedOptions.filter((o) => {
+            return this.modelValue.includes(o.value);
           });
+          return options.map((o) => o.key);
         }
-        return isObject(this.modelValue)
-          ? this.optionKey(this.modelValue)
-          : this.modelValue;
+        const option = this.normalizedOptions.find((o) => {
+          return o.value === this.modelValue;
+        });
+        return option?.key;
       },
       set(value) {
         if (this.multiple) {
-          const options = this.options.filter((o) => {
-            return value.includes(isObject(o) ? this.optionKey(o) : o);
+          const options = this.normalizedOptions.filter((o) => {
+            return value.includes(o.key);
           });
-          this.$emit("update:modelValue", options.map(this.optionValue));
+          this.$emit(
+            "update:modelValue",
+            options.map((o) => o.value)
+          );
         }
 
-        const option = this.options.find((o) => {
-          return value === (isObject(o) ? this.optionKey(o) : o);
+        const option = this.normalizedOptions.find((o) => {
+          return o.key === value;
         });
-        this.$emit("update:modelValue", this.optionValue(option));
+        this.$emit("update:modelValue", option?.value);
       },
     },
   },

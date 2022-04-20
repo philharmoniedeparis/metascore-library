@@ -261,9 +261,9 @@ export default {
         });
         layout.items[0].items.push({
           type: "select",
-          options: this.images,
-          optionLabel: (o) => o.name,
-          optionKey: (o) => o.id,
+          options: [{ name: "", id: -1, url: null }, ...this.images],
+          optionLabel: (o) => o?.name,
+          optionKey: (o) => o?.id,
           optionValue: (o) => o.url,
           ...this.getControlProps("background-image"),
         });
@@ -329,8 +329,8 @@ export default {
             type: "select",
             multiple: true,
             options: this.firstLevelComponents,
-            optionLabel: (o) => o.name,
-            optionKey: (o) => o.id,
+            optionLabel: (o) => o?.name,
+            optionKey: (o) => o?.id,
             optionValue: (o) => ({ type: o.type, id: o.id }),
             ...this.getControlProps("blocks", this.commonModel.type),
           });
@@ -411,7 +411,7 @@ export default {
                 (property) => {
                   layout.items[0].items.push({
                     type: "select",
-                    options: this.masterComponent.markers,
+                    options: [null, ...this.masterComponent.markers],
                     ...this.getControlProps(property, this.commonModel.type),
                   });
                 }
