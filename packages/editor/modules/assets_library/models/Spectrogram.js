@@ -17,7 +17,7 @@ export default class Spectrogram extends AbstractModel {
         properties: {
           width: createIntegerField({
             default: 400,
-            minimum: 0,
+            minimum: 1,
           }),
           height: createEnumField({
             enum: ["16", "32", "64", "128", "256", "512", "1024", "2048"],

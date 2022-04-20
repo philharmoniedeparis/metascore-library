@@ -40,13 +40,20 @@
 </i18n>
 
 <template>
-  <modal-form :title="$t('title')" @submit="onSubmit" @close="onCancel">
+  <modal-form
+    :title="$t('title')"
+    :validate="false"
+    @submit="onSubmit"
+    @close="onCancel"
+  >
     <schema-form
+      v-if="model"
       class="assets-library--waveform-form"
       :schema="schema"
       :layout="layout"
       :values="model"
       :validator="validator"
+      :errors="errors"
       @update:model-value="onUpdate($event)"
     />
 
@@ -74,7 +81,8 @@ export default {
   emits: ["submit", "close"],
   data() {
     return {
-      model: new Model(),
+      model: null,
+      errors: null,
     };
   },
   computed: {
@@ -163,34 +171,42 @@ export default {
       };
     },
   },
+  async mounted() {
+    this.model = await Model.create({});
+  },
   methods: {
     onUpdate({ property, value }) {
-      this.model.update({
-        [property]: value,
-      });
+      this.model.update({ [property]: value }, false);
     },
     onSubmit() {
       const data = this.model.data;
 
-      if (!data.end) {
-        data.zoom = "auto";
-        delete data.end;
-      }
+      this.model
+        .validate(data)
+        .then(() => {
+          if (!data.end) {
+            data.zoom = "auto";
+            delete data.end;
+          }
 
-      ["split-channels", "no-axis-labels"].forEach((key) => {
-        data[key] = data[key] ? 1 : 0;
-      });
+          ["split-channels", "no-axis-labels"].forEach((key) => {
+            data[key] = data[key] ? 1 : 0;
+          });
 
-      [
-        "background-color",
-        "waveform-color",
-        "axis-label-color",
-        "border-color",
-      ].forEach((key) => {
-        data[key] = data[key].replace("#", "");
-      });
+          [
+            "background-color",
+            "waveform-color",
+            "axis-label-color",
+            "border-color",
+          ].forEach((key) => {
+            data[key] = data[key].replace("#", "");
+          });
 
-      this.$emit("submit", data);
+          this.$emit("submit", data);
+        })
+        .catch((errors) => {
+          this.errors = errors;
+        });
     },
     onCancel() {
       this.$emit("close");

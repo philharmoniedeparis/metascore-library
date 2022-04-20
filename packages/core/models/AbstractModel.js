@@ -120,7 +120,7 @@ export default class AbstractModel {
     return this.schema.required;
   }
 
-  static async create(data = {}, validate = true) {
+  static create(data = {}, validate = true) {
     const instance = new this();
 
     if (validate) {
@@ -196,37 +196,56 @@ export default class AbstractModel {
   }
 
   /**
-   * Get current validation errors.
-   */
-  get errors() {
-    return this.ajv.errors;
-  }
-
-  /**
    * Alias to the static method of the same name
    *
    * @param {Object} data The data to validate
-   * @returns {boolean} True if the data is valid, false otherwise
+   * @returns {Promise} A promise that resolves with validated data or rejects with errors
    */
-  async validate(data) {
-    return await this.ajv.validate(this.schema, data);
+  validate(data) {
+    return new Promise((resolve, reject) => {
+      const result = this.ajv.validate(this.schema, data);
+
+      if (!!result && typeof result.then === "function") {
+        result.then(resolve).catch((e) => {
+          reject(e.errors);
+        });
+      } else {
+        if (result) {
+          resolve(data);
+        } else {
+          reject(this.ajv.errors);
+        }
+      }
+    });
   }
 
   /**
    * Update internal data
    *
    * @param {Object} data The data to update
+   * @param {boolean} [validate=true] Whether to validate the data
    * @returns {Promise<this, Error>} True if the data is valid, false otherwise
    */
-  async update(data) {
+  update(data, validate = true) {
     const updated = {
       ...this._data,
       ...data,
     };
 
-    return this.validate(updated).then(() => {
+    if (validate) {
+      return new Promise((resolve, reject) => {
+        this.validate(updated)
+          .then((result) => {
+            this._data = result;
+            resolve(this);
+          })
+          .catch((errors) => {
+            reject(errors);
+          });
+      });
+    } else {
       this._data = updated;
       return this;
-    });
+    }
   }
 }

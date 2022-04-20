@@ -3,6 +3,7 @@
     :is="`${control}-control`"
     v-model="value"
     :label="displayLabel ? schema.title : null"
+    :required="required"
     :readonly="readonly"
     :disabled="disabled"
     v-bind="extraProps"
@@ -16,6 +17,10 @@ export default {
     type: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

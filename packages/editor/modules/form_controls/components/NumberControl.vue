@@ -11,6 +11,7 @@
     :label="label"
     :label-for="inputId"
     :description="description"
+    :required="required"
   >
     <div
       class="input-container"
@@ -78,6 +79,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

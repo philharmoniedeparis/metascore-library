@@ -52,13 +52,20 @@
 </i18n>
 
 <template>
-  <modal-form :title="$t('title')" @submit="onSubmit" @close="onCancel">
+  <modal-form
+    :title="$t('title')"
+    :validate="false"
+    @submit="onSubmit"
+    @close="onCancel"
+  >
     <schema-form
+      v-if="model"
       class="assets-library--spectrogram-form"
       :schema="schema"
       :layout="layout"
       :values="model"
       :validator="validator"
+      :errors="errors"
       @update:model-value="onUpdate($event)"
     />
 
@@ -86,7 +93,8 @@ export default {
   emits: ["submit", "close"],
   data() {
     return {
-      model: new Model(),
+      model: null,
+      errors: null,
     };
   },
   computed: {
@@ -183,22 +191,35 @@ export default {
       };
     },
   },
+  async mounted() {
+    this.model = await Model.create({});
+  },
   methods: {
     onUpdate({ property, value }) {
-      this.model.update({
-        [property]: value,
-      });
+      this.model.update({ [property]: value }, false);
     },
     onSubmit() {
       const data = this.model.data;
 
-      data.size = `${data.width}x${data.height}`;
-      delete data.width;
-      delete data.height;
+      this.model
+        .validate(data)
+        .then(() => {
+          if (this.model.errors) {
+            this.errors = this.model.errors;
+            return;
+          }
 
-      data.legend = data.legend ? 1 : 0;
+          data.size = `${data.width}x${data.height}`;
+          delete data.width;
+          delete data.height;
 
-      this.$emit("submit", data);
+          data.legend = data.legend ? 1 : 0;
+
+          this.$emit("submit", data);
+        })
+        .catch((errors) => {
+          this.errors = errors;
+        });
     },
     onCancel() {
       this.$emit("close");

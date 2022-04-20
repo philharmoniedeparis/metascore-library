@@ -4,14 +4,16 @@
     :label="label"
     :label-for="inputId"
     :description="description"
+    :required="required"
   >
     <select
       :id="inputId"
       ref="input"
       v-model="value"
       v-autofocus="autofocus"
-      :multiple="multiple"
+      :required="required"
       :disabled="disabled"
+      :multiple="multiple"
     >
       <option
         v-for="option in normalizedOptions"
@@ -43,6 +45,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     disabled: {
       type: Boolean,

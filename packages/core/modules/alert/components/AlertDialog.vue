@@ -18,7 +18,7 @@
 
     <template #footer>
       <styled-button type="button" role="primary" @click="$emit('close')">
-        {{ submitLabelWithDefault }}
+        {{ buttonLabelWithDefault }}
       </styled-button>
     </template>
   </base-modal>

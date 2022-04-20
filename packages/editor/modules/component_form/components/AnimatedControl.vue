@@ -4,6 +4,7 @@
     :data-property="property"
     :label="label"
     :description="description"
+    :required="required"
   >
     <checkbox-control
       :model-value="value.animated"
@@ -45,6 +46,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

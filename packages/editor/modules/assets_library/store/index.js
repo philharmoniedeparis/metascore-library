@@ -8,7 +8,6 @@ export default defineStore("assets-library", {
       items: {},
       processing: false,
       uploadProgress: null,
-      error: null,
     };
   },
   getters: {
@@ -81,9 +80,6 @@ export default defineStore("assets-library", {
           items.map(this.add);
           return items;
         })
-        .catch((e) => {
-          this.error = e;
-        })
         .finally(() => {
           this.processing = false;
           this.uploadProgress = null;
@@ -97,9 +93,6 @@ export default defineStore("assets-library", {
         .then((item) => {
           this.add(item);
           return item;
-        })
-        .catch((e) => {
-          this.error = e;
         })
         .finally(() => {
           this.processing = false;

@@ -16,11 +16,11 @@ export default class Spectrogram extends AbstractModel {
         properties: {
           width: createIntegerField({
             default: 400,
-            minimum: 0,
+            minimum: 1,
           }),
           height: createIntegerField({
             default: 200,
-            minimum: 0,
+            minimum: 1,
           }),
           "split-channels": createBooleanField({
             default: false,

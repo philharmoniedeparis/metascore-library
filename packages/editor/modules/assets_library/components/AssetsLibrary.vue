@@ -60,7 +60,7 @@
         <spectrogram-form
           v-if="showSpectrogramForm"
           @submit="onSpectrogramFormSubmit"
-          @close="showSpectrogramForm = false"
+          @close="onSpectrogramFormClose"
         />
       </template>
 
@@ -72,7 +72,7 @@
         <audiowaveform-form
           v-if="showAudiowaveformForm"
           @submit="onAudiowaveformFormSubmit"
-          @close="showAudiowaveformForm = false"
+          @close="onAudiowaveformFormClose"
         />
       </template>
 
@@ -82,7 +82,7 @@
         :value="uploadProgress"
       />
 
-      <alert-dialog v-if="error">
+      <alert-dialog v-if="error" @close="error = null">
         {{ $t("error") }}
       </alert-dialog>
     </div>
@@ -162,6 +162,7 @@ export default {
       dragover: false,
       showSpectrogramForm: false,
       showAudiowaveformForm: false,
+      error: null,
     };
   },
   computed: {
@@ -173,9 +174,6 @@ export default {
     },
     uploadProgress() {
       return this.store.uploadProgress;
-    },
-    error() {
-      return this.store.error;
     },
   },
   methods: {
@@ -230,7 +228,14 @@ export default {
     onDrop(evt) {
       const files = this.getDraggedFiles(evt.dataTransfer);
       this.dragover = false;
-      this.store.upload(this.uploadUrl, files);
+      this.store
+        .upload(this.uploadUrl, files)
+        .then(() => {
+          this.error = null;
+        })
+        .catch((e) => {
+          this.error = e;
+        });
     },
     onUploadChange(value) {
       Promise.all(
@@ -240,18 +245,45 @@ export default {
           });
         })
       ).then((files) => {
-        this.store.upload(this.uploadUrl, files);
+        this.store
+          .upload(this.uploadUrl, files)
+          .then(() => {
+            this.error = null;
+          })
+          .catch((e) => {
+            this.error = e;
+          });
       });
     },
     onSpectrogramFormSubmit(data) {
-      this.store.generate(this.spectrogramUrl, data).then(() => {
-        this.showSpectrogramForm = false;
-      });
+      this.store
+        .generate(this.spectrogramUrl, data)
+        .then(() => {
+          this.showSpectrogramForm = false;
+          this.error = null;
+        })
+        .catch((e) => {
+          this.error = e;
+        });
+    },
+    onSpectrogramFormClose() {
+      this.showSpectrogramForm = false;
+      this.error = null;
     },
     onAudiowaveformFormSubmit(data) {
-      this.store.generate(this.audiowaveformUrl, data).then(() => {
-        this.showAudiowaveformForm = false;
-      });
+      this.store
+        .generate(this.audiowaveformUrl, data)
+        .then(() => {
+          this.showAudiowaveformForm = false;
+          this.error = null;
+        })
+        .catch((e) => {
+          this.error = e;
+        });
+    },
+    onAudiowaveformFormClose() {
+      this.showAudiowaveformForm = false;
+      this.error = null;
     },
   },
 };

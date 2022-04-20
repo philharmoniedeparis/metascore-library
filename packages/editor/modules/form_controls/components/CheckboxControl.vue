@@ -5,6 +5,7 @@
     :label-for="inputId"
     label-position="after"
     :description="description"
+    :required="required"
   >
     <div class="input-container">
       <input
@@ -43,6 +44,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     disabled: {
       type: Boolean,

@@ -9,7 +9,11 @@
       <slot v-else name="description" />
     </div>
 
-    <form :id="uuid" novalidate @submit.stop.prevent="$emit('submit')">
+    <form
+      :id="uuid"
+      :novalidate="!validate"
+      @submit.stop.prevent="$emit('submit')"
+    >
       <slot />
     </form>
 
@@ -27,6 +31,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    validate: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["submit", "close"],

@@ -12,6 +12,8 @@
         :schema="flattenSchema ? flattenedSchema : schema"
         :layout="subLayout"
         :values="values"
+        :errors="errors"
+        :path="subLayout.property ? `${path}/${subLayout.property}` : path"
         @update:model-value="onSubFormUpdate"
       />
     </template>
@@ -45,12 +47,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    values: {
-      type: Object,
-      default() {
-        return {};
-      },
-    },
     layout: {
       type: Object,
       default(props) {
@@ -66,6 +62,22 @@ export default {
           }),
         };
       },
+    },
+    values: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    errors: {
+      type: Array,
+      default() {
+        return null;
+      },
+    },
+    path: {
+      type: String,
+      default: "",
     },
     validator: {
       type: Object,
@@ -96,6 +108,12 @@ export default {
             property: this.layout.property,
             modelValue: this.values[this.layout.property],
             schema: this.schema.properties[this.layout.property],
+            required: this.schema.required?.includes(this.layout.property),
+            errors: this.errors
+              ? this.errors
+                  .filter((e) => e.instancePath === this.path)
+                  .map((e) => e.message)
+              : null,
             "data-property": this.layout.property,
             ...omit(this.layout, ["property"]),
           };

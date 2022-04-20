@@ -4,12 +4,14 @@
     :label="label"
     :label-for="inputId"
     :description="description"
+    :required="required"
   >
     <input
       :id="inputId"
       v-model="value"
       v-autofocus="autofocus"
       type="url"
+      :required="required"
       :readonly="readonly"
       :disabled="disabled"
       @focus="onInputFocus"
@@ -35,6 +37,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

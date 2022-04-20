@@ -3,6 +3,8 @@
     :class="['control', 'array', { readonly, disabled }]"
     :data-property="property"
     :label="label"
+    :description="description"
+    :required="required"
   >
     <template v-for="(item, index) in items" :key="index">
       <control-dispatcher
@@ -28,6 +30,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

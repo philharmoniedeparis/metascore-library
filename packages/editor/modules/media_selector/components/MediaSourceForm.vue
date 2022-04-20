@@ -26,13 +26,20 @@
 </i18n>
 
 <template>
-  <modal-form :title="$t('title')" @submit="onSubmit" @close="onCancel">
+  <modal-form
+    :title="$t('title')"
+    :validate="false"
+    @submit="onSubmit"
+    @close="onCancel"
+  >
     <schema-form
+      v-if="model"
       class="media-source-form"
       :schema="schema"
       :layout="layout"
       :values="model"
       :validator="validator"
+      :errors="errors"
       @update:model-value="onUpdate($event)"
     />
 
@@ -78,7 +85,8 @@ export default {
   emits: ["submit", "close"],
   data() {
     return {
-      model: new Model(),
+      model: null,
+      errors: null,
     };
   },
   computed: {
@@ -146,14 +154,24 @@ export default {
       return null;
     },
   },
+  async mounted() {
+    this.model = await Model.create({});
+  },
   methods: {
     onUpdate({ property, value }) {
-      this.model.update({
-        [property]: value,
-      });
+      this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
-      this.$emit("submit", this.model.data);
+      const data = this.model.data;
+
+      this.model
+        .validate(data)
+        .then(() => {
+          this.$emit("submit", data);
+        })
+        .catch((errors) => {
+          this.errors = errors;
+        });
     },
     onCancel() {
       this.$emit("close");

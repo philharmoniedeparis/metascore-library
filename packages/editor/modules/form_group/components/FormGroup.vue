@@ -1,5 +1,5 @@
 <template>
-  <div :class="['form-group', { error: errors.length }]">
+  <div :class="['form-group', { required, error: errors?.length }]">
     <div class="input-wrapper">
       <template v-if="labelPosition === 'after'">
         <slot />
@@ -24,7 +24,7 @@
       class="description"
     />
 
-    <template v-if="errors.length">
+    <template v-if="errors?.length">
       <div v-for="(error, index) of errors" :key="index" class="errors">
         <div class="error">{{ error }}</div>
       </div>
@@ -56,10 +56,14 @@ export default {
       type: String,
       default: null,
     },
+    required: {
+      type: Boolean,
+      default: false,
+    },
     errors: {
       type: Array,
       default() {
-        return [];
+        return null;
       },
     },
   },
@@ -113,6 +117,8 @@ export default {
     ::v-deep(label) {
       &::after {
         content: "*";
+        font-size: 1.25em;
+        padding-left: 0.25em;
       }
     }
   }

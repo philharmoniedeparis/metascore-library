@@ -17,6 +17,7 @@
     :label="label"
     :label-for="inputId"
     :description="description"
+    :required="required"
   >
     <text-control
       ref="opener"
@@ -160,6 +161,10 @@ export default {
     description: {
       type: String,
       default: null,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
     readonly: {
       type: Boolean,

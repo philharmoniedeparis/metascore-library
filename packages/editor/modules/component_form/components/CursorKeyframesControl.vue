@@ -52,6 +52,10 @@ export default {
       type: String,
       default: null,
     },
+    required: {
+      type: Boolean,
+      default: false,
+    },
     disabled: {
       type: Boolean,
       default: false,
