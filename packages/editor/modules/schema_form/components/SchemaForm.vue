@@ -26,14 +26,14 @@
 
 <script>
 import { omit } from "lodash";
-import { computed } from "vue";
+import { markRaw } from "vue";
 import Ajv from "ajv";
 import { flatten } from "../utils/schema";
 
 export default {
   provide() {
     return {
-      validator: computed(() => this.validator),
+      validator: this.validator,
     };
   },
   props: {
@@ -70,12 +70,13 @@ export default {
     validator: {
       type: Object,
       default() {
-        return new Ajv({
+        const ajv = new Ajv({
           allErrors: true,
           verbose: true,
           strict: false,
           multipleOfPrecision: 2,
         });
+        return markRaw(ajv);
       },
     },
   },
