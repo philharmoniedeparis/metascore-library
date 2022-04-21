@@ -58,7 +58,7 @@ export default {
       },
     },
   },
-  emits: ["update:active"],
+  emits: ["update:active", "restore"],
   computed: {
     options() {
       return this.revisions.map((revision) => {
@@ -85,7 +85,9 @@ export default {
     },
   },
   methods: {
-    onRestoreClick() {},
+    onRestoreClick() {
+      this.$emit("restore", this.active);
+    },
   },
 };
 </script>
@@ -105,6 +107,7 @@ export default {
   }
 
   ::v-deep(button) {
+    color: $darkgray;
     background: $white;
     border: 1px solid $white;
     border-radius: 1.5em;

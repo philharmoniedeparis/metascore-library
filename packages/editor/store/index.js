@@ -127,6 +127,52 @@ export default defineStore("editor", {
     },
   },
   actions: {
+    async setData(data) {
+      this.revisions = data.revisions;
+      this.latestRevision = data.latest_revision;
+      this.activeRevision = data.vid;
+
+      this.setAppTitle(data.title);
+      this.setAppWidth(data.width);
+      this.setAppHeight(data.height);
+      this.setAppCss(data.css);
+      this.$onAction(({ name }) => {
+        switch (name) {
+          case "setAppTitle":
+          case "setAppWidth":
+          case "setAppHeight":
+            this.setDirty("metadata");
+            break;
+        }
+      });
+
+      const mediaStore = useModule("media_player").useStore();
+      mediaStore.setSource(data.media);
+      mediaStore.$onAction(({ name }) => {
+        if (["setSource"].includes(name)) {
+          this.setDirty("media");
+        }
+      });
+
+      const componentsStore = useModule("app_components").useStore();
+      await componentsStore.init(data.components);
+      componentsStore.$onAction(({ name }) => {
+        if (["add", "update", "delete"].includes(name)) {
+          this.setDirty("components");
+        }
+      });
+
+      const assetsStore = useModule("assets_library").useStore();
+      assetsStore.init(data.assets);
+      assetsStore.$onAction(({ name }) => {
+        if (["add", "delete"].includes(name)) {
+          this.setDirty("assets");
+        }
+      });
+
+      const historyStore = useModule("history").useStore();
+      historyStore.active = true;
+    },
     setAppTitle(value) {
       this.appTitle = value;
     },
@@ -378,78 +424,39 @@ export default defineStore("editor", {
       this.loading = true;
 
       const data = await api.get(url);
-
-      this.revisions = data.revisions;
-      this.latestRevision = data.latest_revision;
-      this.activeRevision = data.vid;
-
-      this.setAppTitle(data.title);
-      this.setAppWidth(data.width);
-      this.setAppHeight(data.height);
-      this.setAppCss(data.css);
-      this.$onAction(({ name }) => {
-        switch (name) {
-          case "setAppTitle":
-          case "setAppWidth":
-          case "setAppHeight":
-            this.setDirty("metadata");
-            break;
-        }
-      });
-
-      const mediaStore = useModule("media_player").useStore();
-      mediaStore.setSource(data.media);
-      mediaStore.$onAction(({ name }) => {
-        if (["setSource"].includes(name)) {
-          this.setDirty("media");
-        }
-      });
-
-      const componentsStore = useModule("app_components").useStore();
-      await componentsStore.init(data.components);
-      componentsStore.$onAction(({ name }) => {
-        if (["add", "update", "delete"].includes(name)) {
-          this.setDirty("components");
-        }
-      });
-
-      const assetsStore = useModule("assets_library").useStore();
-      assetsStore.init(data.assets);
-      assetsStore.$onAction(({ name }) => {
-        if (["add", "delete"].includes(name)) {
-          this.setDirty("assets");
-        }
-      });
-
-      const historyStore = useModule("history").useStore();
-      historyStore.active = true;
+      await this.setData(data);
 
       this.loading = false;
     },
-    async save(url) {
+    save(url) {
       this.saving = true;
 
-      api
+      return api
         .save(url, this.getDirtyData())
         .then(() => {
           this.dirty.clear();
-        })
-        .catch(() => {
-          // @todo: handle errors
         })
         .finally(() => {
           this.saving = false;
         });
     },
-    async loadRevision(vid) {
+    loadRevision(vid) {
       const revision = this.revisions.find((r) => r.vid === vid);
       if (revision) {
-        await this.load(revision.url);
+        return this.load(revision.url);
       }
     },
-    async restoreRevision(vid) {
-      // @todo: send request
-      console.log("restoreRevision", vid);
+    restoreRevision(url, vid) {
+      this.saving = true;
+
+      return api
+        .restore(url, vid)
+        .then(async (data) => {
+          await this.setData(data);
+        })
+        .finally(() => {
+          this.saving = false;
+        });
     },
   },
   history(context) {

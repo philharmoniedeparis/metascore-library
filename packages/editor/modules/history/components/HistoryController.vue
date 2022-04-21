@@ -1,10 +1,18 @@
 <template>
   <div class="history-controller">
-    <styled-button type="button" :disabled="!canUndo" @click="onUndoClick">
+    <styled-button
+      type="button"
+      :disabled="!canUndo || disabled"
+      @click="onUndoClick"
+    >
       <template #icon><undo-icon /></template>
     </styled-button>
 
-    <styled-button type="button" :disabled="!canRedo" @click="onRedoClick">
+    <styled-button
+      type="button"
+      :disabled="!canRedo || disabled"
+      @click="onRedoClick"
+    >
       <template #icon><redo-icon /></template>
     </styled-button>
   </div>
@@ -19,6 +27,12 @@ export default {
   components: {
     UndoIcon,
     RedoIcon,
+  },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const store = useStore();

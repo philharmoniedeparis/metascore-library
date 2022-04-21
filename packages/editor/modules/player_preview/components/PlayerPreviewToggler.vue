@@ -3,6 +3,7 @@
     v-model="preview"
     v-hotkey="hotkeys"
     class="player-preview-toggler"
+    :disabled="disabled"
   >
     <toggle-icon class="icon" />
   </checkbox-control>
@@ -15,6 +16,12 @@ import ToggleIcon from "../assets/icons/preview-toggle.svg?inline";
 export default {
   components: {
     ToggleIcon,
+  },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const store = useStore();

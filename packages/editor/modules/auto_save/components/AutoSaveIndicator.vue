@@ -35,6 +35,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const editorStore = useEditorStore();
@@ -51,6 +55,9 @@ export default {
   watch: {
     url(value) {
       this[value ? "subscribe" : "unsubscribe"]();
+    },
+    disabled(value) {
+      this[value ? "unsubscribe" : "subscribe"]();
     },
   },
   mounted() {

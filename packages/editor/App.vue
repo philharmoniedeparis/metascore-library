@@ -12,17 +12,32 @@
 </i18n>
 
 <template>
-  <div :class="['metaScore-editor', classes]" @contextmenu="onContextmenu">
+  <div
+    :class="[
+      'metaScore-editor',
+      {
+        preview,
+        'app-title-focused': appTitleFocused,
+        'libraries-expanded': librariesExpanded,
+        'latest-revision': isLatestRevision,
+      },
+    ]"
+    @contextmenu="onContextmenu"
+  >
     <resizable-pane class="top">
       <nav class="main-menu">
         <div class="left">
-          <styled-button :disabled="!dirty" @click="onSaveClick">
+          <styled-button
+            :disabled="!dirty || !isLatestRevision"
+            @click="onSaveClick"
+          >
             <template #icon><save-icon /></template>
           </styled-button>
-          <history-controller />
+          <history-controller :disabled="!isLatestRevision" />
           <text-control
             v-model="appTitle"
             :lazy="true"
+            :disabled="!isLatestRevision"
             class="app-title"
             @focusin="onAppTitleFocusin"
             @focusout="onAppTitleFocusout"
@@ -31,13 +46,14 @@
         <div class="center">
           <player-zoom-controller />
           <player-dimensions-controller />
-          <player-preview-toggler />
+          <player-preview-toggler :disabled="!isLatestRevision" />
         </div>
         <div class="right">
           <revision-selector
             v-model:active="activeRevision"
             :revisions="revisions"
             :latest="latestRevision"
+            @restore="onRevisionSelectorRestore"
           />
         </div>
       </nav>
@@ -77,10 +93,7 @@
       ></component-form>
     </resizable-pane>
 
-    <resizable-pane
-      :class="['bottom', { collapsed: preview }]"
-      :top="{ collapse: true }"
-    >
+    <resizable-pane class="bottom" :top="{ collapse: true }">
       <div class="top">
         <playback-time />
         <buffer-indicator />
@@ -112,7 +125,10 @@
       :text="$t('saving_indicator_label')"
     />
 
-    <auto-save-indicator v-bind="configs.modules?.auto_save" />
+    <auto-save-indicator
+      v-bind="configs.modules?.auto_save"
+      :disabled="!isLatestRevision"
+    />
 
     <context-menu
       v-model:show="showContextmenu"
@@ -174,8 +190,9 @@ export default {
     return {
       version: packageInfo.version,
       modalsTarget: null,
-      classes: {},
+      appTitleFocused: false,
       activeLibrariesTab: 0,
+      librariesExpanded: false,
       cursorKeyframesRecording: false,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
@@ -248,8 +265,8 @@ export default {
         this.store.loadRevision(value);
       },
     },
-    autoSaveUrl() {
-      return this.store.autoSaveUrl;
+    isLatestRevision() {
+      return this.activeRevision === this.latestRevision;
     },
   },
   watch: {
@@ -258,23 +275,16 @@ export default {
         this.waveformStore.load(source);
       }
     },
-    preview(value) {
-      if (value) {
-        this.classes["preview"] = true;
-      } else {
-        delete this.classes["preview"];
-      }
-    },
     activeLibrariesTab(index) {
       const tabs = this.$refs.libraries.$el.querySelector(".tabs-nav");
 
       if (index === 2) {
         const { width } = tabs.getBoundingClientRect();
         tabs.style.maxWidth = `${width}px`;
-        this.classes["libraries-expanded"] = true;
+        this.librariesExpanded = true;
       } else {
         tabs.style.maxWidth = null;
-        delete this.classes["libraries-expanded"];
+        this.librariesExpanded = false;
       }
     },
   },
@@ -297,13 +307,22 @@ export default {
   },
   methods: {
     onSaveClick() {
-      this.store.save(this.url);
+      this.store.save(this.url).catch((e) => {
+        // @todo: handle errors
+        console.error(e);
+      });
     },
     onAppTitleFocusin() {
-      this.classes["app-title-focused"] = true;
+      this.appTitleFocused = true;
     },
     onAppTitleFocusout() {
-      delete this.classes["app-title-focused"];
+      this.appTitleFocused = false;
+    },
+    onRevisionSelectorRestore(vid) {
+      this.store.restoreRevision(this.url, vid).catch((e) => {
+        // @todo: handle errors
+        console.error(e);
+      });
     },
     async onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
@@ -592,8 +611,48 @@ export default {
         background: $darkgray;
       }
     }
+  }
 
-    &.collapsed {
+  &.app-title-focused {
+    .main-menu {
+      > .left > :not(.app-title),
+      > .center,
+      > .right {
+        display: none;
+      }
+    }
+  }
+
+  &.libraries-expanded {
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto;
+    grid-template-areas: "top" "left";
+
+    > .left {
+      width: auto !important;
+      max-width: none;
+      padding: 0;
+
+      ::v-deep(.tabs-nav) {
+        border-color: transparent;
+      }
+    }
+
+    > .center,
+    > .right,
+    > .bottom {
+      display: none;
+    }
+  }
+
+  &.preview,
+  &:not(.latest-revision) {
+    > .left,
+    > .right {
+      display: none;
+    }
+
+    > .bottom {
       display: grid;
       height: auto !important;
       min-height: 0;
@@ -652,45 +711,6 @@ export default {
       > .bottom {
         display: none;
       }
-    }
-  }
-
-  &.app-title-focused {
-    .main-menu {
-      > .left > :not(.app-title),
-      > .center,
-      > .right {
-        display: none;
-      }
-    }
-  }
-
-  &.libraries-expanded {
-    grid-template-columns: auto;
-    grid-template-rows: min-content auto;
-    grid-template-areas: "top" "left";
-
-    > .left {
-      width: auto !important;
-      max-width: none;
-      padding: 0;
-
-      ::v-deep(.tabs-nav) {
-        border-color: transparent;
-      }
-    }
-
-    > .center,
-    > .right,
-    > .bottom {
-      display: none;
-    }
-  }
-
-  &.preview {
-    > .left,
-    > .right {
-      display: none;
     }
   }
 

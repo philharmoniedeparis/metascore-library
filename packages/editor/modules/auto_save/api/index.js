@@ -1,4 +1,4 @@
-import { load, getDefaults } from "@metascore-library/core/services/ajax";
+import { load } from "@metascore-library/core/services/ajax";
 
 function save(url, data) {
   return load(url, {
@@ -8,10 +8,8 @@ function save(url, data) {
 }
 
 function _delete(url) {
-  // Delete auto-save data using the fetch API as XMLHttpRequest doesn't support keepalive.
-  return fetch(url, {
+  return load(url, {
     method: "DELETE",
-    headers: getDefaults().headers?.common || {},
     keepalive: true,
   });
 }
