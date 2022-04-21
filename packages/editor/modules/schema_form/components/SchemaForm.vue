@@ -30,7 +30,14 @@
 import { omit } from "lodash";
 import { markRaw } from "vue";
 import Ajv from "ajv";
+import localize_fr from "ajv-i18n/localize/fr";
+import localize_en from "ajv-i18n/localize/en";
 import { flatten } from "../utils/schema";
+
+const localize = {
+  fr: localize_fr,
+  en: localize_en,
+};
 
 export default {
   provide() {
@@ -97,6 +104,16 @@ export default {
     flattenedSchema() {
       return flatten(this.schema, this.validator, this.values, true);
     },
+    controlErrors() {
+      if (this.errors) {
+        const locale = this.$i18n.locale;
+        const errors = this.errors.filter((e) => e.instancePath === this.path);
+        localize[locale](errors);
+        return errors.map((e) => e.message);
+      }
+
+      return null;
+    },
     props() {
       switch (this.layout.type) {
         case "markup":
@@ -109,11 +126,7 @@ export default {
             modelValue: this.values[this.layout.property],
             schema: this.schema.properties[this.layout.property],
             required: this.schema.required?.includes(this.layout.property),
-            errors: this.errors
-              ? this.errors
-                  .filter((e) => e.instancePath === this.path)
-                  .map((e) => e.message)
-              : null,
+            errors: this.controlErrors,
             "data-property": this.layout.property,
             ...omit(this.layout, ["property"]),
           };

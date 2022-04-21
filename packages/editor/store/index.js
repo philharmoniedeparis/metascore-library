@@ -251,6 +251,7 @@ export default defineStore("editor", {
     },
     pasteComponent(component, parent) {
       // @todo: implement
+      console.log("pasteComponent", component, parent);
     },
     pasteComponents(components, parent) {
       components.map((c) => this.pasteComponent(c, parent));
@@ -447,6 +448,8 @@ export default defineStore("editor", {
       }
     },
     async restoreRevision(vid) {
+      // @todo: send request
+      console.log("restoreRevision", vid);
     },
   },
   history(context) {
