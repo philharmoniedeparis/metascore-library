@@ -3,10 +3,12 @@
   "fr": {
     "option_label": "Révision {id} du {date}",
     "restore_button": "Restaurer",
+    "confirm_text": "Êtes-vous sûr de vouloir revenir à la révision {id} du {date} ?",
   },
   "en": {
     "option_label": "Revision {id} from {date}",
     "restore_button": "Restore",
+    "confirm_text": "Are you sure you want to revert to revision {id} from {date}?",
   },
 }
 </i18n>
@@ -22,6 +24,14 @@
     >
       {{ $t("restore_button") }}
     </styled-button>
+
+    <confirm-dialog
+      v-if="showConfirm"
+      @submit="onConfirmSubmit"
+      @cancel="onConfirmCancel"
+    >
+      <p>{{ $t("confirm_text", { id: active, date: activeDate }) }}</p>
+    </confirm-dialog>
   </div>
 </template>
 
@@ -59,6 +69,11 @@ export default {
     },
   },
   emits: ["update:active", "restore"],
+  data() {
+    return {
+      showConfirm: false,
+    };
+  },
   computed: {
     options() {
       return this.revisions.map((revision) => {
@@ -83,10 +98,25 @@ export default {
     canRestore() {
       return this.active && this.active !== this.latest;
     },
+    activeDate() {
+      if (!this.active) {
+        return null;
+      }
+
+      const revision = this.revisions.find((r) => r.vid === this.active);
+      return this.dateFormatter.format(new Date(revision.created * 1000));
+    },
   },
   methods: {
     onRestoreClick() {
+      this.showConfirm = true;
+    },
+    onConfirmSubmit() {
+      this.showConfirm = false;
       this.$emit("restore", this.active);
+    },
+    onConfirmCancel() {
+      this.showConfirm = false;
     },
   },
 };
