@@ -24,20 +24,27 @@
       class="description"
     />
 
-    <template v-if="errors?.length">
-      <div v-for="(error, index) of errors" :key="index" class="errors">
-        <div class="error">{{ error }}</div>
-      </div>
-    </template>
+    <div v-if="errors?.length" class="errors">
+      <error-icon class="icon" />
+      <ul>
+        <li v-for="(error, index) of errors" :key="index" class="error">
+          {{ error }}
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import ErrorIcon from "../assets/icons/error.svg?inline";
 
 export default {
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
+  components: {
+    ErrorIcon,
   },
   props: {
     label: {
@@ -113,6 +120,36 @@ export default {
     }
   }
 
+  .description {
+    font-size: 0.9em;
+    margin-top: 0.25em;
+    margin-bottom: 0.4em;
+    color: $white;
+    opacity: 0.75;
+  }
+
+  .errors {
+    display: flex;
+    flex-direction: row;
+    font-size: 0.875em;
+    margin-top: 0.25em;
+
+    .icon {
+      color: $danger;
+      width: 1em;
+      height: 1em;
+      margin-right: 0.5em;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: $white;
+      opacity: 0.75;
+    }
+  }
+
   &.required {
     ::v-deep(label) {
       &::after {
@@ -124,22 +161,11 @@ export default {
   }
 
   &.error {
-    ::v-deep(label) {
-      color: #dd201f;
+    ::v-deep(input),
+    ::v-deep(select) {
+      outline: 2px solid $danger;
+      outline-offset: -2px;
     }
   }
-}
-
-.errors {
-  font-size: 0.875em;
-  color: #dd201f;
-}
-
-.description {
-  font-size: 0.9em;
-  margin-top: 0.25em;
-  margin-bottom: 0.4em;
-  color: $white;
-  opacity: 0.75;
 }
 </style>

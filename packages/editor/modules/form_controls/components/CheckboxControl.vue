@@ -131,5 +131,11 @@ export default {
       cursor: default;
     }
   }
+
+  &.error {
+    .input-container {
+      outline: 2px solid $danger;
+    }
+  }
 }
 </style>

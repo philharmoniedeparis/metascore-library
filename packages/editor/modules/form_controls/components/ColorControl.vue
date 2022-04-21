@@ -257,5 +257,11 @@ export default {
       cursor: default;
     }
   }
+
+  &.error {
+    .opener {
+      outline: 2px solid $danger;
+    }
+  }
 }
 </style>
