@@ -100,7 +100,9 @@ export class Animation extends EmbeddableComponent {
    */
   static async getEmbeddedData(url) {
     const { default: Lottie } = await import(
-      /* webpackChunkName: "vendors.lottie.js" */ "lottie-web"
+      /* webpackChunkName: "vendors.lottie.js" */
+      /* webpackExports: ["default"] */
+      "lottie-web"
     );
 
     return new Promise((resolve) => {

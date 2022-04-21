@@ -147,7 +147,9 @@ export default {
       }
 
       const { default: Lottie } = await import(
-        /* webpackChunkName: "vendors.lottie.js" */ "lottie-web"
+        /* webpackChunkName: "vendors.lottie.js" */
+        /* webpackExports: ["default"] */
+        "lottie-web"
       );
 
       this.animation = Lottie.loadAnimation({
