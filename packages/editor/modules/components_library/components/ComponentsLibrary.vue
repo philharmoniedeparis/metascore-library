@@ -26,7 +26,8 @@
 <template>
   <div class="components-library">
     <template v-for="(item, index) in items" :key="index">
-      <component-library-item :component="item" :label="item.name" />
+      <div v-if="item === '-'" class="separator"></div>
+      <component-library-item v-else :component="item" :label="item.name" />
     </template>
   </div>
 </template>
@@ -62,6 +63,7 @@ export default {
           type: "VideoRenderer",
           name: this.$t("video_renderer"),
         },
+        "-",
         {
           type: "Block",
           name: this.$t("synched_block"),
@@ -96,10 +98,10 @@ export default {
 
   ::v-deep(.components-library--item) {
     flex: 0 0 auto;
+  }
 
-    &.synched_block {
-      margin-top: 2px;
-    }
+  .separator {
+    height: 4px;
   }
 }
 </style>
