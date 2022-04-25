@@ -1,3 +1,14 @@
+<i18n>
+{
+  "fr": {
+    "loading_indicator_label": "Chargement ...",
+  },
+  "en": {
+    "loading_indicator_label": "Loading...",
+  },
+}
+</i18n>
+
 <template>
   <div class="metaScore-player" @contextmenu="onContextmenu">
     <app-renderer
@@ -5,6 +16,8 @@
       :responsive="responsive"
       :allow-upscaling="allowUpscaling"
     />
+
+    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
 
     <context-menu
       v-model:show="showContextmenu"
@@ -18,10 +31,16 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import useStore from "./store";
 import packageInfo from "../../package.json";
 
 export default {
+  provide() {
+    return {
+      modalsTarget: computed(() => this.modalsTarget),
+    };
+  },
   props: {
     url: {
       type: String,
@@ -51,11 +70,19 @@ export default {
   data() {
     return {
       version: packageInfo.version,
+      modalsTarget: null,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
   },
+  computed: {
+    loading() {
+      return this.store.loading;
+    },
+  },
   mounted() {
+    this.modalsTarget = this.$el;
+    console.log(this.$el);
     this.store.load(this.url);
   },
   methods: {
@@ -79,8 +106,15 @@ export default {
 
 <style lang="scss" scoped>
 @import "normalize.css";
+@import "source-sans/source-sans-3VF.css";
 
 .metaScore-player {
   position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
+    sans-serif;
 }
 </style>

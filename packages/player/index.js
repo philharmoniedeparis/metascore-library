@@ -8,6 +8,7 @@ import App from "./App.vue";
 import { registerModules } from "@metascore-library/core/services/module-manager";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
+import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 
 export class Player {
   /**
@@ -31,8 +32,14 @@ export class Player {
       .use(i18n)
       .use(hotkey);
 
+    // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
+    app.config.unwrapInjectedRef = true;
+
     // Register root modules.
-    await registerModules([AppRenderer, ContextMenu], { app, pinia });
+    await registerModules([AppRenderer, ContextMenu, ProgressIndicator], {
+      app,
+      pinia,
+    });
 
     return new Player(app, el);
   }

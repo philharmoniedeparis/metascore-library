@@ -368,11 +368,8 @@ export default {
 
 .metaScore-editor {
   position: relative;
-  font-size: 14px;
-  font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
-    sans-serif;
-  display: grid;
   height: 100%;
+  display: grid;
   margin: 0;
   padding: 0;
   grid-template-columns: auto 1fr auto;
@@ -383,6 +380,9 @@ export default {
     "bottom bottom bottom";
   align-items: stretch;
   flex-wrap: nowrap;
+  font-size: 14px;
+  font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
+    sans-serif;
 
   &,
   ::v-deep(*) {

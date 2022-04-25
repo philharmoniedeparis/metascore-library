@@ -5,13 +5,11 @@ import * as api from "../api";
 export default defineStore("player", {
   state: () => {
     return {
-      ready: false,
+      loading: false,
     };
   },
   actions: {
-    async load(url) {
-      const data = await api.get(url);
-
+    setData(data) {
       const mediaStore = useModule("media_player").useStore();
       mediaStore.source = data.media;
 
@@ -22,8 +20,14 @@ export default defineStore("player", {
       appRendererStore.width = data.width;
       appRendererStore.height = data.height;
       appRendererStore.css = data.css;
+    },
+    async load(url) {
+      this.loading = true;
 
-      this.ready = true;
+      const data = await api.get(url);
+      this.setData(data);
+
+      this.loading = false;
     },
   },
 });
