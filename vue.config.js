@@ -1,4 +1,5 @@
 const { defineConfig } = require("@vue/cli-service");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 
 module.exports = defineConfig({
@@ -45,6 +46,31 @@ module.exports = defineConfig({
             };
           }
         },
+      },
+    ]);
+
+    // Override HTML output.
+    config.plugin("html").tap((args) => {
+      args[0].title = "metaScore-library - Editor";
+      args[0].chunks = ["metaScore.Editor"];
+      args[0].overrides = JSON.stringify({
+        services: {
+          ajax: {
+            credentials: "include",
+            headers: {
+              "X-CSRF-Token": process.env.AJAX_XCSRFToken,
+            },
+          },
+        },
+      });
+      return args;
+    });
+    config.plugin("player-html").use(HtmlWebpackPlugin, [
+      {
+        ...config.plugin("html").get("args")[0],
+        title: "metaScore-library - Player",
+        filename: "player.html",
+        chunks: ["metaScore.Player"],
       },
     ]);
 

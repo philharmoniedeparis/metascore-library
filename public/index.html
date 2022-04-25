@@ -21,23 +21,65 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+
     <div id="app"></div>
+
     <!-- built files will be auto injected -->
     <script>
       const url_params = new URLSearchParams(window.location.search);
 
+      let overrides = {};
+      try {
+        overrides = JSON.parse('<%= htmlWebpackPlugin.options.overrides %>');
+      } catch (e) {}
+
       document.addEventListener("DOMContentLoaded", function(event) {
-        if (url_params.has('player')) {
-          metaScore.Player.create({
-            url: "assets/guide.json",
-            el: document.querySelector('body'),
-            api: true,
-          });
+        if (metaScore.Player) {
+          metaScore.Player.create(Object.assign({
+            el: document.querySelector('#app'),
+            url: url_params.get('url'),
+            api: url_params.has('api'),
+            responsive: url_params.has('responsive'),
+            allowUpscaling: url_params.has('allowUpscaling'),
+          }, overrides));
         } else {
-          metaScore.Editor.create({
-            url: "assets/guide.json",
-            el: document.querySelector('body'),
-          });
+          metaScore.Editor.create(Object.assign({
+            el: document.querySelector('#app'),
+            url: url_params.get('url'),
+            modules: {
+              assets_library: {
+                "upload-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/asset",
+                "upload-accept": ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
+                "upload-max-size": 0,
+                "audiowaveform-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiowaveform",
+                "spectrogram-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiospectrum",
+              },
+              shared_assets_library: {
+                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/shared-assets",
+              },
+              auto_save: {
+                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/autosave?latest_revision=1",
+                interval: 30,
+              },
+              revision_selector: {
+                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/revisions",
+              },
+              component_form: {
+                "color-swatches": [
+                  "#ffffff", "#ffc1c1", "#cccccc", "#aeaeae", "#a19b8f", "#a1884f", "#b4a74e",
+                  "#cce24f", "#dcc88c", "#ffcc99", "#ffeb98", "#ffff66", "#f5ed58", "#ffef4b",
+                  "#ffc947", "#ffab33", "#dd883d", "#dd693d", "#f75757", "#ebd900", "#000000",
+                  "#34312c", "#655027", "#8d6f22", "#985e51", "#732727", "#597d03", "#216633",
+                  "#337c66", "#40bc87", "#619f75", "#62a075", "#95c9a5", "#99deb7", "#84ccbe",
+                  "#9de2de", "#99e2ff", "#9fbfcc", "#a0bfcc", "#9fc0f6", "#8ab8e3", "#87c1d8",
+                  "#79c4dc", "#6ee2eb", "#c9d8d8", "#eaf0f9", "#ccaadc", "#948fb5", "#767a84",
+                  "#919799", "#5ea0aa", "#4eb4ed", "#4090bc", "#48798d", "#337a8b", "#288098",
+                  "#2969a5", "#39537e", "#173659", "#003399", "#1c99de", "#4f004c", "#543052",
+                  "#873379", "#cc3343", "#cc7f84",
+                ],
+              },
+            },
+          }, overrides));
         }
       });
     </script>
