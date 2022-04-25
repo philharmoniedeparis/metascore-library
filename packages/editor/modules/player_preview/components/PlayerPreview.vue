@@ -48,7 +48,13 @@
     >
       <preview-grid v-show="!preview" />
 
-      <iframe ref="iframe" src="about:blank" @load="onIframeLoad"></iframe>
+      <iframe
+        ref="iframe"
+        src="about:blank"
+        allow="fullscreen"
+        allowfullscreen
+        @load="onIframeLoad"
+      ></iframe>
     </div>
 
     <teleport v-if="iframeDocument" :to="iframeDocument.body">

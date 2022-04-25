@@ -51,7 +51,7 @@ export default {
       required: true,
     },
   },
-  emits: ["activated", "deactivated"],
+  emits: ["activated", "deactivated", "action"],
   setup(props) {
     const store = useStore();
     const component = toRef(props, "component");

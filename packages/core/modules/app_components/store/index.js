@@ -210,14 +210,25 @@ export default defineStore("app-components", {
         delete component.$deleted;
       }
     },
-    toggle(component) {
+    show(component) {
       const { type, id } = component;
       if (this.isToggled(component)) {
         this.toggled = this.toggled.filter(
           (t) => !(t.type === type && t.id === id)
         );
-      } else {
+      }
+    },
+    hide(component) {
+      const { type, id } = component;
+      if (!this.isToggled(component)) {
         this.toggled.push({ type, id });
+      }
+    },
+    toggle(component) {
+      if (this.isToggled(component)) {
+        this.show(component);
+      } else {
+        this.hide(component);
       }
     },
   },

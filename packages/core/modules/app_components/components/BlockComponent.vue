@@ -64,12 +64,17 @@
     <div ref="pages" class="pages">
       <template v-for="(page, index) in pages" :key="page.id">
         <template v-if="synched">
-          <page-component :component="page" @activated="onTimedPageActivated" />
+          <page-component
+            :component="page"
+            @activated="onTimedPageActivated"
+            @action="$emit('action', $event)"
+          />
         </template>
         <template v-else>
           <page-component
             v-show="activePageIndex === index"
             :component="page"
+            @action="$emit('action', $event)"
           />
         </template>
       </template>
@@ -100,6 +105,7 @@ export default {
       required: true,
     },
   },
+  emits: ["action"],
   setup() {
     const store = useStore();
     const mediaStore = useModule("media_player").useStore();

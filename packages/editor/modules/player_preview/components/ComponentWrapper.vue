@@ -619,6 +619,12 @@ export default {
       }
     }
 
+    &.content:not(.selected) {
+      ::v-deep(.metaScore-component--inner) {
+        pointer-events: none;
+      }
+    }
+
     &.selected {
       &::after {
         content: "";

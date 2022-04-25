@@ -11,6 +11,7 @@ export default defineStore("media_player", {
       time: 0,
       duration: 0,
       playing: false,
+      seeking: false,
       type: null,
       width: null,
       height: null,
@@ -52,7 +53,11 @@ export default defineStore("media_player", {
             this.time = evt.target.currentTime;
           }
         });
+        element.addEventListener("seeking", () => {
+          this.seeking = true;
+        });
         element.addEventListener("seeked", () => {
+          this.seeking = false;
           if (!this.playing) {
             this.updateTime(false);
           }

@@ -1,7 +1,11 @@
 <template>
   <component-wrapper :component="component">
     <template v-for="child in children" :key="child.id">
-      <component :is="`${child.type}Component`" :component="child" />
+      <component
+        :is="`${child.type}Component`"
+        :component="child"
+        @action="$emit('action', $event)"
+      />
     </template>
   </component-wrapper>
 </template>
@@ -19,6 +23,7 @@ export default {
       required: true,
     },
   },
+  emits: ["action"],
   setup() {
     const store = useStore();
     return { store };

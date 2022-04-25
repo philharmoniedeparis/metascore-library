@@ -5,6 +5,7 @@
       <scenario-component
         v-show="scenario.id === activeScenario"
         :component="scenario"
+        @action="onComponentAction"
       />
     </template>
   </div>
@@ -30,7 +31,8 @@ export default {
     const store = useStore();
     const mediaStore = useModule("media_player").useStore();
     const componentsStore = useModule("app_components").useStore();
-    return { store, mediaStore, componentsStore };
+    const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    return { store, mediaStore, componentsStore, addCuepoint, removeCuepoint };
   },
   data() {
     return {
@@ -134,6 +136,131 @@ export default {
         this._resize_observer.disconnect();
       }
     },
+    onComponentAction({ type, ...args }) {
+      switch (type) {
+        case "play":
+          if ("inTime" in args || "outTime" in args) {
+            const { inTime = null, outTime = null, scenario = null } = args;
+            const cuepoint_config = {
+              startTime: inTime,
+              endTime: outTime,
+              onStop: () => {
+                this.mediaStore.pause();
+              },
+              onSeekout: ({ cuepoint }) => {
+                this.removeCuepoint(cuepoint);
+              },
+            };
+
+            if (
+              scenario !== null &&
+              this.componentsStore.get("Scenario", scenario) &&
+              scenario !== this.componentsStore.activeScenario
+            ) {
+              const previous_scenario = this.componentsStore.activeScenario;
+              cuepoint_config.onSeekout = ({ cuepoint }) => {
+                this.componentsStore.activeScenario = previous_scenario;
+                this.removeCuepoint(cuepoint);
+              };
+              this.componentsStore.activeScenario = scenario;
+            }
+
+            this.addCuepoint(cuepoint_config);
+
+            if (inTime !== null) {
+              this.mediaStore.seekTo(inTime);
+            }
+          }
+          this.mediaStore.play();
+          break;
+
+        case "pause":
+          this.mediaStore.pause();
+          break;
+
+        case "stop":
+          this.mediaStore.stop();
+          break;
+
+        case "seek":
+          if ("time" in args) {
+            this.mediaStore.seekTo(args?.time || 0);
+          }
+          break;
+
+        case "page":
+          {
+            if ("block" in args && "index" in args) {
+              const block = this.componentsStore
+                .getByType("Block")
+                .find((c) => c.name === args.block);
+              if (block)
+                this.componentsStore.setBlockActivePage(block, args.index);
+            }
+          }
+          break;
+
+        case "showBlock":
+          {
+            if ("name" in args) {
+              const block = this.componentsStore
+                .getByType("Block")
+                .find((c) => c.name === args.name);
+              if (block) this.componentsStore.show(block);
+            }
+          }
+          break;
+
+        case "hideBlock":
+          {
+            if ("name" in args) {
+              const block = this.componentsStore
+                .getByType("Block")
+                .find((c) => c.name === args.name);
+              if (block) this.componentsStore.hide(block);
+            }
+          }
+          break;
+
+        case "toggleBlock":
+          {
+            if ("name" in args) {
+              const block = this.componentsStore
+                .getByType("Block")
+                .find((c) => c.name === args.name);
+              if (block) this.componentsStore.toggle(block);
+            }
+          }
+          break;
+
+        case "scenario":
+          {
+            if ("id" in args) {
+              const scenario = this.componentsStore.get("Scenario", args.id);
+              if (scenario) this.componentsStore.activeScenario = scenario.id;
+            }
+          }
+          break;
+
+        case "enterFullscreen":
+          this.$el.requestFullscreen();
+          break;
+
+        case "exitFullscreen":
+          document.exitFullscreen();
+          break;
+
+        case "toggleFullscreen":
+          {
+            if (document.fullscreenElement !== this.$el) {
+              this.$el.requestFullscreen();
+            } else {
+              document.exitFullscreen();
+            }
+          }
+          break;
+      }
+    },
   },
 };
 </script>
@@ -158,6 +285,7 @@ body {
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
+  background: $white;
 
   ::v-deep(.sr-only) {
     @include sr-only;
