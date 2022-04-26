@@ -7,14 +7,14 @@ import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
 import History from "../history";
 
-import PlayerPreview from "./components/PlayerPreview";
-import PlayerZoomController from "./components/PlayerZoomController";
-import PlayerDimensionsController from "./components/PlayerDimensionsController";
-import PlayerPreviewToggler from "./components/PlayerPreviewToggler";
+import AppPreview from "./components/AppPreview";
+import AppZoomController from "./components/AppZoomController";
+import AppDimensionsController from "./components/AppDimensionsController";
+import AppPreviewToggler from "./components/AppPreviewToggler";
 import ComponentWrapper from "./components/ComponentWrapper";
 
 export default {
-  id: "player_preview",
+  id: "app_preview",
   dependencies: [
     AppComponents,
     AppRenderer,
@@ -24,16 +24,17 @@ export default {
     History,
   ],
   install({ app }) {
-    const PlayerComponentWrapper = useModule("app_components").ComponentWrapper;
+    const DefaultComponentWrapper =
+      useModule("app_components").ComponentWrapper;
 
-    // Override the player's component-wrapper.
+    // Override the default component-wrapper.
     app.component("ComponentWrapper", ComponentWrapper);
-    app.component("PlayerComponentWrapper", PlayerComponentWrapper);
+    app.component("DefaultComponentWrapper", DefaultComponentWrapper);
 
-    app.component("PlayerPreview", PlayerPreview);
-    app.component("PlayerZoomController", PlayerZoomController);
-    app.component("PlayerDimensionsController", PlayerDimensionsController);
-    app.component("PlayerPreviewToggler", PlayerPreviewToggler);
+    app.component("AppPreview", AppPreview);
+    app.component("AppZoomController", AppZoomController);
+    app.component("AppDimensionsController", AppDimensionsController);
+    app.component("AppPreviewToggler", AppPreviewToggler);
 
     return {
       useStore,

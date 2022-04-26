@@ -2,7 +2,7 @@
   <checkbox-control
     v-model="preview"
     v-hotkey="hotkeys"
-    class="player-preview-toggler"
+    class="app-preview-toggler"
     :disabled="disabled"
   >
     <toggle-icon class="icon" />
@@ -59,7 +59,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.player-preview-toggler {
+.app-preview-toggler {
   margin: 0;
 
   ::v-deep(input) {

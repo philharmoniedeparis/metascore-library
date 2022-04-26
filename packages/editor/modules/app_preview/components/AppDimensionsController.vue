@@ -1,5 +1,5 @@
 <template>
-  <div class="player-dimensions-controller">
+  <div class="app-dimensions-controller">
     <number-control
       v-model="width"
       class="width"
@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.player-dimensions-controller {
+.app-dimensions-controller {
   display: flex;
   align-items: center;
 

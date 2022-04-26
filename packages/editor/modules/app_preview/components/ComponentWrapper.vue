@@ -40,7 +40,7 @@
 </i18n>
 
 <template>
-  <player-component-wrapper
+  <default-component-wrapper
     v-contextmenu="contextmenuItems"
     :component="component"
     :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
@@ -62,7 +62,7 @@
       <div class="resize-handle bottom left"></div>
       <div class="resize-handle left"></div>
     </template>
-  </player-component-wrapper>
+  </default-component-wrapper>
 </template>
 
 <script>

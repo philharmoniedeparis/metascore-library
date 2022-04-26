@@ -24,19 +24,19 @@
 </i18n>
 
 <template>
-  <div class="player-preview">
+  <div class="app-preview">
     <preview-ruler
       v-show="!preview"
       :track-target="iframeBody"
       :major-tick-length="rulerThikness"
-      :offset="playerOffset.x"
+      :offset="appOffset.x"
     />
     <preview-ruler
       v-show="!preview"
       axis="y"
       :track-target="iframeBody"
       :major-tick-length="rulerThikness"
-      :offset="playerOffset.y"
+      :offset="appOffset.y"
     />
     <div v-show="!preview" class="rulers-corner" />
 
@@ -111,17 +111,17 @@ export default {
   data() {
     return {
       iframeDocument: null,
-      playerOffset: {
+      appOffset: {
         x: 0,
         y: 0,
       },
     };
   },
   computed: {
-    playerWidth() {
+    appWidth() {
       return this.appRendererStore.width;
     },
-    playerHeight() {
+    appHeight() {
       return this.appRendererStore.height;
     },
     zoom() {
@@ -140,21 +140,21 @@ export default {
     },
     iFrameWrapperStyle() {
       if (this.zoom !== 1) {
-        const width = this.playerWidth * this.zoom;
-        const height = this.playerHeight * this.zoom;
+        const width = this.appWidth * this.zoom;
+        const height = this.appHeight * this.zoom;
 
         return {
-          width: `${this.playerWidth}px`,
-          height: `${this.playerHeight}px`,
+          width: `${this.appWidth}px`,
+          height: `${this.appHeight}px`,
           transform: `scale(${this.zoom})`,
-          marginRight: `${width - this.playerWidth - this.rulerThikness}px`,
-          marginBottom: `${height - this.playerHeight - this.rulerThikness}px`,
+          marginRight: `${width - this.appWidth - this.rulerThikness}px`,
+          marginBottom: `${height - this.appHeight - this.rulerThikness}px`,
         };
       }
 
       return {
-        width: `${this.playerWidth}px`,
-        height: `${this.playerHeight}px`,
+        width: `${this.appWidth}px`,
+        height: `${this.appHeight}px`,
         marginRight: `${-this.rulerThikness}px`,
         marginBottom: `${-this.rulerThikness}px`,
       };
@@ -284,17 +284,17 @@ export default {
     },
   },
   watch: {
-    playerWidth() {
-      this.updatePlayerOffset();
+    appWidth() {
+      this.updateAppOffset();
     },
-    playerHeight() {
-      this.updatePlayerOffset();
+    appHeight() {
+      this.updateAppOffset();
     },
   },
   mounted() {
     this._resize_observer = new ResizeObserver(
       debounce(() => {
-        this.updatePlayerOffset();
+        this.updateAppOffset();
       }, 500)
     );
     this._resize_observer.observe(this.$el);
@@ -390,18 +390,18 @@ export default {
     },
 
     onIframeTransitionend() {
-      this.updatePlayerOffset();
+      this.updateAppOffset();
     },
 
-    updatePlayerOffset() {
+    updateAppOffset() {
       const iframe_wrapper = this.$refs["iframe-wrapper"];
       const { left, top } = this.$el.getBoundingClientRect();
-      const { left: playerLeft, top: playerTop } =
+      const { left: appLeft, top: appTop } =
         iframe_wrapper.getBoundingClientRect();
 
-      this.playerOffset = {
-        x: playerLeft - left,
-        y: playerTop - top,
+      this.appOffset = {
+        x: appLeft - left,
+        y: appTop - top,
       };
     },
   },
@@ -409,7 +409,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.player-preview {
+.app-preview {
   display: grid;
   width: 100%;
   height: 100%;

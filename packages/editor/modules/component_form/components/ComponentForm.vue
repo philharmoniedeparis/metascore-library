@@ -187,8 +187,8 @@ export default {
   setup() {
     const editorStore = useEditorStore();
     const componentsStore = useModule("app_components").useStore();
-    const playerPreviewStore = useModule("player_preview").useStore();
-    return { editorStore, componentsStore, playerPreviewStore };
+    const appPreviewStore = useModule("app_preview").useStore();
+    return { editorStore, componentsStore, appPreviewStore };
   },
   data() {
     return {
@@ -359,7 +359,7 @@ export default {
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
               type: "cursor-keyframes",
-              "component-el": this.playerPreviewStore.getComponentElement(
+              "component-el": this.appPreviewStore.getComponentElement(
                 this.masterComponent
               ),
               ...this.getControlProps("keyframes", this.commonModel.type),

@@ -36,7 +36,7 @@ module.exports = defineConfig({
   },
   chainWebpack: (config) => {
     // Add the "data-metascore" attribute to all link tags
-    // to be used by the player_preview module.
+    // to be used by the app_preview module.
     config.plugin("htmllinkattr").use(HtmlWebpackAssetsAttrPlugin, [
       {
         attrs(asset) {

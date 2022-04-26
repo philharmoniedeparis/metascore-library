@@ -2,7 +2,7 @@
   <select-control
     v-model="zoom"
     :options="options"
-    class="player-zoom-controller"
+    class="app-zoom-controller"
   />
 </template>
 
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.player-zoom-controller {
+.app-zoom-controller {
   ::v-deep(select) {
     text-align: center;
   }

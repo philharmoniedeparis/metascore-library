@@ -19,7 +19,7 @@ import History from "./modules/history";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
-import PlayerPreview from "./modules/player_preview";
+import AppPreview from "./modules/app_preview";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
@@ -68,7 +68,7 @@ export class Editor {
         MediaPlayer,
         MediaSelector,
         PlaybackControls,
-        PlayerPreview,
+        AppPreview,
         ProgressIndicator,
         ResizablePane,
         RevisionSelector,

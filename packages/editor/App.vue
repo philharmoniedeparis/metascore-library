@@ -44,9 +44,9 @@
           />
         </div>
         <div class="center">
-          <player-zoom-controller />
-          <player-dimensions-controller />
-          <player-preview-toggler :disabled="!isLatestRevision" />
+          <app-zoom-controller />
+          <app-dimensions-controller />
+          <app-preview-toggler :disabled="!isLatestRevision" />
         </div>
         <div class="right">
           <revision-selector
@@ -80,7 +80,7 @@
     </resizable-pane>
 
     <resizable-pane class="center">
-      <player-preview
+      <app-preview
         :disable-component-interactions="disableComponentInteractions"
       />
     </resizable-pane>
@@ -175,14 +175,14 @@ export default {
     const componentsStore = useModule("app_components").useStore();
     const assetsStore = useModule("assets_library").useStore();
     const mediaStore = useModule("media_player").useStore();
-    const playerPreviewStore = useModule("player_preview").useStore();
+    const appPreviewStore = useModule("app_preview").useStore();
     const waveformStore = useModule("waveform").useStore();
     return {
       store,
       componentsStore,
       assetsStore,
       mediaStore,
-      playerPreviewStore,
+      appPreviewStore,
       waveformStore,
     };
   },
@@ -226,7 +226,7 @@ export default {
       return this.waveformStore.offset.start / this.mediaStore.duration;
     },
     preview() {
-      return this.playerPreviewStore.preview;
+      return this.appPreviewStore.preview;
     },
     disableComponentInteractions() {
       return this.cursorKeyframesRecording;

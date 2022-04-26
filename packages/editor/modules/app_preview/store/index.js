@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { paramCase } from "param-case";
 
-export default defineStore("player-preview", {
+export default defineStore("app-preview", {
   state: () => {
     return {
       zoom: 1,
