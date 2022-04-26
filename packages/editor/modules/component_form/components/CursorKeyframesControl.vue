@@ -14,7 +14,6 @@
 <template>
   <form-group
     :class="['control', 'cursor-keyframes', { disabled, recording }]"
-    :data-property="property"
     :description="description"
   >
     <styled-button type="button" @click="onButtonClick">
@@ -59,14 +58,6 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-    },
-    property: {
-      type: String,
-      required: true,
-    },
-    schema: {
-      type: Object,
-      required: true,
     },
     modelValue: {
       type: Array,
@@ -122,6 +113,7 @@ export default {
 
   button {
     padding: 0.5em 1em 0.5em 0.5em;
+    color: $black;
     background: $white;
     border-radius: 1.5em;
     opacity: 1;
