@@ -108,10 +108,21 @@ export default {
   mounted() {
     if (this.responsive) {
       this.setupResizeObserver();
+
+      const win = this.$el.ownerDocument.defaultView;
+      win.addEventListener("orientationchange", this.onWindowOrientationChange);
     }
   },
   beforeUnmount() {
-    this.destroyResizeObserver();
+    if (this.responsive) {
+      this.destroyResizeObserver();
+
+      const win = this.$el.ownerDocument.defaultView;
+      win.removeEventListener(
+        "orientationchange",
+        this.onWindowOrientationChange
+      );
+    }
   },
   methods: {
     setupResizeObserver() {
@@ -135,6 +146,11 @@ export default {
       if (this._resize_observer) {
         this._resize_observer.disconnect();
       }
+    },
+    onWindowOrientationChange() {
+      const container = this.$el.parentNode;
+      this.containerWidth = container.clientWidth;
+      this.containerHeight = container.clientHeight;
     },
     onComponentAction({ type, ...args }) {
       switch (type) {
