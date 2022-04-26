@@ -15,6 +15,10 @@
       body {
         margin: 0;
       }
+
+      #app {
+        height: 100%;
+      }
     </style>
   </head>
   <body>
@@ -48,11 +52,11 @@
             url: url_params.get('url'),
             modules: {
               assets_library: {
-                "upload-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/asset",
-                "upload-accept": ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
-                "upload-max-size": 0,
-                "audiowaveform-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiowaveform",
-                "spectrogram-url": "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiospectrum",
+                uploadUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/asset",
+                uploadAccept: ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
+                uploadMaxSize: 0,
+                audiowaveformUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiowaveform",
+                spectrogramUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiospectrum",
               },
               shared_assets_library: {
                 url: "http://metascore.philharmoniedeparis.fr.local/fr/api/shared-assets",
@@ -61,11 +65,8 @@
                 url: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/autosave?latest_revision=1",
                 interval: 30,
               },
-              revision_selector: {
-                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/revisions",
-              },
               component_form: {
-                "color-swatches": [
+                colorSwatches: [
                   "#ffffff", "#ffc1c1", "#cccccc", "#aeaeae", "#a19b8f", "#a1884f", "#b4a74e",
                   "#cce24f", "#dcc88c", "#ffcc99", "#ffeb98", "#ffff66", "#f5ed58", "#ffef4b",
                   "#ffc947", "#ffab33", "#dd883d", "#dd693d", "#f75757", "#ebd900", "#000000",

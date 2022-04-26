@@ -7,10 +7,10 @@ let defaults = {
   responseType: "json",
 };
 
-function setDefaults(values) {
+function configure(configs) {
   defaults = {
     ...defaults,
-    ...values,
+    ...configs,
   };
 }
 
@@ -57,4 +57,4 @@ function load(
     .then((response) => decodeResponse(response, responseType));
 }
 
-export { setDefaults, load };
+export { configure, load };

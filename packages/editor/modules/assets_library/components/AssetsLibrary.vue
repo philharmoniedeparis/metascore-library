@@ -38,10 +38,10 @@
     </div>
 
     <div class="assets-library--imports">
-      <template v-if="uploadUrl">
+      <template v-if="store.configs.uploadUrl">
         <file-control
-          :accept="uploadAccept"
-          :max-size="uploadMaxSize"
+          :accept="store.configs.uploadAccept"
+          :max-size="store.configs.uploadMaxSize"
           :multiple="true"
           @update:model-value="onUploadChange"
         >
@@ -52,7 +52,7 @@
         </file-control>
       </template>
 
-      <template v-if="spectrogramUrl">
+      <template v-if="store.canGenerateSpectrogram">
         <styled-button type="button" @click="showSpectrogramForm = true">
           {{ $t("spectrogram_button") }}
           <template #icon><spectrogram-icon /></template>
@@ -64,7 +64,7 @@
         />
       </template>
 
-      <template v-if="audiowaveformUrl">
+      <template v-if="store.canGenerateAudiowaveform">
         <styled-button type="button" @click="showAudiowaveformForm = true">
           {{ $t("audiowaveform_button") }}
           <template #icon><audiowaveform-icon /></template>
@@ -87,22 +87,22 @@
       </alert-dialog>
     </div>
 
-    <div v-if="uploadUrl" class="dropzone">
+    <div v-if="store.configs.uploadUrl" class="dropzone">
+      <p v-dompurify-html="$t('dropzone_text')"></p>
       <p
+        v-if="store.configs.uploadMaxSize"
         v-dompurify-html="
-          $t('dropzone_text', { accept: uploadAccept, maxsize: uploadMaxSize })
+          $t('dropzone_maxsize_description', {
+            maxsize: store.configs.uploadMaxSize,
+          })
         "
       ></p>
       <p
-        v-if="uploadMaxSize"
+        v-if="store.configs.uploadAccept"
         v-dompurify-html="
-          $t('dropzone_maxsize_description', { maxsize: uploadMaxSize })
-        "
-      ></p>
-      <p
-        v-if="uploadAccept"
-        v-dompurify-html="
-          $t('dropzone_types_description', { types: uploadAccept })
+          $t('dropzone_types_description', {
+            types: store.configs.uploadAccept,
+          })
         "
       ></p>
     </div>
@@ -130,28 +130,6 @@ export default {
   },
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
-  },
-  props: {
-    uploadUrl: {
-      type: String,
-      default: null,
-    },
-    uploadMaxSize: {
-      type: Number,
-      default: null,
-    },
-    uploadAccept: {
-      type: String,
-      default: null,
-    },
-    spectrogramUrl: {
-      type: String,
-      default: null,
-    },
-    audiowaveformUrl: {
-      type: String,
-      default: null,
-    },
   },
   setup() {
     const store = useStore();
@@ -205,7 +183,7 @@ export default {
      * @param {Event} evt The event object.
      */
     onDragover(evt) {
-      if (!this.uploadUrl) {
+      if (!this.store.configs.uploadUrl) {
         return;
       }
 
@@ -229,7 +207,7 @@ export default {
       const files = this.getDraggedFiles(evt.dataTransfer);
       this.dragover = false;
       this.store
-        .upload(this.uploadUrl, files)
+        .upload(files)
         .then(() => {
           this.error = null;
         })
@@ -246,7 +224,7 @@ export default {
         })
       ).then((files) => {
         this.store
-          .upload(this.uploadUrl, files)
+          .upload(files)
           .then(() => {
             this.error = null;
           })
@@ -257,7 +235,7 @@ export default {
     },
     onSpectrogramFormSubmit(data) {
       this.store
-        .generate(this.spectrogramUrl, data)
+        .generateSpectrogram(data)
         .then(() => {
           this.showSpectrogramForm = false;
           this.error = null;
@@ -272,7 +250,7 @@ export default {
     },
     onAudiowaveformFormSubmit(data) {
       this.store
-        .generate(this.audiowaveformUrl, data)
+        .generateAudiowaveform(data)
         .then(() => {
           this.showAudiowaveformForm = false;
           this.error = null;

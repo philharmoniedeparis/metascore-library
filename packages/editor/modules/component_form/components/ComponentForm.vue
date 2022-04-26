@@ -160,6 +160,7 @@
 
 <script>
 import { intersection } from "lodash";
+import useStore from "../store";
 import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
@@ -177,18 +178,13 @@ export default {
         return [];
       },
     },
-    colorSwatches: {
-      type: Array,
-      default() {
-        return [];
-      },
-    },
   },
   setup() {
+    const store = useStore();
     const editorStore = useEditorStore();
     const componentsStore = useModule("app_components").useStore();
     const appPreviewStore = useModule("app_preview").useStore();
-    return { editorStore, componentsStore, appPreviewStore };
+    return { store, editorStore, componentsStore, appPreviewStore };
   },
   data() {
     return {
@@ -256,7 +252,7 @@ export default {
 
       if (this.commonModel.$isBackgroundable) {
         layout.items[0].items.push({
-          swatches: this.colorSwatches,
+          swatches: this.store.configs.colorSwatches,
           ...this.getControlProps("background-color"),
         });
         layout.items[0].items.push({
@@ -275,7 +271,7 @@ export default {
           class: "form-container horizontal",
           items: [
             {
-              swatches: this.colorSwatches,
+              swatches: this.store.configs.colorSwatches,
               ...this.getControlProps("border-color"),
             },
             ...["border-width", "border-radius"].map((property) =>
@@ -313,7 +309,7 @@ export default {
             });
           });
           layout.items[0].items.push({
-            swatches: this.colorSwatches,
+            swatches: this.store.configs.colorSwatches,
             ...this.getControlProps("colors"),
           });
           break;
@@ -374,7 +370,7 @@ export default {
           ) {
             layout.items[0].items.push({
               itemProps: {
-                swatches: this.colorSwatches,
+                swatches: this.store.configs.colorSwatches,
               },
               ...this.getControlProps("colors", this.commonModel.type),
             });

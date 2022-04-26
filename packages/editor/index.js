@@ -6,9 +6,13 @@ import { createI18n } from "vue-i18n";
 import hotkey from "v-hotkey";
 import App from "./App.vue";
 
-import { registerModules } from "@metascore-library/core/services/module-manager";
-import AutoSave from "./modules/auto_save";
+import {
+  registerModules,
+  useModule,
+} from "@metascore-library/core/services/module-manager";
+import { configure as configureAjax } from "@metascore-library/core/services/ajax";
 import AssetsLibrary from "./modules/assets_library";
+import AutoSave from "./modules/auto_save";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
@@ -41,10 +45,7 @@ export class Editor {
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
     const events = new Emitter();
-    const app = createApp(App, { url, configs })
-      .use(pinia)
-      .use(i18n)
-      .use(hotkey);
+    const app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);
 
     // See https://github.com/vuejs/core/pull/5474
     app.config.skipEventsTimestampCheck = true;
@@ -56,8 +57,8 @@ export class Editor {
 
     await registerModules(
       [
-        AutoSave,
         AssetsLibrary,
+        AutoSave,
         BufferIndicator,
         ComponentForm,
         ComponentsLibrary,
@@ -81,6 +82,15 @@ export class Editor {
       ],
       { app, pinia }
     );
+
+    if (configs.services?.ajax) {
+      configureAjax(configs.services.ajax);
+    }
+    if (configs.modules) {
+      Object.entries(configs.modules).forEach(([name, configs]) => {
+        useModule(name).configure(configs);
+      });
+    }
 
     return new Editor(app, events, el);
   }

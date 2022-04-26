@@ -5,6 +5,13 @@ import * as api from "../api";
 export default defineStore("assets-library", {
   state: () => {
     return {
+      configs: {
+        uploadUrl: null,
+        uploadAccept: ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
+        uploadMaxSize: 0,
+        spectrogramUrl: null,
+        audiowaveformUrl: null,
+      },
       items: {},
       processing: false,
       uploadProgress: null,
@@ -50,8 +57,20 @@ export default defineStore("assets-library", {
         });
       };
     },
+    canGenerateSpectrogram() {
+      return this.configs.spectrogramUrl !== null;
+    },
+    canGenerateAudiowaveform() {
+      return this.configs.audiowaveformUrl !== null;
+    },
   },
   actions: {
+    configure(configs) {
+      this.configs = {
+        ...this.configs,
+        ...configs,
+      };
+    },
     init(data) {
       this.items = normalize(data);
     },
@@ -68,12 +87,12 @@ export default defineStore("assets-library", {
         item.$deleted = true;
       }
     },
-    upload(url, files) {
+    upload(files) {
       this.processing = true;
       this.uploadProgress = 0;
 
       return api
-        .uploadFiles(url, files, (evt) => {
+        .uploadFiles(this.configs.uploadUrl, files, (evt) => {
           this.uploadProgress = evt.loaded / evt.total;
         })
         .then((items) => {
@@ -85,11 +104,24 @@ export default defineStore("assets-library", {
           this.uploadProgress = null;
         });
     },
-    generate(url, data) {
+    generateSpectrogram(data) {
       this.processing = true;
 
       return api
-        .generateAsset(url, data)
+        .generateAsset(this.configs.spectrogramUrl, data)
+        .then((item) => {
+          this.add(item);
+          return item;
+        })
+        .finally(() => {
+          this.processing = false;
+        });
+    },
+    generateAudiowaveform(data) {
+      this.processing = true;
+
+      return api
+        .generateAsset(this.configs.audiowaveformUrl, data)
         .then((item) => {
           this.add(item);
           return item;

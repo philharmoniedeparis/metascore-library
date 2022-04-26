@@ -16,6 +16,9 @@ const fuse = markRaw(
 export default defineStore("shared-assets-library", {
   state: () => {
     return {
+      configs: {
+        url: null,
+      },
       items: {},
       loaded: false,
       filters: {
@@ -72,12 +75,18 @@ export default defineStore("shared-assets-library", {
     },
   },
   actions: {
-    async load(url) {
+    configure(configs) {
+      this.configs = {
+        ...this.configs,
+        ...configs,
+      };
+    },
+    async load() {
       if (this.loaded) {
         return;
       }
 
-      const data = await api.loadItems(url);
+      const data = await api.loadItems(this.configs.url);
       this.items = normalize(data.assets);
 
       this.loaded = true;

@@ -35,6 +35,8 @@ export class Player {
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     app.config.unwrapInjectedRef = true;
 
+    app.config.performance = process.env.NODE_ENV === "development";
+
     // Register root modules.
     await registerModules([AppRenderer, ContextMenu, ProgressIndicator], {
       app,

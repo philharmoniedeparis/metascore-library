@@ -63,13 +63,10 @@
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item title="Components"><components-library /></tabs-item>
         <tabs-item title="Library">
-          <assets-library v-bind="configs.modules?.assets_library" />
+          <assets-library />
         </tabs-item>
         <tabs-item title="Shared Library">
-          <shared-assets-library
-            v-bind="configs.modules?.shared_assets_library"
-            @click:import="onSharedAssetsImportClick"
-          />
+          <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
         <template v-if="activeLibrariesTab === 2" #tabs-right>
           <keep-alive>
@@ -89,7 +86,6 @@
       <component-form
         :images="imageAssets"
         :first-level-components="firstLevelComponents"
-        v-bind="configs.modules?.component_form"
       ></component-form>
     </resizable-pane>
 
@@ -125,10 +121,7 @@
       :text="$t('saving_indicator_label')"
     />
 
-    <auto-save-indicator
-      v-bind="configs.modules?.auto_save"
-      :disabled="!isLatestRevision"
-    />
+    <auto-save-indicator :disabled="!isLatestRevision" />
 
     <context-menu
       v-model:show="showContextmenu"
@@ -144,7 +137,6 @@
 <script>
 import { computed, readonly } from "vue";
 import useStore from "./store";
-import { setDefaults as setAjaxDefaults } from "@metascore-library/core/services/ajax";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?inline";
@@ -162,12 +154,6 @@ export default {
     url: {
       type: String,
       required: true,
-    },
-    configs: {
-      type: Object,
-      default() {
-        return {};
-      },
     },
   },
   setup() {
@@ -287,11 +273,6 @@ export default {
         this.librariesExpanded = false;
       }
     },
-  },
-  beforeMount() {
-    if (this.configs.services?.ajax) {
-      setAjaxDefaults(this.configs.services.ajax);
-    }
   },
   mounted() {
     this.modalsTarget = this.$el;

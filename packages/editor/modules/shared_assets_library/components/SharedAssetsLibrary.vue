@@ -16,12 +16,6 @@ export default {
   components: {
     SharedAssetsItem,
   },
-  props: {
-    url: {
-      type: String,
-      required: true,
-    },
-  },
   emits: ["click:import"],
   setup() {
     const store = useStore();
@@ -40,7 +34,7 @@ export default {
   },
   async mounted() {
     if (!this.loaded) {
-      await this.store.load(this.url);
+      await this.store.load();
     }
   },
   methods: {

@@ -14,6 +14,9 @@ export default {
 
     return {
       useStore,
+      configure: (configs) => {
+        useStore().configure(configs);
+      },
     };
   },
 };

@@ -1,3 +1,4 @@
+import useStore from "./store";
 import AppPreview from "../app_preview";
 import EventBus from "@metascore-library/core/modules/event_bus";
 import FormGroup from "../form_group";
@@ -27,5 +28,11 @@ export default {
     app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CursorKeyframesControl", CursorKeyframesControl);
     app.component("ComponentForm", ComponentForm);
+
+    return {
+      configure: (configs) => {
+        useStore().configure(configs);
+      },
+    };
   },
 };
