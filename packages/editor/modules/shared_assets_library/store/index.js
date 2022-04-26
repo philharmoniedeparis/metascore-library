@@ -86,7 +86,7 @@ export default defineStore("shared-assets-library", {
         return;
       }
 
-      const data = await api.loadItems(this.configs.url);
+      const data = await api.load(this.configs.url);
       this.items = normalize(data.assets);
 
       this.loaded = true;

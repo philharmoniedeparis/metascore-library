@@ -1,11 +1,11 @@
-import { load } from "@metascore-library/core/services/ajax";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 function get(url) {
-  return load(url);
+  return useModule("ajax").load(url);
 }
 
 function save(url, data) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "PATCH",
     data,
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -13,7 +13,7 @@ function save(url, data) {
 }
 
 function restore(url, vid) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "PATCH",
     params: { vid },
     headers: { "Content-Type": "application/json" },

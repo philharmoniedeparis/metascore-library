@@ -1,7 +1,7 @@
-import { load } from "@metascore-library/core/services/ajax";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 function get(url) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     responseType: "arraybuffer",
   });
 }

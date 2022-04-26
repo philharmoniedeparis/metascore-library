@@ -1,4 +1,4 @@
-import { load } from "@metascore-library/core/services/ajax";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 function uploadFiles(url, files, progress_callback) {
   const data = new FormData();
@@ -6,7 +6,7 @@ function uploadFiles(url, files, progress_callback) {
     data.append(`files[asset][]`, file);
   });
 
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "POST",
     data,
     onUploadProgress: progress_callback,
@@ -14,7 +14,7 @@ function uploadFiles(url, files, progress_callback) {
 }
 
 function generateAsset(url, data) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "POST",
     data,
   });

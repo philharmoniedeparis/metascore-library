@@ -32,25 +32,26 @@
     <script>
       const url_params = new URLSearchParams(window.location.search);
 
-      let overrides = {};
-      try {
-        overrides = JSON.parse('<%= htmlWebpackPlugin.options.overrides %>');
-      } catch (e) {}
-
       document.addEventListener("DOMContentLoaded", function(event) {
         if (metaScore.Player) {
-          metaScore.Player.create(Object.assign({
+          metaScore.Player.create({
             el: document.querySelector('#app'),
             url: url_params.get('url'),
             api: url_params.has('api'),
             responsive: url_params.has('responsive'),
             allowUpscaling: url_params.has('allowUpscaling'),
-          }, overrides));
+          });
         } else {
-          metaScore.Editor.create(Object.assign({
+          metaScore.Editor.create({
             el: document.querySelector('#app'),
             url: url_params.get('url'),
             modules: {
+              ajax: {
+                credentials: "include",
+                headers: {
+                  'X-CSRF-Token': '<%= htmlWebpackPlugin.options.XCSRFToken %>',
+                },
+              },
               assets_library: {
                 uploadUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/asset",
                 uploadAccept: ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
@@ -80,7 +81,7 @@
                 ],
               },
             },
-          }, overrides));
+          });
         }
       });
     </script>

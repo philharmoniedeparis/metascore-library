@@ -1,4 +1,5 @@
 import useStore from "./store";
+import Ajax from "@metascore-library/core/modules/ajax";
 import Alert from "@metascore-library/core/modules/alert";
 import Confirm from "@metascore-library/core/modules/confirm";
 import FormControls from "../form_controls";
@@ -10,6 +11,7 @@ import AssetsLibrary from "./components/AssetsLibrary";
 export default {
   id: "assets_library",
   dependencies: [
+    Ajax,
     Alert,
     Confirm,
     FormControls,

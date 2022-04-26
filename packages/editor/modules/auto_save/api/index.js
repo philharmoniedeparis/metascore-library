@@ -1,14 +1,14 @@
-import { load } from "@metascore-library/core/services/ajax";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 function save(url, data) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "POST",
     data,
   });
 }
 
 function _delete(url) {
-  return load(url, {
+  return useModule("ajax").load(url, {
     method: "DELETE",
     keepalive: true,
   });

@@ -1,0 +1,9 @@
+{
+  "name": "@metascore-library/ajax",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "pinia": "^2.0.11"
+  }
+}

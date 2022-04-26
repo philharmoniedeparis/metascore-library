@@ -10,7 +10,7 @@ import {
   registerModules,
   useModule,
 } from "@metascore-library/core/services/module-manager";
-import { configure as configureAjax } from "@metascore-library/core/services/ajax";
+import Ajax from "@metascore-library/core/modules/ajax";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
 import BufferIndicator from "./modules/buffer_indicator";
@@ -57,6 +57,7 @@ export class Editor {
 
     await registerModules(
       [
+        Ajax,
         AssetsLibrary,
         AutoSave,
         BufferIndicator,
@@ -83,12 +84,10 @@ export class Editor {
       { app, pinia }
     );
 
-    if (configs.services?.ajax) {
-      configureAjax(configs.services.ajax);
-    }
     if (configs.modules) {
       Object.entries(configs.modules).forEach(([name, configs]) => {
-        useModule(name).configure(configs);
+        const module = useModule(name);
+        if (module) module.configure(configs);
       });
     }
 

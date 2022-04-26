@@ -1,4 +1,5 @@
 import useStore from "./store";
+import Ajax from "@metascore-library/core/modules/ajax";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import WaveformOverview from "./components/WaveformOverview";
@@ -7,7 +8,7 @@ import WaveformZoomController from "./components/WaveformZoomController";
 
 export default {
   id: "waveform",
-  dependencies: [MediaPlayer, StyledButton],
+  dependencies: [Ajax, MediaPlayer, StyledButton],
   install({ app }) {
     app.component("WaveformOverview", WaveformOverview);
     app.component("WaveformZoom", WaveformZoom);

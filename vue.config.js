@@ -53,16 +53,7 @@ module.exports = defineConfig({
     config.plugin("html").tap((args) => {
       args[0].title = "metaScore-library - Editor";
       args[0].chunks = ["metaScore.Editor"];
-      args[0].overrides = JSON.stringify({
-        services: {
-          ajax: {
-            credentials: "include",
-            headers: {
-              "X-CSRF-Token": process.env.AJAX_XCSRFToken,
-            },
-          },
-        },
-      });
+      args[0].XCSRFToken = process.env.AJAX_XCSRFToken;
       return args;
     });
     config.plugin("player-html").use(HtmlWebpackPlugin, [
