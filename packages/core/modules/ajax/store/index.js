@@ -6,7 +6,6 @@ export default defineStore("ajax", {
     return {
       defaults: {
         baseURL: document.location.origin,
-        headers: {},
         credentials: "same-origin",
         responseType: "json",
       },
@@ -14,10 +13,7 @@ export default defineStore("ajax", {
   },
   actions: {
     configure(configs) {
-      this.defaults = {
-        ...this.defaults,
-        ...configs,
-      };
+      this.defaults = merge({}, this.defaults, configs);
     },
     async decodeResponse(response, type = "json") {
       switch (type) {
@@ -40,7 +36,7 @@ export default defineStore("ajax", {
       });
 
       if (data) {
-        options.body = JSON.stringify(data);
+        options.body = data;
       }
 
       return fetch(
