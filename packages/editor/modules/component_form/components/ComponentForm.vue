@@ -333,9 +333,16 @@ export default {
           break;
 
         case "Content":
-          layout.items[0].items.push(
-            this.getControlProps("text", this.commonModel.type)
-          );
+          if (this.selectedComponents.length === 1) {
+            layout.items[0].items.push({
+              type: "html",
+              "app-iframe-el": this.appPreviewStore.iframe,
+              "app-component-el": this.appPreviewStore.getComponentElement(
+                this.masterComponent
+              ),
+              ...this.getControlProps("text", this.commonModel.type),
+            });
+          }
           break;
 
         case "Cursor":
@@ -355,7 +362,7 @@ export default {
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
               type: "cursor-keyframes",
-              "component-el": this.appPreviewStore.getComponentElement(
+              "app-component-el": this.appPreviewStore.getComponentElement(
                 this.masterComponent
               ),
               ...this.getControlProps("keyframes", this.commonModel.type),

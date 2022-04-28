@@ -5,7 +5,7 @@
     :class="[
       'styled-button',
       role,
-      { 'has-icon': $slots.icon, 'has-content': $slots.default },
+      { 'has-icon': $slots.icon, 'has-content': $slots.default, loading },
     ]"
   >
     <i v-if="$slots.icon" class="icon">
@@ -31,6 +31,10 @@ export default {
     role: {
       type: String,
       default: null,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
 };

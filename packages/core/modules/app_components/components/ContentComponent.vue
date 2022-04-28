@@ -1,6 +1,10 @@
 <template>
   <component-wrapper :component="component">
-    <div v-dompurify-html="text" @click.prevent="onTextClick"></div>
+    <div
+      v-dompurify-html="text"
+      class="contents"
+      @click.prevent="onTextClick"
+    ></div>
   </component-wrapper>
 </template>
 

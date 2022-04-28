@@ -25,7 +25,7 @@
       </template>
     </styled-button>
 
-    <teleport v-if="recording" :to="componentEl">
+    <teleport v-if="recording" :to="appComponentEl">
       <cursor-keyframes-editor v-model="value" />
     </teleport>
   </form-group>
@@ -39,7 +39,7 @@ export default {
     CursorKeyframesEditor,
   },
   props: {
-    componentEl: {
+    appComponentEl: {
       type: HTMLElement,
       required: true,
     },

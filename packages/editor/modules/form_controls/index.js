@@ -6,7 +6,6 @@ import TimecodeInput from "../timecode_input";
 import CheckboxControl from "./components/CheckboxControl";
 import ColorControl from "./components/ColorControl";
 import FileControl from "./components/FileControl";
-import HtmlControl from "./components/HtmlControl";
 import NumberControl from "./components/NumberControl";
 import SelectControl from "./components/SelectControl";
 import TextControl from "./components/TextControl";
@@ -20,7 +19,6 @@ export default {
     app.component("CheckboxControl", CheckboxControl);
     app.component("ColorControl", ColorControl);
     app.component("FileControl", FileControl);
-    app.component("HtmlControl", HtmlControl);
     app.component("NumberControl", NumberControl);
     app.component("SelectControl", SelectControl);
     app.component("TextControl", TextControl);

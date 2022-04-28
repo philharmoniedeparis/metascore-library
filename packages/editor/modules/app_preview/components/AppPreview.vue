@@ -111,6 +111,7 @@ export default {
   data() {
     return {
       iframeDocument: null,
+      iframeBody: null,
       appOffset: {
         x: 0,
         y: 0,
@@ -129,14 +130,6 @@ export default {
     },
     preview() {
       return this.store.preview;
-    },
-    iframeBody: {
-      get() {
-        return this.store.iframeBody;
-      },
-      set(value) {
-        this.store.iframeBody = value;
-      },
     },
     iFrameWrapperStyle() {
       if (this.zoom !== 1) {
@@ -298,6 +291,10 @@ export default {
       }, 500)
     );
     this._resize_observer.observe(this.$el);
+
+    this.$nextTick(function () {
+      this.store.iframe = this.$refs.iframe;
+    });
   },
   beforeUnmount() {
     if (this._resize_observer) {

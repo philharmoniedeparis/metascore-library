@@ -6,13 +6,13 @@ export default defineStore("app-preview", {
     return {
       zoom: 1,
       preview: false,
-      iframeBody: null,
+      iframe: null,
     };
   },
   getters: {
     getComponentElement() {
       return (component) => {
-        return this.iframeBody.querySelector(
+        return this.iframe.contentDocument.body.querySelector(
           `.metaScore-component.${paramCase(component.type)}#${component.id}`
         );
       };

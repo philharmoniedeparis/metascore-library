@@ -1,6 +1,9 @@
 const { defineConfig } = require("@vue/cli-service");
+const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
+const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
+const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
   lintOnSave: true,
@@ -32,6 +35,18 @@ module.exports = defineConfig({
       chunkFilename: function () {
         return "metaScore.[name].chunk.css";
       },
+      insert: function (linkTag) {
+        // Insert a clone in the preview iframe.
+        var preview = document.querySelector(
+          ".metaScore-editor .app-preview iframe"
+        );
+        if (preview) {
+          preview.contentDocument.head.appendChild(linkTag.cloneNode());
+        }
+
+        document.head.appendChild(linkTag);
+      },
+      ignoreOrder: true,
     },
   },
   chainWebpack: (config) => {
@@ -91,9 +106,10 @@ module.exports = defineConfig({
       .chunkFilename("metaScore.[name].chunk.js");
 
     // Add inline SVGs support.
-    const svgRule = config.module.rule("svg");
-    svgRule
-      .oneOf("inline")
+    config.module.rule("svg").resourceQuery({ not: [/inline/] });
+    config.module
+      .rule("inline-svg")
+      .test(/\.(svg)(\?.*)?$/)
       .resourceQuery(/inline/)
       .type("javascript/auto")
       .use("vue-loader")
@@ -101,7 +117,6 @@ module.exports = defineConfig({
       .end()
       .use("vue-svg-loader")
       .loader("vue-svg-loader")
-      .end()
       .end();
 
     // Setup i18n loader.
@@ -113,5 +128,38 @@ module.exports = defineConfig({
       .use("i18n")
       .loader("@intlify/vue-i18n-loader")
       .end();
+
+    // Setup CKEditor.
+    // See https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/frameworks/vuejs-v3.html#using-ckeditor-from-source
+    config.plugin("ckeditor").use(CKEditorWebpackPlugin, [
+      {
+        language: "fr",
+        additionalLanguages: ["en"],
+        buildAllTranslationsToSeparateFiles: true,
+      },
+    ]);
+    config.module
+      .rule("svg")
+      .exclude.add(path.join(__dirname, "node_modules", "@ckeditor"));
+    config.module
+      .rule("cke-svg")
+      .test(/ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/)
+      .use("raw-loader")
+      .loader("raw-loader");
+    config.module
+      .rule("cke-css")
+      .test(/ckeditor5-[^/\\]+[/\\].+\.css$/)
+      .use("postcss-loader")
+      .loader("postcss-loader")
+      .tap(() => {
+        return {
+          postcssOptions: styles.getPostCssConfig({
+            themeImporter: {
+              themePath: require.resolve("@ckeditor/ckeditor5-theme-lark"),
+            },
+            minify: true,
+          }),
+        };
+      });
   },
 });
