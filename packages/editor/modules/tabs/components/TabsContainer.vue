@@ -17,9 +17,8 @@
         <slot name="tabs-right" />
       </div>
     </div>
-    <div class="tabs-content">
-      <slot />
-    </div>
+
+    <slot />
   </div>
 </template>
 
@@ -113,11 +112,6 @@ export default {
   .tabs-left,
   .tabs-right {
     flex: 1;
-  }
-
-  .tabs-content {
-    flex: 1 1 100%;
-    overflow-y: auto;
   }
 }
 </style>

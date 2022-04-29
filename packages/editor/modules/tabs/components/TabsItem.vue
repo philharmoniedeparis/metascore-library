@@ -31,3 +31,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.tab-item {
+  flex: 1 1 100%;
+  overflow-y: auto;
+}
+</style>
