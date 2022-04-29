@@ -182,8 +182,8 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const componentsStore = useModule("app_components").useStore();
-    const appPreviewStore = useModule("app_preview").useStore();
+    const componentsStore = useModule("app_components").store;
+    const appPreviewStore = useModule("app_preview").store;
     return { store, editorStore, componentsStore, appPreviewStore };
   },
   data() {

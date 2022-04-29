@@ -1,15 +1,19 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import directive from "./directives/contexmenu";
 import ContextMenu from "./components/ContextMenu";
 
-export default {
-  id: "contextmenu",
-  install({ app }) {
+export default class ContextMenuModule extends AbstractModule {
+  static id = "contextmenu";
+
+  constructor({ app }) {
+    super(arguments);
+
     app.directive("contextmenu", directive);
     app.component("ContextMenu", ContextMenu);
+  }
 
-    return {
-      useStore,
-    };
-  },
-};
+  get store() {
+    return useStore();
+  }
+}

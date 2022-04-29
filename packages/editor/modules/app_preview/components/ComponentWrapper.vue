@@ -95,9 +95,9 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const clipboardStore = useModule("clipboard").useStore();
-    const componentsStore = useModule("app_components").useStore();
-    const historyStore = useModule("history").useStore();
+    const clipboardStore = useModule("clipboard").store;
+    const componentsStore = useModule("app_components").store;
+    const historyStore = useModule("history").store;
     return {
       store,
       editorStore,

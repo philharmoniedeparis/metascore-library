@@ -139,7 +139,7 @@ export default {
   },
   emits: ["update:activeId", "add", "clone", "delete"],
   setup() {
-    const contextmenuStore = useModule("contextmenu").useStore();
+    const contextmenuStore = useModule("contextmenu").store;
     return {
       contextmenuStore,
     };

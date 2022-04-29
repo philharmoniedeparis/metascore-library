@@ -1,3 +1,4 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
 import Alert from "@metascore-library/core/modules/alert";
@@ -8,9 +9,10 @@ import SchemaForm from "../schema_form";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import AssetsLibrary from "./components/AssetsLibrary";
 
-export default {
-  id: "assets_library",
-  dependencies: [
+export default class AssetsLibraryModule extends AbstractModule {
+  static id = "assets_library";
+
+  static dependencies = [
     Ajax,
     Alert,
     Confirm,
@@ -18,15 +20,19 @@ export default {
     ProgressIndicator,
     SchemaForm,
     StyledButton,
-  ],
-  install({ app }) {
-    app.component("AssetsLibrary", AssetsLibrary);
+  ];
 
-    return {
-      useStore,
-      configure: (configs) => {
-        useStore().configure(configs);
-      },
-    };
-  },
-};
+  constructor({ app }) {
+    super(arguments);
+
+    app.component("AssetsLibrary", AssetsLibrary);
+  }
+
+  get store() {
+    return useStore();
+  }
+
+  configure(configs) {
+    this.store.configure(configs);
+  }
+}

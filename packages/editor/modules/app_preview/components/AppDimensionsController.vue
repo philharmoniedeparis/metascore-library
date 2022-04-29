@@ -27,7 +27,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 export default {
   setup() {
     const editorStore = useEditorStore();
-    const historyStore = useModule("history").useStore();
+    const historyStore = useModule("history").store;
     return { editorStore, historyStore };
   },
   computed: {

@@ -86,8 +86,8 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useModule("media_player").useStore();
-    const contextmenuStore = useModule("contextmenu").useStore();
+    const mediaStore = useModule("media_player").store;
+    const contextmenuStore = useModule("contextmenu").store;
     return { mediaStore, contextmenuStore };
   },
   data() {

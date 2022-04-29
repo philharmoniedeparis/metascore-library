@@ -1,20 +1,24 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import Emitter from "tiny-emitter";
 
-export default {
-  id: "event_bus",
-  install({ app }) {
-    const emitter = new Emitter();
+export default class EventBusModule extends AbstractModule {
+  static id = "event_bus";
+
+  constructor({ app }) {
+    super(arguments);
+
+    this._emitter = new Emitter();
 
     app.config.globalProperties.$eventBus = {
-      on(event, handler) {
-        emitter.on(event, handler);
+      on: (event, handler) => {
+        this._emitter.on(event, handler);
       },
-      off(event, handler) {
-        emitter.off(event, handler);
+      off: (event, handler) => {
+        this._emitter.off(event, handler);
       },
-      emit(event, payload) {
-        emitter.emit(event, payload);
+      emit: (event, payload) => {
+        this._emitter.emit(event, payload);
       },
     };
-  },
-};
+  }
+}

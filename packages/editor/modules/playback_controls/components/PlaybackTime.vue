@@ -7,7 +7,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   setup() {
-    const mediaStore = useModule("media_player").useStore();
+    const mediaStore = useModule("media_player").store;
     return { mediaStore };
   },
   computed: {

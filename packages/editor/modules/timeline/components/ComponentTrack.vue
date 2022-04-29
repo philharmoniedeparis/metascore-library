@@ -119,9 +119,9 @@ export default {
   },
   setup() {
     const editorStore = useEditorStore();
-    const mediaStore = useModule("media_player").useStore();
-    const componentsStore = useModule("app_components").useStore();
-    const historyStore = useModule("history").useStore();
+    const mediaStore = useModule("media_player").store;
+    const componentsStore = useModule("app_components").store;
+    const historyStore = useModule("history").store;
     return { editorStore, mediaStore, componentsStore, historyStore };
   },
   data() {

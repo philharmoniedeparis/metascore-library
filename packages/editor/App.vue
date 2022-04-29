@@ -158,11 +158,11 @@ export default {
   },
   setup() {
     const store = useStore();
-    const componentsStore = useModule("app_components").useStore();
-    const assetsStore = useModule("assets_library").useStore();
-    const mediaStore = useModule("media_player").useStore();
-    const appPreviewStore = useModule("app_preview").useStore();
-    const waveformStore = useModule("waveform").useStore();
+    const componentsStore = useModule("app_components").store;
+    const assetsStore = useModule("assets_library").store;
+    const mediaStore = useModule("media_player").store;
+    const appPreviewStore = useModule("app_preview").store;
+    const waveformStore = useModule("waveform").store;
     return {
       store,
       componentsStore,

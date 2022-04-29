@@ -108,7 +108,7 @@ export default {
   emits: ["action"],
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").useStore();
+    const mediaStore = useModule("media_player").store;
     return { store, mediaStore };
   },
   data() {

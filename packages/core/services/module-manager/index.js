@@ -1,6 +1,6 @@
 import { isFunction } from "lodash";
 
-const modules = {};
+const modules = new Map();
 
 async function registerModules(modules, context) {
   for (const module of modules) {
@@ -9,32 +9,25 @@ async function registerModules(modules, context) {
 }
 
 async function registerModule(module, context) {
-  if (module.id in modules) {
+  if (modules.has(module.id)) {
     // Skip if already registerd.
     return;
   }
 
   // Add to list of registered modules.
-  modules[module.id] = {};
+  modules.set(module.id, null);
 
   // Register dependencies.
-  if ("dependencies" in module) {
-    const dependencies = isFunction(module.dependencies)
-      ? await module.dependencies()
-      : module.dependencies;
-
-    for (const dependency of dependencies) {
-      await registerModule(dependency, context);
-    }
+  const dependencies = isFunction(module.dependencies)
+    ? await module.dependencies()
+    : module.dependencies;
+  for (const dependency of dependencies) {
+    await registerModule(dependency, context);
   }
 
   // Install.
-  if ("install" in module) {
-    const exports = await module.install(context);
-    if (typeof exports !== "undefined") {
-      modules[module.id] = exports;
-    }
-  }
+  const instance = new module(context);
+  modules.set(module.id, instance);
 
   if (process.env.NODE_ENV === "development") {
     console.info(`Module manager: "${module.id}" module registerd.`);
@@ -42,7 +35,7 @@ async function registerModule(module, context) {
 }
 
 function useModule(id) {
-  const module = modules[id];
+  const module = modules.get(id);
 
   if (!module) {
     throw Error(`Module "${id}" not found`);

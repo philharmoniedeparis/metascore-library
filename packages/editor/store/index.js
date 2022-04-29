@@ -20,19 +20,19 @@ export default defineStore("editor", {
   },
   getters: {
     appWidth() {
-      const appRendererStore = useModule("app_renderer").useStore();
+      const appRendererStore = useModule("app_renderer").store;
       return appRendererStore.width;
     },
     appHeight() {
-      const appRendererStore = useModule("app_renderer").useStore();
+      const appRendererStore = useModule("app_renderer").store;
       return appRendererStore.height;
     },
     mediaSource() {
-      const mediaStore = useModule("media_player").useStore();
+      const mediaStore = useModule("media_player").store;
       return mediaStore.source;
     },
     scenarios() {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       return componentsStore.getByType("Scenario");
     },
     isComponentSelected() {
@@ -43,14 +43,14 @@ export default defineStore("editor", {
       };
     },
     getSelectedComponents() {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       return this.selectedComponents.map(({ type, id }) => {
         return componentsStore.get(type, id);
       });
     },
     componentHasSelectedDescendents() {
       return (component) => {
-        const componentsStore = useModule("app_components").useStore();
+        const componentsStore = useModule("app_components").store;
         const children = componentsStore.getChildren(component);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
@@ -69,7 +69,7 @@ export default defineStore("editor", {
       };
     },
     getLockedComponents() {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       return this.lockedComponents.map(({ type, id }) => {
         return componentsStore.get(type, id);
       });
@@ -100,7 +100,7 @@ export default defineStore("editor", {
           data.set("height", this.appHeight);
         }
         if (this.isDirty("media", after)) {
-          const mediaStore = useModule("media_player").useStore();
+          const mediaStore = useModule("media_player").store;
           const source = mediaStore.source;
           if ("file" in source) {
             data.set("files[media]", source.file);
@@ -108,11 +108,11 @@ export default defineStore("editor", {
           data.set("media", JSON.stringify(omit(source, ["file"])));
         }
         if (this.isDirty("components", after)) {
-          const componentsStore = useModule("app_components").useStore();
+          const componentsStore = useModule("app_components").store;
           data.set("components", JSON.stringify(componentsStore.toJson()));
         }
         if (this.isDirty("assets", after)) {
-          const assetsStore = useModule("assets_library").useStore();
+          const assetsStore = useModule("assets_library").store;
           const assets = assetsStore.all;
           if (assets.length > 0) {
             assets.forEach((asset) => {
@@ -146,7 +146,7 @@ export default defineStore("editor", {
         }
       });
 
-      const mediaStore = useModule("media_player").useStore();
+      const mediaStore = useModule("media_player").store;
       mediaStore.setSource(data.media);
       mediaStore.$onAction(({ name }) => {
         if (["setSource"].includes(name)) {
@@ -154,7 +154,7 @@ export default defineStore("editor", {
         }
       });
 
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       await componentsStore.init(data.components);
       componentsStore.$onAction(({ name }) => {
         if (["add", "update", "delete"].includes(name)) {
@@ -162,7 +162,7 @@ export default defineStore("editor", {
         }
       });
 
-      const assetsStore = useModule("assets_library").useStore();
+      const assetsStore = useModule("assets_library").store;
       assetsStore.init(data.assets);
       assetsStore.$onAction(({ name }) => {
         if (["add", "delete"].includes(name)) {
@@ -170,34 +170,34 @@ export default defineStore("editor", {
         }
       });
 
-      const historyStore = useModule("history").useStore();
+      const historyStore = useModule("history").store;
       historyStore.active = true;
     },
     setAppTitle(value) {
       this.appTitle = value;
     },
     setAppWidth(value) {
-      const appRendererStore = useModule("app_renderer").useStore();
+      const appRendererStore = useModule("app_renderer").store;
       appRendererStore.width = value;
     },
     setAppHeight(value) {
-      const appRendererStore = useModule("app_renderer").useStore();
+      const appRendererStore = useModule("app_renderer").store;
       appRendererStore.height = value;
     },
     setAppCss(value) {
-      const appRendererStore = useModule("app_renderer").useStore();
+      const appRendererStore = useModule("app_renderer").store;
       appRendererStore.css = value;
     },
     setMediaSource(value) {
-      const mediaStore = useModule("media_player").useStore();
+      const mediaStore = useModule("media_player").store;
       mediaStore.setSource(value);
     },
     async createComponent(data, validate) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       return await componentsStore.create(data, validate);
     },
     async updateComponent(component, data) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       await componentsStore.update(component, data);
     },
     async updateComponents(components, data) {
@@ -207,7 +207,7 @@ export default defineStore("editor", {
     },
     async addComponent(component, parent = null) {
       // @todo: deal with omitted ids and childnre from clone
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       await componentsStore.add(component, parent);
       return component;
     },
@@ -238,7 +238,7 @@ export default defineStore("editor", {
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
       if (selected.length > 0) {
-        const componentsStore = useModule("app_components").useStore();
+        const componentsStore = useModule("app_components").store;
         const master = selected[0];
         const parent = componentsStore.getParent(master);
         const children = componentsStore.getChildren(parent);
@@ -281,7 +281,7 @@ export default defineStore("editor", {
       this.lockedComponents = [];
     },
     copyComponent(component) {
-      const clipboardStore = useModule("clipboard").useStore();
+      const clipboardStore = useModule("clipboard").store;
       const data = omit(component, ["id"]);
       clipboardStore.setData(`metascore/component`, data);
     },
@@ -303,7 +303,7 @@ export default defineStore("editor", {
       components.map((c) => this.pasteComponent(c, parent));
     },
     deleteComponent(component) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       componentsStore.delete(component.type, component.id);
 
       if (
@@ -317,14 +317,14 @@ export default defineStore("editor", {
       components.map(this.deleteComponent);
     },
     restoreComponent(component) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       componentsStore.restore(component.type, component.id);
     },
     restoreComponents(components) {
       components.map(this.restoreComponent);
     },
     async cloneComponent(component, data = {}) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       const clone = await componentsStore.create(
         {
           ...omit(cloneDeep(component), ["id"]),
@@ -354,7 +354,7 @@ export default defineStore("editor", {
     },
     arrangeComponent(component, action) {
       if (component.$parent) {
-        const componentsStore = useModule("app_components").useStore();
+        const componentsStore = useModule("app_components").store;
         const parent = componentsStore.getParent(component);
         const children = componentsStore.getChildren(parent);
         const count = children.length;
@@ -399,7 +399,7 @@ export default defineStore("editor", {
       console.log("addPageAfter");
     },
     moveComponents(components, { left, top }) {
-      const componentsStore = useModule("app_components").useStore();
+      const componentsStore = useModule("app_components").store;
       components.forEach((component) => {
         const model = componentsStore.getModel(component.type);
         if (!model.$isPositionable) {

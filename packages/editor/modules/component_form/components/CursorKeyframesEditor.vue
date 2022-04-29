@@ -55,9 +55,8 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const StyledButton = useModule("styled_button").StyledButton;
-    const mediaStore = useModule("media_player").useStore();
-    return { StyledButton, mediaStore };
+    const mediaStore = useModule("media_player").store;
+    return { mediaStore };
   },
   data() {
     return {

@@ -1,10 +1,15 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import Modal from "../modal";
 import ProgressIndicator from "./components/ProgressIndicator";
 
-export default {
-  id: "progress_indicator",
-  dependencies: [Modal],
-  install({ app }) {
+export default class ProgressIndicatorModule extends AbstractModule {
+  static id = "progress_indicator";
+
+  static dependencies = [Modal];
+
+  constructor({ app }) {
+    super(arguments);
+
     app.component("ProgressIndicator", ProgressIndicator);
-  },
-};
+  }
+}

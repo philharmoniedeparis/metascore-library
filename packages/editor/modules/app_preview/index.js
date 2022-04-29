@@ -1,3 +1,4 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "./store";
 import AppComponents from "@metascore-library/core/modules/app_components";
@@ -13,19 +14,23 @@ import AppDimensionsController from "./components/AppDimensionsController";
 import AppPreviewToggler from "./components/AppPreviewToggler";
 import ComponentWrapper from "./components/ComponentWrapper";
 
-export default {
-  id: "app_preview",
-  dependencies: [
+export default class AppPreviewModule extends AbstractModule {
+  static id = "app_preview";
+
+  static dependencies = [
     AppComponents,
     AppRenderer,
     ContextMenu,
     Clipboard,
     FormControls,
     History,
-  ],
-  install({ app }) {
+  ];
+
+  constructor({ app }) {
+    super(arguments);
+
     const DefaultComponentWrapper =
-      useModule("app_components").ComponentWrapper;
+      useModule("app_components").components.ComponentWrapper;
 
     // Override the default component-wrapper.
     app.component("ComponentWrapper", ComponentWrapper);
@@ -35,9 +40,9 @@ export default {
     app.component("AppZoomController", AppZoomController);
     app.component("AppDimensionsController", AppDimensionsController);
     app.component("AppPreviewToggler", AppPreviewToggler);
+  }
 
-    return {
-      useStore,
-    };
-  },
-};
+  get store() {
+    return useStore();
+  }
+}

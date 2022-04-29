@@ -1,6 +1,6 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Device from "../device";
-
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
 import BlockTogglerComponent from "./components/BlockTogglerComponent";
@@ -13,13 +13,15 @@ import PageComponent from "./components/PageComponent";
 import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
-import * as Models from "./models";
-import * as Composables from "./composables";
 
-export default {
-  id: "app_components",
-  dependencies: [Device],
-  install({ app }) {
+export default class AppComponentsModule extends AbstractModule {
+  static id = "app_components";
+
+  static dependencies = [Device];
+
+  constructor({ app }) {
+    super(arguments);
+
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
     app.component("BlockTogglerComponent", BlockTogglerComponent);
@@ -32,12 +34,15 @@ export default {
     app.component("ScenarioComponent", ScenarioComponent);
     app.component("SVGComponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
+  }
 
+  get store() {
+    return useStore();
+  }
+
+  get components() {
     return {
-      useStore,
       ComponentWrapper,
-      Models,
-      Composables,
     };
-  },
-};
+  }
+}

@@ -1,3 +1,4 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import AutoFocus from "@metascore-library/core/modules/auto_focus";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import FormGroup from "../form_group";
@@ -12,10 +13,14 @@ import TextControl from "./components/TextControl";
 import TimeControl from "./components/TimeControl";
 import UrlControl from "./components/UrlControl";
 
-export default {
-  id: "form_controls",
-  dependencies: [AutoFocus, StyledButton, FormGroup, TimecodeInput],
-  install({ app }) {
+export default class FormControlsModule extends AbstractModule {
+  static id = "form_controls";
+
+  static dependencies = [AutoFocus, StyledButton, FormGroup, TimecodeInput];
+
+  constructor({ app }) {
+    super(arguments);
+
     app.component("CheckboxControl", CheckboxControl);
     app.component("ColorControl", ColorControl);
     app.component("FileControl", FileControl);
@@ -24,5 +29,5 @@ export default {
     app.component("TextControl", TextControl);
     app.component("TimeControl", TimeControl);
     app.component("UrlControl", UrlControl);
-  },
-};
+  }
+}

@@ -29,8 +29,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").useStore();
-    const componentsStore = useModule("app_components").useStore();
+    const mediaStore = useModule("media_player").store;
+    const componentsStore = useModule("app_components").store;
     const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
     return { store, mediaStore, componentsStore, addCuepoint, removeCuepoint };
   },

@@ -1,6 +1,11 @@
-export default {
-  id: "post_message",
-  install({ app }) {
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+
+export default class PostMessageModule extends AbstractModule {
+  static id = "post_message";
+
+  constructor({ app }) {
+    super(arguments);
+
     app.provide("$postMessage", {
       send(target, message, targetOrigin = "*") {
         if (!targetOrigin) return;
@@ -20,5 +25,5 @@ export default {
         window.removeEventListener("message", callback);
       },
     });
-  },
-};
+  }
+}

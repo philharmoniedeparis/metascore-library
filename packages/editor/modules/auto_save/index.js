@@ -1,17 +1,24 @@
-import useStore from "./store";
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import Ajax from "@metascore-library/core/modules/ajax";
+import useStore from "./store";
 import AutoSaveIndicator from "./components/AutoSaveIndicator";
 
-export default {
-  id: "auto_save",
-  dependencies: [Ajax],
-  install({ app }) {
-    app.component("AutoSaveIndicator", AutoSaveIndicator);
+export default class AutoSaveModule extends AbstractModule {
+  static id = "auto_save";
 
-    return {
-      configure: (configs) => {
-        useStore().configure(configs);
-      },
-    };
-  },
-};
+  static dependencies = [Ajax];
+
+  constructor({ app }) {
+    super(arguments);
+
+    app.component("AutoSaveIndicator", AutoSaveIndicator);
+  }
+
+  get store() {
+    return useStore();
+  }
+
+  configure(configs) {
+    this.store.configure(configs);
+  }
+}

@@ -1,3 +1,4 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
@@ -14,9 +15,10 @@ import CursorKeyframesControl from "./components/CursorKeyframesControl";
 import ComponentForm from "./components/ComponentForm";
 import HtmlControl from "./components/HtmlControl";
 
-export default {
-  id: "component_form",
-  dependencies: [
+export default class ComponentFormModule extends AbstractModule {
+  static id = "component_form";
+
+  static dependencies = [
     AppPreview,
     AssetsLibrary,
     EventBus,
@@ -25,18 +27,23 @@ export default {
     SchemaForm,
     StyledButton,
     Tabs,
-  ],
-  install({ app }) {
+  ];
+
+  constructor({ app }) {
+    super(arguments);
+
     app.component("AnimatedControl", AnimatedControl);
     app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CursorKeyframesControl", CursorKeyframesControl);
     app.component("ComponentForm", ComponentForm);
     app.component("HtmlControl", HtmlControl);
+  }
 
-    return {
-      configure: (configs) => {
-        useStore().configure(configs);
-      },
-    };
-  },
-};
+  get store() {
+    return useStore();
+  }
+
+  configure(configs) {
+    this.store.configure(configs);
+  }
+}

@@ -1,8 +1,12 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import FormGroup from "./components/FormGroup";
 
-export default {
-  id: "form_group",
-  install({ app }) {
+export default class FormGroupModule extends AbstractModule {
+  static id = "form_group";
+
+  constructor({ app }) {
+    super(arguments);
+
     app.component("FormGroup", FormGroup);
-  },
-};
+  }
+}

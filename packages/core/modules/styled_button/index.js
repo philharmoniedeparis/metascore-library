@@ -1,12 +1,12 @@
+import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import StyledButton from "./components/StyledButton";
 
-export default {
-  id: "styled_button",
-  install({ app }) {
-    app.component("StyledButton", StyledButton);
+export default class StyledButtonModule extends AbstractModule {
+  static id = "styled_button";
 
-    return {
-      StyledButton,
-    };
-  },
-};
+  constructor({ app }) {
+    super(arguments);
+
+    app.component("StyledButton", StyledButton);
+  }
+}
