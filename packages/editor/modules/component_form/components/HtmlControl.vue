@@ -18,6 +18,7 @@
 
 <script>
 import { markRaw } from "vue";
+import useStore from "../store";
 
 export default {
   props: {
@@ -51,9 +52,12 @@ export default {
     },
   },
   emits: ["update:modelValue"],
+  setup() {
+    const store = useStore();
+    return { store };
+  },
   data() {
     return {
-      editing: false,
       setting_up_editor: false,
       editor: null,
     };
@@ -71,6 +75,14 @@ export default {
       return this.appComponentEl.querySelector(
         ":scope > .metaScore-component--inner > .contents"
       );
+    },
+    editing: {
+      get() {
+        return this.store.editingTextContent;
+      },
+      set(value) {
+        this.store.editingTextContent = value;
+      },
     },
   },
   watch: {

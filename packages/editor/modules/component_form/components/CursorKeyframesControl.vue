@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import useStore from "../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 
 export default {
@@ -67,10 +68,9 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-  data() {
-    return {
-      recording: false,
-    };
+  setup() {
+    const store = useStore();
+    return { store };
   },
   computed: {
     value: {
@@ -81,19 +81,21 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
+    recording: {
+      get() {
+        return this.store.recordingCursorKeyframes;
+      },
+      set(value) {
+        this.store.recordingCursorKeyframes = value;
+      },
+    },
   },
   beforeUnmount() {
-    this.$eventBus.emit("component_form:cursorkeyframesrecordstop");
+    this.recording = false;
   },
   methods: {
     onButtonClick() {
       this.recording = !this.recording;
-
-      this.$eventBus.emit(
-        `component_form:cursorkeyframesrecord${
-          this.recording ? "start" : "stop"
-        }`
-      );
     },
   },
 };

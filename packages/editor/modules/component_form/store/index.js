@@ -6,6 +6,8 @@ export default defineStore("component-form", {
       configs: {
         colorSwatches: [],
       },
+      recordingCursorKeyframes: false,
+      editingTextContent: false,
     };
   },
   actions: {

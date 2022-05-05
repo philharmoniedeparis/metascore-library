@@ -1,8 +1,10 @@
+import { storeToRefs } from "pinia";
+import { readonly } from "vue";
+
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
-import EventBus from "@metascore-library/core/modules/event_bus";
 import FormGroup from "../form_group";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import SchemaForm from "../schema_form";
@@ -21,7 +23,6 @@ export default class ComponentFormModule extends AbstractModule {
   static dependencies = [
     AppPreview,
     AssetsLibrary,
-    EventBus,
     FormGroup,
     MediaPlayer,
     SchemaForm,
@@ -45,5 +46,17 @@ export default class ComponentFormModule extends AbstractModule {
 
   configure(configs) {
     this.store.configure(configs);
+  }
+
+  get recordingCursorKeyframes() {
+    const store = useStore();
+    const { recordingCursorKeyframes } = storeToRefs(store);
+    return readonly(recordingCursorKeyframes);
+  }
+
+  get editingTextContent() {
+    const store = useStore();
+    const { editingTextContent } = storeToRefs(store);
+    return readonly(editingTextContent);
   }
 }

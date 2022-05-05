@@ -186,11 +186,6 @@ export default {
     const appPreviewStore = useModule("app_preview").store;
     return { store, editorStore, componentsStore, appPreviewStore };
   },
-  data() {
-    return {
-      cursorKeyframesRecording: false,
-    };
-  },
   computed: {
     selectedComponents() {
       return this.editorStore.getSelectedComponents;
@@ -480,26 +475,12 @@ export default {
 
       return layout;
     },
-  },
-  mounted() {
-    this.$eventBus.on(
-      "component_form:cursorkeyframesrecordstart",
-      this.onCursorKeyframesRecordStart
-    );
-    this.$eventBus.on(
-      "component_form:cursorkeyframesrecordstop",
-      this.onCursorKeyframesRecordStop
-    );
-  },
-  beforeUnmount() {
-    this.$eventBus.off(
-      "component_form:cursorkeyframesrecordstart",
-      this.onCursorKeyframesRecordStart
-    );
-    this.$eventBus.off(
-      "component_form:cursorkeyframesrecordstop",
-      this.onCursorKeyframesRecordStop
-    );
+    recordingCursorKeyframes() {
+      return this.store.recordingCursorKeyframes;
+    },
+    editingTextContent() {
+      return this.store.editingTextContent;
+    },
   },
   methods: {
     update({ property, value }) {
@@ -529,17 +510,14 @@ export default {
             : this.$t(property);
       }
 
-      if (this.cursorKeyframesRecording && property !== "keyframes") {
+      if (
+        (this.recordingCursorKeyframes && property !== "keyframes") ||
+        (this.editingTextContent && property !== "text")
+      ) {
         props.disabled = true;
       }
 
       return props;
-    },
-    onCursorKeyframesRecordStart() {
-      this.cursorKeyframesRecording = true;
-    },
-    onCursorKeyframesRecordStop() {
-      this.cursorKeyframesRecording = false;
     },
   },
 };

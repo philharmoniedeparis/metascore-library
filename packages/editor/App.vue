@@ -163,6 +163,15 @@ export default {
     const mediaStore = useModule("media_player").store;
     const appPreviewStore = useModule("app_preview").store;
     const waveformStore = useModule("waveform").store;
+
+    const component_form = useModule("component_form");
+    const disableComponentInteractions = computed(() => {
+      return (
+        component_form.recordingCursorKeyframes ||
+        component_form.editingTextContent
+      );
+    });
+
     return {
       store,
       componentsStore,
@@ -170,6 +179,7 @@ export default {
       mediaStore,
       appPreviewStore,
       waveformStore,
+      disableComponentInteractions,
     };
   },
   data() {
@@ -179,7 +189,6 @@ export default {
       appTitleFocused: false,
       activeLibrariesTab: 0,
       librariesExpanded: false,
-      cursorKeyframesRecording: false,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
@@ -213,9 +222,6 @@ export default {
     },
     preview() {
       return this.appPreviewStore.preview;
-    },
-    disableComponentInteractions() {
-      return this.cursorKeyframesRecording;
     },
     imageAssets() {
       return this.assetsStore.filterByType("image").map(readonly);
@@ -276,13 +282,6 @@ export default {
   },
   mounted() {
     this.modalsTarget = this.$el;
-
-    this.$eventBus.on("component_form:cursorkeyframesrecordstart", () => {
-      this.cursorKeyframesRecording = true;
-    });
-    this.$eventBus.on("component_form:cursorkeyframesrecordstop", () => {
-      this.cursorKeyframesRecording = false;
-    });
 
     this.store.load(this.url);
   },
