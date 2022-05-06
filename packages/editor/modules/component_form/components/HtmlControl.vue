@@ -124,6 +124,14 @@ export default {
         });
     },
     onEditorCreate(editor) {
+      editor.editing.view.change((writer) => {
+        // Remove ck-editor special classes.
+        // See https://github.com/ckeditor/ckeditor5/issues/6280#issuecomment-597059725
+        const viewEditableRoot = editor.editing.view.document.getRoot();
+        writer.removeClass("ck-editor__editable_inline", viewEditableRoot);
+        writer.removeClass("ck-content", viewEditableRoot);
+      });
+
       const toolbar = editor.ui.view.toolbar.element;
       this.editor = markRaw(editor);
       this.$refs["toolbar-container"].appendChild(toolbar);
@@ -145,8 +153,9 @@ export default {
     },
     destroyEditor() {
       if (this.editor) {
-        const toolbar = this.editor.ui.view.toolbar.element;
-        toolbar.remove();
+        this.value = this.editor.getData();
+
+        this.editor.ui.view.toolbar.element.remove();
         this.editor.destroy();
         this.editor = null;
       }
