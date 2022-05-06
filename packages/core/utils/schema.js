@@ -5,14 +5,25 @@ export const createStringField = ({
   title = "",
   description = "",
   default: default_value,
+  minLength = null,
+  maxLength = null,
   nullable = false,
 } = {}) => {
-  return {
+  const field = {
     type: nullable ? ["string", "null"] : "string",
     title,
     description,
     default: default_value,
   };
+
+  if (minLength !== null) {
+    field.minLength = minLength;
+  }
+  if (maxLength !== null) {
+    field.maxLength = maxLength;
+  }
+
+  return field;
 };
 
 export const createNumberField = ({

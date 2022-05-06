@@ -172,7 +172,7 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({});
+    this.model = await Model.create({}, false);
   },
   methods: {
     onUpdate({ property, value }) {

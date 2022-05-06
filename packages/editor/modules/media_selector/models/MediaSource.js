@@ -19,6 +19,14 @@ export default class MediaSource extends AbstractModel {
             ajv,
           }),
         },
+        oneOf: [
+          {
+            required: ["file"],
+          },
+          {
+            required: ["url"],
+          },
+        ],
       })
     );
   }

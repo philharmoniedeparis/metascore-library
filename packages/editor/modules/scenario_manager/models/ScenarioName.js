@@ -7,7 +7,9 @@ export default class Scenario extends AbstractModel {
     return Object.freeze(
       merge(super.schema, {
         properties: {
-          name: createStringField(),
+          name: createStringField({
+            minLength: 1,
+          }),
         },
         required: ["name"],
       })

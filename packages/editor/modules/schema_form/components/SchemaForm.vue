@@ -107,7 +107,12 @@ export default {
     controlErrors() {
       if (this.errors) {
         const locale = this.$i18n.locale;
-        const errors = this.errors.filter((e) => e.instancePath === this.path);
+        const errors = this.errors.filter((e) => {
+          return (
+            (!e.instancePath && e.schema.includes(this.layout.property)) ||
+            e.instancePath === this.path
+          );
+        });
         localize[locale](errors);
         return errors.map((e) => e.message);
       }
