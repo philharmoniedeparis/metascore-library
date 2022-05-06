@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { readonly } from "vue";
+import { readonly, unref } from "vue";
 import { v4 as uuid } from "uuid";
 import { normalize, denormalize } from "./utils/normalize";
 import * as Models from "../models";
@@ -231,5 +231,66 @@ export default defineStore("app-components", {
         this.hide(component);
       }
     },
+  },
+  history(context) {
+    // @todo: group actions on multiple components
+    const {
+      name, // Invoked action's name.
+      args, // Array of parameters passed to the action.
+      after, // Hook called after the action executes.
+      push, // Method to push an undo/redo item to the history.
+    } = context;
+
+    switch (name) {
+      case "update":
+        {
+          const [component, data] = args;
+          const oldValue = Object.keys(data).reduce(
+            (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
+            {}
+          );
+          after(() => {
+            push({
+              undo: () => {
+                this.update(component, oldValue);
+              },
+              redo: () => {
+                this.update(component, data);
+              },
+            });
+          });
+        }
+        break;
+
+      case "add":
+        after((component) => {
+          push({
+            undo: () => {
+              this.delete(component.type, component.id);
+            },
+            redo: () => {
+              this.restore(component.type, component.id);
+            },
+          });
+        });
+        break;
+
+      case "restore":
+      case "delete":
+        {
+          const [type, id] = args;
+          after(() => {
+            push({
+              undo: () => {
+                this[name === "delete" ? "restore" : "delete"](type, id);
+              },
+              redo: () => {
+                this[name](type, id);
+              },
+            });
+          });
+        }
+        break;
+    }
   },
 });

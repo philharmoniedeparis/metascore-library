@@ -99,13 +99,16 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const appRendererStore = useModule("app_renderer").store;
-    const contextmenuStore = useModule("contextmenu").store;
+    const { deleteComponent } = useModule("app_components");
+    const { width: appWidth, height: appHeight } = useModule("app_renderer");
+    const { addItems: addContextmenuItems } = useModule("contextmenu");
     return {
       store,
-      appRendererStore,
+      appWidth,
+      appHeight,
       editorStore,
-      contextmenuStore,
+      deleteComponent,
+      addContextmenuItems,
     };
   },
   data() {
@@ -119,12 +122,6 @@ export default {
     };
   },
   computed: {
-    appWidth() {
-      return this.appRendererStore.width;
-    },
-    appHeight() {
-      return this.appRendererStore.height;
-    },
     zoom() {
       return this.store.zoom;
     },
@@ -220,11 +217,11 @@ export default {
         },
         delete: () => {
           const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.deleteComponents(selected);
+          selected.forEach((c) => this.deleteComponent(c.type, c.id));
         },
         backspace: () => {
           const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.deleteComponents(selected);
+          selected.forEach((c) => this.deleteComponent(c.type, c.id));
         },
       };
     },
@@ -251,7 +248,7 @@ export default {
             {
               label: this.$t("contextmenu.delete"),
               handler: () => {
-                this.editorStore.deleteComponents(selected);
+                selected.forEach((c) => this.deleteComponent(c.type, c.id));
               },
             },
             {
@@ -380,7 +377,7 @@ export default {
         return;
       }
 
-      this.contextmenuStore.addItems(this.contextmenuItems);
+      this.addContextmenuItems(this.contextmenuItems);
 
       evt.preventDefault();
       this.bubbleIframeEvent(evt);

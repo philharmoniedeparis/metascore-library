@@ -18,28 +18,24 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const {
+      element: mediaElement,
+      type: mediaType,
+      ready: mediaReady,
+      width: mediaWidth,
+      height: mediaHeight,
+      time: mediaTime,
+    } = useModule("media_player");
+    return {
+      mediaElement,
+      mediaType,
+      mediaReady,
+      mediaWidth,
+      mediaHeight,
+      mediaTime,
+    };
   },
   computed: {
-    mediaElement() {
-      return this.mediaStore.element;
-    },
-    mediaReady() {
-      return this.mediaStore.ready;
-    },
-    mediaTime() {
-      return this.mediaStore.time;
-    },
-    mediaType() {
-      return this.mediaStore.type;
-    },
-    mediaWidth() {
-      return this.mediaStore.width;
-    },
-    mediaHeight() {
-      return this.mediaStore.height;
-    },
     canvas() {
       return this.$refs.canvas;
     },

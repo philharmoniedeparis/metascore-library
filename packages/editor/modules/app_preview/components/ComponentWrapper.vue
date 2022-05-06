@@ -95,15 +95,33 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const clipboardStore = useModule("clipboard").store;
-    const componentsStore = useModule("app_components").store;
-    const historyStore = useModule("history").store;
+    const {
+      format: clipboardFormat,
+      data: clipboardData,
+      setData: setClipboardData,
+    } = useModule("clipboard");
+    const {
+      getModel,
+      getComponentSiblings,
+      createComponent,
+      addComponent,
+      updateComponent,
+    } = useModule("app_components");
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
     return {
       store,
       editorStore,
-      clipboardStore,
-      componentsStore,
-      historyStore,
+      clipboardFormat,
+      clipboardData,
+      setClipboardData,
+      getModel,
+      getComponentSiblings,
+      createComponent,
+      addComponent,
+      updateComponent,
+      startHistoryGroup,
+      endHistoryGroup,
     };
   },
   data() {
@@ -116,7 +134,7 @@ export default {
   },
   computed: {
     model() {
-      return this.componentsStore.getModel(this.component.type);
+      return this.getModel(this.component.type);
     },
     preview() {
       return this.store.preview;
@@ -134,14 +152,14 @@ export default {
       return this.model.$isResizable;
     },
     siblings() {
-      return this.componentsStore.getSiblings(this.component);
+      return this.getComponentSiblings(this.component);
     },
     clipboardDataAvailable() {
-      if (this.clipboardStore.format !== "metascore/component") {
+      if (this.clipboardFormat !== "metascore/component") {
         return false;
       }
 
-      const component = this.clipboardStore.data;
+      const component = this.clipboardData;
 
       switch (this.component.type) {
         case "Scenario":
@@ -184,7 +202,7 @@ export default {
           label: this.$t("contextmenu.paste"),
           handler: () => {
             // @todo
-            const data = this.clipboardStore.data;
+            const data = this.clipboardData;
             console.log(data);
           },
         });
@@ -232,7 +250,7 @@ export default {
             label: this.$t("contextmenu.copy"),
             handler: () => {
               const data = omit(this.component, ["id"]);
-              this.clipboardStore.setData(`metascore/component`, data);
+              this.setClipboardData(`metascore/component`, data);
             },
           });
 
@@ -431,12 +449,12 @@ export default {
     },
     onDraggableStart() {
       this.dragging = true;
-      this.historyStore.startGroup();
+      this.startHistoryGroup();
     },
     onDraggableMove(evt) {
       this.editorStore.getSelectedComponents.forEach((component) => {
         const position = component.position;
-        this.editorStore.updateComponent(component, {
+        this.updateComponent(component, {
           position: [
             Math.round(position[0] + evt.delta.x),
             Math.round(position[1] + evt.delta.y),
@@ -446,7 +464,7 @@ export default {
     },
     onDraggableEnd(evt) {
       this.dragging = false;
-      this.historyStore.endGroup();
+      this.endHistoryGroup();
 
       // Prevent the next click event
       evt.target.addEventListener(
@@ -461,7 +479,7 @@ export default {
     onResizableMove(evt) {
       const position = this.component.position;
 
-      this.editorStore.updateComponent(this.component, {
+      this.updateComponent(this.component, {
         position: [
           position[0] + evt.deltaRect.left,
           position[1] + evt.deltaRect.top,
@@ -552,13 +570,13 @@ export default {
               ];
             }
           }
-          return await this.editorStore.createComponent(data);
+          return await this.createComponent(data);
         }
       }
     },
     async addDroppedComponent(evt) {
       const droppedComponent = await this.getComponentFromDragEvent(evt);
-      const component = await this.editorStore.addComponent(
+      const component = await this.addComponent(
         droppedComponent,
         this.component
       );

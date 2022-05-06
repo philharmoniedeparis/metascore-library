@@ -1,3 +1,4 @@
+import { readonly } from "vue";
 import { defineStore } from "pinia";
 import { normalize } from "./utils/normalize";
 import * as api from "../api";
@@ -42,7 +43,7 @@ export default defineStore("assets-library", {
     get() {
       return (id) => {
         const item = this.items[id];
-        return item && !item.$deleted ? item : null;
+        return item && !item.$deleted ? readonly(item) : null;
       };
     },
     all() {
@@ -50,7 +51,7 @@ export default defineStore("assets-library", {
         .map(this.get)
         .filter((a) => a);
     },
-    filterByType() {
+    getByType() {
       return (type) => {
         return this.all.filter((a) => {
           return this.getType(a) === type;

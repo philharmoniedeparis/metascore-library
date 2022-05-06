@@ -9,10 +9,10 @@ export default class Adapter {
   // Starts the upload process.
   // @todo: handle uplaod progress
   upload() {
-    const assetsStore = useModule("assets_library").store;
+    const { uploadFiles } = useModule("assets_library");
 
     return this.loader.file.then((file) =>
-      assetsStore.upload([file]).then((assets) => {
+      uploadFiles([file]).then((assets) => {
         return {
           default: assets[0].url,
         };

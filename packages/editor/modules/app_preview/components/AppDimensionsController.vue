@@ -21,39 +21,51 @@
 </template>
 
 <script>
-import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   setup() {
-    const editorStore = useEditorStore();
-    const historyStore = useModule("history").store;
-    return { editorStore, historyStore };
+    const {
+      width: appWidth,
+      setWidth: setAppWidth,
+      height: appHeight,
+      setHeight: setAppHeight,
+    } = useModule("app_renderer");
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
+    return {
+      appWidth,
+      setAppWidth,
+      appHeight,
+      setAppHeight,
+      startHistoryGroup,
+      endHistoryGroup,
+    };
   },
   computed: {
     width: {
       get() {
-        return this.editorStore.appWidth;
+        return this.appWidth;
       },
       set(value) {
-        this.editorStore.setAppWidth(value);
+        this.setAppWidth(value);
       },
     },
     height: {
       get() {
-        return this.editorStore.appHeight;
+        return this.appHeight;
       },
       set(value) {
-        this.editorStore.setAppHeight(value);
+        this.setAppHeight(value);
       },
     },
   },
   methods: {
     onInputFocus() {
-      this.historyStore.startGroup();
+      this.startHistoryGroup();
     },
     onInputBlur() {
-      this.historyStore.endGroup();
+      this.endHistoryGroup();
     },
   },
 };

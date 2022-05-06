@@ -29,10 +29,38 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").store;
-    const componentsStore = useModule("app_components").store;
+    const {
+      getComponent,
+      getComponentsByType,
+      activeScenario,
+      showComponent,
+      hideComponent,
+      toggleComponent,
+    } = useModule("app_components");
+    const {
+      source: mediaSource,
+      play: playMedia,
+      pause: pauseMedia,
+      stop: stopMedia,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
     const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
-    return { store, mediaStore, componentsStore, addCuepoint, removeCuepoint };
+    return {
+      store,
+      mediaSource,
+      playMedia,
+      pauseMedia,
+      stopMedia,
+      seekMediaTo,
+      getComponent,
+      getComponentsByType,
+      activeScenario,
+      showComponent,
+      hideComponent,
+      toggleComponent,
+      addCuepoint,
+      removeCuepoint,
+    };
   },
   data() {
     return {
@@ -51,14 +79,8 @@ export default {
     css() {
       return this.store.css;
     },
-    mediaSource() {
-      return this.mediaStore.source;
-    },
     scenarios() {
-      return this.componentsStore.getByType("Scenario");
-    },
-    activeScenario() {
-      return this.componentsStore.activeScenario;
+      return this.getComponentsByType("Scenario");
     },
     style() {
       if (this.responsive) {
@@ -161,7 +183,7 @@ export default {
               startTime: inTime,
               endTime: outTime,
               onStop: () => {
-                this.mediaStore.pause();
+                this.pauseMedia();
               },
               onSeekout: ({ cuepoint }) => {
                 this.removeCuepoint(cuepoint);
@@ -170,48 +192,49 @@ export default {
 
             if (
               scenario !== null &&
-              this.componentsStore.get("Scenario", scenario) &&
-              scenario !== this.componentsStore.activeScenario
+              this.getComponent("Scenario", scenario) &&
+              scenario !== this.activeScenario
             ) {
-              const previous_scenario = this.componentsStore.activeScenario;
+              const previous_scenario = this.activeScenario;
               cuepoint_config.onSeekout = ({ cuepoint }) => {
-                this.componentsStore.activeScenario = previous_scenario;
+                this.setActiveScenario(previous_scenario);
                 this.removeCuepoint(cuepoint);
               };
-              this.componentsStore.activeScenario = scenario;
+              this.setActiveScenario(scenario);
             }
 
             this.addCuepoint(cuepoint_config);
 
             if (inTime !== null) {
-              this.mediaStore.seekTo(inTime);
+              this.seekMediaTo(inTime);
             }
           }
-          this.mediaStore.play();
+          this.playMedia();
           break;
 
         case "pause":
-          this.mediaStore.pause();
+          this.pauseMedia();
           break;
 
         case "stop":
-          this.mediaStore.stop();
+          this.stopMedia();
           break;
 
         case "seek":
           if ("time" in args) {
-            this.mediaStore.seekTo(args?.time || 0);
+            this.seekMediaTo(args?.time || 0);
           }
           break;
 
         case "page":
           {
             if ("block" in args && "index" in args) {
-              const block = this.componentsStore
-                .getByType("Block")
-                .find((c) => c.name === args.block);
-              if (block)
-                this.componentsStore.setBlockActivePage(block, args.index);
+              const block = this.getComponentsByType("Block").find(
+                (c) => c.name === args.block
+              );
+              if (block) {
+                // @todo: implement
+              }
             }
           }
           break;
@@ -219,10 +242,10 @@ export default {
         case "showBlock":
           {
             if ("name" in args) {
-              const block = this.componentsStore
-                .getByType("Block")
-                .find((c) => c.name === args.name);
-              if (block) this.componentsStore.show(block);
+              const block = this.getComponentsByType("Block").find(
+                (c) => c.name === args.name
+              );
+              if (block) this.showComponent(block);
             }
           }
           break;
@@ -230,10 +253,10 @@ export default {
         case "hideBlock":
           {
             if ("name" in args) {
-              const block = this.componentsStore
-                .getByType("Block")
-                .find((c) => c.name === args.name);
-              if (block) this.componentsStore.hide(block);
+              const block = this.getComponentsByType("Block").find(
+                (c) => c.name === args.name
+              );
+              if (block) this.hideComponent(block);
             }
           }
           break;
@@ -241,10 +264,10 @@ export default {
         case "toggleBlock":
           {
             if ("name" in args) {
-              const block = this.componentsStore
-                .getByType("Block")
-                .find((c) => c.name === args.name);
-              if (block) this.componentsStore.toggle(block);
+              const block = this.getComponentsByType("Block").find(
+                (c) => c.name === args.name
+              );
+              if (block) this.toggleComponent(block);
             }
           }
           break;
@@ -252,8 +275,8 @@ export default {
         case "scenario":
           {
             if ("id" in args) {
-              const scenario = this.componentsStore.get("Scenario", args.id);
-              if (scenario) this.componentsStore.activeScenario = scenario.id;
+              const scenario = this.getComponent("Scenario", args.id);
+              if (scenario) this.setActiveScenario(scenario.id);
             }
           }
           break;

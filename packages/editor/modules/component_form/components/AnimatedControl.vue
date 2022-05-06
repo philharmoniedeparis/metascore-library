@@ -85,13 +85,10 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const { time: mediaTime } = useModule("media_player");
+    return { mediaTime };
   },
   computed: {
-    mediaTime() {
-      return this.mediaStore.time;
-    },
     value: {
       get() {
         return this.modelValue;

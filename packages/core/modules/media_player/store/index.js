@@ -131,4 +131,31 @@ export default defineStore("media_player", {
       }
     },
   },
+  history(context) {
+    const {
+      name, // Invoked action's name.
+      after, // Hook called after the action executes.
+      push, // Method to push an undo/redo item to the history.
+    } = context;
+
+    switch (name) {
+      case "setSource":
+        {
+          const key = name.slice(3, 4).toLowerCase() + name.slice(4);
+          const oldValue = this[key];
+          after(() => {
+            const newValue = this[key];
+            push({
+              undo: () => {
+                this[name](oldValue);
+              },
+              redo: () => {
+                this[name](newValue);
+              },
+            });
+          });
+        }
+        break;
+    }
+  },
 });

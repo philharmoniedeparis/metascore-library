@@ -26,8 +26,14 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const {
+      ready: mediaReady,
+      time: mediaTime,
+      duration: mediaDuration,
+      buffered: mediaBuffered,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return { mediaReady, mediaTime, mediaDuration, mediaBuffered, seekMediaTo };
   },
   data() {
     return {
@@ -36,18 +42,6 @@ export default {
     };
   },
   computed: {
-    mediaReady() {
-      return this.mediaStore.ready;
-    },
-    mediaTime() {
-      return this.mediaStore.time;
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
-    mediaBuffered() {
-      return this.mediaStore.buffered;
-    },
     ranges() {
       const multiplier = this.width / this.mediaDuration;
 
@@ -93,10 +87,6 @@ export default {
     }
   },
   methods: {
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
-
     /**
      * Get the time in seconds corresponding to an x position in pixels
      * @param {Number} x The x position

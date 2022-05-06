@@ -20,19 +20,15 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const {
+      ready: mediaReady,
+      time: mediaTime,
+      duration: mediaDuration,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return { mediaReady, mediaTime, mediaDuration, seekMediaTo };
   },
   computed: {
-    mediaReady() {
-      return this.mediaStore.ready;
-    },
-    mediaTime() {
-      return this.mediaStore.time;
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
     canvas() {
       return this.$refs.canvas;
     },
@@ -109,9 +105,6 @@ export default {
     }
   },
   methods: {
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
     update() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 

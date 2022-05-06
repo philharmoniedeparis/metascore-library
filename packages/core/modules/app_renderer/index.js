@@ -1,3 +1,5 @@
+import { readonly } from "vue";
+import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
@@ -16,7 +18,40 @@ export default class AppRendererModule extends AbstractModule {
     app.component("AppRenderer", AppRenderer);
   }
 
-  get store() {
-    return useStore();
+  init(data) {
+    const store = useStore();
+    store.init(data);
+  }
+
+  get width() {
+    const store = useStore();
+    const { width } = storeToRefs(store);
+    return readonly(width);
+  }
+
+  get height() {
+    const store = useStore();
+    const { height } = storeToRefs(store);
+    return readonly(height);
+  }
+
+  setWidth(value) {
+    const store = useStore();
+    store.setWidth(value);
+  }
+
+  setHeight(value) {
+    const store = useStore();
+    store.setHeight(value);
+  }
+
+  setCSS(value) {
+    const store = useStore();
+    store.setCSS(value);
+  }
+
+  addStoreActionListener(callback) {
+    const store = useStore();
+    store.$onAction(callback);
   }
 }

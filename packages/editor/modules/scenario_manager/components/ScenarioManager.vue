@@ -139,9 +139,9 @@ export default {
   },
   emits: ["update:activeId", "add", "clone", "delete"],
   setup() {
-    const contextmenuStore = useModule("contextmenu").store;
+    const { addItems: addContextmenuItems } = useModule("contextmenu");
     return {
-      contextmenuStore,
+      addContextmenuItems,
     };
   },
   data() {
@@ -284,7 +284,7 @@ export default {
         });
       }
 
-      this.contextmenuStore.addItems(items);
+      this.addContextmenuItems(items);
     },
   },
 };

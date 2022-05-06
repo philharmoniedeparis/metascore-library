@@ -34,8 +34,12 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").store;
-    return { store, mediaStore };
+    const {
+      duration: mediaDuration,
+      time: mediaTime,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return { store, mediaDuration, mediaTime, seekMediaTo };
   },
   data() {
     return {
@@ -44,17 +48,6 @@ export default {
     };
   },
   computed: {
-    mediaTime: {
-      get() {
-        return this.mediaStore.time;
-      },
-      set(value) {
-        this.mediaStore.seekTo(value);
-      },
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
     waveformData() {
       return this.store.data;
     },
@@ -205,7 +198,7 @@ export default {
     gotToMousePosition(evt) {
       const offset = this.$el.getBoundingClientRect();
       const x = evt.pageX - offset.left;
-      this.mediaTime = this.getTimeAt(x);
+      this.seekMediaTo(this.getTimeAt(x));
     },
 
     /**

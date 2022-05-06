@@ -1,3 +1,5 @@
+import { readonly } from "vue";
+import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import plugin from "./store/plugin";
@@ -16,7 +18,29 @@ export default class HistoryModule extends AbstractModule {
     pinia.use(plugin);
   }
 
-  get store() {
-    return useStore();
+  get active() {
+    const store = useStore();
+    const { active } = storeToRefs(store);
+    return readonly(active);
+  }
+
+  activate() {
+    const store = useStore();
+    store.active = true;
+  }
+
+  deactivate() {
+    const store = useStore();
+    store.active = false;
+  }
+
+  startGroup() {
+    const store = useStore();
+    store.startGroup();
+  }
+
+  endGroup() {
+    const store = useStore();
+    store.endGroup();
   }
 }

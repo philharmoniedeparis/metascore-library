@@ -4,7 +4,10 @@ import { isNull, isUndefined } from "lodash";
 
 export function useTime(component, model) {
   if (unref(model).$isTimeable) {
+    const { time: mediaTime } = useModule("media_player");
+
     const active = computed(() => {
+      const time = unref(mediaTime);
       const { "start-time": startTime, "end-time": endTime } = unref(component);
 
       if (
@@ -14,17 +17,15 @@ export function useTime(component, model) {
         return true;
       }
 
-      const mediaStore = useModule("media_player").store;
-      const mediaTime = mediaStore.time;
       if (isUndefined(endTime) || isNull(endTime)) {
-        return mediaTime >= startTime;
+        return time >= startTime;
       }
 
       if (isUndefined(startTime) || isNull(startTime)) {
-        return mediaTime < endTime;
+        return time < endTime;
       }
 
-      return unref(mediaTime) >= startTime && unref(mediaTime) < endTime;
+      return time >= startTime && time < endTime;
     });
 
     return {

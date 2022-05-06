@@ -25,8 +25,8 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const { ready: mediaReady, time: mediaTime } = useModule("media_player");
+    return { mediaReady, mediaTime };
   },
   data() {
     return {
@@ -36,12 +36,6 @@ export default {
     };
   },
   computed: {
-    mediaReady() {
-      return this.mediaStore.ready;
-    },
-    mediaTime() {
-      return this.mediaStore.time;
-    },
     startTime() {
       return this.component["start-time"] || 0;
     },

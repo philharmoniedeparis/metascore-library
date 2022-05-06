@@ -40,12 +40,9 @@ export default class ComponentFormModule extends AbstractModule {
     app.component("HtmlControl", HtmlControl);
   }
 
-  get store() {
-    return useStore();
-  }
-
   configure(configs) {
-    this.store.configure(configs);
+    const store = useStore();
+    store.configure(configs);
   }
 
   get recordingCursorKeyframes() {

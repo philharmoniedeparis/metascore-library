@@ -1,5 +1,6 @@
+import { readonly } from "vue";
+import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "./store";
 import AppComponents from "@metascore-library/core/modules/app_components";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
@@ -29,10 +30,8 @@ export default class AppPreviewModule extends AbstractModule {
   constructor({ app }) {
     super(arguments);
 
-    const DefaultComponentWrapper =
-      useModule("app_components").components.ComponentWrapper;
-
-    // Override the default component-wrapper.
+    // Override the app_components' component-wrapper.
+    const DefaultComponentWrapper = app.component("ComponentWrapper");
     app.component("ComponentWrapper", ComponentWrapper);
     app.component("DefaultComponentWrapper", DefaultComponentWrapper);
 
@@ -42,7 +41,20 @@ export default class AppPreviewModule extends AbstractModule {
     app.component("AppPreviewToggler", AppPreviewToggler);
   }
 
-  get store() {
-    return useStore();
+  get preview() {
+    const store = useStore();
+    const { preview } = storeToRefs(store);
+    return readonly(preview);
+  }
+
+  get iframe() {
+    const store = useStore();
+    const { iframe } = storeToRefs(store);
+    return readonly(iframe);
+  }
+
+  getComponentElement(component) {
+    const store = useStore();
+    return store.getComponentElement(component);
   }
 }

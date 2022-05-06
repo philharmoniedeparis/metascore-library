@@ -108,8 +108,8 @@ export default {
   emits: ["action"],
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").store;
-    return { store, mediaStore };
+    const { seekTo: seekMediaTo } = useModule("media_player");
+    return { store, seekMediaTo };
   },
   data() {
     return {
@@ -148,9 +148,6 @@ export default {
     this.setupSwipe();
   },
   methods: {
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
     async setupSwipe() {
       if (!this.$deviceHasTouch) {
         return;

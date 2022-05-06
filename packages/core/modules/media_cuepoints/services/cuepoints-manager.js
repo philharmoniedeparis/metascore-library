@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { watch, unref } from "vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 let cuepoints = [];
@@ -85,33 +85,28 @@ function updateCuepoints(time, seeked = false) {
 }
 
 function init() {
-  const mediaStore = useModule("media_player").store;
-  watch(
-    () => mediaStore.time,
-    (value) => {
-      if (trackErrors) {
-        if (previousTime !== null) {
-          maxError = Math.max(maxError, Math.abs(value - previousTime));
-        }
-        previousTime = value;
+  const { time: mediaTime, seeking: mediaSeeking } = useModule("media_player");
+  watch(mediaTime, (value) => {
+    if (trackErrors) {
+      if (previousTime !== null) {
+        maxError = Math.max(maxError, Math.abs(value - previousTime));
       }
-      updateCuepoints(value);
+      previousTime = value;
     }
-  );
-  watch(
-    () => mediaStore.seeking,
-    (value) => {
-      seeking = value;
+    updateCuepoints(value);
+  });
+  watch(mediaSeeking, (value) => {
+    seeking = value;
 
-      if (!value) {
-        if (trackErrors) {
-          maxError = 0;
-          previousTime = mediaStore.time;
-        }
-        updateCuepoints(mediaStore.time, true);
+    if (!seeking) {
+      const time = unref(mediaTime);
+      if (trackErrors) {
+        maxError = 0;
+        previousTime = time;
       }
+      updateCuepoints(time, true);
     }
-  );
+  });
 }
 
 export { init, addCuepoint, removeCuepoint, clearCuepoints };

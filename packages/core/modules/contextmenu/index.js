@@ -13,7 +13,13 @@ export default class ContextMenuModule extends AbstractModule {
     app.component("ContextMenu", ContextMenu);
   }
 
-  get store() {
-    return useStore();
+  addItem(item) {
+    const store = useStore();
+    store.addItem(item);
+  }
+
+  addItems(items) {
+    const store = useStore();
+    store.addItems(items);
   }
 }

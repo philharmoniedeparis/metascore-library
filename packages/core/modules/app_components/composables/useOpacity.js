@@ -4,7 +4,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
 export function useOpacity(component, model) {
-  const mediaStore = useModule("media_player").store;
+  const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isOpacitable) {
     const opacity = computed(() => {
@@ -15,8 +15,8 @@ export function useOpacity(component, model) {
         if (!opacity.animated) {
           value = opacity.value;
         } else {
-          const mediaTime = mediaStore.time;
-          value = getAnimatedValueAtTime(opacity.value, mediaTime);
+          const time = unref(mediaTime);
+          value = getAnimatedValueAtTime(opacity.value, time);
         }
 
         if (!isUndefined(value) && !isNull(value)) {

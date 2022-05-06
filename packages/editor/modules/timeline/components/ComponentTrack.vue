@@ -119,10 +119,27 @@ export default {
   },
   setup() {
     const editorStore = useEditorStore();
-    const mediaStore = useModule("media_player").store;
-    const componentsStore = useModule("app_components").store;
-    const historyStore = useModule("history").store;
-    return { editorStore, mediaStore, componentsStore, historyStore };
+    const { duration: mediaDuration } = useModule("media_player");
+    const {
+      getModel,
+      getComponentParent,
+      componentHasChildren,
+      getComponentChildren,
+      updateComponent,
+    } = useModule("app_components");
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
+    return {
+      editorStore,
+      mediaDuration,
+      getModel,
+      getComponentParent,
+      componentHasChildren,
+      getComponentChildren,
+      updateComponent,
+      startHistoryGroup,
+      endHistoryGroup,
+    };
   },
   data() {
     return {
@@ -131,13 +148,13 @@ export default {
   },
   computed: {
     model() {
-      return this.componentsStore.getModel(this.component.type);
+      return this.getModel(this.component.type);
     },
     label() {
       switch (this.component.type) {
         case "Page": {
-          const block = this.componentsStore.getParent(this.component);
-          const pages = this.componentsStore.getChildren(block);
+          const block = this.getComponentParent(this.component);
+          const pages = this.getComponentChildren(block);
           const count = pages.length;
           const index = pages.findIndex((c) => c.id === this.component.id) + 1;
           return this.$t("page_label", { index, count });
@@ -146,9 +163,6 @@ export default {
         default:
           return this.component.name;
       }
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
     },
     selected() {
       return this.editorStore.isComponentSelected(this.component);
@@ -164,10 +178,10 @@ export default {
       },
     },
     hasChildren() {
-      return this.componentsStore.hasChildren(this.component);
+      return this.componentHasChildren(this.component);
     },
     children() {
-      const children = this.componentsStore.getChildren(this.component);
+      const children = this.getComponentChildren(this.component);
 
       switch (this.component.type) {
         case "Page":
@@ -265,7 +279,7 @@ export default {
       }
     },
     onResizableStart() {
-      this.historyStore.startGroup();
+      this.startHistoryGroup();
     },
     onResizableMove(evt) {
       const time = evt.target;
@@ -288,13 +302,13 @@ export default {
         );
       }
 
-      this.editorStore.updateComponent(this.component, data);
+      this.updateComponent(this.component, data);
     },
     onResizableEnd() {
-      this.historyStore.endGroup();
+      this.endHistoryGroup();
     },
     onAnimatedPropertyUpdate(property, value) {
-      this.editorStore.updateComponent(this.component, {
+      this.updateComponent(this.component, {
         [property]: {
           value,
           animated: true,

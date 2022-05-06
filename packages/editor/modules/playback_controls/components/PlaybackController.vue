@@ -32,13 +32,15 @@ export default {
     RewindIcon,
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const {
+      playing: mediaPlaying,
+      play: playMedia,
+      pause: pauseMedia,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return { mediaPlaying, playMedia, pauseMedia, seekMediaTo };
   },
   computed: {
-    mediaPlaying() {
-      return this.mediaStore.playing;
-    },
     hotkeys() {
       return {
         space: () => {
@@ -52,15 +54,6 @@ export default {
     },
   },
   methods: {
-    playMedia() {
-      this.mediaStore.play();
-    },
-    pauseMedia() {
-      this.mediaStore.pause();
-    },
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
     onRewindClick() {
       this.seekMediaTo(0);
     },

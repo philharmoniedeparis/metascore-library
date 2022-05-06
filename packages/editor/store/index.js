@@ -19,22 +19,6 @@ export default defineStore("editor", {
     };
   },
   getters: {
-    appWidth() {
-      const appRendererStore = useModule("app_renderer").store;
-      return appRendererStore.width;
-    },
-    appHeight() {
-      const appRendererStore = useModule("app_renderer").store;
-      return appRendererStore.height;
-    },
-    mediaSource() {
-      const mediaStore = useModule("media_player").store;
-      return mediaStore.source;
-    },
-    scenarios() {
-      const componentsStore = useModule("app_components").store;
-      return componentsStore.getByType("Scenario");
-    },
     isComponentSelected() {
       return (component) => {
         return this.selectedComponents.some(({ type, id }) => {
@@ -43,15 +27,15 @@ export default defineStore("editor", {
       };
     },
     getSelectedComponents() {
-      const componentsStore = useModule("app_components").store;
+      const { getComponent } = useModule("app_components");
       return this.selectedComponents.map(({ type, id }) => {
-        return componentsStore.get(type, id);
+        return getComponent(type, id);
       });
     },
     componentHasSelectedDescendents() {
       return (component) => {
-        const componentsStore = useModule("app_components").store;
-        const children = componentsStore.getChildren(component);
+        const { getComponentChildren } = useModule("app_components");
+        const children = getComponentChildren(component);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
             return true;
@@ -69,20 +53,20 @@ export default defineStore("editor", {
       };
     },
     getLockedComponents() {
-      const componentsStore = useModule("app_components").store;
+      const { getComponent } = useModule("app_components");
       return this.lockedComponents.map(({ type, id }) => {
-        return componentsStore.get(type, id);
+        return getComponent(type, id);
       });
     },
     isDirty() {
-      return (key, after = null) => {
-        if (after) {
+      return (key, since = null) => {
+        if (since) {
           if (typeof key !== "undefined") {
-            return this.dirty.has(key) && this.dirty.get(key) >= after;
+            return this.dirty.has(key) && this.dirty.get(key) >= since;
           }
 
           return Array.from(this.dirty.values()).some((value) => {
-            return value >= after;
+            return value >= since;
           });
         }
 
@@ -92,28 +76,26 @@ export default defineStore("editor", {
       };
     },
     getDirtyData() {
-      return (after = null) => {
+      return (since = null) => {
         const data = new FormData();
-        if (this.isDirty("metadata", after)) {
+        if (this.isDirty("metadata", since)) {
           data.set("title", this.appTitle);
           data.set("width", this.appWidth);
           data.set("height", this.appHeight);
         }
-        if (this.isDirty("media", after)) {
-          const mediaStore = useModule("media_player").store;
-          const source = mediaStore.source;
-          if ("file" in source) {
-            data.set("files[media]", source.file);
+        if (this.isDirty("media", since)) {
+          const mediaSource = unref(useModule("media_player").source);
+          if ("file" in mediaSource) {
+            data.set("files[media]", mediaSource.file);
           }
-          data.set("media", JSON.stringify(omit(source, ["file"])));
+          data.set("media", JSON.stringify(omit(mediaSource, ["file"])));
         }
-        if (this.isDirty("components", after)) {
-          const componentsStore = useModule("app_components").store;
-          data.set("components", JSON.stringify(componentsStore.toJson()));
+        if (this.isDirty("components", since)) {
+          const { json } = useModule("app_components");
+          data.set("components", JSON.stringify(json));
         }
-        if (this.isDirty("assets", after)) {
-          const assetsStore = useModule("assets_library").store;
-          const assets = assetsStore.all;
+        if (this.isDirty("assets", since)) {
+          const { assets } = useModule("assets_library");
           if (assets.length > 0) {
             assets.forEach((asset) => {
               data.append("assets[]", JSON.stringify(asset));
@@ -133,83 +115,73 @@ export default defineStore("editor", {
       this.activeRevision = data.vid;
 
       this.setAppTitle(data.title);
-      this.setAppWidth(data.width);
-      this.setAppHeight(data.height);
-      this.setAppCss(data.css);
       this.$onAction(({ name }) => {
         switch (name) {
           case "setAppTitle":
-          case "setAppWidth":
-          case "setAppHeight":
             this.setDirty("metadata");
             break;
         }
       });
 
-      const mediaStore = useModule("media_player").store;
-      mediaStore.setSource(data.media);
-      mediaStore.$onAction(({ name }) => {
+      const { width, height, css } = data;
+      const {
+        init: initAppRenderer,
+        addStoreActionListener: addAppRendererStoreActionListener,
+      } = useModule("app_renderer");
+      initAppRenderer({ width, height, css });
+      addAppRendererStoreActionListener(({ name }) => {
+        if (["width", "height"].includes(name)) {
+          this.setDirty("media");
+        }
+      });
+
+      const {
+        setSource: setMediaSource,
+        addStoreActionListener: addMediaStoreActionListener,
+      } = useModule("media_player");
+      setMediaSource(data.media);
+      addMediaStoreActionListener(({ name }) => {
         if (["setSource"].includes(name)) {
           this.setDirty("media");
         }
       });
 
-      const componentsStore = useModule("app_components").store;
-      await componentsStore.init(data.components);
-      componentsStore.$onAction(({ name }) => {
+      const {
+        init: initComponents,
+        addStoreActionListener: addComponentsStoreActionListener,
+        activeScenario,
+        setActiveScenario,
+      } = useModule("app_components");
+      await initComponents(data.components);
+      addComponentsStoreActionListener(({ name, args }) => {
         if (["add", "update", "delete"].includes(name)) {
           this.setDirty("components");
+
+          if (name === "delete") {
+            const [type, id] = args;
+            if (type === "Scenario" && id === activeScenario) {
+              setActiveScenario(this.scenarios[0]?.id);
+            }
+          }
         }
       });
 
-      const assetsStore = useModule("assets_library").store;
-      assetsStore.init(data.assets);
-      assetsStore.$onAction(({ name }) => {
+      const {
+        init: initAssets,
+        addStoreActionListener: addAssetsStoreActionListener,
+      } = useModule("assets_library");
+      initAssets(data.assets);
+      addAssetsStoreActionListener(({ name }) => {
         if (["add", "delete"].includes(name)) {
           this.setDirty("assets");
         }
       });
 
-      const historyStore = useModule("history").store;
-      historyStore.active = true;
+      const { activate: activateHistory } = useModule("history");
+      activateHistory();
     },
     setAppTitle(value) {
       this.appTitle = value;
-    },
-    setAppWidth(value) {
-      const appRendererStore = useModule("app_renderer").store;
-      appRendererStore.width = value;
-    },
-    setAppHeight(value) {
-      const appRendererStore = useModule("app_renderer").store;
-      appRendererStore.height = value;
-    },
-    setAppCss(value) {
-      const appRendererStore = useModule("app_renderer").store;
-      appRendererStore.css = value;
-    },
-    setMediaSource(value) {
-      const mediaStore = useModule("media_player").store;
-      mediaStore.setSource(value);
-    },
-    async createComponent(data, validate) {
-      const componentsStore = useModule("app_components").store;
-      return await componentsStore.create(data, validate);
-    },
-    async updateComponent(component, data) {
-      const componentsStore = useModule("app_components").store;
-      await componentsStore.update(component, data);
-    },
-    async updateComponents(components, data) {
-      for (const component of components) {
-        await this.updateComponent(component, data);
-      }
-    },
-    async addComponent(component, parent = null) {
-      // @todo: deal with omitted ids and childnre from clone
-      const componentsStore = useModule("app_components").store;
-      await componentsStore.add(component, parent);
-      return component;
     },
     selectComponent(component, append = false) {
       if (!append) {
@@ -238,10 +210,11 @@ export default defineStore("editor", {
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
       if (selected.length > 0) {
-        const componentsStore = useModule("app_components").store;
+        const { getComponentParent, getComponentChildren } =
+          useModule("app_components");
         const master = selected[0];
-        const parent = componentsStore.getParent(master);
-        const children = componentsStore.getChildren(parent);
+        const parent = getComponentParent(master);
+        const children = getComponentChildren(parent);
         const count = children.length;
         let index = children.findIndex((child) => {
           return child === master;
@@ -281,9 +254,9 @@ export default defineStore("editor", {
       this.lockedComponents = [];
     },
     copyComponent(component) {
-      const clipboardStore = useModule("clipboard").store;
+      const { setData: setClipboardData } = useModule("clipboard");
       const data = omit(component, ["id"]);
-      clipboardStore.setData(`metascore/component`, data);
+      setClipboardData(`metascore/component`, data);
     },
     copyComponents(components) {
       components.map(this.copyComponent);
@@ -302,30 +275,15 @@ export default defineStore("editor", {
     pasteComponents(components, parent) {
       components.map((c) => this.pasteComponent(c, parent));
     },
-    deleteComponent(component) {
-      const componentsStore = useModule("app_components").store;
-      componentsStore.delete(component.type, component.id);
-
-      if (
-        component.type === "Scenario" &&
-        component.id === componentsStore.activeScenario
-      ) {
-        componentsStore.activeScenario = this.scenarios[0]?.id;
-      }
-    },
-    deleteComponents(components) {
-      components.map(this.deleteComponent);
-    },
-    restoreComponent(component) {
-      const componentsStore = useModule("app_components").store;
-      componentsStore.restore(component.type, component.id);
-    },
-    restoreComponents(components) {
-      components.map(this.restoreComponent);
-    },
     async cloneComponent(component, data = {}) {
-      const componentsStore = useModule("app_components").store;
-      const clone = await componentsStore.create(
+      const {
+        getComponentChildrenProperty,
+        componentHasChildren,
+        getComponentChildren,
+        createComponent,
+        addComponent,
+      } = useModule("app_components");
+      const clone = await createComponent(
         {
           ...omit(cloneDeep(component), ["id"]),
           ...data,
@@ -333,10 +291,10 @@ export default defineStore("editor", {
         false
       );
 
-      if (componentsStore.hasChildren(component)) {
+      if (componentHasChildren(component)) {
         const children = [];
-        const children_prop = componentsStore.getChildrenProperty(component);
-        componentsStore.getChildren(component).forEach((c) => {
+        const children_prop = getComponentChildrenProperty(component);
+        getComponentChildren(component).forEach((c) => {
           const child = this.cloneComponent(c, {
             $parent: { schema: clone.type, id: clone.id },
           });
@@ -348,15 +306,20 @@ export default defineStore("editor", {
         clone[children_prop] = children;
       }
 
-      await componentsStore.add(clone);
+      await addComponent(clone);
 
       return clone;
     },
     arrangeComponent(component, action) {
       if (component.$parent) {
-        const componentsStore = useModule("app_components").store;
-        const parent = componentsStore.getParent(component);
-        const children = componentsStore.getChildren(parent);
+        const {
+          getComponentParent,
+          getComponentChildrenProperty,
+          getComponentChildren,
+          updateComponent,
+        } = useModule("app_components");
+        const parent = getComponentParent(component);
+        const children = getComponentChildren(parent);
         const count = children.length;
         const old_index = children.findIndex((child) => {
           return child === component;
@@ -382,8 +345,8 @@ export default defineStore("editor", {
           children.splice(new_index, 0, children.splice(old_index, 1)[0]);
         }
 
-        const property = componentsStore.getChildrenProperty(parent);
-        this.updateComponent(parent, {
+        const property = getComponentChildrenProperty(parent);
+        updateComponent(parent, {
           [property]: children.map((child) => {
             return { schema: child.type, id: child.id };
           }),
@@ -399,9 +362,9 @@ export default defineStore("editor", {
       console.log("addPageAfter");
     },
     moveComponents(components, { left, top }) {
-      const componentsStore = useModule("app_components").store;
+      const { getModel, updateComponent } = useModule("app_components");
       components.forEach((component) => {
-        const model = componentsStore.getModel(component.type);
+        const model = getModel(component.type);
         if (!model.$isPositionable) {
           return;
         }
@@ -414,7 +377,7 @@ export default defineStore("editor", {
           position[1] += top;
         }
 
-        this.updateComponent(component, { position });
+        updateComponent(component, { position });
       });
     },
     setDirty(key) {
@@ -462,18 +425,14 @@ export default defineStore("editor", {
   history(context) {
     const {
       name, // Invoked action's name.
-      args, // Array of parameters passed to the action.
       after, // Hook called after the action executes.
       push, // Method to push an undo/redo item to the history.
     } = context;
 
     switch (name) {
       case "setAppTitle":
-      case "setAppWidth":
-      case "setAppHeight":
-      case "setMediaSource":
         {
-          const key = name.slice(3, 4).toLowerCase() + name.slice(4);
+          const key = "appTitle";
           const oldValue = this[key];
           after(() => {
             const newValue = this[key];
@@ -483,99 +442,6 @@ export default defineStore("editor", {
               },
               redo: () => {
                 this[name](newValue);
-              },
-            });
-          });
-        }
-        break;
-
-      case "updateComponent":
-        {
-          const [component, data] = args;
-          const oldValue = Object.keys(data).reduce(
-            (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
-            {}
-          );
-          after(() => {
-            push({
-              undo: () => {
-                this.updateComponent(component, oldValue);
-              },
-              redo: () => {
-                this.updateComponent(component, data);
-              },
-            });
-          });
-        }
-        break;
-
-      case "updateComponents":
-        {
-          const [components, data] = args;
-          const oldValues = components.map((component) => {
-            return {
-              component,
-              data: Object.keys(data).reduce(
-                (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
-                {}
-              ),
-            };
-          });
-
-          after(() => {
-            push({
-              undo: () => {
-                oldValues.forEach(({ component, data }) => {
-                  this.updateComponent(component, data);
-                });
-              },
-              redo: () => {
-                this.updateComponents(components, data);
-              },
-            });
-          });
-        }
-        break;
-
-      case "addComponent":
-        after((component) => {
-          push({
-            undo: () => {
-              this.deleteComponent(component);
-            },
-            redo: () => {
-              this.restoreComponent(component);
-            },
-          });
-        });
-        break;
-
-      case "restoreComponent":
-      case "restoreComponents":
-      case "deleteComponent":
-      case "deleteComponents":
-        {
-          const arg = args[0];
-          after(() => {
-            push({
-              undo: () => {
-                switch (name) {
-                  case "restoreComponent":
-                    this.deleteComponent(arg);
-                    break;
-                  case "restoreComponents":
-                    this.deleteComponents(arg);
-                    break;
-                  case "deleteComponent":
-                    this.restoreComponent(arg);
-                    break;
-                  case "deleteComponents":
-                    this.restoreComponents(arg);
-                    break;
-                }
-              },
-              redo: () => {
-                this[name](arg);
               },
             });
           });

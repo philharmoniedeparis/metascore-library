@@ -41,9 +41,11 @@ export default {
   },
   computed: {
     blocks() {
-      return this.component.blocks.map(({ type, id }) => {
-        return this.store.get(type, id);
-      });
+      return this.component.blocks
+        .map(({ type, id }) => {
+          return this.store.get(type, id);
+        })
+        .filter((b) => b);
     },
     sortedBlocks() {
       return sortBy(this.blocks, [

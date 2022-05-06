@@ -1,5 +1,5 @@
 <template>
-  <time-control v-model="mediaTime" class="playback-time" />
+  <time-control v-model="time" class="playback-time" />
 </template>
 
 <script>
@@ -7,16 +7,16 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    return { mediaTime, seekMediaTo };
   },
   computed: {
-    mediaTime: {
+    time: {
       get() {
-        return this.mediaStore.time;
+        return this.mediaTime;
       },
       set(value) {
-        this.mediaStore.seekTo(value);
+        this.seekMediaTo(value);
       },
     },
   },

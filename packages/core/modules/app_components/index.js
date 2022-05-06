@@ -1,3 +1,5 @@
+import { readonly } from "vue";
+import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Device from "../device";
@@ -36,13 +38,109 @@ export default class AppComponentsModule extends AbstractModule {
     app.component("VideoRendererComponent", VideoRendererComponent);
   }
 
-  get store() {
-    return useStore();
+  get activeScenario() {
+    const store = useStore();
+    const { activeScenario } = storeToRefs(store);
+    return readonly(activeScenario);
   }
 
-  get components() {
-    return {
-      ComponentWrapper,
-    };
+  get json() {
+    const store = useStore();
+    return store.toJson();
+  }
+
+  init(data) {
+    const store = useStore();
+    store.init(data);
+  }
+
+  getModel(type) {
+    const store = useStore();
+    return store.getModel(type);
+  }
+
+  getComponent(type, id) {
+    const store = useStore();
+    return store.get(type, id);
+  }
+
+  getComponentParent(component) {
+    const store = useStore();
+    return store.getParent(component);
+  }
+
+  getComponentChildrenProperty(component) {
+    const store = useStore();
+    return store.getChildrenProperty(component);
+  }
+
+  componentHasChildren(component) {
+    const store = useStore();
+    return store.hasChildren(component);
+  }
+
+  getComponentChildren(component) {
+    const store = useStore();
+    return store.getChildren(component);
+  }
+
+  getComponentSiblings(component) {
+    const store = useStore();
+    return store.getSiblings(component);
+  }
+
+  getComponentsByType(type) {
+    const store = useStore();
+    return store.getByType(type);
+  }
+
+  createComponent(data, validate = true) {
+    const store = useStore();
+    return store.create(data, validate);
+  }
+
+  addComponent(component, parent) {
+    const store = useStore();
+    return store.add(component, parent);
+  }
+
+  updateComponent(component, data) {
+    const store = useStore();
+    return store.update(component, data);
+  }
+
+  deleteComponent(type, id) {
+    const store = useStore();
+    return store.delete(type, id);
+  }
+
+  restoreComponent(type, id) {
+    const store = useStore();
+    return store.restore(type, id);
+  }
+
+  showComponent(component) {
+    const store = useStore();
+    store.show(component);
+  }
+
+  hideComponent(component) {
+    const store = useStore();
+    store.hide(component);
+  }
+
+  toggleComponent(component) {
+    const store = useStore();
+    store.toggle(component);
+  }
+
+  setActiveScenario(value) {
+    const store = useStore();
+    store.activeScenario = value;
+  }
+
+  addStoreActionListener(callback) {
+    const store = useStore();
+    store.$onAction(callback);
   }
 }

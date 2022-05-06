@@ -68,27 +68,22 @@ export default {
     },
   },
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
-  },
-  computed: {
-    mediaPlaying() {
-      return this.mediaStore.playing;
-    },
-    mediaFormattedTime() {
-      return this.mediaStore.formattedTime;
-    },
+    const {
+      playing: mediaPlaying,
+      formattedTime: mediaFormattedTime,
+      play: playMedia,
+      pause: pauseMedia,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return {
+      mediaPlaying,
+      mediaFormattedTime,
+      playMedia,
+      pauseMedia,
+      seekMediaTo,
+    };
   },
   methods: {
-    playMedia() {
-      this.mediaStore.play();
-    },
-    pauseMedia() {
-      this.mediaStore.pause();
-    },
-    seekMediaTo(time) {
-      this.mediaStore.seekTo(time);
-    },
     onRewindClick() {
       this.seekMediaTo(0);
     },

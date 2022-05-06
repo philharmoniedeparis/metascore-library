@@ -1,3 +1,5 @@
+import { readonly } from "vue";
+import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
@@ -20,7 +22,32 @@ export default class WaveformModule extends AbstractModule {
     app.component("WaveformZoomController", WaveformZoomController);
   }
 
-  get store() {
-    return useStore();
+  get minScale() {
+    const store = useStore();
+    const { minScale } = storeToRefs(store);
+    return readonly(minScale);
+  }
+
+  get maxScale() {
+    const store = useStore();
+    const { maxScale } = storeToRefs(store);
+    return readonly(maxScale);
+  }
+
+  get scale() {
+    const store = useStore();
+    const { scale } = storeToRefs(store);
+    return readonly(scale);
+  }
+
+  get offset() {
+    const store = useStore();
+    const { offset } = storeToRefs(store);
+    return readonly(offset);
+  }
+
+  load(source) {
+    const store = useStore();
+    return store.load(source);
   }
 }

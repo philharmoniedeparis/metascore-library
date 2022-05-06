@@ -86,9 +86,10 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useModule("media_player").store;
-    const contextmenuStore = useModule("contextmenu").store;
-    return { mediaStore, contextmenuStore };
+    const { addItem: addContextmenuItem } = useModule("contextmenu");
+    const { duration: mediaDuration, seekTo: seekMediaTo } =
+      useModule("media_player");
+    return { mediaDuration, seekMediaTo, addContextmenuItem };
   },
   data() {
     return {
@@ -96,17 +97,6 @@ export default {
     };
   },
   computed: {
-    mediaTime: {
-      get() {
-        return this.mediaStore.time;
-      },
-      set(value) {
-        this.mediaStore.seekTo(value);
-      },
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
     value: {
       get() {
         return this.modelValue;
@@ -154,14 +144,14 @@ export default {
 
       this.selectedKeyframe = keyframe;
 
-      this.mediaTime = time;
+      this.seekMediaTo(time);
     },
     onKeyframeClick(keyframe) {
       this.selectedKeyframe = keyframe;
-      this.mediaTime = keyframe[0];
+      this.seekMediaTo(keyframe[0]);
     },
     onKeyframeContextmenu(keyframe) {
-      this.contextmenuStore.addItem({
+      this.addContextmenuItem({
         label: this.$t("contextmenu.keyframe.delete"),
         handler: () => {
           this.deleteKeyframe(keyframe);

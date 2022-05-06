@@ -182,9 +182,24 @@ export default {
   setup() {
     const store = useStore();
     const editorStore = useEditorStore();
-    const componentsStore = useModule("app_components").store;
-    const appPreviewStore = useModule("app_preview").store;
-    return { store, editorStore, componentsStore, appPreviewStore };
+    const {
+      getModel,
+      getComponentParent,
+      getComponentChildren,
+      updateComponent,
+    } = useModule("app_components");
+    const { iframe: appPreveiwIframe, getComponentElement } =
+      useModule("app_preview");
+    return {
+      store,
+      editorStore,
+      getModel,
+      getComponentParent,
+      getComponentChildren,
+      updateComponent,
+      appPreveiwIframe,
+      getComponentElement,
+    };
   },
   computed: {
     selectedComponents() {
@@ -196,7 +211,7 @@ export default {
     commonModel() {
       let models = [];
       this.selectedComponents.forEach((component, index) => {
-        const model = this.componentsStore.getModel(component.type);
+        const model = this.getModel(component.type);
         const modelChain = model.modelChain;
         models = index > 0 ? intersection(models, modelChain) : modelChain;
       });
@@ -205,8 +220,8 @@ export default {
     title() {
       switch (this.masterComponent?.type) {
         case "Page": {
-          const block = this.componentsStore.getParent(this.masterComponent);
-          const pages = this.componentsStore.getChildren(block);
+          const block = this.getComponentParent(this.masterComponent);
+          const pages = this.getComponentChildren(block);
           const count = pages.length;
           const index =
             pages.findIndex((c) => c.id === this.masterComponent.id) + 1;
@@ -331,8 +346,8 @@ export default {
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
               type: "html",
-              "app-iframe-el": this.appPreviewStore.iframe,
-              "app-component-el": this.appPreviewStore.getComponentElement(
+              "app-iframe-el": this.appPreveiwIframe,
+              "app-component-el": this.getComponentElement(
                 this.masterComponent
               ),
               ...this.getControlProps("text", this.commonModel.type),
@@ -357,7 +372,7 @@ export default {
           if (this.selectedComponents.length === 1) {
             layout.items[0].items.push({
               type: "cursor-keyframes",
-              "app-component-el": this.appPreviewStore.getComponentElement(
+              "app-component-el": this.getComponentElement(
                 this.masterComponent
               ),
               ...this.getControlProps("keyframes", this.commonModel.type),
@@ -484,9 +499,11 @@ export default {
   },
   methods: {
     update({ property, value }) {
-      this.editorStore.updateComponents(this.selectedComponents, {
-        [property]: value,
-      });
+      this.selectedComponents.forEach((c) =>
+        this.updateComponent(c, {
+          [property]: value,
+        })
+      );
     },
     getControlProps(property, model_type = null) {
       const props = {

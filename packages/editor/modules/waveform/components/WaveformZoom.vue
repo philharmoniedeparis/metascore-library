@@ -79,8 +79,12 @@ export default {
   },
   setup() {
     const store = useStore();
-    const mediaStore = useModule("media_player").store;
-    return { store, mediaStore };
+    const {
+      duration: mediaDuration,
+      time: mediaTime,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
+    return { store, mediaDuration, mediaTime, seekMediaTo };
   },
   data() {
     return {
@@ -93,17 +97,6 @@ export default {
     };
   },
   computed: {
-    mediaTime: {
-      get() {
-        return this.mediaStore.time;
-      },
-      set(value) {
-        this.mediaStore.seekTo(value);
-      },
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
     waveformData() {
       return this.store.data;
     },
@@ -532,7 +525,7 @@ export default {
       if (!this.dragging) {
         const { left } = evt.target.getBoundingClientRect();
         const x = evt.pageX - left;
-        this.mediaTime = this.getTimeAt(x);
+        this.seekMediaTo(this.getTimeAt(x));
       } else {
         this.dragging = false;
       }

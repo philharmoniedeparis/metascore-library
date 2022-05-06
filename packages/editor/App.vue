@@ -105,8 +105,9 @@
       </div>
       <div class="bottom">
         <scenario-manager
-          v-model:activeId="activeScenario"
           :scenarios="scenarios"
+          :active-id="activeScenario"
+          @update:active-id="setActiveScenario"
           @add="onScnearioManagerAdd"
           @clone="onScnearioManagerClone"
           @delete="onScnearioManagerDelete"
@@ -135,7 +136,7 @@
 </template>
 
 <script>
-import { computed, readonly } from "vue";
+import { computed, unref, readonly } from "vue";
 import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
@@ -158,27 +159,53 @@ export default {
   },
   setup() {
     const store = useStore();
-    const componentsStore = useModule("app_components").store;
-    const assetsStore = useModule("assets_library").store;
-    const mediaStore = useModule("media_player").store;
-    const appPreviewStore = useModule("app_preview").store;
-    const waveformStore = useModule("waveform").store;
+    const {
+      getComponentsByType,
+      getComponent,
+      getComponentChildren,
+      activeScenario,
+      setActiveScenario,
+      createComponent,
+      addComponent,
+      deleteComponent,
+    } = useModule("app_components");
+    const { getAssetsByType, addAsset } = useModule("assets_library");
+    const { preview } = useModule("app_preview");
+    const {
+      maxScale: maxWaveformScale,
+      scale: waveformScale,
+      offset: waveformOffset,
+      load: loadWaveform,
+    } = useModule("waveform");
 
-    const component_form = useModule("component_form");
-    const disableComponentInteractions = computed(() => {
-      return (
-        component_form.recordingCursorKeyframes ||
-        component_form.editingTextContent
-      );
-    });
+    const { source: mediaSource, duration: mediaDuration } =
+      useModule("media_player");
+
+    const { recordingCursorKeyframes, editingTextContent } =
+      useModule("component_form");
+    const disableComponentInteractions = computed(
+      () => unref(recordingCursorKeyframes) || unref(editingTextContent)
+    );
 
     return {
       store,
-      componentsStore,
-      assetsStore,
-      mediaStore,
-      appPreviewStore,
-      waveformStore,
+      getComponentsByType,
+      getComponent,
+      getComponentChildren,
+      activeScenario,
+      setActiveScenario,
+      createComponent,
+      addComponent,
+      deleteComponent,
+      getAssetsByType,
+      addAsset,
+      preview,
+      maxWaveformScale,
+      waveformScale,
+      waveformOffset,
+      loadWaveform,
+      mediaSource,
+      mediaDuration,
       disableComponentInteractions,
     };
   },
@@ -211,37 +238,23 @@ export default {
         this.store.setAppTitle(value);
       },
     },
-    mediaSource() {
-      return this.store.mediaSource;
-    },
     timelineScale() {
-      return this.waveformStore.maxScale / this.waveformStore.scale;
+      return this.maxWaveformScale / this.waveformScale;
     },
     timelineOffset() {
-      return this.waveformStore.offset.start / this.mediaStore.duration;
-    },
-    preview() {
-      return this.appPreviewStore.preview;
+      return this.waveformOffset.start / this.mediaDuration;
     },
     imageAssets() {
-      return this.assetsStore.filterByType("image").map(readonly);
+      return this.getAssetsByType("image").map(readonly);
     },
     scenarios() {
-      return this.store.scenarios;
-    },
-    activeScenario: {
-      get() {
-        return this.componentsStore.activeScenario;
-      },
-      set(value) {
-        this.componentsStore.activeScenario = value;
-      },
+      return this.getComponentsByType("Scenario");
     },
     firstLevelComponents() {
       const scenario = this.activeScenario
-        ? this.componentsStore.get("Scenario", this.activeScenario)
+        ? this.getComponent("Scenario", this.activeScenario)
         : null;
-      return scenario ? this.componentsStore.getChildren(scenario) : [];
+      return scenario ? this.getComponentChildren(scenario) : [];
     },
     revisions() {
       return this.store.revisions;
@@ -264,7 +277,7 @@ export default {
   watch: {
     mediaSource(source) {
       if (source) {
-        this.waveformStore.load(source);
+        this.loadWaveform(source);
       }
     },
     activeLibrariesTab(index) {
@@ -306,22 +319,22 @@ export default {
     },
     async onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
-      this.assetsStore.add(asset);
+      this.addAsset(asset);
     },
     async onScnearioManagerAdd(data) {
-      const scenario = await this.store.createComponent({
+      const scenario = await this.createComponent({
         ...data,
         type: "Scenario",
       });
-      await this.store.addComponent(scenario);
-      this.activeScenario = scenario.id;
+      await this.addComponent(scenario);
+      this.setActiveScenario(scenario.id);
     },
     onScnearioManagerClone({ scenario, data }) {
       const clone = this.store.cloneComponent(scenario, data);
-      this.activeScenario = clone.id;
+      this.setActiveScenario(clone.id);
     },
     onScnearioManagerDelete({ scenario }) {
-      this.store.deleteComponent(scenario);
+      this.deleteComponent(scenario);
     },
     onContextmenu(evt) {
       // Show the native menu if the Ctrl key is down.

@@ -55,8 +55,8 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const mediaStore = useModule("media_player").store;
-    return { mediaStore };
+    const { time: mediaTime } = useModule("media_player");
+    return { mediaTime };
   },
   data() {
     return {
@@ -74,9 +74,6 @@ export default {
       set(value) {
         this.$emit("update:modelValue", value);
       },
-    },
-    mediaTime() {
-      return this.mediaStore.time;
     },
     ovelayLabel() {
       if (this.activeKeyframe === null) {

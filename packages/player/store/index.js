@@ -10,16 +10,15 @@ export default defineStore("player", {
   },
   actions: {
     setData(data) {
-      const mediaStore = useModule("media_player").store;
-      mediaStore.source = data.media;
+      const { setSource: setMediaSource } = useModule("media_player");
+      setMediaSource(data.media);
 
-      const componentsStore = useModule("app_components").store;
-      componentsStore.init(data.components);
+      const { init: initComponents } = useModule("app_components");
+      initComponents(data.components);
 
-      const appRendererStore = useModule("app_renderer").store;
-      appRendererStore.width = data.width;
-      appRendererStore.height = data.height;
-      appRendererStore.css = data.css;
+      const { width, height, css } = data;
+      const { init: initAppRenderer } = useModule("app_renderer");
+      initAppRenderer({ width, height, css });
     },
     async load(url) {
       this.loading = true;

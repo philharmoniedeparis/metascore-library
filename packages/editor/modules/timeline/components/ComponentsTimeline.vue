@@ -46,9 +46,23 @@ export default {
   },
   setup() {
     const editorStore = useEditorStore();
-    const mediaStore = useModule("media_player").store;
-    const componentsStore = useModule("app_components").store;
-    return { editorStore, mediaStore, componentsStore };
+    const {
+      getComponentsByType,
+      getComponent,
+      activeScenario,
+      updateComponent,
+    } = useModule("app_components");
+    const { time: mediaTime, duration: mediaDuration } =
+      useModule("media_player");
+    return {
+      editorStore,
+      mediaTime,
+      mediaDuration,
+      getComponentsByType,
+      getComponent,
+      activeScenario,
+      updateComponent,
+    };
   },
   data() {
     return {
@@ -56,17 +70,8 @@ export default {
     };
   },
   computed: {
-    mediaTime() {
-      return this.mediaStore.time;
-    },
-    mediaDuration() {
-      return this.mediaStore.duration;
-    },
     scenarios() {
-      return this.componentsStore.getByType("Scenario");
-    },
-    activeScenario() {
-      return this.componentsStore.activeScenario;
+      return this.getComponentsByType("Scenario");
     },
     trackTimeWidth() {
       return `${this.scale * 100}%`;
@@ -146,7 +151,7 @@ export default {
         const parent_track = track.parentNode.closest(".component-track");
         const parent_type = parent_track.getAttribute("data-type");
         const parent_id = parent_track.getAttribute("data-id");
-        const parent_model = this.componentsStore.get(parent_type, parent_id);
+        const parent_model = this.getComponent(parent_type, parent_id);
 
         const children = [];
         parent_track
@@ -158,7 +163,7 @@ export default {
             });
           });
 
-        this.editorStore.updateComponent(parent_model, { children });
+        this.updateComponent(parent_model, { children });
 
         this.resorted = false;
       }

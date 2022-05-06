@@ -4,7 +4,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
 export function useTransform(component, model) {
-  const mediaStore = useModule("media_player").store;
+  const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isTransformable) {
     const transform = computed(() => {
@@ -17,8 +17,8 @@ export function useTransform(component, model) {
         if (!translate.animated) {
           value = translate.value;
         } else {
-          const mediaTime = mediaStore.time;
-          value = getAnimatedValueAtTime(translate.value, mediaTime);
+          const time = unref(mediaTime);
+          value = getAnimatedValueAtTime(translate.value, time);
         }
 
         if (!isUndefined(value) && !isNull(value)) {
@@ -37,8 +37,8 @@ export function useTransform(component, model) {
         if (!scale.animated) {
           value = scale.value;
         } else {
-          const mediaTime = mediaStore.time;
-          value = getAnimatedValueAtTime(scale.value, mediaTime);
+          const time = unref(mediaTime);
+          value = getAnimatedValueAtTime(scale.value, time);
         }
 
         if (!isUndefined(value) && !isNull(value)) {
