@@ -1,3 +1,14 @@
+<i18n>
+{
+  "fr": {
+    "loading_indicator_label": "Chargement ...",
+  },
+  "en": {
+    "loading_indicator_label": "Loading...",
+  },
+}
+</i18n>
+
 <template>
   <div class="shared-assets-library">
     <template v-for="asset in assets" :key="asset.id">
@@ -5,6 +16,8 @@
         <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
       </keep-alive>
     </template>
+
+    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
   </div>
 </template>
 
@@ -28,13 +41,16 @@ export default {
     loaded() {
       return this.store.loaded;
     },
+    loading() {
+      return this.store.loading;
+    },
     filters() {
       return this.store.filters;
     },
   },
-  async mounted() {
+  mounted() {
     if (!this.loaded) {
-      await this.store.load();
+      this.store.load();
     }
   },
   methods: {

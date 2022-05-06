@@ -21,6 +21,7 @@ export default defineStore("shared-assets-library", {
       },
       items: {},
       loaded: false,
+      loading: false,
       filters: {
         terms: "",
         tags: [],
@@ -82,14 +83,17 @@ export default defineStore("shared-assets-library", {
       };
     },
     async load() {
-      if (this.loaded) {
+      if (this.loaded || this.loading) {
         return;
       }
+
+      this.loading = true;
 
       const data = await api.load(this.configs.url);
       this.items = normalize(data.assets);
 
       this.loaded = true;
+      this.loading = false;
     },
   },
 });
