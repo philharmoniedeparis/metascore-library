@@ -54,22 +54,22 @@ export default defineStore("history", {
         });
       }
     },
-    undo() {
+    async undo() {
       if (this.canUndo) {
         this.processing = true;
 
         const item = this.stack[--this.index];
-        item.undo();
+        await item.undo();
 
         this.processing = false;
       }
     },
-    redo() {
+    async redo() {
       if (this.canRedo) {
         this.processing = true;
 
         const item = this.stack[this.index++];
-        item.redo();
+        await item.redo();
 
         this.processing = false;
       }

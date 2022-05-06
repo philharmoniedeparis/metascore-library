@@ -251,11 +251,11 @@ export default defineStore("app-components", {
           );
           after(() => {
             push({
-              undo: () => {
-                this.update(component, oldValue);
+              undo: async () => {
+                await this.update(component, oldValue);
               },
-              redo: () => {
-                this.update(component, data);
+              redo: async () => {
+                await this.update(component, data);
               },
             });
           });
