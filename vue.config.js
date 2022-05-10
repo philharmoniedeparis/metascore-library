@@ -57,7 +57,7 @@ module.exports = defineConfig({
         attrs(asset) {
           if (asset.tagName === "link") {
             return {
-              "data-metascore": true,
+              "data-metascore-library": true,
             };
           }
         },
@@ -66,21 +66,21 @@ module.exports = defineConfig({
 
     const isDevServer = process.env.WEBPACK_SERVE;
     if (isDevServer) {
-    // Override HTML output.
-    config.plugin("html").tap((args) => {
-      args[0].title = "metaScore-library - Editor";
-      args[0].chunks = ["metaScore.Editor"];
-      args[0].XCSRFToken = process.env.AJAX_XCSRFToken;
-      return args;
-    });
-    config.plugin("player-html").use(HtmlWebpackPlugin, [
-      {
-        ...config.plugin("html").get("args")[0],
-        title: "metaScore-library - Player",
-        filename: "player.html",
-        chunks: ["metaScore.Player"],
-      },
-    ]);
+      // Override HTML output.
+      config.plugin("html").tap((args) => {
+        args[0].title = "metaScore-library - Editor";
+        args[0].chunks = ["metaScore.Editor"];
+        args[0].XCSRFToken = process.env.AJAX_XCSRFToken;
+        return args;
+      });
+      config.plugin("player-html").use(HtmlWebpackPlugin, [
+        {
+          ...config.plugin("html").get("args")[0],
+          title: "metaScore-library - Player",
+          filename: "player.html",
+          chunks: ["metaScore.Player"],
+        },
+      ]);
     }
 
     // See https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags

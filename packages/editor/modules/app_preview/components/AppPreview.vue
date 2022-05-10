@@ -309,7 +309,7 @@ export default {
         // Find all metascore link tags
         // and add them to the iframe.
         document
-          .querySelectorAll("link[rel='stylesheet'][data-metascore]")
+          .querySelectorAll("link[rel='stylesheet'][data-metascore-library]")
           .forEach((tag) => {
             const url = tag.getAttribute("href");
             const link = document.createElement("link");
