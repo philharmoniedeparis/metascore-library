@@ -17,7 +17,7 @@ export default defineStore("ajax", {
     },
     async decodeResponse(response, type = "json") {
       switch (type) {
-        case "arraybuffer":
+        case "arrayBuffer":
         case "blob":
         case "formData":
         case "json":
