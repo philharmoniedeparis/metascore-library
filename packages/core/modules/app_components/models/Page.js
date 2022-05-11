@@ -2,6 +2,7 @@ import { mix } from "mixwith";
 import { merge } from "lodash";
 import {
   AbstractComponent,
+  Animation,
   Block,
   BlockToggler,
   Content,
