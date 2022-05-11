@@ -76,7 +76,7 @@ export default defineStore("app-components", {
           children = component[property];
         }
 
-        return children.map((c) => this.get(c.type, c.id)).filter((m) => m);
+        return children.map((c) => this.get(c.type, c.id)).filter((c) => c);
       };
     },
     getParent() {

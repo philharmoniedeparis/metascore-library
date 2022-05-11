@@ -16,9 +16,7 @@ export const createCollectionField = ({
 } = {}) => {
   ajv.addFormat("collection", { validate: () => true });
 
-  const schemas = Array.isArray(model)
-    ? model.map((m) => m.name)
-    : [model.name];
+  const types = Array.isArray(model) ? model.map((m) => m.type) : [model.type];
 
   return {
     ...createArrayField({
@@ -28,7 +26,7 @@ export const createCollectionField = ({
         type: "object",
         properties: {
           id: { type: "string" },
-          schema: { enum: schemas },
+          type: { enum: types },
         },
       },
       uniqueItems: true,

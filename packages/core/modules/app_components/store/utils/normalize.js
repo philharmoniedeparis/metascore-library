@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 
 // Get collection properties.
 const collections = {};
-Object.values(Models).forEach(({ name: type, schema }) => {
+Object.values(Models).forEach(({ type, schema }) => {
   Object.entries(schema.properties).forEach(([key, value]) => {
     if (value.format === "collection") {
       collections[type] = collections[type] || [];
