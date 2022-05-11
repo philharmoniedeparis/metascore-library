@@ -3,7 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "@floating-ui/dom": "^0.4.4",
+    "@floating-ui/dom": "^0.5.0",
     "@interactjs/actions": "^1.10.11",
     "@interactjs/auto-start": "^1.10.11",
     "@interactjs/interact": "^1.10.11",

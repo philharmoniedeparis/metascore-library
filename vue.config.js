@@ -9,6 +9,7 @@ module.exports = defineConfig({
   lintOnSave: true,
   publicPath: "./",
   transpileDependencies: true,
+  parallel: false, //see https://github.com/ckeditor/ckeditor5-vue/issues/136#issuecomment-669916603
   devServer: {
     host: process.env.DEV_SERVER_HOST || "local-ip",
     port: process.env.DEV_SERVER_PORT || "auto",
@@ -50,6 +51,20 @@ module.exports = defineConfig({
     },
   },
   chainWebpack: (config) => {
+    // Override entry points.
+    config.entryPoints.clear();
+    config.entry("metaScore.Player").add("./packages/player/index.js").end();
+    config.entry("metaScore.Editor").add("./packages/editor/index.js").end();
+
+    // Override output options.
+    config.output
+      .library({
+        name: "metaScore",
+        type: "assign-properties",
+      })
+      .filename("[name].js")
+      .chunkFilename("metaScore.[name].chunk.js");
+
     // Add the "data-metascore" attribute to all link tags
     // to be used by the app_preview module.
     config.plugin("htmllinkattr").use(HtmlWebpackAssetsAttrPlugin, [
@@ -94,20 +109,6 @@ module.exports = defineConfig({
       return definitions;
     });
 
-    // Override entry points.
-    config.entryPoints.clear();
-    config.entry("metaScore.Player").add("./packages/player/index.js").end();
-    config.entry("metaScore.Editor").add("./packages/editor/index.js").end();
-
-    // Override output options.
-    config.output
-      .library({
-        name: "metaScore",
-        type: "assign-properties",
-      })
-      .filename("[name].js")
-      .chunkFilename("metaScore.[name].chunk.js");
-
     // Add inline SVGs support.
     config.module.rule("svg").resourceQuery({ not: [/inline/] });
     config.module
@@ -139,6 +140,8 @@ module.exports = defineConfig({
         language: "fr",
         additionalLanguages: ["en"],
         buildAllTranslationsToSeparateFiles: true,
+        outputDirectory: "translations/ckeditor",
+        chunks: ["metaScore.Editor"],
       },
     ]);
     config.module

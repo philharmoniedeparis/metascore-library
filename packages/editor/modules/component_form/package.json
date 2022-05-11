@@ -22,7 +22,7 @@
     "@ckeditor/ckeditor5-style": "^34.0.0",
     "@ckeditor/ckeditor5-table": "^34.0.0",
     "@ckeditor/ckeditor5-theme-lark": "^34.0.0",
-    "@floating-ui/dom": "^0.4.4",
+    "@floating-ui/dom": "^0.5.0",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2"
   }
