@@ -80,6 +80,7 @@
         v-if="processing"
         :text="$t('upload_indicator_label')"
         :value="uploadProgress"
+        :target="false"
       />
 
       <alert-dialog v-if="error" @close="error = null">

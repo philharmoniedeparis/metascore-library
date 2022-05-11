@@ -12,10 +12,14 @@
 <template>
   <div class="shared-assets-library">
     <template v-for="asset in assets" :key="asset.id">
-        <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
+      <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
     </template>
 
-    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
+    <progress-indicator
+      v-if="loading"
+      :text="$t('loading_indicator_label')"
+      :target="false"
+    />
   </div>
 </template>
 

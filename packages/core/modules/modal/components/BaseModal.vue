@@ -11,8 +11,8 @@
 
 <template>
   <!-- The wrapper is used as a work-around to pass classes from the parent component to the actual modal -->
-  <div class="base-modal-wrapper">
-    <teleport :to="target ?? modalsTarget">
+  <div :class="['base-modal-wrapper', { teleport }]">
+    <teleport :to="teleportTarget" :disabled="!teleport">
       <transition name="fade">
         <div class="base-modal" v-bind="$attrs">
           <div class="backdrop" tabindex="-1" role="dialog">
@@ -63,7 +63,7 @@ export default {
   },
   props: {
     target: {
-      type: [String, HTMLElement],
+      type: [String, HTMLElement, Boolean],
       default: null,
     },
     header: {
@@ -76,6 +76,14 @@ export default {
     },
   },
   emits: ["close"],
+  computed: {
+    teleport() {
+      return this.target !== false;
+    },
+    teleportTarget() {
+      return this.target ?? this.modalsTarget;
+    },
+  },
 };
 </script>
 
@@ -90,7 +98,9 @@ export default {
 }
 
 .base-modal-wrapper {
-  display: none;
+  &.teleport {
+    display: none;
+  }
 }
 
 .base-modal {
