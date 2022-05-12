@@ -7,7 +7,7 @@ const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
   lintOnSave: true,
-  publicPath: "./",
+  publicPath: "./dist/",
   transpileDependencies: true,
   parallel: false, //see https://github.com/ckeditor/ckeditor5-vue/issues/136#issuecomment-669916603
   devServer: {
