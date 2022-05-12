@@ -14,30 +14,36 @@
     "opacity": "Opacité",
     "translate": "Translation",
     "scale": "Échelle",
+    "AbstractComponent": {
+      "title": "Composant | {count} Composants"
+    },
+    "EmbeddableComponent": {
+      "title": "Composant | {count} Composants"
+    },
     "Animation": {
-      "title": "Animation",
+      "title": "Animation | {count} Animations",
       "start-frame": "Image de départ",
       "loop-duration": "Durée d'un boucle",
       "reversed": "Inversé",
       "colors": "Couleurs",
     },
     "Block": {
-      "title": "Bloc",
+      "title": "Bloc | {count} Blocs",
       "pager-visibility": "Visibilité du tourne page",
     },
     "BlockToggler": {
-      "title": "Contrôleur de blocs",
+      "title": "Contrôleur de blocs | {count} Contrôleurs de blocs",
       "blocks": "Blocs",
     },
     "Content": {
-      "title": "Texte",
+      "title": "Texte | {count} Textes",
       "text": "Éditer le contenu",
     },
     "Controller": {
-      "title": "Contrôleur",
+      "title": "Contrôleur | {count} Contrôleurs",
     },
     "Cursor": {
-      "title": "Curseur",
+      "title": "Curseur | {count} Curseurs",
       "form": "Forme",
       "direction": "Direction",
       "acceleration": "Accélération",
@@ -51,13 +57,13 @@
       "title": "Média",
     },
     "Page": {
-      "title": "Page {index}/{count}",
+      "title": "Page {index}/{total} | {count} Pages",
     },
     "Scenario": {
-      "title": "Scénario",
+      "title": "Scénario | {count} Scénarios",
     },
     "SVG": {
-      "title": "SVG",
+      "title": "SVG | {count} SVGs",
       "colors": "Couleurs",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
@@ -68,7 +74,7 @@
       "marker-end": "Marqueur de fin",
     },
     "VideoRenderer": {
-      "title": "Rendu vidéo",
+      "title": "Rendu vidéo | {count} Rendus vidéo",
     },
   },
   "en": {
@@ -85,30 +91,36 @@
     "opacity": "Opacity",
     "translate": "Translation",
     "scale": "Scale",
+    "AbstractComponent": {
+      "title": "Component | {count} Components"
+    },
+    "EmbeddableComponent": {
+      "title": "Component | {count} Components"
+    },
     "Animation": {
-      "title": "Animation",
+      "title": "Animation | {count} Animations",
       "start-frame": "Start frame",
       "loop-duration": "Loop duration",
       "reversed": "Reversed",
       "colors": "Colors",
     },
     "Block": {
-      "title": "Block",
+      "title": "Block | {count} Blocks",
       "pager-visibility": "Pager visibility",
     },
     "BlockToggler": {
-      "title": "Block toggler",
+      "title": "Block toggler | {count} Block togglers",
       "blocks": "Blocks",
     },
     "Content": {
-      "title": "Text",
+      "title": "Text | {count} Texts",
       "text": "Edit the content",
     },
     "Controller": {
-      "title": "Controller",
+      "title": "Controller | {count} Controllers",
     },
     "Cursor": {
-      "title": "Cursor",
+      "title": "Cursor | {count} Cursors",
       "form": "Form",
       "direction": "Direction",
       "acceleration": "Acceleration",
@@ -119,16 +131,16 @@
       "cursor-color": "Cursor color",
     },
     "Media": {
-      "title": "Media",
+      "title": "Media | {count} Media",
     },
     "Page": {
-      "title": "Page {index}/{count}",
+      "title": "Page {index}/{total} | {count} Pages",
     },
     "Scenario": {
-      "title": "Scenario",
+      "title": "Scenario | {count} Scenarios",
     },
     "SVG": {
-      "title": "SVG",
+      "title": "SVG | {count} SVGs",
       "stroke": "Stroke color",
       "stroke-width": "Stroke width",
       "stroke-dasharray": "Stroke style",
@@ -139,7 +151,7 @@
       "colors": "Colors",
     },
     "VideoRenderer": {
-      "title": "Video Renderer",
+      "title": "Video Renderer | {count} Video Renderers",
     },
   },
 }
@@ -205,6 +217,9 @@ export default {
     selectedComponents() {
       return this.editorStore.getSelectedComponents;
     },
+    selectedComponentsCount() {
+      return this.selectedComponents.length;
+    },
     masterComponent() {
       return this.selectedComponents[0];
     },
@@ -218,19 +233,18 @@ export default {
       return models[0];
     },
     title() {
-      switch (this.masterComponent?.type) {
-        case "Page": {
-          const block = this.getComponentParent(this.masterComponent);
-          const pages = this.getComponentChildren(block);
-          const count = pages.length;
-          const index =
-            pages.findIndex((c) => c.id === this.masterComponent.id) + 1;
-          return this.$t("Page.title", { index, count });
-        }
+      const count = this.selectedComponentsCount;
 
-        default:
-          return this.$t(`${this.masterComponent.type}.title`);
+      if (count === 1 && this.commonModel.type === "Page") {
+        const block = this.getComponentParent(this.masterComponent);
+        const pages = this.getComponentChildren(block);
+        const total = pages.length;
+        const index =
+          pages.findIndex((c) => c.id === this.masterComponent.id) + 1;
+        return this.$tc("Page.title", { index, total }, count);
       }
+
+      return this.$tc(`${this.commonModel.type}.title`, count);
     },
     schema() {
       return this.commonModel?.schema;
@@ -343,7 +357,7 @@ export default {
           break;
 
         case "Content":
-          if (this.selectedComponents.length === 1) {
+          if (this.selectedComponentsCount === 1) {
             layout.items[0].items.push({
               type: "html",
               "app-iframe-el": this.appPreveiwIframe,
@@ -369,7 +383,7 @@ export default {
               this.getControlProps(property, this.commonModel.type)
             );
           });
-          if (this.selectedComponents.length === 1) {
+          if (this.selectedComponentsCount === 1) {
             layout.items[0].items.push({
               type: "cursor-keyframes",
               "app-component-el": this.getComponentElement(
