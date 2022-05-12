@@ -18,7 +18,7 @@
 
 <script>
 import { markRaw } from "vue";
-import useStore from "../store";
+import useStore from "../../store";
 
 export default {
   props: {
@@ -106,7 +106,7 @@ export default {
 
       const { Editor, config } = await import(
         /* webpackChunkName: "vendors.ckeditor.js" */
-        "../ckeditor"
+        "../../ckeditor"
       );
 
       Editor.create(

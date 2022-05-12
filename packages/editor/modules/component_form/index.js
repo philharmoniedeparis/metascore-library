@@ -11,11 +11,12 @@ import SchemaForm from "../schema_form";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 import Tabs from "../tabs";
 
-import AnimatedControl from "./components/AnimatedControl";
-import BorderRadiusControl from "./components/BorderRadiusControl";
-import CursorKeyframesControl from "./components/CursorKeyframesControl";
+import AnimatedControl from "./components/controls/AnimatedControl";
+import BorderRadiusControl from "./components/controls/BorderRadiusControl";
+import CursorKeyframesControl from "./components/controls/CursorKeyframesControl";
+import HtmlControl from "./components/controls/HtmlControl";
+
 import ComponentForm from "./components/ComponentForm";
-import HtmlControl from "./components/HtmlControl";
 
 export default class ComponentFormModule extends AbstractModule {
   static id = "component_form";
@@ -36,8 +37,9 @@ export default class ComponentFormModule extends AbstractModule {
     app.component("AnimatedControl", AnimatedControl);
     app.component("BorderRadiusControl", BorderRadiusControl);
     app.component("CursorKeyframesControl", CursorKeyframesControl);
-    app.component("ComponentForm", ComponentForm);
     app.component("HtmlControl", HtmlControl);
+
+    app.component("ComponentForm", ComponentForm);
   }
 
   configure(configs) {

@@ -39,7 +39,7 @@ import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { formatTime } from "@metascore-library/core/utils/media";
-import ClearIcon from "../assets/icons/clear.svg?inline";
+import ClearIcon from "../../assets/icons/clear.svg?inline";
 
 export default {
   components: {

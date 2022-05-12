@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import useStore from "../store";
+import useStore from "../../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 
 export default {
