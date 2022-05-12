@@ -72,7 +72,6 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, omit } from "lodash";
-import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
@@ -94,7 +93,6 @@ export default {
   emits: ["componentclick"],
   setup() {
     const store = useStore();
-    const editorStore = useEditorStore();
     const {
       format: clipboardFormat,
       data: clipboardData,
@@ -111,7 +109,6 @@ export default {
       useModule("history");
     return {
       store,
-      editorStore,
       clipboardFormat,
       clipboardData,
       setClipboardData,
@@ -140,10 +137,10 @@ export default {
       return this.store.preview;
     },
     selected() {
-      return this.editorStore.isComponentSelected(this.component);
+      return this.store.isComponentSelected(this.component);
     },
     locked() {
-      return this.editorStore.isComponentLocked(this.component);
+      return this.store.isComponentLocked(this.component);
     },
     positionable() {
       return this.model.$isPositionable;
@@ -166,7 +163,7 @@ export default {
         case "Page":
           return this.model.schema.properties[
             "children"
-          ].items.properties.schema.enum.includes(component.type);
+          ].items.properties.type.enum.includes(component.type);
         case "Block":
           return component.type === "Page";
         default:
@@ -179,9 +176,9 @@ export default {
           label: this.$t(`contextmenu.${this.selected ? "de" : ""}select`),
           handler: () => {
             if (this.selected) {
-              this.editorStore.deselectComponent(this.component);
+              this.store.deselectComponent(this.component);
             } else {
-              this.editorStore.selectComponent(this.component);
+              this.store.selectComponent(this.component);
             }
           },
         },
@@ -189,9 +186,9 @@ export default {
           label: this.$t(`contextmenu.${this.locked ? "un" : ""}lock`),
           handler: () => {
             if (this.locked) {
-              this.editorStore.unlockComponent(this.component);
+              this.store.unlockComponent(this.component);
             } else {
-              this.editorStore.lockComponent(this.component);
+              this.store.lockComponent(this.component);
             }
           },
         },
@@ -226,19 +223,19 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.editorStore.deleteComponent(this.component);
+                    this.store.deleteComponent(this.component);
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_before"),
                   handler: () => {
-                    this.editorStore.addPageBefore(this.component);
+                    this.store.addPageBefore(this.component);
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_after"),
                   handler: () => {
-                    this.editorStore.addPageAfter(this.component);
+                    this.store.addPageAfter(this.component);
                   },
                 },
               ],
@@ -262,7 +259,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.editorStore.deleteComponent(this.component);
+                    this.store.deleteComponent(this.component);
                   },
                 },
                 {
@@ -271,37 +268,25 @@ export default {
                     {
                       label: this.$t("contextmenu.to_front"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(
-                          this.component,
-                          "front"
-                        );
+                        this.store.arrangeComponent(this.component, "front");
                       },
                     },
                     {
                       label: this.$t("contextmenu.to_back"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(
-                          this.component,
-                          "back"
-                        );
+                        this.store.arrangeComponent(this.component, "back");
                       },
                     },
                     {
                       label: this.$t("contextmenu.forward"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(
-                          this.component,
-                          "forward"
-                        );
+                        this.store.arrangeComponent(this.component, "forward");
                       },
                     },
                     {
                       label: this.$t("contextmenu.backward"),
                       handler: () => {
-                        this.editorStore.arrangeComponent(
-                          this.component,
-                          "backward"
-                        );
+                        this.store.arrangeComponent(this.component, "backward");
                       },
                     },
                   ],
@@ -346,11 +331,11 @@ export default {
 
       if (this.selected) {
         if (evt.shiftKey) {
-          this.editorStore.deselectComponent(this.component);
+          this.store.deselectComponent(this.component);
           evt.stopImmediatePropagation();
         }
       } else {
-        this.editorStore.selectComponent(this.component, evt.shiftKey);
+        this.store.selectComponent(this.component, evt.shiftKey);
         evt.stopImmediatePropagation();
       }
     },
@@ -423,7 +408,7 @@ export default {
       const offset_y = top - this.component.position[1];
 
       this.siblings.forEach((sibling) => {
-        if (this.editorStore.isComponentSelected(sibling)) {
+        if (this.store.isComponentSelected(sibling)) {
           return;
         }
 
@@ -452,7 +437,7 @@ export default {
       this.startHistoryGroup();
     },
     onDraggableMove(evt) {
-      this.editorStore.getSelectedComponents.forEach((component) => {
+      this.store.getSelectedComponents.forEach((component) => {
         const position = component.position;
         this.updateComponent(component, {
           position: [
@@ -581,7 +566,7 @@ export default {
         this.component
       );
 
-      this.editorStore.selectComponent(component);
+      this.store.selectComponent(component);
     },
   },
 };

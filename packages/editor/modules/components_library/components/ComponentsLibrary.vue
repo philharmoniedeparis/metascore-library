@@ -33,16 +33,11 @@
 </template>
 
 <script>
-import useEditorStore from "@metascore-library/editor/store";
 import ComponentLibraryItem from "./ComponentLibraryItem.vue";
 
 export default {
   components: {
     ComponentLibraryItem,
-  },
-  setup() {
-    const editorStore = useEditorStore();
-    return { editorStore };
   },
   computed: {
     items() {

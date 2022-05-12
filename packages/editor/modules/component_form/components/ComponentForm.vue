@@ -173,7 +173,6 @@
 <script>
 import { intersection } from "lodash";
 import useStore from "../store";
-import useEditorStore from "@metascore-library/editor/store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
@@ -193,30 +192,29 @@ export default {
   },
   setup() {
     const store = useStore();
-    const editorStore = useEditorStore();
     const {
       getModel,
       getComponentParent,
       getComponentChildren,
       updateComponent,
     } = useModule("app_components");
-    const { iframe: appPreveiwIframe, getComponentElement } =
-      useModule("app_preview");
+    const {
+      iframe: appPreveiwIframe,
+      selectedComponents,
+      getComponentElement,
+    } = useModule("app_preview");
     return {
       store,
-      editorStore,
       getModel,
       getComponentParent,
       getComponentChildren,
       updateComponent,
       appPreveiwIframe,
       getComponentElement,
+      selectedComponents,
     };
   },
   computed: {
-    selectedComponents() {
-      return this.editorStore.getSelectedComponents;
-    },
     selectedComponentsCount() {
       return this.selectedComponents.length;
     },

@@ -46,7 +46,6 @@
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "../store";
-import useEditorStore from "@metascore-library/editor/store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
@@ -72,8 +71,7 @@ export default {
   },
   setup() {
     const store = useStore();
-    const editorStore = useEditorStore();
-    return { store, editorStore };
+    return { store };
   },
   data() {
     return {

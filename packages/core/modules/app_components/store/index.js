@@ -198,13 +198,13 @@ export default defineStore("app-components", {
         console.error(e);
       }
     },
-    delete(type, id) {
+    delete({ type, id }) {
       const component = this.components?.[type]?.[id];
       if (component) {
         component.$deleted = true;
       }
     },
-    restore(type, id) {
+    restore({ type, id }) {
       const component = this.components?.[type]?.[id];
       if (component) {
         delete component.$deleted;
@@ -278,14 +278,14 @@ export default defineStore("app-components", {
       case "restore":
       case "delete":
         {
-          const [type, id] = args;
+          const [component] = args;
           after(() => {
             push({
               undo: () => {
-                this[name === "delete" ? "restore" : "delete"](type, id);
+                this[name === "delete" ? "restore" : "delete"](component);
               },
               redo: () => {
-                this[name](type, id);
+                this[name](component);
               },
             });
           });

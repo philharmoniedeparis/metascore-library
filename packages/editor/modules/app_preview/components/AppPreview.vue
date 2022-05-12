@@ -67,7 +67,6 @@
 import { computed } from "vue";
 import { debounce } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import useEditorStore from "@metascore-library/editor/store";
 import "../polyfills/GeomertyUtils";
 import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";
@@ -98,7 +97,6 @@ export default {
   emits: ["load"],
   setup() {
     const store = useStore();
-    const editorStore = useEditorStore();
     const { deleteComponent } = useModule("app_components");
     const { width: appWidth, height: appHeight } = useModule("app_renderer");
     const { addItems: addContextmenuItems } = useModule("contextmenu");
@@ -106,7 +104,6 @@ export default {
       store,
       appWidth,
       appHeight,
-      editorStore,
       deleteComponent,
       addContextmenuItems,
     };
@@ -156,78 +153,78 @@ export default {
 
       return {
         right: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { left: 1 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { left: 1 });
         },
         "shift+right": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { left: 10 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { left: 10 });
         },
         left: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { left: -1 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { left: -1 });
         },
         "shift+left": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { left: -10 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { left: -10 });
         },
         up: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { top: -1 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { top: -1 });
         },
         "shift+up": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { top: -10 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { top: -10 });
         },
         down: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { top: 1 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { top: 1 });
         },
         "shift+down": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.moveComponents(selected, { top: 10 });
+          const selected = this.store.getSelectedComponents;
+          this.store.moveComponents(selected, { top: 10 });
         },
         tab: () => {
-          this.editorStore.moveComponentSelection();
+          this.store.moveComponentSelection();
         },
         "shift+tab": () => {
-          this.editorStore.moveComponentSelection(true);
+          this.store.moveComponentSelection(true);
         },
         "ctrl+c": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.copyComponents(selected);
+          const selected = this.store.getSelectedComponents;
+          this.store.copyComponents(selected);
         },
         "ctrl+v": () => {
           // @todo
         },
         "ctrl+x": () => {
-          const selected = this.editorStore.getSelectedComponents;
-          this.editorStore.cutComponents(selected);
+          const selected = this.store.getSelectedComponents;
+          this.store.cutComponents(selected);
         },
         "ctrl+d": () => {
           // @todo
         },
         "ctrl+l": () => {
-          const selected = this.editorStore.getSelectedComponents;
+          const selected = this.store.getSelectedComponents;
           if (selected.length > 0) {
             const master = selected[0];
-            const locked = this.editorStore.isComponentLocked(master);
-            this.editorStore[`${locked ? "un" : ""}lockComponents`](selected);
+            const locked = this.store.isComponentLocked(master);
+            this.store[`${locked ? "un" : ""}lockComponents`](selected);
           }
         },
         delete: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          selected.forEach((c) => this.deleteComponent(c.type, c.id));
+          const selected = this.store.getSelectedComponents;
+          selected.forEach(this.deleteComponent);
         },
         backspace: () => {
-          const selected = this.editorStore.getSelectedComponents;
-          selected.forEach((c) => this.deleteComponent(c.type, c.id));
+          const selected = this.store.getSelectedComponents;
+          selected.forEach(this.deleteComponent);
         },
       };
     },
     contextmenuItems() {
       const items = [];
-      const selected = this.editorStore.getSelectedComponents;
+      const selected = this.store.getSelectedComponents;
 
       if (selected.length > 0) {
         items.push({
@@ -236,31 +233,31 @@ export default {
             {
               label: this.$t("contextmenu.deselect"),
               handler: () => {
-                this.editorStore.deselectAllComponents();
+                this.store.deselectAllComponents();
               },
             },
             {
               label: this.$t("contextmenu.copy"),
               handler: () => {
-                this.editorStore.copyComponents(selected);
+                this.store.copyComponents(selected);
               },
             },
             {
               label: this.$t("contextmenu.delete"),
               handler: () => {
-                selected.forEach((c) => this.deleteComponent(c.type, c.id));
+                selected.forEach(this.deleteComponent);
               },
             },
             {
               label: this.$t("contextmenu.lock"),
               handler: () => {
-                this.editorStore.lockComponents(selected);
+                this.store.lockComponents(selected);
               },
             },
             {
               label: this.$t("contextmenu.unlock"),
               handler: () => {
-                this.editorStore.unlockComponents(selected);
+                this.store.unlockComponents(selected);
               },
             },
           ],

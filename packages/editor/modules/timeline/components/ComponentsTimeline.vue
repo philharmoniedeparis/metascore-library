@@ -19,7 +19,6 @@ import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import useEditorStore from "@metascore-library/editor/store";
 import ComponentTrack from "./ComponentTrack.vue";
 
 export default {
@@ -45,7 +44,6 @@ export default {
     },
   },
   setup() {
-    const editorStore = useEditorStore();
     const {
       getComponentsByType,
       getComponent,
@@ -55,7 +53,6 @@ export default {
     const { time: mediaTime, duration: mediaDuration } =
       useModule("media_player");
     return {
-      editorStore,
       mediaTime,
       mediaDuration,
       getComponentsByType,

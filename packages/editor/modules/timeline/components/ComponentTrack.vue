@@ -96,7 +96,6 @@ import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { paramCase } from "param-case";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import useEditorStore from "@metascore-library/editor/store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
 import AnimatedPropertyTrack from "./AnimatedPropertyTrack.vue";
@@ -118,7 +117,6 @@ export default {
     },
   },
   setup() {
-    const editorStore = useEditorStore();
     const { duration: mediaDuration } = useModule("media_player");
     const {
       getModel,
@@ -127,16 +125,31 @@ export default {
       getComponentChildren,
       updateComponent,
     } = useModule("app_components");
+    const {
+      isComponentSelected,
+      isComponentLocked,
+      lockComponent,
+      unlockComponent,
+      componentHasSelectedDescendents,
+      selectComponent,
+      deselectComponent,
+    } = useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
     return {
-      editorStore,
       mediaDuration,
       getModel,
       getComponentParent,
       componentHasChildren,
       getComponentChildren,
       updateComponent,
+      isComponentSelected,
+      isComponentLocked,
+      lockComponent,
+      unlockComponent,
+      componentHasSelectedDescendents,
+      selectComponent,
+      deselectComponent,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -165,16 +178,14 @@ export default {
       }
     },
     selected() {
-      return this.editorStore.isComponentSelected(this.component);
+      return this.isComponentSelected(this.component);
     },
     locked: {
       get() {
-        return this.editorStore.isComponentLocked(this.component);
+        return this.isComponentLocked(this.component);
       },
       set(value) {
-        this.editorStore[value ? "lockComponent" : "unlockComponent"](
-          this.component
-        );
+        this[value ? "lockComponent" : "unlockComponent"](this.component);
       },
     },
     hasChildren() {
@@ -193,7 +204,7 @@ export default {
       }
     },
     hasSelectedDescendents() {
-      return this.editorStore.componentHasSelectedDescendents(this.component);
+      return this.componentHasSelectedDescendents(this.component);
     },
     timeable() {
       return this.model.$isTimeable;
@@ -272,10 +283,10 @@ export default {
     onClick(evt) {
       if (this.selected) {
         if (evt.shiftKey) {
-          this.editorStore.deselectComponent(this.component);
+          this.deselectComponent(this.component);
         }
       } else {
-        this.editorStore.selectComponent(this.component, evt.shiftKey);
+        this.selectComponent(this.component, evt.shiftKey);
       }
     },
     onResizableStart() {

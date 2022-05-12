@@ -109,14 +109,14 @@ export default class AppComponentsModule extends AbstractModule {
     return store.update(component, data);
   }
 
-  deleteComponent(type, id) {
+  deleteComponent(component) {
     const store = useStore();
-    return store.delete(type, id);
+    return store.delete(component);
   }
 
-  restoreComponent(type, id) {
+  restoreComponent(component) {
     const store = useStore();
-    return store.restore(type, id);
+    return store.restore(component);
   }
 
   showComponent(component) {

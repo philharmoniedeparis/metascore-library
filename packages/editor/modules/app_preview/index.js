@@ -53,8 +53,48 @@ export default class AppPreviewModule extends AbstractModule {
     return readonly(iframe);
   }
 
+  get selectedComponents() {
+    const store = useStore();
+    return store.getSelectedComponents;
+  }
+
   getComponentElement(component) {
     const store = useStore();
     return store.getComponentElement(component);
+  }
+
+  isComponentSelected(component) {
+    const store = useStore();
+    return store.isComponentSelected(component);
+  }
+
+  isComponentLocked(component) {
+    const store = useStore();
+    return store.isComponentLocked(component);
+  }
+
+  lockComponent(component) {
+    const store = useStore();
+    return store.lockComponent(component);
+  }
+
+  unlockComponent(component) {
+    const store = useStore();
+    return store.unlockComponent(component);
+  }
+
+  componentHasSelectedDescendents(component) {
+    const store = useStore();
+    return store.componentHasSelectedDescendents(component);
+  }
+
+  selectComponent(component) {
+    const store = useStore();
+    return store.selectComponent(component);
+  }
+
+  deselectComponent(component) {
+    const store = useStore();
+    return store.deselectComponent(component);
   }
 }
