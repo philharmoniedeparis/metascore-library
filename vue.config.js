@@ -34,7 +34,7 @@ module.exports = defineConfig({
     extract: {
       filename: "[name].css",
       chunkFilename: function () {
-        return "metaScore.[name].chunk.css";
+        return "metaScore.[name].[chunkhash].chunk.css";
       },
       insert: function (linkTag) {
         // Insert a clone in the preview iframe.
@@ -63,7 +63,7 @@ module.exports = defineConfig({
         type: "assign-properties",
       })
       .filename("[name].js")
-      .chunkFilename("metaScore.[name].chunk.js");
+      .chunkFilename("metaScore.[name].[chunkhash].chunk.js");
 
     // Add the "data-metascore" attribute to all link tags
     // to be used by the app_preview module.

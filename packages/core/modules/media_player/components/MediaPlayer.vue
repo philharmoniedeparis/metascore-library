@@ -158,12 +158,12 @@ export default {
       switch (type) {
         case "dashjs":
           {
-            const { default: DashJS } = await import(
+            const { MediaPlayer: DashJSMediaPlayer } = await import(
               /* webpackChunkName: "vendors.dashjs" */
-              /* webpackExports: ["default"] */
+              /* webpackExports: ["MediaPlayer"] */
               "dashjs"
             );
-            this.dash = DashJS.MediaPlayer().create();
+            this.dash = DashJSMediaPlayer().create();
             this.dash.initialize(this.$el, url, true);
           }
           return;
