@@ -45,6 +45,7 @@ export default {
         {
           type: "Cursor",
           name: this.$t("cursor"),
+          form: "linear",
         },
         {
           type: "Content",
