@@ -122,15 +122,7 @@ export default class AbstractModel {
 
   static create(data = {}, validate = true) {
     const instance = new this();
-
-    if (validate) {
-      return instance.update(data);
-    }
-
-    for (const [name, value] of Object.entries(data)) {
-      instance[name] = value;
-    }
-    return instance;
+    return instance.update(data, validate);
   }
 
   constructor() {
