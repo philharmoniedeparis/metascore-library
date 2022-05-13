@@ -5,6 +5,7 @@ export default defineStore("component-form", {
     return {
       configs: {
         colorSwatches: [],
+        extraFonts: [],
       },
       recordingCursorKeyframes: false,
       editingTextContent: false,

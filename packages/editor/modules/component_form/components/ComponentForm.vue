@@ -362,6 +362,7 @@ export default {
               "app-component-el": this.getComponentElement(
                 this.masterComponent
               ),
+              "extra-fonts": this.store.configs.extraFonts,
               ...this.getControlProps("text", this.commonModel.type),
             });
           }

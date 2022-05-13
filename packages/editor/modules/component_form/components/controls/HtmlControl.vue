@@ -30,6 +30,12 @@ export default {
       type: HTMLElement,
       required: true,
     },
+    extraFonts: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
     label: {
       type: String,
       default: null,
@@ -104,16 +110,17 @@ export default {
     async setupEditor() {
       this.setting_up_editor = true;
 
-      const { Editor, config } = await import(
+      const { Editor, getConfig } = await import(
         /* webpackChunkName: "vendors.ckeditor.js" */
         "../../ckeditor"
       );
 
-      Editor.create(
-        this.editorEl,
-        { ...config, language: this.$i18n.locale },
-        this.appComponentEl.ownerDocument
-      )
+      const config = getConfig({
+        language: this.$i18n.locale,
+        extraFonts: this.extraFonts,
+      });
+
+      Editor.create(this.editorEl, config, this.appComponentEl.ownerDocument)
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.
