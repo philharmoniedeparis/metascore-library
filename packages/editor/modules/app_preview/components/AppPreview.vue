@@ -46,8 +46,6 @@
       :style="iFrameWrapperStyle"
       @transitionend="onIframeTransitionend"
     >
-      <preview-grid v-show="!preview" />
-
       <iframe
         ref="iframe"
         src="about:blank"
@@ -55,6 +53,9 @@
         allowfullscreen
         @load="onIframeLoad"
       ></iframe>
+
+      <preview-grid v-show="!preview" />
+      <preview-snap-guides v-show="!preview" />
     </div>
 
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
@@ -71,11 +72,13 @@ import "../polyfills/GeomertyUtils";
 import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";
 import PreviewGrid from "./PreviewGrid.vue";
+import PreviewSnapGuides from "./PreviewSnapGuides.vue";
 
 export default {
   components: {
     PreviewRuler,
     PreviewGrid,
+    PreviewSnapGuides,
   },
   provide() {
     return {
@@ -449,10 +452,6 @@ export default {
   height: v-bind(cssRulerThikness);
   background: $mediumgray;
   z-index: 3;
-}
-
-.preview-grid {
-  pointer-events: none;
 }
 
 iframe {

@@ -151,6 +151,14 @@ export default {
     siblings() {
       return this.getComponentSiblings(this.component);
     },
+    snapTargets: {
+      get() {
+        return this.store.snapTargets;
+      },
+      set(value) {
+        this.store.snapTargets = value;
+      },
+    },
     clipboardDataAvailable() {
       if (this.clipboardFormat !== "metascore/component") {
         return false;
@@ -367,6 +375,16 @@ export default {
 
           this._interactables.draggable({
             allowFrom,
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [this.getInteractableSnapTargets],
+                relativePoints: [
+                  { x: 0, y: 0 },
+                  { x: 0.5, y: 0.5 },
+                  { x: 1, y: 1 },
+                ],
+              }),
+            ],
             listeners: {
               start: this.onDraggableStart,
               move: this.onDraggableMove,
@@ -383,6 +401,11 @@ export default {
               bottom: ".resize-handle.bottom",
               left: ".resize-handle.left",
             },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [this.getInteractableSnapTargets],
+              }),
+            ],
             listeners: {
               start: this.onResizableStart,
               move: this.onResizableMove,
@@ -398,39 +421,45 @@ export default {
         delete this._interactables;
       }
     },
-    getInteractableSnapTargets() {
-      const targets = [];
-      const x_values = [];
-      const y_values = [];
+    getInteractableSnapTargets(x, y, interaction, relativePoint) {
+      const range = 5;
+      let min_distance = { x: range, y: range };
+      let target = null;
 
-      const { top, left } = this.$el.getBoundingClientRect();
-      const offset_x = left - this.component.position[0];
-      const offset_y = top - this.component.position[1];
+      if (relativePoint.index === 0) {
+        this.snapTargets = [];
+      }
 
       this.siblings.forEach((sibling) => {
         if (this.store.isComponentSelected(sibling)) {
           return;
         }
 
-        let [left, top] = sibling.position;
+        const [left, top] = sibling.position;
         const [width, height] = sibling.dimension;
-        left += offset_x;
-        top += offset_y;
-        x_values.push(left, left + width / 2, left + width);
-        y_values.push(top, top + height / 2, top + height);
-      });
 
-      x_values.forEach((x) => {
-        targets.push({ x });
-        y_values.forEach((y) => {
-          targets.push({ x, y });
+        [left, (left + width) / 2, left + width].forEach((value) => {
+          const distance = Math.abs(value - x);
+          if (distance <= min_distance.x) {
+            min_distance.x = distance;
+            target = { ...(target ?? {}), x: value };
+          }
+        });
+
+        [top, (top + height) / 2, top + height].forEach((value) => {
+          const distance = Math.abs(value - y);
+          if (distance <= min_distance.y) {
+            min_distance.y = distance;
+            target = { ...(target ?? {}), y: value };
+          }
         });
       });
-      y_values.forEach((y) => {
-        targets.push({ y });
-      });
 
-      return targets;
+      if (target) {
+        this.snapTargets.push(target);
+      }
+
+      return target;
     },
     onDraggableStart() {
       this.dragging = true;
@@ -449,6 +478,7 @@ export default {
     },
     onDraggableEnd(evt) {
       this.dragging = false;
+      this.snapTargets = [];
       this.endHistoryGroup();
 
       // Prevent the next click event
@@ -474,6 +504,7 @@ export default {
     },
     onResizableEnd(evt) {
       this.resizing = false;
+      this.snapTargets = [];
 
       // Prevent the next click event
       evt.target.addEventListener(
