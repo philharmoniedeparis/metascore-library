@@ -78,7 +78,7 @@ export default {
     },
     playheadPosition() {
       return this.mediaDuration
-        ? (this.mediaTime / this.mediaDuration) * 100
+        ? (this.mediaTime / this.mediaDuration) * this.scale * 100
         : null;
     },
     playheadStyle() {
