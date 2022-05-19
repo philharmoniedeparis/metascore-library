@@ -33,7 +33,7 @@ export default {
   },
   watch: {
     disabled(value) {
-      this[value ? "unsubscribe" : "subscribe"]();
+      this.store[value ? "unsubscribe" : "subscribe"]();
     },
   },
   mounted() {
