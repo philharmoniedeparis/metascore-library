@@ -26,8 +26,11 @@ export default defineStore("ajax", {
           return await response.text();
       }
     },
-    load(url, { method = "get", params = {}, data = null, ...config } = {}) {
-      const options = merge({}, this.defaults, { method, ...config });
+    load(url, { method = "GET", params = {}, data = null, ...config } = {}) {
+      const options = merge({}, this.defaults, {
+        method: method.toUpperCase(),
+        ...config,
+      });
       const responseType = options.responseType;
 
       const _url = new URL(url, options.baseURL);
@@ -52,6 +55,7 @@ export default defineStore("ajax", {
           return response;
         })
         .then(async (response) => {
+          if (options.method === "HEAD") return true;
           return await this.decodeResponse(response, responseType);
         });
     },
