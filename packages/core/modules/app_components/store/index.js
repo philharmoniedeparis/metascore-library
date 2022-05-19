@@ -185,10 +185,16 @@ export default defineStore("app-components", {
               const index = pages.findIndex((c) => c.id === component.id);
 
               if ("start-time" in data && index > 0) {
-                pages[index - 1]["end-time"] = data["start-time"];
+                const prev_page = pages[index - 1];
+                await this.components[prev_page.type][prev_page.id].update({
+                  "end-time": data["start-time"],
+                });
               }
               if ("end-time" in data && index < pages.length - 1) {
-                pages[index + 1]["start-time"] = data["end-time"];
+                const next_page = pages[index + 1];
+                await this.components[next_page.type][next_page.id].update({
+                  "start-time": data["end-time"],
+                });
               }
             }
           }
