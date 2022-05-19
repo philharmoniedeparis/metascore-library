@@ -1,6 +1,6 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-function get(url) {
+function load(url) {
   return useModule("ajax").get(url);
 }
 
@@ -12,4 +12,4 @@ function restore(url, vid) {
   return useModule("ajax").patch(url, { params: { vid } });
 }
 
-export { get, save, restore };
+export { load, save, restore };

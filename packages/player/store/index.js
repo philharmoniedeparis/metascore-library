@@ -23,7 +23,7 @@ export default defineStore("player", {
     async load(url) {
       this.loading = true;
 
-      const data = await api.get(url);
+      const data = await api.load(url);
       this.setData(data);
 
       this.loading = false;
