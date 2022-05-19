@@ -26,11 +26,8 @@ export default class SharedAssetsLibraryModule extends AbstractModule {
     app.component("SharedAssetsToolbar", SharedAssetsToolbar);
   }
 
-  get store() {
-    return useStore();
-  }
-
   configure(configs) {
-    this.store.configure(configs);
+    const store = useStore();
+    store.configure(configs);
   }
 }
