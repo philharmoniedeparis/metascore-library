@@ -1,5 +1,5 @@
 <template>
-  <div class="preview-snap-guides">
+  <div class="snap-guides">
     <div
       v-for="(guide, index) in snapGuides"
       :key="index"
@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.preview-snap-guides {
+.snap-guides {
   position: absolute;
   top: 0;
   left: 0;

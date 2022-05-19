@@ -7,7 +7,10 @@
           :component="scenario"
         />
       </template>
+
       <div class="playhead" :style="playheadStyle"></div>
+
+      <snap-guides />
     </div>
   </div>
 </template>
@@ -20,10 +23,12 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import ComponentTrack from "./ComponentTrack.vue";
+import SnapGuides from "./SnapGuides.vue";
 
 export default {
   components: {
     ComponentTrack,
+    SnapGuides,
   },
   props: {
     scale: {

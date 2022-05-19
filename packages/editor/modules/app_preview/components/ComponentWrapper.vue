@@ -377,7 +377,7 @@ export default {
             allowFrom,
             modifiers: [
               interact.modifiers.snap({
-                targets: [this.getInteractableSnapTargets],
+                targets: [this.getInteractableSnapTarget],
                 relativePoints: [
                   { x: 0, y: 0 },
                   { x: 0.5, y: 0.5 },
@@ -403,7 +403,7 @@ export default {
             },
             modifiers: [
               interact.modifiers.snap({
-                targets: [this.getInteractableSnapTargets],
+                targets: [this.getInteractableSnapTarget],
               }),
             ],
             listeners: {
@@ -421,9 +421,8 @@ export default {
         delete this._interactables;
       }
     },
-    getInteractableSnapTargets(x, y, interaction, relativePoint) {
-      const range = 5;
-      let min_distance = { x: range, y: range };
+    getInteractableSnapTarget(x, y, interaction, relativePoint) {
+      let min_distance = { x: this.snapRange, y: this.snapRange };
       let target = null;
 
       if (relativePoint.index === 0) {

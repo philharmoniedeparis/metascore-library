@@ -21,6 +21,7 @@
         'has-selected-descendents': hasSelectedDescendents,
         expanded,
         selected,
+        resizing,
       },
     ]"
     :data-type="component.type"
@@ -64,8 +65,11 @@
       </div>
     </div>
 
-    <div class="time-wrapper" @click="onClick">
-      <div ref="time" class="time" tabindex="0" :style="timeStyle"></div>
+    <div ref="time-wrapper" class="time-wrapper" @click="onClick">
+      <div ref="time" class="time" tabindex="0" :style="timeStyle">
+        <div class="resize-handle right"></div>
+        <div class="resize-handle left"></div>
+      </div>
     </div>
 
     <div v-if="hasChildren" class="children">
@@ -92,10 +96,12 @@
 <script>
 import "@interactjs/auto-start";
 import "@interactjs/actions/resize";
+import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { paramCase } from "param-case";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
 import AnimatedPropertyTrack from "./AnimatedPropertyTrack.vue";
@@ -115,9 +121,15 @@ export default {
       type: Number,
       default: 0,
     },
+    snapRange: {
+      type: Number,
+      default: 5,
+    },
   },
   setup() {
-    const { duration: mediaDuration } = useModule("media_player");
+    const store = useStore();
+    const { time: mediaTime, duration: mediaDuration } =
+      useModule("media_player");
     const {
       getModel,
       getComponentParent,
@@ -137,6 +149,8 @@ export default {
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
     return {
+      store,
+      mediaTime,
       mediaDuration,
       getModel,
       getComponentParent,
@@ -157,6 +171,7 @@ export default {
   data() {
     return {
       expanded: false,
+      resizing: false,
     };
   },
   computed: {
@@ -247,6 +262,14 @@ export default {
           {}
         );
     },
+    activeSnapTargets: {
+      get() {
+        return this.store.activeSnapTargets;
+      },
+      set(value) {
+        this.store.activeSnapTargets = value;
+      },
+    },
   },
   watch: {
     selected(value) {
@@ -258,7 +281,16 @@ export default {
 
           const resizable = interact(this.$refs.time);
           resizable.resizable({
-            edges: { left: true, right: true },
+            edges: {
+              right: ".resize-handle.right",
+              left: ".resize-handle.left",
+            },
+            modifiers: [
+              interact.modifiers.snap({
+                targets: this.getInteractableSnapTargets(),
+                range: this.snapRange,
+              }),
+            ],
             listeners: {
               start: this.onResizableStart,
               move: this.onResizableMove,
@@ -289,34 +321,64 @@ export default {
         this.selectComponent(this.component, evt.shiftKey);
       }
     },
+    getInteractableSnapTargets() {
+      const { left, width } =
+        this.$refs["time-wrapper"].getBoundingClientRect();
+      const targets = [];
+
+      // Add playhead.
+      const playhead_x = this.mediaTime * (width / this.mediaDuration) + left;
+      targets.push({ x: playhead_x });
+
+      // Loop through tracks to check if they are legitimate target.
+      this.$el
+        .closest(".component-track[data-type='Scenario']")
+        .querySelectorAll(
+          ".component-track:not(.resizing) > .time-wrapper .time"
+        )
+        .forEach((track_time) => {
+          if (track_time.offsetParent === null) {
+            // Skip if the track is not visible.
+            return;
+          }
+
+          const { left: track_left, width: track_width } =
+            track_time.getBoundingClientRect();
+          targets.push({ x: track_left });
+          targets.push({ x: track_left + track_width });
+        });
+
+      return targets;
+    },
     onResizableStart() {
+      this.resizing = true;
       this.startHistoryGroup();
     },
     onResizableMove(evt) {
-      const time = evt.target;
-      const time_wrapper = time.parentNode;
+      const time_wrapper = this.$refs["time-wrapper"];
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
-      const { left: deltaLeft, right: deltaRight } = evt.deltaRect;
+      const prop = evt.edges.right ? "end-time" : "start-time";
       const data = {};
 
-      if (evt.edges.right) {
-        data["end-time"] = round(
-          this.component["end-time"] +
-            deltaRight * (this.mediaDuration / wrapper_width),
-          2
-        );
-      } else {
-        data["start-time"] = round(
-          this.component["start-time"] +
-            deltaLeft * (this.mediaDuration / wrapper_width),
-          2
-        );
-      }
+      this.activeSnapTargets = [];
+      evt.modifiers.forEach((modifier) => {
+        if (modifier.inRange) {
+          this.activeSnapTargets.push(modifier.target);
+        }
+      });
+
+      data[prop] = round(
+        this.component[prop] +
+          evt.delta.x * (this.mediaDuration / wrapper_width),
+        2
+      );
 
       this.updateComponent(this.component, data);
     },
     onResizableEnd() {
       this.endHistoryGroup();
+      this.activeSnapTargets = [];
+      this.resizing = false;
     },
     onAnimatedPropertyUpdate(property, value) {
       this.updateComponent(this.component, {
@@ -473,6 +535,22 @@ export default {
       box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
       opacity: 0.5;
 
+      .resize-handle {
+        position: absolute;
+        top: 0;
+        width: 0.25em;
+        height: 100%;
+        background: #fff;
+        z-index: 1;
+
+        &.left {
+          left: 0;
+        }
+        &.right {
+          right: 0;
+        }
+      }
+
       &:focus {
         outline: none;
       }
@@ -481,16 +559,6 @@ export default {
         outline-offset: 0.1em;
         outline-style: dashed;
         outline-width: 1px;
-      }
-
-      .resize-handle {
-        display: none;
-        width: 6px;
-        height: 6px;
-        margin: -3px 0 0;
-        background: #fff;
-        border-radius: 50%;
-        z-index: 1;
       }
     }
   }
@@ -617,6 +685,16 @@ export default {
 
         .resize-handle {
           display: block;
+        }
+      }
+    }
+  }
+
+  &:not(.selected) {
+    > .time-wrapper {
+      .time {
+        .resize-handle {
+          display: none;
         }
       }
     }

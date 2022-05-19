@@ -11,7 +11,7 @@ export default defineStore("app-preview", {
       iframe: null,
       selectedComponents: [],
       lockedComponents: [],
-      snapTargets: [],
+      activeSnapTargets: [],
     };
   },
   getters: {
