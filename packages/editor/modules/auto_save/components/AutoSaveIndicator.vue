@@ -22,9 +22,9 @@ import useStore from "../store";
 
 export default {
   props: {
-    disabled: {
+    enabled: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   setup() {
@@ -32,15 +32,19 @@ export default {
     return { store };
   },
   watch: {
-    disabled(value) {
-      this.store[value ? "unsubscribe" : "subscribe"]();
+    enabled(value) {
+      this.store[value ? "subscribe" : "unsubscribe"]();
     },
   },
   mounted() {
-    this.store.subscribe();
+    if (this.enabled) {
+      this.store.subscribe();
+    }
   },
   beforeUnmount() {
-    this.store.unsubscribe();
+    if (this.enabled) {
+      this.store.unsubscribe();
+    }
   },
   methods: {
     save() {

@@ -18,4 +18,19 @@ export default class AutoSaveModule extends AbstractModule {
     const store = useStore();
     store.configure(configs);
   }
+
+  isDataAvailable() {
+    const store = useStore();
+    return store.isDataAvailable();
+  }
+
+  load() {
+    const store = useStore();
+    return store.load();
+  }
+
+  delete() {
+    const store = useStore();
+    return store.delete();
+  }
 }

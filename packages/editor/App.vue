@@ -3,10 +3,20 @@
   "fr": {
     "loading_indicator_label": "Chargement ...",
     "saving_indicator_label": "Sauvegarde en cours ...",
+    "autosave": {
+      "confirm_text": "Des données d'enregistrement automatique ont été trouvées pour cette application. Souhaitez-vous les récupérer ?",
+      "submit_button": "Oui",
+      "cancel_button": "Non",
+    },
   },
   "en": {
     "loading_indicator_label": "Loading...",
     "saving_indicator_label": "Saving...",
+    "autosave": {
+      "confirm_text": "Auto-save data were found for this application. Would you like to recover them?",
+      "submit_button": "Yes",
+      "cancel_button": "No",
+    },
   },
 }
 </i18n>
@@ -122,7 +132,16 @@
       :text="$t('saving_indicator_label')"
     />
 
-    <auto-save-indicator :disabled="!isLatestRevision" />
+    <confirm-dialog
+      v-if="showAutoSaveRestoreConfirm"
+      :submit-label="$t('autosave.submit_button')"
+      :cancel-label="$t('autosave.cancel_button')"
+      @submit="onAutoSaveRestoreSubmit"
+      @cancel="onAutoSaveRestoreCancel"
+    >
+      <p>{{ $t("autosave.confirm_text") }}</p>
+    </confirm-dialog>
+    <auto-save-indicator v-else :enabled="isLatestRevision" />
 
     <context-menu
       v-model:show="showContextmenu"
@@ -187,6 +206,8 @@ export default {
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
 
+    const { isDataAvailable: isAutoSaveDataAvailable } = useModule("auto_save");
+
     return {
       store,
       getComponentsByType,
@@ -207,6 +228,7 @@ export default {
       mediaSource,
       mediaDuration,
       disableComponentInteractions,
+      isAutoSaveDataAvailable,
     };
   },
   data() {
@@ -216,6 +238,7 @@ export default {
       appTitleFocused: false,
       activeLibrariesTab: 0,
       librariesExpanded: false,
+      showAutoSaveRestoreConfirm: false,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
@@ -293,10 +316,15 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     this.modalsTarget = this.$el;
 
-    this.store.load(this.url);
+    const hasAutoSaveData = await this.isAutoSaveDataAvailable();
+    if (hasAutoSaveData) {
+      this.showAutoSaveRestoreConfirm = true;
+    } else {
+      await this.store.load(this.url);
+    }
   },
   methods: {
     onSaveClick() {
@@ -335,6 +363,16 @@ export default {
     },
     onScnearioManagerDelete({ scenario }) {
       this.deleteComponent(scenario);
+    },
+    onAutoSaveRestoreSubmit() {
+      this.showAutoSaveRestoreConfirm = false;
+      this.store.restoreAutoSaveData();
+    },
+    onAutoSaveRestoreCancel() {
+      this.showAutoSaveRestoreConfirm = false;
+      this.store.deleteAutoSaveData();
+
+      this.store.load(this.url);
     },
     onContextmenu(evt) {
       // Show the native menu if the Ctrl key is down.

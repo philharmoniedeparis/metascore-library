@@ -13,6 +13,7 @@ export default defineStore("auto-save", {
       saving: false,
       lastSave: null,
       timeoutId: null,
+      storeUnsubscribeCallback: null,
     };
   },
   actions: {
@@ -31,23 +32,34 @@ export default defineStore("auto-save", {
       }
 
       const editorStore = useEditorStore();
-      this.storeUnsubscribe = editorStore.$onAction(({ name }) => {
+      this.storeUnsubscribeCallback = editorStore.$onAction(({ name }) => {
         if (!this.timeoutId && name === "setDirty") {
           this.setTimeout();
         }
       });
 
       if (this.configs.deleteOnUnload) {
-        window.addEventListener("unload", this.delete);
+        //window.addEventListener("unload", this.delete);
       }
     },
     unsubscribe() {
       if (this.timeoutId) {
         clearTimeout(this.timeoutId);
+        this.timeoutId = null;
       }
-      if (this.storeUnsubscribe) {
-        this.storeUnsubscribe();
+      if (this.storeUnsubscribeCallback) {
+        this.storeUnsubscribeCallback();
+        this.storeUnsubscribeCallback = null;
       }
+    },
+    isDataAvailable() {
+      return api
+        .head(this.configs.url)
+        .then(() => true)
+        .catch(() => false);
+    },
+    load() {
+      return api.load(this.configs.url);
     },
     save() {
       this.saving = true;

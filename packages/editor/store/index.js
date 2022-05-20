@@ -14,6 +14,7 @@ export default defineStore("editor", {
       latestRevision: null,
       activeRevision: null,
       dirty: new Map(),
+      loadingAutoSaveData: false,
     };
   },
   getters: {
@@ -148,7 +149,7 @@ export default defineStore("editor", {
     async load(url) {
       this.loading = true;
 
-      const data = await api.get(url);
+      const data = await api.load(url);
       await this.setData(data);
 
       this.loading = false;
@@ -182,6 +183,20 @@ export default defineStore("editor", {
         .finally(() => {
           this.saving = false;
         });
+    },
+    async restoreAutoSaveData() {
+      this.loading = true;
+
+      const { load: loadAutoSaveData } = useModule("auto_save");
+      const data = await loadAutoSaveData();
+
+      await this.setData(data);
+
+      this.loading = false;
+    },
+    deleteAutoSaveData() {
+      const { delete: deleteAutoSaveData } = useModule("auto_save");
+      deleteAutoSaveData();
     },
   },
   history(context) {
