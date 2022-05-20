@@ -8,6 +8,7 @@ import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
 import History from "../history";
+import Hotkey from "../hotkey";
 
 import AppPreview from "./components/AppPreview";
 import AppZoomController from "./components/AppZoomController";
@@ -25,6 +26,7 @@ export default class AppPreviewModule extends AbstractModule {
     Clipboard,
     FormControls,
     History,
+    Hotkey,
   ];
 
   constructor({ app }) {

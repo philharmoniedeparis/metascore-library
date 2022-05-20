@@ -1,3 +1,22 @@
+<i18n>
+{
+  "fr": {
+    "hotkey": {
+      "group": "Général",
+      "ctrl+e": "Basculer temporairement le mode de prévisualisation",
+      "ctrl+shift+e": "Basculer le mode de prévisualisation",
+    },
+  },
+  "en": {
+    "hotkey": {
+      "group": "General",
+      "ctrl+e": "Toggle preview mode temporarily",
+      "ctrl+shift+e": "Toggle preview mode",
+    },
+  }
+}
+</i18n>
+
 <template>
   <checkbox-control
     v-model="preview"
@@ -38,11 +57,20 @@ export default {
     },
     hotkeys() {
       return {
-        "ctrl+e": {
-          keydown: this.onHotkey,
-          keyup: this.onHotkey,
+        group: this.$t("hotkey.group"),
+        keys: {
+          "ctrl+e": {
+            handler: {
+              keydown: this.onHotkey,
+              keyup: this.onHotkey,
+            },
+            description: this.$t("hotkey.ctrl+e"),
+          },
+          "ctrl+shift+e": {
+            handler: this.onHotkey,
+            description: this.$t("hotkey.ctrl+shift+e"),
+          },
         },
-        "ctrl+shift+e": this.onHotkey,
       };
     },
   },

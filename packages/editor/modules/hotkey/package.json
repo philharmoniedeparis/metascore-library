@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/hotkey",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "v-hotkey": "https://gitpkg.now.sh/philharmoniedeparis/v-hotkey?next"
+  }
+}

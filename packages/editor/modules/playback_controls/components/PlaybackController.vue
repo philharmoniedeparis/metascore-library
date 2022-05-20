@@ -1,3 +1,20 @@
+<i18n>
+{
+  "fr": {
+    "hotkey": {
+      "group": "Général",
+      "space": "Lancer/arrêter la lecture",
+    },
+  },
+  "en": {
+    "hotkey": {
+      "group": "General",
+      "space": "Play/pause",
+    },
+  }
+}
+</i18n>
+
 <template>
   <div v-hotkey="hotkeys" class="playback-controller">
     <styled-button type="button" class="rewind" @click="onRewindClick">
@@ -43,12 +60,18 @@ export default {
   computed: {
     hotkeys() {
       return {
-        space: () => {
-          if (this.mediaPlaying) {
-            this.pauseMedia();
-          } else {
-            this.playMedia();
-          }
+        group: this.$t("hotkey.group"),
+        keys: {
+          space: {
+            handler: () => {
+              if (this.mediaPlaying) {
+                this.pauseMedia();
+              } else {
+                this.playMedia();
+              }
+            },
+            description: this.$t("hotkey.space"),
+          },
         },
       };
     },

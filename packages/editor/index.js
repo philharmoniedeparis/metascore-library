@@ -3,7 +3,6 @@ import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createI18n } from "vue-i18n";
-import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import {
@@ -20,6 +19,7 @@ import Confirm from "@metascore-library/core/modules/confirm";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
+import Hotkey from "./modules/hotkey";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
@@ -45,7 +45,7 @@ export class Editor {
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
 
     const events = new Emitter();
-    const app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);
+    const app = createApp(App, { url }).use(pinia).use(i18n);
 
     // See https://github.com/vuejs/core/pull/5474
     app.config.skipEventsTimestampCheck = true;
@@ -67,6 +67,7 @@ export class Editor {
         ContextMenu,
         FormControls,
         History,
+        Hotkey,
         MediaPlayer,
         MediaSelector,
         PlaybackControls,

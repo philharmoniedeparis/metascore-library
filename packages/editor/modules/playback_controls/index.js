@@ -3,12 +3,13 @@ import PlaybackController from "./components/PlaybackController";
 import PlaybackTime from "./components/PlaybackTime";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import FormControls from "../form_controls";
+import Hotkey from "../hotkey";
 import StyledButton from "@metascore-library/core/modules/styled_button";
 
 export default class PlaybackControlsModule extends AbstractModule {
   static id = "playback_controls";
 
-  static dependencies = [MediaPlayer, FormControls, StyledButton];
+  static dependencies = [MediaPlayer, FormControls, Hotkey, StyledButton];
 
   constructor({ app }) {
     super(arguments);

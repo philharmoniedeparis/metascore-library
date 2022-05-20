@@ -4,6 +4,11 @@
     "opacity": "Opacité",
     "scale": "Échelle",
     "translate": "Translation",
+    "hotkey": {
+      "group": "Timeline",
+      "delete": "Supprimer le(s) composant(s) sélectionné(s)",
+      "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
+    },
     "contextmenu": {
       "keyframe": {
         "delete": "Supprimer",
@@ -14,6 +19,11 @@
     "opacity": "Opacity",
     "scale": "Scale",
     "translate": "Translation",
+    "hotkey": {
+      "group": "Timeline",
+      "delete": "Delete selected component(s)",
+      "backspace": "Delete selected component(s)",
+    },
     "contextmenu": {
       "keyframe": {
         "delete": "Delete",
@@ -107,8 +117,17 @@ export default {
     },
     hotkeys() {
       return {
-        delete: this.deleteSelectedKeyframe,
-        backspace: this.deleteSelectedKeyframe,
+        group: this.$t("hotkey.group"),
+        keys: {
+          delete: {
+            handler: this.deleteSelectedKeyframe,
+            description: this.$t("hotkey.delete"),
+          },
+          backspace: {
+            handler: this.deleteSelectedKeyframe,
+            description: this.$t("hotkey.backspace"),
+          },
+        },
       };
     },
   },
