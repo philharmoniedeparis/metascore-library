@@ -10,6 +10,7 @@
       "@metascore-library/player/*": ["./packages/player/*"],
       "@metascore-library/editor/*": ["./packages/editor/*"],
     },
+    "jsx": "preserve",
     "lib": [
       "esnext",
       "dom",
