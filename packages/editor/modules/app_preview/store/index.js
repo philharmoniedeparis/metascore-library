@@ -250,7 +250,7 @@ export default defineStore("app-preview", {
           return;
         }
 
-        const position = component.position;
+        const position = [...component.position];
         if (left) {
           position[0] += left;
         }
