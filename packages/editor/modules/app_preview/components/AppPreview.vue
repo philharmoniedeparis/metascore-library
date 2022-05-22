@@ -6,6 +6,21 @@
       "right": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers la droite",
       "shift+right": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers la droite",
       "left": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers la gauche",
+      "shift+left": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers la gauche",
+      "up": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le haut",
+      "shift+up": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
+      "down": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le bas",
+      "shift+down": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le bas",
+      "ctrl+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n'est déjà sélectionné",
+      "tab": "Sélectionner le composant suivant",
+      "shift+tab": "Sélectionner le composant précédent",
+      "ctrl+c": "Copier le(s) composant(s) sélectionné(s)",
+      "ctrl+v": "Coller le(s) composant(s)",
+      "ctrl+x": "Couper le(s) composant(s) sélectionné(s)",
+      "ctrl+d": "Dupliquer le(s) composant(s) sélectionné(s)",
+      "ctrl+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
+      "delete": "Supprimer le(s) composant(s) sélectionné(s)",
+      "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
     },
     "contextmenu": {
       "selection": "Sélection",
@@ -22,6 +37,21 @@
       "right": "Move selected component(s) by 1 pixel to the right",
       "shift+right": "Move selected component(s) by 10 pixel to the right",
       "left": "Move selected component(s) by 1 pixel to the left",
+      "shift+left": "Move selected component(s) by 10 pixels to the left",
+      "up": "Move selected component(s) by 1 pixels upwards",
+      "shift+up": "Move selected component(s) by 10 pixels upwards",
+      "down": "Move selected component(s) by 1 pixel downwards",
+      "shift+down": "Move selected component(s) by 10 pixels downwards",
+      "ctrl+a": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
+      "tab": "Select the next component",
+      "shift+tab": "Select the previous component",
+      "ctrl+c": "Copy selected component(s)",
+      "ctrl+v": "Paste component(s)",
+      "ctrl+x": "Cut selected component(s)",
+      "ctrl+d": "Duplicate selected component(s)",
+      "ctrl+l": "Lock/unlock selected component(s)",
+      "delete": "Delete selected component(s)",
+      "backspace": "Delete selected component(s)",
     },
     "contextmenu": {
       "selection": "Selection",
@@ -195,73 +225,73 @@ export default {
               const selected = this.store.getSelectedComponents;
               this.store.moveComponents(selected, { left: -10 });
             },
-            description: "test",
+            description: this.$t("hotkey.shift+left"),
           },
           up: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.moveComponents(selected, { top: -1 });
             },
-            description: "test",
+            description: this.$t("hotkey.up"),
           },
           "shift+up": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.moveComponents(selected, { top: -10 });
             },
-            description: "test",
+            description: this.$t("hotkey.shift+up"),
           },
           down: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.moveComponents(selected, { top: 1 });
             },
-            description: "test",
+            description: this.$t("hotkey.down"),
           },
           "shift+down": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.moveComponents(selected, { top: 10 });
             },
-            description: "test",
+            description: this.$t("hotkey.shift+down"),
           },
           tab: {
             handler: () => {
               this.store.moveComponentSelection();
             },
-            description: "test",
+            description: this.$t("hotkey.tab"),
           },
           "shift+tab": {
             handler: () => {
               this.store.moveComponentSelection(true);
             },
-            description: "test",
+            description: this.$t("hotkey.shift+tab"),
           },
           "ctrl+c": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.copyComponents(selected);
             },
-            description: "test",
+            description: this.$t("hotkey.ctrl+c"),
           },
           "ctrl+v": {
             handler: () => {
               // @todo
             },
-            description: "test",
+            description: this.$t("hotkey.ctrl+v"),
           },
           "ctrl+x": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               this.store.cutComponents(selected);
             },
-            description: "test",
+            description: this.$t("hotkey.ctrl+x"),
           },
           "ctrl+d": {
             handler: () => {
               // @todo
             },
-            description: "test",
+            description: this.$t("hotkey.ctrl+d"),
           },
           "ctrl+l": {
             handler: () => {
@@ -272,21 +302,21 @@ export default {
                 this.store[`${locked ? "un" : ""}lockComponents`](selected);
               }
             },
-            description: "test",
+            description: this.$t("hotkey.ctrl+l"),
           },
           delete: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               selected.forEach(this.deleteComponent);
             },
-            description: "test",
+            description: this.$t("hotkey.delete"),
           },
           backspace: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
               selected.forEach(this.deleteComponent);
             },
-            description: "test",
+            description: this.$t("hotkey.backspace"),
           },
         },
       };

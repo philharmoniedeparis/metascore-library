@@ -19,8 +19,6 @@ export default defineStore("hotkey", {
     addCombination(group, combination, description) {
       this.addGroup(group);
       this.hotkeys.get(group).set(combination, description);
-
-      console.log(this.hotkeys);
     },
     removeCombination(group, combination) {
       if (this.hotkeys.has(group)) {

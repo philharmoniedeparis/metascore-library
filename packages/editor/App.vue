@@ -8,6 +8,10 @@
       "submit_button": "Oui",
       "cancel_button": "Non",
     },
+    "hotkey": {
+      "group": "Général",
+      "ctrl+h": "Afficher les raccourcis clavier",
+    },
   },
   "en": {
     "loading_indicator_label": "Loading...",
@@ -17,12 +21,17 @@
       "submit_button": "Yes",
       "cancel_button": "No",
     },
+    "hotkey": {
+      "group": "Général",
+      "ctrl+h": "Show keyboard shortcuts",
+    },
   },
 }
 </i18n>
 
 <template>
   <div
+    v-hotkey="hotkeys"
     :class="[
       'metaScore-editor',
       {
@@ -143,6 +152,8 @@
     </confirm-dialog>
     <auto-save-indicator v-else :enabled="isLatestRevision" />
 
+    <hotkey-list v-if="showHotkeyList" @close="showHotkeyList = false" />
+
     <context-menu
       v-model:show="showContextmenu"
       :position="contextmenuPosition"
@@ -239,6 +250,7 @@ export default {
       activeLibrariesTab: 0,
       librariesExpanded: false,
       showAutoSaveRestoreConfirm: false,
+      showHotkeyList: false,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
@@ -295,6 +307,20 @@ export default {
     },
     isLatestRevision() {
       return this.activeRevision === this.latestRevision;
+    },
+    hotkeys() {
+      return {
+        group: this.$t("hotkey.group"),
+        keys: {
+          // @todo: fix hotkeys code handling for ?
+          "ctrl+h": {
+            handler: () => {
+              this.showHotkeyList = true;
+            },
+            description: this.$t("hotkey.?"),
+          },
+        },
+      };
     },
   },
   watch: {
