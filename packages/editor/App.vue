@@ -317,7 +317,7 @@ export default {
             handler: () => {
               this.showHotkeyList = true;
             },
-            description: this.$t("hotkey.?"),
+            description: this.$t("hotkey.ctrl+h"),
           },
         },
       };

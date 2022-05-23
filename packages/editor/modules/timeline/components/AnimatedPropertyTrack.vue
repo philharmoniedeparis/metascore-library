@@ -63,7 +63,7 @@
         tabindex="0"
         @click.stop="onKeyframeClick(keyframe)"
         @contextmenu="onKeyframeContextmenu(keyframe)"
-      />
+      ></div>
     </div>
   </div>
 </template>

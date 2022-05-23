@@ -134,7 +134,7 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue", "focus", "blur"],
+  emits: ["update:modelValue", "focus", "blur", "valuein", "valueout"],
   data() {
     return {
       keysPressed: 0,
@@ -315,10 +315,10 @@ export default {
       this.value = null;
     },
     onInClick() {
-      this.$emits("valuein");
+      this.$emit("valuein");
     },
     onOutClick() {
-      this.emits("valueout", { value: this.value });
+      this.$emit("valueout", { value: this.value });
     },
 
     /**
