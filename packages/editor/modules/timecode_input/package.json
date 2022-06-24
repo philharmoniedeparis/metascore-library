@@ -3,7 +3,6 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "lodash": "^4.17.21",
-    "to-regex-range": "^5.0.1"
+    "lodash": "^4.17.21"
   }
 }

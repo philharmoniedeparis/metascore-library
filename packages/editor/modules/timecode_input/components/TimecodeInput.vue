@@ -2,7 +2,7 @@
   <div class="timecode-input" @focusin="onFocus" @focusout="onBlur">
     <input
       ref="input"
-      v-model="textualvalue"
+      v-model="textualValue"
       type="text"
       :readonly="readonly"
       :disabled="disabled"
@@ -49,8 +49,7 @@
 </template>
 
 <script>
-import toRegexRange from "to-regex-range";
-import { padStart, round, isNaN } from "lodash";
+import { padStart, round, toNumber } from "lodash";
 import ClearIcon from "../assets/icons/clear.svg?inline";
 import InIcon from "../assets/icons/in.svg?inline";
 import OutIcon from "../assets/icons/out.svg?inline";
@@ -83,24 +82,28 @@ export default {
             multiplier: 3600,
             max: 99,
             prefix: "",
+            regex: "[–0-9]{1,2}",
           },
           {
             name: "minutes",
             multiplier: 60,
             max: 59,
             prefix: ":",
+            regex: "[–0-5]?[–0-9]",
           },
           {
             name: "seconds",
             multiplier: 1,
             max: 59,
             prefix: ":",
+            regex: "[–0-5]?[–0-9]",
           },
           {
             name: "centiseconds",
             multiplier: 0.01,
             max: 99,
             prefix: ".",
+            regex: "[–0-9]{1,2}",
           },
         ];
       },
@@ -144,6 +147,11 @@ export default {
        */
       focusedSegment: null,
       /**
+       * Whether to skip setting the focused segment on focus
+       * @type {Boolean}
+       */
+      skipFocus: false,
+      /**
        * Whether an input occured but the current value has not yet been updated
        * @type {Boolean}
        */
@@ -152,16 +160,15 @@ export default {
   },
   computed: {
     regexp() {
-      let regexp = "";
-
-      this.segments.forEach((segment) => {
-        const rangeRegex = toRegexRange(0, segment.max);
-        regexp += `${segment.prefix}(${this.placeholder}|${rangeRegex})`;
-      });
+      let regexp = this.segments
+        .map((s) => {
+          return `${s.prefix}(${s.regex})`;
+        })
+        .join("");
 
       return new RegExp(`^${regexp}$`);
     },
-    textualvalue: {
+    textualValue: {
       get() {
         return this.getTextualValue(this.modelValue);
       },
@@ -194,7 +201,7 @@ export default {
     focusedSegment() {
       this.updateSelection();
     },
-    textualvalue() {
+    textualValue() {
       this.updateSelection();
     },
   },
@@ -208,12 +215,19 @@ export default {
         }
       }
     },
+    onMousedown() {
+      this.skipFocus = true;
+    },
     onClick() {
-      const caretPosition = this.getCaretPosition();
-      this.focusedSegment = Math.floor(caretPosition / 3);
+      const caret_position = this.getCaretPosition();
+      this.focusedSegment = Math.floor(caret_position / 3);
+      this.skipFocus = false;
     },
     onFocus() {
-      this.focusedSegment = 0;
+      this.keysPressed = 0;
+      if (!this.skipFocus) {
+        this.focusedSegment = 0;
+      }
       this.$emit("focus");
     },
     onBlur() {
@@ -275,7 +289,7 @@ export default {
       }
     },
     onKeypress(evt) {
-      if (!isNaN(evt.key)) {
+      if (!isNaN(toNumber(evt.key))) {
         // Numeric key
         if (this.focusedSegment < this.segments.length) {
           let segment_value = parseInt(
@@ -291,7 +305,7 @@ export default {
 
           segment_value = padStart(
             Math.min(
-              this.segments[this.focusedSegment].max_value,
+              this.segments[this.focusedSegment].max,
               parseInt(segment_value, 10)
             ),
             2,
@@ -363,8 +377,7 @@ export default {
      * @return {String} The segment's value
      */
     getSegmentValue(index) {
-      const textual_value = this.textualvalue;
-      const matches = textual_value.match(this.regexp);
+      const matches = this.textualValue.match(this.regexp);
 
       if (matches) {
         matches.shift();
@@ -379,7 +392,7 @@ export default {
      * @param {String} value The segment's value
      */
     setSegmentValue(index, value) {
-      let textual_value = this.textualvalue;
+      let textual_value = this.textualValue;
       const matches = textual_value.match(this.regexp);
 
       if (matches) {
@@ -390,10 +403,9 @@ export default {
           textual_value += this.segments[i].prefix;
           textual_value +=
             i === index ? value : matches[i] === "––" ? "00" : matches[i];
-          textual_value += this.segments[i].suffix;
         });
 
-        this.$refs.input.value = textual_value;
+        this.textualValue = textual_value;
 
         this.dirty = true;
       }

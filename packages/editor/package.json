@@ -5,7 +5,7 @@
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",
     "pinia": "^2.0.11",
-    "source-sans": "github:adobe-fonts/source-sans",
+    "source-sans": "github:adobe-fonts/source-sans#3.046R",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.31",
     "vue-i18n": "^9.1.9"
