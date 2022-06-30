@@ -140,11 +140,7 @@ export default {
         return;
       }
 
-      const { default: Lottie } = await import(
-        /* webpackChunkName: "vendors.lottie.js" */
-        /* webpackExports: ["default"] */
-        "lottie-web"
-      );
+      const { default: Lottie } = await import("lottie-web");
 
       this.animation = Lottie.loadAnimation({
         container: this.$refs["animation-wrapper"],

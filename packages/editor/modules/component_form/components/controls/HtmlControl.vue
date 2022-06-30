@@ -110,10 +110,7 @@ export default {
     async setupEditor() {
       this.setting_up_editor = true;
 
-      const { Editor, getConfig } = await import(
-        /* webpackChunkName: "vendors.ckeditor.js" */
-        "../../ckeditor"
-      );
+      const { Editor, getConfig } = await import("../../ckeditor");
 
       const config = getConfig({
         language: this.$i18n.locale,

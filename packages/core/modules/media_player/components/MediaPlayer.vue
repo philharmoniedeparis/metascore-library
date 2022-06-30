@@ -158,11 +158,7 @@ export default {
       switch (type) {
         case "dashjs":
           {
-            const { MediaPlayer: DashJSMediaPlayer } = await import(
-              /* webpackChunkName: "vendors.dashjs" */
-              /* webpackExports: ["MediaPlayer"] */
-              "dashjs"
-            );
+            const { MediaPlayer: DashJSMediaPlayer } = await import("dashjs");
             this.dash = DashJSMediaPlayer().create();
             this.dash.initialize(this.$el, url, true);
           }
@@ -170,11 +166,7 @@ export default {
 
         case "hls.js":
           {
-            const { default: Hls } = await import(
-              /* webpackChunkName: "vendors.hls.js" */
-              /* webpackExports: ["default"] */
-              "hls.js"
-            );
+            const { default: Hls } = await import("hls.js");
             if (Hls.isSupported()) {
               this.hls = new Hls();
               this.hls.loadSource(url);
