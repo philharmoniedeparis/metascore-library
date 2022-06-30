@@ -125,7 +125,7 @@ export default {
   data() {
     return {
       inputId: uuid(),
-      internalValue: null,
+      internalValue: this.modelValue,
       showOverlay: false,
       overlayStyle: null,
       overlayUpdateCleanup: null,
@@ -154,9 +154,6 @@ export default {
         this.overlayUpdateCleanup = null;
       }
     },
-  },
-  mounted() {
-    this.internalValue = this.modelValue;
   },
   methods: {
     isArray,

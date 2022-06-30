@@ -1,6 +1,11 @@
 <i18n>
 {
   "fr": {
+    "components_library_title": "Composants",
+    "assets_library_title": "Bibliothèque",
+    "shared_assets_library_title": "Bibliothèque partagée",
+    "component_form_title": "Attributs",
+    "behaviors_form_title": "Comportements",
     "loading_indicator_label": "Chargement ...",
     "saving_indicator_label": "Sauvegarde en cours ...",
     "autosave": {
@@ -14,6 +19,11 @@
     },
   },
   "en": {
+    "components_library_title": "Components",
+    "assets_library_title": "Library",
+    "shared_assets_library_title": "Shared Library",
+    "component_form_title": "Attributes",
+    "behaviors_form_title": "Behaviors",
     "loading_indicator_label": "Loading...",
     "saving_indicator_label": "Saving...",
     "autosave": {
@@ -80,14 +90,16 @@
 
     <resizable-pane class="left" :right="{ collapse: true }">
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
-        <tabs-item title="Components"><components-library /></tabs-item>
-        <tabs-item title="Library">
+        <tabs-item :title="$t('components_library_title')">
+          <components-library />
+        </tabs-item>
+        <tabs-item :title="$t('assets_library_title')">
           <assets-library />
         </tabs-item>
-        <tabs-item title="Shared Library">
+        <tabs-item :title="$t('shared_assets_library_title')">
           <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
-        <template v-if="activeLibrariesTab === 2" #tabs-right>
+        <template v-if="activeLibrariesTab === 2" #tabs-end>
           <keep-alive>
             <shared-assets-toolbar />
           </keep-alive>
@@ -102,10 +114,17 @@
     </resizable-pane>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <component-form
-        :images="imageAssets"
-        :first-level-components="firstLevelComponents"
-      ></component-form>
+      <tabs-container>
+        <tabs-item :title="$t('component_form_title')">
+          <component-form
+            :images="imageAssets"
+            :first-level-components="firstLevelComponents"
+          ></component-form>
+        </tabs-item>
+        <tabs-item :title="$t('behaviors_form_title')">
+          <behaviors-form></behaviors-form>
+        </tabs-item>
+      </tabs-container>
     </resizable-pane>
 
     <resizable-pane class="bottom" :top="{ collapse: true }">

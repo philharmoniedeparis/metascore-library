@@ -1,6 +1,7 @@
 <i18n>
 {
   "fr": {
+    "title": "Attributs",
     "name": "Nom",
     "hidden": "Caché au démarrage",
     "background-color": "Couleur de fond",
@@ -15,35 +16,35 @@
     "translate": "Translation",
     "scale": "Échelle",
     "AbstractComponent": {
-      "title": "Composant | {count} Composants"
+      "title": "Attributs du composant | Attributs de {count} composants"
     },
     "EmbeddableComponent": {
-      "title": "Composant | {count} Composants"
+      "title": "Attributs du composant | Attributs de {count} composants"
     },
     "Animation": {
-      "title": "Animation | {count} Animations",
+      "title": "Attributs de l'animation | Attributs de {count} animations",
       "start-frame": "Image de départ",
       "loop-duration": "Durée d'un boucle",
       "reversed": "Inversé",
       "colors": "Couleurs",
     },
     "Block": {
-      "title": "Bloc | {count} Blocs",
+      "title": "Attributs du bloc | Attributs de {count} blocs",
       "pager-visibility": "Visibilité du tourne page",
     },
     "BlockToggler": {
-      "title": "Contrôleur de blocs | {count} Contrôleurs de blocs",
+      "title": "Attributs du contrôleur de blocs | Attributs de {count} contrôleurs de blocs",
       "blocks": "Blocs",
     },
     "Content": {
-      "title": "Texte | {count} Textes",
+      "title": "Attributs du texte | Attributs de {count} textes",
       "text": "Éditer le contenu",
     },
     "Controller": {
-      "title": "Contrôleur | {count} Contrôleurs",
+      "title": "Attributs du contrôleur | Attributs de {count} contrôleurs",
     },
     "Cursor": {
-      "title": "Curseur | {count} Curseurs",
+      "title": "Attributs du curseur | Attributs de {count} curseurs",
       "form": "Forme",
       "direction": "Direction",
       "acceleration": "Accélération",
@@ -54,16 +55,16 @@
       "cursor-color": "Couleur du curseur",
     },
     "Media": {
-      "title": "Média",
+      "title": "Attributs du média | Attributs de {count} média",
     },
     "Page": {
-      "title": "Page {index}/{total} | {count} Pages",
+      "title": "Attributs de la page {index}/{total} | Attributs de {count} pages",
     },
     "Scenario": {
-      "title": "Scénario | {count} Scénarios",
+      "title": "Attributs du scénario | Attributs de {count} scénarios",
     },
     "SVG": {
-      "title": "SVG | {count} SVGs",
+      "title": "Attributs du SVG | Attributs de {count} SVGs",
       "colors": "Couleurs",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
@@ -74,10 +75,11 @@
       "marker-end": "Marqueur de fin",
     },
     "VideoRenderer": {
-      "title": "Rendu vidéo | {count} Rendus vidéo",
+      "title": "Attributs du rendu vidéo | Attributs de {count} rendus vidéo",
     },
   },
   "en": {
+    "title": "Attributes",
     "name": "Name",
     "hidden": "Hidden on start",
     "background-color": "Background color",
@@ -92,35 +94,35 @@
     "translate": "Translation",
     "scale": "Scale",
     "AbstractComponent": {
-      "title": "Component | {count} Components"
+      "title": "Attributes of component | Attributes of {count} components"
     },
     "EmbeddableComponent": {
-      "title": "Component | {count} Components"
+      "title": "Attributes of component | Attributes of {count} components"
     },
     "Animation": {
-      "title": "Animation | {count} Animations",
+      "title": "Attributes of animation | Attributes of {count} animations",
       "start-frame": "Start frame",
       "loop-duration": "Loop duration",
       "reversed": "Reversed",
       "colors": "Colors",
     },
     "Block": {
-      "title": "Block | {count} Blocks",
+      "title": "Attributes of block | Attributes of {count} blocks",
       "pager-visibility": "Pager visibility",
     },
     "BlockToggler": {
-      "title": "Block toggler | {count} Block togglers",
+      "title": "Attributes of block toggler | Attributes of {count} block togglers",
       "blocks": "Blocks",
     },
     "Content": {
-      "title": "Text | {count} Texts",
+      "title": "Attributes of text | Attributes of {count} texts",
       "text": "Edit the content",
     },
     "Controller": {
-      "title": "Controller | {count} Controllers",
+      "title": "Attributes of controller | Attributes of {count} controllers",
     },
     "Cursor": {
-      "title": "Cursor | {count} Cursors",
+      "title": "Attributes of cursor | Attributes of {count} cursors",
       "form": "Form",
       "direction": "Direction",
       "acceleration": "Acceleration",
@@ -131,16 +133,16 @@
       "cursor-color": "Cursor color",
     },
     "Media": {
-      "title": "Media | {count} Media",
+      "title": "Attributes of media | Attributes of {count} media",
     },
     "Page": {
-      "title": "Page {index}/{total} | {count} Pages",
+      "title": "Attributes of page {index}/{total} | Attributes of {count} pages",
     },
     "Scenario": {
-      "title": "Scenario | {count} Scenarios",
+      "title": "Attributes of scenario | Attributes of {count} scenarios",
     },
     "SVG": {
-      "title": "SVG | {count} SVGs",
+      "title": "Attributes of SVG | Attributes of {count} SVGs",
       "stroke": "Stroke color",
       "stroke-width": "Stroke width",
       "stroke-dasharray": "Stroke style",
@@ -151,7 +153,7 @@
       "colors": "Colors",
     },
     "VideoRenderer": {
-      "title": "Video Renderer | {count} Video Renderers",
+      "title": "Attributes of video renderer | Attributes of {count} video renderers",
     },
   },
 }
@@ -231,6 +233,10 @@ export default {
       return models[0];
     },
     title() {
+      if (!this.commonModel) {
+        return this.$t("title");
+      }
+
       const count = this.selectedComponentsCount;
 
       if (count === 1 && this.commonModel.type === "Page") {
@@ -508,6 +514,11 @@ export default {
     },
     editingTextContent() {
       return this.store.editingTextContent;
+    },
+  },
+  watch: {
+    title(value) {
+      this.store.title = value;
     },
   },
   methods: {

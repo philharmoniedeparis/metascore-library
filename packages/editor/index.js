@@ -12,6 +12,7 @@ import {
 import Ajax from "@metascore-library/core/modules/ajax";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
+import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
@@ -60,6 +61,7 @@ export class Editor {
         Ajax,
         AssetsLibrary,
         AutoSave,
+        BehaviorsForm,
         BufferIndicator,
         ComponentForm,
         ComponentsLibrary,

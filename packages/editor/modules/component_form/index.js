@@ -47,6 +47,12 @@ export default class ComponentFormModule extends AbstractModule {
     store.configure(configs);
   }
 
+  get title() {
+    const store = useStore();
+    const { title } = storeToRefs(store);
+    return readonly(title);
+  }
+
   get recordingCursorKeyframes() {
     const store = useStore();
     const { recordingCursorKeyframes } = storeToRefs(store);
