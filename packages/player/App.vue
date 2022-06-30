@@ -82,7 +82,6 @@ export default {
   },
   mounted() {
     this.modalsTarget = this.$el;
-    console.log(this.$el);
     this.store.load(this.url);
   },
   methods: {
