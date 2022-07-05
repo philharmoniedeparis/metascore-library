@@ -153,11 +153,7 @@ export default {
         return;
       }
 
-      const { default: Hammer } = await import(
-        /* webpackChunkName: "vendors.hammerjs" */
-        /* webpackExports: ["default"] */
-        "hammerjs"
-      );
+      const { default: Hammer } = await import("hammerjs");
 
       new Hammer.Manager(this.$refs.pages, {
         recognizers: [

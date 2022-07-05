@@ -3,7 +3,7 @@
     <media-player v-if="mediaSource" :source="mediaSource" type="video" />
     <template v-for="scenario in scenarios" :key="scenario.id">
       <scenario-component
-        v-show="scenario.id === activeScenario"
+        v-if="scenario.id === activeScenario"
         :component="scenario"
         @action="onComponentAction"
       />
@@ -33,6 +33,7 @@ export default {
       getComponent,
       getComponentsByType,
       activeScenario,
+      setActiveScenario,
       showComponent,
       hideComponent,
       toggleComponent,
@@ -55,6 +56,7 @@ export default {
       getComponent,
       getComponentsByType,
       activeScenario,
+      setActiveScenario,
       showComponent,
       hideComponent,
       toggleComponent,

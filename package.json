@@ -5,8 +5,8 @@
   "scripts": {
     "postinstall": "patch-package",
     "serve": "vue-cli-service serve --target lib --inline-vue",
-    "build": "vue-cli-service build --target lib --inline-vue",
-    "develop": "vue-cli-service build --target lib --inline-vue --watch",
+    "build": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue",
+    "develop": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue --watch",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },

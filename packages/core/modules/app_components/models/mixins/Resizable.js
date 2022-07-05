@@ -16,10 +16,10 @@ export default Mixin(
               default: [50, 50],
               items: [
                 createIntegerField({
-                  minimum: 10,
+                  minimum: 1,
                 }),
                 createIntegerField({
-                  minimum: 10,
+                  minimum: 1,
                 }),
               ],
             }),
