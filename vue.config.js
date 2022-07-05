@@ -65,43 +65,44 @@ module.exports = defineConfig({
       .filename("[name].js");
 
     // Split vendors to separate chunks.
-    config.optimization.splitChunks({
-      ...config.optimization.get("splitChunks"),
-      cacheGroups: {
-        lottie: {
-          test: /lottie-web/,
-          name: "lottie",
-          chunks: "async",
-          enforce: true,
-          filename: "metaScore.vendors.[name].js",
-        },
-        hammerjs: {
-          test: /hammerjs/,
-          name: "hammerjs",
-          chunks: "async",
-          enforce: true,
-          filename: "metaScore.vendors.[name].js",
-        },
-        dashjs: {
-          test: /dashjs/,
-          name: "dashjs",
-          chunks: "async",
-          enforce: true,
-          filename: "metaScore.vendors.[name].js",
-        },
-        hlsjs: {
-          test: /hls\.js/,
-          name: "hlsjs",
-          chunks: "async",
-          enforce: true,
-          filename: "metaScore.vendors.[name].js",
-        },
-        ckeditor: {
-          test: /ckeditor/,
-          name: "ckeditor",
-          chunks: "async",
-          enforce: true,
-          filename: "metaScore.vendors.[name].js",
+    config.optimization.merge({
+      splitChunks: {
+        cacheGroups: {
+          lottie: {
+            test: /lottie-web/,
+            name: "lottie",
+            chunks: "async",
+            enforce: true,
+            filename: "metaScore.vendors.[name].js",
+          },
+          hammerjs: {
+            test: /hammerjs/,
+            name: "hammerjs",
+            chunks: "async",
+            enforce: true,
+            filename: "metaScore.vendors.[name].js",
+          },
+          dashjs: {
+            test: /dashjs/,
+            name: "dashjs",
+            chunks: "async",
+            enforce: true,
+            filename: "metaScore.vendors.[name].js",
+          },
+          hlsjs: {
+            test: /hls\.js/,
+            name: "hlsjs",
+            chunks: "async",
+            enforce: true,
+            filename: "metaScore.vendors.[name].js",
+          },
+          ckeditor: {
+            test: /ckeditor/,
+            name: "ckeditor",
+            chunks: "async",
+            enforce: true,
+            filename: "metaScore.vendors.[name].js",
+          },
         },
       },
     });
