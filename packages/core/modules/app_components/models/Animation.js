@@ -123,8 +123,10 @@ export class Animation extends EmbeddableComponent {
         const colors = [];
         ["color1", "color2"].forEach((c) => {
           const path = container.querySelector(`.${c} path`);
-          const style = getComputedStyle(path);
-          colors.push(style.fill);
+          if (path) {
+            const style = getComputedStyle(path);
+            colors.push(style.fill);
+          }
         });
         if (colors.length > 0) {
           data.colors = colors;
