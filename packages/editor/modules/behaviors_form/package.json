@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "blockly": "^8.0.3",
     "lodash": "^4.17.21"
   }
 }

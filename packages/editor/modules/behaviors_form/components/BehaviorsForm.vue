@@ -1,41 +1,12 @@
-<i18n>
-{
-  "fr": {
-    "triggers_title": "Déclencheurs",
-    "conditions_title": "Conditions et opérateurs",
-    "actions_title": "Actions",
-    "variables_title": "Variables",
-  },
-  "en": {
-    "triggers_title": "Triggers",
-    "conditions_title": "Conditions and operators",
-    "actions_title": "Actions",
-    "variables_title": "Variables",
-  }
-}
-</i18n>
-
 <template>
   <div class="behaviors-form">
-    <collapsible-panel :expanded="true">
-      <template #title>{{ $t("triggers_title") }}</template>
-    </collapsible-panel>
-
-    <collapsible-panel :expanded="true">
-      <template #title>{{ $t("conditions_title") }}</template>
-    </collapsible-panel>
-
-    <collapsible-panel :expanded="true">
-      <template #title>{{ $t("actions_title") }}</template>
-    </collapsible-panel>
-
-    <collapsible-panel :expanded="true">
-      <template #title>{{ $t("variables_title") }}</template>
-    </collapsible-panel>
+    <div ref="blockly" class="blockly"></div>
   </div>
 </template>
 
 <script>
+import * as Blockly from "blockly/core";
+import "blockly/blocks";
 import useStore from "../store";
 
 export default {
@@ -46,20 +17,98 @@ export default {
       store,
     };
   },
+  data() {
+    return {
+      workspace: null,
+    };
+  },
   computed: {},
+  async mounted() {
+    // Import the locale.
+    const locale = this.$i18n.locale;
+    const { default: blocklyLocale } = await import(
+      /* webpackInclude: /(en|fr)\.js/ */
+      /* webpackMode: "lazy" */
+      /* webpackChunkName: "blockly-locale-[request]" */
+      `blockly/msg/${locale}`
+    );
+
+    Blockly.setLocale(blocklyLocale);
+
+    this.workspace = Blockly.inject(this.$refs.blockly, {
+      toolbox: {
+        kind: "categoryToolbox",
+        contents: [
+          {
+            kind: "category",
+            name: "Control",
+            contents: [
+              {
+                kind: "block",
+                type: "controls_if",
+              },
+            ],
+          },
+          {
+            kind: "category",
+            name: "Logic",
+            contents: [
+              {
+                kind: "block",
+                type: "logic_compare",
+              },
+              {
+                kind: "block",
+                type: "logic_operation",
+              },
+              {
+                kind: "block",
+                type: "logic_boolean",
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    this.workspace.addChangeListener(this.onWorkspaceChange);
+
+    this._resize_observer = new ResizeObserver(this.updateSize);
+    this._resize_observer.observe(this.$el);
+    this.updateSize();
+  },
+  beforeUnmount() {
+    this.workspace.removeChangeListener(this.onWorkspaceChange);
+
+    if (this._resize_observer) {
+      this._resize_observer.disconnect();
+      delete this._resize_observer;
+    }
+  },
+  methods: {
+    onWorkspaceChange() {
+      console.log(Blockly.serialization.workspaces.save(this.workspace));
+    },
+    updateSize() {
+      Blockly.svgResize(this.workspace);
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .behaviors-form {
-  display: flex;
+  position: relative;
   height: 100%;
-  flex-direction: column;
-  gap: 0.75em;
-  padding: 0.5em;
   background: $lightgray;
-  overflow-x: hidden;
-  overflow-y: auto;
   color: $white;
+}
+
+.blockly {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
