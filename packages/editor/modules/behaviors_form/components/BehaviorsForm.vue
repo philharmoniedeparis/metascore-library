@@ -6,6 +6,7 @@
 
 <script>
 import * as Blockly from "blockly/core";
+import Theme from "../blockly/theme";
 import "blockly/blocks";
 import useStore from "../store";
 
@@ -36,23 +37,25 @@ export default {
     Blockly.setLocale(blocklyLocale);
 
     this.workspace = Blockly.inject(this.$refs.blockly, {
+      theme: Theme,
       toolbox: {
         kind: "categoryToolbox",
         contents: [
           {
             kind: "category",
-            name: "Control",
+            name: "Triggers",
+            categorystyle: "triggers",
+            contents: [],
+          },
+          {
+            kind: "category",
+            name: "Logic",
+            categorystyle: "logic",
             contents: [
               {
                 kind: "block",
                 type: "controls_if",
               },
-            ],
-          },
-          {
-            kind: "category",
-            name: "Logic",
-            contents: [
               {
                 kind: "block",
                 type: "logic_compare",
