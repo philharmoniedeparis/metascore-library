@@ -1,3 +1,34 @@
+<i18n>
+{
+  "fr": {
+    "categories": {
+      "triggers": "Déclencheurs",
+      "logic": "Logique",
+      "math": "Mathématiques",
+      "actions": "Actions",
+      "variables": {
+        "root": "Variables",
+        "builtin": "Built-in",
+        "custom": "Custom",
+      },
+    }
+  },
+  "en": {
+    "categories": {
+      "triggers": "Triggers",
+      "logic": "Logic",
+      "math": "Math",
+      "actions": "Actions",
+      "variables": {
+        "root": "Variables",
+        "builtin": "Built-in",
+        "custom": "Custom",
+      },
+    }
+  },
+}
+</i18n>
+
 <template>
   <div class="behaviors-form">
     <div ref="blockly" class="blockly"></div>
@@ -8,6 +39,7 @@
 import * as Blockly from "blockly/core";
 import Theme from "../blockly/theme";
 import "blockly/blocks";
+import "../blockly/blocks";
 import useStore from "../store";
 
 export default {
@@ -28,10 +60,9 @@ export default {
     // Import the locale.
     const locale = this.$i18n.locale;
     const { default: blocklyLocale } = await import(
-      /* webpackInclude: /(en|fr)\.js/ */
       /* webpackMode: "lazy" */
       /* webpackChunkName: "blockly-locale-[request]" */
-      `blockly/msg/${locale}`
+      `../blockly/msg/${locale}`
     );
 
     Blockly.setLocale(blocklyLocale);
@@ -43,30 +74,55 @@ export default {
         contents: [
           {
             kind: "category",
-            name: "Triggers",
+            name: this.$t("categories.triggers"),
             categorystyle: "triggers",
             contents: [],
           },
           {
             kind: "category",
-            name: "Logic",
+            name: this.$t("categories.logic"),
             categorystyle: "logic",
             contents: [
+              { kind: "block", type: "controls_if" },
+              { kind: "block", type: "logic_compare" },
+              { kind: "block", type: "logic_operation" },
+              { kind: "block", type: "logic_negate" },
+              { kind: "block", type: "logic_boolean" },
+            ],
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.math"),
+            categorystyle: "math",
+            contents: [
+              { kind: "block", type: "math_number" },
+              { kind: "block", type: "math_arithmetic" },
+            ],
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.actions"),
+            categorystyle: "actions",
+            contents: [],
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.variables.root"),
+            categorystyle: "variables",
+            expanded: "true",
+            contents: [
               {
-                kind: "block",
-                type: "controls_if",
+                kind: "category",
+                name: this.$t("categories.variables.builtin"),
+                contents: [
+                  { kind: "block", type: "mediatime_get" },
+                  { kind: "block", type: "mediatime_set" },
+                ],
               },
               {
-                kind: "block",
-                type: "logic_compare",
-              },
-              {
-                kind: "block",
-                type: "logic_operation",
-              },
-              {
-                kind: "block",
-                type: "logic_boolean",
+                kind: "category",
+                name: this.$t("categories.variables.custom"),
+                custom: "VARIABLE",
               },
             ],
           },
@@ -74,23 +130,19 @@ export default {
       },
     });
 
-    this.workspace.addChangeListener(this.onWorkspaceChange);
-
     this._resize_observer = new ResizeObserver(this.updateSize);
     this._resize_observer.observe(this.$el);
     this.updateSize();
   },
   beforeUnmount() {
-    this.workspace.removeChangeListener(this.onWorkspaceChange);
-
     if (this._resize_observer) {
       this._resize_observer.disconnect();
       delete this._resize_observer;
     }
   },
   methods: {
-    onWorkspaceChange() {
-      console.log(Blockly.serialization.workspaces.save(this.workspace));
+    serialize() {
+      return Blockly.serialization.workspaces.save(this.workspace);
     },
     updateSize() {
       Blockly.svgResize(this.workspace);

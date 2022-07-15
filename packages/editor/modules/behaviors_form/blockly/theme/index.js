@@ -28,6 +28,9 @@ export default Blockly.Theme.defineTheme("metaScore", {
     logic: {
       colour: "#ff4e00",
     },
+    math: {
+      colour: "#ff4e00",
+    },
     actions: {
       colour: "#ffb600",
     },
@@ -53,8 +56,8 @@ export default Blockly.Theme.defineTheme("metaScore", {
     },
     variable_blocks: {
       colourPrimary: "#ffffff",
-      colourSecondary: "#64C7FF",
-      colourTertiary: "#C5EAFF",
+      colourSecondary: "#ffffff",
+      colourTertiary: "#ffffff",
     },
   },
 });
