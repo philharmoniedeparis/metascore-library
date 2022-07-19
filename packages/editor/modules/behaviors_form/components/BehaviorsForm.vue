@@ -8,8 +8,8 @@
       "actions": "Actions",
       "variables": {
         "root": "Variables",
-        "builtin": "Built-in",
-        "custom": "Custom",
+        "builtin": "Intégrées",
+        "custom": "Personnalisées",
       },
     }
   },
@@ -36,23 +36,22 @@
 </template>
 
 <script>
-import * as Blockly from "blockly/core";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import Blockly from "blockly/core";
 import Theme from "../blockly/theme";
 import "blockly/blocks";
 import "../blockly/blocks";
-import useStore from "../store";
 
 export default {
   props: {},
   setup() {
-    const store = useStore();
-    return {
-      store,
-    };
+    const { behaviors, setBehaviors } = useModule("app_behaviors");
+    return { behaviors, setBehaviors };
   },
   data() {
     return {
       workspace: null,
+      loaded: false,
     };
   },
   computed: {},
@@ -75,13 +74,13 @@ export default {
           {
             kind: "category",
             name: this.$t("categories.triggers"),
-            categorystyle: "triggers",
+            categorystyle: "triggers_category",
             contents: [],
           },
           {
             kind: "category",
             name: this.$t("categories.logic"),
-            categorystyle: "logic",
+            categorystyle: "logic_category",
             contents: [
               { kind: "block", type: "controls_if" },
               { kind: "block", type: "logic_compare" },
@@ -93,7 +92,7 @@ export default {
           {
             kind: "category",
             name: this.$t("categories.math"),
-            categorystyle: "math",
+            categorystyle: "math_category",
             contents: [
               { kind: "block", type: "math_number" },
               { kind: "block", type: "math_arithmetic" },
@@ -102,13 +101,13 @@ export default {
           {
             kind: "category",
             name: this.$t("categories.actions"),
-            categorystyle: "actions",
+            categorystyle: "actions_category",
             contents: [],
           },
           {
             kind: "category",
             name: this.$t("categories.variables.root"),
-            categorystyle: "variables",
+            categorystyle: "variables_category",
             expanded: "true",
             contents: [
               {
@@ -130,6 +129,10 @@ export default {
       },
     });
 
+    this.deserialize(this.behaviors);
+
+    this.workspace.addChangeListener(this.onWorkspaceChange);
+
     this._resize_observer = new ResizeObserver(this.updateSize);
     this._resize_observer.observe(this.$el);
     this.updateSize();
@@ -143,6 +146,24 @@ export default {
   methods: {
     serialize() {
       return Blockly.serialization.workspaces.save(this.workspace);
+    },
+    deserialize(state) {
+      Blockly.serialization.workspaces.load(state || {}, this.workspace);
+    },
+    onWorkspaceChange(evt) {
+      if (evt.isUiEvent) {
+        return;
+      }
+
+      if (!this.loaded) {
+        if (evt.type === "finished_loading") {
+          this.loaded = true;
+        }
+        return;
+      }
+
+      const behaviors = this.serialize();
+      this.setBehaviors(behaviors);
     },
     updateSize() {
       Blockly.svgResize(this.workspace);
