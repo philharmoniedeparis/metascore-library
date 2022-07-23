@@ -11,7 +11,7 @@ export default Blockly.Theme.defineTheme("metaScore", {
     toolboxForegroundColour: "#fff",
     flyoutBackgroundColour: "#3c3c3c",
     flyoutForegroundColour: "#ccc",
-    flyoutOpacity: 0.75,
+    flyoutOpacity: 1,
     insertionMarkerColour: "#fff",
     insertionMarkerOpacity: 0.3,
     scrollbarColour: "#797979",
@@ -20,8 +20,8 @@ export default Blockly.Theme.defineTheme("metaScore", {
   },
   fontStyle: {
     family: "'SourceSansPro', 'Source-Sans-Pro', 'Source Sans Pro', sans-serif",
-    weight: "bold",
-    size: 12,
+    weight: "normal",
+    size: 10,
   },
   categoryStyles: {
     triggers_category: {
@@ -43,6 +43,7 @@ export default Blockly.Theme.defineTheme("metaScore", {
   blockStyles: {
     trigger_blocks: {
       colourPrimary: "120",
+      hat: "cap",
     },
     logic_blocks: {
       colourPrimary: "18",

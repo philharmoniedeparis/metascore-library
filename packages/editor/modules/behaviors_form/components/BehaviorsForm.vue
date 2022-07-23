@@ -68,6 +68,22 @@ export default {
 
     this.workspace = Blockly.inject(this.$refs.blockly, {
       theme: Theme,
+      renderer: "zelos",
+      grid: {
+        spacing: 20,
+        length: 20,
+        colour: "rgba(255, 255, 255, 0.1)",
+        snap: true,
+      },
+      zoom: {
+        controls: true,
+        wheel: false,
+        pinch: true,
+        startScale: 0.95,
+        maxScale: 3,
+        minScale: 0.3,
+        scaleSpeed: 1.2,
+      },
       toolbox: {
         kind: "categoryToolbox",
         contents: [
@@ -75,7 +91,12 @@ export default {
             kind: "category",
             name: this.$t("categories.triggers"),
             categorystyle: "triggers_category",
-            contents: [],
+            contents: [
+              { kind: "block", type: "keyboard_keypressed" },
+              { kind: "block", type: "components_click" },
+              { kind: "block", type: "links_click" },
+              { kind: "block", type: "reactivity_watch" },
+            ],
           },
           {
             kind: "category",
