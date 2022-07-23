@@ -27,8 +27,8 @@ Msg.VARIABLES_MEDIATIME_TOOLTIP =
   "Sets the media time to be equal to the input.";
 Msg.VARIABLES_MEDIATIME_HELPURL = "";
 
-Msg.RECTIVITY_WATCH = "when %1";
-Msg.RECTIVITY_WATCH_TOOLTIP = "";
-Msg.RECTIVITY_WATCH_HELPURL = "";
+Msg.REACTIVITY_WATCH = "when %1";
+Msg.REACTIVITY_WATCH_TOOLTIP = "";
+Msg.REACTIVITY_WATCH_HELPURL = "";
 
 export default Msg;
