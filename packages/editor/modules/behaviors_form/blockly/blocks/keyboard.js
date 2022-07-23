@@ -5,7 +5,7 @@ const keys = [
   ["%{BKY_KEYBOARD_KEYPRESSED_SPACE}", "spacebar"],
   ["%{BKY_KEYBOARD_KEYPRESSED_UP}", "up"],
   ["%{BKY_KEYBOARD_KEYPRESSED_DOWN}", "down"],
-  ["%{BKY_KEYBOARD_KEYPRESSED_RIGH}", "right "],
+  ["%{BKY_KEYBOARD_KEYPRESSED_RIGHT}", "right "],
   ["%{BKY_KEYBOARD_KEYPRESSED_LEFT}", "left"],
   ["a", "a"],
   ["b", "b"],
@@ -54,6 +54,13 @@ defineBlocksWithJsonArray([
         type: "field_dropdown",
         name: "KEY",
         options: keys,
+      },
+      {
+        type: "input_dummy",
+      },
+      {
+        type: "input_statement",
+        name: "STATEMENT",
       },
     ],
     nextStatement: "Boolean",

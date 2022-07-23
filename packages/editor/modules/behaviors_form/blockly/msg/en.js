@@ -1,6 +1,6 @@
 import Msg from "blockly/msg/en";
 
-Msg.KEYBOARD_KEYPRESSED = "when key %1 is pressed";
+Msg.KEYBOARD_KEYPRESSED = "when key %1 is pressed %2 %3";
 Msg.KEYBOARD_KEYPRESSED_TOOLTIP = "";
 Msg.KEYBOARD_KEYPRESSED_HELPURL = "";
 Msg.KEYBOARD_KEYPRESSED_ANY = "any";
@@ -10,7 +10,7 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.COMPONENTS_CLICK = "when component %1 is clicked";
+Msg.COMPONENTS_CLICK = "when component %1 is clicked %2 %3";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 

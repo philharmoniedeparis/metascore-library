@@ -1,16 +1,16 @@
 import Msg from "blockly/msg/fr";
 
-Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
+Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée %2 %3";
 Msg.KEYBOARD_KEYPRESSED_TOOLTIP = "";
 Msg.KEYBOARD_KEYPRESSED_HELPURL = "";
 Msg.KEYBOARD_KEYPRESSED_ANY = "n'importe quelle";
-Msg.KEYBOARD_KEYPRESSED_SPACE = "spacebar";
+Msg.KEYBOARD_KEYPRESSED_SPACE = "barre d'espace";
 Msg.KEYBOARD_KEYPRESSED_UP = "▲";
 Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué";
+Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué %2 %3";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 
