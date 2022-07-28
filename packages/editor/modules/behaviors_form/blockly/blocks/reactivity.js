@@ -10,9 +10,15 @@ defineBlocksWithJsonArray([
         name: "CONDITION",
         check: "Boolean",
       },
+      {
+        type: "input_dummy",
+      },
+      {
+        type: "input_statement",
+        name: "STATEMENT",
+      },
     ],
     inputsInline: true,
-    nextStatement: "Boolean",
     style: "trigger_blocks",
     tooltip: "%{BKY_REACTIVITY_WATCH_TOOLTIP}",
     helpUrl: "%{BKY_REACTIVITY_WATCH_HELPURL}",

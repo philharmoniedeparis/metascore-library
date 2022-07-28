@@ -19,9 +19,8 @@ export default Blockly.Theme.defineTheme("metaScore", {
     cursorColour: "#d0d0d0",
   },
   fontStyle: {
-    family: "'SourceSansPro', 'Source-Sans-Pro', 'Source Sans Pro', sans-serif",
     weight: "normal",
-    size: 10,
+    size: "14px",
   },
   categoryStyles: {
     triggers_category: {

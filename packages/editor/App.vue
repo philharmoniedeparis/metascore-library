@@ -584,7 +584,7 @@ export default {
     grid-area: right;
     width: 20em;
     min-width: 15em;
-    max-width: 25vw;
+    max-width: 50vw;
   }
 
   > .bottom {

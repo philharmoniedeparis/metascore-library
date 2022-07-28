@@ -14,7 +14,7 @@ Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué %2 %3";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 
-Msg.LINKS_CLICK = "lorsque le lien %1 est cliqué";
+Msg.LINKS_CLICK = "lorsque le lien %1 est cliqué %2 %3";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
 
@@ -28,7 +28,7 @@ Msg.VARIABLES_MEDIATIME_TOOLTIP =
   "Définit le temp du média pour qu’il soit égale à la valeur de l’entrée.";
 Msg.VARIABLES_MEDIATIME_HELPURL = "";
 
-Msg.REACTIVITY_WATCH = "lorsque %1";
+Msg.REACTIVITY_WATCH = "lorsque %1 %2 %3";
 Msg.REACTIVITY_WATCH_TOOLTIP = "";
 Msg.REACTIVITY_WATCH_HELPURL = "";
 

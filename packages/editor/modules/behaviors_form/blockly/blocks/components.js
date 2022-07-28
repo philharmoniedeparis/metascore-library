@@ -18,7 +18,6 @@ defineBlocksWithJsonArray([
         name: "STATEMENT",
       },
     ],
-    nextStatement: "Boolean",
     style: "trigger_blocks",
     tooltip: "%{BKY_COMPONENTS_CLICK_TOOLTIP}",
     helpUrl: "%{BKY_COMPONENTS_CLICK_HELPURL}",

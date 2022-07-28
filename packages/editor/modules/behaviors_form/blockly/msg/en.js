@@ -14,7 +14,7 @@ Msg.COMPONENTS_CLICK = "when component %1 is clicked %2 %3";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 
-Msg.LINKS_CLICK = "when link %1 is clicked";
+Msg.LINKS_CLICK = "when link %1 is clicked %2 %3";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
 
@@ -27,7 +27,7 @@ Msg.VARIABLES_MEDIATIME_TOOLTIP =
   "Sets the media time to be equal to the input.";
 Msg.VARIABLES_MEDIATIME_HELPURL = "";
 
-Msg.REACTIVITY_WATCH = "when %1";
+Msg.REACTIVITY_WATCH = "when %1 %2 %3";
 Msg.REACTIVITY_WATCH_TOOLTIP = "";
 Msg.REACTIVITY_WATCH_HELPURL = "";
 

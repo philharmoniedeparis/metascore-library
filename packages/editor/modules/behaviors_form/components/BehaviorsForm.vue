@@ -38,6 +38,11 @@
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
 import Blockly from "blockly/core";
+import {
+  ContinuousToolbox,
+  ContinuousFlyout,
+  ContinuousMetrics,
+} from "@blockly/continuous-toolbox";
 import Theme from "../blockly/theme";
 import "blockly/blocks";
 import "../blockly/blocks";
@@ -70,8 +75,8 @@ export default {
       theme: Theme,
       renderer: "zelos",
       grid: {
-        spacing: 20,
-        length: 20,
+        spacing: 200,
+        length: 200,
         colour: "rgba(255, 255, 255, 0.1)",
         snap: true,
       },
@@ -79,10 +84,15 @@ export default {
         controls: true,
         wheel: false,
         pinch: true,
-        startScale: 0.95,
+        startScale: 1,
         maxScale: 3,
         minScale: 0.3,
         scaleSpeed: 1.2,
+      },
+      plugins: {
+        toolbox: ContinuousToolbox,
+        flyoutsVerticalToolbox: ContinuousFlyout,
+        metricsManager: ContinuousMetrics,
       },
       toolbox: {
         kind: "categoryToolbox",

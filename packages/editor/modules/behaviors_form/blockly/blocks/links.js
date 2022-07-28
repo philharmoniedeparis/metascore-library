@@ -10,8 +10,14 @@ defineBlocksWithJsonArray([
         name: "ID",
         options: [["option", "OPTIONNAME"]],
       },
+      {
+        type: "input_dummy",
+      },
+      {
+        type: "input_statement",
+        name: "STATEMENT",
+      },
     ],
-    nextStatement: "Boolean",
     style: "trigger_blocks",
     tooltip: "%{BKY_LINKS_CLICK_TOOLTIP}",
     helpUrl: "%{BKY_LINKS_CLICK_HELPURL}",
