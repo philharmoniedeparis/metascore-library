@@ -393,6 +393,8 @@ export default {
     if (this._resize_observer) {
       this._resize_observer.disconnect();
     }
+
+    this.store.iframe = null;
   },
   methods: {
     async onIframeLoad() {

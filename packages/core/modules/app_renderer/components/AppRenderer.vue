@@ -1,5 +1,5 @@
 <template>
-  <div class="metaScore-app" :style="style">
+  <div class="metaScore-app" tabindex="-1" :style="style">
     <media-player v-if="mediaSource" :source="mediaSource" type="video" />
     <template v-for="scenario in scenarios" :key="scenario.id">
       <scenario-component
@@ -136,6 +136,10 @@ export default {
       const win = this.$el.ownerDocument.defaultView;
       win.addEventListener("orientationchange", this.onWindowOrientationChange);
     }
+
+    this.$nextTick(function () {
+      this.store.el = this.$el;
+    });
   },
   beforeUnmount() {
     if (this.responsive) {
@@ -147,6 +151,8 @@ export default {
         this.onWindowOrientationChange
       );
     }
+
+    this.store.el = null;
   },
   methods: {
     setupResizeObserver() {

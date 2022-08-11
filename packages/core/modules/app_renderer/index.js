@@ -29,6 +29,12 @@ export default class AppRendererModule extends AbstractModule {
     store.init(data);
   }
 
+  get el() {
+    const store = useStore();
+    const { el } = storeToRefs(store);
+    return readonly(el);
+  }
+
   get width() {
     const store = useStore();
     const { width } = storeToRefs(store);

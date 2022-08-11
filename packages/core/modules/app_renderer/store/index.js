@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export default defineStore("app-renderer", {
   state: () => {
     return {
+      el: null,
       width: null,
       height: null,
       css: null,

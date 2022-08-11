@@ -6,11 +6,9 @@ Blockly.HSV_VALUE = 0.99;
 export default Blockly.Theme.defineTheme("metaScore", {
   base: Blockly.Themes.Classic,
   componentStyles: {
-    workspaceBackgroundColour: "#606060",
-    toolboxBackgroundColour: "#777",
-    toolboxForegroundColour: "#fff",
-    flyoutBackgroundColour: "#3c3c3c",
-    flyoutForegroundColour: "#ccc",
+    workspaceBackgroundColour: "#3f3f3f",
+    flyoutBackgroundColour: "#777",
+    flyoutForegroundColour: "#fff",
     flyoutOpacity: 1,
     insertionMarkerColour: "#fff",
     insertionMarkerOpacity: 0.3,
@@ -19,8 +17,10 @@ export default Blockly.Theme.defineTheme("metaScore", {
     cursorColour: "#d0d0d0",
   },
   fontStyle: {
+    family:
+      "'Source Sans 3 VF', 'Source Sans Variable', 'Source Sans Pro', sans-serif",
     weight: "normal",
-    size: "14px",
+    size: 16,
   },
   categoryStyles: {
     triggers_category: {

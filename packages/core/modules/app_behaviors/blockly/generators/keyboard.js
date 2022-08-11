@@ -11,7 +11,7 @@ JavaScript["keyboard_keypressed"] = function (block) {
     code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
   }
 
-  code += `Keyboard.addListener("${key}", () => {${statement}});\n`;
+  code += `Keyboard.addEventListener("${key}", "keydown", "${statement}");\n`;
 
   if (JavaScript.STATEMENT_SUFFIX) {
     code =

@@ -6,11 +6,7 @@
       "logic": "Logique",
       "math": "Mathématiques",
       "actions": "Actions",
-      "variables": {
-        "root": "Variables",
-        "builtin": "Intégrées",
-        "custom": "Personnalisées",
-      },
+      "variables": "Variables",
     }
   },
   "en": {
@@ -19,11 +15,7 @@
       "logic": "Logic",
       "math": "Math",
       "actions": "Actions",
-      "variables": {
-        "root": "Variables",
-        "builtin": "Built-in",
-        "custom": "Custom",
-      },
+      "variables": "Variables",
     }
   },
 }
@@ -40,11 +32,11 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import Blockly from "blockly/core";
 import {
   ContinuousToolbox,
-  ContinuousFlyout,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
-import Theme from "../blockly/theme";
 import "blockly/blocks";
+import Theme from "../blockly/theme";
+import Flyout from "../blockly/plugins/flyout";
 import "../blockly/blocks";
 
 export default {
@@ -84,14 +76,14 @@ export default {
         controls: true,
         wheel: false,
         pinch: true,
-        startScale: 1,
+        startScale: 0.675,
         maxScale: 3,
         minScale: 0.3,
         scaleSpeed: 1.2,
       },
       plugins: {
         toolbox: ContinuousToolbox,
-        flyoutsVerticalToolbox: ContinuousFlyout,
+        flyoutsVerticalToolbox: Flyout,
         metricsManager: ContinuousMetrics,
       },
       toolbox: {
@@ -137,24 +129,17 @@ export default {
           },
           {
             kind: "category",
-            name: this.$t("categories.variables.root"),
+            name: this.$t("categories.variables"),
             categorystyle: "variables_category",
-            expanded: "true",
             contents: [
-              {
-                kind: "category",
-                name: this.$t("categories.variables.builtin"),
-                contents: [
-                  { kind: "block", type: "mediatime_get" },
-                  { kind: "block", type: "mediatime_set" },
-                ],
-              },
-              {
-                kind: "category",
-                name: this.$t("categories.variables.custom"),
-                custom: "VARIABLE",
-              },
+              { kind: "block", type: "mediatime_get" },
+              { kind: "block", type: "mediatime_set" },
             ],
+          },
+          {
+            kind: "category",
+            categorystyle: "variables_category",
+            custom: "VARIABLE",
           },
         ],
       },
@@ -217,5 +202,13 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+
+  ::v-deep(.blocklyToolboxDiv) {
+    max-width: 0;
+  }
+
+  ::v-deep(.blocklyFlyoutLabelText) {
+    font-size: 24px;
+  }
 }
 </style>

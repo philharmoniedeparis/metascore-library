@@ -1,7 +1,7 @@
 import JavaScript from "blockly/javascript";
 
 JavaScript["components_click"] = function (block) {
-  const id = block.getFieldValue("ID");
+  const [type, id] = block.getFieldValue("COMPONENT").split(":");
   const statement = JavaScript.statementToCode(block, "STATEMENT");
 
   let code = "";
@@ -11,7 +11,7 @@ JavaScript["components_click"] = function (block) {
     code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
   }
 
-  code += `Components.addClickListener("${id}", () => {${statement}});\n`;
+  code += `Components.addEventListener("${type}", "${id}", "click", "${statement}");\n`;
 
   if (JavaScript.STATEMENT_SUFFIX) {
     code =

@@ -52,7 +52,7 @@
   >
     <slot />
 
-    <template v-if="selected && resizable" #outer>
+    <template v-if="selected && resizable && !preview" #outer>
       <div class="resize-handle top left"></div>
       <div class="resize-handle top"></div>
       <div class="resize-handle top right"></div>
