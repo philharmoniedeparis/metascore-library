@@ -111,7 +111,8 @@ export default defineStore("media_player", {
     },
     stop() {
       if (this.element) {
-        this.element.stop();
+        this.pause();
+        this.seekTo(0);
       }
     },
     seekTo(time) {

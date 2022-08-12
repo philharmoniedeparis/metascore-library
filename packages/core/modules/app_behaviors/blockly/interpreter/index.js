@@ -1,20 +1,33 @@
-import { run, stop } from "./utils";
+import { compileCode } from "@nx-js/compiler-util";
+import { isEmpty } from "lodash";
 import * as Components from "./components";
-import * as MedaiTime from "./mediatime";
+import * as Medai from "./media";
 import * as Keyboard from "./keyboard";
+import * as Reactivity from "./reactivity";
 
 export function exec(code) {
   reset();
 
-  run(code, (interpreter, globalObject) => {
-    Components.init(interpreter, globalObject);
-    MedaiTime.init(interpreter, globalObject);
-    Keyboard.init(interpreter, globalObject);
-  });
+  if (isEmpty(code)) {
+    return;
+  }
+
+  const context = {};
+  Components.init(context);
+  Medai.init(context);
+  Keyboard.init(context);
+  Reactivity.init(context);
+
+  try {
+    const compiled = compileCode(code);
+    compiled(context);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export function reset() {
-  stop();
   Components.reset();
   Keyboard.reset();
+  Reactivity.reset();
 }

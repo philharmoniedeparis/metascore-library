@@ -23,3 +23,15 @@ JavaScript["components_click"] = function (block) {
 
   return code;
 };
+
+JavaScript["components_show"] = function (block) {
+  const [type, id] = block.getFieldValue("COMPONENT").split(":");
+  const code = `Components.show("${type}", "${id}");`;
+  return code;
+};
+
+JavaScript["components_hide"] = function (block) {
+  const [type, id] = block.getFieldValue("COMPONENT").split(":");
+  const code = `Components.hide("${type}", "${id}");`;
+  return code;
+};

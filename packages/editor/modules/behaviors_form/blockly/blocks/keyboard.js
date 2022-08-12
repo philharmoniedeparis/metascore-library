@@ -55,9 +55,9 @@ defineBlocksWithJsonArray([
         name: "KEY",
         options: keys,
       },
-      {
-        type: "input_dummy",
-      },
+    ],
+    message1: "%{BKY_KEYBOARD_KEYPRESSED_THEN}",
+    args1: [
       {
         type: "input_statement",
         name: "STATEMENT",

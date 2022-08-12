@@ -1,33 +1,22 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 import JavaScript from "blockly/javascript";
-import { append } from "./utils";
 import { unref } from "vue";
 
 const listeners = [];
 
-export function init(interpreter, globalObject) {
+export function init(context) {
   // Ensure 'Keyboard' name does not conflict with variable names.
   JavaScript.addReservedWords("Keyboard");
 
-  // Create 'Keyboard' global object.
-  const Keyboard = interpreter.nativeToPseudo({});
-  interpreter.setProperty(globalObject, "Keyboard", Keyboard);
-
-  // Define 'Keyboard.addEventListener' property.
-  interpreter.setProperty(
-    Keyboard,
-    "addEventListener",
-    interpreter.createNativeFunction(function (key, event, callback) {
+  // Add 'Keyboard' object to context.
+  context.Keyboard = {
+    addEventListener: (key, event, callback) => {
       let { el } = useModule("app_renderer");
       el = unref(el);
 
-      key = interpreter.pseudoToNative(key);
-      event = interpreter.pseudoToNative(event);
-      callback = interpreter.pseudoToNative(callback);
-
       const wrapper = function (evt) {
         if (key === "any" || evt.key === key) {
-          append(callback, interpreter);
+          callback();
         }
       };
 
@@ -41,11 +30,9 @@ export function init(interpreter, globalObject) {
         callback: wrapper,
       });
 
-      console.error("addEventListener", listeners);
-
       return true;
-    })
-  );
+    },
+  };
 }
 
 export function reset() {
@@ -54,5 +41,4 @@ export function reset() {
     const { el, type, callback } = listeners.pop();
     el.removeEventListener(type, callback);
   }
-  console.error("reset", listeners);
 }

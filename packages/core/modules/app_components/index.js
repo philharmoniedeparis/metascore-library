@@ -140,6 +140,12 @@ export default class AppComponentsModule extends AbstractModule {
     store.activeScenario = value;
   }
 
+  addHook(type, hook) {
+    const store = useStore();
+    store.hooks[type] = store.hooks[type] || [];
+    store.hooks[type].push(hook);
+  }
+
   addStoreActionListener(callback) {
     const store = useStore();
     store.$onAction(callback);

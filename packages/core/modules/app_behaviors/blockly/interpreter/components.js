@@ -1,29 +1,18 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useStore from "../../store";
 import JavaScript from "blockly/javascript";
-import { append } from "./utils";
 
 const listeners = [];
 
-export function init(interpreter, globalObject) {
+export function init(context) {
   // Ensure 'Components' name does not conflict with variable names.
   JavaScript.addReservedWords("Components");
 
-  // Create 'Components' global object.
-  const Components = interpreter.nativeToPseudo({});
-  interpreter.setProperty(globalObject, "Components", Components);
-
-  // Define 'Components.addEventListener' property.
-  interpreter.setProperty(
-    Components,
-    "addEventListener",
-    interpreter.createNativeFunction(function (type, id, event, callback) {
+  // Add 'Keyboard' object to context.
+  context.Components = {
+    addEventListener: (type, id, event, callback) => {
       const { getComponent } = useModule("app_components");
       const { getComponentElement } = useModule("app_preview");
-
-      type = interpreter.pseudoToNative(type);
-      id = interpreter.pseudoToNative(id);
-      event = interpreter.pseudoToNative(event);
-      callback = interpreter.pseudoToNative(callback);
 
       const component = getComponent(type, id);
       if (!component) {
@@ -36,23 +25,29 @@ export function init(interpreter, globalObject) {
         return;
       }
 
-      const wrapper = function () {
-        append(callback, interpreter);
-      };
-
       // Add the event listener.
-      el.addEventListener(event, wrapper);
+      el.addEventListener(event, callback);
 
       // Add to list of listeners.
       listeners.push({
         el,
         type: event,
-        callback: wrapper,
+        callback,
       });
-
-      return true;
-    })
-  );
+    },
+    show: (type, id) => {
+      const store = useStore();
+      store.setComponentState(type, id, {
+        hidden: false,
+      });
+    },
+    hide: (type, id) => {
+      const store = useStore();
+      store.setComponentState(type, id, {
+        hidden: true,
+      });
+    },
+  };
 }
 
 export function reset() {

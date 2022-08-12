@@ -10,9 +10,9 @@ defineBlocksWithJsonArray([
         name: "ID",
         options: [["option", "OPTIONNAME"]],
       },
-      {
-        type: "input_dummy",
-      },
+    ],
+    message1: "%{BKY_LINKS_CLICK_THEN}",
+    args1: [
       {
         type: "input_statement",
         name: "STATEMENT",

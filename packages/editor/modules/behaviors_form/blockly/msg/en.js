@@ -1,6 +1,7 @@
 import Msg from "blockly/msg/en";
 
-Msg.KEYBOARD_KEYPRESSED = "when key %1 is pressed %2 %3";
+Msg.KEYBOARD_KEYPRESSED = "when key %1 is pressed";
+Msg.KEYBOARD_KEYPRESSED_THEN = "do %1";
 Msg.KEYBOARD_KEYPRESSED_TOOLTIP = "";
 Msg.KEYBOARD_KEYPRESSED_HELPURL = "";
 Msg.KEYBOARD_KEYPRESSED_ANY = "any";
@@ -10,25 +11,49 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.COMPONENTS_CLICK = "when component %1 is clicked %2 %3";
+Msg.COMPONENTS_CLICK = "when component %1 is clicked";
+Msg.COMPONENTS_CLICK_THEN = "do %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 
-Msg.LINKS_CLICK = "when link %1 is clicked %2 %3";
+Msg.COMPONENTS_SHOW = "show %1";
+Msg.COMPONENTS_SHOW_TOOLTIP = "";
+Msg.COMPONENTS_SHOW_HELPURL = "";
+
+Msg.COMPONENTS_HIDE = "hide %1";
+Msg.COMPONENTS_HIDE_TOOLTIP = "";
+Msg.COMPONENTS_HIDE_HELPURL = "";
+
+Msg.LINKS_CLICK = "when link %1 is clicked";
+Msg.LINKS_CLICK_THEN = "do %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
 
-Msg.VARIABLES_MEDIATIME_GET = "media time";
-Msg.VARIABLES_MEDIATIME_TOOLTIP = "Returns the current media time in seconds.";
-Msg.VARIABLES_MEDIATIME_HELPURL = "";
+Msg.VARIABLES_MEDIA_GET_TIME = "media time";
+Msg.VARIABLES_MEDIA_GET_TIME_TOOLTIP =
+  "Returns the current media time in seconds.";
+Msg.VARIABLES_MEDIA_GET_TIME_HELPURL = "";
 
-Msg.VARIABLES_MEDIATIME_SET = "set the media time to %1";
-Msg.VARIABLES_MEDIATIME_TOOLTIP =
+Msg.VARIABLES_MEDIA_SET_TIME = "set the media time to %1";
+Msg.VARIABLES_MEDIA_SET_TIME_TOOLTIP =
   "Sets the media time to be equal to the input.";
-Msg.VARIABLES_MEDIATIME_HELPURL = "";
+Msg.VARIABLES_MEDIA_SET_TIME_HELPURL = "";
 
-Msg.REACTIVITY_WATCH = "when %1 %2 %3";
-Msg.REACTIVITY_WATCH_TOOLTIP = "";
-Msg.REACTIVITY_WATCH_HELPURL = "";
+Msg.VARIABLES_MEDIA_PLAY = "Start playback";
+Msg.VARIABLES_MEDIA_PLAY_TOOLTIP = "";
+Msg.VARIABLES_MEDIA_PLAY_HELPURL = "";
+
+Msg.VARIABLES_MEDIA_PAUSE = "Pause playback";
+Msg.VARIABLES_MEDIA_PAUSE_TOOLTIP = "";
+Msg.VARIABLES_MEDIA_PAUSE_HELPURL = "";
+
+Msg.VARIABLES_MEDIA_STOP = "Stop playback";
+Msg.VARIABLES_MEDIA_STOP_TOOLTIP = "";
+Msg.VARIABLES_MEDIA_STOP_HELPURL = "";
+
+Msg.REACTIVITY_WHEN = "when %1";
+Msg.REACTIVITY_WHEN_THEN = "do %1";
+Msg.REACTIVITY_WHEN_TOOLTIP = "";
+Msg.REACTIVITY_WHEN_HELPURL = "";
 
 export default Msg;

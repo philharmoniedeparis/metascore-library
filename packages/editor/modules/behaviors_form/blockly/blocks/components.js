@@ -32,9 +32,9 @@ defineBlocksWithJsonArray([
         name: "COMPONENT",
         options: getOptions,
       },
-      {
-        type: "input_dummy",
-      },
+    ],
+    message1: "%{BKY_COMPONENTS_CLICK_THEN}",
+    args1: [
       {
         type: "input_statement",
         name: "STATEMENT",
@@ -43,5 +43,37 @@ defineBlocksWithJsonArray([
     style: "trigger_blocks",
     tooltip: "%{BKY_COMPONENTS_CLICK_TOOLTIP}",
     helpUrl: "%{BKY_COMPONENTS_CLICK_HELPURL}",
+  },
+  {
+    type: "components_show",
+    message0: "%{BKY_COMPONENTS_SHOW}",
+    args0: [
+      {
+        type: "field_dropdown",
+        name: "COMPONENT",
+        options: getOptions,
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_COMPONENTS_SHOW_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_SHOW_HELPURL}",
+  },
+  {
+    type: "components_hide",
+    message0: "%{BKY_COMPONENTS_HIDE}",
+    args0: [
+      {
+        type: "field_dropdown",
+        name: "COMPONENT",
+        options: getOptions,
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_COMPONENTS_HIDE_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_HIDE_HELPURL}",
   },
 ]);

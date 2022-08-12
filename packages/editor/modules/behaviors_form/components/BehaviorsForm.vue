@@ -97,7 +97,7 @@ export default {
               { kind: "block", type: "keyboard_keypressed" },
               { kind: "block", type: "components_click" },
               { kind: "block", type: "links_click" },
-              { kind: "block", type: "reactivity_watch" },
+              { kind: "block", type: "reactivity_when" },
             ],
           },
           {
@@ -125,15 +125,21 @@ export default {
             kind: "category",
             name: this.$t("categories.actions"),
             categorystyle: "actions_category",
-            contents: [],
+            contents: [
+              { kind: "block", type: "media_play" },
+              { kind: "block", type: "media_pause" },
+              { kind: "block", type: "media_stop" },
+              { kind: "block", type: "components_show" },
+              { kind: "block", type: "components_hide" },
+            ],
           },
           {
             kind: "category",
             name: this.$t("categories.variables"),
             categorystyle: "variables_category",
             contents: [
-              { kind: "block", type: "mediatime_get" },
-              { kind: "block", type: "mediatime_set" },
+              { kind: "block", type: "media_get_time" },
+              { kind: "block", type: "media_set_time" },
             ],
           },
           {

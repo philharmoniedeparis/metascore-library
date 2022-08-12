@@ -3,7 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "blockly": "^8.0.3",
-    "js-interpreter-npm": "^1.0.7"
+    "@nx-js/compiler-util": "^2.0.0",
+    "blockly": "^8.0.3"
   }
 }

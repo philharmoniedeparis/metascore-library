@@ -11,15 +11,22 @@ export default defineStore("app-components", {
       components: {},
       activeScenario: null,
       toggled: [],
+      hooks: {},
     };
   },
   getters: {
     get() {
       return (type, id) => {
         const component = this.components?.[type]?.[id];
-        return component && !component.$deleted
-          ? readonly(component.data)
-          : null;
+        const data = component && !component.$deleted ? component.data : null;
+
+        if (this.hooks?.get) {
+          this.hooks.get.forEach((hook) => {
+            hook(data);
+          });
+        }
+
+        return readonly(data);
       };
     },
     getByType() {

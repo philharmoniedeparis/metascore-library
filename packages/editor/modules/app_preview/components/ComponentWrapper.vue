@@ -104,6 +104,7 @@ export default {
       createComponent,
       addComponent,
       updateComponent,
+      deleteComponent,
     } = useModule("app_components");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -117,6 +118,7 @@ export default {
       createComponent,
       addComponent,
       updateComponent,
+      deleteComponent,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -231,7 +233,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.store.deleteComponent(this.component);
+                    this.deleteComponent(this.component);
                   },
                 },
                 {
@@ -267,7 +269,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.store.deleteComponent(this.component);
+                    this.deleteComponent(this.component);
                   },
                 },
                 {

@@ -2,17 +2,17 @@ import { defineBlocksWithJsonArray } from "blockly/core";
 
 defineBlocksWithJsonArray([
   {
-    type: "reactivity_watch",
-    message0: "%{BKY_REACTIVITY_WATCH}",
+    type: "reactivity_when",
+    message0: "%{BKY_REACTIVITY_WHEN}",
     args0: [
       {
         type: "input_value",
         name: "CONDITION",
         check: "Boolean",
       },
-      {
-        type: "input_dummy",
-      },
+    ],
+    message1: "%{BKY_REACTIVITY_WHEN_THEN}",
+    args1: [
       {
         type: "input_statement",
         name: "STATEMENT",
@@ -20,7 +20,7 @@ defineBlocksWithJsonArray([
     ],
     inputsInline: true,
     style: "trigger_blocks",
-    tooltip: "%{BKY_REACTIVITY_WATCH_TOOLTIP}",
-    helpUrl: "%{BKY_REACTIVITY_WATCH_HELPURL}",
+    tooltip: "%{BKY_REACTIVITY_WHEN_TOOLTIP}",
+    helpUrl: "%{BKY_REACTIVITY_WHEN_HELPURL}",
   },
 ]);
