@@ -22,4 +22,20 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_LINKS_CLICK_TOOLTIP}",
     helpUrl: "%{BKY_LINKS_CLICK_HELPURL}",
   },
+  {
+    type: "links_open_url",
+    message0: "%{BKY_LINKS_OPEN_URL}",
+    args0: [
+      {
+        type: "input_value",
+        name: "URL",
+        check: "String",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_LINKS_OPEN_URL_TOOLTIP}",
+    helpUrl: "%{BKY_LINKS_OPEN_URL_HELPURL}",
+  },
 ]);

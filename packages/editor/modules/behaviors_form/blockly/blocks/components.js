@@ -1,7 +1,7 @@
 import { defineBlocksWithJsonArray } from "blockly/core";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-function getOptions(components) {
+function getComponentOptions(components, prefix = "") {
   const { getComponentsByType, getComponentChildren } =
     useModule("app_components");
   let options = [];
@@ -12,10 +12,25 @@ function getOptions(components) {
 
   if (components.length > 0) {
     components.forEach((c) => {
-      options.push([c.name || "untitled", `${c.type}:${c.id}`]);
+      options.push([`${prefix} ${c.name || "untitled"}`, `${c.type}:${c.id}`]);
 
       const children = getComponentChildren(c);
-      options = [...options, ...getOptions(children)];
+      options = [...options, ...getComponentOptions(children, `—${prefix}`)];
+    });
+  }
+
+  return options;
+}
+
+function getScenarioOptions() {
+  const { getComponentsByType } = useModule("app_components");
+  let options = [];
+
+  const components = getComponentsByType("Scenario");
+
+  if (components.length > 0) {
+    components.forEach((c) => {
+      options.push([c.name || "untitled", c.id]);
     });
   }
 
@@ -30,7 +45,7 @@ defineBlocksWithJsonArray([
       {
         type: "field_dropdown",
         name: "COMPONENT",
-        options: getOptions,
+        options: getComponentOptions,
       },
     ],
     message1: "%{BKY_COMPONENTS_CLICK_THEN}",
@@ -51,7 +66,7 @@ defineBlocksWithJsonArray([
       {
         type: "field_dropdown",
         name: "COMPONENT",
-        options: getOptions,
+        options: getComponentOptions,
       },
     ],
     previousStatement: null,
@@ -67,7 +82,7 @@ defineBlocksWithJsonArray([
       {
         type: "field_dropdown",
         name: "COMPONENT",
-        options: getOptions,
+        options: getComponentOptions,
       },
     ],
     previousStatement: null,
@@ -75,5 +90,21 @@ defineBlocksWithJsonArray([
     style: "actions_blocks",
     tooltip: "%{BKY_COMPONENTS_HIDE_TOOLTIP}",
     helpUrl: "%{BKY_COMPONENTS_HIDE_HELPURL}",
+  },
+  {
+    type: "components_set_scenario",
+    message0: "%{BKY_COMPONENTS_SET_SCENARIO}",
+    args0: [
+      {
+        type: "field_dropdown",
+        name: "ID",
+        options: getScenarioOptions,
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_COMPONENTS_SET_SCENARIO_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_SET_SCENARIO_HELPURL}",
   },
 ]);

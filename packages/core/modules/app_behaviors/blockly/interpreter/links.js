@@ -32,6 +32,9 @@ export function init(context) {
         callback,
       });
     },
+    openUrl: (url) => {
+      window.open(url, "_blank");
+    },
   };
 }
 

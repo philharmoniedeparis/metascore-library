@@ -32,6 +32,9 @@ export default Blockly.Theme.defineTheme("metaScore", {
     math_category: {
       colour: "18",
     },
+    text_category: {
+      colour: "18",
+    },
     actions_category: {
       colour: "43",
     },
@@ -48,6 +51,9 @@ export default Blockly.Theme.defineTheme("metaScore", {
       colourPrimary: "18",
     },
     math_blocks: {
+      colourPrimary: "18",
+    },
+    text_blocks: {
       colourPrimary: "18",
     },
     actions_blocks: {

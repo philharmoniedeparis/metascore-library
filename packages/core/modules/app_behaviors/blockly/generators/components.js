@@ -37,3 +37,9 @@ JavaScript["components_hide"] = function (block) {
   const code = `Components.hide("${type}", "${id}");`;
   return code;
 };
+
+JavaScript["components_set_scenario"] = function (block) {
+  const id = block.getFieldValue("ID");
+  const code = `Components.setScenario("${id}");`;
+  return code;
+};

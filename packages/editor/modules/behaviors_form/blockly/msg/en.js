@@ -1,5 +1,12 @@
 import Msg from "blockly/msg/en";
 
+Msg.CATEGORIES_TRIGGERS = "Triggers";
+Msg.CATEGORIES_LOGIC = "Logic";
+Msg.CATEGORIES_MATH = "Math";
+Msg.CATEGORIES_TEXT = "Text";
+Msg.CATEGORIES_ACTIONS = "Actions";
+Msg.CATEGORIES_VARIABLES = "Variables";
+
 Msg.COMPONENTS_CLICK = "when component %1 is clicked";
 Msg.COMPONENTS_CLICK_THEN = "do %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -12,6 +19,10 @@ Msg.COMPONENTS_SHOW_HELPURL = "";
 Msg.COMPONENTS_HIDE = "hide %1";
 Msg.COMPONENTS_HIDE_TOOLTIP = "";
 Msg.COMPONENTS_HIDE_HELPURL = "";
+
+Msg.COMPONENTS_SET_SCENARIO = "activate the %1 scenario";
+Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
+Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
 
 Msg.GENERAL_STARTUP = "at startup";
 Msg.GENERAL_STARTUP_THEN = "do %1";
@@ -33,6 +44,10 @@ Msg.LINKS_CLICK = "when link %1 is clicked";
 Msg.LINKS_CLICK_THEN = "do %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
+
+Msg.LINKS_OPEN_URL = "open the url %1";
+Msg.LINKS_OPEN_URL_TOOLTIP = "";
+Msg.LINKS_OPEN_URL_HELPURL = "";
 
 Msg.MEDIA_GET_DURATION = "media duration";
 Msg.MEDIA_GET_DURATION_TOOLTIP = "Returns the media's duration in seconds.";

@@ -47,6 +47,10 @@ export function init(context) {
         hidden: true,
       });
     },
+    setScenario: (id) => {
+      const { setActiveScenario } = useModule("app_components");
+      setActiveScenario(id);
+    },
   };
 }
 

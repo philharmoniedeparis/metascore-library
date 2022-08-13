@@ -25,3 +25,10 @@ JavaScript["links_click"] = function (block) {
 
   return code;
 };
+
+JavaScript["links_open_url"] = function (block) {
+  const url =
+    JavaScript.valueToCode(block, "URL", JavaScript.ORDER_ASSIGNMENT) || "";
+  const code = `Links.openUrl(${url});`;
+  return code;
+};

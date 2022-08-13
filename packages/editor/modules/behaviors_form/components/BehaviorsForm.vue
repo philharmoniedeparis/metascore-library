@@ -5,6 +5,7 @@
       "triggers": "Déclencheurs",
       "logic": "Logique",
       "math": "Mathématiques",
+      "text": "Texte",
       "actions": "Actions",
       "variables": "Variables",
     }
@@ -14,6 +15,7 @@
       "triggers": "Triggers",
       "logic": "Logic",
       "math": "Math",
+      "text": "Text",
       "actions": "Actions",
       "variables": "Variables",
     }
@@ -104,6 +106,30 @@ export default {
           },
           {
             kind: "category",
+            name: this.$t("categories.actions"),
+            categorystyle: "actions_category",
+            contents: [
+              { kind: "block", type: "media_play" },
+              { kind: "block", type: "media_pause" },
+              { kind: "block", type: "media_stop" },
+              { kind: "block", type: "components_show" },
+              { kind: "block", type: "components_hide" },
+              { kind: "block", type: "components_set_scenario" },
+              {
+                kind: "block",
+                type: "links_open_url",
+                inputs: {
+                  URL: {
+                    block: {
+                      type: "text",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          {
+            kind: "category",
             name: this.$t("categories.logic"),
             categorystyle: "logic_category",
             contents: [
@@ -125,15 +151,9 @@ export default {
           },
           {
             kind: "category",
-            name: this.$t("categories.actions"),
-            categorystyle: "actions_category",
-            contents: [
-              { kind: "block", type: "media_play" },
-              { kind: "block", type: "media_pause" },
-              { kind: "block", type: "media_stop" },
-              { kind: "block", type: "components_show" },
-              { kind: "block", type: "components_hide" },
-            ],
+            name: this.$t("categories.text"),
+            categorystyle: "text_category",
+            contents: [{ kind: "block", type: "text" }],
           },
           {
             kind: "category",
