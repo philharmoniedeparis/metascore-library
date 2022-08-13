@@ -1,7 +1,6 @@
 import JavaScript from "blockly/javascript";
 
-JavaScript["keyboard_keypressed"] = function (block) {
-  const key = block.getFieldValue("KEY");
+JavaScript["general_startup"] = function (block) {
   const statement = JavaScript.statementToCode(block, "STATEMENT");
 
   let code = "";
@@ -11,9 +10,7 @@ JavaScript["keyboard_keypressed"] = function (block) {
     code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
   }
 
-  code += `Keyboard.addEventListener("${key}", "keydown", function () {\n`;
   code += statement;
-  code += "});\n";
 
   if (JavaScript.STATEMENT_SUFFIX) {
     code =

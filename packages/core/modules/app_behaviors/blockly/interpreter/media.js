@@ -8,6 +8,10 @@ export function init(context) {
 
   // Add 'MediaTime' object to context.
   context.Media = {
+    getDuration: () => {
+      const { duration } = useModule("media_player");
+      return unref(duration);
+    },
     getTime: () => {
       const { time } = useModule("media_player");
       return unref(time);
@@ -15,6 +19,10 @@ export function init(context) {
     setTime: (time) => {
       const { seekTo } = useModule("media_player");
       seekTo(time);
+    },
+    isPlaying() {
+      const { playing } = useModule("media_player");
+      return unref(playing);
     },
     play() {
       const { play } = useModule("media_player");

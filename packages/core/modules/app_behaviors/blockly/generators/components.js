@@ -11,7 +11,9 @@ JavaScript["components_click"] = function (block) {
     code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
   }
 
-  code += `Components.addEventListener("${type}", "${id}", "click", "${statement}");\n`;
+  code += `Components.addEventListener("${type}", "${id}", "click", function () {\n`;
+  code += statement;
+  code += "});\n";
 
   if (JavaScript.STATEMENT_SUFFIX) {
     code =

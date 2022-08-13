@@ -30,13 +30,14 @@
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
 import Blockly from "blockly/core";
+import Theme from "../blockly/theme";
+import { DisableTopBlocks } from "@blockly/disable-top-blocks";
 import {
   ContinuousToolbox,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
-import "blockly/blocks";
-import Theme from "../blockly/theme";
 import Flyout from "../blockly/plugins/flyout";
+import "blockly/blocks";
 import "../blockly/blocks";
 
 export default {
@@ -67,9 +68,9 @@ export default {
       theme: Theme,
       renderer: "zelos",
       grid: {
-        spacing: 200,
-        length: 200,
-        colour: "rgba(255, 255, 255, 0.1)",
+        spacing: 100,
+        length: 100,
+        colour: "rgba(255, 255, 255, 0.25)",
         snap: true,
       },
       zoom: {
@@ -94,6 +95,7 @@ export default {
             name: this.$t("categories.triggers"),
             categorystyle: "triggers_category",
             contents: [
+              { kind: "block", type: "general_startup" },
               { kind: "block", type: "keyboard_keypressed" },
               { kind: "block", type: "components_click" },
               { kind: "block", type: "links_click" },
@@ -140,6 +142,8 @@ export default {
             contents: [
               { kind: "block", type: "media_get_time" },
               { kind: "block", type: "media_set_time" },
+              { kind: "block", type: "media_get_duration" },
+              { kind: "block", type: "media_playing" },
             ],
           },
           {
@@ -153,7 +157,12 @@ export default {
 
     this.deserialize(this.behaviors);
 
+    // Listen to changes to update behaviors.
     this.workspace.addChangeListener(this.onWorkspaceChange);
+
+    // Setup the DisableTopBlocks plugin.
+    this.workspace.addChangeListener(Blockly.Events.disableOrphans);
+    new DisableTopBlocks().init();
 
     this._resize_observer = new ResizeObserver(this.updateSize);
     this._resize_observer.observe(this.$el);
@@ -173,9 +182,7 @@ export default {
       Blockly.serialization.workspaces.load(state || {}, this.workspace);
     },
     onWorkspaceChange(evt) {
-      if (evt.isUiEvent) {
-        return;
-      }
+      if (evt.isUiEvent || !evt.workspaceId) return;
 
       if (!this.loaded) {
         if (evt.type === "finished_loading") {

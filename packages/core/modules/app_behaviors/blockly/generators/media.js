@@ -1,5 +1,10 @@
 import JavaScript from "blockly/javascript";
 
+JavaScript["media_duration"] = function () {
+  const code = "Media.getDuration()";
+  return [code, JavaScript.ORDER_FUNCTION_CALL];
+};
+
 JavaScript["media_get_time"] = function () {
   const code = "Media.getTime()";
   return [code, JavaScript.ORDER_FUNCTION_CALL];
@@ -10,6 +15,11 @@ JavaScript["media_set_time"] = function (block) {
     JavaScript.valueToCode(block, "VALUE", JavaScript.ORDER_ASSIGNMENT) || "0";
   const code = `Media.setTime(${value});`;
   return code;
+};
+
+JavaScript["media_playing"] = function () {
+  const code = "Media.isPlaying()";
+  return [code, JavaScript.ORDER_FUNCTION_CALL];
 };
 
 JavaScript["media_play"] = function () {

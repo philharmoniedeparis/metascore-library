@@ -4,6 +4,7 @@
   "description": "",
   "dependencies": {
     "@blockly/continuous-toolbox": "^2.0.37",
+    "@blockly/disable-top-blocks": "^0.1.42",
     "blockly": "^8.0.3",
     "lodash": "^4.17.21"
   }

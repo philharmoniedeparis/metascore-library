@@ -1,7 +1,7 @@
 import Blockly from "blockly/core";
 
 Blockly.HSV_SATURATION = 0.99;
-Blockly.HSV_VALUE = 0.99;
+Blockly.HSV_VALUE = 0.9;
 
 export default Blockly.Theme.defineTheme("metaScore", {
   base: Blockly.Themes.Classic,

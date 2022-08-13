@@ -1,8 +1,9 @@
 import { compileCode } from "@nx-js/compiler-util";
 import { isEmpty } from "lodash";
 import * as Components from "./components";
-import * as Medai from "./media";
 import * as Keyboard from "./keyboard";
+import * as Links from "./links";
+import * as Medai from "./media";
 import * as Reactivity from "./reactivity";
 
 export function exec(code) {
@@ -14,8 +15,9 @@ export function exec(code) {
 
   const context = {};
   Components.init(context);
-  Medai.init(context);
   Keyboard.init(context);
+  Links.init(context);
+  Medai.init(context);
   Reactivity.init(context);
 
   try {
@@ -29,5 +31,6 @@ export function exec(code) {
 export function reset() {
   Components.reset();
   Keyboard.reset();
+  Links.reset();
   Reactivity.reset();
 }
