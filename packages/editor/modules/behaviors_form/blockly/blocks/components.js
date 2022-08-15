@@ -1,4 +1,5 @@
 import { defineBlocksWithJsonArray } from "blockly/core";
+import "../fields/field_enhanced_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 function getComponentOptions(components, prefix = "") {
@@ -12,7 +13,20 @@ function getComponentOptions(components, prefix = "") {
 
   if (components.length > 0) {
     components.forEach((c) => {
-      options.push([`${prefix} ${c.name || "untitled"}`, `${c.type}:${c.id}`]);
+      if (c.type === "Scenario") {
+        options.push([
+          {
+            label: `${prefix} ${c.name || "untitled"}`,
+            disabled: true,
+          },
+          `${c.type}:${c.id}`,
+        ]);
+      } else {
+        options.push([
+          `${prefix} ${c.name || "untitled"}`,
+          `${c.type}:${c.id}`,
+        ]);
+      }
 
       const children = getComponentChildren(c);
       options = [...options, ...getComponentOptions(children, `—${prefix}`)];
@@ -43,7 +57,7 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_CLICK}",
     args0: [
       {
-        type: "field_dropdown",
+        type: "field_enhanced_dropdown",
         name: "COMPONENT",
         options: getComponentOptions,
       },
@@ -64,7 +78,7 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_SHOW}",
     args0: [
       {
-        type: "field_dropdown",
+        type: "field_enhanced_dropdown",
         name: "COMPONENT",
         options: getComponentOptions,
       },
@@ -80,7 +94,7 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_HIDE}",
     args0: [
       {
-        type: "field_dropdown",
+        type: "field_enhanced_dropdown",
         name: "COMPONENT",
         options: getComponentOptions,
       },
