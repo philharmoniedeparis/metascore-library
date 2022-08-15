@@ -24,8 +24,27 @@ export function init(context) {
       const { playing } = useModule("media_player");
       return unref(playing);
     },
-    play() {
-      const { play } = useModule("media_player");
+    play(from = null, to = null) {
+      const { play, pause, seekTo } = useModule("media_player");
+      const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+
+      if (from !== null || to !== null) {
+        addCuepoint({
+          startTime: from,
+          endTime: to,
+          onStop: () => {
+            pause();
+          },
+          onSeekout: ({ cuepoint }) => {
+            removeCuepoint(cuepoint);
+          },
+        });
+
+        if (from !== null) {
+          seekTo(from);
+        }
+      }
+
       play();
     },
     pause: () => {

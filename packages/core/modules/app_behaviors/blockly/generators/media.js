@@ -23,16 +23,27 @@ JavaScript["media_playing"] = function () {
 };
 
 JavaScript["media_play"] = function () {
-  const code = `Media.play();`;
+  const code = "Media.play();";
+  return code;
+};
+
+JavaScript["media_play_excerpt"] = function (block) {
+  const from = JavaScript.valueToCode(
+    block,
+    "FROM",
+    JavaScript.ORDER_ASSIGNMENT
+  );
+  const to = JavaScript.valueToCode(block, "TO", JavaScript.ORDER_ASSIGNMENT);
+  const code = `Media.play(${from}, ${to});`;
   return code;
 };
 
 JavaScript["media_pause"] = function () {
-  const code = `Media.pause();`;
+  const code = "Media.pause();";
   return code;
 };
 
 JavaScript["media_stop"] = function () {
-  const code = `Media.stop();`;
+  const code = "Media.stop();";
   return code;
 };

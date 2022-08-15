@@ -110,6 +110,14 @@ export default {
             categorystyle: "actions_category",
             contents: [
               { kind: "block", type: "media_play" },
+              {
+                kind: "block",
+                type: "media_play_excerpt",
+                inputs: {
+                  FROM: { block: { type: "math_number" } },
+                  TO: { block: { type: "math_number" } },
+                },
+              },
               { kind: "block", type: "media_pause" },
               { kind: "block", type: "media_stop" },
               { kind: "block", type: "components_show" },
@@ -119,11 +127,7 @@ export default {
                 kind: "block",
                 type: "links_open_url",
                 inputs: {
-                  URL: {
-                    block: {
-                      type: "text",
-                    },
-                  },
+                  URL: { block: { type: "text" } },
                 },
               },
             ],

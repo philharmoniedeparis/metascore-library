@@ -1,12 +1,5 @@
 import Msg from "blockly/msg/en";
 
-Msg.CATEGORIES_TRIGGERS = "Triggers";
-Msg.CATEGORIES_LOGIC = "Logic";
-Msg.CATEGORIES_MATH = "Math";
-Msg.CATEGORIES_TEXT = "Text";
-Msg.CATEGORIES_ACTIONS = "Actions";
-Msg.CATEGORIES_VARIABLES = "Variables";
-
 Msg.COMPONENTS_CLICK = "when component %1 is clicked";
 Msg.COMPONENTS_CLICK_THEN = "do %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -24,7 +17,7 @@ Msg.COMPONENTS_SET_SCENARIO = "activate the %1 scenario";
 Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
 Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
 
-Msg.GENERAL_STARTUP = "at startup";
+Msg.GENERAL_STARTUP = "at application startup";
 Msg.GENERAL_STARTUP_THEN = "do %1";
 Msg.GENERAL_STARTUP_TOOLTIP = "";
 Msg.GENERAL_STARTUP_HELPURL = "";
@@ -61,7 +54,7 @@ Msg.MEDIA_SET_TIME = "set the media time to %1";
 Msg.MEDIA_SET_TIME_TOOLTIP = "Sets the media time to be equal to the input.";
 Msg.MEDIA_SET_TIME_HELPURL = "";
 
-Msg.MEDIA_PLAYING = "playing";
+Msg.MEDIA_PLAYING = "is playing";
 Msg.MEDIA_PLAYING_TOOLTIP =
   "Returns true if the media is playing, false otherwise.";
 Msg.MEDIA_PLAYING_HELPURL = "";
@@ -69,6 +62,10 @@ Msg.MEDIA_PLAYING_HELPURL = "";
 Msg.MEDIA_PLAY = "start playback";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
+
+Msg.MEDIA_PLAY_EXCERPT = "play excerpt from %1 to %2";
+Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
+Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
 Msg.MEDIA_PAUSE = "pause playback";
 Msg.MEDIA_PAUSE_TOOLTIP = "";

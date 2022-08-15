@@ -51,6 +51,28 @@ defineBlocksWithJsonArray([
     helpUrl: "%{BKY_MEDIA_PLAY_HELPURL}",
   },
   {
+    type: "media_play_excerpt",
+    message0: "%{BKY_MEDIA_PLAY_EXCERPT}",
+    args0: [
+      {
+        type: "input_value",
+        name: "FROM",
+        check: "Number",
+      },
+      {
+        type: "input_value",
+        name: "TO",
+        check: "Number",
+      },
+    ],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_MEDIA_PLAY_EXCERPT_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_PLAY_EXCERPT_HELPURL}",
+  },
+  {
     type: "media_pause",
     message0: "%{BKY_MEDIA_PAUSE}",
     previousStatement: null,

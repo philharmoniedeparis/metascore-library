@@ -6,11 +6,12 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "./store";
 import MediaPlayer from "../media_player";
 import AppComponents from "../app_components";
+import MediaCuepoints from "../media_cuepoints";
 
 export default class AppBehaviorsModule extends AbstractModule {
   static id = "app_behaviors";
 
-  static dependencies = [MediaPlayer, AppComponents];
+  static dependencies = [MediaPlayer, AppComponents, MediaCuepoints];
 
   constructor(context) {
     super(context);

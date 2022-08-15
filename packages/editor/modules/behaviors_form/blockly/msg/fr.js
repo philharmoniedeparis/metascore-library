@@ -1,12 +1,5 @@
 import Msg from "blockly/msg/fr";
 
-Msg.CATEGORIES_TRIGGERS = "Déclencheurs";
-Msg.CATEGORIES_LOGIC = "Logique";
-Msg.CATEGORIES_MATH = "Mathématiques";
-Msg.CATEGORIES_TEXT = "Texte";
-Msg.CATEGORIES_ACTIONS = "Actions";
-Msg.CATEGORIES_VARIABLES = "Variables";
-
 Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -24,7 +17,7 @@ Msg.COMPONENTS_SET_SCENARIO = "activer le scénario %1";
 Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
 Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
 
-Msg.GENERAL_STARTUP = "au démarrage";
+Msg.GENERAL_STARTUP = "au chargement de l'application";
 Msg.GENERAL_STARTUP_THEN = "faire %1";
 Msg.GENERAL_STARTUP_TOOLTIP = "";
 Msg.GENERAL_STARTUP_HELPURL = "";
@@ -62,7 +55,7 @@ Msg.MEDIA_SET_TIME_TOOLTIP =
   "Définit le temp du média pour qu’il soit égale à la valeur de l’entrée.";
 Msg.MEDIA_SET_TIME_HELPURL = "";
 
-Msg.MEDIA_PLAYING = "lecture en cours";
+Msg.MEDIA_PLAYING = "la lecture est en cours";
 Msg.MEDIA_PLAYING_TOOLTIP =
   "Retourne vrai si le média est en cours de lecture, faux autrement.";
 Msg.MEDIA_PLAYING_HELPURL = "";
@@ -70,6 +63,10 @@ Msg.MEDIA_PLAYING_HELPURL = "";
 Msg.MEDIA_PLAY = "lancer la lacture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
+
+Msg.MEDIA_PLAY_EXCERPT = "lire l'extrait de %1 à %2";
+Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
+Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
 Msg.MEDIA_PAUSE = "suspendre la lecture";
 Msg.MEDIA_PAUSE_TOOLTIP = "";
