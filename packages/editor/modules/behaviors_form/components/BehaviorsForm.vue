@@ -31,6 +31,7 @@
 
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { markRaw } from "vue";
 import Blockly from "blockly/core";
 import Theme from "../blockly/theme";
 import { DisableTopBlocks } from "@blockly/disable-top-blocks";
@@ -66,7 +67,8 @@ export default {
 
     Blockly.setLocale(blocklyLocale);
 
-    this.workspace = Blockly.inject(this.$refs.blockly, {
+    this.workspace = markRaw(
+      Blockly.inject(this.$refs.blockly, {
       theme: Theme,
       renderer: "zelos",
       grid: {
@@ -177,7 +179,8 @@ export default {
           },
         ],
       },
-    });
+      })
+    );
 
     this.deserialize(this.behaviors);
 
