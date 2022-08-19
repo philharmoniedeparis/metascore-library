@@ -21,9 +21,9 @@
         <div class="time" @click.stop>
           {{ ovelayLabel }}
         </div>
-        <styled-button type="button" @click.stop="deleteActiveKeyframe">
+        <base-button type="button" @click.stop="deleteActiveKeyframe">
           <template #icon><clear-icon /></template>
-        </styled-button>
+        </base-button>
       </div>
     </div>
   </div>

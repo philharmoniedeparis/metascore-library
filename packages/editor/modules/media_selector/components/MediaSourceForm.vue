@@ -44,18 +44,18 @@
     />
 
     <template #actions="props">
-      <styled-button :form="props.form" role="primary">
+      <base-button :form="props.form" role="primary">
         {{ $t("apply_button") }}
-      </styled-button>
+      </base-button>
 
-      <styled-button
+      <base-button
         type="button"
         :form="props.form"
         role="secondary"
         @click="onCancel"
       >
         {{ $t("cancel_button") }}
-      </styled-button>
+      </base-button>
     </template>
   </modal-form>
 </template>

@@ -1,8 +1,8 @@
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <styled-button type="button" @click="showForm = true">
+    <base-button type="button" @click="showForm = true">
       {{ mediaSource.name }}
-    </styled-button>
+    </base-button>
 
     <media-source-form
       v-if="showForm"
@@ -59,7 +59,7 @@ export default {
 
 <style lang="scss" scoped>
 .media-selector {
-  ::v-deep(.styled-button) {
+  ::v-deep(.base-button) {
     display: block;
     width: 100%;
     padding: 0;

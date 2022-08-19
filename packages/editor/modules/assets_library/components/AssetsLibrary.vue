@@ -53,10 +53,10 @@
       </template>
 
       <template v-if="store.canGenerateSpectrogram">
-        <styled-button type="button" @click="showSpectrogramForm = true">
+        <base-button type="button" @click="showSpectrogramForm = true">
           {{ $t("spectrogram_button") }}
           <template #icon><spectrogram-icon /></template>
-        </styled-button>
+        </base-button>
         <spectrogram-form
           v-if="showSpectrogramForm"
           @submit="onSpectrogramFormSubmit"
@@ -65,10 +65,10 @@
       </template>
 
       <template v-if="store.canGenerateAudiowaveform">
-        <styled-button type="button" @click="showAudiowaveformForm = true">
+        <base-button type="button" @click="showAudiowaveformForm = true">
           {{ $t("audiowaveform_button") }}
           <template #icon><audiowaveform-icon /></template>
-        </styled-button>
+        </base-button>
         <audiowaveform-form
           v-if="showAudiowaveformForm"
           @submit="onAudiowaveformFormSubmit"

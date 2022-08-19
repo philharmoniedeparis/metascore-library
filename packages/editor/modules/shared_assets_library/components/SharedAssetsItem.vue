@@ -18,9 +18,9 @@
         :src="file.url"
       />
 
-      <styled-button type="button" @click="onImportClick">
+      <base-button type="button" @click="onImportClick">
         {{ $t("import_button") }}
-      </styled-button>
+      </base-button>
 
       <figcaption>{{ label }}</figcaption>
     </figure>

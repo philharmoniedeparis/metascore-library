@@ -5,7 +5,7 @@ import FormGroup from "../form_group";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import SharedAssetsLibrary from "./components/SharedAssetsLibrary";
 import SharedAssetsToolbar from "./components/SharedAssetsToolbar";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import useStore from "./store";
 
 export default class SharedAssetsLibraryModule extends AbstractModule {
@@ -16,7 +16,7 @@ export default class SharedAssetsLibraryModule extends AbstractModule {
     AseetsLibrary,
     FormGroup,
     ProgressIndicator,
-    StyledButton,
+    BaseButton,
   ];
 
   constructor({ app }) {

@@ -56,12 +56,12 @@
     <resizable-pane class="top">
       <nav class="main-menu">
         <div class="left">
-          <styled-button
+          <base-button
             :disabled="!dirty || !isLatestRevision"
             @click="onSaveClick"
           >
             <template #icon><save-icon /></template>
-          </styled-button>
+          </base-button>
           <history-controller :disabled="!isLatestRevision" />
           <text-control
             v-model="appTitle"

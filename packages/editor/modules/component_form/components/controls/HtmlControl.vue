@@ -4,13 +4,13 @@
     :description="description"
     :required="required"
   >
-    <styled-button
+    <base-button
       type="button"
       :loading="setting_up_editor"
       @click="onButtonClick"
     >
       {{ label }}
-    </styled-button>
+    </base-button>
 
     <div ref="toolbar-container" class="toolbar-container" />
   </form-group>

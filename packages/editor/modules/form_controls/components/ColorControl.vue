@@ -54,12 +54,12 @@
         </tabs-item>
       </tabs-container>
       <div class="buttons">
-        <styled-button class="apply" role="primary" @click="onApplyClick(hide)">
+        <base-button class="apply" role="primary" @click="onApplyClick(hide)">
           {{ $t("apply_button") }}
-        </styled-button>
-        <styled-button class="cancel" role="secondary" @click="onCancelClick">
+        </base-button>
+        <base-button class="cancel" role="secondary" @click="onCancelClick">
           {{ $t("cancel_button") }}
-        </styled-button>
+        </base-button>
       </div>
     </div>
   </form-group>

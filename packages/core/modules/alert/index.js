@@ -1,12 +1,12 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import Modal from "../modal";
-import StyledButton from "../styled_button";
+import BaseButton from "../button";
 import AlertDialog from "./components/AlertDialog";
 
 export default class AlertModule extends AbstractModule {
   static id = "alert";
 
-  static dependencies = [Modal, StyledButton];
+  static dependencies = [Modal, BaseButton];
 
   constructor({ app }) {
     super(arguments);

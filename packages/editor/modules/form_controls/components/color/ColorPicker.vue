@@ -38,20 +38,20 @@
     </div>
     <div class="format">
       <text-control ref="text" v-model="text" :lazy="true" />
-      <styled-button
+      <base-button
         :class="['hexa', { selected: format == 'hexa' }]"
         type="button"
         @click="format = 'hexa'"
       >
         {{ $t("hexa_button") }}
-      </styled-button>
-      <styled-button
+      </base-button>
+      <base-button
         :class="['rgba', { selected: format == 'rgba' }]"
         type="button"
         @click="format = 'rgba'"
       >
         {{ $t("rgba_button") }}
-      </styled-button>
+      </base-button>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import AutoFocus from "@metascore-library/core/modules/auto_focus";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import FormGroup from "../form_group";
 import TimecodeInput from "../timecode_input";
 
@@ -16,7 +16,7 @@ import UrlControl from "./components/UrlControl";
 export default class FormControlsModule extends AbstractModule {
   static id = "form_controls";
 
-  static dependencies = [AutoFocus, StyledButton, FormGroup, TimecodeInput];
+  static dependencies = [AutoFocus, BaseButton, FormGroup, TimecodeInput];
 
   constructor({ app }) {
     super(arguments);

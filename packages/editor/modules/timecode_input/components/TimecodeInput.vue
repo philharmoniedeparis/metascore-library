@@ -20,30 +20,30 @@
       v-if="!disabled && (inButton || outButton || clearButton)"
       class="buttons"
     >
-      <styled-button
+      <base-button
         v-if="inButton && !readonly"
         type="button"
         class="in"
         @click="onInClick"
       >
         <template #icon><in-icon /></template>
-      </styled-button>
-      <styled-button
+      </base-button>
+      <base-button
         v-if="outButton"
         type="button"
         class="out"
         @click="onOutClick"
       >
         <template #icon><out-icon /></template>
-      </styled-button>
-      <styled-button
+      </base-button>
+      <base-button
         v-if="clearButton && !readonly"
         type="button"
         class="clear"
         @click="onClearClick"
       >
         <template #icon><clear-icon /></template>
-      </styled-button>
+      </base-button>
     </div>
   </div>
 </template>

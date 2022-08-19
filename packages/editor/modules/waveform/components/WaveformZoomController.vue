@@ -1,6 +1,6 @@
 <template>
   <div class="waveform--zoom-controller">
-    <styled-button
+    <base-button
       type="button"
       title="Zoom out"
       class="zoom-out"
@@ -8,13 +8,13 @@
       @mouseup="onButtonMouseup"
     >
       <template #icon><zoom-icon /></template>
-    </styled-button>
+    </base-button>
 
     <div ref="slider" class="slider">
       <div class="thumb" :style="`left: ${sliderThumbLeft}%;`"></div>
     </div>
 
-    <styled-button
+    <base-button
       type="button"
       title="Zoom in"
       class="zoom-in"
@@ -22,7 +22,7 @@
       @mouseup="onButtonMouseup"
     >
       <template #icon><zoom-icon /></template>
-    </styled-button>
+    </base-button>
   </div>
 </template>
 

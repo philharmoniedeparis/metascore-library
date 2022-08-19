@@ -19,13 +19,13 @@
     </div>
 
     <template #footer>
-      <styled-button type="button" role="primary" @click="$emit('submit')">
+      <base-button type="button" role="primary" @click="$emit('submit')">
         {{ submitLabelWithDefault }}
-      </styled-button>
+      </base-button>
 
-      <styled-button type="button" role="secondary" @click="$emit('cancel')">
+      <base-button type="button" role="secondary" @click="$emit('cancel')">
         {{ cancelLabelWithDefault }}
-      </styled-button>
+      </base-button>
     </template>
   </base-modal>
 </template>

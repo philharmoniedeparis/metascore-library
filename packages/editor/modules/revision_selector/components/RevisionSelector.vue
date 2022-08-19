@@ -17,13 +17,9 @@
   <div class="revision-selector">
     <select-control v-model="internalValue" :options="options" />
 
-    <styled-button
-      type="button"
-      :disabled="!canRestore"
-      @click="onRestoreClick"
-    >
+    <base-button type="button" :disabled="!canRestore" @click="onRestoreClick">
       {{ $t("restore_button") }}
-    </styled-button>
+    </base-button>
 
     <confirm-dialog
       v-if="showConfirm"

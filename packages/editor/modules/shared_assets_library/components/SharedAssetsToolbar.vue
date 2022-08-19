@@ -19,7 +19,7 @@
       <input v-model="filters.terms" :placeholder="$t('terms_placeholder')" />
     </form-group>
 
-    <styled-button
+    <base-button
       v-for="(value, key) in tags"
       :key="key"
       :class="['tag', { active: isTagActive(key) }]"
@@ -27,7 +27,7 @@
       @click="toggleTag(key)"
     >
       {{ $t(value.label) }}
-    </styled-button>
+    </base-button>
   </div>
 </template>
 

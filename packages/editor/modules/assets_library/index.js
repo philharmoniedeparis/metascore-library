@@ -8,7 +8,7 @@ import Confirm from "@metascore-library/core/modules/confirm";
 import FormControls from "../form_controls";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import SchemaForm from "../schema_form";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import AssetsLibrary from "./components/AssetsLibrary";
 
 export default class AssetsLibraryModule extends AbstractModule {
@@ -21,7 +21,7 @@ export default class AssetsLibraryModule extends AbstractModule {
     FormControls,
     ProgressIndicator,
     SchemaForm,
-    StyledButton,
+    BaseButton,
   ];
 
   constructor({ app }) {

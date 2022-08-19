@@ -3,7 +3,7 @@
     :type="type"
     :disabled="disabled"
     :class="[
-      'styled-button',
+      'base-button',
       role,
       { 'has-icon': $slots.icon, 'has-content': $slots.default, loading },
     ]"
@@ -41,7 +41,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.styled-button {
+.base-button {
   position: relative;
   width: max-content;
   display: inline-flex;

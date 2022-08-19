@@ -16,14 +16,14 @@
     :class="['control', 'cursor-keyframes', { disabled, recording }]"
     :description="description"
   >
-    <styled-button type="button" @click="onButtonClick">
+    <base-button type="button" @click="onButtonClick">
       <template v-if="recording">
         {{ $t("stop_recording") }}
       </template>
       <template v-else>
         {{ $t("start_recording") }}
       </template>
-    </styled-button>
+    </base-button>
 
     <teleport v-if="recording" :to="appComponentEl">
       <cursor-keyframes-editor v-model="value" />

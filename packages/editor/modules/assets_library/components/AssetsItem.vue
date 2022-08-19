@@ -30,9 +30,9 @@
       <figcaption>{{ label }}</figcaption>
     </figure>
 
-    <styled-button type="button" title="Supprimer" @click="onDeleteClick">
+    <base-button type="button" title="Supprimer" @click="onDeleteClick">
       <template #icon><delete-icon /></template>
-    </styled-button>
+    </base-button>
     <confirm-dialog
       v-if="showDeleteConfirm"
       @submit="onDeleteSubmit"
