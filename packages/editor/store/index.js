@@ -84,23 +84,19 @@ export default defineStore("editor", {
       });
 
       const { width, height, css } = data;
-      const {
-        init: initAppRenderer,
-        addStoreActionListener: addAppRendererStoreActionListener,
-      } = useModule("app_renderer");
+      const { init: initAppRenderer, onStoreAction: onAppRendererStoreAction } =
+        useModule("app_renderer");
       initAppRenderer({ width, height, css });
-      addAppRendererStoreActionListener(({ name }) => {
+      onAppRendererStoreAction(({ name }) => {
         if (["width", "height"].includes(name)) {
           this.setDirty("media");
         }
       });
 
-      const {
-        setSource: setMediaSource,
-        addStoreActionListener: addMediaStoreActionListener,
-      } = useModule("media_player");
+      const { setSource: setMediaSource, onStoreAction: onMediaStoreAction } =
+        useModule("media_player");
       setMediaSource(data.media);
-      addMediaStoreActionListener(({ name }) => {
+      onMediaStoreAction(({ name }) => {
         if (["setSource"].includes(name)) {
           this.setDirty("media");
         }
@@ -108,12 +104,12 @@ export default defineStore("editor", {
 
       const {
         init: initComponents,
-        addStoreActionListener: addComponentsStoreActionListener,
+        onStoreAction: onComponentsStoreAction,
         activeScenario,
         setActiveScenario,
       } = useModule("app_components");
       await initComponents(data.components);
-      addComponentsStoreActionListener(({ name, args }) => {
+      onComponentsStoreAction(({ name, args }) => {
         if (["add", "update", "delete"].includes(name)) {
           this.setDirty("components");
 
@@ -126,12 +122,19 @@ export default defineStore("editor", {
         }
       });
 
-      const {
-        init: initAssets,
-        addStoreActionListener: addAssetsStoreActionListener,
-      } = useModule("assets_library");
+      const { init: initBehaviors, onStoreAction: onBehaviorsStoreAction } =
+        useModule("app_behaviors");
+      await initBehaviors(data.behaviors);
+      onBehaviorsStoreAction(({ name }) => {
+        if (name === "update") {
+          this.setDirty("behaviors");
+        }
+      });
+
+      const { init: initAssets, onStoreAction: onAssetsStoreAction } =
+        useModule("assets_library");
       initAssets(data.assets);
-      addAssetsStoreActionListener(({ name }) => {
+      onAssetsStoreAction(({ name }) => {
         if (["add", "delete"].includes(name)) {
           this.setDirty("assets");
         }

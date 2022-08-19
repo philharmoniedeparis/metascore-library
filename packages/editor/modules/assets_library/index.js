@@ -61,7 +61,7 @@ export default class AssetsLibraryModule extends AbstractModule {
     return store.upload(files);
   }
 
-  addStoreActionListener(callback) {
+  onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);
   }

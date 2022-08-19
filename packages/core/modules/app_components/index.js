@@ -145,7 +145,7 @@ export default class AppComponentsModule extends AbstractModule {
     store.activeScenario = value;
   }
 
-  addStoreActionListener(callback) {
+  onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);
   }

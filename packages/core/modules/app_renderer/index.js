@@ -62,7 +62,7 @@ export default class AppRendererModule extends AbstractModule {
     store.setCSS(value);
   }
 
-  addStoreActionListener(callback) {
+  onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);
   }

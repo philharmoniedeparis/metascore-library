@@ -111,7 +111,7 @@ export default class MediaPlayerModule extends AbstractModule {
     store.seekTo(value);
   }
 
-  addStoreActionListener(callback) {
+  onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);
   }
