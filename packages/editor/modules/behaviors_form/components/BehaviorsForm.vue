@@ -46,7 +46,8 @@ import "../blockly/blocks";
 export default {
   props: {},
   setup() {
-    const { behaviors, setBehaviors } = useModule("app_behaviors");
+    const { data: behaviors, setData: setBehaviors } =
+      useModule("app_behaviors");
     return { behaviors, setBehaviors };
   },
   data() {
@@ -69,116 +70,116 @@ export default {
 
     this.workspace = markRaw(
       Blockly.inject(this.$refs.blockly, {
-      theme: Theme,
-      renderer: "zelos",
-      grid: {
-        spacing: 100,
-        length: 100,
-        colour: "rgba(255, 255, 255, 0.25)",
-        snap: true,
-      },
-      zoom: {
-        controls: true,
-        wheel: false,
-        pinch: true,
-        startScale: 0.675,
-        maxScale: 3,
-        minScale: 0.3,
-        scaleSpeed: 1.2,
-      },
-      plugins: {
-        toolbox: ContinuousToolbox,
-        flyoutsVerticalToolbox: Flyout,
-        metricsManager: ContinuousMetrics,
-      },
-      toolbox: {
-        kind: "categoryToolbox",
-        contents: [
-          {
-            kind: "category",
-            name: this.$t("categories.triggers"),
-            categorystyle: "triggers_category",
-            contents: [
-              { kind: "block", type: "general_startup" },
-              { kind: "block", type: "keyboard_keypressed" },
-              { kind: "block", type: "components_click" },
-              { kind: "block", type: "links_click" },
-              { kind: "block", type: "reactivity_when" },
-            ],
-          },
-          {
-            kind: "category",
-            name: this.$t("categories.actions"),
-            categorystyle: "actions_category",
-            contents: [
-              { kind: "block", type: "media_play" },
-              {
-                kind: "block",
-                type: "media_play_excerpt",
-                inputs: {
-                  FROM: { block: { type: "math_number" } },
-                  TO: { block: { type: "math_number" } },
+        theme: Theme,
+        renderer: "zelos",
+        grid: {
+          spacing: 100,
+          length: 100,
+          colour: "rgba(255, 255, 255, 0.25)",
+          snap: true,
+        },
+        zoom: {
+          controls: true,
+          wheel: false,
+          pinch: true,
+          startScale: 0.675,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
+        },
+        plugins: {
+          toolbox: ContinuousToolbox,
+          flyoutsVerticalToolbox: Flyout,
+          metricsManager: ContinuousMetrics,
+        },
+        toolbox: {
+          kind: "categoryToolbox",
+          contents: [
+            {
+              kind: "category",
+              name: this.$t("categories.triggers"),
+              categorystyle: "triggers_category",
+              contents: [
+                { kind: "block", type: "general_startup" },
+                { kind: "block", type: "keyboard_keypressed" },
+                { kind: "block", type: "components_click" },
+                { kind: "block", type: "links_click" },
+                { kind: "block", type: "reactivity_when" },
+              ],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.actions"),
+              categorystyle: "actions_category",
+              contents: [
+                { kind: "block", type: "media_play" },
+                {
+                  kind: "block",
+                  type: "media_play_excerpt",
+                  inputs: {
+                    FROM: { block: { type: "math_number" } },
+                    TO: { block: { type: "math_number" } },
+                  },
                 },
-              },
-              { kind: "block", type: "media_pause" },
-              { kind: "block", type: "media_stop" },
-              { kind: "block", type: "components_show" },
-              { kind: "block", type: "components_hide" },
-              { kind: "block", type: "components_set_scenario" },
-              {
-                kind: "block",
-                type: "links_open_url",
-                inputs: {
-                  URL: { block: { type: "text" } },
+                { kind: "block", type: "media_pause" },
+                { kind: "block", type: "media_stop" },
+                { kind: "block", type: "components_show" },
+                { kind: "block", type: "components_hide" },
+                { kind: "block", type: "components_set_scenario" },
+                {
+                  kind: "block",
+                  type: "links_open_url",
+                  inputs: {
+                    URL: { block: { type: "text" } },
+                  },
                 },
-              },
-            ],
-          },
-          {
-            kind: "category",
-            name: this.$t("categories.logic"),
-            categorystyle: "logic_category",
-            contents: [
-              { kind: "block", type: "controls_if" },
-              { kind: "block", type: "logic_compare" },
-              { kind: "block", type: "logic_operation" },
-              { kind: "block", type: "logic_negate" },
-              { kind: "block", type: "logic_boolean" },
-            ],
-          },
-          {
-            kind: "category",
-            name: this.$t("categories.math"),
-            categorystyle: "math_category",
-            contents: [
-              { kind: "block", type: "math_number" },
-              { kind: "block", type: "math_arithmetic" },
-            ],
-          },
-          {
-            kind: "category",
-            name: this.$t("categories.text"),
-            categorystyle: "text_category",
-            contents: [{ kind: "block", type: "text" }],
-          },
-          {
-            kind: "category",
-            name: this.$t("categories.variables"),
-            categorystyle: "variables_category",
-            contents: [
-              { kind: "block", type: "media_get_time" },
-              { kind: "block", type: "media_set_time" },
-              { kind: "block", type: "media_get_duration" },
-              { kind: "block", type: "media_playing" },
-            ],
-          },
-          {
-            kind: "category",
-            categorystyle: "variables_category",
-            custom: "VARIABLE",
-          },
-        ],
-      },
+              ],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.logic"),
+              categorystyle: "logic_category",
+              contents: [
+                { kind: "block", type: "controls_if" },
+                { kind: "block", type: "logic_compare" },
+                { kind: "block", type: "logic_operation" },
+                { kind: "block", type: "logic_negate" },
+                { kind: "block", type: "logic_boolean" },
+              ],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.math"),
+              categorystyle: "math_category",
+              contents: [
+                { kind: "block", type: "math_number" },
+                { kind: "block", type: "math_arithmetic" },
+              ],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.text"),
+              categorystyle: "text_category",
+              contents: [{ kind: "block", type: "text" }],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.variables"),
+              categorystyle: "variables_category",
+              contents: [
+                { kind: "block", type: "media_get_time" },
+                { kind: "block", type: "media_set_time" },
+                { kind: "block", type: "media_get_duration" },
+                { kind: "block", type: "media_playing" },
+              ],
+            },
+            {
+              kind: "category",
+              categorystyle: "variables_category",
+              custom: "VARIABLE",
+            },
+          ],
+        },
       })
     );
 
@@ -218,8 +219,7 @@ export default {
         return;
       }
 
-      const behaviors = this.serialize();
-      this.setBehaviors(behaviors);
+      this.setBehaviors(this.serialize());
     },
     updateSize() {
       Blockly.svgResize(this.workspace);

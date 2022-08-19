@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { assign } from "lodash";
 import { Workspace, serialization, JavaScript } from "blockly/core";
 import "../blockly/generators";
 import * as interpreter from "../blockly/interpreter";
@@ -12,10 +11,10 @@ export default defineStore("app-behaviors", {
     };
   },
   actions: {
-    init({ behaviors }) {
-      this.behaviors = behaviors;
+    init(data) {
+      this.behaviors = data || {};
     },
-    setBehaviors(value) {
+    update(value) {
       this.behaviors = value;
 
       const workspace = new Workspace();
@@ -23,12 +22,6 @@ export default defineStore("app-behaviors", {
       const code = JavaScript.workspaceToCode(workspace);
 
       interpreter.exec(code);
-    },
-    setComponentState(type, id, state) {
-      this.components[type] = this.components[type] || {};
-      this.components[type][id] = this.components[type][id] || {};
-
-      assign(this.components[type][id], state);
     },
   },
 });

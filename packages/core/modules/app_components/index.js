@@ -50,7 +50,7 @@ export default class AppComponentsModule extends AbstractModule {
     return readonly(activeScenario);
   }
 
-  get json() {
+  get data() {
     const store = useStore();
     return store.toJson();
   }

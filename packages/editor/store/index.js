@@ -51,8 +51,12 @@ export default defineStore("editor", {
           data.set("media", JSON.stringify(omit(mediaSource, ["file"])));
         }
         if (this.isDirty("components", since)) {
-          const { json } = useModule("app_components");
-          data.set("components", JSON.stringify(json));
+          const { data: components } = useModule("app_components");
+          data.set("components", JSON.stringify(components));
+        }
+        if (this.isDirty("behaviors", since)) {
+          const { data: behaviors } = useModule("app_behaviors");
+          data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
           const { assets } = useModule("assets_library");

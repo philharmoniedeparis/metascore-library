@@ -38,14 +38,19 @@ export default class AppBehaviorsModule extends AbstractModule {
     store.init(data);
   }
 
-  get behaviors() {
+  get data() {
     const store = useStore();
     const { behaviors } = storeToRefs(store);
     return readonly(behaviors);
   }
 
-  setBehaviors(value) {
+  setData(value) {
     const store = useStore();
-    store.setBehaviors(value);
+    store.update(value);
+  }
+
+  onStoreAction(callback) {
+    const store = useStore();
+    store.$onAction(callback);
   }
 }
