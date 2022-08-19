@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Device from "../device";
+import EventBus from "../event_bus";
 import MediaPlayer from "../media_player";
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
@@ -17,10 +18,14 @@ import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
 
+export const Events = {
+  COMPONENT_GET: "component_get",
+};
+
 export default class AppComponentsModule extends AbstractModule {
   static id = "app_components";
 
-  static dependencies = [Device, MediaPlayer];
+  static dependencies = [Device, EventBus, MediaPlayer];
 
   constructor({ app }) {
     super(arguments);
@@ -138,12 +143,6 @@ export default class AppComponentsModule extends AbstractModule {
   setActiveScenario(value) {
     const store = useStore();
     store.activeScenario = value;
-  }
-
-  addHook(type, hook) {
-    const store = useStore();
-    store.hooks[type] = store.hooks[type] || [];
-    store.hooks[type].push(hook);
   }
 
   addStoreActionListener(callback) {

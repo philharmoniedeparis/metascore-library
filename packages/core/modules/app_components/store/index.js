@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
+import { Events } from "../";
 
 export default defineStore("app-components", {
   state: () => {
@@ -11,7 +12,6 @@ export default defineStore("app-components", {
       components: {},
       activeScenario: null,
       toggled: [],
-      hooks: {},
     };
   },
   getters: {
@@ -20,11 +20,8 @@ export default defineStore("app-components", {
         const component = this.components?.[type]?.[id];
         const data = component && !component.$deleted ? component.data : null;
 
-        if (this.hooks?.get) {
-          this.hooks.get.forEach((hook) => {
-            hook(data);
-          });
-        }
+        const event_bus = useModule("event_bus");
+        event_bus.emit(Events.COMPONENT_GET, data);
 
         return readonly(data);
       };

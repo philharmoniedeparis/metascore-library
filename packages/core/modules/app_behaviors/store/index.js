@@ -22,8 +22,6 @@ export default defineStore("app-behaviors", {
       serialization.workspaces.load(this.behaviors, workspace);
       const code = JavaScript.workspaceToCode(workspace);
 
-      console.log(code);
-
       interpreter.exec(code);
     },
     setComponentState(type, id, state) {
