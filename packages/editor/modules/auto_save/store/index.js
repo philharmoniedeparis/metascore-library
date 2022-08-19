@@ -26,6 +26,12 @@ export default defineStore("auto-save", {
     setTimeout() {
       this.timeoutId = setTimeout(this.save, this.configs.interval * 1000);
     },
+    clearTimeout() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId);
+        this.timeoutId = null;
+      }
+    },
     subscribe() {
       if (!this.configs.url) {
         return;
@@ -39,14 +45,11 @@ export default defineStore("auto-save", {
       });
 
       if (this.configs.deleteOnUnload) {
-        //window.addEventListener("unload", this.delete);
+        window.addEventListener("unload", this.delete);
       }
     },
     unsubscribe() {
-      if (this.timeoutId) {
-        clearTimeout(this.timeoutId);
-        this.timeoutId = null;
-      }
+      this.clearTimeout();
       if (this.storeUnsubscribeCallback) {
         this.storeUnsubscribeCallback();
         this.storeUnsubscribeCallback = null;
@@ -76,7 +79,7 @@ export default defineStore("auto-save", {
         })
         .finally(() => {
           this.saving = false;
-          this.timeoutId = null;
+          this.clearTimeout();
         });
     },
     delete() {
