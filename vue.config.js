@@ -3,6 +3,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
@@ -150,6 +151,18 @@ module.exports = defineConfig({
       };
       return definitions;
     });
+
+    // Copy blockly media
+    config.plugin("blockly-media").use(CopyWebpackPlugin, [
+      {
+        patterns: [
+          {
+            from: path.resolve(__dirname, "node_modules", "blockly", "media"),
+            to: "blockly/media/",
+          },
+        ],
+      },
+    ]);
 
     // Add inline SVGs support.
     config.module.rule("svg").resourceQuery({ not: [/inline/] });

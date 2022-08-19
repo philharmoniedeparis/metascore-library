@@ -72,6 +72,7 @@ export default {
       Blockly.inject(this.$refs.blockly, {
         theme: Theme,
         renderer: "zelos",
+        media: `${this.publicPath}blockly/media/`,
         grid: {
           spacing: 100,
           length: 100,

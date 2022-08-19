@@ -48,6 +48,10 @@ export class Editor {
     const events = new Emitter();
     const app = createApp(App, { url }).use(pinia).use(i18n);
 
+    // Add webpack's public path as a global property.
+    // eslint-disable-next-line no-undef
+    app.config.globalProperties.publicPath = __webpack_public_path__;
+
     // See https://github.com/vuejs/core/pull/5474
     app.config.skipEventsTimestampCheck = true;
 
