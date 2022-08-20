@@ -1,6 +1,6 @@
 import JavaScript from "blockly/javascript";
 
-JavaScript["general_startup"] = function (block) {
+JavaScript["app_startup"] = function (block) {
   const statement = JavaScript.statementToCode(block, "STATEMENT");
 
   let code = "";

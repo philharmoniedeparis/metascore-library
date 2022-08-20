@@ -1,5 +1,10 @@
 import Msg from "blockly/msg/fr";
 
+Msg.APP_STARTUP = "au chargement de l'application";
+Msg.APP_STARTUP_THEN = "faire %1";
+Msg.APP_STARTUP_TOOLTIP = "";
+Msg.APP_STARTUP_HELPURL = "";
+
 Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -16,11 +21,6 @@ Msg.COMPONENTS_HIDE_HELPURL = "";
 Msg.COMPONENTS_SET_SCENARIO = "activer le scénario %1";
 Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
 Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
-
-Msg.GENERAL_STARTUP = "au chargement de l'application";
-Msg.GENERAL_STARTUP_THEN = "faire %1";
-Msg.GENERAL_STARTUP_TOOLTIP = "";
-Msg.GENERAL_STARTUP_HELPURL = "";
 
 Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
 Msg.KEYBOARD_KEYPRESSED_THEN = "faire %1";

@@ -2,9 +2,9 @@ import { defineBlocksWithJsonArray } from "blockly/core";
 
 defineBlocksWithJsonArray([
   {
-    type: "general_startup",
-    message0: "%{BKY_GENERAL_STARTUP}",
-    message1: "%{BKY_GENERAL_STARTUP_THEN}",
+    type: "app_startup",
+    message0: "%{BKY_APP_STARTUP}",
+    message1: "%{BKY_APP_STARTUP_THEN}",
     args1: [
       {
         type: "input_statement",
@@ -12,7 +12,7 @@ defineBlocksWithJsonArray([
       },
     ],
     style: "trigger_blocks",
-    tooltip: "%{BKY_GENERAL_STARTUP_TOOLTIP}",
-    helpUrl: "%{BKY_GENERAL_STARTUP_HELPURL}",
+    tooltip: "%{BKY_APP_STARTUP_TOOLTIP}",
+    helpUrl: "%{BKY_APP_STARTUP_HELPURL}",
   },
 ]);

@@ -1,5 +1,5 @@
+import "./app";
 import "./components";
-import "./general";
 import "./keyboard";
 import "./links";
 import "./media";

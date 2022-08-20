@@ -101,7 +101,7 @@ export default {
               name: this.$t("categories.triggers"),
               categorystyle: "triggers_category",
               contents: [
-                { kind: "block", type: "general_startup" },
+                { kind: "block", type: "app_startup" },
                 { kind: "block", type: "keyboard_keypressed" },
                 { kind: "block", type: "components_click" },
                 { kind: "block", type: "links_click" },
