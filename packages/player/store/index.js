@@ -9,12 +9,17 @@ export default defineStore("player", {
     };
   },
   actions: {
-    setData(data) {
+    async setData(data) {
       const { setSource: setMediaSource } = useModule("media_player");
       setMediaSource(data.media);
 
       const { init: initComponents } = useModule("app_components");
       initComponents(data.components);
+
+      const { init: initBehaviors, enable: enableBehaviors } =
+        useModule("app_behaviors");
+      await initBehaviors(data.behaviors);
+      enableBehaviors();
 
       const { width, height, css } = data;
       const { init: initAppRenderer } = useModule("app_renderer");
@@ -24,7 +29,7 @@ export default defineStore("player", {
       this.loading = true;
 
       const data = await api.load(url);
-      this.setData(data);
+      await this.setData(data);
 
       this.loading = false;
     },

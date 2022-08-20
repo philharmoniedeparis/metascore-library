@@ -10,8 +10,11 @@ import {
   useModule,
 } from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
+import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
+import AppPreview from "./modules/app_preview";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
+import BaseButton from "@metascore-library/core/modules/button";
 import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
@@ -24,13 +27,11 @@ import Hotkey from "./modules/hotkey";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
-import AppPreview from "./modules/app_preview";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
-import BaseButton from "@metascore-library/core/modules/button";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
 import Waveform from "./modules/waveform";
@@ -63,8 +64,11 @@ export class Editor {
     await registerModules(
       [
         Ajax,
+        AppBehaviors,
+        AppPreview,
         AssetsLibrary,
         AutoSave,
+        BaseButton,
         BehaviorsForm,
         BufferIndicator,
         ComponentForm,
@@ -77,13 +81,11 @@ export class Editor {
         MediaPlayer,
         MediaSelector,
         PlaybackControls,
-        AppPreview,
         ProgressIndicator,
         ResizablePane,
         RevisionSelector,
         ScenarioManager,
         SharedAssetsLibrary,
-        BaseButton,
         Tabs,
         Timeline,
         Waveform,

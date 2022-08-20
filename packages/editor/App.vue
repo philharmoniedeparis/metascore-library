@@ -218,8 +218,14 @@ export default {
       addComponent,
       deleteComponent,
     } = useModule("app_components");
+
+    const { enable: enableBehaviors, disable: disableBehaviors } =
+      useModule("app_behaviors");
+
     const { getAssetsByType, addAsset } = useModule("assets_library");
+
     const { preview } = useModule("app_preview");
+
     const {
       maxScale: maxWaveformScale,
       scale: waveformScale,
@@ -232,6 +238,7 @@ export default {
 
     const { recordingCursorKeyframes, editingTextContent } =
       useModule("component_form");
+
     const disableComponentInteractions = computed(
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
@@ -248,6 +255,8 @@ export default {
       createComponent,
       addComponent,
       deleteComponent,
+      enableBehaviors,
+      disableBehaviors,
       getAssetsByType,
       addAsset,
       preview,
@@ -358,6 +367,12 @@ export default {
       } else {
         tabs.style.maxWidth = null;
         this.librariesExpanded = false;
+      }
+    },
+    preview(value) {
+      if (value) this.enableBehaviors();
+      else {
+        this.disableBehaviors();
       }
     },
   },

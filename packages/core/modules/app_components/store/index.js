@@ -4,7 +4,6 @@ import { v4 as uuid } from "uuid";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
-import { Events } from "../";
 
 export default defineStore("app-components", {
   state: () => {
@@ -15,17 +14,6 @@ export default defineStore("app-components", {
     };
   },
   getters: {
-    get() {
-      return (type, id) => {
-        const component = this.components?.[type]?.[id];
-        const data = component && !component.$deleted ? component.data : null;
-
-        const event_bus = useModule("event_bus");
-        event_bus.emit(Events.COMPONENT_GET, data);
-
-        return readonly(data);
-      };
-    },
     getByType() {
       return (type) => {
         return Object.keys(this.components?.[type] || {})
@@ -119,6 +107,11 @@ export default defineStore("app-components", {
       const normalized = await normalize(data);
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
+    },
+    get(type, id) {
+      const component = this.components?.[type]?.[id];
+      const data = component && !component.$deleted ? component.data : null;
+      return readonly(data);
     },
     async create(data, validate = true) {
       if (data.type in Models) {

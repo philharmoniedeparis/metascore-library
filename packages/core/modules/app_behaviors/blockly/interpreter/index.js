@@ -32,5 +32,6 @@ export function reset() {
   Components.reset();
   Keyboard.reset();
   Links.reset();
+  Medai.reset();
   Reactivity.reset();
 }

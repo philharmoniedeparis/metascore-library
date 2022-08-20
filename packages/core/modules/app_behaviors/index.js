@@ -1,36 +1,21 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import { assign } from "lodash";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "./store";
-import AppComponents, {
-  Events as AppComponentsEvents,
-} from "../app_components";
-import EventBus from "../event_bus";
+import plugin from "./store/plugin";
+import AppComponents from "../app_components";
 import MediaCuepoints from "../media_cuepoints";
 import MediaPlayer from "../media_player";
 
 export default class AppBehaviorsModule extends AbstractModule {
   static id = "app_behaviors";
 
-  static dependencies = [AppComponents, EventBus, MediaCuepoints, MediaPlayer];
+  static dependencies = [AppComponents, MediaCuepoints, MediaPlayer];
 
-  constructor(context) {
-    super(context);
+  constructor({ pinia }) {
+    super(arguments);
 
-    const event_bus = useModule("event_bus");
-    event_bus.on(AppComponentsEvents.COMPONENT_GET, (data) => {
-      if (!data) {
-        return;
-      }
-
-      const store = useStore();
-      const { type, id } = data;
-      if (type in store.components && id in store.components[type]) {
-        assign(data, store.components[type][id]);
-      }
-    });
+    pinia.use(plugin);
   }
 
   init(data) {
@@ -47,6 +32,16 @@ export default class AppBehaviorsModule extends AbstractModule {
   setData(value) {
     const store = useStore();
     store.update(value);
+  }
+
+  enable() {
+    const store = useStore();
+    store.enable();
+  }
+
+  disable() {
+    const store = useStore();
+    store.disable();
   }
 
   onStoreAction(callback) {

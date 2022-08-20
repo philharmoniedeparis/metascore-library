@@ -57,3 +57,8 @@ export function init(context) {
     },
   };
 }
+
+export function reset() {
+  const { pause } = useModule("media_player");
+  pause();
+}

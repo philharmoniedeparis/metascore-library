@@ -3,7 +3,6 @@ import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Device from "../device";
-import EventBus from "../event_bus";
 import MediaPlayer from "../media_player";
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
@@ -18,14 +17,10 @@ import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
 
-export const Events = {
-  COMPONENT_GET: "component_get",
-};
-
 export default class AppComponentsModule extends AbstractModule {
   static id = "app_components";
 
-  static dependencies = [Device, EventBus, MediaPlayer];
+  static dependencies = [Device, MediaPlayer];
 
   constructor({ app }) {
     super(arguments);
