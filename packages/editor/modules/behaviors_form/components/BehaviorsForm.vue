@@ -32,7 +32,6 @@
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { markRaw } from "vue";
-import Blockly from "blockly/core";
 import Theme from "../blockly/theme";
 import { DisableTopBlocks } from "@blockly/disable-top-blocks";
 import {
@@ -40,15 +39,16 @@ import {
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
 import Flyout from "../blockly/plugins/flyout";
-import "blockly/blocks";
-import "../blockly/blocks";
 
 export default {
   props: {},
   setup() {
-    const { data: behaviors, setData: setBehaviors } =
-      useModule("app_behaviors");
-    return { behaviors, setBehaviors };
+    const {
+      Blockly,
+      data: behaviors,
+      setData: setBehaviors,
+    } = useModule("app_behaviors");
+    return { Blockly, behaviors, setBehaviors };
   },
   data() {
     return {
@@ -58,18 +58,8 @@ export default {
   },
   computed: {},
   async mounted() {
-    // Import the locale.
-    const locale = this.$i18n.locale;
-    const { default: blocklyLocale } = await import(
-      /* webpackMode: "lazy" */
-      /* webpackChunkName: "blockly-locale-[request]" */
-      `../blockly/msg/${locale}`
-    );
-
-    Blockly.setLocale(blocklyLocale);
-
     this.workspace = markRaw(
-      Blockly.inject(this.$refs.blockly, {
+      this.Blockly.inject(this.$refs.blockly, {
         theme: Theme,
         renderer: "zelos",
         media: `${this.publicPath}blockly/media/`,
@@ -190,7 +180,7 @@ export default {
     this.workspace.addChangeListener(this.onWorkspaceChange);
 
     // Setup the DisableTopBlocks plugin.
-    this.workspace.addChangeListener(Blockly.Events.disableOrphans);
+    this.workspace.addChangeListener(this.Blockly.Events.disableOrphans);
     new DisableTopBlocks().init();
 
     this._resize_observer = new ResizeObserver(this.updateSize);
@@ -205,10 +195,10 @@ export default {
   },
   methods: {
     serialize() {
-      return Blockly.serialization.workspaces.save(this.workspace);
+      return this.Blockly.serialization.workspaces.save(this.workspace);
     },
     deserialize(state) {
-      Blockly.serialization.workspaces.load(state || {}, this.workspace);
+      this.Blockly.serialization.workspaces.load(state || {}, this.workspace);
     },
     onWorkspaceChange(evt) {
       if (evt.isUiEvent || !evt.workspaceId) return;
@@ -223,7 +213,7 @@ export default {
       this.setBehaviors(this.serialize());
     },
     updateSize() {
-      Blockly.svgResize(this.workspace);
+      this.Blockly.svgResize(this.workspace);
     },
   },
 };

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { assign } from "lodash";
-import { Workspace, serialization, JavaScript } from "blockly/core";
+import Blockly from "../blockly";
 import "../blockly/generators";
 import * as interpreter from "../blockly/interpreter";
 
@@ -24,10 +24,10 @@ export default defineStore("app-behaviors", {
       }
     },
     run() {
-      const workspace = new Workspace();
-      serialization.workspaces.load(this.behaviors, workspace);
+      const workspace = new Blockly.Workspace();
+      Blockly.serialization.workspaces.load(this.behaviors, workspace);
 
-      const code = JavaScript.workspaceToCode(workspace);
+      const code = Blockly.JavaScript.workspaceToCode(workspace);
       interpreter.exec(code);
     },
     enable() {

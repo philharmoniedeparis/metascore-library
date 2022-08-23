@@ -44,6 +44,7 @@ export class Player {
       [Ajax, AppBehaviors, AppRenderer, ContextMenu, ProgressIndicator],
       {
         app,
+        i18n,
         pinia,
       }
     );

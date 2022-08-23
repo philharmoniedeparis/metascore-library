@@ -19,7 +19,7 @@ async function registerModule(module, context) {
 
   // Register dependencies.
   const dependencies = isFunction(module.dependencies)
-    ? await module.dependencies()
+    ? await module.dependencies(context)
     : module.dependencies;
   for (const dependency of dependencies) {
     await registerModule(dependency, context);

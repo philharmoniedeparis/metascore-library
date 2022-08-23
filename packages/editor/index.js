@@ -90,7 +90,7 @@ export class Editor {
         Timeline,
         Waveform,
       ],
-      { app, pinia }
+      { app, i18n, pinia }
     );
 
     if (configs.modules) {
