@@ -34,8 +34,19 @@ JavaScript["media_play_excerpt"] = function (block) {
     JavaScript.ORDER_ASSIGNMENT
   );
   const to = JavaScript.valueToCode(block, "TO", JavaScript.ORDER_ASSIGNMENT);
-  const code = `Media.play(${from}, ${to});`;
-  return code;
+
+  if (block.getInput("THEN")) {
+    const statement = JavaScript.statementToCode(block, "THEN");
+
+    let code = "";
+    code += `Media.play(${from}, ${to}, function () {\n`;
+    code += statement;
+    code += "});\n";
+
+    return code;
+  }
+
+  return `Media.play(${from}, ${to});`;
 };
 
 JavaScript["media_pause"] = function () {

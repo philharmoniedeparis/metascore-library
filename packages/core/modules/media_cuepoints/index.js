@@ -14,7 +14,7 @@ export default class MediaCuepointsModule extends AbstractModule {
   }
 
   addCuepoint(options) {
-    Manager.addCuepoint(options);
+    return Manager.addCuepoint(options);
   }
 
   removeCuepoint(options) {
