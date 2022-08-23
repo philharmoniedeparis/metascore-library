@@ -8,6 +8,7 @@
       "text": "Texte",
       "actions": "Actions",
       "variables": "Variables",
+      "presets": "Prédéfinis",
     }
   },
   "en": {
@@ -18,6 +19,7 @@
       "text": "Text",
       "actions": "Actions",
       "variables": "Variables",
+      "presets": "Presets",
     }
   },
 }
@@ -168,6 +170,41 @@ export default {
               kind: "category",
               categorystyle: "variables_category",
               custom: "VARIABLE",
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.presets"),
+              categorystyle: "presets_category",
+              contents: [
+                {
+                  kind: "block",
+                  type: "components_click",
+                  inputs: {
+                    STATEMENT: {
+                      block: {
+                        next: {
+                          block: {
+                            type: "media_play_excerpt",
+                            inputs: {
+                              TO: {
+                                block: { type: "math_number" },
+                              },
+                              FROM: {
+                                block: { type: "math_number" },
+                              },
+                              THEN: {
+                                block: { type: "components_set_scenario" },
+                              },
+                            },
+                            extraState: { hasThen: true },
+                          },
+                        },
+                        type: "components_set_scenario",
+                      },
+                    },
+                  },
+                },
+              ],
             },
           ],
         },
