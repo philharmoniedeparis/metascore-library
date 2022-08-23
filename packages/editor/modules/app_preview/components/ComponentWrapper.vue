@@ -44,7 +44,7 @@
     v-contextmenu="contextmenuItems"
     :component="component"
     :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
-    @click.stop="onClick"
+    @click="onClick"
     @dragenter="onDragenter"
     @dragover="onDragover"
     @dragleave="onDragleave"
@@ -338,6 +338,8 @@ export default {
       if (this.preview) {
         return;
       }
+
+      evt.stopPropagation();
 
       if (this.selected) {
         if (evt.shiftKey) {
