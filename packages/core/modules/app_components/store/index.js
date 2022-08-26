@@ -180,15 +180,13 @@ export default defineStore("app-components", {
             if ("start-time" in data) {
               data["start-time"] = Math.max(
                 data["start-time"],
-                parent["start-time"],
-                0
+                parent["start-time"] ?? 0
               );
             }
             if ("end-time" in data) {
               data["end-time"] = Math.min(
                 data["end-time"],
-                parent["end-time"],
-                unref(mediaDuration)
+                parent["end-time"] ?? unref(mediaDuration)
               );
             }
           }
