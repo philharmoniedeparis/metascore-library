@@ -6,22 +6,54 @@
     :description="description"
     :required="required"
   >
-    <timecode-input
-      :id="inputId"
-      v-model="value"
-      v-autofocus="autofocus"
-      :required="required"
-      :readonly="readonly"
-      :disabled="disabled"
-      :min="min"
-      :max="max"
-      :in-button="inButton"
-      :out-button="outButton"
-      :clear-button="clearButton"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-      @change="onInputChange"
-    />
+    <div
+      class="input-container"
+      @focusin="onInputFocus"
+      @focusout="onInputBlur"
+    >
+      <!-- eslint-disable vue/no-deprecated-html-element-is -->
+      <input
+        is="timecode-input"
+        :id="inputId"
+        v-model="value"
+        v-autofocus="autofocus"
+        :required="required"
+        :readonly="readonly"
+        :disabled="disabled"
+        :min="min"
+        :max="max"
+        @change="onInputChange"
+      />
+      <div
+        v-if="!disabled && (inButton || outButton || clearButton)"
+        class="buttons"
+      >
+        <base-button
+          v-if="inButton && !readonly"
+          type="button"
+          class="in"
+          @click="onInClick"
+        >
+          <template #icon><in-icon /></template>
+        </base-button>
+        <base-button
+          v-if="outButton"
+          type="button"
+          class="out"
+          @click="onOutClick"
+        >
+          <template #icon><out-icon /></template>
+        </base-button>
+        <base-button
+          v-if="clearButton && !readonly"
+          type="button"
+          class="clear"
+          @click="onClearClick"
+        >
+          <template #icon><clear-icon /></template>
+        </base-button>
+      </div>
+    </div>
 
     <template v-if="$slots.label" #label>
       <slot name="label" />
@@ -31,8 +63,17 @@
 
 <script>
 import { v4 as uuid } from "uuid";
+import "timecode-input";
+import ClearIcon from "../assets/icons/time-clear.svg?inline";
+import InIcon from "../assets/icons/time-in.svg?inline";
+import OutIcon from "../assets/icons/time-out.svg?inline";
 
 export default {
+  components: {
+    InIcon,
+    OutIcon,
+    ClearIcon,
+  },
   props: {
     label: {
       type: String,
@@ -80,14 +121,14 @@ export default {
     },
     modelValue: {
       type: Number,
-      default: 0,
+      default: null,
     },
     lazy: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ["update:modelValue", "blur", "focus"],
+  emits: ["update:modelValue", "focus", "blur", "valuein", "valueout"],
   data() {
     return {
       inputId: uuid(),
@@ -117,14 +158,57 @@ export default {
         this.$emit("update:modelValue", evt.target.value);
       }
     },
+    onClearClick() {
+      this.value = null;
+    },
+    onInClick() {
+      this.$emit("valuein");
+    },
+    onOutClick() {
+      this.$emit("valueout", { value: this.value });
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .control {
+  .input-container {
+    position: relative;
+  }
+
+  // #\9 is used here to increase specificity.
+  input:not(#\9) {
+    width: 6em;
+    text-align: center;
+  }
+
+  .buttons {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: #3f3f3f;
+
+    button {
+      padding: 0.25em;
+      font-size: 0.75em;
+
+      .icon {
+        width: 1em;
+      }
+    }
+  }
+
+  &:not(:hover) {
+    .buttons {
+      display: none;
+    }
+  }
+
   &.disabled {
-    ::v-deep(input) {
+    input {
       opacity: 0.5;
     }
   }
