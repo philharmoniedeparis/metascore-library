@@ -24,6 +24,7 @@
         :max="max"
         @change="onInputChange"
       />
+      <!-- eslint-enable vue/no-deprecated-html-element-is -->
       <div
         v-if="!disabled && (inButton || outButton || clearButton)"
         class="buttons"
@@ -64,6 +65,7 @@
 <script>
 import { v4 as uuid } from "uuid";
 import "timecode-input";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import ClearIcon from "../assets/icons/time-clear.svg?inline";
 import InIcon from "../assets/icons/time-in.svg?inline";
 import OutIcon from "../assets/icons/time-out.svg?inline";
@@ -128,7 +130,11 @@ export default {
       default: false,
     },
   },
-  emits: ["update:modelValue", "focus", "blur", "valuein", "valueout"],
+  emits: ["update:modelValue", "focus", "blur"],
+  setup() {
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    return { mediaTime, seekMediaTo };
+  },
   data() {
     return {
       inputId: uuid(),
@@ -162,10 +168,10 @@ export default {
       this.value = null;
     },
     onInClick() {
-      this.$emit("valuein");
+      this.value = this.mediaTime;
     },
     onOutClick() {
-      this.$emit("valueout", { value: this.value });
+      this.seekMediaTo(this.value);
     },
   },
 };
