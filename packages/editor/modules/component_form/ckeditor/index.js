@@ -1,6 +1,7 @@
 import Editor from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
 
 import Alignment from "@ckeditor/ckeditor5-alignment/src/alignment";
+import BehavorTrigger from "./plugins/behaviortrigger/src/behaviortrigger";
 import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote";
 import Bold from "@ckeditor/ckeditor5-basic-styles/src/bold";
 import Essentials from "@ckeditor/ckeditor5-essentials/src/essentials";
@@ -40,6 +41,7 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     language,
     plugins: [
       Alignment,
+      BehavorTrigger,
       BlockQuote,
       Bold,
       Essentials,
@@ -102,6 +104,7 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "alignment",
         "|",
         "link",
+        "addBehaviorTrigger",
         "uploadImage",
         "insertTable",
         "|",
