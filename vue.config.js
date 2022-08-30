@@ -177,6 +177,13 @@ module.exports = defineConfig({
       .use("vue-svg-loader")
       .loader("vue-svg-loader")
       .end();
+    // Add raw SVGs support.
+    config.module
+      .rule("raw-svg")
+      .test(/\.(svg)(\?.*)?$/)
+      .resourceQuery(/raw/)
+      .type("asset/source")
+      .end();
 
     // Setup i18n loader.
     // See https://vue-i18n.intlify.dev/guide/advanced/sfc.html#vue-cli

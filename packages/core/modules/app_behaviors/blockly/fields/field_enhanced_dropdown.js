@@ -10,6 +10,7 @@ import {
 /**
  * Class for an enhanced editable dropdown field
  * that allows creating disabled options.
+ * @extends {FieldDropdown}
  */
 export default class FieldEnhancedDropdown extends FieldDropdown {
   /**

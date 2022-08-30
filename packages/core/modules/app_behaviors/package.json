@@ -4,6 +4,7 @@
   "description": "",
   "dependencies": {
     "@nx-js/compiler-util": "^2.0.0",
-    "blockly": "^8.0.3"
+    "blockly": "^8.0.3",
+    "timecode-input": "github:philharmoniedeparis/timecode-input"
   }
 }

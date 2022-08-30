@@ -42,6 +42,9 @@ Msg.LINKS_OPEN_URL = "ouvrir l'url %1";
 Msg.LINKS_OPEN_URL_TOOLTIP = "";
 Msg.LINKS_OPEN_URL_HELPURL = "";
 
+Msg.MEDIA_TIMECODE_HELPURL = "";
+Msg.MEDIA_TIMECODE_TOOLTIP = "";
+
 Msg.MEDIA_GET_DURATION = "durée du média";
 Msg.MEDIA_GET_DURATION_TOOLTIP = "Retourne la durée du média en secondes.";
 Msg.MEDIA_GET_DURATION_HELPURL = "";

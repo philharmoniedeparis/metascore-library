@@ -50,7 +50,8 @@ export default {
       data: behaviors,
       setData: setBehaviors,
     } = useModule("app_behaviors");
-    return { Blockly, behaviors, setBehaviors };
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    return { Blockly, behaviors, setBehaviors, mediaTime, seekMediaTo };
   },
   data() {
     return {
@@ -110,8 +111,8 @@ export default {
                   kind: "block",
                   type: "media_play_excerpt",
                   inputs: {
-                    FROM: { block: { type: "math_number" } },
-                    TO: { block: { type: "math_number" } },
+                    FROM: { block: { type: "media_timecode" } },
+                    TO: { block: { type: "media_timecode" } },
                   },
                 },
                 { kind: "block", type: "media_pause" },
@@ -160,6 +161,7 @@ export default {
               name: this.$t("categories.variables"),
               categorystyle: "variables_category",
               contents: [
+                { kind: "block", type: "media_timecode" },
                 { kind: "block", type: "media_get_time" },
                 { kind: "block", type: "media_set_time" },
                 { kind: "block", type: "media_get_duration" },
@@ -187,10 +189,10 @@ export default {
                             type: "media_play_excerpt",
                             inputs: {
                               TO: {
-                                block: { type: "math_number" },
+                                block: { type: "media_timecode" },
                               },
                               FROM: {
-                                block: { type: "math_number" },
+                                block: { type: "media_timecode" },
                               },
                               THEN: {
                                 block: { type: "components_set_scenario" },
@@ -225,6 +227,9 @@ export default {
     this.updateSize();
   },
   beforeUnmount() {
+    this.workspace.dispose();
+    this.workspace = null;
+
     if (this._resize_observer) {
       this._resize_observer.disconnect();
       delete this._resize_observer;
@@ -238,8 +243,6 @@ export default {
       this.Blockly.serialization.workspaces.load(state || {}, this.workspace);
     },
     onWorkspaceChange(evt) {
-      if (evt.isUiEvent || !evt.workspaceId) return;
-
       if (!this.loaded) {
         if (evt.type === "finished_loading") {
           this.loaded = true;
@@ -247,7 +250,38 @@ export default {
         return;
       }
 
-      this.setBehaviors(this.serialize());
+      switch (evt.type) {
+        case "timecode_value_in":
+          {
+            const block = this.workspace.getBlockById(evt.blockId);
+            if (!block) {
+              console.warn(
+                "Can't get field from non-existent block: " + evt.blockId
+              );
+              return;
+            }
+            const field = block.getField(evt.field);
+            if (!field) {
+              console.warn(
+                "Can't set value on non-existent field: " + evt.field
+              );
+              return;
+            }
+            field.setValue(this.mediaTime);
+          }
+          break;
+        case "timecode_value_out":
+          {
+            const value = evt.value;
+            this.seekMediaTo(value);
+          }
+          break;
+      }
+
+      if (!evt.isUiEvent && evt.workspaceId === this.workspace.id) {
+        // Save the changes.
+        this.setBehaviors(this.serialize());
+      }
     },
     updateSize() {
       this.Blockly.svgResize(this.workspace);

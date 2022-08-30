@@ -6,6 +6,22 @@ import {
 } from "blockly/core";
 
 defineBlocksWithJsonArray([
+  // Block for timecode value
+  {
+    type: "media_timecode",
+    message0: "%1",
+    args0: [
+      {
+        type: "field_timecode",
+        name: "TIMECODE",
+      },
+    ],
+    output: "Timecode",
+    style: "media_blocks",
+    helpUrl: "%{BKY_MEDIA_TIMECODE_HELPURL}",
+    tooltip: "%{BKY_MEDIA_TIMECODE_TOOLTIP}",
+    extensions: ["parent_tooltip_when_inline"],
+  },
   {
     type: "media_get_duration",
     message0: "%{BKY_MEDIA_GET_DURATION}",
@@ -29,7 +45,7 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "VALUE",
-        check: "Number",
+        check: "Timecode",
       },
     ],
     previousStatement: null,
@@ -62,12 +78,12 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "FROM",
-        check: "Number",
+        check: "Timecode",
       },
       {
         type: "input_value",
         name: "TO",
-        check: "Number",
+        check: "Timecode",
       },
     ],
     inputsInline: true,
@@ -86,12 +102,12 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "FROM",
-        check: "Number",
+        check: "Timecode",
       },
       {
         type: "input_value",
         name: "TO",
-        check: "Number",
+        check: "Timecode",
       },
     ],
     inputsInline: true,
