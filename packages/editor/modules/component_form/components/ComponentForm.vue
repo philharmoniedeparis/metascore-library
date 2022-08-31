@@ -200,18 +200,14 @@ export default {
       getComponentChildren,
       updateComponent,
     } = useModule("app_components");
-    const {
-      iframe: appPreveiwIframe,
-      selectedComponents,
-      getComponentElement,
-    } = useModule("app_preview");
+    const { selectedComponents, getComponentElement } =
+      useModule("app_preview");
     return {
       store,
       getModel,
       getComponentParent,
       getComponentChildren,
       updateComponent,
-      appPreveiwIframe,
       getComponentElement,
       selectedComponents,
     };
@@ -364,10 +360,7 @@ export default {
           if (this.selectedComponentsCount === 1) {
             layout.items[0].items.push({
               type: "html",
-              "app-iframe-el": this.appPreveiwIframe,
-              "app-component-el": this.getComponentElement(
-                this.masterComponent
-              ),
+              component: this.masterComponent,
               "extra-fonts": this.store.configs.extraFonts,
               ...this.getControlProps("text", this.commonModel.type),
             });
@@ -391,9 +384,7 @@ export default {
           if (this.selectedComponentsCount === 1) {
             layout.items[0].items.push({
               type: "cursor-keyframes",
-              "app-component-el": this.getComponentElement(
-                this.masterComponent
-              ),
+              component: this.masterComponent,
               ...this.getControlProps("keyframes", this.commonModel.type),
             });
           }
@@ -523,6 +514,17 @@ export default {
   },
   methods: {
     update({ property, value }) {
+      // Allow controls to specify which components to update.
+      if ("componentsToUpdate" in value && "value" in value) {
+        value.componentsToUpdate.forEach((c) =>
+          this.updateComponent(c, {
+            [property]: value.value,
+          })
+        );
+        return;
+      }
+
+      // Otherwise update all selected components.
       this.selectedComponents.forEach((c) =>
         this.updateComponent(c, {
           [property]: value,

@@ -6,7 +6,7 @@
   >
     <base-button
       type="button"
-      :loading="setting_up_editor"
+      :loading="settingUpEditor"
       @click="onButtonClick"
     >
       {{ label }}
@@ -18,16 +18,13 @@
 
 <script>
 import { markRaw } from "vue";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
 
 export default {
   props: {
-    appIframeEl: {
-      type: HTMLIFrameElement,
-      required: true,
-    },
-    appComponentEl: {
-      type: HTMLElement,
+    component: {
+      type: Object,
       required: true,
     },
     extraFonts: {
@@ -60,11 +57,14 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    return { store };
+    const { iframe: appPreveiwIframe, getComponentElement } =
+      useModule("app_preview");
+    return { store, appPreveiwIframe, getComponentElement };
   },
   data() {
     return {
-      setting_up_editor: false,
+      settingUpEditor: false,
+      contentsElement: null,
       editor: null,
     };
   },
@@ -77,10 +77,8 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
-    editorEl() {
-      return this.appComponentEl.querySelector(
-        ":scope > .metaScore-component--inner > .contents"
-      );
+    componentEl() {
+      return this.getComponentElement(this.component);
     },
     editing: {
       get() {
@@ -92,23 +90,40 @@ export default {
     },
   },
   watch: {
-    editing(value) {
-      if (value) {
-        this.setupEditor();
-      } else {
-        this.destroyEditor();
+    component(value, oldValue) {
+      if (oldValue) {
+        this.stopEditing(oldValue);
       }
+    },
+    componentEl: {
+      handler(value) {
+        this.contentsElement = value
+          ? value.querySelector(
+              ":scope > .metaScore-component--inner > .contents"
+            )
+          : null;
+      },
+      immediate: true,
     },
   },
   beforeUnmount() {
-    this.destroyEditor();
+    this.stopEditing(this.component);
   },
   methods: {
     onButtonClick() {
-      this.editing = !this.editing;
+      if (!this.editing) {
+        this.startEditing();
+      } else {
+        this.stopEditing();
+      }
     },
-    async setupEditor() {
-      this.setting_up_editor = true;
+    async startEditing() {
+      if (this.editing) {
+        return;
+      }
+
+      this.editing = true;
+      this.settingUpEditor = true;
 
       const { Editor, getConfig } = await import("../../ckeditor");
 
@@ -117,14 +132,18 @@ export default {
         extraFonts: this.extraFonts,
       });
 
-      Editor.create(this.editorEl, config, this.appComponentEl.ownerDocument)
+      Editor.create(
+        this.contentsElement,
+        config,
+        this.contentsElement.ownerDocument
+      )
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.
           console.error(e);
         })
         .finally(() => {
-          this.setting_up_editor = false;
+          this.settingUpEditor = false;
         });
     },
     onEditorCreate(editor) {
@@ -152,17 +171,27 @@ export default {
       );
     },
     onEditorContextualBallonPositionSet(evt, prop, value) {
-      const offset = this.appIframeEl.getBoundingClientRect()[prop];
+      const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
       evt.return = value + offset;
     },
-    destroyEditor() {
+    stopEditing(component) {
+      if (!this.editing) {
+        return;
+      }
+
       if (this.editor) {
-        this.value = this.editor.getData();
+        const value = this.editor.getData();
+        this.value = {
+          componentsToUpdate: [component],
+          value,
+        };
 
         this.editor.ui.view.toolbar.element.remove();
         this.editor.destroy();
         this.editor = null;
       }
+
+      this.editing = false;
     },
   },
 };

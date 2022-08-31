@@ -25,13 +25,14 @@
       </template>
     </base-button>
 
-    <teleport v-if="recording" :to="appComponentEl">
+    <teleport v-if="recording" :to="componentEl">
       <cursor-keyframes-editor v-model="value" />
     </teleport>
   </form-group>
 </template>
 
 <script>
+import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 
@@ -40,8 +41,8 @@ export default {
     CursorKeyframesEditor,
   },
   props: {
-    appComponentEl: {
-      type: HTMLElement,
+    component: {
+      type: Object,
       required: true,
     },
     label: {
@@ -70,7 +71,8 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    return { store };
+    const { getComponentElement } = useModule("app_preview");
+    return { store, getComponentElement };
   },
   computed: {
     value: {
@@ -80,6 +82,9 @@ export default {
       set(value) {
         this.$emit("update:modelValue", value);
       },
+    },
+    componentEl() {
+      return this.getComponentElement(this.component);
     },
     recording: {
       get() {
