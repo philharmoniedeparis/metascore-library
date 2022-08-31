@@ -110,6 +110,9 @@ export default {
     this.stopEditing(this.component);
   },
   methods: {
+    onContentsElementKeyEvent(evt) {
+      evt.stopPropagation();
+    },
     onButtonClick() {
       if (!this.editing) {
         this.startEditing();
@@ -145,6 +148,16 @@ export default {
         .finally(() => {
           this.settingUpEditor = false;
         });
+
+      // Prevent key events from propagating.
+      this.contentsElement.addEventListener(
+        "keydown",
+        this.onContentsElementKeyEvent
+      );
+      this.contentsElement.addEventListener(
+        "keyup",
+        this.onContentsElementKeyEvent
+      );
     },
     onEditorCreate(editor) {
       editor.editing.view.change((writer) => {
@@ -189,6 +202,17 @@ export default {
         this.editor.ui.view.toolbar.element.remove();
         this.editor.destroy();
         this.editor = null;
+      }
+
+      if (this.contentsElement) {
+        this.contentsElement.removeEventListener(
+          "keydown",
+          this.onContentsElementKeyEvent
+        );
+        this.contentsElement.removeEventListener(
+          "keyup",
+          this.onContentsElementKeyEvent
+        );
       }
 
       this.editing = false;

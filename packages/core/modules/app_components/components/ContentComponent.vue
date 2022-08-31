@@ -1,10 +1,6 @@
 <template>
   <component-wrapper :component="component">
-    <div
-      v-dompurify-html="text"
-      class="contents"
-      @click.prevent="onTextClick"
-    ></div>
+    <div v-dompurify-html="text" class="contents" @click="onTextClick"></div>
   </component-wrapper>
 </template>
 
@@ -48,6 +44,7 @@ export default {
       }
 
       evt.stopPropagation();
+      evt.preventDefault();
 
       if (/^#/.test(link.hash)) {
         const actions = link.hash.replace(/^#/, "").split("&");
