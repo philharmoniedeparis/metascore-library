@@ -2,6 +2,7 @@ import {
   Field,
   fieldRegistry,
   WidgetDiv,
+  DropDownDiv,
   utils,
   browserEvents,
   Events,
@@ -181,17 +182,96 @@ export default class FieldTimecode extends Field {
   }
 
   /**
+   * @override
+   */
+  setValue(newValue) {
+    const doLogging = false;
+
+    if (this.isBeingEdited_ && this.htmlInput_) {
+      this.isDirty_ = true;
+      this.htmlInput_.value = newValue;
+    }
+
+    let validatedValue = this.doClassValidation_(newValue);
+    // Class validators might accidentally forget to return, we'll ignore that.
+    newValue = this.processValidation_(newValue, validatedValue);
+    if (newValue instanceof Error) {
+      doLogging && console.log("invalid class validation, return");
+      return;
+    }
+
+    const localValidator = this.getValidator();
+    if (localValidator) {
+      validatedValue = localValidator.call(this, newValue);
+      // Local validators might accidentally forget to return, we'll ignore
+      // that.
+      newValue = this.processValidation_(newValue, validatedValue);
+      if (newValue instanceof Error) {
+        doLogging && console.log("invalid local validation, return");
+        return;
+      }
+    }
+    const source = this.sourceBlock_;
+    if (source && source.disposed) {
+      doLogging && console.log("source disposed, return");
+      return;
+    }
+    const oldValue = this.getValue();
+    if (oldValue === newValue) {
+      doLogging && console.log("same, doValueUpdate_, return");
+      this.doValueUpdate_(newValue);
+      return;
+    }
+
+    this.doValueUpdate_(newValue);
+    if (source && Events.isEnabled()) {
+      Events.fire(
+        new (Events.get(Events.BLOCK_CHANGE))(
+          source,
+          "field",
+          this.name || null,
+          oldValue,
+          newValue
+        )
+      );
+    }
+    if (this.isDirty_) {
+      this.forceRerender();
+    }
+    doLogging && console.log(this.value_);
+  }
+
+  /**
+   * @inheridoc
+   */
+  processValidation_(newValue, validatedValue) {
+    if (validatedValue === false) {
+      this.doValueInvalid_(newValue);
+      if (this.isDirty_) {
+        this.forceRerender();
+      }
+      return Error();
+    }
+    if (validatedValue !== undefined) {
+      newValue = validatedValue;
+    }
+    return newValue;
+  }
+
+  /**
    * @inheridoc
    */
   doClassValidation_(opt_newValue) {
-    if (opt_newValue === null || opt_newValue === undefined) {
+    if (opt_newValue === null) {
       return null;
     }
+
     const value = Number(opt_newValue);
-    if (isNaN(value)) {
-      return null;
+    if (!isNaN(value)) {
+      return value;
     }
-    return value;
+
+    return false;
   }
 
   /**
@@ -390,7 +470,7 @@ export default class FieldTimecode extends Field {
 
     this.htmlInput_.value = this.htmlInput_.defaultValue = this.value_;
     this.htmlInput_.untypedDefaultValue_ = this.value_;
-    this.htmlInput_.oldValue_ = null;
+    this.htmlInput_.oldValue_ = this.htmlInput_.value;
 
     this.resizeEditor_();
 
@@ -494,14 +574,14 @@ export default class FieldTimecode extends Field {
   onHtmlInputKeyDown_(e) {
     if (e.keyCode === utils.KeyCodes.ENTER) {
       WidgetDiv.hide();
-      utils.dropDownDiv.hideWithoutAnimation();
+      DropDownDiv.hideWithoutAnimation();
     } else if (e.keyCode === utils.KeyCodes.ESC) {
       this.setValue(this.htmlInput_.untypedDefaultValue_);
       WidgetDiv.hide();
-      utils.dropDownDiv.hideWithoutAnimation();
+      DropDownDiv.hideWithoutAnimation();
     } else if (e.keyCode === utils.KeyCodes.TAB) {
       WidgetDiv.hide();
-      utils.dropDownDiv.hideWithoutAnimation();
+      DropDownDiv.hideWithoutAnimation();
       this.sourceBlock_.tab(this, !e.shiftKey);
       e.preventDefault();
     }
@@ -532,7 +612,7 @@ export default class FieldTimecode extends Field {
     const action = evt.target.dataset.action;
     switch (action) {
       case "clear":
-        this.htmlInput_.value = null;
+        this.setValue(null);
         break;
 
       case "in":
@@ -568,17 +648,6 @@ export default class FieldTimecode extends Field {
         }
         break;
     }
-  }
-
-  /**
-   * @inheritdoc
-   */
-  setValue(newValue) {
-    if (this.isBeingEdited_ && this.htmlInput_) {
-      this.isDirty_ = true;
-      this.htmlInput_.value = newValue;
-    }
-    super.setValue(newValue);
   }
 
   /**
