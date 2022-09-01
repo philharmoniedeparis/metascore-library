@@ -7,6 +7,7 @@
       "math": "Mathématiques",
       "text": "Texte",
       "actions": "Actions",
+      "media": "Media",
       "variables": "Variables",
       "presets": "Prédéfinis",
     }
@@ -18,6 +19,7 @@
       "math": "Math",
       "text": "Text",
       "actions": "Actions",
+      "media": "Média",
       "variables": "Variables",
       "presets": "Presets",
     }
@@ -158,8 +160,8 @@ export default {
             },
             {
               kind: "category",
-              name: this.$t("categories.variables"),
-              categorystyle: "variables_category",
+              name: this.$t("categories.media"),
+              categorystyle: "media_category",
               contents: [
                 { kind: "block", type: "media_timecode" },
                 { kind: "block", type: "media_get_time" },
