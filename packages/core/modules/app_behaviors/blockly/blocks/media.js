@@ -16,7 +16,7 @@ defineBlocksWithJsonArray([
         name: "TIMECODE",
       },
     ],
-    output: "Timecode",
+    output: "Number",
     style: "media_blocks",
     helpUrl: "%{BKY_MEDIA_TIMECODE_HELPURL}",
     tooltip: "%{BKY_MEDIA_TIMECODE_TOOLTIP}",
@@ -45,7 +45,7 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "VALUE",
-        check: "Timecode",
+        check: "Number",
       },
     ],
     previousStatement: null,
@@ -78,12 +78,12 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "FROM",
-        check: "Timecode",
+        check: "Number",
       },
       {
         type: "input_value",
         name: "TO",
-        check: "Timecode",
+        check: "Number",
       },
     ],
     inputsInline: true,
@@ -102,12 +102,12 @@ defineBlocksWithJsonArray([
       {
         type: "input_value",
         name: "FROM",
-        check: "Timecode",
+        check: "Number",
       },
       {
         type: "input_value",
         name: "TO",
-        check: "Timecode",
+        check: "Number",
       },
     ],
     inputsInline: true,
