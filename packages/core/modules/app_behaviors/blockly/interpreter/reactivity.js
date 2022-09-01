@@ -1,5 +1,5 @@
 import JavaScript from "blockly/javascript";
-import { watchEffect } from "vue";
+import { watchEffect, ref, unref, isRef } from "vue";
 
 const watchers = [];
 
@@ -9,6 +9,9 @@ export function init(context) {
 
   // Add 'Reactivity' object to context.
   context.Reactivity = {
+    ref,
+    unref,
+    isRef,
     watchEffect: (fn) => {
       const unwatch = watchEffect(fn, {
         flush: "post",

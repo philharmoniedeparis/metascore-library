@@ -24,8 +24,34 @@ JavaScript.init = function (workspace) {
       variables[i].getId(),
       Names.NameType.VARIABLE
     );
-    this.definitions_["variables"] += `var ${name} = ref();\n`;
+    this.definitions_["variables"] += `var ${name} = Reactivity.ref();\n`;
   }
+};
+
+JavaScript["variables_get"] = function (block) {
+  // Variable getter.
+  const varName = JavaScript.nameDB_.getName(
+    block.getFieldValue("VAR"),
+    Names.NameType.VARIABLE
+  );
+  const code = `Reactivity.unref(${varName})\n`;
+  return [code, JavaScript.ORDER_ATOMIC];
+};
+
+JavaScript["variables_set"] = function (block) {
+  // Variable setter.
+  const argument0 =
+    JavaScript.valueToCode(block, "VALUE", JavaScript.ORDER_ASSIGNMENT) || "0";
+  const varName = JavaScript.nameDB_.getName(
+    block.getFieldValue("VAR"),
+    Names.NameType.VARIABLE
+  );
+
+  let code = "";
+  code += `if (Reactivity.isRef(${varName})) ${varName}.value = ${argument0};\n`;
+  code += `else ${varName} = ${argument0};\n`;
+
+  return code;
 };
 
 JavaScript["reactivity_when"] = function (block) {
