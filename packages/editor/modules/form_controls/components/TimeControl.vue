@@ -64,6 +64,7 @@
 
 <script>
 import { v4 as uuid } from "uuid";
+import { round } from "lodash";
 import "timecode-input";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import ClearIcon from "../assets/icons/time-clear.svg?inline";
@@ -109,6 +110,10 @@ export default {
       type: Number,
       default: null,
     },
+    decimals: {
+      type: Number,
+      default: 2,
+    },
     inButton: {
       type: Boolean,
       default: false,
@@ -147,7 +152,7 @@ export default {
       },
       set(value) {
         if (!this.lazy) {
-          this.$emit("update:modelValue", value);
+          this.$emit("update:modelValue", round(value, this.decimals));
         }
       },
     },
