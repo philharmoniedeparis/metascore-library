@@ -1,8 +1,9 @@
 import JavaScript from "blockly/javascript";
+import { round } from "lodash";
 
 JavaScript["media_timecode"] = function (block) {
   // Timecode value.
-  const code = Number(block.getFieldValue("TIMECODE"));
+  const code = round(Number(block.getFieldValue("TIMECODE")), 2);
   const order =
     code >= 0 ? JavaScript.ORDER_ATOMIC : JavaScript.ORDER_UNARY_NEGATION;
   return [code, order];
