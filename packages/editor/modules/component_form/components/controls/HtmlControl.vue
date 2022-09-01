@@ -187,9 +187,13 @@ export default {
       const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
       evt.return = value + offset;
     },
-    stopEditing(component) {
+    stopEditing(component = null) {
       if (!this.editing) {
         return;
+      }
+
+      if (component === null) {
+        component = this.component;
       }
 
       if (this.editor) {

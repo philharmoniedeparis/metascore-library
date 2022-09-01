@@ -173,7 +173,7 @@
 </template>
 
 <script>
-import { intersection } from "lodash";
+import { intersection, isObject } from "lodash";
 import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
@@ -515,7 +515,11 @@ export default {
   methods: {
     update({ property, value }) {
       // Allow controls to specify which components to update.
-      if ("componentsToUpdate" in value && "value" in value) {
+      if (
+        isObject(value) &&
+        "componentsToUpdate" in value &&
+        "value" in value
+      ) {
         value.componentsToUpdate.forEach((c) =>
           this.updateComponent(c, {
             [property]: value.value,
