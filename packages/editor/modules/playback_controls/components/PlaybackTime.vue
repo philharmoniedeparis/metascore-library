@@ -29,10 +29,6 @@ export default {
 
   ::v-deep(.input-wrapper) {
     height: 100%;
-
-    .timecode-input {
-      height: 100%;
-    }
   }
 
   ::v-deep(input) {

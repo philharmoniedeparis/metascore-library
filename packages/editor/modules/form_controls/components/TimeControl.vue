@@ -183,8 +183,7 @@ export default {
     position: relative;
   }
 
-  // #\9 is used here to increase specificity.
-  input:not(#\9) {
+  input {
     width: 6em;
     text-align: center;
   }

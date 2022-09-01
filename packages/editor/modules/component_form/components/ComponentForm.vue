@@ -609,8 +609,11 @@ export default {
     }
 
     &.time {
-      justify-content: space-between;
       border-top: 2px solid $mediumgray;
+
+      input {
+        width: 6em;
+      }
     }
 
     &.animated {
