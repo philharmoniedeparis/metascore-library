@@ -1,5 +1,13 @@
 import JavaScript from "blockly/javascript";
 
+JavaScript["media_timecode"] = function (block) {
+  // Timecode value.
+  const code = Number(block.getFieldValue("TIMECODE"));
+  const order =
+    code >= 0 ? JavaScript.ORDER_ATOMIC : JavaScript.ORDER_UNARY_NEGATION;
+  return [code, order];
+};
+
 JavaScript["media_duration"] = function () {
   const code = "Media.getDuration()";
   return [code, JavaScript.ORDER_FUNCTION_CALL];
