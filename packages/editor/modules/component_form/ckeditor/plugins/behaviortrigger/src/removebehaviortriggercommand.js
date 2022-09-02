@@ -1,5 +1,5 @@
-import { Command } from "ckeditor5/src/core";
-import { findAttributeRange } from "ckeditor5/src/typing";
+import Command from "@ckeditor/ckeditor5-core/src/command";
+import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
 
 import { isTriggerableElement } from "./utils";
 

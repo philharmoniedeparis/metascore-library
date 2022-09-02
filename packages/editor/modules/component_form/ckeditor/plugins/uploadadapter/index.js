@@ -1,4 +1,4 @@
-import { Plugin } from "ckeditor5/src/core";
+import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
 import Adapter from "./Adapter";
 
 export default class UploadAdapter extends Plugin {

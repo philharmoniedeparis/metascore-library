@@ -1,16 +1,15 @@
-import {
-  ButtonView,
-  FocusCycler,
-  LabeledFieldView,
-  SwitchButtonView,
-  View,
-  ViewCollection,
-  createLabeledInputText,
-  injectCssTransitionDisabler,
-  submitHandler,
-} from "ckeditor5/src/ui";
-import { FocusTracker, KeystrokeHandler } from "ckeditor5/src/utils";
-import { icons } from "ckeditor5/src/core";
+import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
+import FocusCycler from "@ckeditor/ckeditor5-ui/src/focuscycler";
+import LabeledFieldView from "@ckeditor/ckeditor5-ui/src/labeledfield/labeledfieldview";
+import SwitchButtonView from "@ckeditor/ckeditor5-ui/src/button/switchbuttonview";
+import View from "@ckeditor/ckeditor5-ui/src/view";
+import ViewCollection from "@ckeditor/ckeditor5-ui/src/viewcollection";
+import { createLabeledInputText } from "@ckeditor/ckeditor5-ui/src/labeledfield/utils";
+import injectCssTransitionDisabler from "@ckeditor/ckeditor5-ui/src/bindings/injectcsstransitiondisabler";
+import submitHandler from "@ckeditor/ckeditor5-ui/src/bindings/submithandler";
+import FocusTracker from "@ckeditor/ckeditor5-utils/src/focustracker";
+import KeystrokeHandler from "@ckeditor/ckeditor5-utils/src/keystrokehandler";
+import { icons } from "@ckeditor/ckeditor5-core";
 
 import "@ckeditor/ckeditor5-ui/theme/components/responsive-form/responsiveform.css";
 import "../../theme/behaviortriggerform.scss";

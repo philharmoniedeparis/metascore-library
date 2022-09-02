@@ -1,6 +1,8 @@
-import { Command } from "ckeditor5/src/core";
-import { findAttributeRange } from "ckeditor5/src/typing";
-import { Collection, first, toMap } from "ckeditor5/src/utils";
+import Command from "@ckeditor/ckeditor5-core/src/command";
+import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
+import Collection from "@ckeditor/ckeditor5-utils/src/collection";
+import first from "@ckeditor/ckeditor5-utils/src/first";
+import toMap from "@ckeditor/ckeditor5-utils/src/tomap";
 
 import AutomaticDecorators from "./utils/automaticdecorators";
 import { isTriggerableElement } from "./utils";
