@@ -1,54 +1,8 @@
 diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
-index 7e4fec3..1c0f72c 100644
+index 9ce22ed..898f3c2 100644
 --- a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
 +++ b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.js
-@@ -332,6 +332,8 @@ function flushPreFlushCbs(seen, parentJob = null) {
-     }
- }
- function flushPostFlushCbs(seen) {
-+    // flush any pre cbs queued during the flush (e.g. pre watchers)
-+    flushPreFlushCbs();
-     if (pendingPostFlushCbs.length) {
-         const deduped = [...new Set(pendingPostFlushCbs)];
-         pendingPostFlushCbs.length = 0;
-@@ -590,7 +592,6 @@ function setDevtoolsHook(hook, target) {
-     // handle late devtools injection - only do this if we are in an actual
-     // browser environment to avoid the timer handle stalling test runner exit
-     // (#4815)
--    // eslint-disable-next-line no-restricted-globals
-     typeof window !== 'undefined' &&
-         // some envs mock window but not fully
-         window.HTMLElement &&
-@@ -1793,16 +1794,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = sh
-     }
-     else {
-         // default: 'pre'
--        scheduler = () => {
--            if (!instance || instance.isMounted) {
--                queuePreFlushCb(job);
--            }
--            else {
--                // with 'pre' option, the first call must happen before
--                // the component is mounted so it is called synchronously.
--                job();
--            }
--        };
-+        scheduler = () => queuePreFlushCb(job);
-     }
-     const effect = new reactivity.ReactiveEffect(getter, scheduler);
-     {
-@@ -3567,6 +3559,10 @@ const normalizeSlotValue = (value) => shared.isArray(value)
-     ? value.map(normalizeVNode)
-     : [normalizeVNode(value)];
- const normalizeSlot = (key, rawSlot, ctx) => {
-+    if (rawSlot._n) {
-+        // already normalized - #5353
-+        return rawSlot;
-+    }
-     const normalized = withCtx((...args) => {
-         if (currentInstance) {
-             warn(`Slot "${key}" invoked outside of the render function: ` +
-@@ -3765,7 +3761,8 @@ function createAppContext() {
+@@ -4278,7 +4278,8 @@ function createAppContext() {
              optionMergeStrategies: {},
              errorHandler: undefined,
              warnHandler: undefined,
@@ -58,137 +12,21 @@ index 7e4fec3..1c0f72c 100644
          },
          mixins: [],
          components: {},
-@@ -3913,8 +3910,6 @@ function createAppAPI(render, hydrate) {
-                     warn(`App already provides property with key "${String(key)}". ` +
-                         `It will be overwritten with the new value.`);
-                 }
--                // TypeScript doesn't allow symbols as index type
--                // https://github.com/Microsoft/TypeScript/issues/24587
-                 context.provides[key] = value;
-                 return app;
-             }
-@@ -4051,9 +4046,13 @@ function createHydrationFunctions(rendererInternals) {
-     const hydrateNode = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized = false) => {
-         const isFragmentStart = isComment(node) && node.data === '[';
-         const onMismatch = () => handleMismatch(node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragmentStart);
--        const { type, ref, shapeFlag } = vnode;
-+        const { type, ref, shapeFlag, patchFlag } = vnode;
-         const domType = node.nodeType;
-         vnode.el = node;
-+        if (patchFlag === -2 /* BAIL */) {
-+            optimized = false;
-+            vnode.dynamicChildren = null;
-+        }
-         let nextNode = null;
-         switch (type) {
-             case Text:
-@@ -4930,7 +4929,6 @@ function baseCreateRenderer(options, createHydrationFns) {
-         }
-         else {
-             // no update needed. just copy over properties
--            n2.component = n1.component;
-             n2.el = n1.el;
-             instance.vnode = n2;
-         }
-@@ -5096,9 +5094,9 @@ function baseCreateRenderer(options, createHydrationFns) {
-             }
-         };
-         // create reactive effect for rendering
--        const effect = (instance.effect = new reactivity.ReactiveEffect(componentUpdateFn, () => queueJob(instance.update), instance.scope // track it in component's effect scope
-+        const effect = (instance.effect = new reactivity.ReactiveEffect(componentUpdateFn, () => queueJob(update), instance.scope // track it in component's effect scope
-         ));
--        const update = (instance.update = effect.run.bind(effect));
-+        const update = (instance.update = () => effect.run());
-         update.id = instance.uid;
-         // allowRecurse
-         // #1801, #2043 component render effects should allow recursive updates
-@@ -5110,7 +5108,6 @@ function baseCreateRenderer(options, createHydrationFns) {
-             effect.onTrigger = instance.rtg
-                 ? e => shared.invokeArrayFns(instance.rtg, e)
-                 : void 0;
--            // @ts-ignore (for scheduler)
-             update.ownerInstance = instance;
-         }
-         update();
-@@ -6470,7 +6467,6 @@ function renderList(source, renderItem, cache, index) {
-     else if (typeof source === 'number') {
-         if (!Number.isInteger(source)) {
-             warn(`The v-for range expect an integer value but got ${source}.`);
--            return [];
-         }
-         ret = new Array(source);
-         for (let i = 0; i < source; i++) {
-@@ -6619,8 +6615,8 @@ const publicPropertiesMap =
-     $root: i => getPublicInstance(i.root),
-     $emit: i => i.emit,
-     $options: i => (resolveMergedOptions(i) ),
--    $forceUpdate: i => () => queueJob(i.update),
--    $nextTick: i => nextTick.bind(i.proxy),
-+    $forceUpdate: i => i.f || (i.f = () => queueJob(i.update)),
-+    $nextTick: i => i.n || (i.n = nextTick.bind(i.proxy)),
-     $watch: i => (instanceWatch.bind(i) )
- });
- const PublicInstanceProxyHandlers = {
-@@ -6893,7 +6889,7 @@ function createComponentInstance(vnode, parent, suspense) {
-         provides: parent ? parent.provides : Object.create(appContext.provides),
-         accessCache: null,
-         renderCache: [],
--        // local resovled assets
-+        // local resolved assets
-         components: null,
-         directives: null,
-         // resolved props and emits options
+@@ -7196,7 +7197,8 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
+         // only do on-the-fly compile if not in SSR - SSR on-the-fly compilation
+         // is done by server-renderer
+         if (!isSSR && compile && !Component.render) {
+-            const template = Component.template;
++            const template = Component.template ||
++                resolveMergedOptions(instance).template;
+             if (template) {
+                 {
+                     startMeasure(instance, `compile`);
 diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
-index 01f5b4e..e1eb928 100644
+index 201c854..f568aa9 100644
 --- a/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
 +++ b/node_modules/@vue/runtime-core/dist/runtime-core.cjs.prod.js
-@@ -274,6 +274,8 @@ function flushPreFlushCbs(seen, parentJob = null) {
-     }
- }
- function flushPostFlushCbs(seen) {
-+    // flush any pre cbs queued during the flush (e.g. pre watchers)
-+    flushPreFlushCbs();
-     if (pendingPostFlushCbs.length) {
-         const deduped = [...new Set(pendingPostFlushCbs)];
-         pendingPostFlushCbs.length = 0;
-@@ -349,7 +351,6 @@ function setDevtoolsHook(hook, target) {
-     // handle late devtools injection - only do this if we are in an actual
-     // browser environment to avoid the timer handle stalling test runner exit
-     // (#4815)
--    // eslint-disable-next-line no-restricted-globals
-     typeof window !== 'undefined' &&
-         // some envs mock window but not fully
-         window.HTMLElement &&
-@@ -1326,16 +1327,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = sh
-     }
-     else {
-         // default: 'pre'
--        scheduler = () => {
--            if (!instance || instance.isMounted) {
--                queuePreFlushCb(job);
--            }
--            else {
--                // with 'pre' option, the first call must happen before
--                // the component is mounted so it is called synchronously.
--                job();
--            }
--        };
-+        scheduler = () => queuePreFlushCb(job);
-     }
-     const effect = new reactivity.ReactiveEffect(getter, scheduler);
-     // initial run
-@@ -2818,6 +2810,10 @@ const normalizeSlotValue = (value) => shared.isArray(value)
-     ? value.map(normalizeVNode)
-     : [normalizeVNode(value)];
- const normalizeSlot = (key, rawSlot, ctx) => {
-+    if (rawSlot._n) {
-+        // already normalized - #5353
-+        return rawSlot;
-+    }
-     const normalized = withCtx((...args) => {
-         return normalizeSlotValue(rawSlot(...args));
-     }, ctx);
-@@ -2991,7 +2987,8 @@ function createAppContext() {
+@@ -3366,7 +3366,8 @@ function createAppContext() {
              optionMergeStrategies: {},
              errorHandler: undefined,
              warnHandler: undefined,
@@ -198,76 +36,22 @@ index 01f5b4e..e1eb928 100644
          },
          mixins: [],
          components: {},
-@@ -3087,8 +3084,6 @@ function createAppAPI(render, hydrate) {
-                 }
-             },
-             provide(key, value) {
--                // TypeScript doesn't allow symbols as index type
--                // https://github.com/Microsoft/TypeScript/issues/24587
-                 context.provides[key] = value;
-                 return app;
-             }
-@@ -3213,9 +3208,13 @@ function createHydrationFunctions(rendererInternals) {
-     const hydrateNode = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized = false) => {
-         const isFragmentStart = isComment(node) && node.data === '[';
-         const onMismatch = () => handleMismatch(node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragmentStart);
--        const { type, ref, shapeFlag } = vnode;
-+        const { type, ref, shapeFlag, patchFlag } = vnode;
-         const domType = node.nodeType;
-         vnode.el = node;
-+        if (patchFlag === -2 /* BAIL */) {
-+            optimized = false;
-+            vnode.dynamicChildren = null;
-+        }
-         let nextNode = null;
-         switch (type) {
-             case Text:
-@@ -3956,7 +3955,6 @@ function baseCreateRenderer(options, createHydrationFns) {
-         }
-         else {
-             // no update needed. just copy over properties
--            n2.component = n1.component;
-             n2.el = n1.el;
-             instance.vnode = n2;
-         }
-@@ -4073,9 +4071,9 @@ function baseCreateRenderer(options, createHydrationFns) {
-             }
-         };
-         // create reactive effect for rendering
--        const effect = (instance.effect = new reactivity.ReactiveEffect(componentUpdateFn, () => queueJob(instance.update), instance.scope // track it in component's effect scope
-+        const effect = (instance.effect = new reactivity.ReactiveEffect(componentUpdateFn, () => queueJob(update), instance.scope // track it in component's effect scope
-         ));
--        const update = (instance.update = effect.run.bind(effect));
-+        const update = (instance.update = () => effect.run());
-         update.id = instance.uid;
-         // allowRecurse
-         // #1801, #2043 component render effects should allow recursive updates
-@@ -5470,8 +5468,8 @@ const publicPropertiesMap =
-     $root: i => getPublicInstance(i.root),
-     $emit: i => i.emit,
-     $options: i => (resolveMergedOptions(i) ),
--    $forceUpdate: i => () => queueJob(i.update),
--    $nextTick: i => nextTick.bind(i.proxy),
-+    $forceUpdate: i => i.f || (i.f = () => queueJob(i.update)),
-+    $nextTick: i => i.n || (i.n = nextTick.bind(i.proxy)),
-     $watch: i => (instanceWatch.bind(i) )
- });
- const PublicInstanceProxyHandlers = {
-@@ -5637,7 +5635,7 @@ function createComponentInstance(vnode, parent, suspense) {
-         provides: parent ? parent.provides : Object.create(appContext.provides),
-         accessCache: null,
-         renderCache: [],
--        // local resovled assets
-+        // local resolved assets
-         components: null,
-         directives: null,
-         // resolved props and emits options
+@@ -5874,7 +5875,8 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
+         // only do on-the-fly compile if not in SSR - SSR on-the-fly compilation
+         // is done by server-renderer
+         if (!isSSR && compile && !Component.render) {
+-            const template = Component.template;
++            const template = Component.template ||
++                resolveMergedOptions(instance).template;
+             if (template) {
+                 const { isCustomElement, compilerOptions } = instance.appContext.config;
+                 const { delimiters, compilerOptions: componentCompilerOptions } = Component;
 diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.d.ts b/node_modules/@vue/runtime-core/dist/runtime-core.d.ts
 deleted file mode 100644
-index 8964cab..0000000
+index 73daf7c..0000000
 --- a/node_modules/@vue/runtime-core/dist/runtime-core.d.ts
 +++ /dev/null
-@@ -1,1998 +0,0 @@
+@@ -1,2020 +0,0 @@
 -import { camelize } from '@vue/shared';
 -import { capitalize } from '@vue/shared';
 -import { ComponentPropsOptions as ComponentPropsOptions_2 } from '@vue/runtime-core';
@@ -435,18 +219,18 @@ index 8964cab..0000000
 -    mode?: 'in-out' | 'out-in' | 'default';
 -    appear?: boolean;
 -    persisted?: boolean;
--    onBeforeEnter?: (el: HostElement) => void;
--    onEnter?: (el: HostElement, done: () => void) => void;
--    onAfterEnter?: (el: HostElement) => void;
--    onEnterCancelled?: (el: HostElement) => void;
--    onBeforeLeave?: (el: HostElement) => void;
--    onLeave?: (el: HostElement, done: () => void) => void;
--    onAfterLeave?: (el: HostElement) => void;
--    onLeaveCancelled?: (el: HostElement) => void;
--    onBeforeAppear?: (el: HostElement) => void;
--    onAppear?: (el: HostElement, done: () => void) => void;
--    onAfterAppear?: (el: HostElement) => void;
--    onAppearCancelled?: (el: HostElement) => void;
+-    onBeforeEnter?: Hook<(el: HostElement) => void>;
+-    onEnter?: Hook<(el: HostElement, done: () => void) => void>;
+-    onAfterEnter?: Hook<(el: HostElement) => void>;
+-    onEnterCancelled?: Hook<(el: HostElement) => void>;
+-    onBeforeLeave?: Hook<(el: HostElement) => void>;
+-    onLeave?: Hook<(el: HostElement, done: () => void) => void>;
+-    onAfterLeave?: Hook<(el: HostElement) => void>;
+-    onLeaveCancelled?: Hook<(el: HostElement) => void>;
+-    onBeforeAppear?: Hook<(el: HostElement) => void>;
+-    onAppear?: Hook<(el: HostElement, done: () => void) => void>;
+-    onAfterAppear?: Hook<(el: HostElement) => void>;
+-    onAppearCancelled?: Hook<(el: HostElement) => void>;
 -}
 -
 -declare const enum BooleanFlags {
@@ -532,6 +316,7 @@ index 8964cab..0000000
 -declare interface CompiledSlotDescriptor {
 -    name: string;
 -    fn: Slot;
+-    key?: string;
 -}
 -
 -/**
@@ -679,6 +464,14 @@ index 8964cab..0000000
 -    /* Excluded from this release type: da */
 -    /* Excluded from this release type: ec */
 -    /* Excluded from this release type: sp */
+-    /**
+-     * For caching bound $forceUpdate on public proxy access
+-     */
+-    f?: () => void;
+-    /**
+-     * For caching bound $nextTick on public proxy access
+-     */
+-    n?: () => Promise<void>;
 -}
 -
 -declare interface ComponentInternalOptions {
@@ -693,6 +486,10 @@ index 8964cab..0000000
 -     * This one should be exposed so that devtools can make use of it
 -     */
 -    __file?: string;
+-    /**
+-     * name inferred from filename
+-     */
+-    __name?: string;
 -}
 -
 -export declare type ComponentObjectPropsOptions<P = Data> = {
@@ -741,6 +538,8 @@ index 8964cab..0000000
 -} & ThisType<CreateComponentPublicInstance<PE, RawBindings, D, C, M, Mixin, Extends, E>>;
 -
 -export declare type ComponentPropsOptions<P = Data> = ComponentObjectPropsOptions<P> | string[];
+-
+-export declare type ComponentProvideOptions = ObjectProvideOptions | Function;
 -
 -export declare type ComponentPublicInstance<P = {}, // props type extracted from props option
 -B = {}, // raw bindings returned from setup()
@@ -917,13 +716,13 @@ index 8964cab..0000000
 -
 -export declare function defineComponent<Props, RawBindings = object>(setup: (props: Readonly<Props>, ctx: SetupContext) => RawBindings | RenderFunction): DefineComponent<Props, RawBindings>;
 -
--export declare function defineComponent<Props = {}, RawBindings = {}, D = {}, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = EmitsOptions, EE extends string = string>(options: ComponentOptionsWithoutProps<Props, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<Props, RawBindings, D, C, M, Mixin, Extends, E, EE>;
+-export declare function defineComponent<Props = {}, RawBindings = {}, D = {}, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = {}, EE extends string = string>(options: ComponentOptionsWithoutProps<Props, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<Props, RawBindings, D, C, M, Mixin, Extends, E, EE>;
 -
--export declare function defineComponent<PropNames extends string, RawBindings, D, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = Record<string, any>, EE extends string = string>(options: ComponentOptionsWithArrayProps<PropNames, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<Readonly<{
+-export declare function defineComponent<PropNames extends string, RawBindings, D, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = {}, EE extends string = string>(options: ComponentOptionsWithArrayProps<PropNames, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<Readonly<{
 -    [key in PropNames]?: any;
 -}>, RawBindings, D, C, M, Mixin, Extends, E, EE>;
 -
--export declare function defineComponent<PropsOptions extends Readonly<ComponentPropsOptions>, RawBindings, D, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = Record<string, any>, EE extends string = string>(options: ComponentOptionsWithObjectProps<PropsOptions, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<PropsOptions, RawBindings, D, C, M, Mixin, Extends, E, EE>;
+-export declare function defineComponent<PropsOptions extends Readonly<ComponentPropsOptions>, RawBindings, D, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = {}, EE extends string = string>(options: ComponentOptionsWithObjectProps<PropsOptions, RawBindings, D, C, M, Mixin, Extends, E, EE>): DefineComponent<PropsOptions, RawBindings, D, C, M, Mixin, Extends, E, EE>;
 -
 -/**
 - * Vue `<script setup>` compiler macro for declaring a component's emitted
@@ -1130,7 +929,7 @@ index 8964cab..0000000
 -};
 -
 -export declare type ExtractDefaultPropTypes<O> = O extends object ? {
--    [K in DefaultKeys<O>]: InferPropType<O[K]>;
+-    [K in keyof Pick<O, DefaultKeys<O>>]: InferPropType<O[K]>;
 -} : {};
 -
 -declare type ExtractMixin<T> = {
@@ -1226,6 +1025,8 @@ index 8964cab..0000000
 -    reload: typeof reload;
 -}
 -
+-declare type Hook<T = () => void> = T | T[];
+-
 -declare function hydrateSuspense(node: Node, vnode: VNode, parentComponent: ComponentInternalInstance | null, parentSuspense: SuspenseBoundary | null, isSVG: boolean, slotScopeIds: string[] | null, optimized: boolean, rendererInternals: RendererInternals, hydrateNode: (node: Node, vnode: VNode, parentComponent: ComponentInternalInstance | null, parentSuspense: SuspenseBoundary | null, slotScopeIds: string[] | null, optimized: boolean) => Node | null): Node | null;
 -
 -declare function hydrateTeleport(node: Node, vnode: TeleportVNode, parentComponent: ComponentInternalInstance | null, parentSuspense: SuspenseBoundary | null, slotScopeIds: string[] | null, optimized: boolean, { o: { nextSibling, parentNode, querySelector } }: RendererInternals<Node, Element>, hydrateChildren: (node: Node | null, vnode: VNode, container: Element, parentComponent: ComponentInternalInstance | null, parentSuspense: SuspenseBoundary | null, slotScopeIds: string[] | null, optimized: boolean) => Node | null): Node | null;
@@ -1234,7 +1035,7 @@ index 8964cab..0000000
 -    hydrate: RootHydrateFunction;
 -}
 -
--declare type InferDefault<P, T> = T extends null | number | string | boolean | symbol | Function ? T : (props: P) => T;
+-declare type InferDefault<P, T> = T extends null | number | string | boolean | symbol | Function ? T | ((props: P) => T) : (props: P) => T;
 -
 -declare type InferDefaults<T> = {
 -    [K in keyof T]?: InferDefault<T, NotUndefined<T[K]>>;
@@ -1338,7 +1139,7 @@ index 8964cab..0000000
 -    computed?: C;
 -    methods?: M;
 -    watch?: ComponentWatchOptions;
--    provide?: Data | Function;
+-    provide?: ComponentProvideOptions;
 -    inject?: ComponentInjectOptions;
 -    filters?: Record<string, Function>;
 -    mixins?: Mixin[];
@@ -1370,8 +1171,8 @@ index 8964cab..0000000
 -     *
 -     * type-only, used to assist Mixin's type inference,
 -     * typescript will try to simplify the inferred `Mixin` type,
--     * with the `__differenciator`, typescript won't be able to combine different mixins,
--     * because the `__differenciator` will be different
+-     * with the `__differentiator`, typescript won't be able to combine different mixins,
+-     * because the `__differentiator` will be different
 -     */
 -    __differentiator?: keyof D | keyof C | keyof M;
 -}
@@ -1513,6 +1314,8 @@ index 8964cab..0000000
 -    from?: string | symbol;
 -    default?: unknown;
 -}>;
+-
+-declare type ObjectProvideOptions = Record<string | symbol, unknown>;
 -
 -declare type ObjectWatchOptionItem = {
 -    handler: WatchCallback | string;
@@ -1800,7 +1603,9 @@ index 8964cab..0000000
 -
 -export declare function resolveTransitionHooks(vnode: VNode, props: BaseTransitionProps<any>, state: TransitionState, instance: ComponentInternalInstance): TransitionHooks;
 -
--export declare type RootHydrateFunction = (vnode: VNode<Node, Element>, container: Element | ShadowRoot) => void;
+-export declare type RootHydrateFunction = (vnode: VNode<Node, Element>, container: (Element | ShadowRoot) & {
+-    _vnode?: VNode;
+-}) => void;
 -
 -export declare type RootRenderFunction<HostElement = RendererElement> = (vnode: VNode | null, container: HostElement, isSVG?: boolean) => void;
 -
@@ -1816,6 +1621,7 @@ index 8964cab..0000000
 -
 -declare interface SchedulerJob extends Function {
 -    id?: number;
+-    pre?: boolean;
 -    active?: boolean;
 -    computed?: boolean;
 -    /**
@@ -2008,7 +1814,7 @@ index 8964cab..0000000
 - * For prefixing keys in v-on="obj" with "on"
 - * @private
 - */
--export declare function toHandlers(obj: Record<string, any>): Record<string, any>;
+-export declare function toHandlers(obj: Record<string, any>, preserveCaseIfNecessary?: boolean): Record<string, any>;
 -
 -export { toRaw }
 -
@@ -2146,7 +1952,7 @@ index 8964cab..0000000
 -    onVnodeUnmounted?: VNodeMountHook | VNodeMountHook[];
 -};
 -
--declare type VNodeRef = string | Ref | ((ref: object | null, refs: Record<string, any>) => void);
+-export declare type VNodeRef = string | Ref | ((ref: Element | ComponentPublicInstance | null, refs: Record<string, any>) => void);
 -
 -export declare type VNodeTypes = string | VNode | Component | typeof Text_2 | typeof Static | typeof Comment_2 | typeof Fragment | typeof TeleportImpl | typeof SuspenseImpl;
 -
@@ -2267,56 +2073,10 @@ index 8964cab..0000000
 -  const withDefaults: _withDefaults
 -}
 diff --git a/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js b/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
-index 2b5b015..2cf7b93 100644
+index b972a60..b654bfd 100644
 --- a/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
 +++ b/node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js
-@@ -335,6 +335,8 @@ function flushPreFlushCbs(seen, parentJob = null) {
-     }
- }
- function flushPostFlushCbs(seen) {
-+    // flush any pre cbs queued during the flush (e.g. pre watchers)
-+    flushPreFlushCbs();
-     if (pendingPostFlushCbs.length) {
-         const deduped = [...new Set(pendingPostFlushCbs)];
-         pendingPostFlushCbs.length = 0;
-@@ -596,7 +598,6 @@ function setDevtoolsHook(hook, target) {
-     // handle late devtools injection - only do this if we are in an actual
-     // browser environment to avoid the timer handle stalling test runner exit
-     // (#4815)
--    // eslint-disable-next-line no-restricted-globals
-     typeof window !== 'undefined' &&
-         // some envs mock window but not fully
-         window.HTMLElement &&
-@@ -1802,16 +1803,7 @@ function doWatch(source, cb, { immediate, deep, flush, onTrack, onTrigger } = EM
-     }
-     else {
-         // default: 'pre'
--        scheduler = () => {
--            if (!instance || instance.isMounted) {
--                queuePreFlushCb(job);
--            }
--            else {
--                // with 'pre' option, the first call must happen before
--                // the component is mounted so it is called synchronously.
--                job();
--            }
--        };
-+        scheduler = () => queuePreFlushCb(job);
-     }
-     const effect = new ReactiveEffect(getter, scheduler);
-     if ((process.env.NODE_ENV !== 'production')) {
-@@ -3585,6 +3577,10 @@ const normalizeSlotValue = (value) => isArray(value)
-     ? value.map(normalizeVNode)
-     : [normalizeVNode(value)];
- const normalizeSlot = (key, rawSlot, ctx) => {
-+    if (rawSlot._n) {
-+        // already normalized - #5353
-+        return rawSlot;
-+    }
-     const normalized = withCtx((...args) => {
-         if ((process.env.NODE_ENV !== 'production') && currentInstance) {
-             warn(`Slot "${key}" invoked outside of the render function: ` +
-@@ -3785,7 +3781,8 @@ function createAppContext() {
+@@ -4298,7 +4298,8 @@ function createAppContext() {
              optionMergeStrategies: {},
              errorHandler: undefined,
              warnHandler: undefined,
@@ -2326,83 +2086,13 @@ index 2b5b015..2cf7b93 100644
          },
          mixins: [],
          components: {},
-@@ -3936,8 +3933,6 @@ function createAppAPI(render, hydrate) {
-                     warn(`App already provides property with key "${String(key)}". ` +
-                         `It will be overwritten with the new value.`);
-                 }
--                // TypeScript doesn't allow symbols as index type
--                // https://github.com/Microsoft/TypeScript/issues/24587
-                 context.provides[key] = value;
-                 return app;
-             }
-@@ -4075,9 +4070,13 @@ function createHydrationFunctions(rendererInternals) {
-     const hydrateNode = (node, vnode, parentComponent, parentSuspense, slotScopeIds, optimized = false) => {
-         const isFragmentStart = isComment(node) && node.data === '[';
-         const onMismatch = () => handleMismatch(node, vnode, parentComponent, parentSuspense, slotScopeIds, isFragmentStart);
--        const { type, ref, shapeFlag } = vnode;
-+        const { type, ref, shapeFlag, patchFlag } = vnode;
-         const domType = node.nodeType;
-         vnode.el = node;
-+        if (patchFlag === -2 /* BAIL */) {
-+            optimized = false;
-+            vnode.dynamicChildren = null;
-+        }
-         let nextNode = null;
-         switch (type) {
-             case Text:
-@@ -4999,7 +4998,6 @@ function baseCreateRenderer(options, createHydrationFns) {
-         }
-         else {
-             // no update needed. just copy over properties
--            n2.component = n1.component;
-             n2.el = n1.el;
-             instance.vnode = n2;
-         }
-@@ -5165,9 +5163,9 @@ function baseCreateRenderer(options, createHydrationFns) {
-             }
-         };
-         // create reactive effect for rendering
--        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, () => queueJob(instance.update), instance.scope // track it in component's effect scope
-+        const effect = (instance.effect = new ReactiveEffect(componentUpdateFn, () => queueJob(update), instance.scope // track it in component's effect scope
-         ));
--        const update = (instance.update = effect.run.bind(effect));
-+        const update = (instance.update = () => effect.run());
-         update.id = instance.uid;
-         // allowRecurse
-         // #1801, #2043 component render effects should allow recursive updates
-@@ -5179,7 +5177,6 @@ function baseCreateRenderer(options, createHydrationFns) {
-             effect.onTrigger = instance.rtg
-                 ? e => invokeArrayFns(instance.rtg, e)
-                 : void 0;
--            // @ts-ignore (for scheduler)
-             update.ownerInstance = instance;
-         }
-         update();
-@@ -6545,7 +6542,6 @@ function renderList(source, renderItem, cache, index) {
-     else if (typeof source === 'number') {
-         if ((process.env.NODE_ENV !== 'production') && !Number.isInteger(source)) {
-             warn(`The v-for range expect an integer value but got ${source}.`);
--            return [];
-         }
-         ret = new Array(source);
-         for (let i = 0; i < source; i++) {
-@@ -6694,8 +6690,8 @@ const publicPropertiesMap =
-     $root: i => getPublicInstance(i.root),
-     $emit: i => i.emit,
-     $options: i => (__VUE_OPTIONS_API__ ? resolveMergedOptions(i) : i.type),
--    $forceUpdate: i => () => queueJob(i.update),
--    $nextTick: i => nextTick.bind(i.proxy),
-+    $forceUpdate: i => i.f || (i.f = () => queueJob(i.update)),
-+    $nextTick: i => i.n || (i.n = nextTick.bind(i.proxy)),
-     $watch: i => (__VUE_OPTIONS_API__ ? instanceWatch.bind(i) : NOOP)
- });
- const PublicInstanceProxyHandlers = {
-@@ -6972,7 +6968,7 @@ function createComponentInstance(vnode, parent, suspense) {
-         provides: parent ? parent.provides : Object.create(appContext.provides),
-         accessCache: null,
-         renderCache: [],
--        // local resovled assets
-+        // local resolved assets
-         components: null,
-         directives: null,
-         // resolved props and emits options
+@@ -7275,7 +7276,8 @@ function finishComponentSetup(instance, isSSR, skipOptions) {
+         // only do on-the-fly compile if not in SSR - SSR on-the-fly compilation
+         // is done by server-renderer
+         if (!isSSR && compile && !Component.render) {
+-            const template = Component.template;
++            const template = Component.template ||
++                resolveMergedOptions(instance).template;
+             if (template) {
+                 if ((process.env.NODE_ENV !== 'production')) {
+                     startMeasure(instance, `compile`);
