@@ -135,11 +135,7 @@ export default {
         extraFonts: this.extraFonts,
       });
 
-      Editor.create(
-        this.contentsElement,
-        config,
-        this.contentsElement.ownerDocument
-      )
+      Editor.create(this.contentsElement, config)
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.
