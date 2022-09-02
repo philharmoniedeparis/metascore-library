@@ -65,21 +65,9 @@ export default class AddBehaviorTriggerCommand extends Command {
     const selectedElement =
       selection.getSelectedElement() || first(selection.getSelectedBlocks());
 
-    let hasSelection = false;
-    for (const range of selection.getRanges()) {
-      if (!range.isCollapsed) {
-        hasSelection = true;
-        break;
-      }
-    }
-
-    if (!hasSelection) {
-      this.value = void 0;
-      this.isEnabled = false;
-    }
     // A check for any integration that allows linking elements (e.g. `LinkImage`).
     // Currently the selection reads attributes from text nodes only. See #7429 and #7465.
-    else if (isTriggerableElement(selectedElement, model.schema)) {
+    if (isTriggerableElement(selectedElement, model.schema)) {
       this.value = selectedElement.getAttribute("behaviorTrigger");
       this.isEnabled = model.schema.checkAttribute(
         selectedElement,
