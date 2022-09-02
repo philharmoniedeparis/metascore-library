@@ -13,7 +13,7 @@ import { createBehaviorTriggerElement } from "./utils";
 
 import "../theme/behaviortrigger.scss";
 
-const HIGHLIGHT_CLASS = "ck-behavior_trigger_selected";
+const HIGHLIGHT_CLASS = "ck-behaviortrigger_selected";
 
 /**
  * The behavior trigger engine feature.
