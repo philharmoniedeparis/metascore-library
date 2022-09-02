@@ -4,6 +4,7 @@ import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
 import ContextualBalloon from "@ckeditor/ckeditor5-ui/src/panel/balloon/contextualballoon";
 import clickOutsideHandler from "@ckeditor/ckeditor5-ui/src/bindings/clickoutsidehandler";
 import { isWidget } from "@ckeditor/ckeditor5-widget/src/utils";
+import viewToPlainText from "@ckeditor/ckeditor5-clipboard/src/utils/viewtoplaintext";
 import BehaviorTriggerFormView from "./ui/behaviortriggerformview";
 import BehaviorTriggerActionsView from "./ui/behaviortriggeractionsview";
 import { isLinkElement, TRIGGER_KEYSTROKE } from "./utils";
@@ -327,6 +328,7 @@ export default class BehaviorTriggerUI extends Plugin {
 
     const editor = this.editor;
     const addBehaviorTriggerCommand = editor.commands.get("addBehaviorTrigger");
+    const selection = editor.model.document.selection;
 
     this.formView.disableCssTransitions();
 
@@ -349,7 +351,8 @@ export default class BehaviorTriggerUI extends Plugin {
     // https://github.com/ckeditor/ckeditor5-link/issues/78
     // https://github.com/ckeditor/ckeditor5-link/issues/123
     this.formView.idInputView.fieldView.element.value =
-      addBehaviorTriggerCommand.value || "";
+      addBehaviorTriggerCommand.value ||
+      this._generateIdFromSelection(selection);
   }
 
   /**
@@ -736,6 +739,40 @@ export default class BehaviorTriggerUI extends Plugin {
         writer.removeMarker(VISUAL_SELECTION_MARKER_NAME);
       });
     }
+  }
+
+  _generateIdFromSelection(selection) {
+    let id = "";
+
+    // Get selection as plain text.
+    for (const range of selection.getRanges()) {
+      for (const item of range.getItems()) {
+        id += viewToPlainText(item);
+      }
+    }
+
+    // Remove special characters.
+    id = id.replace(/[«»!"#$%&'()*+,/:;<=>?@[\\\]^`{|}~]/g, "");
+
+    // Truncate to 10 characters.
+    id = id.substring(0, 20);
+
+    // Strip whitespaces from beginning and end.
+    id = id.trim();
+
+    // Transform to lowercase.
+    id = id.toLowerCase();
+
+    // Replace dots and spaces with a short dash.
+    id = id.replace(/(\s|\.)/g, "-");
+
+    // Replace multiple dashes with a single dash.
+    id = id.replace(/-{2,}/g, "-");
+
+    // Replace long dash with two short dashes.
+    id = id.replace(/—/g, "--");
+
+    return id;
   }
 }
 
