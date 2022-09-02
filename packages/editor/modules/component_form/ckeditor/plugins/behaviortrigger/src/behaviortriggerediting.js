@@ -69,7 +69,8 @@ export default class BehaviorTriggerEditing extends Plugin {
       },
       model: {
         key: "behaviorTrigger",
-        value: (viewElement) => viewElement.getAttribute("id"),
+        value: (viewElement) =>
+          viewElement.getAttribute("data-behavior-trigger"),
       },
     });
 
