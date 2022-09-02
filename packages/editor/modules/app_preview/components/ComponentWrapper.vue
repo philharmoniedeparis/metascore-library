@@ -656,9 +656,11 @@ export default {
       }
     }
 
-    &.content:not(.selected) {
-      ::v-deep(.metaScore-component--inner) {
-        pointer-events: none;
+    &.content > ::v-deep(.metaScore-component--inner) {
+      & > .contents {
+        a {
+          pointer-events: none;
+        }
       }
     }
 
