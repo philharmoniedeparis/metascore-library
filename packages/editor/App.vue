@@ -48,6 +48,7 @@
         preview,
         'app-title-focused': appTitleFocused,
         'libraries-expanded': librariesExpanded,
+        'behaviors-open': behaviorsOpen,
         'latest-revision': isLatestRevision,
       },
     ]"
@@ -114,7 +115,7 @@
     </resizable-pane>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <tabs-container>
+      <tabs-container v-model:activeTab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
             :images="imageAssets"
@@ -277,6 +278,8 @@ export default {
       appTitleFocused: false,
       activeLibrariesTab: 0,
       librariesExpanded: false,
+      activeFormsTab: 0,
+      behaviorsOpen: false,
       showAutoSaveRestoreConfirm: false,
       showHotkeyList: false,
       showContextmenu: false,
@@ -368,6 +371,9 @@ export default {
         tabs.style.maxWidth = null;
         this.librariesExpanded = false;
       }
+    },
+    activeFormsTab(index) {
+      this.behaviorsOpen = index === 1;
     },
     preview(value) {
       if (value) this.enableBehaviors();
@@ -711,6 +717,15 @@ export default {
       > .right {
         display: none;
       }
+    }
+  }
+
+  &.behaviors-open {
+    grid-template-columns: auto 1fr minmax(0, auto);
+
+    > .right {
+      min-width: 60em;
+      max-width: none;
     }
   }
 
