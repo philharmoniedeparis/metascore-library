@@ -6,8 +6,10 @@
       "logic": "Logique",
       "math": "Mathématiques",
       "text": "Texte",
+      "color": "Couleur",
       "actions": "Actions",
       "media": "Media",
+      "components": "Composants",
       "variables": "Variables",
       "presets": "Prédéfinis",
     }
@@ -18,8 +20,10 @@
       "logic": "Logic",
       "math": "Math",
       "text": "Text",
+      "color": "Color",
       "actions": "Actions",
       "media": "Média",
+      "components": "Components",
       "variables": "Variables",
       "presets": "Presets",
     }
@@ -160,6 +164,12 @@ export default {
             },
             {
               kind: "category",
+              name: this.$t("categories.color"),
+              categorystyle: "color_category",
+              contents: [{ kind: "block", type: "colour_picker" }],
+            },
+            {
+              kind: "category",
               name: this.$t("categories.media"),
               categorystyle: "media_category",
               contents: [
@@ -168,6 +178,19 @@ export default {
                 { kind: "block", type: "media_set_time" },
                 { kind: "block", type: "media_get_duration" },
                 { kind: "block", type: "media_playing" },
+              ],
+            },
+            {
+              kind: "category",
+              name: this.$t("categories.components"),
+              categorystyle: "components_category",
+              contents: [
+                { kind: "block", type: "components_get_property" },
+                { kind: "block", type: "components_set_property" },
+                { kind: "block", type: "components_get_background" },
+                { kind: "block", type: "components_set_background" },
+                { kind: "block", type: "components_get_text" },
+                { kind: "block", type: "components_set_text" },
               ],
             },
             {

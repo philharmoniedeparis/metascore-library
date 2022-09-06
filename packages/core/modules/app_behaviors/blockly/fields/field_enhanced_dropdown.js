@@ -127,7 +127,7 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
     /**
      * The currently selected option. The field is initialized with the
      * first option selected.
-     * @type {!Array<string|!ImageProperties>}
+     * @type {!Array<string|!object>}
      * @private
      */
     this.selectedOption_ = this.getOptions(false).find((o) => {
@@ -154,36 +154,38 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
     for (let i = 0; i < options.length; i++) {
       let content = options[i][0]; // Human-readable text or image.
       const value = options[i][1]; // Language-neutral value.
-
-      let menuItem = null;
-
+      let enabled = true;
+      let label = content;
       if (typeof content === "object") {
         if ("src" in content) {
           // An image, not text.
           const image = new Image(content.width, content.height);
           image.src = content.src;
           image.alt = content.alt || "";
-          menuItem = new MenuItem(image, value);
+          label = image;
         } else {
-          menuItem = new MenuItem(content.label, value);
+          label = content.label;
         }
 
         if ("disabled" in content && content.disabled) {
-          menuItem.setEnabled(false);
+          enabled = false;
         }
-      } else {
-        menuItem = new MenuItem(content, value);
       }
 
+      const menuItem = new MenuItem(label, value);
       menuItem.setRole(aria.Role.OPTION);
       menuItem.setRightToLeft(this.sourceBlock_.RTL);
       menuItem.setCheckable(true);
       menu.addChild(menuItem);
-      menuItem.setChecked(value === this.value_);
-      if (value === this.value_) {
-        this.selectedMenuItem_ = menuItem;
+      if (enabled) {
+        menuItem.setChecked(value === this.value_);
+        if (value === this.value_) {
+          this.selectedMenuItem_ = menuItem;
+        }
+        menuItem.onAction(this.handleMenuActionEvent_, this);
+      } else {
+        menuItem.setEnabled(false);
       }
-      menuItem.onAction(this.handleMenuActionEvent_, this);
     }
   }
 
@@ -201,6 +203,22 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
     return /** @type {!Array<!Array<string>>} */ (this.menuGenerator_);
   }
 
+  render_() {
+    // Hide both elements.
+    this.textContent_.nodeValue = "";
+    this.imageElement_.style.display = "none";
+
+    // Show correct element.
+    const option = this.selectedOption_ && this.selectedOption_[0];
+    if (option && typeof option === "object" && "alt" in option) {
+      this.renderSelectedImage_(/** @type {!ImageProperties} */ (option));
+    } else {
+      this.renderSelectedText_();
+    }
+
+    this.positionBorderRect_();
+  }
+
   /**
    * @inheritdoc
    */
@@ -209,11 +227,12 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
       return null;
     }
     const option = this.selectedOption_[0];
-    if (typeof option === "object" && "label" in option) {
+    if (typeof option === "object") {
+      if ("alt" in option) {
+        return option.alt;
+      }
+
       return option.label;
-    }
-    if (typeof option === "object" && "alt" in option) {
-      return option.alt;
     }
     return option;
   }

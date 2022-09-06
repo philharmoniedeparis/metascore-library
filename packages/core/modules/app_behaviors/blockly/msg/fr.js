@@ -10,6 +10,30 @@ Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
 
+Msg.COMPONENTS_SET_SCENARIO = "aller au scénario %1";
+Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
+Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
+
+Msg.COMPONENTS_PROPERTY = {};
+Msg.COMPONENTS_PROPERTY["background-color"] = "couleur de fond";
+Msg.COMPONENTS_PROPERTY["background-image"] = "image de fond";
+Msg.COMPONENTS_PROPERTY["border-color"] = "couleur de bordure";
+Msg.COMPONENTS_PROPERTY["border-width"] = "largeur de bordure";
+Msg.COMPONENTS_PROPERTY["hidden"] = "caché";
+Msg.COMPONENTS_PROPERTY["loop-duration"] = "durée d'un boucle";
+Msg.COMPONENTS_PROPERTY["reversed"] = "inversé";
+Msg.COMPONENTS_PROPERTY["text"] = "texte";
+Msg.COMPONENTS_PROPERTY["cursor-width"] = "largeur du curseur";
+Msg.COMPONENTS_PROPERTY["cursor-color"] = "couleur du curseur";
+
+Msg.COMPONENTS_GET_PROPERTY = "%2 de %1";
+Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
+Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
+
+Msg.COMPONENTS_SET_PROPERTY = "définir %2 de %1 à %3";
+Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
+Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
+
 Msg.COMPONENTS_SHOW = "afficher %1";
 Msg.COMPONENTS_SHOW_TOOLTIP = "";
 Msg.COMPONENTS_SHOW_HELPURL = "";
@@ -18,9 +42,21 @@ Msg.COMPONENTS_HIDE = "masquer %1";
 Msg.COMPONENTS_HIDE_TOOLTIP = "";
 Msg.COMPONENTS_HIDE_HELPURL = "";
 
-Msg.COMPONENTS_SET_SCENARIO = "aller au scénario %1";
-Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
-Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
+Msg.COMPONENTS_GET_BACKGROUND = "couleur de fond de %1";
+Msg.COMPONENTS_GET_BACKGROUND_TOOLTIP = "";
+Msg.COMPONENTS_GET_BACKGROUND_HELPURL = "";
+
+Msg.COMPONENTS_SET_BACKGROUND = "définir la couleur de fond de %1 à %2";
+Msg.COMPONENTS_SET_BACKGROUND_TOOLTIP = "";
+Msg.COMPONENTS_SET_BACKGROUND_HELPURL = "";
+
+Msg.COMPONENTS_GET_TEXT = "texte de %1";
+Msg.COMPONENTS_GET_TEXT_TOOLTIP = "";
+Msg.COMPONENTS_GET_TEXT_HELPURL = "";
+
+Msg.COMPONENTS_SET_TEXT = "définir le texte de %1 à %2";
+Msg.COMPONENTS_SET_TEXT_TOOLTIP = "";
+Msg.COMPONENTS_SET_TEXT_HELPURL = "";
 
 Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
 Msg.KEYBOARD_KEYPRESSED_THEN = "faire %1";

@@ -35,10 +35,16 @@ export default Blockly.Theme.defineTheme("metaScore", {
     text_category: {
       colour: "18",
     },
+    color_category: {
+      colour: "18",
+    },
     actions_category: {
       colour: "43",
     },
     media_category: {
+      colour: "43",
+    },
+    components_category: {
       colour: "43",
     },
     variables_category: {
@@ -65,7 +71,13 @@ export default Blockly.Theme.defineTheme("metaScore", {
     text_blocks: {
       colourPrimary: "18",
     },
+    color_blocks: {
+      colourPrimary: "18",
+    },
     media_blocks: {
+      colourPrimary: "18",
+    },
+    component_blocks: {
       colourPrimary: "18",
     },
     variable_blocks: {

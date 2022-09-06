@@ -47,6 +47,22 @@ export function init(context) {
         hidden: true,
       });
     },
+    getProperty: (type, id, name) => {
+      const { getComponent } = useModule("app_components");
+
+      const component = getComponent(type, id);
+      if (!component) {
+        return;
+      }
+
+      return component[name];
+    },
+    setProperty: (type, id, name, value) => {
+      const store = useStore();
+      store.setComponentState(type, id, {
+        [name]: value,
+      });
+    },
     setScenario: (id) => {
       const { setActiveScenario } = useModule("app_components");
       setActiveScenario(id);
