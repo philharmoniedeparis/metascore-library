@@ -6,10 +6,10 @@ import { isFunction } from "lodash";
 const cuepoints = [];
 
 export function init(context) {
-  // Ensure 'MediaTime' name does not conflict with variable names.
-  JavaScript.addReservedWords("MediaTime");
+  // Ensure 'Media' name does not conflict with variable names.
+  JavaScript.addReservedWords("Media");
 
-  // Add 'MediaTime' object to context.
+  // Add 'Media' object to context.
   context.Media = {
     getDuration: () => {
       const { duration } = useModule("media_player");

@@ -1,7 +1,7 @@
 import JavaScript from "blockly/javascript";
 
 JavaScript["links_click"] = function (block) {
-  const id = block.getFieldValue("ID");
+  const id = block.getFieldValue("TRIGGER");
   const statement = JavaScript.statementToCode(block, "STATEMENT");
 
   let code = "";

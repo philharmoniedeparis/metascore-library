@@ -10,25 +10,24 @@ export function init(context) {
 
   // Add 'Links' object to context.
   context.Links = {
-    addEventListener: (id, event, callback) => {
+    addEventListener: (id, type, callback) => {
       let { el: root } = useModule("app_renderer");
       root = unref(root);
 
       /** @type HTMLElement */
       const el = root.querySelector(
-        `.metaScore-component.content .contents a[data-behavior="${id}"]`
+        `.metaScore-component.content .contents a[data-behavior-trigger="${id}"]`
       );
-      if (!el) {
-        return;
-      }
+
+      if (!el) return;
 
       // Add the event listener.
-      el.addEventListener(event, callback);
+      el.addEventListener(type, callback);
 
       // Add to list of listeners.
       listeners.push({
         el,
-        type: event,
+        type,
         callback,
       });
     },

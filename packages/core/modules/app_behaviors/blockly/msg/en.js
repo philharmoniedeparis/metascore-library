@@ -35,7 +35,9 @@ Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
 Msg.LINKS_CLICK = "when link %1 is clicked";
 Msg.LINKS_CLICK_THEN = "do %1";
+Msg.LINKS_CLICK_EMPTY_OPTION = "    ";
 Msg.LINKS_CLICK_TOOLTIP = "";
+Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
 
 Msg.LINKS_OPEN_URL = "open the url %1";
