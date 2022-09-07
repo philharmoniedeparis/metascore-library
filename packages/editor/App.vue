@@ -1,6 +1,7 @@
 <i18n>
 {
   "fr": {
+    "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
     "assets_library_title": "Bibliothèque",
     "shared_assets_library_title": "Bibliothèque partagée",
@@ -19,6 +20,7 @@
     },
   },
   "en": {
+    "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
     "assets_library_title": "Library",
     "shared_assets_library_title": "Shared Library",
