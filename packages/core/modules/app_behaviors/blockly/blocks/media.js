@@ -50,7 +50,7 @@ defineBlocksWithJsonArray([
     ],
     previousStatement: null,
     nextStatement: null,
-    style: "media_blocks",
+    style: "actions_blocks",
     tooltip: "%{BKY_MEDIA_SET_TIME_TOOLTIP}",
     helpUrl: "%{BKY_MEDIA_SET_TIME_HELPURL}",
   },

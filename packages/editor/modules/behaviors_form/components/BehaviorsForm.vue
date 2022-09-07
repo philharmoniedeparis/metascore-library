@@ -9,7 +9,7 @@
       "color": "Couleur",
       "actions": "Actions",
       "media": "Media",
-      "components": "Composants",
+      "components": "Attributs de composants",
       "variables": "Variables",
       "presets": "Prédéfinis",
     }
@@ -23,7 +23,7 @@
       "color": "Color",
       "actions": "Actions",
       "media": "Média",
-      "components": "Components",
+      "components": "Component attributes",
       "variables": "Variables",
       "presets": "Presets",
     }
@@ -123,9 +123,14 @@ export default {
                 },
                 { kind: "block", type: "media_pause" },
                 { kind: "block", type: "media_stop" },
+                { kind: "block", type: "media_set_time" },
+                { kind: "block", type: "components_set_scenario" },
                 { kind: "block", type: "components_show" },
                 { kind: "block", type: "components_hide" },
-                { kind: "block", type: "components_set_scenario" },
+                { kind: "block", type: "components_set_background" },
+                { kind: "block", type: "components_set_text" },
+                { kind: "block", type: "components_set_property" },
+                { kind: "block", type: "components_set_block_page" },
                 {
                   kind: "block",
                   type: "links_open_url",
@@ -175,7 +180,6 @@ export default {
               contents: [
                 { kind: "block", type: "media_timecode" },
                 { kind: "block", type: "media_get_time" },
-                { kind: "block", type: "media_set_time" },
                 { kind: "block", type: "media_get_duration" },
                 { kind: "block", type: "media_playing" },
               ],
@@ -185,14 +189,10 @@ export default {
               name: this.$t("categories.components"),
               categorystyle: "components_category",
               contents: [
-                { kind: "block", type: "components_get_property" },
-                { kind: "block", type: "components_set_property" },
                 { kind: "block", type: "components_get_background" },
-                { kind: "block", type: "components_set_background" },
                 { kind: "block", type: "components_get_text" },
-                { kind: "block", type: "components_set_text" },
+                { kind: "block", type: "components_get_property" },
                 { kind: "block", type: "components_get_block_page" },
-                { kind: "block", type: "components_set_block_page" },
               ],
             },
             {
@@ -338,6 +338,10 @@ export default {
 
   ::v-deep(.blocklyFlyoutLabelText) {
     font-size: 24px;
+  }
+
+  ::v-deep(.blocklyMainBackground) {
+    stroke: none;
   }
 }
 </style>
