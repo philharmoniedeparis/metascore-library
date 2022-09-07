@@ -75,17 +75,6 @@
           @close="onAudiowaveformFormClose"
         />
       </template>
-
-      <progress-indicator
-        v-if="processing"
-        :text="$t('upload_indicator_label')"
-        :value="uploadProgress"
-        :target="false"
-      />
-
-      <alert-dialog v-if="error" @close="error = null">
-        {{ $t("error") }}
-      </alert-dialog>
     </div>
 
     <div v-if="store.configs.uploadUrl" class="dropzone">
@@ -107,6 +96,17 @@
         "
       ></p>
     </div>
+
+    <progress-indicator
+      v-if="processing"
+      :text="$t('upload_indicator_label')"
+      :value="uploadProgress"
+      :target="false"
+    />
+
+    <alert-dialog v-if="error" @close="error = null">
+      {{ $t("error") }}
+    </alert-dialog>
   </div>
 </template>
 
