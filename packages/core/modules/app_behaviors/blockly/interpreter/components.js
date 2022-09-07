@@ -35,6 +35,10 @@ export function init(context) {
         callback,
       });
     },
+    setScenario: (id) => {
+      const { setActiveScenario } = useModule("app_components");
+      setActiveScenario(id);
+    },
     show: (type, id) => {
       const store = useStore();
       store.setComponentState(type, id, {
@@ -63,9 +67,21 @@ export function init(context) {
         [name]: value,
       });
     },
-    setScenario: (id) => {
-      const { setActiveScenario } = useModule("app_components");
-      setActiveScenario(id);
+    getBlockPage: (id) => {
+      const { getComponent, getBlockActivePage } = useModule("app_components");
+
+      const block = getComponent("Block", id);
+      if (block) {
+        return getBlockActivePage(block);
+      }
+    },
+    setBlockPage: (id, index) => {
+      const { getComponent, setBlockActivePage } = useModule("app_components");
+
+      const block = getComponent("Block", id);
+      if (block) {
+        setBlockActivePage(block, index);
+      }
     },
   };
 }

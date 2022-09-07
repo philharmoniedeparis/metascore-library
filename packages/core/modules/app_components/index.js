@@ -140,6 +140,17 @@ export default class AppComponentsModule extends AbstractModule {
     store.activeScenario = value;
   }
 
+  getBlockActivePage(block) {
+    const store = useStore();
+    const { id } = block;
+    return id in store.blocksActivePage ? store.blocksActivePage[id] : 0;
+  }
+
+  setBlockActivePage(block, index) {
+    const store = useStore();
+    store.setBlockActivePage(block, index);
+  }
+
   onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);

@@ -39,7 +39,7 @@ defineBlocksWithJsonArray([
     args0: [
       {
         type: "input_dummy",
-        name: "SCENARIO_INPUT",
+        name: "COMPONENT",
       },
     ],
     extensions: ["components_scenario_options"],
@@ -208,36 +208,82 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_COMPONENTS_SET_TEXT_TOOLTIP}",
     helpUrl: "%{BKY_COMPONENTS_SET_TEXT_HELPURL}",
   },
+  // Get block's activate page index.
+  {
+    type: "components_get_block_page",
+    message0: "%{BKY_COMPONENTS_GET_BLOCK_PAGE}",
+    args0: [
+      {
+        type: "input_dummy",
+        name: "COMPONENT",
+      },
+    ],
+    extensions: ["components_block_options"],
+    output: "Number",
+    style: "component_blocks",
+    tooltip: "%{BKY_COMPONENTS_GET_BLOCK_PAGE_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_GET_BLOCK_PAGE_HELPURL}",
+  },
+  // Set block's activate page index.
+  {
+    type: "components_set_block_page",
+    message0: "%{BKY_COMPONENTS_SET_BLOCK_PAGE}",
+    args0: [
+      {
+        type: "input_dummy",
+        name: "COMPONENT",
+      },
+      {
+        type: "input_value",
+        name: "INDEX",
+        check: "Number",
+      },
+    ],
+    extensions: ["components_block_options"],
+    inputsInline: true,
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_COMPONENTS_SET_BLOCK_PAGE_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_SET_BLOCK_PAGE_HELPURL}",
+  },
 ]);
 
-function getScenarioOptions() {
-  const { getComponentsByType } = useModule("app_components");
+/**
+ * Get component dropdown options
+ * @param {string?} type The type of components
+ * @param {boolean|array} recursive Whether to recurse to child components.
+ *  An array of children is passed when recursed from within the function.
+ * @param {function?} alter_hook An optional function to alter each option.
+ * @param {string?} prefix A string to prefix options, used internally.
+ * @returns {array} An options array
+ */
+function getComponentOptions(
+  type = null,
+  recursive = false,
+  alter_hook = null,
+  prefix = ""
+) {
+  const {
+    components: allComponents,
+    getComponentsByType,
+    getComponentChildren,
+  } = useModule("app_components");
+  let components = [];
   let options = [];
 
-  const components = getComponentsByType("Scenario");
-
-  if (components.length > 0) {
-    components.forEach((c) => {
-      options.push([c.name || "untitled", c.id]);
-    });
-  }
-
-  return options;
-}
-
-function getComponentOptions(alter_hook, components = null, prefix = "") {
-  const { getComponentsByType, getComponentChildren } =
-    useModule("app_components");
-  let options = [];
-
-  if (components === null) {
-    components = getComponentsByType("Scenario");
+  if (recursive) {
+    components = Array.isArray(recursive)
+      ? recursive
+      : getComponentsByType(type || "Scenario");
+  } else {
+    components = type ? getComponentsByType(type) : allComponents;
   }
 
   if (components.length > 0) {
     components.forEach((c) => {
       const name = c.name || "untitled";
-      const option = [{ label: `${prefix} ${name}` }, `${c.type}:${c.id}`];
+      const option = [`${prefix} ${name}`, `${c.type}:${c.id}`];
 
       if (alter_hook && isFunction(alter_hook)) {
         alter_hook(option, c);
@@ -245,11 +291,13 @@ function getComponentOptions(alter_hook, components = null, prefix = "") {
 
       options.push(option);
 
-      const children = getComponentChildren(c);
-      options = [
-        ...options,
-        ...getComponentOptions(alter_hook, children, `—${prefix}`),
-      ];
+      if (recursive) {
+        const children = getComponentChildren(c);
+        options = [
+          ...options,
+          ...getComponentOptions(type, children, alter_hook, `—${prefix}`),
+        ];
+      }
     });
   }
 
@@ -257,13 +305,24 @@ function getComponentOptions(alter_hook, components = null, prefix = "") {
 }
 
 Extensions.register("components_scenario_options", function () {
-  const scenario_input = this.getInput("SCENARIO_INPUT");
+  const scenario_input = this.getInput("COMPONENT");
 
   if (!scenario_input) return;
 
   scenario_input.appendField(
-    new FieldEnhancedDropdown(getScenarioOptions),
-    "SCENARIO"
+    new FieldDropdown(getComponentOptions("Scenario")),
+    "COMPONENT"
+  );
+});
+
+Extensions.register("components_block_options", function () {
+  const block_input = this.getInput("COMPONENT");
+
+  if (!block_input) return;
+
+  block_input.appendField(
+    new FieldDropdown(getComponentOptions("Block")),
+    "COMPONENT"
   );
 });
 
@@ -374,19 +433,19 @@ Extensions.register("components_component_options", function () {
 
   const component_field = new FieldEnhancedDropdown(function () {
     if (property_input) {
-      return getComponentOptions((option, c) => {
+      return getComponentOptions(null, true, (option, c) => {
         if (
           !(c.type in SUPPORTED_PROPERTIES) ||
           SUPPORTED_PROPERTIES[c.type].length === 0
         ) {
-          option[0].disabled = true;
+          option[0] = { label: option[0], disabled: true };
         }
       });
     }
 
-    return getComponentOptions((option, c) => {
+    return getComponentOptions(null, true, (option, c) => {
       if (c.type === "Scenario") {
-        option[0].disabled = true;
+        option[0] = { label: option[0], disabled: true };
       }
     });
   });

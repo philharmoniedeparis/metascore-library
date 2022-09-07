@@ -58,6 +58,14 @@ Msg.COMPONENTS_SET_TEXT = "définir le texte de %1 à %2";
 Msg.COMPONENTS_SET_TEXT_TOOLTIP = "";
 Msg.COMPONENTS_SET_TEXT_HELPURL = "";
 
+Msg.COMPONENTS_GET_BLOCK_PAGE = "index de la page active de %1";
+Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
+Msg.COMPONENTS_GET_BLOCK_PAGE_HELPURL = "";
+
+Msg.COMPONENTS_SET_BLOCK_PAGE = "définir l'index de la page active de %1 à %2";
+Msg.COMPONENTS_SET_BLOCK_PAGE_TOOLTIP = "";
+Msg.COMPONENTS_SET_BLOCK_PAGE_HELPURL = "";
+
 Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
 Msg.KEYBOARD_KEYPRESSED_THEN = "faire %1";
 Msg.KEYBOARD_KEYPRESSED_TOOLTIP = "";

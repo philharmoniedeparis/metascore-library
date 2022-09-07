@@ -191,6 +191,8 @@ export default {
                 { kind: "block", type: "components_set_background" },
                 { kind: "block", type: "components_get_text" },
                 { kind: "block", type: "components_set_text" },
+                { kind: "block", type: "components_get_block_page" },
+                { kind: "block", type: "components_set_block_page" },
               ],
             },
             {

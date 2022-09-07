@@ -27,7 +27,7 @@ JavaScript["components_click"] = function (block) {
 };
 
 JavaScript["components_set_scenario"] = function (block) {
-  const id = block.getFieldValue("SCENARIO");
+  const [, id] = block.getFieldValue("COMPONENT").split(":");
   const code = `Components.setScenario("${id}");`;
   return code;
 };
@@ -96,6 +96,24 @@ JavaScript["components_set_text"] = function (block) {
     JavaScript.valueToCode(block, "VALUE", JavaScript.ORDER_ASSIGNMENT) || "0";
 
   const code = `Components.setProperty("${type}", "${id}", "text", ${value});`;
+
+  return code;
+};
+
+JavaScript["components_get_block_page"] = function (block) {
+  const [, id] = block.getFieldValue("COMPONENT").split(":");
+
+  const code = `Components.getBlockPage("${id}") + 1`;
+
+  return [code, JavaScript.ORDER_ADDITION];
+};
+
+JavaScript["components_set_block_page"] = function (block) {
+  const [, id] = block.getFieldValue("COMPONENT").split(":");
+  const index =
+    JavaScript.valueToCode(block, "INDEX", JavaScript.ORDER_ASSIGNMENT) || "0";
+
+  const code = `Components.setBlockPage("${id}", ${index} - 1);`;
 
   return code;
 };

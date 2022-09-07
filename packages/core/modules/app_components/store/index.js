@@ -10,6 +10,7 @@ export default defineStore("app-components", {
     return {
       components: {},
       activeScenario: null,
+      blocksActivePage: {},
       toggled: [],
     };
   },
@@ -231,6 +232,18 @@ export default defineStore("app-components", {
       const component = this.components?.[type]?.[id];
       if (component) {
         delete component.$deleted;
+      }
+    },
+    setBlockActivePage(block, index) {
+      if (block.synched) {
+        const pages = this.getChildren(block);
+        const page = pages[index];
+        if (page && "start-time" in page) {
+          const { seekTo: seekMediaTo } = useModule("media_player");
+          seekMediaTo(page["start-time"]);
+        }
+      } else {
+        this.blocksActivePage[block.id] = index;
       }
     },
     show(component) {
