@@ -1,10 +1,10 @@
 import packageInfo from "../../package.json";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createI18n } from "vue-i18n";
 import hotkey from "v-hotkey";
 import App from "./App.vue";
 
+import { init as createI18n } from "@metascore-library/core/services/i18n";
 import { registerModules } from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
 import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
