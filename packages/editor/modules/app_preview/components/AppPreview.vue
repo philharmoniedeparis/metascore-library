@@ -143,10 +143,15 @@ export default {
   setup() {
     const store = useStore();
     const { deleteComponent } = useModule("app_components");
-    const { width: appWidth, height: appHeight } = useModule("app_renderer");
+    const {
+      el: appEl,
+      width: appWidth,
+      height: appHeight,
+    } = useModule("app_renderer");
     const { addItems: addContextmenuItems } = useModule("contextmenu");
     return {
       store,
+      appEl,
       appWidth,
       appHeight,
       deleteComponent,
@@ -370,6 +375,11 @@ export default {
     },
   },
   watch: {
+    preview(value) {
+      if (value && this.appEl) {
+        this.appEl.focus();
+      }
+    },
     appWidth() {
       this.updateAppOffset();
     },
