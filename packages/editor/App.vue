@@ -54,7 +54,7 @@
     ]"
     @contextmenu="onContextmenu"
   >
-    <resizable-pane class="top">
+    <div class="top">
       <nav class="main-menu">
         <div class="left">
           <base-button
@@ -87,9 +87,14 @@
           />
         </div>
       </nav>
-    </resizable-pane>
+    </div>
 
-    <resizable-pane class="left" :right="{ collapse: true }">
+    <resizable-pane
+      class="left"
+      :right="{ collapse: true }"
+      :apply-styles="false"
+      @update:width="librariesWidth = `${$event}px`"
+    >
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item :title="$t('components_library_title')">
           <components-library />
@@ -108,13 +113,18 @@
       </tabs-container>
     </resizable-pane>
 
-    <resizable-pane class="center">
+    <div class="center">
       <app-preview
         :disable-component-interactions="disableComponentInteractions"
       />
-    </resizable-pane>
+    </div>
 
-    <resizable-pane class="right" :left="{ collapse: true }">
+    <resizable-pane
+      class="right"
+      :left="{ collapse: true }"
+      :apply-styles="false"
+      @update:width="formsWidth = `${$event}px`"
+    >
       <tabs-container v-model:activeTab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
@@ -276,8 +286,10 @@ export default {
       version: packageInfo.version,
       modalsTarget: null,
       appTitleFocused: false,
+      librariesWidth: "20em",
       activeLibrariesTab: 0,
       librariesExpanded: false,
+      formsWidth: "20em",
       activeFormsTab: 0,
       behaviorsOpen: false,
       showAutoSaveRestoreConfirm: false,
@@ -469,7 +481,10 @@ export default {
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns:
+    minmax(15em, min(25vw, v-bind(librariesWidth)))
+    1fr
+    minmax(15em, min(50vw, v-bind(formsWidth)));
   grid-template-rows: min-content 1fr auto;
   grid-template-areas:
     "top top top"
@@ -592,20 +607,17 @@ export default {
 
   > .left {
     grid-area: left;
-    width: 20em;
-    min-width: 15em;
-    max-width: 25vw;
   }
 
   > .center {
     grid-area: center;
+    overflow: hidden;
+    background: #777;
+    color: #fff;
   }
 
   > .right {
     grid-area: right;
-    width: 20em;
-    min-width: 15em;
-    max-width: 50vw;
   }
 
   > .bottom {
@@ -721,12 +733,10 @@ export default {
   }
 
   &.behaviors-open {
-    grid-template-columns: auto 1fr minmax(0, auto);
-
-    > .right {
-      min-width: 60em;
-      max-width: none;
-    }
+    grid-template-columns:
+      minmax(15em, min(25vw, v-bind(librariesWidth)))
+      1fr
+      minmax(60em, min(100vw, v-bind(formsWidth)));
   }
 
   &.libraries-expanded {
