@@ -763,6 +763,8 @@ export default {
 
   &.preview,
   &:not(.latest-revision) {
+    grid-template-columns: auto 1fr auto;
+
     > .left,
     > .right {
       display: none;
