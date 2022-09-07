@@ -71,7 +71,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round, omit } from "lodash";
+import { round, omit, kebabCase, startCase, camelCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
@@ -521,7 +521,7 @@ export default {
       evt.dataTransfer.types.some((format) => {
         const matches = format.match(/^metascore\/component:(.*)$/);
         if (matches) {
-          type = matches[1];
+          type = startCase(camelCase(matches[1])).replace(" ", "");
           return true;
         }
       });
@@ -572,8 +572,12 @@ export default {
       }
     },
     async getComponentFromDragEvent(evt) {
-      const type = this.getModelTypeFromDragEvent(evt);
+      let type = this.getModelTypeFromDragEvent(evt);
       if (type) {
+        // Some browsers transform the DataTransfer format to lowercase.
+        // Force it to kebab case to insure compatibility with other browsers.
+        type = kebabCase(type);
+
         const format = `metascore/component:${type}`;
         if (evt.dataTransfer.types.includes(format)) {
           const data = JSON.parse(evt.dataTransfer.getData(format));
