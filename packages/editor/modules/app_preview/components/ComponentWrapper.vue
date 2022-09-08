@@ -473,8 +473,8 @@ export default {
         const position = component.position;
         this.updateComponent(component, {
           position: [
-            Math.round(position[0] + evt.delta.x),
-            Math.round(position[1] + evt.delta.y),
+            round(position[0] + evt.delta.x),
+            round(position[1] + evt.delta.y),
           ],
         });
       });
@@ -499,8 +499,8 @@ export default {
 
       this.updateComponent(this.component, {
         position: [
-          position[0] + evt.deltaRect.left,
-          position[1] + evt.deltaRect.top,
+          round(position[0] + evt.deltaRect.left),
+          round(position[1] + evt.deltaRect.top),
         ],
         dimension: [round(evt.rect.width), round(evt.rect.height)],
       });
