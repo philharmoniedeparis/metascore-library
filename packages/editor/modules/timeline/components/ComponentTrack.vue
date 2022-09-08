@@ -367,9 +367,13 @@ export default {
         }
       });
 
+      let previous_value = this.component[prop];
+      if (previous_value === null) {
+        previous_value = prop === "end-time" ? this.mediaDuration : 0;
+      }
+
       data[prop] = round(
-        this.component[prop] +
-          evt.delta.x * (this.mediaDuration / wrapper_width),
+        previous_value + evt.delta.x * (this.mediaDuration / wrapper_width),
         2
       );
 
