@@ -711,46 +711,42 @@ FieldTimecode.prototype.DEFAULT_VALUE = null;
 FieldTimecode.BORDERRADIUS = 4;
 
 /**
- * CSS for date picker.  See css.js for use.
+ * CSS for timecode buttons.
  */
-Css.register([
-  /* eslint-disable indent */
-  /* eslint-disable prettier/prettier */
-  ".blocklyTimecodeButtonsWrapper {",
-    "position: absolute;",
-    "left: 0;",
-    "bottom: 100%;",
-    "display: flex;",
-    "width: 100%;",
-    "flex-direction: row;",
-    "justify-content: center;",
-  "}",
-  ".blocklyTimecodeButtonsWrapper button {",
-    "display: flex;",
-    "width: 1em;",
-    "height: 1em;",
-    "margin-bottom: -1px;",
-    "padding: 0.15em;",
-    "border: 0.675px solid rgb(172, 124, 2);",
-    "align-items: center;",
-    "justify-content: center;",
-    "color: #000;",
-    "background-color: #fff;",
-    "box-sizing: border-box;",
-  "}",
-  ".blocklyTimecodeButtonsWrapper button:hover {",
-    "background-color: #ccc;",
-  "}",
-  ".blocklyTimecodeButtonsWrapper button:not(:first-child) {",
-    "border-left: 0;",
-  "}",
-  ".blocklyTimecodeButtonsWrapper button svg {",
-    "width: 100%;",
-    "height: 100%;",
-    "pointer-events: none;",
-  "}",
-  /* eslint-enable indent */
-  /* eslint-enable prettier/prettier */
-]);
+Css.register(
+  `.blocklyTimecodeButtonsWrapper {,
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .blocklyTimecodeButtonsWrapper button {
+    display: flex;
+    width: 1em;
+    height: 1em;
+    margin-bottom: -1px;
+    padding: 0.15em;
+    border: 0.675px solid rgb(172, 124, 2);
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    background-color: #fff;
+    box-sizing: border-box;
+  }
+  .blocklyTimecodeButtonsWrapper button:hover {
+    background-color: #ccc;
+  }
+  .blocklyTimecodeButtonsWrapper button:not(:first-child) {
+    "border-left: 0;
+  }
+  .blocklyTimecodeButtonsWrapper button svg {
+    "width: 100%;
+    "height: 100%;
+    "pointer-events: none;
+  }`
+);
 
 fieldRegistry.register("field_timecode", FieldTimecode);
