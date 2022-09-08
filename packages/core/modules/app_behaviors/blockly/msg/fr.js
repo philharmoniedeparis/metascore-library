@@ -5,7 +5,7 @@ Msg.APP_STARTUP_THEN = "faire %1";
 Msg.APP_STARTUP_TOOLTIP = "";
 Msg.APP_STARTUP_HELPURL = "";
 
-Msg.COMPONENTS_CLICK = "lorsque le composant %1 est cliqué";
+Msg.COMPONENTS_CLICK = "au clic sur le composant %1";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
 Msg.COMPONENTS_CLICK_HELPURL = "";
@@ -77,7 +77,7 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.LINKS_CLICK = "lorsque le lien %1 est cliqué";
+Msg.LINKS_CLICK = "au clic sur le lien %1";
 Msg.LINKS_CLICK_THEN = "faire %1";
 Msg.LINKS_CLICK_EMPTY_OPTION = "    ";
 Msg.LINKS_CLICK_TOOLTIP = "";
