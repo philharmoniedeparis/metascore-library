@@ -60,6 +60,22 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getModel(type);
   }
 
+  getComponents() {
+    const store = useStore();
+    const { components } = storeToRefs(store);
+    return readonly(components);
+  }
+
+  getComponentsByType(type) {
+    const store = useStore();
+    return store.getByType(type);
+  }
+
+  getFirstMatchingComponent(filter) {
+    const store = useStore();
+    return store.getFirstMatching(filter);
+  }
+
   getComponent(type, id) {
     const store = useStore();
     return store.get(type, id);
@@ -88,11 +104,6 @@ export default class AppComponentsModule extends AbstractModule {
   getComponentSiblings(component) {
     const store = useStore();
     return store.getSiblings(component);
-  }
-
-  getComponentsByType(type) {
-    const store = useStore();
-    return store.getByType(type);
   }
 
   createComponent(data, validate = true) {

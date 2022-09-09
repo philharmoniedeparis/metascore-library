@@ -1,7 +1,7 @@
 import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-const NO_TRIGGERS_OPTION = "%NO_TRIGGERS%";
+export const EMPTY_OPTION = "%EMPTY_OPTION%";
 
 function getTriggerOptions() {
   let options = [];
@@ -22,7 +22,7 @@ function getTriggerOptions() {
   });
 
   if (options.length === 0) {
-    return [[Msg["LINKS_CLICK_EMPTY_OPTION"], NO_TRIGGERS_OPTION]];
+    return [[Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]];
   }
 
   return options;
@@ -73,13 +73,13 @@ Extensions.register("behavior_triggers_options", function () {
   const field = block.getField("TRIGGER");
   const options = field.getOptions();
 
-  if (options.length === 1 && options[0][1] === NO_TRIGGERS_OPTION) {
+  if (options.length === 1 && options[0][1] === EMPTY_OPTION) {
     field.setEnabled(false);
     block.setEnabled(false);
-    block.setTooltip(Msg["LINKS_CLICK_EMPTY_TOOLTIP"]);
+    block.setTooltip(Msg.LINKS_CLICK_EMPTY_TOOLTIP);
   } else {
     field.setEnabled(true);
     block.setEnabled(true);
-    block.setTooltip(Msg["LINKS_CLICK_TOOLTIP"]);
+    block.setTooltip(Msg.LINKS_CLICK_TOOLTIP);
   }
 });

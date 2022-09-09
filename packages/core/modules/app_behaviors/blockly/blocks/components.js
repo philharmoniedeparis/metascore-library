@@ -8,6 +8,8 @@ import { isFunction } from "lodash";
 import FieldEnhancedDropdown from "../fields/field_enhanced_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
+export const EMPTY_OPTION = "%EMPTY_OPTION%";
+
 defineBlocksWithJsonArray([
   // Click.
   {
@@ -98,64 +100,17 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_COMPONENTS_SET_PROPERTY_TOOLTIP}",
     helpUrl: "%{BKY_COMPONENTS_SET_PROPERTY_HELPURL}",
   },
-  // Show.
   {
-    type: "components_show",
-    message0: "%{BKY_COMPONENTS_SHOW}",
+    type: "components_set_property_mock",
+    message0: "%{BKY_COMPONENTS_SET_PROPERTY}",
     args0: [
       {
         type: "input_dummy",
         name: "COMPONENT",
       },
-    ],
-    extensions: ["components_component_options"],
-    previousStatement: null,
-    nextStatement: null,
-    style: "actions_blocks",
-    tooltip: "%{BKY_COMPONENTS_SHOW_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_SHOW_HELPURL}",
-  },
-  // Hide.
-  {
-    type: "components_hide",
-    message0: "%{BKY_COMPONENTS_HIDE}",
-    args0: [
       {
         type: "input_dummy",
-        name: "COMPONENT",
-      },
-    ],
-    extensions: ["components_component_options"],
-    previousStatement: null,
-    nextStatement: null,
-    style: "actions_blocks",
-    tooltip: "%{BKY_COMPONENTS_HIDE_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_HIDE_HELPURL}",
-  },
-  // Get background.
-  {
-    type: "components_get_background",
-    message0: "%{BKY_COMPONENTS_GET_BACKGROUND}",
-    args0: [
-      {
-        type: "input_dummy",
-        name: "COMPONENT",
-      },
-    ],
-    extensions: ["components_component_options"],
-    output: "Colour",
-    style: "component_blocks",
-    tooltip: "%{BKY_COMPONENTS_GET_BACKGROUND_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_GET_BACKGROUND_HELPURL}",
-  },
-  // Set background.
-  {
-    type: "components_set_background",
-    message0: "%{BKY_COMPONENTS_SET_BACKGROUND}",
-    args0: [
-      {
-        type: "input_dummy",
-        name: "COMPONENT",
+        name: "PROPERTY",
       },
       {
         type: "input_value",
@@ -163,50 +118,13 @@ defineBlocksWithJsonArray([
       },
     ],
     extensions: ["components_component_options"],
+    mutator: "components_property_options_mutator",
     inputsInline: true,
     previousStatement: null,
     nextStatement: null,
     style: "actions_blocks",
-    tooltip: "%{BKY_COMPONENTS_SET_BACKGROUND_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_SET_BACKGROUND_HELPURL}",
-  },
-  // Get text.
-  {
-    type: "components_get_text",
-    message0: "%{BKY_COMPONENTS_GET_TEXT}",
-    args0: [
-      {
-        type: "input_dummy",
-        name: "COMPONENT",
-      },
-    ],
-    extensions: ["components_component_options"],
-    output: "String",
-    style: "component_blocks",
-    tooltip: "%{BKY_COMPONENTS_GET_TEXT_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_GET_TEXT_HELPURL}",
-  },
-  // Set text.
-  {
-    type: "components_set_text",
-    message0: "%{BKY_COMPONENTS_SET_TEXT}",
-    args0: [
-      {
-        type: "input_dummy",
-        name: "COMPONENT",
-      },
-      {
-        type: "input_value",
-        name: "VALUE",
-      },
-    ],
-    extensions: ["components_component_options"],
-    inputsInline: true,
-    previousStatement: null,
-    nextStatement: null,
-    style: "actions_blocks",
-    tooltip: "%{BKY_COMPONENTS_SET_TEXT_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_SET_TEXT_HELPURL}",
+    tooltip: "%{BKY_COMPONENTS_SET_PROPERTY_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_SET_PROPERTY_HELPURL}",
   },
   // Get block's activate page index.
   {
@@ -264,11 +182,8 @@ function getComponentOptions(
   alter_hook = null,
   prefix = ""
 ) {
-  const {
-    components: allComponents,
-    getComponentsByType,
-    getComponentChildren,
-  } = useModule("app_components");
+  const { getComponents, getComponentsByType, getComponentChildren } =
+    useModule("app_components");
   let components = [];
   let options = [];
 
@@ -277,7 +192,7 @@ function getComponentOptions(
       ? recursive
       : getComponentsByType(type || "Scenario");
   } else {
-    components = type ? getComponentsByType(type) : allComponents;
+    components = type ? getComponentsByType(type) : getComponents();
   }
 
   if (components.length > 0) {
@@ -375,6 +290,17 @@ const SUPPORTED_PROPERTIES = {
     //"position",
     "text",
   ],
+  Controller: [
+    "background-color",
+    //"background-image",
+    "border-color",
+    //"border-radius",
+    "border-width",
+    //"dimension",
+    "hidden",
+    //"opacity",
+    //"position",
+  ],
   Cursor: [
     "background-color",
     //"background-image",
@@ -430,26 +356,53 @@ Extensions.register("components_component_options", function () {
   if (!component_input) return;
 
   const property_input = this.getInput("PROPERTY");
+  const mock = this.type.endsWith("_mock");
 
   const component_field = new FieldEnhancedDropdown(function () {
-    if (property_input) {
-      return getComponentOptions(null, true, (option, c) => {
-        if (
-          !(c.type in SUPPORTED_PROPERTIES) ||
-          SUPPORTED_PROPERTIES[c.type].length === 0
-        ) {
-          option[0] = { label: option[0], disabled: true };
-        }
-      });
+    const options = [
+      [
+        {
+          label: Msg.COMPONENTS_EMPTY_OPTION,
+          disabled: true,
+          default: true,
+          hiddenInMenu: true,
+        },
+        EMPTY_OPTION,
+      ],
+    ];
+
+    if (mock) {
+      return options;
     }
 
-    return getComponentOptions(null, true, (option, c) => {
-      if (c.type === "Scenario") {
-        option[0] = { label: option[0], disabled: true };
-      }
-    });
+    if (property_input) {
+      return [
+        ...options,
+        ...getComponentOptions(null, true, (option, c) => {
+          if (
+            !(c.type in SUPPORTED_PROPERTIES) ||
+            SUPPORTED_PROPERTIES[c.type].length === 0
+          ) {
+            option[0] = { label: option[0], disabled: true };
+          }
+        }),
+      ];
+    }
+
+    return [
+      ...options,
+      ...getComponentOptions(null, true, (option, c) => {
+        if (c.type === "Scenario") {
+          option[0] = { label: option[0], disabled: true };
+        }
+      }),
+    ];
   });
   component_input.appendField(component_field, "COMPONENT");
+
+  if (mock) {
+    this.setEnabled(false);
+  }
 });
 
 /**
@@ -511,6 +464,18 @@ const COMPONENTS_COMPONENT_OPTIONS_MUTATOR_MIXIN = {
 
     this.updatePropertyField_();
 
+    const mock = this.type.endsWith("_mock");
+    if (mock) {
+      this.setEnabled(false);
+      this.setTooltip(
+        Msg.COMPONENTS_SET_PROPERTY_MOCK_TOOLTIP.replace(
+          "%2",
+          Msg.COMPONENTS_PROPERTY[this.property_]
+        )
+      );
+      return;
+    }
+
     const component_field = this.getField("COMPONENT");
     if (component_field) {
       component_field.setValidator((newValue) => {
@@ -547,8 +512,19 @@ const COMPONENTS_COMPONENT_OPTIONS_MUTATOR_MIXIN = {
    * @returns {array} The options.
    */
   getPropertyOptions_: function (component_type) {
-    const { getModel } = useModule("app_components");
+    const mock = this.type.endsWith("_mock");
+    if (mock) {
+      if (this.property_) {
+        return [[Msg.COMPONENTS_PROPERTY[this.property_], EMPTY_OPTION]];
+      }
+      return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+    }
 
+    if (component_type === EMPTY_OPTION) {
+      return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+    }
+
+    const { getModel } = useModule("app_components");
     return Object.keys(getModel(component_type).properties)
       .filter((property) => {
         return (
@@ -568,6 +544,8 @@ const COMPONENTS_COMPONENT_OPTIONS_MUTATOR_MIXIN = {
    * @returns {string|array<string>|null} The type check.
    */
   getPropertyValueTypeCheck_: function (component_type, property_name) {
+    if (component_type === EMPTY_OPTION) return null;
+
     const { getModel } = useModule("app_components");
     const property = getModel(component_type).properties?.[property_name];
 
@@ -610,14 +588,11 @@ const COMPONENTS_COMPONENT_OPTIONS_MUTATOR_MIXIN = {
     const property_input = this.getInput("PROPERTY");
     if (!property_input) return;
 
-    let property_field = this.getField("PROPERTY");
-    if (property_field) {
-      // Type changed, remove field.
-      property_input.removeField("PROPERTY", true);
-    }
+    // Type changed, remove field.
+    property_input.removeField("PROPERTY", true);
 
     const component_type = this.getComponentType_(component_value);
-    property_field = new FieldDropdown(() => {
+    const property_field = new FieldEnhancedDropdown(() => {
       return this.getPropertyOptions_(component_type);
     });
     property_field.setValue(this.property_);
@@ -638,6 +613,9 @@ const COMPONENTS_COMPONENT_OPTIONS_MUTATOR_MIXIN = {
    * @param {string?} property_value The PROPERTY field value.
    */
   updateValueField_(property_value) {
+    const mock = this.type.endsWith("_mock");
+    if (mock) return;
+
     const value_input = this.getInput("VALUE");
     if (!value_input) return;
 

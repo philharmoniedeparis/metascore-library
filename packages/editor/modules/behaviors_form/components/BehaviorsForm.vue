@@ -38,14 +38,15 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { merge } from "lodash";
 import { markRaw } from "vue";
-import Theme from "../blockly/theme";
 import { DisableTopBlocks } from "@blockly/disable-top-blocks";
 import {
   ContinuousToolbox,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
+import { useModule } from "@metascore-library/core/services/module-manager";
+import Theme from "../blockly/theme";
 import Flyout from "../blockly/plugins/flyout";
 
 export default {
@@ -56,8 +57,17 @@ export default {
       data: behaviors,
       setData: setBehaviors,
     } = useModule("app_behaviors");
+    const { getFirstMatchingComponent, getModel } = useModule("app_components");
     const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
-    return { Blockly, behaviors, setBehaviors, mediaTime, seekMediaTo };
+    return {
+      Blockly,
+      behaviors,
+      setBehaviors,
+      getFirstMatchingComponent,
+      getModel,
+      mediaTime,
+      seekMediaTo,
+    };
   },
   data() {
     return {
@@ -65,10 +75,9 @@ export default {
       loaded: false,
     };
   },
-  computed: {},
-  async mounted() {
-    this.workspace = markRaw(
-      this.Blockly.inject(this.$refs.blockly, {
+  computed: {
+    config() {
+      return {
         theme: Theme,
         renderer: "zelos",
         media: `${this.publicPath}blockly/media/`,
@@ -92,152 +101,296 @@ export default {
           flyoutsVerticalToolbox: Flyout,
           metricsManager: ContinuousMetrics,
         },
-        toolbox: {
-          kind: "categoryToolbox",
-          contents: [
-            {
-              kind: "category",
-              name: this.$t("categories.triggers"),
-              categorystyle: "triggers_category",
-              contents: [
-                { kind: "block", type: "app_startup" },
-                { kind: "block", type: "keyboard_keypressed" },
-                { kind: "block", type: "components_click" },
-                { kind: "block", type: "links_click" },
-                { kind: "block", type: "reactivity_when" },
-              ],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.actions"),
-              categorystyle: "actions_category",
-              contents: [
-                { kind: "block", type: "media_play" },
-                {
-                  kind: "block",
-                  type: "media_play_excerpt",
-                  inputs: {
-                    FROM: { block: { type: "media_timecode" } },
-                    TO: { block: { type: "media_timecode" } },
-                  },
-                },
-                { kind: "block", type: "media_pause" },
-                { kind: "block", type: "media_stop" },
-                { kind: "block", type: "media_set_time" },
-                { kind: "block", type: "components_set_scenario" },
-                { kind: "block", type: "components_show" },
-                { kind: "block", type: "components_hide" },
-                { kind: "block", type: "components_set_background" },
-                { kind: "block", type: "components_set_text" },
-                { kind: "block", type: "components_set_property" },
-                { kind: "block", type: "components_set_block_page" },
-                {
-                  kind: "block",
-                  type: "links_open_url",
-                  inputs: {
-                    URL: { block: { type: "text" } },
-                  },
-                },
-              ],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.logic"),
-              categorystyle: "logic_category",
-              contents: [
-                { kind: "block", type: "controls_if" },
-                { kind: "block", type: "logic_compare" },
-                { kind: "block", type: "logic_operation" },
-                { kind: "block", type: "logic_negate" },
-                { kind: "block", type: "logic_boolean" },
-              ],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.math"),
-              categorystyle: "math_category",
-              contents: [
-                { kind: "block", type: "math_number" },
-                { kind: "block", type: "math_arithmetic" },
-              ],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.text"),
-              categorystyle: "text_category",
-              contents: [{ kind: "block", type: "text" }],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.color"),
-              categorystyle: "color_category",
-              contents: [{ kind: "block", type: "colour_picker" }],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.media"),
-              categorystyle: "media_category",
-              contents: [
-                { kind: "block", type: "media_timecode" },
-                { kind: "block", type: "media_get_time" },
-                { kind: "block", type: "media_get_duration" },
-                { kind: "block", type: "media_playing" },
-              ],
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.components"),
-              categorystyle: "components_category",
-              contents: [
-                { kind: "block", type: "components_get_background" },
-                { kind: "block", type: "components_get_text" },
-                { kind: "block", type: "components_get_property" },
-                { kind: "block", type: "components_get_block_page" },
-              ],
-            },
-            {
-              kind: "category",
-              categorystyle: "variables_category",
-              custom: "VARIABLE",
-            },
-            {
-              kind: "category",
-              name: this.$t("categories.presets"),
-              categorystyle: "presets_category",
-              contents: [
-                {
-                  kind: "block",
-                  type: "components_click",
-                  inputs: {
-                    STATEMENT: {
-                      block: {
-                        next: {
-                          block: {
-                            type: "media_play_excerpt",
-                            inputs: {
-                              TO: {
-                                block: { type: "media_timecode" },
-                              },
-                              FROM: {
-                                block: { type: "media_timecode" },
-                              },
-                              THEN: {
-                                block: { type: "components_set_scenario" },
-                              },
-                            },
-                            extraState: { hasThen: true },
-                          },
-                        },
-                        type: "components_set_scenario",
+        toolbox: this.toolbox,
+      };
+    },
+    toolbox() {
+      return {
+        kind: "categoryToolbox",
+        contents: [
+          /*{
+            kind: "category",
+            name: this.$t("categories.triggers"),
+            categorystyle: "triggers_category",
+            contents: this.triggerBlocks,
+          },*/
+          {
+            kind: "category",
+            name: this.$t("categories.actions"),
+            categorystyle: "actions_category",
+            contents: this.actionBlocks,
+          },
+          /*{
+            kind: "category",
+            name: this.$t("categories.logic"),
+            categorystyle: "logic_category",
+            contents: this.logicBlocks,
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.math"),
+            categorystyle: "math_category",
+            contents: this.mathBlocks,
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.text"),
+            categorystyle: "text_category",
+            contents: this.textBlocks,
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.color"),
+            categorystyle: "color_category",
+            contents: this.colorBlocks,
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.media"),
+            categorystyle: "media_category",
+            contents: this.mediaBlocks,
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.components"),
+            categorystyle: "components_category",
+            contents: this.componentBlocks,
+          },
+          {
+            kind: "category",
+            categorystyle: "variables_category",
+            custom: "VARIABLE",
+          },
+          {
+            kind: "category",
+            name: this.$t("categories.presets"),
+            categorystyle: "presets_category",
+            contents: this.presetBlocks,
+          },*/
+        ],
+      };
+    },
+    triggerBlocks() {
+      return [
+        { kind: "block", type: "app_startup" },
+        { kind: "block", type: "keyboard_keypressed" },
+        { kind: "block", type: "components_click" },
+        { kind: "block", type: "links_click" },
+        { kind: "block", type: "reactivity_when" },
+      ];
+    },
+    actionBlocks() {
+      // Hide
+      let hideable_component = this.getFirstMatchingComponent((c) => {
+        const model = this.getModel(c.type);
+        return model.$isHideable;
+      });
+      let hide_block = {
+        kind: "block",
+        type: "components_set_property",
+        fields: { PROPERTY: "hidden" },
+        inputs: {
+          VALUE: {
+            block: { type: "logic_boolean", fields: { BOOL: "TRUE" } },
+          },
+        },
+        extraState: { property: "hidden" },
+      };
+      merge(
+        hide_block,
+        hideable_component
+          ? {
+              fields: {
+                COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+              },
+            }
+          : { type: "components_set_property_mock" }
+      );
+
+      // Show
+      const show_block = merge({}, hide_block, {
+        inputs: {
+          VALUE: {
+            block: { fields: { BOOL: "FALSE" } },
+          },
+        },
+      });
+
+      // Background color
+      let backgroundable_component = this.getFirstMatchingComponent((c) => {
+        const model = this.getModel(c.type);
+        return model.$isBackgroundable;
+      });
+      let background_color_block = {
+        kind: "block",
+        type: "components_set_property",
+        fields: { PROPERTY: "background-color" },
+        inputs: {
+          VALUE: {
+            block: { type: "colour_picker" },
+          },
+        },
+        extraState: { property: "background-color" },
+      };
+      merge(
+        background_color_block,
+        backgroundable_component
+          ? {
+              fields: {
+                COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+              },
+            }
+          : { type: "components_set_property_mock" }
+      );
+
+      // Background color
+      let content_component = this.getFirstMatchingComponent((c) => {
+        return c.type === "Content";
+      });
+      let text_block = {
+        kind: "block",
+        type: "components_set_property",
+        fields: { PROPERTY: "text" },
+        inputs: {
+          VALUE: {
+            block: { type: "text" },
+          },
+        },
+        extraState: { property: "text" },
+      };
+      merge(
+        text_block,
+        content_component
+          ? {
+              fields: {
+                COMPONENT: `${content_component.type}:${content_component.id}`,
+              },
+            }
+          : { type: "components_set_property_mock" }
+      );
+
+      return [
+        /*{ kind: "block", type: "media_play" },
+        {
+          kind: "block",
+          type: "media_play_excerpt",
+          inputs: {
+            FROM: { block: { type: "media_timecode" } },
+            TO: { block: { type: "media_timecode" } },
+          },
+        },
+        { kind: "block", type: "media_pause" },
+        { kind: "block", type: "media_stop" },
+        { kind: "block", type: "media_set_time" },
+        { kind: "block", type: "components_set_scenario" },*/
+        hide_block,
+        /*show_block,
+        background_color_block,
+        text_block,
+        { kind: "block", type: "components_set_property" },
+        { kind: "block", type: "components_set_block_page" },
+        {
+          kind: "block",
+          type: "links_open_url",
+          inputs: {
+            URL: { block: { type: "text" } },
+          },
+        },*/
+      ];
+    },
+    logicBlocks() {
+      return [
+        { kind: "block", type: "controls_if" },
+        { kind: "block", type: "logic_compare" },
+        { kind: "block", type: "logic_operation" },
+        { kind: "block", type: "logic_negate" },
+        { kind: "block", type: "logic_boolean" },
+      ];
+    },
+    mathBlocks() {
+      return [
+        { kind: "block", type: "math_number" },
+        { kind: "block", type: "math_arithmetic" },
+      ];
+    },
+    textBlocks() {
+      return [{ kind: "block", type: "text" }];
+    },
+    colorBlocks() {
+      return [{ kind: "block", type: "colour_picker" }];
+    },
+    mediaBlocks() {
+      return [
+        { kind: "block", type: "media_timecode" },
+        { kind: "block", type: "media_get_time" },
+        { kind: "block", type: "media_get_duration" },
+        { kind: "block", type: "media_playing" },
+      ];
+    },
+    componentBlocks() {
+      return [
+        /*{
+          kind: "block",
+          type: "components_get_property",
+          fields: {
+            PROPERTY: "hidden",
+            COMPONENT: this.getFirstComponentWithProperty("hidden"), //"Block:component-0uQeLywx6d"
+          },
+          extraState: {
+            property: "hidden",
+          },
+        },
+        {
+          kind: "block",
+          type: "components_get_property",
+          fields: {
+            PROPERTY: "hidden",
+            COMPONENT: this.getFirstComponentWithProperty("hidden"), //"Block:component-0uQeLywx6d"
+          },
+          extraState: {
+            property: "hidden",
+          },
+        },*/
+        { kind: "block", type: "components_get_property" },
+        { kind: "block", type: "components_get_block_page" },
+      ];
+    },
+    presetBlocks() {
+      return [
+        {
+          kind: "block",
+          type: "components_click",
+          inputs: {
+            STATEMENT: {
+              block: {
+                next: {
+                  block: {
+                    type: "media_play_excerpt",
+                    inputs: {
+                      TO: {
+                        block: { type: "media_timecode" },
+                      },
+                      FROM: {
+                        block: { type: "media_timecode" },
+                      },
+                      THEN: {
+                        block: { type: "components_set_scenario" },
                       },
                     },
+                    extraState: { hasThen: true },
                   },
                 },
-              ],
+                type: "components_set_scenario",
+              },
             },
-          ],
+          },
         },
-      })
+      ];
+    },
+  },
+  async mounted() {
+    this.workspace = markRaw(
+      this.Blockly.inject(this.$refs.blockly, this.config)
     );
 
     this.deserialize(this.behaviors);

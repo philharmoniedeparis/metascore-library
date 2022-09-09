@@ -131,7 +131,7 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
      * @private
      */
     this.selectedOption_ = this.getOptions(false).find((o) => {
-      return typeof o[0] === "string" || !o[0].disabled;
+      return typeof o[0] === "string" || o[0].default || !o[0].disabled;
     });
 
     if (opt_config) this.configure_(opt_config);
@@ -157,6 +157,11 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
       let enabled = true;
       let label = content;
       if (typeof content === "object") {
+        if ("hiddenInMenu" in content && content.hiddenInMenu) {
+          // Don't add a menu item.
+          continue;
+        }
+
         if ("src" in content) {
           // An image, not text.
           const image = new Image(content.width, content.height);
@@ -175,13 +180,13 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
       const menuItem = new MenuItem(label, value);
       menuItem.setRole(aria.Role.OPTION);
       menuItem.setRightToLeft(this.sourceBlock_.RTL);
-      menuItem.setCheckable(true);
       menu.addChild(menuItem);
       if (enabled) {
-        menuItem.setChecked(value === this.value_);
         if (value === this.value_) {
           this.selectedMenuItem_ = menuItem;
         }
+        menuItem.setCheckable(true);
+        menuItem.setChecked(value === this.value_);
         menuItem.onAction(this.handleMenuActionEvent_, this);
       } else {
         menuItem.setEnabled(false);

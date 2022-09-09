@@ -26,6 +26,8 @@ Msg.COMPONENTS_PROPERTY["text"] = "texte";
 Msg.COMPONENTS_PROPERTY["cursor-width"] = "largeur du curseur";
 Msg.COMPONENTS_PROPERTY["cursor-color"] = "couleur du curseur";
 
+Msg.COMPONENTS_EMPTY_OPTION = " -- ";
+
 Msg.COMPONENTS_GET_PROPERTY = "%2 de %1";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
@@ -34,35 +36,15 @@ Msg.COMPONENTS_SET_PROPERTY = "définir %2 de %1 à %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
 
-Msg.COMPONENTS_SHOW = "afficher %1";
-Msg.COMPONENTS_SHOW_TOOLTIP = "";
-Msg.COMPONENTS_SHOW_HELPURL = "";
+Msg.COMPONENTS_SET_PROPERTY_MOCK_TOOLTIP =
+  "il n'y a actuellement aucun composant dans l'espace de travail qui supporte l'attribut « %2 ».";
 
-Msg.COMPONENTS_HIDE = "masquer %1";
-Msg.COMPONENTS_HIDE_TOOLTIP = "";
-Msg.COMPONENTS_HIDE_HELPURL = "";
-
-Msg.COMPONENTS_GET_BACKGROUND = "couleur de fond de %1";
-Msg.COMPONENTS_GET_BACKGROUND_TOOLTIP = "";
-Msg.COMPONENTS_GET_BACKGROUND_HELPURL = "";
-
-Msg.COMPONENTS_SET_BACKGROUND = "définir la couleur de fond de %1 à %2";
-Msg.COMPONENTS_SET_BACKGROUND_TOOLTIP = "";
-Msg.COMPONENTS_SET_BACKGROUND_HELPURL = "";
-
-Msg.COMPONENTS_GET_TEXT = "texte de %1";
-Msg.COMPONENTS_GET_TEXT_TOOLTIP = "";
-Msg.COMPONENTS_GET_TEXT_HELPURL = "";
-
-Msg.COMPONENTS_SET_TEXT = "définir le texte de %1 à %2";
-Msg.COMPONENTS_SET_TEXT_TOOLTIP = "";
-Msg.COMPONENTS_SET_TEXT_HELPURL = "";
-
-Msg.COMPONENTS_GET_BLOCK_PAGE = "index de la page active de %1";
+Msg.COMPONENTS_GET_BLOCK_PAGE = "numéro de la page active de %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_GET_BLOCK_PAGE_HELPURL = "";
 
-Msg.COMPONENTS_SET_BLOCK_PAGE = "définir l'index de la page active de %1 à %2";
+Msg.COMPONENTS_SET_BLOCK_PAGE =
+  "définir le numéro de la page active de %1 à %2";
 Msg.COMPONENTS_SET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_SET_BLOCK_PAGE_HELPURL = "";
 
@@ -77,9 +59,10 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
+Msg.LINKS_EMPTY_OPTION = "    ";
+
 Msg.LINKS_CLICK = "au clic sur le lien %1";
 Msg.LINKS_CLICK_THEN = "faire %1";
-Msg.LINKS_CLICK_EMPTY_OPTION = "    ";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";

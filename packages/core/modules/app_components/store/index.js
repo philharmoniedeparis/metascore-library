@@ -22,6 +22,26 @@ export default defineStore("app-components", {
           .filter((c) => c);
       };
     },
+    getFirstMatching() {
+      return (matcher) => {
+        const findMatch = (components) => {
+          let match = null;
+          components.some((c) => {
+            if (matcher(c)) {
+              match = c;
+              return true;
+            }
+            match = findMatch(this.getChildren(c));
+            if (match) {
+              return true;
+            }
+          });
+          return match;
+        };
+
+        return findMatch(this.getByType("Scenario"));
+      };
+    },
     getModel() {
       return (type) => {
         return Models[type];
