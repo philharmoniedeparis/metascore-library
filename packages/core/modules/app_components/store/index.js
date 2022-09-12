@@ -168,14 +168,17 @@ export default defineStore("app-components", {
         };
 
         const children_prop = this.getChildrenProperty(parent);
+
+        let children = parent[children_prop] || [];
+        children = children.concat([
+          {
+            type: component.type,
+            id: component.id,
+          },
+        ]);
+
         await this.update(parent, {
-          [children_prop]: [
-            ...parent[children_prop],
-            {
-              type: component.type,
-              id: component.id,
-            },
-          ],
+          [children_prop]: children,
         });
       }
 
