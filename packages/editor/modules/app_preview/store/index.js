@@ -24,16 +24,23 @@ export default defineStore("app-preview", {
     },
     isComponentSelected() {
       return (component) => {
+        const { getComponent } = useModule("app_components");
         return this.selectedComponents.some(({ type, id }) => {
-          return component.type === type && component.id === id;
+          return (
+            component.type === type &&
+            component.id === id &&
+            getComponent(type, id)
+          );
         });
       };
     },
     getSelectedComponents() {
       const { getComponent } = useModule("app_components");
-      return this.selectedComponents.map(({ type, id }) => {
-        return getComponent(type, id);
-      });
+      return this.selectedComponents
+        .map(({ type, id }) => {
+          return getComponent(type, id);
+        })
+        .filter((c) => c);
     },
     componentHasSelectedDescendents() {
       return (component) => {
@@ -50,8 +57,13 @@ export default defineStore("app-preview", {
     },
     isComponentLocked() {
       return (component) => {
+        const { getComponent } = useModule("app_components");
         return this.lockedComponents.some(({ type, id }) => {
-          return component.type === type && component.id === id;
+          return (
+            component.type === type &&
+            component.id === id &&
+            getComponent(type, id)
+          );
         });
       };
     },
