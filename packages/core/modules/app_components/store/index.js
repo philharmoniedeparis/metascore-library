@@ -22,12 +22,12 @@ export default defineStore("app-components", {
           .filter((c) => c);
       };
     },
-    getFirstMatching() {
-      return (matcher) => {
+    find() {
+      return (callback) => {
         const findMatch = (components) => {
           let match = null;
           components.some((c) => {
-            if (matcher(c)) {
+            if (callback(c)) {
               match = c;
               return true;
             }

@@ -57,13 +57,13 @@ export default {
       data: behaviors,
       setData: setBehaviors,
     } = useModule("app_behaviors");
-    const { getFirstMatchingComponent, getModel } = useModule("app_components");
+    const { findComponent, getModel } = useModule("app_components");
     const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
     return {
       Blockly,
       behaviors,
       setBehaviors,
-      getFirstMatchingComponent,
+      findComponent,
       getModel,
       mediaTime,
       seekMediaTo,
@@ -108,19 +108,19 @@ export default {
       return {
         kind: "categoryToolbox",
         contents: [
-          /*{
+          {
             kind: "category",
             name: this.$t("categories.triggers"),
             categorystyle: "triggers_category",
             contents: this.triggerBlocks,
-          },*/
+          },
           {
             kind: "category",
             name: this.$t("categories.actions"),
             categorystyle: "actions_category",
             contents: this.actionBlocks,
           },
-          /*{
+          {
             kind: "category",
             name: this.$t("categories.logic"),
             categorystyle: "logic_category",
@@ -166,7 +166,7 @@ export default {
             name: this.$t("categories.presets"),
             categorystyle: "presets_category",
             contents: this.presetBlocks,
-          },*/
+          },
         ],
       };
     },
@@ -181,7 +181,7 @@ export default {
     },
     actionBlocks() {
       // Hide
-      let hideable_component = this.getFirstMatchingComponent((c) => {
+      let hideable_component = this.findComponent((c) => {
         const model = this.getModel(c.type);
         return model.$isHideable;
       });
@@ -217,7 +217,7 @@ export default {
       });
 
       // Background color
-      let backgroundable_component = this.getFirstMatchingComponent((c) => {
+      let backgroundable_component = this.findComponent((c) => {
         const model = this.getModel(c.type);
         return model.$isBackgroundable;
       });
@@ -243,8 +243,8 @@ export default {
           : { type: "components_set_property_mock" }
       );
 
-      // Background color
-      let content_component = this.getFirstMatchingComponent((c) => {
+      // Text
+      let content_component = this.findComponent((c) => {
         return c.type === "Content";
       });
       let text_block = {
@@ -270,7 +270,7 @@ export default {
       );
 
       return [
-        /*{ kind: "block", type: "media_play" },
+        { kind: "block", type: "media_play" },
         {
           kind: "block",
           type: "media_play_excerpt",
@@ -282,9 +282,9 @@ export default {
         { kind: "block", type: "media_pause" },
         { kind: "block", type: "media_stop" },
         { kind: "block", type: "media_set_time" },
-        { kind: "block", type: "components_set_scenario" },*/
+        { kind: "block", type: "components_set_scenario" },
         hide_block,
-        /*show_block,
+        show_block,
         background_color_block,
         text_block,
         { kind: "block", type: "components_set_property" },
@@ -295,7 +295,7 @@ export default {
           inputs: {
             URL: { block: { type: "text" } },
           },
-        },*/
+        },
       ];
     },
     logicBlocks() {
@@ -328,29 +328,75 @@ export default {
       ];
     },
     componentBlocks() {
+      // Hidden
+      let hideable_component = this.findComponent((c) => {
+        const model = this.getModel(c.type);
+        return model.$isHideable;
+      });
+      let hidden_block = {
+        kind: "block",
+        type: "components_get_property",
+        fields: { PROPERTY: "hidden" },
+        extraState: { property: "hidden" },
+      };
+      merge(
+        hidden_block,
+        hideable_component
+          ? {
+              fields: {
+                COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+              },
+            }
+          : { type: "components_get_property_mock" }
+      );
+
+      // Background color
+      let backgroundable_component = this.findComponent((c) => {
+        const model = this.getModel(c.type);
+        return model.$isBackgroundable;
+      });
+      let background_color_block = {
+        kind: "block",
+        type: "components_get_property",
+        fields: { PROPERTY: "background-color" },
+        extraState: { property: "background-color" },
+      };
+      merge(
+        background_color_block,
+        backgroundable_component
+          ? {
+              fields: {
+                COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+              },
+            }
+          : { type: "components_get_property_mock" }
+      );
+
+      // Text
+      let content_component = this.findComponent((c) => {
+        return c.type === "Content";
+      });
+      let text_block = {
+        kind: "block",
+        type: "components_get_property",
+        fields: { PROPERTY: "text" },
+        extraState: { property: "text" },
+      };
+      merge(
+        text_block,
+        content_component
+          ? {
+              fields: {
+                COMPONENT: `${content_component.type}:${content_component.id}`,
+              },
+            }
+          : { type: "components_get_property_mock" }
+      );
+
       return [
-        /*{
-          kind: "block",
-          type: "components_get_property",
-          fields: {
-            PROPERTY: "hidden",
-            COMPONENT: this.getFirstComponentWithProperty("hidden"), //"Block:component-0uQeLywx6d"
-          },
-          extraState: {
-            property: "hidden",
-          },
-        },
-        {
-          kind: "block",
-          type: "components_get_property",
-          fields: {
-            PROPERTY: "hidden",
-            COMPONENT: this.getFirstComponentWithProperty("hidden"), //"Block:component-0uQeLywx6d"
-          },
-          extraState: {
-            property: "hidden",
-          },
-        },*/
+        hidden_block,
+        background_color_block,
+        text_block,
         { kind: "block", type: "components_get_property" },
         { kind: "block", type: "components_get_block_page" },
       ];

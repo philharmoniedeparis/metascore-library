@@ -71,14 +71,14 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getByType(type);
   }
 
-  getFirstMatchingComponent(filter) {
-    const store = useStore();
-    return store.getFirstMatching(filter);
-  }
-
   getComponent(type, id) {
     const store = useStore();
     return store.get(type, id);
+  }
+
+  findComponent(filter) {
+    const store = useStore();
+    return store.find(filter);
   }
 
   getComponentParent(component) {

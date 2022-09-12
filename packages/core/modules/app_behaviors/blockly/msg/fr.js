@@ -27,6 +27,12 @@ Msg.COMPONENTS_PROPERTY["cursor-width"] = "largeur du curseur";
 Msg.COMPONENTS_PROPERTY["cursor-color"] = "couleur du curseur";
 
 Msg.COMPONENTS_EMPTY_OPTION = " -- ";
+Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP =
+  "il n'y a actuellement aucun composant dans l'espace de travail qui supporte l'attribut « %2 ».";
+Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
+  "il n'y a actuellement aucun scénario dans l'espace de travail";
+Msg.COMPONENTS_NO_BLOCK_TOOLTIP =
+  "il n'y a actuellement aucun bloc dans l'espace de travail";
 
 Msg.COMPONENTS_GET_PROPERTY = "%2 de %1";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
@@ -35,9 +41,6 @@ Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
 Msg.COMPONENTS_SET_PROPERTY = "définir %2 de %1 à %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
-
-Msg.COMPONENTS_SET_PROPERTY_MOCK_TOOLTIP =
-  "il n'y a actuellement aucun composant dans l'espace de travail qui supporte l'attribut « %2 ».";
 
 Msg.COMPONENTS_GET_BLOCK_PAGE = "numéro de la page active de %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";

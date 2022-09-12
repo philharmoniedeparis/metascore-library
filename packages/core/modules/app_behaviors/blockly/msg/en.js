@@ -27,6 +27,12 @@ Msg.COMPONENTS_PROPERTY["cursor-width"] = "cursor width";
 Msg.COMPONENTS_PROPERTY["cursor-color"] = "cursor color";
 
 Msg.COMPONENTS_EMPTY_OPTION = " -- ";
+Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP =
+  'there are currently no component in the workspace that supports the "%2" attribute';
+Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
+  "there are currently no scenario in the workspace";
+Msg.COMPONENTS_NO_BLOCK_TOOLTIP =
+  "there are currently no block in the workspace";
 
 Msg.COMPONENTS_GET_PROPERTY = "%2 of %1";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
@@ -35,9 +41,6 @@ Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
 Msg.COMPONENTS_SET_PROPERTY = "set %2 of %1 to %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
-
-Msg.COMPONENTS_SET_PROPERTY_MOCK_TOOLTIP =
-  'there are currently no component in th workspace that supports the "%2" attribute';
 
 Msg.COMPONENTS_GET_BLOCK_PAGE = "active page number of %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
