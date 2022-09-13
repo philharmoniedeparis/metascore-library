@@ -445,6 +445,7 @@ export default {
     },
     onScnearioManagerDelete({ scenario }) {
       this.deleteComponent(scenario);
+      this.setActiveScenario(this.scenarios[0].id);
     },
     onAutoSaveRestoreSubmit() {
       this.showAutoSaveRestoreConfirm = false;

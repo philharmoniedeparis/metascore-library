@@ -69,9 +69,11 @@ export default defineStore("app-preview", {
     },
     getLockedComponents() {
       const { getComponent } = useModule("app_components");
-      return this.lockedComponents.map(({ type, id }) => {
-        return getComponent(type, id);
-      });
+      return this.lockedComponents
+        .map(({ type, id }) => {
+          return getComponent(type, id);
+        })
+        .filter((c) => c);
     },
   },
   actions: {

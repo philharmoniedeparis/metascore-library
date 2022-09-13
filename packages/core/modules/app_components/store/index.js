@@ -133,7 +133,7 @@ export default defineStore("app-components", {
     get(type, id) {
       const component = this.components?.[type]?.[id];
       const data = component && !component.$deleted ? component.data : null;
-      return readonly(data);
+      return data ? readonly(data) : null;
     },
     async create(data, validate = true) {
       if (data.type in Models) {
