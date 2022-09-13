@@ -604,6 +604,11 @@ export default {
         this.component
       );
 
+      if (component.type === "Block") {
+        const page = await this.createComponent({ type: "Page" });
+        await this.addComponent(page, component);
+      }
+
       this.store.selectComponent(component);
     },
   },

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { paramCase } from "param-case";
-import { omit, cloneDeep } from "lodash";
+import { omit } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default defineStore("app-preview", {
@@ -167,41 +167,6 @@ export default defineStore("app-preview", {
     },
     pasteComponents(components, parent) {
       components.map((c) => this.pasteComponent(c, parent));
-    },
-    async cloneComponent(component, data = {}) {
-      const {
-        getComponentChildrenProperty,
-        componentHasChildren,
-        getComponentChildren,
-        createComponent,
-        addComponent,
-      } = useModule("app_components");
-      const clone = await createComponent(
-        {
-          ...omit(cloneDeep(component), ["id"]),
-          ...data,
-        },
-        false
-      );
-
-      if (componentHasChildren(component)) {
-        const children = [];
-        const children_prop = getComponentChildrenProperty(component);
-        getComponentChildren(component).forEach((c) => {
-          const child = this.cloneComponent(c, {
-            $parent: { schema: clone.type, id: clone.id },
-          });
-          children.push({
-            schema: child.type,
-            id: child.id,
-          });
-        });
-        clone[children_prop] = children;
-      }
-
-      await addComponent(clone);
-
-      return clone;
     },
     arrangeComponent(component, action) {
       if (component.$parent) {

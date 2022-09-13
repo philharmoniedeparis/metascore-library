@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
 import { v4 as uuid } from "uuid";
+import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
@@ -182,17 +183,6 @@ export default defineStore("app-components", {
         });
       }
 
-      switch (component.type) {
-        case "Block":
-          {
-            if (component.pages.length < 1) {
-              const page = await this.create({ type: "Page" });
-              await this.add(page, component);
-            }
-          }
-          break;
-      }
-
       return component;
     },
     async update(component, data) {
@@ -256,6 +246,27 @@ export default defineStore("app-components", {
       if (component) {
         delete component.$deleted;
       }
+    },
+    async clone(component, data = {}, parent = null) {
+      const children_prop = this.getChildrenProperty(component);
+
+      let clone = await this.create(
+        {
+          ...omit(cloneDeep(component), ["id", children_prop]),
+          ...data,
+        },
+        false
+      );
+
+      await this.add(clone, parent, false);
+
+      if (this.hasChildren(component)) {
+        for (const c of this.getChildren(component)) {
+          await this.clone(c, {}, clone);
+        }
+      }
+
+      return clone;
     },
     setBlockActivePage(block, index) {
       if (block.synched) {

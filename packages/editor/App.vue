@@ -230,6 +230,7 @@ export default {
       createComponent,
       addComponent,
       deleteComponent,
+      cloneComponent,
     } = useModule("app_components");
 
     const { enable: enableBehaviors, disable: disableBehaviors } =
@@ -268,6 +269,7 @@ export default {
       createComponent,
       addComponent,
       deleteComponent,
+      cloneComponent,
       enableBehaviors,
       disableBehaviors,
       getAssetsByType,
@@ -437,8 +439,8 @@ export default {
       await this.addComponent(scenario);
       this.setActiveScenario(scenario.id);
     },
-    onScnearioManagerClone({ scenario, data }) {
-      const clone = this.store.cloneComponent(scenario, data);
+    async onScnearioManagerClone({ scenario, data }) {
+      const clone = await this.cloneComponent(scenario, data);
       this.setActiveScenario(clone.id);
     },
     onScnearioManagerDelete({ scenario }) {

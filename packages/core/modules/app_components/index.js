@@ -131,6 +131,11 @@ export default class AppComponentsModule extends AbstractModule {
     return store.restore(component);
   }
 
+  cloneComponent(component, data) {
+    const store = useStore();
+    return store.clone(component, data);
+  }
+
   showComponent(component) {
     const store = useStore();
     store.show(component);
