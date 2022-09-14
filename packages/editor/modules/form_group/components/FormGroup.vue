@@ -99,8 +99,8 @@ export default {
       user-select: none;
     }
 
-    ::v-deep(input),
-    ::v-deep(select) {
+    :deep(input),
+    :deep(select) {
       width: 100%;
       padding: 0.3125em;
       color: $white;
@@ -151,7 +151,7 @@ export default {
   }
 
   &.required {
-    ::v-deep(label) {
+    :deep(label) {
       &::after {
         content: "*";
         font-size: 1.25em;
@@ -161,8 +161,8 @@ export default {
   }
 
   &.error {
-    ::v-deep(input),
-    ::v-deep(select) {
+    :deep(input),
+    :deep(select) {
       outline: 2px solid $danger;
       outline-offset: -2px;
     }

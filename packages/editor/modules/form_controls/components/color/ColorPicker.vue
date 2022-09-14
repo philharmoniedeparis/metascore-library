@@ -368,7 +368,7 @@ export default {
     justify-content: flex-end;
     margin: 0.5em 0.75em;
 
-    ::v-deep(.control.text) {
+    :deep(.control.text) {
       margin-right: 1em;
 
       input {

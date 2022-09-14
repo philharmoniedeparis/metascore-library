@@ -261,7 +261,7 @@ export default {
     }
   }
 
-  ::v-deep(.component-track) {
+  :deep(.component-track) {
     &.dragging {
       z-index: 20;
 
@@ -280,7 +280,7 @@ export default {
     }
   }
 
-  ::v-deep(.component-track > .time-wrapper) {
+  :deep(.component-track > .time-wrapper) {
     width: v-bind(trackTimeWidth);
     margin-left: v-bind(trackTimeOffset);
   }

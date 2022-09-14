@@ -97,7 +97,7 @@ export default {
     min-width: 10em;
     margin: 0;
 
-    ::v-deep(input) {
+    :deep(input) {
       // #\9 is used here to increase specificity.
       &:not(#\9) {
         padding: 0 0 0 2em;

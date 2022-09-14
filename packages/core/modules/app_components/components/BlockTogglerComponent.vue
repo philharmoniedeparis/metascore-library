@@ -82,7 +82,7 @@ export default {
 
 <style lang="scss" scoped>
 .block-toggler {
-  > ::v-deep(.metaScore-component--inner) {
+  > :deep(.metaScore-component--inner) {
     display: flex;
     width: 100%;
     height: 100%;

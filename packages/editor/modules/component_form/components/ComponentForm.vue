@@ -593,7 +593,7 @@ export default {
     z-index: 1;
   }
 
-  ::v-deep(.form-container) {
+  :deep(.form-container) {
     display: flex;
     background: $lightgray;
     gap: 0.75em;
@@ -651,7 +651,7 @@ export default {
     }
   }
 
-  ::v-deep(.control) {
+  :deep(.control) {
     margin: 0;
 
     .input-wrapper {

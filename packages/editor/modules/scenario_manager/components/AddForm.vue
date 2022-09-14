@@ -105,7 +105,7 @@ export default {
 
 <style lang="scss" scoped>
 .scenario-manager--add-form {
-  ::v-deep(.input-wrapper) {
+  :deep(.input-wrapper) {
     flex-direction: column;
     align-items: flex-start;
   }

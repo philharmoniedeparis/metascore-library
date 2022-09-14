@@ -76,7 +76,7 @@ export default {
   display: flex;
   align-items: center;
 
-  ::v-deep(.form-group) {
+  :deep(.form-group) {
     input {
       width: 3em;
       text-align: center;

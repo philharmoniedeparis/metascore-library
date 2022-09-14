@@ -403,8 +403,8 @@ export default {
 
   .handle,
   .time-wrapper,
-  .aniamted-properties ::v-deep(.handle),
-  .aniamted-properties ::v-deep(.keyframes-wrapper) {
+  .aniamted-properties :deep(.handle),
+  .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
     border-top: 1px solid $darkgray;
     border-bottom: 1px solid $darkgray;
@@ -412,7 +412,7 @@ export default {
   }
 
   .handle,
-  .aniamted-properties ::v-deep(.handle) {
+  .aniamted-properties :deep(.handle) {
     display: flex;
     position: sticky;
     left: 0;
@@ -512,7 +512,7 @@ export default {
     }
   }
 
-  .aniamted-properties ::v-deep(.handle) {
+  .aniamted-properties :deep(.handle) {
     margin-left: calc(var(--depth) * 0.25em + 1em);
 
     > .icon {

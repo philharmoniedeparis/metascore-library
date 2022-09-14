@@ -531,15 +531,15 @@ export default {
   width: 100%;
   height: 100%;
 
-  ::v-deep(.blocklyToolboxDiv) {
+  :deep(.blocklyToolboxDiv) {
     max-width: 0;
   }
 
-  ::v-deep(.blocklyFlyoutLabelText) {
+  :deep(.blocklyFlyoutLabelText) {
     font-size: 24px;
   }
 
-  ::v-deep(.blocklyMainBackground) {
+  :deep(.blocklyMainBackground) {
     stroke: none;
   }
 }

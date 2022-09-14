@@ -292,7 +292,7 @@ export default {
     position: relative;
     flex-direction: column;
 
-    ::v-deep(.control.file) {
+    :deep(.control.file) {
       margin: 0;
       box-sizing: border-box;
       flex: 0 0 2.5em;
@@ -329,7 +329,7 @@ export default {
       }
     }
 
-    ::v-deep(button) {
+    :deep(button) {
       width: 100%;
       flex: 0 0 2.5em;
       padding: 0.25em 0.5em;

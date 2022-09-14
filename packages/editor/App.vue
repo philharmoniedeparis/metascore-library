@@ -502,7 +502,7 @@ export default {
     sans-serif;
 
   &,
-  ::v-deep(*) {
+  :deep(*) {
     scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
     scrollbar-width: thin;
 
@@ -524,11 +524,11 @@ export default {
     }
   }
 
-  ::v-deep(.sr-only) {
+  :deep(.sr-only) {
     @include sr-only;
   }
 
-  ::v-deep(button) {
+  :deep(button) {
     background: none;
     border: none;
     opacity: 0.5;
@@ -539,12 +539,12 @@ export default {
     }
   }
 
-  ::v-deep(input, select) {
+  :deep(input, select) {
     font-family: inherit;
     color: inherit;
   }
 
-  ::v-deep(.icon) {
+  :deep(.icon) {
     display: block;
   }
 
@@ -560,13 +560,13 @@ export default {
       gap: 1em;
       box-sizing: border-box;
 
-      ::v-deep(button) {
+      :deep(button) {
         padding-top: 0;
         padding-bottom: 0;
         align-self: stretch;
       }
 
-      ::v-deep(.form-group) {
+      :deep(.form-group) {
         margin: 0;
         justify-content: center;
 
@@ -599,7 +599,7 @@ export default {
       .app-title {
         flex: 1 1 auto;
 
-        ::v-deep(input) {
+        :deep(input) {
           &:not(:focus) {
             overflow: hidden;
             white-space: nowrap;
@@ -650,7 +650,7 @@ export default {
         box-sizing: border-box;
         border-right: 2px solid $darkgray;
 
-        ::v-deep(input) {
+        :deep(input) {
           border-radius: 0;
         }
       }
@@ -754,7 +754,7 @@ export default {
       max-width: none;
       padding: 0;
 
-      ::v-deep(.tabs-nav) {
+      :deep(.tabs-nav) {
         border-color: transparent;
       }
     }
@@ -805,12 +805,12 @@ export default {
 
           .playback-controller {
             grid-area: 1 / 1 / span 2 / 1;
-            ::v-deep(.rewind) {
+            :deep(.rewind) {
               display: none;
             }
 
-            ::v-deep(.play),
-            ::v-deep(.pause) {
+            :deep(.play),
+            :deep(.pause) {
               width: 100%;
               height: 100%;
               margin-right: 0;

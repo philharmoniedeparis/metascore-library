@@ -334,17 +334,17 @@ body {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   background: $white;
 
-  ::v-deep(.sr-only) {
+  :deep(.sr-only) {
     @include sr-only;
   }
 
-  ::v-deep(button) {
+  :deep(button) {
     background: none;
     border: none;
     cursor: pointer;
   }
 
-  > ::v-deep(.media-player) {
+  > :deep(.media-player) {
     display: none;
   }
 }

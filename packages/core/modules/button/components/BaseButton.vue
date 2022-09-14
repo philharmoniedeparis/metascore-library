@@ -106,7 +106,7 @@ export default {
     border: none;
   }
 
-  ::v-deep(*) {
+  :deep(*) {
     pointer-events: none;
   }
 
@@ -117,7 +117,7 @@ export default {
     align-items: center;
     justify-content: center;
 
-    ::v-deep(svg) {
+    :deep(svg) {
       width: 100%;
       height: 100%;
     }

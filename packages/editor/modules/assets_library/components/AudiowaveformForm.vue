@@ -217,7 +217,7 @@ export default {
 
 <style lang="scss" scoped>
 .assets-library--waveform-form {
-  ::v-deep(fieldset) {
+  :deep(fieldset) {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5em 1em;

@@ -307,7 +307,7 @@ export default {
     }
 
     &.scroll-left {
-      ::v-deep(.icon) {
+      :deep(.icon) {
         transform: rotate(180deg);
       }
     }

@@ -223,7 +223,7 @@ export default {
 
 <style lang="scss" scoped>
 .control {
-  ::v-deep(.input-wrapper) {
+  :deep(.input-wrapper) {
     // #\9 is used here to increase specificity.
     &:not(#\9) {
       flex-direction: column;

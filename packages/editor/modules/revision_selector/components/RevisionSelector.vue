@@ -125,14 +125,14 @@ export default {
   align-items: center;
   gap: 0.5em;
 
-  ::v-deep(select) {
+  :deep(select) {
     max-width: 15em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  ::v-deep(button) {
+  :deep(button) {
     color: $darkgray;
     background: $white;
     border: 1px solid $white;

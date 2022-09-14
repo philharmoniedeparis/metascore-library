@@ -660,12 +660,12 @@ export default {
     }
 
     &.block {
-      &:hover > ::v-deep(.metaScore-component--inner .pager) {
+      &:hover > :deep(.metaScore-component--inner .pager) {
         display: flex !important;
       }
     }
 
-    &.content > ::v-deep(.metaScore-component--inner) {
+    &.content > :deep(.metaScore-component--inner) {
       & > .contents {
         a {
           pointer-events: none;

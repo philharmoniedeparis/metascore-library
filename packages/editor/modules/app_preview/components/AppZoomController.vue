@@ -45,7 +45,7 @@ export default {
 
 <style lang="scss" scoped>
 .app-zoom-controller {
-  ::v-deep(select) {
+  :deep(select) {
     text-align: center;
   }
 }

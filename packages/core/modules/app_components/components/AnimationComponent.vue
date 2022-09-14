@@ -186,10 +186,10 @@ export default {
 
 <style lang="scss" scoped>
 .animation {
-  ::v-deep(.color1 path) {
+  :deep(.color1 path) {
     fill: var(--color1);
   }
-  ::v-deep(.color2 path) {
+  :deep(.color2 path) {
     fill: var(--color2);
   }
 }

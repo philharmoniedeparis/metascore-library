@@ -155,7 +155,7 @@ export default {
       font-weight: 600;
     }
 
-    ::v-deep(.base-button) {
+    :deep(.base-button) {
       font-size: 0.75em;
     }
   }
@@ -177,7 +177,7 @@ export default {
     flex-wrap: wrap;
     gap: 0.5em;
 
-    ::v-deep(.base-button) {
+    :deep(.base-button) {
       background: $mediumgray;
 
       &.primary {

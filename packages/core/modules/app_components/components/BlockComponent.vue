@@ -215,7 +215,7 @@ export default {
 
 <style lang="scss" scoped>
 .block {
-  > ::v-deep(.metaScore-component--inner) {
+  > :deep(.metaScore-component--inner) {
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: left top;

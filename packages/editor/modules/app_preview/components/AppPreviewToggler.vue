@@ -90,7 +90,7 @@ export default {
 .app-preview-toggler {
   margin: 0;
 
-  ::v-deep(input) {
+  :deep(input) {
     & + label {
       color: $white;
       background: none;

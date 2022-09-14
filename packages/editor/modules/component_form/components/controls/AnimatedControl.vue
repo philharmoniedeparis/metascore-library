@@ -159,7 +159,7 @@ export default {
   justify-content: space-between;
   align-content: flex-start;
 
-  ::v-deep(.control[data-property="animated"]) {
+  :deep(.control[data-property="animated"]) {
     input + label {
       background: none;
     }

@@ -182,14 +182,14 @@ export default {
 
 <style lang="scss" scoped>
 .media-source-form {
-  ::v-deep(.form-group) {
+  :deep(.form-group) {
     .input-wrapper {
       flex-direction: column;
       align-items: flex-start;
     }
   }
 
-  ::v-deep(.separator) {
+  :deep(.separator) {
     margin: 1em 0;
     display: flex;
     flex-direction: row;

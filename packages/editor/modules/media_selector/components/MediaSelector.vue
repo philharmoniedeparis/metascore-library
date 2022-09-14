@@ -59,7 +59,7 @@ export default {
 
 <style lang="scss" scoped>
 .media-selector {
-  ::v-deep(.base-button) {
+  :deep(.base-button) {
     display: block;
     width: 100%;
     padding: 0;

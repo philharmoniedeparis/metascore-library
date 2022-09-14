@@ -101,7 +101,7 @@ export default {
       box-sizing: border-box;
     }
 
-    ::v-deep(button) {
+    :deep(button) {
       position: absolute;
       top: 0;
       left: 0;
@@ -135,7 +135,7 @@ export default {
   }
 
   &:not(:hover) {
-    ::v-deep(button) {
+    :deep(button) {
       display: none;
     }
   }

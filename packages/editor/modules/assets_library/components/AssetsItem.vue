@@ -277,7 +277,7 @@ export default {
     opacity: 0.5;
   }
 
-  ::v-deep(.tmp) {
+  :deep(.tmp) {
     visibility: hidden;
     pointer-events: none;
   }

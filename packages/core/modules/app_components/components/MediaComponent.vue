@@ -28,7 +28,7 @@ export default {
 
 <style lang="scss" scoped>
 .media {
-  > ::v-deep(.metaScore-component--inner) {
+  > :deep(.metaScore-component--inner) {
     display: flex;
     align-items: center;
 

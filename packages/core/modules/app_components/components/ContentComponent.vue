@@ -130,7 +130,7 @@ export default {
     height: 100%;
     overflow: auto;
 
-    ::v-deep a[data-behavior-trigger] {
+    :deep(a[data-behavior-trigger]) {
       cursor: pointer;
     }
   }
