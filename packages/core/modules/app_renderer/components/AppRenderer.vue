@@ -34,6 +34,7 @@ export default {
       getComponentsByType,
       activeScenario,
       setActiveScenario,
+      setBlockActivePage,
       showComponent,
       hideComponent,
       toggleComponent,
@@ -57,6 +58,7 @@ export default {
       getComponentsByType,
       activeScenario,
       setActiveScenario,
+      setBlockActivePage,
       showComponent,
       hideComponent,
       toggleComponent,
@@ -241,7 +243,7 @@ export default {
                 (c) => c.name === args.block
               );
               if (block) {
-                // @todo: implement
+                this.setBlockActivePage(block, args.index);
               }
             }
           }
