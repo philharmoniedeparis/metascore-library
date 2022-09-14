@@ -21,6 +21,7 @@
         'has-selected-descendents': hasSelectedDescendents,
         expanded,
         selected,
+        locked,
         resizing,
       },
     ]"
@@ -274,41 +275,21 @@ export default {
   watch: {
     selected(value) {
       if (value) {
-        this._interactables = [];
-
-        if (this.timeable) {
-          // @todo: skip for locked components and pages of non-synched blocks
-
-          const resizable = interact(this.$refs.time);
-          resizable.resizable({
-            edges: {
-              right: ".resize-handle.right",
-              left: ".resize-handle.left",
-            },
-            modifiers: [
-              interact.modifiers.snap({
-                targets: this.getInteractableSnapTargets(),
-                range: this.snapRange,
-              }),
-            ],
-            listeners: {
-              start: this.onResizableStart,
-              move: this.onResizableMove,
-              end: this.onResizableEnd,
-            },
-          });
-
-          this._interactables.push(resizable);
-        }
-
-        this.$nextTick(function () {
-          this.$refs.handle.scrollIntoView();
-        });
-      } else if (this._interactables) {
-        this._interactables.forEach((i) => i.unset());
-        delete this._interactables;
+        this.setupInteractions();
+      } else {
+        this.destroyInteractions();
       }
     },
+    locked(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else {
+        this.setupInteractions();
+      }
+    },
+  },
+  beforeUnmount() {
+    this.destroyInteractions();
   },
   methods: {
     paramCase,
@@ -319,6 +300,46 @@ export default {
         }
       } else {
         this.selectComponent(this.component, evt.shiftKey);
+      }
+    },
+    setupInteractions() {
+      if (!this.selected || this.locked) return;
+
+      this._interactables = [];
+
+      if (this.timeable) {
+        // @todo: skip for locked components and pages of non-synched blocks
+
+        const resizable = interact(this.$refs.time);
+        resizable.resizable({
+          edges: {
+            right: ".resize-handle.right",
+            left: ".resize-handle.left",
+          },
+          modifiers: [
+            interact.modifiers.snap({
+              targets: this.getInteractableSnapTargets(),
+              range: this.snapRange,
+            }),
+          ],
+          listeners: {
+            start: this.onResizableStart,
+            move: this.onResizableMove,
+            end: this.onResizableEnd,
+          },
+        });
+
+        this._interactables.push(resizable);
+      }
+
+      this.$nextTick(function () {
+        this.$refs.handle.scrollIntoView();
+      });
+    },
+    destroyInteractions() {
+      if (this._interactables) {
+        this._interactables.forEach((i) => i.unset());
+        delete this._interactables;
       }
     },
     getInteractableSnapTargets() {
@@ -542,6 +563,7 @@ export default {
       .resize-handle {
         position: absolute;
         top: 0;
+        display: none;
         width: 0.25em;
         height: 100%;
         background: #fff;
@@ -606,25 +628,6 @@ export default {
     }
   }
 
-  &.scenario {
-    > .handle {
-      .expander {
-        display: none;
-      }
-    }
-
-    > .children {
-      display: contents;
-    }
-  }
-
-  &.page {
-    &:first-child > .time-wrapper .time .resize-handle[data-direction="left"],
-    &:last-child > .time-wrapper .time .resize-handle[data-direction="right"] {
-      display: none;
-    }
-  }
-
   &:not(.has-children) {
     .label {
       margin-left: 0.5em;
@@ -676,31 +679,43 @@ export default {
     }
   }
 
-  // #\9 is used here to increase specificity.
-  &.selected:not(#\9) {
+  &.selected {
     > .handle,
     > .time-wrapper {
       background: $lightgray;
-    }
 
-    > .time-wrapper {
       .time {
         opacity: 1;
+      }
+    }
 
-        .resize-handle {
-          display: block;
+    &:not(.locked) {
+      > .time-wrapper {
+        .time {
+          .resize-handle {
+            display: block;
+          }
         }
       }
     }
   }
 
-  &:not(.selected) {
-    > .time-wrapper {
-      .time {
-        .resize-handle {
-          display: none;
-        }
+  &.scenario {
+    > .handle {
+      .expander {
+        display: none;
       }
+    }
+
+    > .children {
+      display: contents;
+    }
+  }
+
+  &.page {
+    &:first-child > .time-wrapper .time .resize-handle.left,
+    &:last-child > .time-wrapper .time .resize-handle.right {
+      display: none;
     }
   }
 }
