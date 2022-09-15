@@ -95,7 +95,7 @@ Msg.MEDIA_PLAYING_TOOLTIP =
   "Retourne vrai si le média est en cours de lecture, faux autrement.";
 Msg.MEDIA_PLAYING_HELPURL = "";
 
-Msg.MEDIA_PLAY = "lancer la lacture";
+Msg.MEDIA_PLAY = "lancer la lecture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
