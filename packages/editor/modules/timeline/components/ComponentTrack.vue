@@ -70,6 +70,7 @@
       <div ref="time" class="time" tabindex="0" :style="timeStyle">
         <div class="resize-handle right"></div>
         <div class="resize-handle left"></div>
+        <div class="background"></div>
       </div>
     </div>
 
@@ -555,10 +556,6 @@ export default {
       bottom: 0.5em;
       left: 0;
       right: 0;
-      background-color: #555;
-      box-sizing: border-box;
-      box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
-      opacity: 0.5;
 
       .resize-handle {
         position: absolute;
@@ -575,6 +572,18 @@ export default {
         &.right {
           right: 0;
         }
+      }
+
+      .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #555;
+        box-sizing: border-box;
+        box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+        opacity: 0.5;
       }
 
       &:focus {
@@ -616,12 +625,12 @@ export default {
 
   @each $component, $color in $component-colors {
     @if $component == default {
-      > .time-wrapper .time {
+      > .time-wrapper .time .background {
         background-color: $color;
       }
     } @else {
       &.#{$component} {
-        > .time-wrapper .time {
+        > .time-wrapper .time .background {
           background-color: $color;
         }
       }
@@ -635,7 +644,7 @@ export default {
   }
 
   &:not(.has-start-time) {
-    > .time-wrapper .time {
+    > .time-wrapper .background {
       clip-path: polygon(
         0 0,
         4px 25%,
@@ -649,7 +658,7 @@ export default {
   }
 
   &:not(.has-end-time) {
-    > .time-wrapper .time {
+    > .time-wrapper .background {
       clip-path: polygon(
         0 0,
         0 100%,
@@ -663,7 +672,7 @@ export default {
   }
 
   &:not(.has-start-time):not(.has-end-time) {
-    > .time-wrapper .time {
+    > .time-wrapper .background {
       clip-path: polygon(
         0 0,
         4px 25%,
@@ -683,9 +692,10 @@ export default {
     > .handle,
     > .time-wrapper {
       background: $lightgray;
-
       .time {
-        opacity: 1;
+        .background {
+          opacity: 1;
+        }
       }
     }
 
@@ -713,8 +723,8 @@ export default {
   }
 
   &.page {
-    &:first-child > .time-wrapper .time .resize-handle.left,
-    &:last-child > .time-wrapper .time .resize-handle.right {
+    &:first-child > .time-wrapper .resize-handle.left,
+    &:last-child > .time-wrapper .resize-handle.right {
       display: none;
     }
   }
