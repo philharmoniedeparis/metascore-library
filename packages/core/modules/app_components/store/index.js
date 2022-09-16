@@ -158,7 +158,7 @@ export default defineStore("app-components", {
         return await Models[data.type].create(data, validate);
       }
     },
-    async add(component, parent = null) {
+    async add(component, parent = null, index = null) {
       this.components[component.type] = this.components[component.type] || {};
       this.components[component.type][component.id] = component;
 
@@ -171,12 +171,17 @@ export default defineStore("app-components", {
         const children_prop = this.getChildrenProperty(parent);
 
         let children = parent[children_prop] || [];
-        children = children.concat([
-          {
-            type: component.type,
-            id: component.id,
-          },
-        ]);
+        if (index !== null) {
+          children = [
+            ...children.slice(0, index),
+            { type: component.type, id: component.id },
+            ...children.slice(index),
+          ];
+        } else {
+          children = children.concat([
+            { type: component.type, id: component.id },
+          ]);
+        }
 
         await this.update(parent, {
           [children_prop]: children,

@@ -111,9 +111,9 @@ export default class AppComponentsModule extends AbstractModule {
     return store.create(data, validate);
   }
 
-  addComponent(component, parent) {
+  addComponent(component, parent, index) {
     const store = useStore();
-    return store.add(component, parent);
+    return store.add(component, parent, index);
   }
 
   updateComponent(component, data) {

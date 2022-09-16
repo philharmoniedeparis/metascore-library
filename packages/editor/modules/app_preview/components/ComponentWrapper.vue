@@ -98,13 +98,16 @@ export default {
       data: clipboardData,
       setData: setClipboardData,
     } = useModule("clipboard");
+    const { time: mediaTime } = useModule("media_player");
     const {
       getModel,
+      getComponentChildren,
       getComponentSiblings,
       createComponent,
       addComponent,
       updateComponent,
       deleteComponent,
+      getBlockActivePage,
     } = useModule("app_components");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -113,12 +116,15 @@ export default {
       clipboardFormat,
       clipboardData,
       setClipboardData,
+      mediaTime,
       getModel,
+      getComponentChildren,
       getComponentSiblings,
       createComponent,
       addComponent,
       updateComponent,
       deleteComponent,
+      getBlockActivePage,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -516,7 +522,7 @@ export default {
         { capture: true, once: true }
       );
     },
-    getModelTypeFromDragEvent(evt) {
+    getModelFromDragEvent(evt) {
       let type = null;
       evt.dataTransfer.types.some((format) => {
         const matches = format.match(/^metascore\/component:(.*)$/);
@@ -525,18 +531,18 @@ export default {
           return true;
         }
       });
-      return type;
+      return type ? this.getModel(type) : null;
     },
     isDropAllowed(evt) {
-      const type = this.getModelTypeFromDragEvent(evt);
+      const model = this.getModelFromDragEvent(evt);
 
-      if (type) {
+      if (model.type) {
         switch (this.component.type) {
           case "Scenario":
           case "Page":
-            return !["Scenario", "Page"].includes(type);
+            return !["Scenario", "Page"].includes(model.type);
           case "Block":
-            return type === "Page";
+            return model.type === "Page";
         }
       }
 
@@ -572,11 +578,11 @@ export default {
       }
     },
     async getComponentFromDragEvent(evt) {
-      let type = this.getModelTypeFromDragEvent(evt);
-      if (type) {
+      let model = this.getModelFromDragEvent(evt);
+      if (model) {
         // Some browsers transform the DataTransfer format to lowercase.
         // Force it to kebab case to insure compatibility with other browsers.
-        type = kebabCase(type);
+        const type = kebabCase(model.type);
 
         const format = `metascore/component:${type}`;
         if (evt.dataTransfer.types.includes(format)) {
@@ -599,14 +605,43 @@ export default {
     },
     async addDroppedComponent(evt) {
       const droppedComponent = await this.getComponentFromDragEvent(evt);
+
+      let index = null;
+      switch (droppedComponent.type) {
+        case "Page":
+          index = this.getBlockActivePage(this.component) + 1;
+          break;
+      }
+
       const component = await this.addComponent(
         droppedComponent,
-        this.component
+        this.component,
+        index
       );
 
-      if (component.type === "Block") {
-        const page = await this.createComponent({ type: "Page" });
-        await this.addComponent(page, component);
+      switch (component.type) {
+        case "Block":
+          {
+            const page = await this.createComponent({ type: "Page" });
+            await this.addComponent(page, component);
+          }
+          break;
+        case "Page":
+          if (this.component.synched) {
+            const pages = this.getComponentChildren(this.component);
+            const previous = pages[index - 1];
+            const next = pages[index + 1];
+
+            if (previous || next) {
+              const data = {};
+
+              if (previous) data["start-time"] = round(this.mediaTime, 2);
+              if (next) data["end-time"] = next["start-time"];
+
+              await this.updateComponent(droppedComponent, data);
+            }
+          }
+          break;
       }
 
       this.store.selectComponent(component);
