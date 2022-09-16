@@ -171,47 +171,52 @@ export default defineStore("app-preview", {
       components.map((c) => this.pasteComponent(c, parent));
     },
     arrangeComponent(component, action) {
-      if (component.$parent) {
-        const {
-          getComponentParent,
-          getComponentChildrenProperty,
-          getComponentChildren,
-          updateComponent,
-        } = useModule("app_components");
-        const parent = getComponentParent(component);
-        const children = getComponentChildren(parent);
-        const count = children.length;
-        const old_index = children.findIndex((child) => {
-          return child === component;
-        });
+      const {
+        getComponentParent,
+        getComponentChildrenProperty,
+        getComponentChildren,
+        updateComponent,
+      } = useModule("app_components");
 
-        let new_index = null;
-        switch (action) {
-          case "front":
-            new_index = count - 1;
-            break;
-          case "back":
-            new_index = 0;
-            break;
-          case "forward":
-            new_index = Math.min(old_index + 1, count - 1);
-            break;
-          case "backward":
-            new_index = Math.max(old_index - 1, 0);
-            break;
-        }
-
-        if (new_index !== null && new_index !== old_index) {
-          children.splice(new_index, 0, children.splice(old_index, 1)[0]);
-        }
-
-        const property = getComponentChildrenProperty(parent);
-        updateComponent(parent, {
-          [property]: children.map((child) => {
-            return { schema: child.type, id: child.id };
-          }),
-        });
+      const parent = getComponentParent(component);
+      if (!parent) {
+        throw new Error(
+          `compontent ${component.type}:${component.id} can't be rearranged as it doesn't have a parent`
+        );
       }
+
+      const children = getComponentChildren(parent);
+      const count = children.length;
+      const old_index = children.findIndex((child) => {
+        return child.type === component.type && child.id === component.id;
+      });
+
+      let new_index = null;
+      switch (action) {
+        case "front":
+          new_index = count - 1;
+          break;
+        case "back":
+          new_index = 0;
+          break;
+        case "forward":
+          new_index = Math.min(old_index + 1, count - 1);
+          break;
+        case "backward":
+          new_index = Math.max(old_index - 1, 0);
+          break;
+      }
+
+      if (new_index !== null && new_index !== old_index) {
+        children.splice(new_index, 0, children.splice(old_index, 1)[0]);
+      }
+
+      const property = getComponentChildrenProperty(parent);
+      updateComponent(parent, {
+        [property]: children.map((child) => {
+          return { type: child.type, id: child.id };
+        }),
+      });
     },
     addPageBefore() {
       // @todo
