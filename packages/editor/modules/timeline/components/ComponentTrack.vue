@@ -274,13 +274,6 @@ export default {
     },
   },
   watch: {
-    selected(value) {
-      if (value) {
-        this.setupInteractions();
-      } else {
-        this.destroyInteractions();
-      }
-    },
     locked(value) {
       if (value) {
         this.destroyInteractions();
@@ -288,6 +281,9 @@ export default {
         this.setupInteractions();
       }
     },
+  },
+  mounted() {
+    this.setupInteractions();
   },
   beforeUnmount() {
     this.destroyInteractions();
@@ -304,7 +300,7 @@ export default {
       }
     },
     setupInteractions() {
-      if (!this.selected || this.locked) return;
+      if (this.locked) return;
 
       this._interactables = [];
 
@@ -401,10 +397,17 @@ export default {
 
       this.updateComponent(this.component, data);
     },
-    onResizableEnd() {
+    onResizableEnd(evt) {
       this.endHistoryGroup();
       this.activeSnapTargets = [];
       this.resizing = false;
+
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
+      );
     },
     onAnimatedPropertyUpdate(property, value) {
       this.updateComponent(this.component, {
@@ -596,6 +599,14 @@ export default {
         outline-width: 1px;
       }
     }
+
+    &:hover {
+      .time {
+        .resize-handle {
+          display: block;
+        }
+      }
+    }
   }
 
   .children {
@@ -698,13 +709,13 @@ export default {
         }
       }
     }
+  }
 
-    &:not(.locked) {
-      > .time-wrapper {
-        .time {
-          .resize-handle {
-            display: block;
-          }
+  &.locked {
+    > .time-wrapper {
+      .time {
+        .resize-handle {
+          display: none;
         }
       }
     }
