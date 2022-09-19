@@ -386,6 +386,10 @@ export default {
           this._interactables.draggable({
             allowFrom,
             modifiers: [
+              interact.modifiers.restrict({
+                restriction: "parent",
+                elementRect: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
+              }),
               interact.modifiers.snap({
                 targets: [this.getInteractableSnapTarget],
                 relativePoints: [
