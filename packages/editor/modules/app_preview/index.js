@@ -17,17 +17,6 @@ import AppDimensionsController from "./components/AppDimensionsController";
 import AppPreviewToggler from "./components/AppPreviewToggler";
 import ComponentWrapper from "./components/ComponentWrapper";
 
-// Override interact's is.element to workaround a bug
-// when working with elements in an iframe.
-// See https://github.com/taye/interact.js/issues/883
-import is from "@interactjs/utils/is";
-is.element = function (thing) {
-  if (!thing || typeof thing !== "object") {
-    return false;
-  }
-  return thing.nodeType === 1 && typeof thing.nodeName === "string";
-};
-
 export default class AppPreviewModule extends AbstractModule {
   static id = "app_preview";
 
