@@ -387,7 +387,12 @@ export default {
             allowFrom,
             modifiers: [
               interact.modifiers.restrict({
-                restriction: "parent",
+                // Using "parent" as "restriction" produces an
+                // "invalid 'instanceof' operand iS.SVGElement"
+                // error in production builds.
+                restriction: () => {
+                  return this.$el.parentElement.getBoundingClientRect();
+                },
                 elementRect: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
               }),
               interact.modifiers.snap({
