@@ -60,6 +60,6 @@ export default class AssetsLibraryModule extends AbstractModule {
 
   onStoreAction(callback) {
     const store = useStore();
-    store.$onAction(callback);
+    return store.$onAction(callback);
   }
 }

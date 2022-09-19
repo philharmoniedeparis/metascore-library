@@ -224,6 +224,6 @@ export default class AppComponentsModule extends AbstractModule {
 
   onStoreAction(callback) {
     const store = useStore();
-    store.$onAction(callback);
+    return store.$onAction(callback);
   }
 }

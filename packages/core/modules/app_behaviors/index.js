@@ -63,6 +63,6 @@ export default class AppBehaviorsModule extends AbstractModule {
 
   onStoreAction(callback) {
     const store = useStore();
-    store.$onAction(callback);
+    return store.$onAction(callback);
   }
 }
