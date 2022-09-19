@@ -166,7 +166,7 @@ export default {
     },
     onInputChange(evt) {
       if (this.lazy) {
-        this.$emit("update:modelValue", evt.target.value);
+        this.$emit("update:modelValue", round(evt.target.value, this.decimals));
       }
     },
     onClearClick() {
