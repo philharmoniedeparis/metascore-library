@@ -199,6 +199,7 @@ export default {
       getComponentParent,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
     } = useModule("app_components");
     const { selectedComponents, getComponentElement } =
       useModule("app_preview");
@@ -208,6 +209,7 @@ export default {
       getComponentParent,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
       getComponentElement,
       selectedComponents,
     };
@@ -444,24 +446,37 @@ export default {
           break;
       }
 
-      if (this.commonModel.$isTimeable) {
+      if (this.selectedComponents.every(this.isComponentTimeable)) {
+        const items = [
+          {
+            inButton: true,
+            outButton: true,
+            clearButton: true,
+            ...this.getControlProps("start-time"),
+          },
+          {
+            inButton: true,
+            outButton: true,
+            clearButton: true,
+            ...this.getControlProps("end-time"),
+          },
+        ];
+
+        this.selectedComponents.forEach((component) => {
+          if (component.type === "Page") {
+            const block = this.getComponentParent(component);
+            const pages = this.getComponentChildren(block);
+            const index = pages.findIndex((c) => c.id === component.id);
+
+            if (index === 0) items[0].disabled = true;
+            if (index === pages.length - 1) items[1].disabled = true;
+          }
+        });
+
         layout.items.push({
           type: "markup",
           class: "form-container horizontal time",
-          items: [
-            {
-              inButton: true,
-              outButton: true,
-              clearButton: true,
-              ...this.getControlProps("start-time"),
-            },
-            {
-              inButton: true,
-              outButton: true,
-              clearButton: true,
-              ...this.getControlProps("end-time"),
-            },
-          ],
+          items,
         });
       }
 

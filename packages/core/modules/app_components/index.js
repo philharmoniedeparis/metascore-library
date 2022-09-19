@@ -167,6 +167,61 @@ export default class AppComponentsModule extends AbstractModule {
     store.setBlockActivePage(block, index);
   }
 
+  isComponentBackgroundable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isBackgroundable;
+  }
+
+  isComponentBorderable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isBorderable;
+  }
+
+  isComponentHideable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isHideable;
+  }
+
+  isComponentOpacitable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isOpacitable;
+  }
+
+  isComponentPositionable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isPositionable;
+  }
+
+  isComponentResizable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isResizable;
+  }
+
+  isComponentTimeable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    if (model.$isTimeable) {
+      if (component.type === "Page") {
+        const block = store.getParent(component);
+        return block.synched;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  isComponentTransformable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isisTransformable;
+  }
+
   onStoreAction(callback) {
     const store = useStore();
     store.$onAction(callback);

@@ -68,8 +68,10 @@
 
     <div ref="time-wrapper" class="time-wrapper" @click="onClick">
       <div ref="time" class="time" tabindex="0" :style="timeStyle">
-        <div class="resize-handle right"></div>
-        <div class="resize-handle left"></div>
+        <template v-if="timeable">
+          <div class="resize-handle right"></div>
+          <div class="resize-handle left"></div>
+        </template>
         <div class="background"></div>
       </div>
     </div>
@@ -138,6 +140,7 @@ export default {
       componentHasChildren,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
     } = useModule("app_components");
     const {
       isComponentSelected,
@@ -159,6 +162,7 @@ export default {
       componentHasChildren,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
       isComponentSelected,
       isComponentLocked,
       lockComponent,
@@ -224,7 +228,7 @@ export default {
       return this.componentHasSelectedDescendents(this.component);
     },
     timeable() {
-      return this.model.$isTimeable;
+      return this.isComponentTimeable(this.component);
     },
     hasStartTime() {
       return this.timeable && this.component["start-time"] !== null;
@@ -274,6 +278,13 @@ export default {
     },
   },
   watch: {
+    selected(value) {
+      if (value) {
+        this.$nextTick(function () {
+          this.$refs.handle.scrollIntoView();
+        });
+      }
+    },
     locked(value) {
       if (value) {
         this.destroyInteractions();
@@ -300,42 +311,30 @@ export default {
       }
     },
     setupInteractions() {
-      if (this.locked) return;
+      if (this.locked || !this.timeable) return;
 
-      this._interactables = [];
-
-      if (this.timeable) {
-        // @todo: skip for locked components and pages of non-synched blocks
-
-        const resizable = interact(this.$refs.time);
-        resizable.resizable({
-          edges: {
-            right: ".resize-handle.right",
-            left: ".resize-handle.left",
-          },
-          modifiers: [
-            interact.modifiers.snap({
-              targets: this.getInteractableSnapTargets(),
-              range: this.snapRange,
-            }),
-          ],
-          listeners: {
-            start: this.onResizableStart,
-            move: this.onResizableMove,
-            end: this.onResizableEnd,
-          },
-        });
-
-        this._interactables.push(resizable);
-      }
-
-      this.$nextTick(function () {
-        this.$refs.handle.scrollIntoView();
+      this._interactables = interact(this.$refs.time);
+      this._interactables.resizable({
+        edges: {
+          right: ".resize-handle.right",
+          left: ".resize-handle.left",
+        },
+        modifiers: [
+          interact.modifiers.snap({
+            targets: this.getInteractableSnapTargets(),
+            range: this.snapRange,
+          }),
+        ],
+        listeners: {
+          start: this.onResizableStart,
+          move: this.onResizableMove,
+          end: this.onResizableEnd,
+        },
       });
     },
     destroyInteractions() {
       if (this._interactables) {
-        this._interactables.forEach((i) => i.unset());
+        this._interactables.unset();
         delete this._interactables;
       }
     },
