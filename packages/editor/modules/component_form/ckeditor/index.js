@@ -181,9 +181,12 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     htmlSupport: {
       allow: [
         {
-          name: /^(div|a|p|i|em|b|strong|h[2-4]|span)$/,
+          name: /^(div|a|p|i|em|b|strong|h[1-6]|span)$/,
           classes: true,
           styles: true,
+          attributes: {
+            dir: /^(rtl|ltr)$/,
+          },
         },
         {
           name: "a",
