@@ -4,19 +4,13 @@ import AbstractModule from "@metascore-library/core/services/module-manager/Abst
 import useStore from "./store";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import AppComponents from "@metascore-library/core/modules/app_components";
-import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
 import MediaCuepoints from "../media_cuepoints";
 import AppRenderer from "./components/AppRenderer.vue";
 
 export default class AppRendererModule extends AbstractModule {
   static id = "app_renderer";
 
-  static dependencies = [
-    MediaPlayer,
-    MediaCuepoints,
-    AppComponents,
-    AppBehaviors,
-  ];
+  static dependencies = [MediaPlayer, MediaCuepoints, AppComponents];
 
   constructor({ app }) {
     super(arguments);
