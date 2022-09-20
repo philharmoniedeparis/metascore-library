@@ -17,7 +17,6 @@ const SUPPORTED_PROPERTIES = [
   "hidden",
   "loop-duration",
   "reversed",
-  "text",
   "cursor-width",
   "cursor-color",
 ];

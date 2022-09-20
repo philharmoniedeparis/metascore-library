@@ -243,32 +243,6 @@ export default {
           : { type: "components_set_property_mock" }
       );
 
-      // Text
-      let content_component = this.findComponent((c) => {
-        return c.type === "Content";
-      });
-      let text_block = {
-        kind: "block",
-        type: "components_set_property",
-        fields: { PROPERTY: "text" },
-        inputs: {
-          VALUE: {
-            block: { type: "text" },
-          },
-        },
-        extraState: { property: "text" },
-      };
-      merge(
-        text_block,
-        content_component
-          ? {
-              fields: {
-                COMPONENT: `${content_component.type}:${content_component.id}`,
-              },
-            }
-          : { type: "components_set_property_mock" }
-      );
-
       return [
         { kind: "block", type: "media_play" },
         {
@@ -286,7 +260,6 @@ export default {
         hide_block,
         show_block,
         background_color_block,
-        text_block,
         { kind: "block", type: "components_set_property" },
         { kind: "block", type: "components_set_block_page" },
         {
@@ -372,31 +345,9 @@ export default {
           : { type: "components_get_property_mock" }
       );
 
-      // Text
-      let content_component = this.findComponent((c) => {
-        return c.type === "Content";
-      });
-      let text_block = {
-        kind: "block",
-        type: "components_get_property",
-        fields: { PROPERTY: "text" },
-        extraState: { property: "text" },
-      };
-      merge(
-        text_block,
-        content_component
-          ? {
-              fields: {
-                COMPONENT: `${content_component.type}:${content_component.id}`,
-              },
-            }
-          : { type: "components_get_property_mock" }
-      );
-
       return [
         hidden_block,
         background_color_block,
-        text_block,
         { kind: "block", type: "components_get_property" },
         { kind: "block", type: "components_get_block_page" },
       ];
