@@ -97,7 +97,7 @@ Msg.MEDIA_PLAY = "start playback";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT = "play excerpt from %1 to %2";
+Msg.MEDIA_PLAY_EXCERPT = "%1 play excerpt from %2 to %3";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 

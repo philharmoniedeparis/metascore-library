@@ -1,9 +1,6 @@
-import {
-  defineBlocksWithJsonArray,
-  Extensions,
-  Mutator,
-  Msg,
-} from "blockly/core";
+import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
+import { createMinusField } from "@blockly/block-plus-minus/src/field_minus";
+import { createPlusField } from "@blockly/block-plus-minus/src/field_plus";
 
 defineBlocksWithJsonArray([
   // Block for timecode value
@@ -75,6 +72,10 @@ defineBlocksWithJsonArray([
     type: "media_play_excerpt",
     message0: "%{BKY_MEDIA_PLAY_EXCERPT}",
     args0: [
+      {
+        type: "input_dummy",
+        name: "PLUS_MINUS",
+      },
       {
         type: "input_value",
         name: "FROM",
@@ -157,12 +158,16 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
 
   /**
    * Returns the state of this block as a JSON serializable object.
-   * @return {?{elseIfCount: (number|undefined), haseElse: (boolean|undefined)}}
+   * @return {?{hasThen: (boolean|undefined)}}
    *     The state of this block.
    */
   saveExtraState: function () {
+    if (!this.hasThen_) {
+      return null;
+    }
+
     return {
-      hasThen: this.hasThen_,
+      hasThen: true,
     };
   },
 
@@ -171,80 +176,25 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
    * @param {*} state The state to apply to this block.
    */
   loadExtraState: function (state) {
-    this.hasThen_ = state["hasThen"] ? true : false;
+    this.hasThen_ = state["hasThen"] || false;
     this.updateShape_();
   },
 
   /**
-   * Populate the mutator's dialog with this block's components.
-   * @param {!Workspace} workspace Mutator's workspace.
-   * @return {!Block} Root block in mutator.
-   * @this {Block}
+   * Callback for the plus field.
    */
-  decompose: function (workspace) {
-    const topBlock = workspace.newBlock("media_play_excerpt_top");
-    topBlock.initSvg();
-
-    if (this.hasThen_) {
-      const thenBlock = workspace.newBlock("media_play_excerpt_then");
-      thenBlock.initSvg();
-      topBlock.nextConnection.connect(thenBlock.previousConnection);
-    }
-
-    return topBlock;
+  plus: function () {
+    this.hasThen_ = true;
+    this.updateShape_();
   },
 
   /**
-   * Reconfigure this block based on the mutator dialog's components.
-   * @param {!Block} topBlock Root block in mutator.
-   * @this {Block}
+   * Callback for the minus field.
+   * @this {Blockly.Block}
    */
-  compose: function (topBlock) {
-    let nextBlock = topBlock.nextConnection.targetBlock();
-
+  minus: function () {
     this.hasThen_ = false;
-
-    let thenStatementConnection = null;
-
-    while (nextBlock && !nextBlock.isInsertionMarker()) {
-      switch (nextBlock.type) {
-        case "media_play_excerpt_then":
-          this.hasThen_ = true;
-          thenStatementConnection = nextBlock.statementConnection_;
-          break;
-        default:
-          throw TypeError("Unknown block type: " + nextBlock.type);
-      }
-      nextBlock =
-        nextBlock.nextConnection && nextBlock.nextConnection.targetBlock();
-    }
     this.updateShape_();
-
-    // Reconnect child blocks.
-    Mutator.reconnect(thenStatementConnection, this, "THEN");
-  },
-
-  /**
-   * Store pointers to any connected child blocks.
-   * @param {!Block} topBlock Root block in mutator.
-   * @this {Block}
-   */
-  saveConnections: function (topBlock) {
-    let nextBlock = topBlock.nextConnection.targetBlock();
-    while (nextBlock) {
-      switch (nextBlock.type) {
-        case "media_play_excerpt_then": {
-          const thenInput = this.getInput("THEN");
-          nextBlock.statementConnection_ =
-            thenInput && thenInput.connection.targetConnection;
-          break;
-        }
-        default:
-          throw TypeError("Unknown block type: " + nextBlock.type);
-      }
-      nextBlock =
-        nextBlock.nextConnection && nextBlock.nextConnection.targetBlock();
-    }
   },
 
   /**
@@ -253,22 +203,47 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
    * @private
    */
   updateShape_: function () {
-    // Add the then statement.
     if (this.hasThen_) {
+      // Update plus/minus buttons.
+      if (this.getField("PLUS")) {
+        this.getInput("PLUS_MINUS").removeField("PLUS");
+      }
+      if (!this.getField("MINUS")) {
+        this.getInput("PLUS_MINUS").appendField(createMinusField(), "MINUS");
+      }
+      // Add "then" input.
       if (!this.getInput("THEN")) {
         this.appendStatementInput("THEN").appendField(
           Msg["MEDIA_PLAY_EXCERPT_THEN"]
         );
       }
-    } else if (this.getInput("THEN")) {
-      this.removeInput("THEN");
+    } else {
+      // Update plus/minus buttons.
+      if (!this.getField("PLUS")) {
+        this.getInput("PLUS_MINUS").appendField(createPlusField(), "PLUS");
+      }
+      if (this.getField("MINUS")) {
+        this.getInput("PLUS_MINUS").removeField("MINUS");
+      }
+      // Remove "then" input.
+      if (this.getInput("THEN")) {
+        this.removeInput("THEN");
+      }
     }
   },
+};
+
+/**
+ * Adds the initial plus button.
+ * @this {Blockly.Block}
+ */
+const MEDIA_PLAY_EXCERPT_MUTATOR_HELPER = function () {
+  this.updateShape_();
 };
 
 Extensions.registerMutator(
   "media_play_excerpt_mutator",
   MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN,
-  null,
+  MEDIA_PLAY_EXCERPT_MUTATOR_HELPER,
   ["media_play_excerpt_then"]
 );

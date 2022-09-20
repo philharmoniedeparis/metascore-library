@@ -99,7 +99,7 @@ Msg.MEDIA_PLAY = "lancer la lecture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT = "lire l'extrait de %1 à %2";
+Msg.MEDIA_PLAY_EXCERPT = "%1 lire l'extrait de %2 à %3";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 

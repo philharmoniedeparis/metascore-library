@@ -45,6 +45,7 @@ import {
   ContinuousToolbox,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
+import "@blockly/block-plus-minus";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import Theme from "../blockly/theme";
 import Flyout from "../blockly/plugins/flyout";
@@ -274,6 +275,7 @@ export default {
     logicBlocks() {
       return [
         { kind: "block", type: "controls_if" },
+        { kind: "block", type: "controls_if", extraState: { hasElse: true } },
         { kind: "block", type: "logic_compare" },
         { kind: "block", type: "logic_operation" },
         { kind: "block", type: "logic_negate" },
