@@ -2,7 +2,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
 import JavaScript from "blockly/javascript";
 
-const listeners = [];
+const states = new Map();
 
 export function init(context) {
   // Ensure 'Components' name does not conflict with variable names.
@@ -28,9 +28,20 @@ export function init(context) {
       // Add the event listener.
       el.addEventListener(event, callback);
 
+      if (!states.has(el)) {
+        states.set(el, {});
+      }
+
+      const state = states.get(el);
+      state.listeners = state.listeners || [];
+
+      if (event === "click") {
+        state.cursor = state.cursor || el.style.cursor;
+        el.style.cursor = "pointer";
+      }
+
       // Add to list of listeners.
-      listeners.push({
-        el,
+      state.listeners.push({
         type: event,
         callback,
       });
@@ -87,9 +98,21 @@ export function init(context) {
 }
 
 export function reset() {
-  // Remove all listeners.
-  while (listeners.length > 0) {
-    const { el, type, callback } = listeners.pop();
-    el.removeEventListener(type, callback);
-  }
+  states.forEach((state, el) => {
+    // Remove all listeners.
+    const { listeners, cursor } = state;
+    if (listeners) {
+      while (listeners.length > 0) {
+        const { type, callback } = listeners.pop();
+        el.removeEventListener(type, callback);
+      }
+    }
+    // Reset cursor.
+    if (typeof cursor !== "undefined") {
+      el.style.cursor = cursor;
+    }
+  });
+
+  // Clear states.
+  states.clear();
 }
