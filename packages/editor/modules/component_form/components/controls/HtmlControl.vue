@@ -64,7 +64,8 @@ export default {
   data() {
     return {
       settingUpEditor: false,
-      contentsElement: null,
+      componentInner: null,
+      contentsEl: null,
       editor: null,
     };
   },
@@ -97,11 +98,17 @@ export default {
     },
     componentEl: {
       handler(value) {
-        this.contentsElement = value
-          ? value.querySelector(
-              ":scope > .metaScore-component--inner > .contents"
-            )
-          : null;
+        if (value) {
+          this.componentInnerEl = value.querySelector(
+            ":scope > .metaScore-component--inner"
+          );
+
+          this.contentsEl =
+            this.componentInnerEl.querySelector(":scope > .contents");
+        } else {
+          this.componentInnerEl = null;
+          this.contentsEl = null;
+        }
       },
       immediate: true,
     },
@@ -110,7 +117,7 @@ export default {
     this.stopEditing(this.component);
   },
   methods: {
-    onContentsElementKeyEvent(evt) {
+    onComponentInnerElKeyEvent(evt) {
       evt.stopPropagation();
     },
     onButtonClick() {
@@ -135,7 +142,7 @@ export default {
         extraFonts: this.extraFonts,
       });
 
-      Editor.create(this.contentsElement, config)
+      Editor.create(this.contentsEl, config)
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.
@@ -146,13 +153,13 @@ export default {
         });
 
       // Prevent key events from propagating.
-      this.contentsElement.addEventListener(
+      this.componentInnerEl.addEventListener(
         "keydown",
-        this.onContentsElementKeyEvent
+        this.onComponentInnerElKeyEvent
       );
-      this.contentsElement.addEventListener(
+      this.componentInnerEl.addEventListener(
         "keyup",
-        this.onContentsElementKeyEvent
+        this.onComponentInnerElKeyEvent
       );
     },
     onEditorCreate(editor) {
@@ -168,20 +175,35 @@ export default {
       this.editor = markRaw(editor);
       this.$refs["toolbar-container"].appendChild(toolbar);
 
-      const contextualballoon_view =
-        editor.plugins.get("ContextualBalloon").view;
-      contextualballoon_view.on(
-        "set:left",
-        this.onEditorContextualBallonPositionSet
-      );
-      contextualballoon_view.on(
-        "set:top",
-        this.onEditorContextualBallonPositionSet
-      );
+      // Add listeners to ContextualBalloon positions
+      if (editor.plugins.has("ContextualBalloon")) {
+        const contextualballoon_view =
+          editor.plugins.get("ContextualBalloon").view;
+        contextualballoon_view.on(
+          "set:left",
+          this.onEditorContextualBallonPositionSet
+        );
+        contextualballoon_view.on(
+          "set:top",
+          this.onEditorContextualBallonPositionSet
+        );
+      }
+
+      // Add listeners to SourceEditing mode
+      if (editor.plugins.has("SourceEditing")) {
+        const sourceediting = editor.plugins.get("SourceEditing");
+        sourceediting.on(
+          "change:isSourceEditingMode",
+          this.onEditorSourceEditingModeChange
+        );
+      }
     },
     onEditorContextualBallonPositionSet(evt, prop, value) {
       const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
       evt.return = value + offset;
+    },
+    onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
+      this.componentEl.classList.toggle("sourceediting", isSourceEditingMode);
     },
     stopEditing(component = null) {
       if (!this.editing) {
@@ -204,14 +226,14 @@ export default {
         this.editor = null;
       }
 
-      if (this.contentsElement) {
-        this.contentsElement.removeEventListener(
+      if (this.contentsEl) {
+        this.contentsEl.removeEventListener(
           "keydown",
-          this.onContentsElementKeyEvent
+          this.onComponentInnerElKeyEvent
         );
-        this.contentsElement.removeEventListener(
+        this.contentsEl.removeEventListener(
           "keyup",
-          this.onContentsElementKeyEvent
+          this.onComponentInnerElKeyEvent
         );
       }
 

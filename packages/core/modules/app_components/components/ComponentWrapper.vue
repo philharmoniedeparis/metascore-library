@@ -88,7 +88,6 @@ export default {
 <style lang="scss" scoped>
 .metaScore-component {
   position: absolute;
-  transform-style: preserve-3d;
 
   .metaScore-component--inner {
     position: absolute;

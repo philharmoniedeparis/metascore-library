@@ -709,10 +709,19 @@ export default {
       }
     }
 
-    &.content > :deep(.metaScore-component--inner) {
-      & > .contents {
-        a {
-          pointer-events: none;
+    &.content {
+      > :deep(.metaScore-component--inner) {
+        & > .contents {
+          a {
+            pointer-events: none;
+          }
+        }
+      }
+
+      &.sourceediting {
+        > :deep(.metaScore-component--inner) {
+          overflow: auto;
+          z-index: 1;
         }
       }
     }
