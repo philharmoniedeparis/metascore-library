@@ -107,12 +107,8 @@ export default defineStore("editor", {
         }
       });
 
-      const {
-        init: initComponents,
-        onStoreAction: onComponentsStoreAction,
-        activeScenario,
-        setActiveScenario,
-      } = useModule("app_components");
+      const { init: initComponents, onStoreAction: onComponentsStoreAction } =
+        useModule("app_components");
 
       let components = data.components;
       if (!Array.isArray(components) || components.length < 1) {
@@ -126,16 +122,9 @@ export default defineStore("editor", {
         ];
       }
       await initComponents(components);
-      onComponentsStoreAction(({ name, args }) => {
+      onComponentsStoreAction(({ name }) => {
         if (["add", "update", "delete"].includes(name)) {
           this.setDirty("components");
-
-          if (name === "delete") {
-            const [type, id] = args;
-            if (type === "Scenario" && id === activeScenario) {
-              setActiveScenario(this.scenarios[0]?.id);
-            }
-          }
         }
       });
 
