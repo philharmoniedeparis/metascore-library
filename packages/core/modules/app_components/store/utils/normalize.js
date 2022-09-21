@@ -65,14 +65,18 @@ export async function normalize(data) {
 }
 
 function denormalizeItem(item, all) {
-  const data = cloneDeep(all[item.type][item.id].data);
+  if (!all?.[item.type]?.[item.id] || all[item.type][item.id].$deleted) {
+    return null;
+  }
+
+  const data = all[item.type][item.id].data;
 
   if (data.type in collections) {
     collections[data.type].forEach((key) => {
       if (data[key]) {
-        data[key] = data[key].map((subitem) => {
-          return denormalizeItem(subitem, all);
-        });
+        data[key] = data[key]
+          .map((subitem) => denormalizeItem(subitem, all))
+          .filter((subitem) => subitem !== null);
       }
     });
   }
@@ -81,7 +85,9 @@ function denormalizeItem(item, all) {
 }
 
 export function denormalize(input, data) {
-  return input.map((i) => {
-    return denormalizeItem(i, data);
-  });
+  data = cloneDeep(data);
+
+  return input
+    .map((item) => denormalizeItem(item, data))
+    .filter((item) => item !== null);
 }
