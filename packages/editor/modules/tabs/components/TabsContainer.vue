@@ -80,6 +80,7 @@ export default {
     flex: 1 1 auto;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     list-style: none;
     border-bottom: 2px solid $mediumgray;
 
