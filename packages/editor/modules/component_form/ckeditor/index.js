@@ -26,7 +26,6 @@ import SourceEditing from "./plugins/sourceediting";
 import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters";
 import SpecialCharactersEssentials from "@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials";
 import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough";
-import Style from "@ckeditor/ckeditor5-style/src/style";
 import Subscript from "@ckeditor/ckeditor5-basic-styles/src/subscript";
 import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
 import Table from "@ckeditor/ckeditor5-table/src/table";
@@ -66,7 +65,6 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
       SpecialCharacters,
       SpecialCharactersEssentials,
       Strikethrough,
-      Style,
       Subscript,
       Superscript,
       Table,
@@ -86,7 +84,6 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "subscript",
         "superscript",
         "|",
-        "style",
         "heading",
         "blockQuote",
         "removeFormat",
@@ -181,7 +178,7 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     htmlSupport: {
       allow: [
         {
-          name: /^(div|a|p|i|em|b|strong|h[1-6]|span)$/,
+          name: /^(div|a|p|i|em|b|strong|h[1-6]|span|big|small|q|cite|ins|del|var|samp|kbd|code|tt)$/,
           classes: true,
           styles: true,
           attributes: {
