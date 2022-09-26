@@ -244,12 +244,12 @@ export default {
   /* Chrome, Safari, Edge, Opera */
   :deep(input::-webkit-outer-spin-button),
   :deep(input::-webkit-inner-spin-button) {
-    -webkit-appearance: none;
+    appearance: none;
     margin: 0;
   }
   /* Firefox */
   input {
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   .spinners {
