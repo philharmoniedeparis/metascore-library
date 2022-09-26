@@ -15,6 +15,7 @@
     "opacity": "Opacité",
     "translate": "Translation",
     "scale": "Échelle",
+    "multival": "La valeur correspond à celle du premier composant sélectionné",
     "AbstractComponent": {
       "title": "Attributs du composant | Attributs de {count} composants"
     },
@@ -93,6 +94,7 @@
     "opacity": "Opacity",
     "translate": "Translation",
     "scale": "Scale",
+    "multival": "The value corresponds to that of the first selected component",
     "AbstractComponent": {
       "title": "Attributes of component | Attributes of {count} components"
     },
@@ -559,7 +561,7 @@ export default {
         case "name":
         case "border-width":
         case "keyframes":
-          props.label = null;
+          props.label = "";
           break;
 
         case "border-color":
@@ -572,6 +574,12 @@ export default {
             : this.$t(property);
       }
 
+      if (this.isPropertyMultival(property)) {
+        props.label += `<span class="multival-warning" title="${this.$t(
+          "multival"
+        )}">⚠</span>`;
+      }
+
       if (
         (this.recordingCursorKeyframes && property !== "keyframes") ||
         (this.editingTextContent && property !== "text")
@@ -580,6 +588,11 @@ export default {
       }
 
       return props;
+    },
+    isPropertyMultival(property) {
+      return this.selectedComponents.some((component) => {
+        return component[property] !== this.masterComponent[property];
+      });
     },
   },
 };
@@ -684,6 +697,11 @@ export default {
     input {
       min-width: 0;
       flex: 1;
+    }
+
+    .multival-warning {
+      margin-left: 0.5em;
+      color: #ffbf00;
     }
 
     &.checkbox {
