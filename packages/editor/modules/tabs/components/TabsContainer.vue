@@ -103,6 +103,8 @@ export default {
       }
 
       &.active {
+        flex: 1 0 auto;
+
         a {
           background: $lightgray;
         }
