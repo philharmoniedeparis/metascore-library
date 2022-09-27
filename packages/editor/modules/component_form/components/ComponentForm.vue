@@ -338,7 +338,7 @@ export default {
           });
           layout.items[0].items.push({
             swatches: this.store.configs.colorSwatches,
-            ...this.getControlProps("colors"),
+            ...this.getControlProps("colors", this.commonModel.type),
           });
           break;
 
