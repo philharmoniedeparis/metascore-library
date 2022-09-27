@@ -99,6 +99,9 @@ export default {
       line-height: 2em;
       background: $lightgray;
       box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     :deep(button) {
