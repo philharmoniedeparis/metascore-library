@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "lottie-web": "^5.8.1",
     "fuse.js": "^6.5.3",
     "pinia": "^2.0.11"
   }
