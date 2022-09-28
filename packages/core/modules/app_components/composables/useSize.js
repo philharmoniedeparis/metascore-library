@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 
-export function useSize(component, model) {
+export default function (component, model) {
   if (unref(model).$isResizable) {
     const size = computed(() => {
       const { dimension: value } = unref(component);
@@ -25,5 +25,3 @@ export function useSize(component, model) {
     size: null,
   };
 }
-
-export default useSize;

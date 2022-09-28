@@ -12,7 +12,7 @@ import {
 } from "@metascore-library/core/utils/schema";
 import { createAngleField } from "../utils/schema";
 
-export class Cursor extends EmbeddableComponent {
+export default class Cursor extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -123,5 +123,3 @@ export class Cursor extends EmbeddableComponent {
     return super.validate(data);
   }
 }
-
-export default Cursor;

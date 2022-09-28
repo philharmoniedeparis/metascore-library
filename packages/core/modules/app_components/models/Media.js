@@ -5,7 +5,7 @@ import {
   createUrlField,
 } from "@metascore-library/core/utils/schema";
 
-export class Media extends EmbeddableComponent {
+export default class Media extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -37,5 +37,3 @@ export class Media extends EmbeddableComponent {
     });
   }
 }
-
-export default Media;

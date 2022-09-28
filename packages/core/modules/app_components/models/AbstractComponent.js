@@ -5,7 +5,7 @@ import {
   createBooleanField,
 } from "@metascore-library/core/utils/schema";
 
-export class AbstractComponent extends AbstractModel {
+export default class AbstractComponent extends AbstractModel {
   /**
    * The component's type
    */
@@ -73,5 +73,3 @@ export class AbstractComponent extends AbstractModel {
     return this.constructor.modelChain;
   }
 }
-
-export default AbstractComponent;

@@ -3,7 +3,7 @@ import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
-export function useTransform(component, model) {
+export default function (component, model) {
   const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isTransformable) {
@@ -68,5 +68,3 @@ export function useTransform(component, model) {
     transform: null,
   };
 }
-
-export default useTransform;

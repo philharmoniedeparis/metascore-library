@@ -3,7 +3,7 @@ import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 
-export function useOpacity(component, model) {
+export default function (component, model) {
   const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isOpacitable) {
@@ -37,5 +37,3 @@ export function useOpacity(component, model) {
     opacity: null,
   };
 }
-
-export default useOpacity;

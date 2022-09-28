@@ -16,7 +16,7 @@ import Backgroundable from "./mixins/Backgroundable";
 import Timeable from "./mixins/Timeable";
 import { createCollectionField } from "../utils/schema";
 
-export class Page extends mix(AbstractComponent).with(
+export default class Page extends mix(AbstractComponent).with(
   Backgroundable,
   Timeable
 ) {
@@ -47,5 +47,3 @@ export class Page extends mix(AbstractComponent).with(
     });
   }
 }
-
-export default Page;

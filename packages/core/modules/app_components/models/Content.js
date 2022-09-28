@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import { createHtmlField } from "../utils/schema";
 
-export class Content extends EmbeddableComponent {
+export default class Content extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -29,5 +29,3 @@ export class Content extends EmbeddableComponent {
     });
   }
 }
-
-export default Content;
