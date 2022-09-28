@@ -38,7 +38,6 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { formatTime } from "@metascore-library/core/utils/media";
 import ClearIcon from "../../assets/icons/clear.svg?inline";
 
 export default {
@@ -55,8 +54,8 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const { time: mediaTime } = useModule("media_player");
-    return { mediaTime };
+    const { time: mediaTime, formatTime } = useModule("media_player");
+    return { mediaTime, formatTime };
   },
   data() {
     return {
@@ -80,7 +79,7 @@ export default {
         return null;
       }
 
-      return formatTime(this.value[this.activeKeyframe]?.[0]);
+      return this.formatTime(this.value[this.activeKeyframe]?.[0]);
     },
   },
   watch: {
@@ -124,7 +123,6 @@ export default {
     }
   },
   methods: {
-    formatTime,
     onClick(evt) {
       const { x } = this.$el.getBoundingClientRect();
       const { clientX } = evt;

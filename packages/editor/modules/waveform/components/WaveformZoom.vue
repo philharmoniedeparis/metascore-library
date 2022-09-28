@@ -31,7 +31,6 @@
 import { debounce } from "lodash";
 import { clamp } from "@metascore-library/core/utils/math";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { formatTime } from "@metascore-library/core/utils/media";
 import useStore from "../store";
 
 export default {
@@ -83,8 +82,9 @@ export default {
       duration: mediaDuration,
       time: mediaTime,
       seekTo: seekMediaTo,
+      formatTime,
     } = useModule("media_player");
-    return { store, mediaDuration, mediaTime, seekMediaTo };
+    return { store, mediaDuration, mediaTime, seekMediaTo, formatTime };
   },
   data() {
     return {
@@ -302,7 +302,7 @@ export default {
 
           for (let time = startTime; time < endTime; time += step) {
             const x = this.getPositionAt(time) + 0.5;
-            const text = formatTime(time);
+            const text = this.formatTime(time);
 
             context.moveTo(x, 0);
             context.lineTo(x, this.axisTickHeight);

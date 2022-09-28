@@ -164,14 +164,12 @@ export default {
     async onSubmit() {
       const data = this.model.data;
 
-      this.model
-        .validate(data)
-        .then(() => {
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
-        });
+      try {
+        await this.model.validate(data);
+        this.$emit("submit", data);
+      } catch (errors) {
+        this.errors = errors;
+      }
     },
     onCancel() {
       this.$emit("close");

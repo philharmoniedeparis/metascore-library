@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { formatTime } from "@metascore-library/core/utils/media";
+import { formatTime } from "../utils/media";
 
 export default defineStore("media_player", {
   state: () => {

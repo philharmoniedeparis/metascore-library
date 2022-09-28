@@ -76,7 +76,6 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { formatTime } from "@metascore-library/core/utils/media";
 import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import AnimatedIcon from "../assets/icons/animated.svg?inline";
 
@@ -97,9 +96,12 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const { addItem: addContextmenuItem } = useModule("contextmenu");
-    const { duration: mediaDuration, seekTo: seekMediaTo } =
-      useModule("media_player");
-    return { mediaDuration, seekMediaTo, addContextmenuItem };
+    const {
+      duration: mediaDuration,
+      seekTo: seekMediaTo,
+      formatTime,
+    } = useModule("media_player");
+    return { mediaDuration, seekMediaTo, formatTime, addContextmenuItem };
   },
   data() {
     return {
@@ -149,7 +151,6 @@ export default {
     }
   },
   methods: {
-    formatTime,
     onWrapperClick(evt) {
       const { width, left } = evt.target.getBoundingClientRect();
       const x = evt.pageX - left;
