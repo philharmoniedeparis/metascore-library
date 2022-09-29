@@ -12,7 +12,7 @@
 <template>
   <!-- The wrapper is used as a work-around to pass classes from the parent component to the actual modal -->
   <div :class="['base-modal-wrapper', { teleport }]">
-    <teleport :to="teleportTarget" :disabled="!teleport">
+    <teleport :to="teleportTarget" :disabled="!teleport || !teleportTarget">
       <transition name="fade">
         <div class="base-modal" v-bind="$attrs">
           <div class="backdrop" tabindex="-1" role="dialog">
