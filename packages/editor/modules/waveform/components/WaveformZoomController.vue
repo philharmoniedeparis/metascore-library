@@ -69,8 +69,8 @@ export default {
         this.waveformScale,
         this.waveformMinScale,
         this.waveformMaxScale,
-        0,
-        100
+        100,
+        0
       );
     },
   },
@@ -109,7 +109,7 @@ export default {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
-      let scale = map(x, 0, 1, this.waveformMinScale, this.waveformMaxScale);
+      let scale = map(x, 1, 0, this.waveformMinScale, this.waveformMaxScale);
 
       // Enforce the value to be a multiple of 2.
       scale = 2 * Math.floor(scale / 2);
@@ -118,14 +118,14 @@ export default {
     },
     zoomIn() {
       this.store.scale = clamp(
-        this.store.scale + this.buttonStep,
+        this.store.scale - this.buttonStep,
         this.waveformMinScale,
         this.waveformMaxScale
       );
     },
     zoomOut() {
       this.store.scale = clamp(
-        this.store.scale - this.buttonStep,
+        this.store.scale + this.buttonStep,
         this.waveformMinScale,
         this.waveformMaxScale
       );
