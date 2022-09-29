@@ -247,8 +247,8 @@ export default {
           this.showSpectrogramForm = false;
           this.error = null;
         })
-        .catch((e) => {
-          this.error = e;
+        .catch((error) => {
+          this.error = error;
         });
     },
     onSpectrogramFormClose() {
@@ -262,8 +262,8 @@ export default {
           this.showAudiowaveformForm = false;
           this.error = null;
         })
-        .catch((e) => {
-          this.error = e;
+        .catch((error) => {
+          this.error = error;
         });
     },
     onAudiowaveformFormClose() {

@@ -88,7 +88,6 @@
 
 <script>
 import { toRaw } from "vue";
-import { cloneDeep } from "lodash";
 import Model from "../models/Spectrogram";
 
 export default {
@@ -203,7 +202,7 @@ export default {
     async onSubmit() {
       try {
         let data = await this.model.validate(this.model.data);
-        data = cloneDeep(toRaw(data));
+        data = { ...toRaw(data) };
 
         data.size = `${data.width}x${data.height}`;
         delete data.width;
