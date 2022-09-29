@@ -43,7 +43,14 @@
   <default-component-wrapper
     v-contextmenu="contextmenuItems"
     :component="component"
-    :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
+    :class="{
+      selected,
+      locked,
+      preview,
+      dragging,
+      resizing,
+      'drag-over': dragOver,
+    }"
     @click="onClick"
     @dragenter="onDragenter"
     @dragover="onDragover"
@@ -52,7 +59,7 @@
   >
     <slot />
 
-    <template v-if="selected && resizable && !preview" #outer>
+    <template v-if="resizable" #outer>
       <div class="resize-handle top left"></div>
       <div class="resize-handle top"></div>
       <div class="resize-handle top right"></div>
@@ -150,11 +157,19 @@ export default {
     locked() {
       return this.store.isComponentLocked(this.component);
     },
+    interactable() {
+      return (
+        !this.disableComponentInteractions &&
+        !this.preview &&
+        !this.locked &&
+        this.selected
+      );
+    },
     positionable() {
-      return this.model.$isPositionable;
+      return this.interactable && this.model.$isPositionable;
     },
     resizable() {
-      return this.model.$isResizable;
+      return this.interactable && this.model.$isResizable;
     },
     siblings() {
       return this.getComponentSiblings(this.component);
@@ -328,6 +343,13 @@ export default {
         this.destroyInteractions();
       }
     },
+    locked(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else {
+        this.setupInteractions();
+      }
+    },
     disableComponentInteractions(value) {
       if (value) {
         this.destroyInteractions();
@@ -358,10 +380,6 @@ export default {
       }
     },
     setupInteractions() {
-      if (this.preview || !this.selected || this.disableComponentInteractions) {
-        return;
-      }
-
       if (this._interactables) {
         return;
       }
@@ -767,6 +785,10 @@ export default {
     &.dragging,
     &.resizing {
       z-index: 999;
+    }
+
+    &.locked {
+      pointer-events: none;
     }
   }
 }

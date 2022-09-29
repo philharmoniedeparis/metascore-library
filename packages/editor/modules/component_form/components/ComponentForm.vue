@@ -203,7 +203,7 @@ export default {
       updateComponent,
       isComponentTimeable,
     } = useModule("app_components");
-    const { selectedComponents, getComponentElement } =
+    const { selectedComponents, getComponentElement, isComponentLocked } =
       useModule("app_preview");
     return {
       store,
@@ -214,6 +214,7 @@ export default {
       isComponentTimeable,
       getComponentElement,
       selectedComponents,
+      isComponentLocked,
     };
   },
   computed: {
@@ -315,6 +316,7 @@ export default {
             { spinnersDirection: "horizontal" },
             { flipSpinners: true },
           ],
+          disabled: this.selectedComponents.some(this.isComponentLocked),
           ...this.getControlProps("position"),
         });
       }
@@ -325,6 +327,7 @@ export default {
             { spinnersDirection: "horizontal" },
             { flipSpinners: true },
           ],
+          disabled: this.selectedComponents.some(this.isComponentLocked),
           ...this.getControlProps("dimension"),
         });
       }
