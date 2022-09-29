@@ -88,6 +88,14 @@ export default {
           colour: "rgba(255, 255, 255, 0.25)",
           snap: true,
         },
+        move: {
+          scrollbars: {
+            horizontal: true,
+            vertical: true,
+          },
+          drag: true,
+          wheel: true,
+        },
         zoom: {
           controls: true,
           wheel: false,
