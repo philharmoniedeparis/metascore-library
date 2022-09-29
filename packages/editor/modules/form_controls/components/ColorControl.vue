@@ -23,6 +23,7 @@
       :id="inputId"
       ref="opener"
       v-autofocus="autofocus"
+      type="button"
       class="opener"
       :style="`color: ${modelValue};`"
       :disabled="disabled"

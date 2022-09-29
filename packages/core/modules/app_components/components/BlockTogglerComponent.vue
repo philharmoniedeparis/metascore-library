@@ -2,6 +2,7 @@
   <component-wrapper :component="component">
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
+        type="button"
         :class="{ toggled: isBlockToggled(block) }"
         @click="toggleBlock(block)"
       >
