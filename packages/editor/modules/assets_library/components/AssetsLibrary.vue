@@ -98,10 +98,10 @@
     </div>
 
     <progress-indicator
-      v-if="processing"
+      v-if="uploading || generatingSpectrogram || generatingAudiowaveform"
       :text="$t('upload_indicator_label')"
-      :value="uploadProgress"
-      :target="false"
+      :value="uploading ? uploadProgress : null"
+      :target="uploading ? false : null"
     />
 
     <alert-dialog v-if="error" @close="error = null">
@@ -148,11 +148,17 @@ export default {
     assets() {
       return this.store.all;
     },
-    processing() {
-      return this.store.processing;
+    uploading() {
+      return this.store.uploading;
     },
     uploadProgress() {
       return this.store.uploadProgress;
+    },
+    generatingSpectrogram() {
+      return this.store.generatingSpectrogram;
+    },
+    generatingAudiowaveform() {
+      return this.store.generatingAudiowaveform;
     },
   },
   methods: {

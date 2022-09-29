@@ -14,8 +14,10 @@ export default defineStore("assets-library", {
         audiowaveformUrl: null,
       },
       items: {},
-      processing: false,
+      uploading: false,
       uploadProgress: null,
+      generatingSpectrogram: false,
+      generatingAudiowaveform: false,
     };
   },
   getters: {
@@ -89,7 +91,7 @@ export default defineStore("assets-library", {
       }
     },
     upload(files) {
-      this.processing = true;
+      this.uploading = true;
       this.uploadProgress = 0;
 
       return api
@@ -101,12 +103,12 @@ export default defineStore("assets-library", {
           return items;
         })
         .finally(() => {
-          this.processing = false;
+          this.uploading = false;
           this.uploadProgress = null;
         });
     },
     generateSpectrogram(data) {
-      this.processing = true;
+      this.generatingSpectrogram = true;
 
       return api
         .generateAsset(this.configs.spectrogramUrl, data)
@@ -115,11 +117,11 @@ export default defineStore("assets-library", {
           return item;
         })
         .finally(() => {
-          this.processing = false;
+          this.generatingSpectrogram = false;
         });
     },
     generateAudiowaveform(data) {
-      this.processing = true;
+      this.generatingAudiowaveform = true;
 
       return api
         .generateAsset(this.configs.audiowaveformUrl, data)
@@ -128,7 +130,7 @@ export default defineStore("assets-library", {
           return item;
         })
         .finally(() => {
-          this.processing = false;
+          this.generatingAudiowaveform = false;
         });
     },
   },
