@@ -63,7 +63,7 @@
       class="assets-library--spectrogram-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
@@ -87,6 +87,8 @@
 </template>
 
 <script>
+import { toRaw } from "vue";
+import { cloneDeep } from "lodash";
 import Model from "../models/Spectrogram";
 
 export default {
@@ -192,34 +194,28 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({}, false);
+    this.model = await Model.create({});
   },
   methods: {
     onUpdate({ property, value }) {
       this.model.update({ [property]: value }, false);
     },
-    onSubmit() {
-      const data = this.model.data;
+    async onSubmit() {
+      try {
+        let data = await this.model.validate(this.model.data);
+        data = cloneDeep(toRaw(data));
 
-      this.model
-        .validate(data)
-        .then(() => {
-          if (this.model.errors) {
-            this.errors = this.model.errors;
-            return;
-          }
+        data.size = `${data.width}x${data.height}`;
+        delete data.width;
+        delete data.height;
 
-          data.size = `${data.width}x${data.height}`;
-          delete data.width;
-          delete data.height;
+        data.legend = data.legend ? 1 : 0;
 
-          data.legend = data.legend ? 1 : 0;
-
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
-        });
+        this.$emit("submit", data);
+      } catch (error) {
+        this.errors = error;
+        console.error(error);
+      }
     },
     onCancel() {
       this.$emit("close");

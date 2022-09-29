@@ -27,7 +27,7 @@
       class="scenario-manager--add-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
@@ -84,17 +84,13 @@ export default {
     onUpdate({ property, value }) {
       this.model.update({ [property]: value }, false);
     },
-    onSubmit() {
-      const data = this.model.data;
-
-      this.model
-        .validate(data)
-        .then(() => {
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
-        });
+    async onSubmit() {
+      try {
+        const data = await this.model.validate(this.model.data);
+        this.$emit("submit", data);
+      } catch (errors) {
+        this.errors = errors;
+      }
     },
     onCancel() {
       this.$emit("close");

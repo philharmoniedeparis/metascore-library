@@ -37,7 +37,7 @@
       class="media-source-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
@@ -162,10 +162,8 @@ export default {
       this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
-      const data = this.model.data;
-
       try {
-        await this.model.validate(data);
+        const data = await this.model.validate(this.model.data);
         this.$emit("submit", data);
       } catch (errors) {
         this.errors = errors;

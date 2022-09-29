@@ -51,7 +51,7 @@
       class="assets-library--waveform-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
@@ -75,6 +75,8 @@
 </template>
 
 <script>
+import { toRaw } from "vue";
+import { cloneDeep } from "lodash";
 import Model from "../models/Audiowaveform";
 
 export default {
@@ -172,41 +174,40 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({}, false);
+    this.model = await Model.create({});
   },
   methods: {
     onUpdate({ property, value }) {
       this.model.update({ [property]: value }, false);
     },
-    onSubmit() {
-      const data = this.model.data;
+    async onSubmit() {
+      try {
+        let data = await this.model.validate(this.model.data);
+        data = cloneDeep(toRaw(data));
 
-      this.model
-        .validate(data)
-        .then(() => {
-          if (!data.end) {
-            data.zoom = "auto";
-            delete data.end;
-          }
+        if (!data.end) {
+          data.zoom = "auto";
+          delete data.end;
+        }
 
-          ["split-channels", "no-axis-labels"].forEach((key) => {
-            data[key] = data[key] ? 1 : 0;
-          });
-
-          [
-            "background-color",
-            "waveform-color",
-            "axis-label-color",
-            "border-color",
-          ].forEach((key) => {
-            data[key] = data[key].replace("#", "");
-          });
-
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
+        ["split-channels", "no-axis-labels"].forEach((key) => {
+          data[key] = data[key] ? 1 : 0;
         });
+
+        [
+          "background-color",
+          "waveform-color",
+          "axis-label-color",
+          "border-color",
+        ].forEach((key) => {
+          data[key] = data[key].replace("#", "");
+        });
+
+        this.$emit("submit", data);
+      } catch (error) {
+        this.errors = error;
+        console.error(error);
+      }
     },
     onCancel() {
       this.$emit("close");
