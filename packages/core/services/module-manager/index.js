@@ -2,13 +2,13 @@ import { isFunction } from "lodash";
 
 const modules = new Map();
 
-async function registerModules(modules, context) {
+export async function registerModules(modules, context) {
   for (const module of modules) {
     await registerModule(module, context);
   }
 }
 
-async function registerModule(module, context) {
+export async function registerModule(module, context) {
   if (modules.has(module.id)) {
     // Skip if already registerd.
     return;
@@ -34,7 +34,7 @@ async function registerModule(module, context) {
   }
 }
 
-function useModule(id) {
+export function useModule(id) {
   const module = modules.get(id);
 
   if (!module) {
@@ -43,5 +43,3 @@ function useModule(id) {
 
   return module;
 }
-
-export { registerModules, registerModule, useModule };

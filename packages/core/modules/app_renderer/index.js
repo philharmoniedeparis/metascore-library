@@ -2,8 +2,8 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
-import AppComponents from "@metascore-library/core/modules/app_components";
+import MediaPlayer from "../media_player";
+import AppComponents from "../app_components";
 import MediaCuepoints from "../media_cuepoints";
 import AppRenderer from "./components/AppRenderer.vue";
 

@@ -1,5 +1,3 @@
-import Editor from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
-
 import Alignment from "@ckeditor/ckeditor5-alignment/src/alignment";
 import BehavorTrigger from "./plugins/behaviortrigger/src/behaviortrigger";
 import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote";
@@ -35,7 +33,9 @@ import UploadAdapter from "./plugins/uploadadapter";
 
 import "./styles.scss";
 
-function getConfig({ language = "fr", extraFonts = [] } = {}) {
+export { default as Editor } from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
+
+export function getConfig({ language = "fr", extraFonts = [] } = {}) {
   return {
     language,
     plugins: [
@@ -197,5 +197,3 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     },
   };
 }
-
-export { Editor, getConfig };
