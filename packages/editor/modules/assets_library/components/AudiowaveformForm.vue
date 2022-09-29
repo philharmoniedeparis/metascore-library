@@ -153,18 +153,22 @@ export default {
               {
                 property: "background-color",
                 label: this.$t("background_color_label"),
+                format: "hex",
               },
               {
                 property: "waveform-color",
                 label: this.$t("waveform_color_label"),
+                format: "hex",
               },
               {
                 property: "axis-label-color",
                 label: this.$t("axis_label_label"),
+                format: "hex",
               },
               {
                 property: "border-color",
                 label: this.$t("border_color_label"),
+                format: "hex",
               },
             ],
           },

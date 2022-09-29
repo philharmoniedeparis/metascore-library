@@ -74,6 +74,7 @@ import {
   shift,
   autoUpdate,
 } from "@floating-ui/dom";
+import chroma from "chroma-js";
 import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import ColorPicker from "./color/ColorPicker.vue";
@@ -112,6 +113,10 @@ export default {
     modelValue: {
       type: String,
       default: "",
+    },
+    format: {
+      type: String,
+      default: "auto",
     },
     picker: {
       type: Boolean,
@@ -182,7 +187,19 @@ export default {
     },
     onApplyClick() {
       this.showOverlay = false;
-      this.$emit("update:modelValue", this.internalValue);
+
+      let value = this.internalValue;
+      switch (this.format) {
+        case "rgb":
+        case "rgba":
+        case "hsl":
+        case "hsv":
+        case "hex":
+        case "css":
+          value = chroma(value)[this.format]();
+          break;
+      }
+      this.$emit("update:modelValue", value);
     },
     onCancelClick() {
       this.showOverlay = false;
