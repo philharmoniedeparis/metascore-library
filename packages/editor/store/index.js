@@ -8,6 +8,7 @@ import * as api from "../api";
 export default defineStore("editor", {
   state: () => {
     return {
+      ready: false,
       loading: false,
       saving: false,
       appTitle: null,
@@ -156,12 +157,18 @@ export default defineStore("editor", {
       this.dirty.set(key, Date.now());
     },
     async load(url) {
+      this.ready = false;
       this.loading = true;
 
-      const data = await api.load(url);
-      await this.setData(data);
-
-      this.loading = false;
+      try {
+        const data = await api.load(url);
+        await this.setData(data);
+        this.ready = true;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
     },
     save(url) {
       this.saving = true;

@@ -7,6 +7,7 @@ import App from "./App.vue";
 import { init as createI18n } from "@metascore-library/core/services/i18n";
 import { registerModules } from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
+import API from "./modules/api";
 import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
@@ -41,7 +42,7 @@ export class Player {
 
     // Register root modules.
     await registerModules(
-      [Ajax, AppBehaviors, AppRenderer, ContextMenu, ProgressIndicator],
+      [Ajax, API, AppBehaviors, AppRenderer, ContextMenu, ProgressIndicator],
       {
         app,
         i18n,

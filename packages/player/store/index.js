@@ -5,6 +5,7 @@ import * as api from "../api";
 export default defineStore("player", {
   state: () => {
     return {
+      ready: false,
       loading: false,
     };
   },
@@ -26,12 +27,18 @@ export default defineStore("player", {
       initAppRenderer({ width, height, css });
     },
     async load(url) {
+      this.ready = false;
       this.loading = true;
 
-      const data = await api.load(url);
-      await this.setData(data);
-
-      this.loading = false;
+      try {
+        const data = await api.load(url);
+        await this.setData(data);
+        this.ready = true;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

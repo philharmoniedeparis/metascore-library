@@ -56,6 +56,10 @@ module.exports = defineConfig({
     // Override entry points.
     config.entryPoints.clear();
     config.entry("metaScore.Player").add("./packages/player/index.js").end();
+    config
+      .entry("metaScore.API")
+      .add("./packages/player/modules/api/entry.js")
+      .end();
     config.entry("metaScore.Editor").add("./packages/editor/index.js").end();
 
     // Override output options.
