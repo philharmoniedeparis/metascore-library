@@ -43,29 +43,61 @@ import "@interactjs/auto-start";
 import "@interactjs/actions/resize";
 import interact from "@interactjs/interact";
 
+/**
+ * @typedef {object} HandleConfig
+ * @param {boolean} collapse Whether double-clicking the handle collapses the pane.
+ */
+
 export default {
   props: {
+    /**
+     * The top handle's config.
+     * @type {boolean|HandleConfig}
+     */
     top: {
       type: [Boolean, Object],
       default: false,
     },
+    /**
+     * The left handle's config.
+     * @type {boolean|HandleConfig}
+     */
     left: {
       type: [Boolean, Object],
       default: false,
     },
+    /**
+     * The bottom handle's config.
+     * @type {boolean|HandleConfig}
+     */
     bottom: {
       type: [Boolean, Object],
       default: false,
     },
+    /**
+     * The right handle's config.
+     * @type {boolean|HandleConfig}
+     */
     right: {
       type: [Boolean, Object],
       default: false,
     },
+    /**
+     * The resize handle's height.
+     */
     handleHeight: {
       type: Number,
       default: 6,
     },
+    /**
+     * Whether to apply the styles automatically.
+     */
+    applyStyles: {
+      type: Boolean,
+      default: true,
+    },
   },
+  emits: ["update:width", "update:height"],
   data() {
     return {
       collapsed: false,
@@ -114,10 +146,16 @@ export default {
     },
     onResizableMove(evt) {
       if (this.left || this.right) {
-        evt.target.style.width = `${evt.rect.width}px`;
+        if (this.applyStyles) {
+          evt.target.style.width = `${evt.rect.width}px`;
+        }
+        this.$emit("update:width", evt.rect.width);
       }
       if (this.top || this.bottom) {
-        evt.target.style.height = `${evt.rect.height}px`;
+        if (this.applyStyles) {
+          evt.target.style.height = `${evt.rect.height}px`;
+        }
+        this.$emit("update:height", evt.rect.height);
       }
     },
   },

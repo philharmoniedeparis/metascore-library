@@ -7,6 +7,7 @@ export default defineStore("component-form", {
         colorSwatches: [],
         extraFonts: [],
       },
+      title: null,
       recordingCursorKeyframes: false,
       editingTextContent: false,
     };

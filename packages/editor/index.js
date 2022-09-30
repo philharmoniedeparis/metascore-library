@@ -2,16 +2,20 @@ import packageInfo from "../../package.json";
 import Emitter from "tiny-emitter";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createI18n } from "vue-i18n";
 import App from "./App.vue";
 
+import { init as createI18n } from "@metascore-library/core/services/i18n";
 import {
   registerModules,
   useModule,
 } from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
+import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
+import AppPreview from "./modules/app_preview";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
+import BaseButton from "@metascore-library/core/modules/button";
+import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
@@ -23,13 +27,11 @@ import Hotkey from "./modules/hotkey";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
-import AppPreview from "./modules/app_preview";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
-import StyledButton from "@metascore-library/core/modules/styled_button";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
 import Waveform from "./modules/waveform";
@@ -47,6 +49,10 @@ export class Editor {
     const events = new Emitter();
     const app = createApp(App, { url }).use(pinia).use(i18n);
 
+    // Add webpack's public path as a global property.
+    // eslint-disable-next-line no-undef
+    app.config.globalProperties.publicPath = __webpack_public_path__;
+
     // See https://github.com/vuejs/core/pull/5474
     app.config.skipEventsTimestampCheck = true;
 
@@ -58,8 +64,12 @@ export class Editor {
     await registerModules(
       [
         Ajax,
+        AppBehaviors,
+        AppPreview,
         AssetsLibrary,
         AutoSave,
+        BaseButton,
+        BehaviorsForm,
         BufferIndicator,
         ComponentForm,
         ComponentsLibrary,
@@ -71,18 +81,16 @@ export class Editor {
         MediaPlayer,
         MediaSelector,
         PlaybackControls,
-        AppPreview,
         ProgressIndicator,
         ResizablePane,
         RevisionSelector,
         ScenarioManager,
         SharedAssetsLibrary,
-        StyledButton,
         Tabs,
         Timeline,
         Waveform,
       ],
-      { app, pinia }
+      { app, i18n, pinia }
     );
 
     if (configs.modules) {

@@ -87,6 +87,9 @@ function updateCuepoints(time, seeked = false) {
 function init() {
   const { time: mediaTime, seeking: mediaSeeking } = useModule("media_player");
   watch(mediaTime, (value) => {
+    // Don't update if seeking.
+    if (mediaSeeking.value) return;
+
     if (trackErrors) {
       if (previousTime !== null) {
         maxError = Math.max(maxError, Math.abs(value - previousTime));
@@ -96,9 +99,7 @@ function init() {
     updateCuepoints(value);
   });
   watch(mediaSeeking, (value) => {
-    seeking = value;
-
-    if (!seeking) {
+    if (!value) {
       const time = unref(mediaTime);
       if (trackErrors) {
         maxError = 0;

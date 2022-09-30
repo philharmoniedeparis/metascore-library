@@ -4,10 +4,12 @@
       <template v-if="labelPosition === 'after'">
         <slot />
       </template>
-      <template v-if="label || $slots.label">
+      <template v-if="label">
+        <label v-dompurify-html="label" :for="labelFor" />
+      </template>
+      <template v-else-if="$slots.label">
         <label :for="labelFor">
-          <template v-if="label">{{ label }}</template>
-          <template v-else><slot name="label" /></template>
+          <slot name="label" />
         </label>
       </template>
       <template v-if="labelPosition === 'before'">
@@ -99,8 +101,8 @@ export default {
       user-select: none;
     }
 
-    ::v-deep(input),
-    ::v-deep(select) {
+    :deep(input),
+    :deep(select) {
       width: 100%;
       padding: 0.3125em;
       color: $white;
@@ -151,7 +153,7 @@ export default {
   }
 
   &.required {
-    ::v-deep(label) {
+    :deep(label) {
       &::after {
         content: "*";
         font-size: 1.25em;
@@ -161,8 +163,8 @@ export default {
   }
 
   &.error {
-    ::v-deep(input),
-    ::v-deep(select) {
+    :deep(input),
+    :deep(select) {
       outline: 2px solid $danger;
       outline-offset: -2px;
     }

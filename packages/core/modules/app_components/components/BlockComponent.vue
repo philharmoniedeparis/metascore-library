@@ -84,7 +84,6 @@
 
 <script>
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
 import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
@@ -108,18 +107,27 @@ export default {
   emits: ["action"],
   setup() {
     const store = useStore();
-    const { seekTo: seekMediaTo } = useModule("media_player");
-    return { store, seekMediaTo };
+    return { store };
   },
   data() {
     return {
       hover: false,
-      activePageIndex: 0,
     };
   },
   computed: {
     synched() {
       return this.component.synched;
+    },
+    activePageIndex: {
+      get() {
+        const id = this.component.id;
+        return id in this.store.blocksActivePage
+          ? this.store.blocksActivePage[id]
+          : 0;
+      },
+      set(value) {
+        this.store.setBlockActivePage(this.component, value);
+      },
     },
     pagerVisibe() {
       if (this.pageCount < 2) {
@@ -167,19 +175,6 @@ export default {
         .on("swipeleft", this.turnPageForward);
     },
 
-    getPage(index) {
-      return this.pages[index];
-    },
-
-    setActivePage(index) {
-      if (this.synched) {
-        const page = this.getPage(index);
-        this.seekMediaTo(page["start-time"]);
-      } else {
-        this.activePageIndex = index;
-      }
-    },
-
     /**
      * The 'mouseenter' event handler
      */
@@ -195,23 +190,24 @@ export default {
     },
 
     onTimedPageActivated(component) {
-      this.activePageIndex = this.pages.findIndex((v) => {
+      const id = this.component.id;
+      this.store.blocksActivePage[id] = this.pages.findIndex((v) => {
         return v.id === component.id;
       });
     },
 
     reset() {
-      this.setActivePage(0);
+      this.activePageIndex = 0;
     },
 
     turnPageBackward() {
       const index = Math.max(this.activePageIndex - 1, 0);
-      this.setActivePage(index);
+      this.activePageIndex = index;
     },
 
     turnPageForward() {
       const index = Math.min(this.activePageIndex + 1, this.pageCount - 1);
-      this.setActivePage(index);
+      this.activePageIndex = index;
     },
   },
 };
@@ -219,7 +215,7 @@ export default {
 
 <style lang="scss" scoped>
 .block {
-  > ::v-deep(.metaScore-component--inner) {
+  > :deep(.metaScore-component--inner) {
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: left top;

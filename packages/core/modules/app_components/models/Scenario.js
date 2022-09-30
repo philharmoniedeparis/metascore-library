@@ -16,7 +16,9 @@ import {
 } from ".";
 import Backgroundable from "./mixins/Backgroundable";
 
-export class Scenario extends mix(AbstractComponent).with(Backgroundable) {
+export default class Scenario extends mix(AbstractComponent).with(
+  Backgroundable
+) {
   static type = "Scenario";
 
   static baseModel = AbstractComponent;
@@ -48,5 +50,3 @@ export class Scenario extends mix(AbstractComponent).with(Backgroundable) {
     });
   }
 }
-
-export default Scenario;

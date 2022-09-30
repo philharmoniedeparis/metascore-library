@@ -1,6 +1,5 @@
-import Editor from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
-
 import Alignment from "@ckeditor/ckeditor5-alignment/src/alignment";
+import BehavorTrigger from "./plugins/behaviortrigger/src/behaviortrigger";
 import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote";
 import Bold from "@ckeditor/ckeditor5-basic-styles/src/bold";
 import Essentials from "@ckeditor/ckeditor5-essentials/src/essentials";
@@ -25,7 +24,6 @@ import SourceEditing from "./plugins/sourceediting";
 import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters";
 import SpecialCharactersEssentials from "@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials";
 import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough";
-import Style from "@ckeditor/ckeditor5-style/src/style";
 import Subscript from "@ckeditor/ckeditor5-basic-styles/src/subscript";
 import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
 import Table from "@ckeditor/ckeditor5-table/src/table";
@@ -35,11 +33,14 @@ import UploadAdapter from "./plugins/uploadadapter";
 
 import "./styles.scss";
 
-function getConfig({ language = "fr", extraFonts = [] } = {}) {
+export { default as Editor } from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
+
+export function getConfig({ language = "fr", extraFonts = [] } = {}) {
   return {
     language,
     plugins: [
       Alignment,
+      BehavorTrigger,
       BlockQuote,
       Bold,
       Essentials,
@@ -64,7 +65,6 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
       SpecialCharacters,
       SpecialCharactersEssentials,
       Strikethrough,
-      Style,
       Subscript,
       Superscript,
       Table,
@@ -84,7 +84,6 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "subscript",
         "superscript",
         "|",
-        "style",
         "heading",
         "blockQuote",
         "removeFormat",
@@ -102,6 +101,7 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "alignment",
         "|",
         "link",
+        "addBehaviorTrigger",
         "uploadImage",
         "insertTable",
         "|",
@@ -109,6 +109,20 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "sourceEditing",
       ],
       shouldNotGroupWhenFull: true,
+    },
+    heading: {
+      options: [
+        { model: "paragraph", title: "Paragraph" },
+        { model: "heading1", view: "h1", title: "Heading 1" },
+        { model: "heading2", view: "h2", title: "Heading 2" },
+        { model: "heading3", view: "h3", title: "Heading 3" },
+        { model: "heading4", view: "h4", title: "Heading 4" },
+        { model: "heading5", view: "h5", title: "Heading 5" },
+        { model: "heading6", view: "h6", title: "Heading 6" },
+        { model: "div", view: "div", title: "Division" },
+        { model: "pre", view: "pre", title: "Preformatted" },
+        { model: "address", view: "address", title: "Address" },
+      ],
     },
     fontFamily: {
       options: [
@@ -123,6 +137,29 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "Trebuchet MS, Helvetica, sans-serif",
         "Verdana, Geneva, sans-serif",
       ],
+      supportAllValues: true,
+    },
+    fontSize: {
+      options: [
+        "default",
+        8,
+        9,
+        10,
+        11,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        36,
+        48,
+        72,
+      ],
+      supportAllValues: true,
     },
     image: {
       toolbar: [
@@ -141,9 +178,12 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     htmlSupport: {
       allow: [
         {
-          name: /^(div|a|p|i|em|b|strong|h[2-4]|span)$/,
+          name: /^(div|a|p|i|em|b|strong|h[1-6]|span|big|small|q|cite|ins|del|var|samp|kbd|code|tt)$/,
           classes: true,
           styles: true,
+          attributes: {
+            dir: /^(rtl|ltr)$/,
+          },
         },
         {
           name: "a",
@@ -157,5 +197,3 @@ function getConfig({ language = "fr", extraFonts = [] } = {}) {
     },
   };
 }
-
-export { Editor, getConfig };

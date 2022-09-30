@@ -18,9 +18,9 @@
         :src="file.url"
       />
 
-      <styled-button type="button" @click="onImportClick">
+      <base-button type="button" @click="onImportClick">
         {{ $t("import_button") }}
-      </styled-button>
+      </base-button>
 
       <figcaption>{{ label }}</figcaption>
     </figure>
@@ -99,9 +99,12 @@ export default {
       line-height: 2em;
       background: $lightgray;
       box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    ::v-deep(button) {
+    :deep(button) {
       position: absolute;
       top: 0;
       left: 0;
@@ -135,7 +138,7 @@ export default {
   }
 
   &:not(:hover) {
-    ::v-deep(button) {
+    :deep(button) {
       display: none;
     }
   }

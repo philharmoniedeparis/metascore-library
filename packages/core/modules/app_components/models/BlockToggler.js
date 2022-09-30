@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import { createArrayField } from "@metascore-library/core/utils/schema";
 
-export class BlockToggler extends EmbeddableComponent {
+export default class BlockToggler extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -48,5 +48,3 @@ export class BlockToggler extends EmbeddableComponent {
     });
   }
 }
-
-export default BlockToggler;

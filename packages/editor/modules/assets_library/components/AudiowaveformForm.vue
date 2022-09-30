@@ -51,30 +51,31 @@
       class="assets-library--waveform-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
     />
 
     <template #actions="props">
-      <styled-button :form="props.form" role="primary">
+      <base-button :form="props.form" role="primary">
         {{ $t("apply_button") }}
-      </styled-button>
+      </base-button>
 
-      <styled-button
+      <base-button
         type="button"
         :form="props.form"
         role="secondary"
         @click="onCancel"
       >
         {{ $t("cancel_button") }}
-      </styled-button>
+      </base-button>
     </template>
   </modal-form>
 </template>
 
 <script>
+import { toRaw } from "vue";
 import Model from "../models/Audiowaveform";
 
 export default {
@@ -152,18 +153,22 @@ export default {
               {
                 property: "background-color",
                 label: this.$t("background_color_label"),
+                format: "hex",
               },
               {
                 property: "waveform-color",
                 label: this.$t("waveform_color_label"),
+                format: "hex",
               },
               {
                 property: "axis-label-color",
                 label: this.$t("axis_label_label"),
+                format: "hex",
               },
               {
                 property: "border-color",
                 label: this.$t("border_color_label"),
+                format: "hex",
               },
             ],
           },
@@ -172,41 +177,40 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({}, false);
+    this.model = await Model.create({});
   },
   methods: {
     onUpdate({ property, value }) {
       this.model.update({ [property]: value }, false);
     },
-    onSubmit() {
-      const data = this.model.data;
+    async onSubmit() {
+      try {
+        let data = await this.model.validate(this.model.data);
+        data = { ...toRaw(data) };
 
-      this.model
-        .validate(data)
-        .then(() => {
-          if (!data.end) {
-            data.zoom = "auto";
-            delete data.end;
-          }
+        if (!data.end) {
+          data.zoom = "auto";
+          delete data.end;
+        }
 
-          ["split-channels", "no-axis-labels"].forEach((key) => {
-            data[key] = data[key] ? 1 : 0;
-          });
-
-          [
-            "background-color",
-            "waveform-color",
-            "axis-label-color",
-            "border-color",
-          ].forEach((key) => {
-            data[key] = data[key].replace("#", "");
-          });
-
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
+        ["split-channels", "no-axis-labels"].forEach((key) => {
+          data[key] = data[key] ? 1 : 0;
         });
+
+        [
+          "background-color",
+          "waveform-color",
+          "axis-label-color",
+          "border-color",
+        ].forEach((key) => {
+          data[key] = data[key].replace("#", "");
+        });
+
+        this.$emit("submit", data);
+      } catch (error) {
+        this.errors = error;
+        console.error(error);
+      }
     },
     onCancel() {
       this.$emit("close");
@@ -217,7 +221,7 @@ export default {
 
 <style lang="scss" scoped>
 .assets-library--waveform-form {
-  ::v-deep(fieldset) {
+  :deep(fieldset) {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5em 1em;

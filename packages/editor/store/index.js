@@ -2,11 +2,13 @@ import { defineStore } from "pinia";
 import { unref } from "vue";
 import { omit } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { t } from "@metascore-library/core/services/i18n";
 import * as api from "../api";
 
 export default defineStore("editor", {
   state: () => {
     return {
+      ready: false,
       loading: false,
       saving: false,
       appTitle: null,
@@ -51,8 +53,12 @@ export default defineStore("editor", {
           data.set("media", JSON.stringify(omit(mediaSource, ["file"])));
         }
         if (this.isDirty("components", since)) {
-          const { json } = useModule("app_components");
-          data.set("components", JSON.stringify(json));
+          const { data: components } = useModule("app_components");
+          data.set("components", JSON.stringify(components));
+        }
+        if (this.isDirty("behaviors", since)) {
+          const { data: behaviors } = useModule("app_behaviors");
+          data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
           const { assets } = useModule("assets_library");
@@ -84,54 +90,58 @@ export default defineStore("editor", {
       });
 
       const { width, height, css } = data;
-      const {
-        init: initAppRenderer,
-        addStoreActionListener: addAppRendererStoreActionListener,
-      } = useModule("app_renderer");
+      const { init: initAppRenderer, onStoreAction: onAppRendererStoreAction } =
+        useModule("app_renderer");
       initAppRenderer({ width, height, css });
-      addAppRendererStoreActionListener(({ name }) => {
+      onAppRendererStoreAction(({ name }) => {
         if (["width", "height"].includes(name)) {
           this.setDirty("media");
         }
       });
 
-      const {
-        setSource: setMediaSource,
-        addStoreActionListener: addMediaStoreActionListener,
-      } = useModule("media_player");
+      const { setSource: setMediaSource, onStoreAction: onMediaStoreAction } =
+        useModule("media_player");
       setMediaSource(data.media);
-      addMediaStoreActionListener(({ name }) => {
+      onMediaStoreAction(({ name }) => {
         if (["setSource"].includes(name)) {
           this.setDirty("media");
         }
       });
 
-      const {
-        init: initComponents,
-        addStoreActionListener: addComponentsStoreActionListener,
-        activeScenario,
-        setActiveScenario,
-      } = useModule("app_components");
-      await initComponents(data.components);
-      addComponentsStoreActionListener(({ name, args }) => {
+      const { init: initComponents, onStoreAction: onComponentsStoreAction } =
+        useModule("app_components");
+
+      let components = data.components;
+      if (!Array.isArray(components) || components.length < 1) {
+        // Create an empty scenario.
+        components = [
+          {
+            id: "scenario-1",
+            type: "Scenario",
+            name: t("scenario_default_title"),
+          },
+        ];
+      }
+      await initComponents(components);
+      onComponentsStoreAction(({ name }) => {
         if (["add", "update", "delete"].includes(name)) {
           this.setDirty("components");
-
-          if (name === "delete") {
-            const [type, id] = args;
-            if (type === "Scenario" && id === activeScenario) {
-              setActiveScenario(this.scenarios[0]?.id);
-            }
-          }
         }
       });
 
-      const {
-        init: initAssets,
-        addStoreActionListener: addAssetsStoreActionListener,
-      } = useModule("assets_library");
+      const { init: initBehaviors, onStoreAction: onBehaviorsStoreAction } =
+        useModule("app_behaviors");
+      await initBehaviors(data.behaviors);
+      onBehaviorsStoreAction(({ name }) => {
+        if (name === "update") {
+          this.setDirty("behaviors");
+        }
+      });
+
+      const { init: initAssets, onStoreAction: onAssetsStoreAction } =
+        useModule("assets_library");
       initAssets(data.assets);
-      addAssetsStoreActionListener(({ name }) => {
+      onAssetsStoreAction(({ name }) => {
         if (["add", "delete"].includes(name)) {
           this.setDirty("assets");
         }
@@ -147,12 +157,18 @@ export default defineStore("editor", {
       this.dirty.set(key, Date.now());
     },
     async load(url) {
+      this.ready = false;
       this.loading = true;
 
-      const data = await api.load(url);
-      await this.setData(data);
-
-      this.loading = false;
+      try {
+        const data = await api.load(url);
+        await this.setData(data);
+        this.ready = true;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
     },
     save(url) {
       this.saving = true;

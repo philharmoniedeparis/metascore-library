@@ -12,7 +12,7 @@
 <template>
   <!-- The wrapper is used as a work-around to pass classes from the parent component to the actual modal -->
   <div :class="['base-modal-wrapper', { teleport }]">
-    <teleport :to="teleportTarget" :disabled="!teleport">
+    <teleport :to="teleportTarget" :disabled="!teleport || !teleportTarget">
       <transition name="fade">
         <div class="base-modal" v-bind="$attrs">
           <div class="backdrop" tabindex="-1" role="dialog">
@@ -23,14 +23,14 @@
                     <slot v-if="$slots.title" name="title" />
                     <template v-else>{{ title }} </template>
                   </h3>
-                  <styled-button
+                  <base-button
                     class="close no-bg"
                     :title="$t('close_title')"
                     :aria-label="$t('close_title')"
                     @click="$emit('close')"
                   >
                     <template #icon><close-icon /></template>
-                  </styled-button>
+                  </base-button>
                 </div>
 
                 <div class="body">
@@ -155,7 +155,7 @@ export default {
       font-weight: 600;
     }
 
-    ::v-deep(.styled-button) {
+    :deep(.base-button) {
       font-size: 0.75em;
     }
   }
@@ -177,7 +177,7 @@ export default {
     flex-wrap: wrap;
     gap: 0.5em;
 
-    ::v-deep(.styled-button) {
+    :deep(.base-button) {
       background: $mediumgray;
 
       &.primary {

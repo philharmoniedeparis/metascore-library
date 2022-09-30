@@ -23,6 +23,7 @@
       :id="inputId"
       ref="opener"
       v-autofocus="autofocus"
+      type="button"
       class="opener"
       :style="`color: ${modelValue};`"
       :disabled="disabled"
@@ -54,12 +55,12 @@
         </tabs-item>
       </tabs-container>
       <div class="buttons">
-        <styled-button class="apply" role="primary" @click="onApplyClick(hide)">
+        <base-button class="apply" role="primary" @click="onApplyClick(hide)">
           {{ $t("apply_button") }}
-        </styled-button>
-        <styled-button class="cancel" role="secondary" @click="onCancelClick">
+        </base-button>
+        <base-button class="cancel" role="secondary" @click="onCancelClick">
           {{ $t("cancel_button") }}
-        </styled-button>
+        </base-button>
       </div>
     </div>
   </form-group>
@@ -73,6 +74,7 @@ import {
   shift,
   autoUpdate,
 } from "@floating-ui/dom";
+import chroma from "chroma-js";
 import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import ColorPicker from "./color/ColorPicker.vue";
@@ -112,6 +114,10 @@ export default {
       type: String,
       default: "",
     },
+    format: {
+      type: String,
+      default: "auto",
+    },
     picker: {
       type: Boolean,
       default: true,
@@ -125,7 +131,7 @@ export default {
   data() {
     return {
       inputId: uuid(),
-      internalValue: null,
+      internalValue: this.modelValue,
       showOverlay: false,
       overlayStyle: null,
       overlayUpdateCleanup: null,
@@ -155,9 +161,6 @@ export default {
       }
     },
   },
-  mounted() {
-    this.internalValue = this.modelValue;
-  },
   methods: {
     isArray,
     async updateOverlayStyle() {
@@ -184,7 +187,19 @@ export default {
     },
     onApplyClick() {
       this.showOverlay = false;
-      this.$emit("update:modelValue", this.internalValue);
+
+      let value = this.internalValue;
+      switch (this.format) {
+        case "rgb":
+        case "rgba":
+        case "hsl":
+        case "hsv":
+        case "hex":
+        case "css":
+          value = chroma(value)[this.format]();
+          break;
+      }
+      this.$emit("update:modelValue", value);
     },
     onCancelClick() {
       this.showOverlay = false;

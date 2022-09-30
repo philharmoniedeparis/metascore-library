@@ -1,6 +1,6 @@
 <template>
   <div class="waveform--zoom-controller">
-    <styled-button
+    <base-button
       type="button"
       title="Zoom out"
       class="zoom-out"
@@ -8,13 +8,13 @@
       @mouseup="onButtonMouseup"
     >
       <template #icon><zoom-icon /></template>
-    </styled-button>
+    </base-button>
 
     <div ref="slider" class="slider">
       <div class="thumb" :style="`left: ${sliderThumbLeft}%;`"></div>
     </div>
 
-    <styled-button
+    <base-button
       type="button"
       title="Zoom in"
       class="zoom-in"
@@ -22,7 +22,7 @@
       @mouseup="onButtonMouseup"
     >
       <template #icon><zoom-icon /></template>
-    </styled-button>
+    </base-button>
   </div>
 </template>
 
@@ -69,8 +69,8 @@ export default {
         this.waveformScale,
         this.waveformMinScale,
         this.waveformMaxScale,
-        0,
-        100
+        100,
+        0
       );
     },
   },
@@ -109,7 +109,7 @@ export default {
       const { width } = interact.getElementRect(evt.target);
       const x = evt.pageX / width;
 
-      let scale = map(x, 0, 1, this.waveformMinScale, this.waveformMaxScale);
+      let scale = map(x, 1, 0, this.waveformMinScale, this.waveformMaxScale);
 
       // Enforce the value to be a multiple of 2.
       scale = 2 * Math.floor(scale / 2);
@@ -118,14 +118,14 @@ export default {
     },
     zoomIn() {
       this.store.scale = clamp(
-        this.store.scale + this.buttonStep,
+        this.store.scale - this.buttonStep,
         this.waveformMinScale,
         this.waveformMaxScale
       );
     },
     zoomOut() {
       this.store.scale = clamp(
-        this.store.scale - this.buttonStep,
+        this.store.scale + this.buttonStep,
         this.waveformMinScale,
         this.waveformMaxScale
       );

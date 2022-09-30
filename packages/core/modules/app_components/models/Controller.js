@@ -2,7 +2,7 @@ import { EmbeddableComponent } from ".";
 
 import { merge } from "lodash";
 
-export class Controller extends EmbeddableComponent {
+export default class Controller extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -32,5 +32,3 @@ export class Controller extends EmbeddableComponent {
     });
   }
 }
-
-export default Controller;

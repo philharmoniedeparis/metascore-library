@@ -21,6 +21,7 @@
         'has-selected-descendents': hasSelectedDescendents,
         expanded,
         selected,
+        locked,
         resizing,
       },
     ]"
@@ -67,8 +68,11 @@
 
     <div ref="time-wrapper" class="time-wrapper" @click="onClick">
       <div ref="time" class="time" tabindex="0" :style="timeStyle">
-        <div class="resize-handle right"></div>
-        <div class="resize-handle left"></div>
+        <template v-if="timeable">
+          <div class="resize-handle right"></div>
+          <div class="resize-handle left"></div>
+        </template>
+        <div class="background"></div>
       </div>
     </div>
 
@@ -136,6 +140,7 @@ export default {
       componentHasChildren,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
     } = useModule("app_components");
     const {
       isComponentSelected,
@@ -157,6 +162,7 @@ export default {
       componentHasChildren,
       getComponentChildren,
       updateComponent,
+      isComponentTimeable,
       isComponentSelected,
       isComponentLocked,
       lockComponent,
@@ -222,7 +228,7 @@ export default {
       return this.componentHasSelectedDescendents(this.component);
     },
     timeable() {
-      return this.model.$isTimeable;
+      return this.isComponentTimeable(this.component);
     },
     hasStartTime() {
       return this.timeable && this.component["start-time"] !== null;
@@ -274,41 +280,24 @@ export default {
   watch: {
     selected(value) {
       if (value) {
-        this._interactables = [];
-
-        if (this.timeable) {
-          // @todo: skip for locked components and pages of non-synched blocks
-
-          const resizable = interact(this.$refs.time);
-          resizable.resizable({
-            edges: {
-              right: ".resize-handle.right",
-              left: ".resize-handle.left",
-            },
-            modifiers: [
-              interact.modifiers.snap({
-                targets: this.getInteractableSnapTargets(),
-                range: this.snapRange,
-              }),
-            ],
-            listeners: {
-              start: this.onResizableStart,
-              move: this.onResizableMove,
-              end: this.onResizableEnd,
-            },
-          });
-
-          this._interactables.push(resizable);
-        }
-
         this.$nextTick(function () {
           this.$refs.handle.scrollIntoView();
         });
-      } else if (this._interactables) {
-        this._interactables.forEach((i) => i.unset());
-        delete this._interactables;
       }
     },
+    locked(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else {
+        this.setupInteractions();
+      }
+    },
+  },
+  mounted() {
+    this.setupInteractions();
+  },
+  beforeUnmount() {
+    this.destroyInteractions();
   },
   methods: {
     paramCase,
@@ -319,6 +308,34 @@ export default {
         }
       } else {
         this.selectComponent(this.component, evt.shiftKey);
+      }
+    },
+    setupInteractions() {
+      if (this.locked || !this.timeable) return;
+
+      this._interactables = interact(this.$refs.time);
+      this._interactables.resizable({
+        edges: {
+          right: ".resize-handle.right",
+          left: ".resize-handle.left",
+        },
+        modifiers: [
+          interact.modifiers.snap({
+            targets: this.getInteractableSnapTargets(),
+            range: this.snapRange,
+          }),
+        ],
+        listeners: {
+          start: this.onResizableStart,
+          move: this.onResizableMove,
+          end: this.onResizableEnd,
+        },
+      });
+    },
+    destroyInteractions() {
+      if (this._interactables) {
+        this._interactables.unset();
+        delete this._interactables;
       }
     },
     getInteractableSnapTargets() {
@@ -367,18 +384,29 @@ export default {
         }
       });
 
+      let previous_value = this.component[prop];
+      if (previous_value === null) {
+        previous_value = prop === "end-time" ? this.mediaDuration : 0;
+      }
+
       data[prop] = round(
-        this.component[prop] +
-          evt.delta.x * (this.mediaDuration / wrapper_width),
+        previous_value + evt.delta.x * (this.mediaDuration / wrapper_width),
         2
       );
 
       this.updateComponent(this.component, data);
     },
-    onResizableEnd() {
+    onResizableEnd(evt) {
       this.endHistoryGroup();
       this.activeSnapTargets = [];
       this.resizing = false;
+
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
+      );
     },
     onAnimatedPropertyUpdate(property, value) {
       this.updateComponent(this.component, {
@@ -399,8 +427,8 @@ export default {
 
   .handle,
   .time-wrapper,
-  .aniamted-properties ::v-deep(.handle),
-  .aniamted-properties ::v-deep(.keyframes-wrapper) {
+  .aniamted-properties :deep(.handle),
+  .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
     border-top: 1px solid $darkgray;
     border-bottom: 1px solid $darkgray;
@@ -408,7 +436,7 @@ export default {
   }
 
   .handle,
-  .aniamted-properties ::v-deep(.handle) {
+  .aniamted-properties :deep(.handle) {
     display: flex;
     position: sticky;
     left: 0;
@@ -508,7 +536,7 @@ export default {
     }
   }
 
-  .aniamted-properties ::v-deep(.handle) {
+  .aniamted-properties :deep(.handle) {
     margin-left: calc(var(--depth) * 0.25em + 1em);
 
     > .icon {
@@ -530,14 +558,11 @@ export default {
       bottom: 0.5em;
       left: 0;
       right: 0;
-      background-color: #555;
-      box-sizing: border-box;
-      box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
-      opacity: 0.5;
 
       .resize-handle {
         position: absolute;
         top: 0;
+        display: none;
         width: 0.25em;
         height: 100%;
         background: #fff;
@@ -551,6 +576,18 @@ export default {
         }
       }
 
+      .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #555;
+        box-sizing: border-box;
+        box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
+        opacity: 0.5;
+      }
+
       &:focus {
         outline: none;
       }
@@ -559,6 +596,14 @@ export default {
         outline-offset: 0.1em;
         outline-style: dashed;
         outline-width: 1px;
+      }
+    }
+
+    &:hover {
+      .time {
+        .resize-handle {
+          display: block;
+        }
       }
     }
   }
@@ -590,13 +635,86 @@ export default {
 
   @each $component, $color in $component-colors {
     @if $component == default {
-      > .time-wrapper .time {
+      > .time-wrapper .time .background {
         background-color: $color;
       }
     } @else {
       &.#{$component} {
-        > .time-wrapper .time {
+        > .time-wrapper .time .background {
           background-color: $color;
+        }
+      }
+    }
+  }
+
+  &:not(.has-children) {
+    .label {
+      margin-left: 0.5em;
+    }
+  }
+
+  &:not(.has-start-time) {
+    > .time-wrapper .background {
+      clip-path: polygon(
+        0 0,
+        4px 25%,
+        0 50%,
+        4px 75%,
+        0 100%,
+        100% 100%,
+        100% 0
+      );
+    }
+  }
+
+  &:not(.has-end-time) {
+    > .time-wrapper .background {
+      clip-path: polygon(
+        0 0,
+        0 100%,
+        100% 100%,
+        calc(100% - 4px) 75%,
+        100% 50%,
+        calc(100% - 4px) 25%,
+        100% 0
+      );
+    }
+  }
+
+  &:not(.has-start-time):not(.has-end-time) {
+    > .time-wrapper .background {
+      clip-path: polygon(
+        0 0,
+        4px 25%,
+        0 50%,
+        4px 75%,
+        0 100%,
+        100% 100%,
+        calc(100% - 4px) 75%,
+        100% 50%,
+        calc(100% - 4px) 25%,
+        100% 0
+      );
+    }
+  }
+
+  &.selected {
+    > .handle,
+    > .time-wrapper {
+      background: $lightgray;
+      .time {
+        .background {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &.locked {
+    > .time-wrapper {
+      .time {
+        .resize-handle {
+          display: none;
         }
       }
     }
@@ -615,88 +733,9 @@ export default {
   }
 
   &.page {
-    &:first-child > .time-wrapper .time .resize-handle[data-direction="left"],
-    &:last-child > .time-wrapper .time .resize-handle[data-direction="right"] {
+    &:first-child > .time-wrapper .resize-handle.left,
+    &:last-child > .time-wrapper .resize-handle.right {
       display: none;
-    }
-  }
-
-  &:not(.has-children) {
-    .label {
-      margin-left: 0.5em;
-    }
-  }
-
-  &:not(.has-start-time) {
-    > .time-wrapper .time {
-      clip-path: polygon(
-        0 0,
-        4px 25%,
-        0 50%,
-        4px 75%,
-        0 100%,
-        100% 100%,
-        100% 0
-      );
-    }
-  }
-
-  &:not(.has-end-time) {
-    > .time-wrapper .time {
-      clip-path: polygon(
-        0 0,
-        0 100%,
-        100% 100%,
-        calc(100% - 4px) 75%,
-        100% 50%,
-        calc(100% - 4px) 25%,
-        100% 0
-      );
-    }
-  }
-
-  &:not(.has-start-time):not(.has-end-time) {
-    > .time-wrapper .time {
-      clip-path: polygon(
-        0 0,
-        4px 25%,
-        0 50%,
-        4px 75%,
-        0 100%,
-        100% 100%,
-        calc(100% - 4px) 75%,
-        100% 50%,
-        calc(100% - 4px) 25%,
-        100% 0
-      );
-    }
-  }
-
-  // #\9 is used here to increase specificity.
-  &.selected:not(#\9) {
-    > .handle,
-    > .time-wrapper {
-      background: $lightgray;
-    }
-
-    > .time-wrapper {
-      .time {
-        opacity: 1;
-
-        .resize-handle {
-          display: block;
-        }
-      }
-    }
-  }
-
-  &:not(.selected) {
-    > .time-wrapper {
-      .time {
-        .resize-handle {
-          display: none;
-        }
-      }
     }
   }
 }

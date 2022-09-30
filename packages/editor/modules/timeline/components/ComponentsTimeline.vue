@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      resorted: false,
+      sorted: false,
     };
   },
   computed: {
@@ -153,21 +153,21 @@ export default {
         const parent_track = track.parentNode.closest(".component-track");
         const parent_type = parent_track.getAttribute("data-type");
         const parent_id = parent_track.getAttribute("data-id");
-        const parent_model = this.getComponent(parent_type, parent_id);
+        const parent = this.getComponent(parent_type, parent_id);
 
         const children = [];
         parent_track
           .querySelectorAll(":scope > .children > .component-track")
           .forEach((child) => {
             children.unshift({
+              type: child.getAttribute("data-type"),
               id: child.getAttribute("data-id"),
-              schema: child.getAttribute("data-type"),
             });
           });
 
-        this.updateComponent(parent_model, { children });
+        this.updateComponent(parent, { children });
 
-        this.resorted = false;
+        this.sorted = false;
       }
     },
     handleDropzoneChecker(
@@ -261,7 +261,7 @@ export default {
     }
   }
 
-  ::v-deep(.component-track) {
+  :deep(.component-track) {
     &.dragging {
       z-index: 20;
 
@@ -280,7 +280,7 @@ export default {
     }
   }
 
-  ::v-deep(.component-track > .time-wrapper) {
+  :deep(.component-track > .time-wrapper) {
     width: v-bind(trackTimeWidth);
     margin-left: v-bind(trackTimeOffset);
   }

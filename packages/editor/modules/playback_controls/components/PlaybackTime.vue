@@ -27,15 +27,11 @@ export default {
 .playback-time {
   margin: 0;
 
-  ::v-deep(.input-wrapper) {
+  :deep(.input-wrapper) {
     height: 100%;
-
-    .timecode-input {
-      height: 100%;
-    }
   }
 
-  ::v-deep(input) {
+  :deep(input) {
     width: 100%;
     height: 100%;
     padding: 0;

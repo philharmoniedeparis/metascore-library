@@ -1,35 +1,35 @@
 <template>
-  <component :is="type" class="icon component-icon" />
+  <component :is="`${type}Icon`" class="icon component-icon" />
 </template>
 
 <script>
-import Animation from "../assets/icons/Animation.svg?inline";
-import NonSynchedBlock from "../assets/icons/Block.non-synched.svg?inline";
-import SynchedBlock from "../assets/icons/Block.synched.svg?inline";
-import BlockToggler from "../assets/icons/BlockToggler.svg?inline";
-import Content from "../assets/icons/Content.svg?inline";
-import Controller from "../assets/icons/Controller.svg?inline";
-import Cursor from "../assets/icons/Cursor.svg?inline";
-import MediaAudio from "../assets/icons/Media.audio.svg?inline";
-import MediaVideo from "../assets/icons/Media.video.svg?inline";
-import Page from "../assets/icons/Page.svg?inline";
-import SVG from "../assets/icons/SVG.svg?inline";
-import VideoRenderer from "../assets/icons/VideoRenderer.svg?inline";
+import AnimationIcon from "../assets/icons/Animation.svg?inline";
+import NonSynchedBlockIcon from "../assets/icons/Block.non-synched.svg?inline";
+import SynchedBlockIcon from "../assets/icons/Block.synched.svg?inline";
+import BlockTogglerIcon from "../assets/icons/BlockToggler.svg?inline";
+import ContentIcon from "../assets/icons/Content.svg?inline";
+import ControllerIcon from "../assets/icons/Controller.svg?inline";
+import CursorIcon from "../assets/icons/Cursor.svg?inline";
+import MediaAudioIcon from "../assets/icons/Media.audio.svg?inline";
+import MediaVideoIcon from "../assets/icons/Media.video.svg?inline";
+import PageIcon from "../assets/icons/Page.svg?inline";
+import SVGIcon from "../assets/icons/SVG.svg?inline";
+import VideoRendererIcon from "../assets/icons/VideoRenderer.svg?inline";
 
 export default {
   components: {
-    Animation,
-    NonSynchedBlock,
-    SynchedBlock,
-    BlockToggler,
-    Content,
-    Controller,
-    Cursor,
-    MediaAudio,
-    MediaVideo,
-    Page,
-    SVG,
-    VideoRenderer,
+    AnimationIcon,
+    NonSynchedBlockIcon,
+    SynchedBlockIcon,
+    BlockTogglerIcon,
+    ContentIcon,
+    ControllerIcon,
+    CursorIcon,
+    MediaAudioIcon,
+    MediaVideoIcon,
+    PageIcon,
+    SVGIcon,
+    VideoRendererIcon,
   },
   props: {
     component: {

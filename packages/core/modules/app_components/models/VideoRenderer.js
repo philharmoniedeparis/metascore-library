@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 
-export class VideoRenderer extends EmbeddableComponent {
+export default class VideoRenderer extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -25,5 +25,3 @@ export class VideoRenderer extends EmbeddableComponent {
     });
   }
 }
-
-export default VideoRenderer;

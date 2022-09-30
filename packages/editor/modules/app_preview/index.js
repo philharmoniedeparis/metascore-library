@@ -9,6 +9,7 @@ import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
 import History from "../history";
 import Hotkey from "../hotkey";
+import MediaPlayer from "@metascore-library/core/modules/media_player";
 
 import AppPreview from "./components/AppPreview";
 import AppZoomController from "./components/AppZoomController";
@@ -27,6 +28,7 @@ export default class AppPreviewModule extends AbstractModule {
     FormControls,
     History,
     Hotkey,
+    MediaPlayer,
   ];
 
   constructor({ app }) {

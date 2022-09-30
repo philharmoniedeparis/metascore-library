@@ -53,10 +53,10 @@
       </template>
 
       <template v-if="store.canGenerateSpectrogram">
-        <styled-button type="button" @click="showSpectrogramForm = true">
+        <base-button type="button" @click="showSpectrogramForm = true">
           {{ $t("spectrogram_button") }}
           <template #icon><spectrogram-icon /></template>
-        </styled-button>
+        </base-button>
         <spectrogram-form
           v-if="showSpectrogramForm"
           @submit="onSpectrogramFormSubmit"
@@ -65,27 +65,16 @@
       </template>
 
       <template v-if="store.canGenerateAudiowaveform">
-        <styled-button type="button" @click="showAudiowaveformForm = true">
+        <base-button type="button" @click="showAudiowaveformForm = true">
           {{ $t("audiowaveform_button") }}
           <template #icon><audiowaveform-icon /></template>
-        </styled-button>
+        </base-button>
         <audiowaveform-form
           v-if="showAudiowaveformForm"
           @submit="onAudiowaveformFormSubmit"
           @close="onAudiowaveformFormClose"
         />
       </template>
-
-      <progress-indicator
-        v-if="processing"
-        :text="$t('upload_indicator_label')"
-        :value="uploadProgress"
-        :target="false"
-      />
-
-      <alert-dialog v-if="error" @close="error = null">
-        {{ $t("error") }}
-      </alert-dialog>
     </div>
 
     <div v-if="store.configs.uploadUrl" class="dropzone">
@@ -107,6 +96,17 @@
         "
       ></p>
     </div>
+
+    <progress-indicator
+      v-if="uploading || generatingSpectrogram || generatingAudiowaveform"
+      :text="$t('upload_indicator_label')"
+      :value="uploading ? uploadProgress : null"
+      :target="uploading ? false : null"
+    />
+
+    <alert-dialog v-if="error" @close="error = null">
+      {{ $t("error") }}
+    </alert-dialog>
   </div>
 </template>
 
@@ -148,11 +148,17 @@ export default {
     assets() {
       return this.store.all;
     },
-    processing() {
-      return this.store.processing;
+    uploading() {
+      return this.store.uploading;
     },
     uploadProgress() {
       return this.store.uploadProgress;
+    },
+    generatingSpectrogram() {
+      return this.store.generatingSpectrogram;
+    },
+    generatingAudiowaveform() {
+      return this.store.generatingAudiowaveform;
     },
   },
   methods: {
@@ -241,8 +247,8 @@ export default {
           this.showSpectrogramForm = false;
           this.error = null;
         })
-        .catch((e) => {
-          this.error = e;
+        .catch((error) => {
+          this.error = error;
         });
     },
     onSpectrogramFormClose() {
@@ -256,8 +262,8 @@ export default {
           this.showAudiowaveformForm = false;
           this.error = null;
         })
-        .catch((e) => {
-          this.error = e;
+        .catch((error) => {
+          this.error = error;
         });
     },
     onAudiowaveformFormClose() {
@@ -292,7 +298,7 @@ export default {
     position: relative;
     flex-direction: column;
 
-    ::v-deep(.control.file) {
+    :deep(.control.file) {
       margin: 0;
       box-sizing: border-box;
       flex: 0 0 2.5em;
@@ -329,7 +335,7 @@ export default {
       }
     }
 
-    ::v-deep(button) {
+    :deep(button) {
       width: 100%;
       flex: 0 0 2.5em;
       padding: 0.25em 0.5em;

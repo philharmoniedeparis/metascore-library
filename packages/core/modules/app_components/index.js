@@ -45,7 +45,7 @@ export default class AppComponentsModule extends AbstractModule {
     return readonly(activeScenario);
   }
 
-  get json() {
+  get data() {
     const store = useStore();
     return store.toJson();
   }
@@ -60,9 +60,25 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getModel(type);
   }
 
+  getComponents() {
+    const store = useStore();
+    const { components } = storeToRefs(store);
+    return readonly(components);
+  }
+
+  getComponentsByType(type) {
+    const store = useStore();
+    return store.getByType(type);
+  }
+
   getComponent(type, id) {
     const store = useStore();
     return store.get(type, id);
+  }
+
+  findComponent(filter) {
+    const store = useStore();
+    return store.find(filter);
   }
 
   getComponentParent(component) {
@@ -90,19 +106,14 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getSiblings(component);
   }
 
-  getComponentsByType(type) {
-    const store = useStore();
-    return store.getByType(type);
-  }
-
   createComponent(data, validate = true) {
     const store = useStore();
     return store.create(data, validate);
   }
 
-  addComponent(component, parent) {
+  addComponent(component, parent, index) {
     const store = useStore();
-    return store.add(component, parent);
+    return store.add(component, parent, index);
   }
 
   updateComponent(component, data) {
@@ -118,6 +129,11 @@ export default class AppComponentsModule extends AbstractModule {
   restoreComponent(component) {
     const store = useStore();
     return store.restore(component);
+  }
+
+  cloneComponent(component, data) {
+    const store = useStore();
+    return store.clone(component, data);
   }
 
   showComponent(component) {
@@ -140,8 +156,74 @@ export default class AppComponentsModule extends AbstractModule {
     store.activeScenario = value;
   }
 
-  addStoreActionListener(callback) {
+  getBlockActivePage(block) {
     const store = useStore();
-    store.$onAction(callback);
+    const { id } = block;
+    return id in store.blocksActivePage ? store.blocksActivePage[id] : 0;
+  }
+
+  setBlockActivePage(block, index) {
+    const store = useStore();
+    store.setBlockActivePage(block, index);
+  }
+
+  isComponentBackgroundable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isBackgroundable;
+  }
+
+  isComponentBorderable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isBorderable;
+  }
+
+  isComponentHideable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isHideable;
+  }
+
+  isComponentOpacitable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isOpacitable;
+  }
+
+  isComponentPositionable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isPositionable;
+  }
+
+  isComponentResizable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isResizable;
+  }
+
+  isComponentTimeable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    if (model.$isTimeable) {
+      if (component.type === "Page") {
+        const block = store.getParent(component);
+        return block.synched;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  isComponentTransformable(component) {
+    const store = useStore();
+    const model = store.getModel(component.type);
+    return model.$isisTransformable;
+  }
+
+  onStoreAction(callback) {
+    const store = useStore();
+    return store.$onAction(callback);
   }
 }

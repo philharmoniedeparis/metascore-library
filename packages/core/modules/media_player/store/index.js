@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { formatTime } from "@metascore-library/core/utils/media";
+import { formatTime } from "../utils/media";
 
 export default defineStore("media_player", {
   state: () => {
@@ -38,15 +38,15 @@ export default defineStore("media_player", {
         });
         element.addEventListener("play", () => {
           this.playing = true;
-          this.updateTime();
+          this.updateTime(true);
         });
         element.addEventListener("pause", () => {
           this.playing = false;
-          this.updateTime(false);
+          this.updateTime();
         });
         element.addEventListener("stop", () => {
           this.playing = false;
-          this.updateTime(false);
+          this.updateTime();
         });
         element.addEventListener("timeupdate", (evt) => {
           if (!this.useRequestAnimationFrame) {
@@ -59,7 +59,7 @@ export default defineStore("media_player", {
         element.addEventListener("seeked", () => {
           this.seeking = false;
           if (!this.playing) {
-            this.updateTime(false);
+            this.updateTime();
           }
         });
         element.addEventListener("progress", (evt) => {
@@ -111,22 +111,23 @@ export default defineStore("media_player", {
     },
     stop() {
       if (this.element) {
-        this.element.stop();
+        this.pause();
+        this.seekTo(0);
       }
     },
     seekTo(time) {
+      // Set the "seeking" flag to true,
+      // as the "seeking" event is sometimes triggered too late.
+      this.seeking = true;
+
       this.element.currentTime = time;
     },
-    updateTime(repeat = true) {
-      if (!this.useRequestAnimationFrame) {
-        return;
-      }
-
+    updateTime(repeat = false) {
       this.time = this.element.currentTime;
 
-      if (repeat !== false && this.playing) {
+      if (this.useRequestAnimationFrame && repeat && this.playing) {
         window.requestAnimationFrame(() => {
-          this.updateTime();
+          this.updateTime(true);
         });
       }
     },

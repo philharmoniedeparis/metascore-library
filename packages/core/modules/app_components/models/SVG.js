@@ -10,7 +10,7 @@ import {
   createColorField,
 } from "@metascore-library/core/utils/schema";
 
-export class SVG extends EmbeddableComponent {
+export default class SVG extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -210,5 +210,3 @@ export class SVG extends EmbeddableComponent {
     return super.validate(data);
   }
 }
-
-export default SVG;

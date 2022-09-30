@@ -1,12 +1,14 @@
 import packageInfo from "../../package.json";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createI18n } from "vue-i18n";
 import hotkey from "v-hotkey";
 import App from "./App.vue";
 
+import { init as createI18n } from "@metascore-library/core/services/i18n";
 import { registerModules } from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
+import API from "./modules/api";
+import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
@@ -39,10 +41,14 @@ export class Player {
     app.config.performance = process.env.NODE_ENV === "development";
 
     // Register root modules.
-    await registerModules([Ajax, AppRenderer, ContextMenu, ProgressIndicator], {
-      app,
-      pinia,
-    });
+    await registerModules(
+      [Ajax, API, AppBehaviors, AppRenderer, ContextMenu, ProgressIndicator],
+      {
+        app,
+        i18n,
+        pinia,
+      }
+    );
 
     return new Player(app, el);
   }

@@ -1,10 +1,6 @@
 <template>
   <component-wrapper :component="component">
-    <div
-      v-dompurify-html="text"
-      class="contents"
-      @click.prevent="onTextClick"
-    ></div>
+    <div v-dompurify-html="text" class="contents" @click="onTextClick"></div>
   </component-wrapper>
 </template>
 
@@ -17,7 +13,7 @@ export default {
     dompurifyHtml: buildVueDompurifyHTMLDirective({
       hooks: {
         afterSanitizeAttributes: (node) => {
-          if (node.tagName === "A") {
+          if (node.tagName === "A" && node.hasAttribute("href")) {
             node.setAttribute("target", "_blank");
             node.setAttribute("rel", "noopener");
           }
@@ -43,11 +39,12 @@ export default {
   methods: {
     onTextClick(evt) {
       const link = evt.target.closest("a");
-      if (!link) {
+      if (!link || !link.href) {
         return;
       }
 
       evt.stopPropagation();
+      evt.preventDefault();
 
       if (/^#/.test(link.hash)) {
         const actions = link.hash.replace(/^#/, "").split("&");
@@ -129,8 +126,13 @@ export default {
 
 <style lang="scss" scoped>
 .content {
-  ::v-deep p {
-    margin: 1em 0;
+  .contents {
+    height: 100%;
+    overflow: auto;
+
+    :deep(a[data-behavior-trigger]) {
+      cursor: pointer;
+    }
   }
 }
 </style>

@@ -25,23 +25,23 @@
 
 <template>
   <div class="scenario-manager">
-    <styled-button
+    <base-button
       type="button"
       class="scroll-left"
       :disabled="!canScrollLeft"
       @click="onScrollLeftClick"
     >
       <template #icon><arrow-icon /></template>
-    </styled-button>
+    </base-button>
 
-    <styled-button
+    <base-button
       type="button"
       class="scroll-right"
       :disabled="!canScrollRight"
       @click="onScrollRightClick"
     >
       <template #icon><arrow-icon /></template>
-    </styled-button>
+    </base-button>
 
     <ul ref="list" class="list" @scroll="onListScroll">
       <li
@@ -56,28 +56,28 @@
       </li>
     </ul>
 
-    <styled-button
+    <base-button
       type="button"
       class="add"
       :title="$t('add_button_title')"
       @click="showAddForm = true"
     >
       <template #icon><add-icon /></template>
-    </styled-button>
+    </base-button>
     <add-form
       v-if="showAddForm"
       @submit="onAddSubmit"
       @close="showAddForm = false"
     />
 
-    <styled-button
+    <base-button
       type="button"
       class="clone"
       :title="$t('clone_button_title')"
       @click="showCloneForm = true"
     >
       <template #icon><clone-icon /></template>
-    </styled-button>
+    </base-button>
     <clone-form
       v-if="showCloneForm"
       :name="activeName"
@@ -85,7 +85,7 @@
       @close="showCloneForm = false"
     />
 
-    <styled-button
+    <base-button
       type="button"
       class="delete"
       :title="$t('delete_button_title')"
@@ -93,7 +93,7 @@
       @click="showDeleteConfirm = true"
     >
       <template #icon><delete-icon /></template>
-    </styled-button>
+    </base-button>
     <confirm-dialog
       v-if="showDeleteConfirm"
       @submit="onDeleteSubmit"
@@ -307,7 +307,7 @@ export default {
     }
 
     &.scroll-left {
-      ::v-deep(.icon) {
+      :deep(.icon) {
         transform: rotate(180deg);
       }
     }

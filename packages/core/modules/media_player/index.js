@@ -3,6 +3,7 @@ import { readonly } from "vue";
 
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import * as utils from "./utils/media";
 import MediaPlayer from "./components/MediaPlayer";
 
 export default class MediaPlayerModule extends AbstractModule {
@@ -111,8 +112,24 @@ export default class MediaPlayerModule extends AbstractModule {
     store.seekTo(value);
   }
 
-  addStoreActionListener(callback) {
+  formatTime(time) {
+    return utils.formatTime(time);
+  }
+
+  getMimeTypeFromURL(url) {
+    return utils.getMimeTypeFromURL(url);
+  }
+
+  getRendererForMime(mime) {
+    return utils.getRendererForMime(mime);
+  }
+
+  async getFileDuration(file) {
+    return utils.getFileDuration(file);
+  }
+
+  onStoreAction(callback) {
     const store = useStore();
-    store.$onAction(callback);
+    return store.$onAction(callback);
   }
 }

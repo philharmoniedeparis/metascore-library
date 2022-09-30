@@ -3,14 +3,15 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "@floating-ui/dom": "^0.5.0",
-    "@interactjs/actions": "^1.10.11",
-    "@interactjs/auto-start": "^1.10.11",
-    "@interactjs/interact": "^1.10.11",
-    "@interactjs/modifiers": "^1.10.11",
-    "@interactjs/pointer-events": "^1.10.11",
+    "@floating-ui/dom": "^1.0.1",
+    "@interactjs/actions": "^1.10.17",
+    "@interactjs/auto-start": "^1.10.17",
+    "@interactjs/interact": "^1.10.17",
+    "@interactjs/modifiers": "^1.10.17",
+    "@interactjs/pointer-events": "^1.10.17",
     "chroma-js": "^2.4.2",
     "lodash": "^4.17.21",
-    "uuid": "^8.3.2"
+    "timecode-input": "github:philharmoniedeparis/timecode-input",
+    "uuid": "^9.0.0"
   }
 }

@@ -17,9 +17,9 @@
     </div>
 
     <template #footer>
-      <styled-button type="button" role="primary" @click="$emit('close')">
+      <base-button type="button" role="primary" @click="$emit('close')">
         {{ buttonLabelWithDefault }}
-      </styled-button>
+      </base-button>
     </template>
   </base-modal>
 </template>

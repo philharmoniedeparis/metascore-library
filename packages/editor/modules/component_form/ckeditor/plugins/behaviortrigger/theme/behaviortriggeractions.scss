@@ -1,0 +1,14 @@
+.ck.ck-behaviortrigger-actions {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+
+	.ck-behaviortrigger-actions__preview {
+		display: inline-block;
+
+		.ck-label {
+            display: inline-block;
+			overflow: hidden;
+		}
+	}
+}

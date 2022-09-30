@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
 import { v4 as uuid } from "uuid";
+import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
@@ -10,23 +11,36 @@ export default defineStore("app-components", {
     return {
       components: {},
       activeScenario: null,
+      blocksActivePage: {},
       toggled: [],
     };
   },
   getters: {
-    get() {
-      return (type, id) => {
-        const component = this.components?.[type]?.[id];
-        return component && !component.$deleted
-          ? readonly(component.data)
-          : null;
-      };
-    },
     getByType() {
       return (type) => {
         return Object.keys(this.components?.[type] || {})
           .map((id) => this.get(type, id))
           .filter((c) => c);
+      };
+    },
+    find() {
+      return (callback) => {
+        const findMatch = (components) => {
+          let match = null;
+          components.some((c) => {
+            if (callback(c)) {
+              match = c;
+              return true;
+            }
+            match = findMatch(this.getChildren(c));
+            if (match) {
+              return true;
+            }
+          });
+          return match;
+        };
+
+        return findMatch(this.getByType("Scenario"));
       };
     },
     getModel() {
@@ -116,6 +130,11 @@ export default defineStore("app-components", {
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
     },
+    get(type, id) {
+      const component = this.components?.[type]?.[id];
+      const data = component && !component.$deleted ? component.data : null;
+      return data ? readonly(data) : null;
+    },
     async create(data, validate = true) {
       if (data.type in Models) {
         if (!("id" in data)) {
@@ -139,7 +158,7 @@ export default defineStore("app-components", {
         return await Models[data.type].create(data, validate);
       }
     },
-    async add(component, parent = null) {
+    async add(component, parent = null, index = null) {
       this.components[component.type] = this.components[component.type] || {};
       this.components[component.type][component.id] = component;
 
@@ -150,26 +169,23 @@ export default defineStore("app-components", {
         };
 
         const children_prop = this.getChildrenProperty(parent);
-        await this.update(parent, {
-          [children_prop]: [
-            ...parent[children_prop],
-            {
-              type: component.type,
-              id: component.id,
-            },
-          ],
-        });
-      }
 
-      switch (component.type) {
-        case "Block":
-          {
-            if (component.pages.length < 1) {
-              const page = await this.create({ type: "Page" });
-              await this.add(page, component);
-            }
-          }
-          break;
+        let children = parent[children_prop] || [];
+        if (index !== null) {
+          children = [
+            ...children.slice(0, index),
+            { type: component.type, id: component.id },
+            ...children.slice(index),
+          ];
+        } else {
+          children = children.concat([
+            { type: component.type, id: component.id },
+          ]);
+        }
+
+        await this.update(parent, {
+          [children_prop]: children,
+        });
       }
 
       return component;
@@ -183,15 +199,13 @@ export default defineStore("app-components", {
             if ("start-time" in data) {
               data["start-time"] = Math.max(
                 data["start-time"],
-                parent["start-time"],
-                0
+                parent["start-time"] ?? 0
               );
             }
             if ("end-time" in data) {
               data["end-time"] = Math.min(
                 data["end-time"],
-                parent["end-time"],
-                unref(mediaDuration)
+                parent["end-time"] ?? unref(mediaDuration)
               );
             }
           }
@@ -236,6 +250,39 @@ export default defineStore("app-components", {
       const component = this.components?.[type]?.[id];
       if (component) {
         delete component.$deleted;
+      }
+    },
+    async clone(component, data = {}, parent = null) {
+      const children_prop = this.getChildrenProperty(component);
+
+      let clone = await this.create(
+        {
+          ...omit(cloneDeep(component), ["id", children_prop]),
+          ...data,
+        },
+        false
+      );
+
+      await this.add(clone, parent, false);
+
+      if (this.hasChildren(component)) {
+        for (const c of this.getChildren(component)) {
+          await this.clone(c, {}, clone);
+        }
+      }
+
+      return clone;
+    },
+    setBlockActivePage(block, index) {
+      if (block.synched) {
+        const pages = this.getChildren(block);
+        const page = pages[index];
+        if (page && "start-time" in page) {
+          const { seekTo: seekMediaTo } = useModule("media_player");
+          seekMediaTo(page["start-time"]);
+        }
+      } else {
+        this.blocksActivePage[block.id] = index;
       }
     },
     show(component) {

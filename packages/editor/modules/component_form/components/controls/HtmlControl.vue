@@ -4,13 +4,13 @@
     :description="description"
     :required="required"
   >
-    <styled-button
+    <base-button
       type="button"
-      :loading="setting_up_editor"
+      :loading="settingUpEditor"
       @click="onButtonClick"
     >
       {{ label }}
-    </styled-button>
+    </base-button>
 
     <div ref="toolbar-container" class="toolbar-container" />
   </form-group>
@@ -18,16 +18,13 @@
 
 <script>
 import { markRaw } from "vue";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
 
 export default {
   props: {
-    appIframeEl: {
-      type: HTMLIFrameElement,
-      required: true,
-    },
-    appComponentEl: {
-      type: HTMLElement,
+    component: {
+      type: Object,
       required: true,
     },
     extraFonts: {
@@ -60,11 +57,15 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    return { store };
+    const { iframe: appPreveiwIframe, getComponentElement } =
+      useModule("app_preview");
+    return { store, appPreveiwIframe, getComponentElement };
   },
   data() {
     return {
-      setting_up_editor: false,
+      settingUpEditor: false,
+      componentInner: null,
+      contentsEl: null,
       editor: null,
     };
   },
@@ -77,10 +78,8 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
-    editorEl() {
-      return this.appComponentEl.querySelector(
-        ":scope > .metaScore-component--inner > .contents"
-      );
+    componentEl() {
+      return this.getComponentElement(this.component);
     },
     editing: {
       get() {
@@ -92,23 +91,49 @@ export default {
     },
   },
   watch: {
-    editing(value) {
-      if (value) {
-        this.setupEditor();
-      } else {
-        this.destroyEditor();
+    component(value, oldValue) {
+      if (oldValue) {
+        this.stopEditing(oldValue);
       }
+    },
+    componentEl: {
+      handler(value) {
+        if (value) {
+          this.componentInnerEl = value.querySelector(
+            ":scope > .metaScore-component--inner"
+          );
+
+          this.contentsEl =
+            this.componentInnerEl.querySelector(":scope > .contents");
+        } else {
+          this.componentInnerEl = null;
+          this.contentsEl = null;
+        }
+      },
+      immediate: true,
     },
   },
   beforeUnmount() {
-    this.destroyEditor();
+    this.stopEditing(this.component);
   },
   methods: {
-    onButtonClick() {
-      this.editing = !this.editing;
+    onComponentInnerElKeyEvent(evt) {
+      evt.stopPropagation();
     },
-    async setupEditor() {
-      this.setting_up_editor = true;
+    onButtonClick() {
+      if (!this.editing) {
+        this.startEditing();
+      } else {
+        this.stopEditing();
+      }
+    },
+    async startEditing() {
+      if (this.editing) {
+        return;
+      }
+
+      this.editing = true;
+      this.settingUpEditor = true;
 
       const { Editor, getConfig } = await import("../../ckeditor");
 
@@ -117,15 +142,25 @@ export default {
         extraFonts: this.extraFonts,
       });
 
-      Editor.create(this.editorEl, config, this.appComponentEl.ownerDocument)
+      Editor.create(this.contentsEl, config)
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.
           console.error(e);
         })
         .finally(() => {
-          this.setting_up_editor = false;
+          this.settingUpEditor = false;
         });
+
+      // Prevent key events from propagating.
+      this.componentInnerEl.addEventListener(
+        "keydown",
+        this.onComponentInnerElKeyEvent
+      );
+      this.componentInnerEl.addEventListener(
+        "keyup",
+        this.onComponentInnerElKeyEvent
+      );
     },
     onEditorCreate(editor) {
       editor.editing.view.change((writer) => {
@@ -140,29 +175,69 @@ export default {
       this.editor = markRaw(editor);
       this.$refs["toolbar-container"].appendChild(toolbar);
 
-      const contextualballoon_view =
-        editor.plugins.get("ContextualBalloon").view;
-      contextualballoon_view.on(
-        "set:left",
-        this.onEditorContextualBallonPositionSet
-      );
-      contextualballoon_view.on(
-        "set:top",
-        this.onEditorContextualBallonPositionSet
-      );
+      // Add listeners to ContextualBalloon positions
+      if (editor.plugins.has("ContextualBalloon")) {
+        const contextualballoon_view =
+          editor.plugins.get("ContextualBalloon").view;
+        contextualballoon_view.on(
+          "set:left",
+          this.onEditorContextualBallonPositionSet
+        );
+        contextualballoon_view.on(
+          "set:top",
+          this.onEditorContextualBallonPositionSet
+        );
+      }
+
+      // Add listeners to SourceEditing mode
+      if (editor.plugins.has("SourceEditing")) {
+        const sourceediting = editor.plugins.get("SourceEditing");
+        sourceediting.on(
+          "change:isSourceEditingMode",
+          this.onEditorSourceEditingModeChange
+        );
+      }
     },
     onEditorContextualBallonPositionSet(evt, prop, value) {
-      const offset = this.appIframeEl.getBoundingClientRect()[prop];
+      const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
       evt.return = value + offset;
     },
-    destroyEditor() {
+    onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
+      this.componentEl.classList.toggle("sourceediting", isSourceEditingMode);
+    },
+    stopEditing(component = null) {
+      if (!this.editing) {
+        return;
+      }
+
+      if (component === null) {
+        component = this.component;
+      }
+
       if (this.editor) {
-        this.value = this.editor.getData();
+        const value = this.editor.getData();
+        this.value = {
+          componentsToUpdate: [component],
+          value,
+        };
 
         this.editor.ui.view.toolbar.element.remove();
         this.editor.destroy();
         this.editor = null;
       }
+
+      if (this.contentsEl) {
+        this.contentsEl.removeEventListener(
+          "keydown",
+          this.onComponentInnerElKeyEvent
+        );
+        this.contentsEl.removeEventListener(
+          "keyup",
+          this.onComponentInnerElKeyEvent
+        );
+      }
+
+      this.editing = false;
     },
   },
 };
@@ -170,7 +245,7 @@ export default {
 
 <style lang="scss" scoped>
 .control {
-  ::v-deep(.input-wrapper) {
+  :deep(.input-wrapper) {
     // #\9 is used here to increase specificity.
     &:not(#\9) {
       flex-direction: column;

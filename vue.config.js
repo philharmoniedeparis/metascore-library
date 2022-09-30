@@ -3,6 +3,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const LodashPlugin = require("lodash-webpack-plugin");
 const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
@@ -54,6 +56,10 @@ module.exports = defineConfig({
     // Override entry points.
     config.entryPoints.clear();
     config.entry("metaScore.Player").add("./packages/player/index.js").end();
+    config
+      .entry("metaScore.API")
+      .add("./packages/player/modules/api/entry.js")
+      .end();
     config.entry("metaScore.Editor").add("./packages/editor/index.js").end();
 
     // Override output options.
@@ -71,37 +77,37 @@ module.exports = defineConfig({
           lottie: {
             test: /lottie-web/,
             name: "lottie",
-            chunks: "async",
-            enforce: true,
+            priority: -5,
             filename: "metaScore.vendors.[name].js",
+            reuseExistingChunk: true,
           },
           hammerjs: {
             test: /hammerjs/,
             name: "hammerjs",
-            chunks: "async",
-            enforce: true,
+            priority: -5,
             filename: "metaScore.vendors.[name].js",
+            reuseExistingChunk: true,
           },
           dashjs: {
             test: /dashjs/,
             name: "dashjs",
-            chunks: "async",
-            enforce: true,
+            priority: -5,
             filename: "metaScore.vendors.[name].js",
+            reuseExistingChunk: true,
           },
           hlsjs: {
             test: /hls\.js/,
             name: "hlsjs",
-            chunks: "async",
-            enforce: true,
+            priority: -5,
             filename: "metaScore.vendors.[name].js",
+            reuseExistingChunk: true,
           },
           ckeditor: {
             test: /ckeditor/,
             name: "ckeditor",
-            chunks: "async",
-            enforce: true,
+            priority: -5,
             filename: "metaScore.vendors.[name].js",
+            reuseExistingChunk: true,
           },
         },
       },
@@ -151,6 +157,18 @@ module.exports = defineConfig({
       return definitions;
     });
 
+    // Copy blockly media
+    config.plugin("blockly-media").use(CopyWebpackPlugin, [
+      {
+        patterns: [
+          {
+            from: path.resolve(__dirname, "node_modules", "blockly", "media"),
+            to: "blockly/media/",
+          },
+        ],
+      },
+    ]);
+
     // Add inline SVGs support.
     config.module.rule("svg").resourceQuery({ not: [/inline/] });
     config.module
@@ -163,6 +181,13 @@ module.exports = defineConfig({
       .end()
       .use("vue-svg-loader")
       .loader("vue-svg-loader")
+      .end();
+    // Add raw SVGs support.
+    config.module
+      .rule("raw-svg")
+      .test(/\.(svg)(\?.*)?$/)
+      .resourceQuery(/raw/)
+      .type("asset/source")
       .end();
 
     // Setup i18n loader.
@@ -199,15 +224,26 @@ module.exports = defineConfig({
       .test(/ckeditor5-[^/\\]+[/\\].+\.css$/)
       .use("postcss-loader")
       .loader("postcss-loader")
-      .tap(() => {
-        return {
-          postcssOptions: styles.getPostCssConfig({
-            themeImporter: {
-              themePath: require.resolve("@ckeditor/ckeditor5-theme-lark"),
-            },
-            minify: true,
-          }),
-        };
+      .options({
+        postcssOptions: styles.getPostCssConfig({
+          themeImporter: {
+            themePath: require.resolve("@ckeditor/ckeditor5-theme-lark"),
+          },
+          minify: true,
+        }),
       });
+
+    // Improve lodash builds.
+    config.module
+      .rule("lodash")
+      .test(/\.js$/)
+      .exclude.add(/node_modules/)
+      .end()
+      .use("babel-loader")
+      .loader("babel-loader")
+      .options({
+        plugins: ["lodash"],
+      });
+    config.plugin("lodash").use(LodashPlugin);
   },
 });

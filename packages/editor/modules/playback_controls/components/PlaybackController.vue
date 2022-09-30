@@ -17,22 +17,22 @@
 
 <template>
   <div v-hotkey="hotkeys" class="playback-controller">
-    <styled-button type="button" class="rewind" @click="onRewindClick">
+    <base-button type="button" class="rewind" @click="onRewindClick">
       <template #icon><rewind-icon /></template>
-    </styled-button>
+    </base-button>
 
-    <styled-button
+    <base-button
       v-if="mediaPlaying"
       type="button"
       class="pause"
       @click="onPauseClick"
     >
       <template #icon><pause-icon /></template>
-    </styled-button>
+    </base-button>
 
-    <styled-button v-else type="button" class="play" @click="onPlayClick">
+    <base-button v-else type="button" class="play" @click="onPlayClick">
       <template #icon><play-icon /></template>
-    </styled-button>
+    </base-button>
   </div>
 </template>
 

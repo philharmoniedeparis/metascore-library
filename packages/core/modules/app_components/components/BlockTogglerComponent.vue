@@ -2,6 +2,7 @@
   <component-wrapper :component="component">
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
+        type="button"
         :class="{ toggled: isBlockToggled(block) }"
         @click="toggleBlock(block)"
       >
@@ -82,7 +83,7 @@ export default {
 
 <style lang="scss" scoped>
 .block-toggler {
-  > ::v-deep(.metaScore-component--inner) {
+  > :deep(.metaScore-component--inner) {
     display: flex;
     width: 100%;
     height: 100%;

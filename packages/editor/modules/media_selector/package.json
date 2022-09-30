@@ -2,5 +2,7 @@
   "name": "@metascore-library/media-selector",
   "private": true,
   "description": "",
-  "dependencies": {}
+  "dependencies": {
+    "vue-dompurify-html": "^3.0.0-beta.1"
+  }
 }

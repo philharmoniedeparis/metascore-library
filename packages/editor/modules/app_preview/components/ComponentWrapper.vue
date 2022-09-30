@@ -43,8 +43,15 @@
   <default-component-wrapper
     v-contextmenu="contextmenuItems"
     :component="component"
-    :class="{ selected, preview, dragging, resizing, 'drag-over': dragOver }"
-    @click.stop="onClick"
+    :class="{
+      selected,
+      locked,
+      preview,
+      dragging,
+      resizing,
+      'drag-over': dragOver,
+    }"
+    @click="onClick"
     @dragenter="onDragenter"
     @dragover="onDragover"
     @dragleave="onDragleave"
@@ -52,7 +59,7 @@
   >
     <slot />
 
-    <template v-if="selected && resizable" #outer>
+    <template v-if="resizable" #outer>
       <div class="resize-handle top left"></div>
       <div class="resize-handle top"></div>
       <div class="resize-handle top right"></div>
@@ -71,7 +78,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round, omit } from "lodash";
+import { round, omit, kebabCase, startCase, camelCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
@@ -98,12 +105,16 @@ export default {
       data: clipboardData,
       setData: setClipboardData,
     } = useModule("clipboard");
+    const { time: mediaTime } = useModule("media_player");
     const {
       getModel,
+      getComponentChildren,
       getComponentSiblings,
       createComponent,
       addComponent,
       updateComponent,
+      deleteComponent,
+      getBlockActivePage,
     } = useModule("app_components");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -112,11 +123,15 @@ export default {
       clipboardFormat,
       clipboardData,
       setClipboardData,
+      mediaTime,
       getModel,
+      getComponentChildren,
       getComponentSiblings,
       createComponent,
       addComponent,
       updateComponent,
+      deleteComponent,
+      getBlockActivePage,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -142,11 +157,19 @@ export default {
     locked() {
       return this.store.isComponentLocked(this.component);
     },
+    interactable() {
+      return (
+        !this.disableComponentInteractions &&
+        !this.preview &&
+        !this.locked &&
+        this.selected
+      );
+    },
     positionable() {
-      return this.model.$isPositionable;
+      return this.interactable && this.model.$isPositionable;
     },
     resizable() {
-      return this.model.$isResizable;
+      return this.interactable && this.model.$isResizable;
     },
     siblings() {
       return this.getComponentSiblings(this.component);
@@ -231,7 +254,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.store.deleteComponent(this.component);
+                    this.deleteComponent(this.component);
                   },
                 },
                 {
@@ -267,7 +290,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.store.deleteComponent(this.component);
+                    this.deleteComponent(this.component);
                   },
                 },
                 {
@@ -320,6 +343,13 @@ export default {
         this.destroyInteractions();
       }
     },
+    locked(value) {
+      if (value) {
+        this.destroyInteractions();
+      } else {
+        this.setupInteractions();
+      }
+    },
     disableComponentInteractions(value) {
       if (value) {
         this.destroyInteractions();
@@ -337,6 +367,8 @@ export default {
         return;
       }
 
+      evt.stopPropagation();
+
       if (this.selected) {
         if (evt.shiftKey) {
           this.store.deselectComponent(this.component);
@@ -348,10 +380,6 @@ export default {
       }
     },
     setupInteractions() {
-      if (this.preview || !this.selected || this.disableComponentInteractions) {
-        return;
-      }
-
       if (this._interactables) {
         return;
       }
@@ -376,6 +404,15 @@ export default {
           this._interactables.draggable({
             allowFrom,
             modifiers: [
+              interact.modifiers.restrict({
+                // Using "parent" as "restriction" produces an
+                // "invalid 'instanceof' operand iS.SVGElement"
+                // error in production builds.
+                restriction: () => {
+                  return this.$el.parentElement.getBoundingClientRect();
+                },
+                elementRect: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
+              }),
               interact.modifiers.snap({
                 targets: [this.getInteractableSnapTarget],
                 relativePoints: [
@@ -469,8 +506,8 @@ export default {
         const position = component.position;
         this.updateComponent(component, {
           position: [
-            Math.round(position[0] + evt.delta.x),
-            Math.round(position[1] + evt.delta.y),
+            round(position[0] + evt.delta.x),
+            round(position[1] + evt.delta.y),
           ],
         });
       });
@@ -495,8 +532,8 @@ export default {
 
       this.updateComponent(this.component, {
         position: [
-          position[0] + evt.deltaRect.left,
-          position[1] + evt.deltaRect.top,
+          round(position[0] + evt.deltaRect.left),
+          round(position[1] + evt.deltaRect.top),
         ],
         dimension: [round(evt.rect.width), round(evt.rect.height)],
       });
@@ -512,27 +549,27 @@ export default {
         { capture: true, once: true }
       );
     },
-    getModelTypeFromDragEvent(evt) {
+    getModelFromDragEvent(evt) {
       let type = null;
       evt.dataTransfer.types.some((format) => {
         const matches = format.match(/^metascore\/component:(.*)$/);
         if (matches) {
-          type = matches[1];
+          type = startCase(camelCase(matches[1])).replace(" ", "");
           return true;
         }
       });
-      return type;
+      return type ? this.getModel(type) : null;
     },
     isDropAllowed(evt) {
-      const type = this.getModelTypeFromDragEvent(evt);
+      const model = this.getModelFromDragEvent(evt);
 
-      if (type) {
+      if (model.type) {
         switch (this.component.type) {
           case "Scenario":
           case "Page":
-            return !["Scenario", "Page"].includes(type);
+            return !["Scenario", "Page"].includes(model.type);
           case "Block":
-            return type === "Page";
+            return model.type === "Page";
         }
       }
 
@@ -568,8 +605,12 @@ export default {
       }
     },
     async getComponentFromDragEvent(evt) {
-      const type = this.getModelTypeFromDragEvent(evt);
-      if (type) {
+      let model = this.getModelFromDragEvent(evt);
+      if (model) {
+        // Some browsers transform the DataTransfer format to lowercase.
+        // Force it to kebab case to insure compatibility with other browsers.
+        const type = kebabCase(model.type);
+
         const format = `metascore/component:${type}`;
         if (evt.dataTransfer.types.includes(format)) {
           const data = JSON.parse(evt.dataTransfer.getData(format));
@@ -591,10 +632,44 @@ export default {
     },
     async addDroppedComponent(evt) {
       const droppedComponent = await this.getComponentFromDragEvent(evt);
+
+      let index = null;
+      switch (droppedComponent.type) {
+        case "Page":
+          index = this.getBlockActivePage(this.component) + 1;
+          break;
+      }
+
       const component = await this.addComponent(
         droppedComponent,
-        this.component
+        this.component,
+        index
       );
+
+      switch (component.type) {
+        case "Block":
+          {
+            const page = await this.createComponent({ type: "Page" });
+            await this.addComponent(page, component);
+          }
+          break;
+        case "Page":
+          if (this.component.synched) {
+            const pages = this.getComponentChildren(this.component);
+            const previous = pages[index - 1];
+            const next = pages[index + 1];
+
+            if (previous || next) {
+              const data = {};
+
+              if (previous) data["start-time"] = round(this.mediaTime, 2);
+              if (next) data["end-time"] = next["start-time"];
+
+              await this.updateComponent(droppedComponent, data);
+            }
+          }
+          break;
+      }
 
       this.store.selectComponent(component);
     },
@@ -647,14 +722,25 @@ export default {
     }
 
     &.block {
-      &:hover > ::v-deep(.metaScore-component--inner .pager) {
+      &:hover > :deep(.metaScore-component--inner .pager) {
         display: flex !important;
       }
     }
 
-    &.content:not(.selected) {
-      ::v-deep(.metaScore-component--inner) {
-        pointer-events: none;
+    &.content {
+      > :deep(.metaScore-component--inner) {
+        & > .contents {
+          a {
+            pointer-events: none;
+          }
+        }
+      }
+
+      &.sourceediting {
+        > :deep(.metaScore-component--inner) {
+          overflow: auto;
+          z-index: 1;
+        }
       }
     }
 
@@ -699,6 +785,10 @@ export default {
     &.dragging,
     &.resizing {
       z-index: 999;
+    }
+
+    &.locked {
+      pointer-events: none;
     }
   }
 }

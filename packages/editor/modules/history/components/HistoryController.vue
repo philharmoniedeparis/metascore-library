@@ -1,20 +1,20 @@
 <template>
   <div class="history-controller">
-    <styled-button
+    <base-button
       type="button"
       :disabled="!canUndo || disabled"
       @click="onUndoClick"
     >
       <template #icon><undo-icon /></template>
-    </styled-button>
+    </base-button>
 
-    <styled-button
+    <base-button
       type="button"
       :disabled="!canRedo || disabled"
       @click="onRedoClick"
     >
       <template #icon><redo-icon /></template>
-    </styled-button>
+    </base-button>
   </div>
 </template>
 

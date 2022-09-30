@@ -3,13 +3,13 @@ import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import plugin from "./store/plugin";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import HistoryController from "./components/HistoryController";
 
 export default class HistoryModule extends AbstractModule {
   static id = "history";
 
-  static dependencies = [StyledButton];
+  static dependencies = [BaseButton];
 
   constructor({ app, pinia }) {
     super(arguments);

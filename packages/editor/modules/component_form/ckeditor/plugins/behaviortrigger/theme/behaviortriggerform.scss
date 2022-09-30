@@ -1,0 +1,26 @@
+.ck.ck-behaviortrigger-form {
+	display: flex;
+
+	.ck-label {
+		display: none;
+	}
+}
+
+/*
+ * Style link form differently when manual decorators are available.
+ * See: https://github.com/ckeditor/ckeditor5-link/issues/186.
+ */
+.ck.ck-behaviortrigger-form_layout-vertical {
+	display: block;
+
+	/*
+	 * Whether the form is in the responsive mode or not, if there are decorator buttons
+	 * keep the top margin of action buttons medium.
+	 */
+	.ck-button {
+		&.ck-button-save,
+		&.ck-button-cancel {
+			margin-top: var(--ck-spacing-medium);
+		}
+	}
+}

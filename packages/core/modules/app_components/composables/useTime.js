@@ -2,7 +2,7 @@ import { computed, unref, readonly } from "vue";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { isNull, isUndefined } from "lodash";
 
-export function useTime(component, model) {
+export default function (component, model) {
   if (unref(model).$isTimeable) {
     const { time: mediaTime } = useModule("media_player");
 
@@ -38,5 +38,3 @@ export function useTime(component, model) {
     active: true,
   };
 }
-
-export default useTime;

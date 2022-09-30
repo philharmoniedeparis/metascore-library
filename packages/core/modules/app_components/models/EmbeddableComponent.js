@@ -11,7 +11,7 @@ import Resizable from "./mixins/Resizable";
 import Timeable from "./mixins/Timeable";
 import Transformable from "./mixins/Transformable";
 
-export class EmbeddableComponent extends mix(AbstractComponent).with(
+export default class EmbeddableComponent extends mix(AbstractComponent).with(
   Backgroundable,
   Borderable,
   Hideable,
@@ -45,5 +45,3 @@ export class EmbeddableComponent extends mix(AbstractComponent).with(
     });
   }
 }
-
-export default EmbeddableComponent;

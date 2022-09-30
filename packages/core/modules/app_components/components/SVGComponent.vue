@@ -157,7 +157,7 @@ export default {
 
 <style lang="scss" scoped>
 .svg {
-  ::v-deep(object) {
+  :deep(object) {
     width: 100%;
     height: 100%;
     pointer-events: none;

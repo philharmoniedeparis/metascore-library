@@ -1,8 +1,0 @@
-{
-  "name": "@metascore-library/timecode-input",
-  "private": true,
-  "description": "",
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
-}

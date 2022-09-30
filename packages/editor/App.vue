@@ -1,6 +1,12 @@
 <i18n>
 {
   "fr": {
+    "scenario_default_title": "Scénario 1",
+    "components_library_title": "Composants",
+    "assets_library_title": "Bibliothèque",
+    "shared_assets_library_title": "Bibliothèque partagée",
+    "component_form_title": "Attributs",
+    "behaviors_form_title": "Comportements",
     "loading_indicator_label": "Chargement ...",
     "saving_indicator_label": "Sauvegarde en cours ...",
     "autosave": {
@@ -12,8 +18,15 @@
       "group": "Général",
       "ctrl+h": "Afficher les raccourcis clavier",
     },
+    "unload_dirty": "Les données non sauvegardées seront perdues.",
   },
   "en": {
+    "scenario_default_title": "Scenario 1",
+    "components_library_title": "Components",
+    "assets_library_title": "Library",
+    "shared_assets_library_title": "Shared Library",
+    "component_form_title": "Attributes",
+    "behaviors_form_title": "Behaviors",
     "loading_indicator_label": "Loading...",
     "saving_indicator_label": "Saving...",
     "autosave": {
@@ -25,6 +38,7 @@
       "group": "Général",
       "ctrl+h": "Show keyboard shortcuts",
     },
+    "unload_dirty": "Any unsaved data will be lost.",
   },
 }
 </i18n>
@@ -38,20 +52,21 @@
         preview,
         'app-title-focused': appTitleFocused,
         'libraries-expanded': librariesExpanded,
+        'behaviors-open': behaviorsOpen,
         'latest-revision': isLatestRevision,
       },
     ]"
     @contextmenu="onContextmenu"
   >
-    <resizable-pane class="top">
+    <div class="top">
       <nav class="main-menu">
         <div class="left">
-          <styled-button
+          <base-button
             :disabled="!dirty || !isLatestRevision"
             @click="onSaveClick"
           >
             <template #icon><save-icon /></template>
-          </styled-button>
+          </base-button>
           <history-controller :disabled="!isLatestRevision" />
           <text-control
             v-model="appTitle"
@@ -76,18 +91,25 @@
           />
         </div>
       </nav>
-    </resizable-pane>
+    </div>
 
-    <resizable-pane class="left" :right="{ collapse: true }">
+    <resizable-pane
+      class="left"
+      :right="{ collapse: true }"
+      :apply-styles="false"
+      @update:width="librariesWidth = `${$event}px`"
+    >
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
-        <tabs-item title="Components"><components-library /></tabs-item>
-        <tabs-item title="Library">
+        <tabs-item :title="$t('components_library_title')">
+          <components-library />
+        </tabs-item>
+        <tabs-item :title="$t('assets_library_title')">
           <assets-library />
         </tabs-item>
-        <tabs-item title="Shared Library">
+        <tabs-item :title="$t('shared_assets_library_title')">
           <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
-        <template v-if="activeLibrariesTab === 2" #tabs-right>
+        <template v-if="activeLibrariesTab === 2" #tabs-end>
           <keep-alive>
             <shared-assets-toolbar />
           </keep-alive>
@@ -95,17 +117,29 @@
       </tabs-container>
     </resizable-pane>
 
-    <resizable-pane class="center">
+    <div class="center">
       <app-preview
         :disable-component-interactions="disableComponentInteractions"
       />
-    </resizable-pane>
+    </div>
 
-    <resizable-pane class="right" :left="{ collapse: true }">
-      <component-form
-        :images="imageAssets"
-        :first-level-components="firstLevelComponents"
-      ></component-form>
+    <resizable-pane
+      class="right"
+      :left="{ collapse: true }"
+      :apply-styles="false"
+      @update:width="formsWidth = `${$event}px`"
+    >
+      <tabs-container v-model:activeTab="activeFormsTab">
+        <tabs-item :title="$t('component_form_title')">
+          <component-form
+            :images="imageAssets"
+            :first-level-components="firstLevelComponents"
+          ></component-form>
+        </tabs-item>
+        <tabs-item :title="$t('behaviors_form_title')">
+          <behaviors-form></behaviors-form>
+        </tabs-item>
+      </tabs-container>
     </resizable-pane>
 
     <resizable-pane class="bottom" :top="{ collapse: true }">
@@ -198,9 +232,16 @@ export default {
       createComponent,
       addComponent,
       deleteComponent,
+      cloneComponent,
     } = useModule("app_components");
+
+    const { enable: enableBehaviors, disable: disableBehaviors } =
+      useModule("app_behaviors");
+
     const { getAssetsByType, addAsset } = useModule("assets_library");
+
     const { preview } = useModule("app_preview");
+
     const {
       maxScale: maxWaveformScale,
       scale: waveformScale,
@@ -213,6 +254,7 @@ export default {
 
     const { recordingCursorKeyframes, editingTextContent } =
       useModule("component_form");
+
     const disableComponentInteractions = computed(
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
@@ -229,6 +271,9 @@ export default {
       createComponent,
       addComponent,
       deleteComponent,
+      cloneComponent,
+      enableBehaviors,
+      disableBehaviors,
       getAssetsByType,
       addAsset,
       preview,
@@ -247,8 +292,12 @@ export default {
       version: packageInfo.version,
       modalsTarget: null,
       appTitleFocused: false,
+      librariesWidth: "20em",
       activeLibrariesTab: 0,
       librariesExpanded: false,
+      formsWidth: "20em",
+      activeFormsTab: 0,
+      behaviorsOpen: false,
       showAutoSaveRestoreConfirm: false,
       showHotkeyList: false,
       showContextmenu: false,
@@ -341,6 +390,15 @@ export default {
         this.librariesExpanded = false;
       }
     },
+    activeFormsTab(index) {
+      this.behaviorsOpen = index === 1;
+    },
+    preview(value) {
+      if (value) this.enableBehaviors();
+      else {
+        this.disableBehaviors();
+      }
+    },
   },
   async mounted() {
     this.modalsTarget = this.$el;
@@ -350,7 +408,11 @@ export default {
       this.showAutoSaveRestoreConfirm = true;
     } else {
       await this.store.load(this.url);
+      window.addEventListener("beforeunload", this.onWindowBeforeunload);
     }
+  },
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.onWindowBeforeunload);
   },
   methods: {
     onSaveClick() {
@@ -383,12 +445,13 @@ export default {
       await this.addComponent(scenario);
       this.setActiveScenario(scenario.id);
     },
-    onScnearioManagerClone({ scenario, data }) {
-      const clone = this.store.cloneComponent(scenario, data);
+    async onScnearioManagerClone({ scenario, data }) {
+      const clone = await this.cloneComponent(scenario, data);
       this.setActiveScenario(clone.id);
     },
     onScnearioManagerDelete({ scenario }) {
       this.deleteComponent(scenario);
+      this.setActiveScenario(this.scenarios[0].id);
     },
     onAutoSaveRestoreSubmit() {
       this.showAutoSaveRestoreConfirm = false;
@@ -414,6 +477,12 @@ export default {
 
       evt.preventDefault();
     },
+    onWindowBeforeunload(evt) {
+      if (this.dirty) {
+        evt.preventDefault();
+        return (evt.returnValue = this.$t("unload_dirty"));
+      }
+    },
   },
 };
 </script>
@@ -429,7 +498,10 @@ export default {
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns:
+    minmax(15em, min(25vw, v-bind(librariesWidth)))
+    1fr
+    minmax(15em, min(50vw, v-bind(formsWidth)));
   grid-template-rows: min-content 1fr auto;
   grid-template-areas:
     "top top top"
@@ -442,7 +514,7 @@ export default {
     sans-serif;
 
   &,
-  ::v-deep(*) {
+  :deep(*) {
     scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
     scrollbar-width: thin;
 
@@ -464,11 +536,11 @@ export default {
     }
   }
 
-  ::v-deep(.sr-only) {
+  :deep(.sr-only) {
     @include sr-only;
   }
 
-  ::v-deep(button) {
+  :deep(button) {
     background: none;
     border: none;
     opacity: 0.5;
@@ -479,12 +551,12 @@ export default {
     }
   }
 
-  ::v-deep(input, select) {
+  :deep(input, select) {
     font-family: inherit;
     color: inherit;
   }
 
-  ::v-deep(.icon) {
+  :deep(.icon) {
     display: block;
   }
 
@@ -500,13 +572,13 @@ export default {
       gap: 1em;
       box-sizing: border-box;
 
-      ::v-deep(button) {
+      :deep(button) {
         padding-top: 0;
         padding-bottom: 0;
         align-self: stretch;
       }
 
-      ::v-deep(.form-group) {
+      :deep(.form-group) {
         margin: 0;
         justify-content: center;
 
@@ -539,7 +611,7 @@ export default {
       .app-title {
         flex: 1 1 auto;
 
-        ::v-deep(input) {
+        :deep(input) {
           &:not(:focus) {
             overflow: hidden;
             white-space: nowrap;
@@ -552,20 +624,17 @@ export default {
 
   > .left {
     grid-area: left;
-    width: 20em;
-    min-width: 15em;
-    max-width: 25vw;
   }
 
   > .center {
     grid-area: center;
+    overflow: hidden;
+    background: #777;
+    color: #fff;
   }
 
   > .right {
     grid-area: right;
-    width: 20em;
-    min-width: 15em;
-    max-width: 25vw;
   }
 
   > .bottom {
@@ -593,7 +662,7 @@ export default {
         box-sizing: border-box;
         border-right: 2px solid $darkgray;
 
-        ::v-deep(input) {
+        :deep(input) {
           border-radius: 0;
         }
       }
@@ -680,6 +749,13 @@ export default {
     }
   }
 
+  &.behaviors-open {
+    grid-template-columns:
+      minmax(15em, min(25vw, v-bind(librariesWidth)))
+      1fr
+      minmax(60em, min(100vw, v-bind(formsWidth)));
+  }
+
   &.libraries-expanded {
     grid-template-columns: auto;
     grid-template-rows: min-content auto;
@@ -690,7 +766,7 @@ export default {
       max-width: none;
       padding: 0;
 
-      ::v-deep(.tabs-nav) {
+      :deep(.tabs-nav) {
         border-color: transparent;
       }
     }
@@ -704,6 +780,8 @@ export default {
 
   &.preview,
   &:not(.latest-revision) {
+    grid-template-columns: auto 1fr auto;
+
     > .left,
     > .right {
       display: none;
@@ -739,12 +817,12 @@ export default {
 
           .playback-controller {
             grid-area: 1 / 1 / span 2 / 1;
-            ::v-deep(.rewind) {
+            :deep(.rewind) {
               display: none;
             }
 
-            ::v-deep(.play),
-            ::v-deep(.pause) {
+            :deep(.play),
+            :deep(.pause) {
               width: 100%;
               height: 100%;
               margin-right: 0;

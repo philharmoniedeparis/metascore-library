@@ -167,7 +167,7 @@ export default {
   }
 
   &.multiple {
-    ::v-deep(label) {
+    :deep(label) {
       align-self: flex-start;
     }
   }

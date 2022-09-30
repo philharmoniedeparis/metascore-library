@@ -17,13 +17,9 @@
   <div class="revision-selector">
     <select-control v-model="internalValue" :options="options" />
 
-    <styled-button
-      type="button"
-      :disabled="!canRestore"
-      @click="onRestoreClick"
-    >
+    <base-button type="button" :disabled="!canRestore" @click="onRestoreClick">
       {{ $t("restore_button") }}
-    </styled-button>
+    </base-button>
 
     <confirm-dialog
       v-if="showConfirm"
@@ -129,14 +125,14 @@ export default {
   align-items: center;
   gap: 0.5em;
 
-  ::v-deep(select) {
+  :deep(select) {
     max-width: 15em;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
-  ::v-deep(button) {
+  :deep(button) {
     color: $darkgray;
     background: $white;
     border: 1px solid $white;

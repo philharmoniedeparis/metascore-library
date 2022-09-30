@@ -92,7 +92,7 @@ export default {
   background: $mediumgray;
   overflow-y: auto;
 
-  ::v-deep(.components-library--item) {
+  :deep(.components-library--item) {
     flex: 0 0 auto;
   }
 

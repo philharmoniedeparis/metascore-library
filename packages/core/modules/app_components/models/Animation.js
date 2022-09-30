@@ -10,7 +10,7 @@ import {
   createColorField,
 } from "@metascore-library/core/utils/schema";
 
-export class Animation extends EmbeddableComponent {
+export default class Animation extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -157,5 +157,3 @@ export class Animation extends EmbeddableComponent {
     return super.validate(data);
   }
 }
-
-export default Animation;

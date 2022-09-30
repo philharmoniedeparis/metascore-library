@@ -1,5 +1,3 @@
-import { readonly } from "vue";
-import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
@@ -8,7 +6,7 @@ import Confirm from "@metascore-library/core/modules/confirm";
 import FormControls from "../form_controls";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 import SchemaForm from "../schema_form";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import AssetsLibrary from "./components/AssetsLibrary";
 
 export default class AssetsLibraryModule extends AbstractModule {
@@ -21,7 +19,7 @@ export default class AssetsLibraryModule extends AbstractModule {
     FormControls,
     ProgressIndicator,
     SchemaForm,
-    StyledButton,
+    BaseButton,
   ];
 
   constructor({ app }) {
@@ -42,8 +40,7 @@ export default class AssetsLibraryModule extends AbstractModule {
 
   get assets() {
     const store = useStore();
-    const { all } = storeToRefs(store);
-    return readonly(all);
+    return store.all;
   }
 
   getAssetsByType(type) {
@@ -61,8 +58,8 @@ export default class AssetsLibraryModule extends AbstractModule {
     return store.upload(files);
   }
 
-  addStoreActionListener(callback) {
+  onStoreAction(callback) {
     const store = useStore();
-    store.$onAction(callback);
+    return store.$onAction(callback);
   }
 }

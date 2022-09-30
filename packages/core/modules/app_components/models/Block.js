@@ -6,7 +6,7 @@ import {
 } from "@metascore-library/core/utils/schema";
 import { createCollectionField } from "../utils/schema";
 
-export class Block extends EmbeddableComponent {
+export default class Block extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
@@ -56,5 +56,3 @@ export class Block extends EmbeddableComponent {
     });
   }
 }
-
-export default Block;

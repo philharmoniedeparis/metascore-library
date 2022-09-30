@@ -6,27 +6,13 @@
     :loop="loop"
     :controls="controls"
     class="media-player"
-  >
-    <source :src="source.url" :type="source.mime" />
-  </component>
+  />
 </template>
 
 <script>
+import { markRaw } from "vue";
+import { getRendererForMime } from "../utils/media";
 import useStore from "../store";
-
-const dash_types = ["application/dash+xml"];
-const hls_types = [
-  "application/mpegurl",
-  "application/x-mpegurl",
-  "application/vnd.apple.mpegurl",
-  "application/vnd.apple.mpegurl.audio",
-  "audio/mpegurl",
-  "audio/x-mpegurl",
-  "audio/hls",
-  "video/mpegurl",
-  "video/x-mpegurl",
-  "video/hls",
-];
 
 export default {
   name: "MediaPlayer",
@@ -92,88 +78,38 @@ export default {
   data() {
     return {
       playing: false,
-      dash: null,
+      renderer: null,
       hls: null,
     };
   },
   watch: {
     source() {
-      this.setupMedia();
+      this.setupRenderer();
     },
   },
   mounted() {
     this.store.initElement(this.$refs.media);
-    this.setupMedia();
+    this.setupRenderer();
   },
   beforeUnmount() {
     this.store.initElement(null);
   },
   methods: {
     /**
-     * Get a renderer type from a source's mime type
-     * @param {String} mime The mime type
-     * @return {String?} A matching renderer type
+     * Setup the renderer
      */
-    getRendererFromType(mime) {
-      let renderer = null;
-
-      mime = mime.toLowerCase();
-
-      if (new Audio().canPlayType(mime)) {
-        renderer = "html5";
-      } else if (dash_types.includes(mime)) {
-        renderer = "dashjs";
-      } else if (hls_types.includes(mime)) {
-        renderer = "hls.js";
+    async setupRenderer() {
+      if (this.renderer) {
+        this.renderer.unmount();
+        this.renderer = null;
       }
 
-      return renderer;
-    },
-
-    /**
-     * Setup the media
-     */
-    async setupMedia() {
-      if (this.dash) {
-        this.dash.destroy();
-        this.dash = null;
-      }
-      if (this.hls) {
-        this.hls.detachMedia();
-        this.hls = null;
-      }
-
-      const renderer = this.getRendererFromType(this.source.mime);
-      await this.setupRenderer(renderer, this.source.url);
-
-      this.$el.load();
-    },
-
-    /**
-     * Setup a renderer
-     * @param {String} type The renderer type
-     * @param {String} url The media url
-     */
-    async setupRenderer(type, url) {
-      switch (type) {
-        case "dashjs":
-          {
-            const { MediaPlayer: DashJSMediaPlayer } = await import("dashjs");
-            this.dash = DashJSMediaPlayer().create();
-            this.dash.initialize(this.$el, url, true);
-          }
-          return;
-
-        case "hls.js":
-          {
-            const { default: Hls } = await import("hls.js");
-            if (Hls.isSupported()) {
-              this.hls = new Hls();
-              this.hls.loadSource(url);
-              this.hls.attachMedia(this.$el);
-            }
-          }
-          return;
+      const Renderer = getRendererForMime(this.source.mime);
+      if (Renderer) {
+        this.renderer = markRaw(new Renderer());
+        await this.renderer.mount(this.source.url, this.$el);
+      } else {
+        // @todo: handle no compatible renderer found.
       }
     },
   },

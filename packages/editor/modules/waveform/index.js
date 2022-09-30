@@ -3,7 +3,7 @@ import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
@@ -12,7 +12,7 @@ import WaveformZoomController from "./components/WaveformZoomController";
 export default class WaveformModule extends AbstractModule {
   static id = "waveform";
 
-  static dependencies = [Ajax, MediaPlayer, StyledButton];
+  static dependencies = [Ajax, MediaPlayer, BaseButton];
 
   constructor({ app }) {
     super(arguments);

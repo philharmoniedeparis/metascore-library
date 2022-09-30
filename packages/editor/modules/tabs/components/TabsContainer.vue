@@ -1,8 +1,8 @@
 <template>
   <div class="tabs-container">
     <div class="tabs-nav-wrapper">
-      <div v-if="$slots['tabs-left']" class="tabs-left">
-        <slot name="tabs-left" />
+      <div v-if="$slots['tabs-start']" class="tabs-start">
+        <slot name="tabs-start" />
       </div>
       <ul class="tabs-nav" role="tablist">
         <li
@@ -13,8 +13,8 @@
           <a role="tab" @click="internalValue = index">{{ tab.title }}</a>
         </li>
       </ul>
-      <div v-if="$slots['tabs-right']" class="tabs-right">
-        <slot name="tabs-right" />
+      <div v-if="$slots['tabs-end']" class="tabs-end">
+        <slot name="tabs-end" />
       </div>
     </div>
 
@@ -80,6 +80,7 @@ export default {
     flex: 1 1 auto;
     margin: 0;
     padding: 0;
+    overflow: hidden;
     list-style: none;
     border-bottom: 2px solid $mediumgray;
 
@@ -102,6 +103,8 @@ export default {
       }
 
       &.active {
+        flex: 1 0 auto;
+
         a {
           background: $lightgray;
         }
@@ -109,8 +112,8 @@ export default {
     }
   }
 
-  .tabs-left,
-  .tabs-right {
+  .tabs-start,
+  .tabs-end {
     flex: 1;
   }
 }

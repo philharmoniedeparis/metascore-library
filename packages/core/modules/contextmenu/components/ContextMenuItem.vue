@@ -8,7 +8,7 @@
     @mouseleave="onMouseleave"
     @mousedown.prevent
   >
-    <button @click="onClick">
+    <button type="button" @click="onClick">
       {{ item.label }}
     </button>
 

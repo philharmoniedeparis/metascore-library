@@ -3,7 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "@floating-ui/dom": "^0.5.0",
+    "@floating-ui/dom": "^1.0.1",
     "pinia": "^2.0.11"
   }
 }

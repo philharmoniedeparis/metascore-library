@@ -37,25 +37,25 @@
       class="media-source-form"
       :schema="schema"
       :layout="layout"
-      :values="model"
+      :values="model.data"
       :validator="validator"
       :errors="errors"
       @update:model-value="onUpdate($event)"
     />
 
     <template #actions="props">
-      <styled-button :form="props.form" role="primary">
+      <base-button :form="props.form" role="primary">
         {{ $t("apply_button") }}
-      </styled-button>
+      </base-button>
 
-      <styled-button
+      <base-button
         type="button"
         :form="props.form"
         role="secondary"
         @click="onCancel"
       >
         {{ $t("cancel_button") }}
-      </styled-button>
+      </base-button>
     </template>
   </modal-form>
 </template>
@@ -162,16 +162,12 @@ export default {
       this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
-      const data = this.model.data;
-
-      this.model
-        .validate(data)
-        .then(() => {
-          this.$emit("submit", data);
-        })
-        .catch((errors) => {
-          this.errors = errors;
-        });
+      try {
+        const data = await this.model.validate(this.model.data);
+        this.$emit("submit", data);
+      } catch (errors) {
+        this.errors = errors;
+      }
     },
     onCancel() {
       this.$emit("close");
@@ -182,14 +178,14 @@ export default {
 
 <style lang="scss" scoped>
 .media-source-form {
-  ::v-deep(.form-group) {
+  :deep(.form-group) {
     .input-wrapper {
       flex-direction: column;
       align-items: flex-start;
     }
   }
 
-  ::v-deep(.separator) {
+  :deep(.separator) {
     margin: 1em 0;
     display: flex;
     flex-direction: row;

@@ -8,7 +8,7 @@ import AssetsLibrary from "../assets_library";
 import FormGroup from "../form_group";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import SchemaForm from "../schema_form";
-import StyledButton from "@metascore-library/core/modules/styled_button";
+import BaseButton from "@metascore-library/core/modules/button";
 import Tabs from "../tabs";
 
 import AnimatedControl from "./components/controls/AnimatedControl";
@@ -27,7 +27,7 @@ export default class ComponentFormModule extends AbstractModule {
     FormGroup,
     MediaPlayer,
     SchemaForm,
-    StyledButton,
+    BaseButton,
     Tabs,
   ];
 
@@ -45,6 +45,12 @@ export default class ComponentFormModule extends AbstractModule {
   configure(configs) {
     const store = useStore();
     store.configure(configs);
+  }
+
+  get title() {
+    const store = useStore();
+    const { title } = storeToRefs(store);
+    return readonly(title);
   }
 
   get recordingCursorKeyframes() {
