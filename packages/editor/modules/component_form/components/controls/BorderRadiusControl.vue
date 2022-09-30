@@ -42,86 +42,82 @@
       @focusout="onOverlayFocusout"
     >
       <div class="shape">
-        <template v-if="values">
-          <template v-for="prop in props" :key="prop">
-            <number-control
-              v-model="values[prop].x"
-              class="prop-control"
-              :min="0"
-              :data-prop="prop"
-              data-axis="x"
-            />
-            <number-control
-              v-model="values[prop].y"
-              class="prop-control"
-              :min="0"
-              :data-prop="prop"
-              data-axis="y"
-            />
-          </template>
+        <template v-for="(value, key) in internalValue" :key="key">
+          <number-control
+            v-model="value.x"
+            class="prop-control"
+            :min="0"
+            :data-prop="key"
+            data-axis="x"
+          />
+          <number-control
+            v-model="value.y"
+            class="prop-control"
+            :min="0"
+            :data-prop="key"
+            data-axis="y"
+          />
         </template>
 
         <div ref="preview" class="preview" :style="previewStyle">
-          <template v-if="values">
-            <div
-              class="resize-handle"
-              data-prop="top-left"
-              data-axis="x"
-              :style="{ left: `${values['top-left'].x}px`, top: 0 }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="top-left"
-              data-axis="y"
-              :style="{ left: 0, top: `${values['top-left'].y}px` }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="top-right"
-              data-axis="x"
-              data-reversed
-              :style="{ right: `${values['top-right'].x}px`, top: 0 }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="top-right"
-              data-axis="y"
-              :style="{ right: 0, top: `${values['top-right'].y}px` }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="bottom-left"
-              data-axis="x"
-              :style="{ left: `${values['bottom-left'].x}px`, bottom: 0 }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="bottom-left"
-              data-axis="y"
-              data-reversed
-              :style="{ left: 0, bottom: `${values['bottom-left'].y}px` }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="bottom-right"
-              data-axis="x"
-              data-reversed
-              :style="{
-                right: `${values['bottom-right'].x}px`,
-                bottom: 0,
-              }"
-            ></div>
-            <div
-              class="resize-handle"
-              data-prop="bottom-right"
-              data-axis="y"
-              data-reversed
-              :style="{
-                right: 0,
-                bottom: `${values['bottom-right'].y}px`,
-              }"
-            ></div>
-          </template>
+          <div
+            class="resize-handle"
+            data-prop="top-left"
+            data-axis="x"
+            :style="{ left: `${internalValue['top-left'].x}px`, top: 0 }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="top-left"
+            data-axis="y"
+            :style="{ left: 0, top: `${internalValue['top-left'].y}px` }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="top-right"
+            data-axis="x"
+            data-reversed
+            :style="{ right: `${internalValue['top-right'].x}px`, top: 0 }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="top-right"
+            data-axis="y"
+            :style="{ right: 0, top: `${internalValue['top-right'].y}px` }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="bottom-left"
+            data-axis="x"
+            :style="{ left: `${internalValue['bottom-left'].x}px`, bottom: 0 }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="bottom-left"
+            data-axis="y"
+            data-reversed
+            :style="{ left: 0, bottom: `${internalValue['bottom-left'].y}px` }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="bottom-right"
+            data-axis="x"
+            data-reversed
+            :style="{
+              right: `${internalValue['bottom-right'].x}px`,
+              bottom: 0,
+            }"
+          ></div>
+          <div
+            class="resize-handle"
+            data-prop="bottom-right"
+            data-axis="y"
+            data-reversed
+            :style="{
+              right: 0,
+              bottom: `${internalValue['bottom-right'].y}px`,
+            }"
+          ></div>
         </div>
       </div>
 
@@ -134,6 +130,8 @@
         </base-button>
       </div>
     </div>
+
+    <div ref="parser" class="parser"></div>
   </form-group>
 </template>
 
@@ -190,25 +188,21 @@ export default {
       overlayStyle: null,
       overlayUpdateCleanup: null,
       props: ["top-left", "top-right", "bottom-right", "bottom-left"],
-      values: null,
+      internalValue: null,
     };
   },
   computed: {
     previewStyle() {
       let borderRadius = null;
 
-      if (!this.values) {
-        borderRadius = this.modelValue;
-      } else {
-        const x = [];
-        const y = [];
-        this.props.forEach((prop) => {
-          x.push(prop in this.values ? `${this.values[prop].x}px` : 0);
-          y.push(prop in this.values ? `${this.values[prop].y}px` : 0);
-        });
+      const x = [];
+      const y = [];
+      Object.values(this.internalValue).forEach((value) => {
+        x.push(`${value.x}px`);
+        y.push(`${value.y}px`);
+      });
 
-        borderRadius = `${x.join(" ")} / ${y.join(" ")}`;
-      }
+      borderRadius = `${x.join(" ")} / ${y.join(" ")}`;
 
       return { borderRadius };
     },
@@ -216,8 +210,9 @@ export default {
   watch: {
     showOverlay(value) {
       if (value) {
+        this.internalValue = this.parseCSS(this.modelValue);
+
         this.$nextTick(function () {
-          this.parseValue();
           this.$refs.overlay.focus();
           this.updateOverlayStyle();
           this.overlayUpdateCleanup = autoUpdate(
@@ -229,12 +224,9 @@ export default {
             }
           );
         });
-      } else {
-        if (this.overlayUpdateCleanup) {
-          this.overlayUpdateCleanup();
-          this.overlayUpdateCleanup = null;
-        }
-        this.values = null;
+      } else if (this.overlayUpdateCleanup) {
+        this.overlayUpdateCleanup();
+        this.overlayUpdateCleanup = null;
       }
     },
   },
@@ -261,22 +253,20 @@ export default {
     }
   },
   methods: {
-    parseValue() {
-      const preview = this.$refs.preview;
-      this.values = {};
+    parseCSS(css) {
+      this.$refs.parser.style.borderRadius = css;
 
-      this.props.forEach((prop) => {
-        const css = preview.style.getPropertyValue(`border-${prop}-radius`);
-        if (css !== null) {
-          const matches = css.match(/(\d*)px/g);
-          if (matches) {
-            this.values[prop] = {
-              x: parseInt(matches[0], 10),
-              y: parseInt(matches[matches.length > 1 ? 1 : 0], 10),
-            };
-          }
-        }
-      });
+      return this.props.reduce((acc, prop) => {
+        const prop_css = this.$refs.parser.style.getPropertyValue(
+          `border-${prop}-radius`
+        );
+        const matches = prop_css ? prop_css.match(/(\d*)px/g) : false;
+        acc[prop] = {
+          x: matches ? parseInt(matches[0], 10) : 0,
+          y: matches ? parseInt(matches[matches.length > 1 ? 1 : 0], 10) : 0,
+        };
+        return acc;
+      }, {});
     },
     async updateOverlayStyle() {
       const { x, y } = await computePosition(
@@ -309,7 +299,7 @@ export default {
       const reversed = "reversed" in handle.dataset;
       const delta = axis === "x" ? dx : dy;
 
-      this.values[prop][axis] += delta * (reversed ? -1 : 1);
+      this.internalValue[prop][axis] += delta * (reversed ? -1 : 1);
     },
     onApplyClick() {
       const preview = this.$refs.preview;
@@ -445,6 +435,10 @@ export default {
         }
       }
     }
+  }
+
+  .parser {
+    display: none;
   }
 
   &.disabled {
