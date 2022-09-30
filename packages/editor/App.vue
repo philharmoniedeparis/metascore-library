@@ -18,6 +18,7 @@
       "group": "Général",
       "ctrl+h": "Afficher les raccourcis clavier",
     },
+    "unload_dirty": "Les données non sauvegardées seront perdues.",
   },
   "en": {
     "scenario_default_title": "Scenario 1",
@@ -37,6 +38,7 @@
       "group": "Général",
       "ctrl+h": "Show keyboard shortcuts",
     },
+    "unload_dirty": "Any unsaved data will be lost.",
   },
 }
 </i18n>
@@ -406,7 +408,11 @@ export default {
       this.showAutoSaveRestoreConfirm = true;
     } else {
       await this.store.load(this.url);
+      window.addEventListener("beforeunload", this.onWindowBeforeunload);
     }
+  },
+  beforeUnmount() {
+    window.removeEventListener("beforeunload", this.onWindowBeforeunload);
   },
   methods: {
     onSaveClick() {
@@ -470,6 +476,12 @@ export default {
       this.showContextmenu = true;
 
       evt.preventDefault();
+    },
+    onWindowBeforeunload(evt) {
+      if (this.dirty) {
+        evt.preventDefault();
+        return (evt.returnValue = this.$t("unload_dirty"));
+      }
     },
   },
 };
