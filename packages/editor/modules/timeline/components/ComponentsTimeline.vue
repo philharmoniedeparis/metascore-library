@@ -132,13 +132,13 @@ export default {
       const track = handle.parentNode;
 
       track.classList.add("dragging");
-      handle.setAttribute("data-drag-y", 0);
+      handle.dataset.dragY = 0;
     },
     onHandleDraggableMove(evt) {
       const { target: handle, dy } = evt;
-      const y = parseFloat(handle.getAttribute("data-drag-y")) + dy;
+      const y = parseFloat(handle.dataset.dragY) + dy;
 
-      handle.setAttribute("data-drag-y", y);
+      handle.dataset.dragY = y;
       handle.style.transform = `translateY(${y}px)`;
     },
     onHandleDraggableEnd(evt) {
@@ -151,8 +151,8 @@ export default {
 
       if (this.sorted) {
         const parent_track = track.parentNode.closest(".component-track");
-        const parent_type = parent_track.getAttribute("data-type");
-        const parent_id = parent_track.getAttribute("data-id");
+        const parent_type = parent_track.dataset.type;
+        const parent_id = parent_track.dataset.id;
         const parent = this.getComponent(parent_type, parent_id);
 
         const children = [];
@@ -160,8 +160,8 @@ export default {
           .querySelectorAll(":scope > .children > .component-track")
           .forEach((child) => {
             children.unshift({
-              type: child.getAttribute("data-type"),
-              id: child.getAttribute("data-id"),
+              type: child.dataset.type,
+              id: child.dataset.id,
             });
           });
 
@@ -212,7 +212,7 @@ export default {
       const { top: drag_top, bottom: drag_bottom } =
         drag_hanlde.getBoundingClientRect();
       const drag_center = drag_top + (drag_bottom - drag_top) / 2;
-      const drag_y = parseFloat(drag_hanlde.getAttribute("data-drag-y"));
+      const drag_y = parseFloat(drag_hanlde.dataset.dragY);
 
       const drop_hanlde = evt.target;
       const drop_track = drop_hanlde.parentNode;
@@ -227,7 +227,7 @@ export default {
       // Adjust drag y.
       const { top: new_drag_top } = drag_hanlde.getBoundingClientRect();
       const new_drag_y = drag_y - (new_drag_top - drag_top);
-      drag_hanlde.setAttribute("data-drag-y", new_drag_y);
+      drag_hanlde.dataset.dragY = new_drag_y;
       drag_hanlde.style.transform = `translateY(${new_drag_y}px)`;
 
       this.sorted = true;

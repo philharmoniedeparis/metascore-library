@@ -438,17 +438,16 @@ export default {
   .handle,
   .aniamted-properties :deep(.handle) {
     display: flex;
-    position: sticky;
+    position: relative;
     left: 0;
     grid-column: 1;
-    padding: 0 0.25em 0 0.5em;
+    padding: 0 0.25em 0 calc(var(--depth) * 0.5em);
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
     gap: 0.25em;
     background: $mediumgray;
-    margin-left: calc(var(--depth) * 0.25em);
     border-right: 2px solid $darkgray;
     touch-action: none;
     user-select: none;
@@ -537,7 +536,7 @@ export default {
   }
 
   .aniamted-properties :deep(.handle) {
-    margin-left: calc(var(--depth) * 0.25em + 1em);
+    padding-left: calc(var(--depth) * 0.5em + 1em);
 
     > .icon {
       height: 1em;
