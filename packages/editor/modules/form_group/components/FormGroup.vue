@@ -162,6 +162,10 @@ export default {
     }
   }
 
+  &.disabled {
+    opacity: 0.75;
+  }
+
   &.error {
     :deep(input),
     :deep(select) {
