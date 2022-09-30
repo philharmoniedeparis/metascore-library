@@ -356,9 +356,10 @@ export default {
             type: "select",
             multiple: true,
             options: this.firstLevelComponents,
-            optionLabel: (o) => o?.name,
-            optionKey: (o) => o?.id,
-            optionValue: (o) => ({ type: o.type, id: o.id }),
+            optionLabel: ({ name }) => name,
+            optionKey: ({ type, id }) => `${type}:${id}`,
+            optionValue: ({ type, id }) => ({ type, id }),
+            valueComparator: (a, b) => a.type === b.type && a.id === b.id,
             ...this.getControlProps("blocks", this.commonModel.type),
           });
           break;

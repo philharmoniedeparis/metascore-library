@@ -86,6 +86,10 @@ export default {
       type: Function,
       default: (o) => (isObject(o) ? o.disabled : false),
     },
+    valueComparator: {
+      type: Function,
+      default: (a, b) => a === b,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -109,11 +113,15 @@ export default {
     value: {
       get() {
         if (this.multiple) {
-          const options = this.normalizedOptions.filter((o) => {
-            return this.modelValue.includes(o.value);
-          });
-          return options.map((o) => o.key);
+          return this.normalizedOptions
+            .filter((o) => {
+              return this.modelValue.some((v) => {
+                return this.valueComparator(o.value, v);
+              });
+            })
+            .map((o) => o.key);
         }
+
         const option = this.normalizedOptions.find((o) => {
           return o.value === this.modelValue;
         });
@@ -121,13 +129,13 @@ export default {
       },
       set(value) {
         if (this.multiple) {
-          const options = this.normalizedOptions.filter((o) => {
-            return value.includes(o.key);
-          });
-          this.$emit(
-            "update:modelValue",
-            options.map((o) => o.value)
-          );
+          const values = this.normalizedOptions
+            .filter((o) => {
+              return value.includes(o.key);
+            })
+            .map((o) => o.value);
+          this.$emit("update:modelValue", values);
+          return;
         }
 
         const option = this.normalizedOptions.find((o) => {
@@ -139,9 +147,7 @@ export default {
   },
   methods: {
     onOptionMousedown(evt) {
-      if (!this.multiple) {
-        return;
-      }
+      if (!this.multiple) return;
 
       evt.target.selected = !evt.target.selected;
       this.$refs.input.dispatchEvent(new Event("change"));
@@ -162,7 +168,6 @@ export default {
 
     option {
       font-weight: normal;
-      background: $mediumgray;
     }
   }
 
