@@ -40,8 +40,7 @@
       class="overlay"
       tabindex="-1"
       :style="overlayStyle"
-      @blur="onOverlayBlur"
-      @mousedown.prevent
+      @focusout="onOverlayFocusout"
     >
       <tabs-container>
         <tabs-item v-if="picker" title="Picker">
@@ -182,8 +181,10 @@ export default {
     onOpenerClick() {
       this.showOverlay = true;
     },
-    onOverlayBlur() {
-      this.showOverlay = false;
+    onOverlayFocusout(evt) {
+      if (!evt.currentTarget.contains(evt.relatedTarget)) {
+        this.showOverlay = false;
+      }
     },
     onApplyClick() {
       this.showOverlay = false;

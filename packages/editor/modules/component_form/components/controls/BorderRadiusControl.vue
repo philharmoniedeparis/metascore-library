@@ -39,8 +39,7 @@
       class="overlay"
       tabindex="-1"
       :style="overlayStyle"
-      @blur="onOverlayBlur"
-      @mousedown.prevent
+      @focusout="onOverlayFocusout"
     >
       <div class="shape">
         <template v-if="values">
@@ -298,8 +297,10 @@ export default {
     onOpenerClick() {
       this.showOverlay = true;
     },
-    onOverlayBlur() {
-      this.showOverlay = false;
+    onOverlayFocusout(evt) {
+      if (!evt.currentTarget.contains(evt.relatedTarget)) {
+        this.showOverlay = false;
+      }
     },
     onHandleDraggableMove(evt) {
       const { target: handle, dx, dy } = evt;
