@@ -512,6 +512,7 @@ export default {
 
 <style lang="scss" scoped>
 .app-preview {
+  position: relative;
   display: grid;
   width: 100%;
   height: 100%;
@@ -553,11 +554,13 @@ export default {
 }
 
 .rulers-corner {
-  position: absolute;
+  position: sticky;
   top: 0;
   left: 0;
   width: v-bind(cssRulerThikness);
   height: v-bind(cssRulerThikness);
+  margin-left: calc(-1 * v-bind(cssRulerThikness));
+  margin-top: calc(-1 * v-bind(cssRulerThikness));
   background: $mediumgray;
   z-index: 3;
 }

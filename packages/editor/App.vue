@@ -512,6 +512,7 @@ export default {
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
+  color: $white;
 
   &,
   :deep(*) {
