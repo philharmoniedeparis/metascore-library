@@ -16,9 +16,8 @@ export default Mixin(
           properties: {
             "border-width": createIntegerField({
               title: "Border width",
-              default: null,
+              default: 0,
               minimum: 0,
-              nullable: true,
             }),
             "border-color": createColorField({
               ajv,
