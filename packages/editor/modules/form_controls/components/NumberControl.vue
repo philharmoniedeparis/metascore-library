@@ -27,6 +27,7 @@
         :step="step"
         :min="min"
         :max="max"
+        :placeholder="placeholder"
         :readonly="readonly"
         :disabled="disabled"
         @change="onInputChange"
@@ -77,6 +78,10 @@ export default {
       default: null,
     },
     description: {
+      type: String,
+      default: null,
+    },
+    placeholder: {
       type: String,
       default: null,
     },

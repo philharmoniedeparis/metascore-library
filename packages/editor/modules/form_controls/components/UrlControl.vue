@@ -11,6 +11,7 @@
       v-model="value"
       v-autofocus="autofocus"
       type="url"
+      :placeholder="placeholder"
       :required="required"
       :readonly="readonly"
       :disabled="disabled"
@@ -35,6 +36,10 @@ export default {
       default: null,
     },
     description: {
+      type: String,
+      default: null,
+    },
+    placeholder: {
       type: String,
       default: null,
     },
