@@ -1,19 +1,25 @@
 <i18n>
 {
-  "en": {
-    "apply_button": "Appliquer",
-    "cancel_button": "Cancel",
-  },
   "fr": {
     "apply_button": "Appliquer",
+    "clear_button": "Effacer",
     "cancel_button": "Annuler",
+  },
+  "en": {
+    "apply_button": "Appliquer",
+    "clear_button": "Clear",
+    "cancel_button": "Cancel",
   },
 }
 </i18n>
 
 <template>
   <form-group
-    :class="['control', 'border-radius', { readonly, disabled }]"
+    :class="[
+      'control',
+      'border-radius',
+      { readonly, disabled, empty: !modelValue },
+    ]"
     :label="label"
     :label-for="inputId"
     :description="description"
@@ -124,6 +130,14 @@
       <div class="buttons">
         <base-button class="apply" role="primary" @click="onApplyClick">
           {{ $t("apply_button") }}
+        </base-button>
+        <base-button
+          v-if="!required"
+          class="clear"
+          role="secondary"
+          @click="onClearClick"
+        >
+          {{ $t("clear_button") }}
         </base-button>
         <base-button class="cancel" role="secondary" @click="onCancelClick">
           {{ $t("cancel_button") }}
@@ -309,6 +323,10 @@ export default {
       );
       this.showOverlay = false;
     },
+    onClearClick() {
+      this.showOverlay = false;
+      this.$emit("update:modelValue", null);
+    },
     onCancelClick() {
       this.showOverlay = false;
     },
@@ -428,6 +446,7 @@ export default {
       gap: 0.5em;
 
       button {
+        padding: 0.5em;
         background: $darkgray;
 
         &.secondary {
