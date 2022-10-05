@@ -99,6 +99,8 @@ export default {
     componentEl: {
       handler(value) {
         if (value) {
+          value.addEventListener("dblclick", this.onComponentDblclick);
+
           this.componentInnerEl = value.querySelector(
             ":scope > .metaScore-component--inner"
           );
@@ -117,6 +119,9 @@ export default {
     this.stopEditing(this.component);
   },
   methods: {
+    onComponentDblclick() {
+      this.startEditing();
+    },
     onComponentInnerElKeyEvent(evt) {
       evt.stopPropagation();
     },
