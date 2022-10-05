@@ -40,10 +40,16 @@ export default defineStore("editor", {
     getDirtyData() {
       return (since = null) => {
         const data = new FormData();
-        if (this.isDirty("metadata", since)) {
+        if (this.isDirty("title", since)) {
           data.set("title", this.appTitle);
-          data.set("width", this.appWidth);
-          data.set("height", this.appHeight);
+        }
+        if (this.isDirty("width", since)) {
+          const width = unref(useModule("app_renderer").width);
+          data.set("width", width);
+        }
+        if (this.isDirty("height", since)) {
+          const height = unref(useModule("app_renderer").height);
+          data.set("height", height);
         }
         if (this.isDirty("media", since)) {
           const mediaSource = unref(useModule("media_player").source);
@@ -84,7 +90,7 @@ export default defineStore("editor", {
       this.$onAction(({ name }) => {
         switch (name) {
           case "setAppTitle":
-            this.setDirty("metadata");
+            this.setDirty("title");
             break;
         }
       });
@@ -94,8 +100,13 @@ export default defineStore("editor", {
         useModule("app_renderer");
       initAppRenderer({ width, height, css });
       onAppRendererStoreAction(({ name }) => {
-        if (["width", "height"].includes(name)) {
-          this.setDirty("media");
+        switch (name) {
+          case "setWidth":
+            this.setDirty("width");
+            break;
+          case "setHeight":
+            this.setDirty("height");
+            break;
         }
       });
 
