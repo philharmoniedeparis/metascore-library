@@ -130,8 +130,13 @@ export default {
     height: 100%;
     overflow: auto;
 
-    :deep(a[data-behavior-trigger]) {
-      cursor: pointer;
+    :deep(a) {
+      color: rgb(0, 0, 238);
+      text-decoration: underline;
+
+      &[data-behavior-trigger] {
+        cursor: pointer;
+      }
     }
   }
 }
