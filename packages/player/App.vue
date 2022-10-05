@@ -33,6 +33,7 @@
 <script>
 import { computed } from "vue";
 import useStore from "./store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
 
 export default {
@@ -65,7 +66,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    return { store };
+    const { ready: appRendererReady } = useModule("app_renderer");
+    return { store, appRendererReady };
   },
   data() {
     return {
@@ -77,7 +79,7 @@ export default {
   },
   computed: {
     loading() {
-      return this.store.loading;
+      return this.store.loading || !this.appRendererReady;
     },
   },
   mounted() {

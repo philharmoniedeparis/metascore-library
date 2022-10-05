@@ -12,6 +12,7 @@ import {
 import Ajax from "@metascore-library/core/modules/ajax";
 import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
 import AppPreview from "./modules/app_preview";
+import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
 import BaseButton from "@metascore-library/core/modules/button";
@@ -66,6 +67,7 @@ export class Editor {
         Ajax,
         AppBehaviors,
         AppPreview,
+        AppRenderer,
         AssetsLibrary,
         AutoSave,
         BaseButton,

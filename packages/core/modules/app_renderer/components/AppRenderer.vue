@@ -1,14 +1,16 @@
 <template>
-  <div class="metaScore-app" tabindex="-1" :style="style">
-    <media-player v-if="mediaSource" :source="mediaSource" type="video" />
-    <template v-for="scenario in scenarios" :key="scenario.id">
-      <scenario-component
-        v-if="scenario.id === activeScenario"
-        :component="scenario"
-        @action="onComponentAction"
-      />
-    </template>
-  </div>
+  <Transition name="fade">
+    <div v-show="ready" class="metaScore-app" tabindex="-1" :style="style">
+      <media-player v-if="mediaSource" :source="mediaSource" type="video" />
+      <template v-for="scenario in scenarios" :key="scenario.id">
+        <scenario-component
+          v-if="scenario.id === activeScenario"
+          :component="scenario"
+          @action="onComponentAction"
+        />
+      </template>
+    </div>
+  </Transition>
 </template>
 
 <script>
@@ -70,7 +72,6 @@ export default {
     return {
       containerWidth: null,
       containerHeight: null,
-      sheet: null,
     };
   },
   computed: {
@@ -82,6 +83,14 @@ export default {
     },
     css() {
       return this.store.css;
+    },
+    ready: {
+      get() {
+        return this.store.ready;
+      },
+      set(value) {
+        this.store.ready = value;
+      },
     },
     scenarios() {
       return this.getComponentsByType("Scenario");
@@ -115,13 +124,19 @@ export default {
   },
   watch: {
     css(value) {
-      if (!this.sheet) {
+      this.ready = !value;
+
+      if (!this._sheet) {
         const doc = this.$el.ownerDocument;
-        this.sheet = doc.createElement("style");
-        doc.head.appendChild(this.sheet);
+        this._sheet = doc.createElement("link");
+        this._sheet.addEventListener("load", this.onSheetLoad);
+        this._sheet.addEventListener("error", this.onSheetError);
+        doc.head.appendChild(this._sheet);
       }
 
-      this.sheet.innerHTML = value ?? "";
+      this._sheet.setAttribute("rel", "stylesheet");
+      this._sheet.setAttribute("type", "text/css");
+      this._sheet.setAttribute("href", value);
     },
     responsive(value) {
       if (value) {
@@ -310,6 +325,12 @@ export default {
           break;
       }
     },
+    onSheetLoad() {
+      this.ready = true;
+    },
+    onSheetError() {
+      this.ready = true;
+    },
   },
 };
 </script>
@@ -349,5 +370,15 @@ body {
   > :deep(.media-player) {
     display: none;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

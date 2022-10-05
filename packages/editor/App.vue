@@ -242,6 +242,8 @@ export default {
 
     const { preview } = useModule("app_preview");
 
+    const { ready: appRendererReady } = useModule("app_renderer");
+
     const {
       maxScale: maxWaveformScale,
       scale: waveformScale,
@@ -277,6 +279,7 @@ export default {
       getAssetsByType,
       addAsset,
       preview,
+      appRendererReady,
       maxWaveformScale,
       waveformScale,
       waveformOffset,
@@ -306,7 +309,7 @@ export default {
   },
   computed: {
     loading() {
-      return this.store.loading;
+      return this.store.loading || !this.appRendererReady;
     },
     saving() {
       return this.store.saving;
