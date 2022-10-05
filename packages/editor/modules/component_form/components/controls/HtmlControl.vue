@@ -97,7 +97,7 @@ export default {
       }
     },
     componentEl: {
-      handler(value) {
+      handler(value, oldValue) {
         if (value) {
           value.addEventListener("dblclick", this.onComponentDblclick);
 
@@ -108,6 +108,9 @@ export default {
           this.contentsEl =
             this.componentInnerEl.querySelector(":scope > .contents");
         } else {
+          if (oldValue) {
+            oldValue.removeEventListener("dblclick", this.onComponentDblclick);
+          }
           this.componentInnerEl = null;
           this.contentsEl = null;
         }
@@ -116,6 +119,13 @@ export default {
     },
   },
   beforeUnmount() {
+    if (this.componentEl) {
+      this.componentEl.removeEventListener(
+        "dblclick",
+        this.onComponentDblclick
+      );
+    }
+
     this.stopEditing(this.component);
   },
   methods: {
