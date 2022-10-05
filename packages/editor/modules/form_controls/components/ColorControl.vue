@@ -1,19 +1,21 @@
 <i18n>
 {
-  "en": {
-    "apply_button": "Appliquer",
-    "cancel_button": "Cancel",
-  },
   "fr": {
     "apply_button": "Appliquer",
+    "clear_button": "Effacer",
     "cancel_button": "Annuler",
+  },
+  "en": {
+    "apply_button": "Appliquer",
+    "clear_button": "Clear",
+    "cancel_button": "Cancel",
   },
 }
 </i18n>
 
 <template>
   <form-group
-    :class="['control', 'color', { readonly, disabled }]"
+    :class="['control', 'color', { readonly, disabled, empty: !modelValue }]"
     :label="label"
     :label-for="inputId"
     :description="description"
@@ -28,7 +30,11 @@
       :style="`color: ${modelValue};`"
       :disabled="disabled"
       @click="onOpenerClick"
-    ></button>
+    >
+      <span v-if="!modelValue" aria-hidden="true">
+        <clear-icon class="icon" />
+      </span>
+    </button>
 
     <template v-if="$slots.label" #label>
       <slot name="label" />
@@ -54,8 +60,16 @@
         </tabs-item>
       </tabs-container>
       <div class="buttons">
-        <base-button class="apply" role="primary" @click="onApplyClick(hide)">
+        <base-button class="apply" role="primary" @click="onApplyClick">
           {{ $t("apply_button") }}
+        </base-button>
+        <base-button
+          v-if="!required"
+          class="clear"
+          role="secondary"
+          @click="onClearClick"
+        >
+          {{ $t("clear_button") }}
         </base-button>
         <base-button class="cancel" role="secondary" @click="onCancelClick">
           {{ $t("cancel_button") }}
@@ -78,11 +92,13 @@ import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import ColorPicker from "./color/ColorPicker.vue";
 import ColorSwatches from "./color/ColorSwatches.vue";
+import ClearIcon from "../assets/icons/color-clear.svg?inline";
 
 export default {
   components: {
     ColorPicker,
     ColorSwatches,
+    ClearIcon,
   },
   props: {
     label: {
@@ -202,6 +218,10 @@ export default {
       }
       this.$emit("update:modelValue", value);
     },
+    onClearClick() {
+      this.showOverlay = false;
+      this.$emit("update:modelValue", null);
+    },
     onCancelClick() {
       this.showOverlay = false;
     },
@@ -221,11 +241,19 @@ export default {
     vertical-align: middle;
     @include transparency-grid;
     background-size: 0.75em;
+    color: transparent;
     border-radius: 0.25em;
     box-shadow: 0.05em 0.05em 0.5em 0.1em rgba(0, 0, 0, 0.25);
     opacity: 1;
     transition: none;
     overflow: hidden;
+
+    .icon {
+      padding: 0.25em;
+      color: $darkgray;
+      background-color: $mediumgray;
+      box-sizing: content-box;
+    }
 
     &::after {
       content: "";
@@ -258,6 +286,7 @@ export default {
       gap: 0.5em;
 
       button {
+        padding: 0.5em;
         background: $darkgray;
 
         &.secondary {
