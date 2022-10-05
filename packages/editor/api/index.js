@@ -9,7 +9,12 @@ function save(url, data) {
 }
 
 function restore(url, vid) {
-  return useModule("ajax").patch(url, { params: { vid } });
+  return useModule("ajax").patch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: { vid },
+  });
 }
 
 export { load, save, restore };
