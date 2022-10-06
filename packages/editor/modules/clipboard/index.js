@@ -6,16 +6,19 @@ import useStore from "./store";
 export default class ClipboardModule extends AbstractModule {
   static id = "clipboard";
 
-  get format() {
+  hasData(format) {
     const store = useStore();
-    const { format } = storeToRefs(store);
-    return readonly(format);
+    return format === store.format;
   }
 
-  get data() {
+  getData(format) {
     const store = useStore();
-    const { data } = storeToRefs(store);
-    return readonly(data);
+    if (format === store.format) {
+      const { data } = storeToRefs(store);
+      return readonly(data);
+    }
+
+    return null;
   }
 
   setData(format, data) {

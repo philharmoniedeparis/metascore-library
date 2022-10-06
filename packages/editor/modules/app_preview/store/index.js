@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
+import { unref } from "vue";
 import { paramCase } from "param-case";
-import { omit } from "lodash";
+import { cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default defineStore("app-preview", {
@@ -147,28 +148,114 @@ export default defineStore("app-preview", {
     unlockAllComponents() {
       this.lockedComponents = [];
     },
-    copyComponent(component) {
-      const { setData: setClipboardData } = useModule("clipboard");
-      const data = omit(component, ["id"]);
-      setClipboardData(`metascore/component`, data);
-    },
     copyComponents(components) {
-      components.map(this.copyComponent);
-    },
-    cutComponent(component) {
-      const { deleteComponent } = useModule("app_components");
-      this.copyComponent(component);
-      deleteComponent(component);
+      const { setData: setClipboardData } = useModule("clipboard");
+      const { getComponentChildrenProperty, getComponentChildren } =
+        useModule("app_components");
+
+      const recursiveCopy = (component) => {
+        const copy = cloneDeep(unref(component));
+        delete copy.id;
+
+        const property = getComponentChildrenProperty(component);
+        if (property) {
+          copy[property] = getComponentChildren(component).map(recursiveCopy);
+        }
+
+        return copy;
+      };
+
+      setClipboardData("metascore/component", components.map(recursiveCopy));
     },
     cutComponents(components) {
-      components.map(this.cutComponent);
+      const { deleteComponent } = useModule("app_components");
+      const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+        useModule("history");
+
+      this.copyComponents(components);
+
+      startHistoryGroup();
+      components.forEach(deleteComponent);
+      endHistoryGroup();
     },
-    pasteComponent(component, parent) {
-      // @todo: implement
-      console.log("pasteComponent", component, parent);
+    getClosestPasteTarget(target) {
+      const { getData: getClipboardData } = useModule("clipboard");
+      const components = unref(getClipboardData("metascore/component"));
+
+      if (!components) return null;
+
+      const { getModel, getComponentChildrenProperty, getComponentParent } =
+        useModule("app_components");
+      const model = getModel(target.type);
+      const property = getComponentChildrenProperty(target);
+
+      if (property) {
+        const can_paste = components.every((component) => {
+          return model.schema.properties[
+            property
+          ].items.properties.type.enum.includes(component.type);
+        });
+
+        if (can_paste) return target;
+      }
+
+      const parent = getComponentParent(target);
+      if (parent) {
+        return this.getClosestPasteTarget(parent);
+      }
+
+      return null;
     },
-    pasteComponents(components, parent) {
-      components.map((c) => this.pasteComponent(c, parent));
+    async pasteComponents(target) {
+      target = this.getClosestPasteTarget(target);
+      if (!target) return;
+
+      const { getComponent, createComponent, addComponent } =
+        useModule("app_components");
+      const { getData: getClipboardData } = useModule("clipboard");
+      const { getComponentChildrenProperty } = useModule("app_components");
+      const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+        useModule("history");
+
+      const recursivePaste = async (data, parent) => {
+        let children = [];
+        const property = getComponentChildrenProperty(data);
+        if (property && property in data && data[property]) {
+          children = data[property];
+          data[property] = [];
+        }
+
+        const component = await createComponent(data);
+        await addComponent(component, parent);
+
+        for (const child of children) {
+          await recursivePaste(child, component);
+        }
+
+        return component;
+      };
+
+      let data = getClipboardData("metascore/component");
+      if (data) {
+        data = cloneDeep(unref(data));
+        startHistoryGroup();
+
+        let i = 0;
+        for (const item of data) {
+          if ("position" in item) {
+            item.position[0] += 10;
+            item.position[1] += 10;
+          }
+
+          const component = await recursivePaste(
+            item,
+            getComponent(target.type, target.id)
+          );
+          this.selectComponent(component, i++ > 0);
+        }
+
+        endHistoryGroup();
+      }
     },
     arrangeComponent(component, action) {
       const {

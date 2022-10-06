@@ -207,56 +207,72 @@ export default {
           right: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { left: 1 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { left: 1 });
+              }
             },
             description: this.$t("hotkey.right"),
           },
           "shift+right": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { left: 10 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { left: 10 });
+              }
             },
             description: this.$t("hotkey.shift+right"),
           },
           left: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { left: -1 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { left: -1 });
+              }
             },
             description: this.$t("hotkey.left"),
           },
           "shift+left": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { left: -10 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { left: -10 });
+              }
             },
             description: this.$t("hotkey.shift+left"),
           },
           up: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { top: -1 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { top: -1 });
+              }
             },
             description: this.$t("hotkey.up"),
           },
           "shift+up": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { top: -10 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { top: -10 });
+              }
             },
             description: this.$t("hotkey.shift+up"),
           },
           down: {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { top: 1 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { top: 1 });
+              }
             },
             description: this.$t("hotkey.down"),
           },
           "shift+down": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.moveComponents(selected, { top: 10 });
+              if (selected.length > 0) {
+                this.store.moveComponents(selected, { top: 10 });
+              }
             },
             description: this.$t("hotkey.shift+down"),
           },
@@ -275,22 +291,29 @@ export default {
           "ctrl+c": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.copyComponents(selected);
+              if (selected.length > 0) {
+                this.store.copyComponents(selected);
+              }
             },
             description: this.$t("hotkey.ctrl+c"),
-          },
-          "ctrl+v": {
-            handler: () => {
-              // @todo
-            },
-            description: this.$t("hotkey.ctrl+v"),
           },
           "ctrl+x": {
             handler: () => {
               const selected = this.store.getSelectedComponents;
-              this.store.cutComponents(selected);
+              if (selected.length > 0) {
+                this.store.cutComponents(selected);
+              }
             },
             description: this.$t("hotkey.ctrl+x"),
+          },
+          "ctrl+v": {
+            handler: () => {
+              const selected = this.store.getSelectedComponents;
+              if (selected.length > 0) {
+                this.store.pasteComponents(selected[0]);
+              }
+            },
+            description: this.$t("hotkey.ctrl+v"),
           },
           "ctrl+d": {
             handler: () => {

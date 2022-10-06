@@ -7,6 +7,7 @@
       "select": "Sélectionner",
       "deselect": "Désélectionner",
       "copy": "Copier",
+      "cut": "Couper",
       "paste": "Coller",
       "delete": "Supprimer",
       "lock": "Verrouiller",
@@ -25,6 +26,7 @@
       "select": "Select",
       "deselect": "Deselect",
       "copy": "Copy",
+      "cut": "Cut",
       "paste": "Paste",
       "delete": "Delete",
       "lock": "Lock",
@@ -78,7 +80,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round, omit, kebabCase, startCase, camelCase } from "lodash";
+import { round, kebabCase, startCase, camelCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
@@ -100,14 +102,12 @@ export default {
   emits: ["componentclick"],
   setup() {
     const store = useStore();
-    const {
-      format: clipboardFormat,
-      data: clipboardData,
-      setData: setClipboardData,
-    } = useModule("clipboard");
+    const { getData: getClipboardData, setData: setClipboardData } =
+      useModule("clipboard");
     const { time: mediaTime } = useModule("media_player");
     const {
       getModel,
+      getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
       createComponent,
@@ -120,11 +120,11 @@ export default {
       useModule("history");
     return {
       store,
-      clipboardFormat,
-      clipboardData,
+      getClipboardData,
       setClipboardData,
       mediaTime,
       getModel,
+      getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
       createComponent,
@@ -182,25 +182,6 @@ export default {
         this.store.snapTargets = value;
       },
     },
-    clipboardDataAvailable() {
-      if (this.clipboardFormat !== "metascore/component") {
-        return false;
-      }
-
-      const component = this.clipboardData;
-
-      switch (this.component.type) {
-        case "Scenario":
-        case "Page":
-          return this.model.schema.properties[
-            "children"
-          ].items.properties.type.enum.includes(component.type);
-        case "Block":
-          return component.type === "Page";
-        default:
-          return false;
-      }
-    },
     contextmenuItems() {
       const items = [
         {
@@ -225,13 +206,12 @@ export default {
         },
       ];
 
-      if (this.clipboardDataAvailable) {
+      const paste_target = this.store.getClosestPasteTarget(this.component);
+      if (paste_target) {
         items.push({
           label: this.$t("contextmenu.paste"),
-          handler: () => {
-            // @todo
-            const data = this.clipboardData;
-            console.log(data);
+          handler: async () => {
+            await this.store.pasteComponents(paste_target);
           },
         });
       }
@@ -254,7 +234,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.deleteComponent(this.component);
+                    this.store.deleteComponent(this.component);
                   },
                 },
                 {
@@ -274,13 +254,20 @@ export default {
           ];
 
         default:
-          items.push({
-            label: this.$t("contextmenu.copy"),
-            handler: () => {
-              const data = omit(this.component, ["id"]);
-              this.setClipboardData(`metascore/component`, data);
+          items.push(
+            {
+              label: this.$t("contextmenu.copy"),
+              handler: () => {
+                this.store.copyComponents([this.component]);
+              },
             },
-          });
+            {
+              label: this.$t("contextmenu.cut"),
+              handler: () => {
+                this.store.cutComponents([this.component]);
+              },
+            }
+          );
 
           return [
             {

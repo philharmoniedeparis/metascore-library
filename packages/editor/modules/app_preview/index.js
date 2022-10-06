@@ -102,4 +102,19 @@ export default class AppPreviewModule extends AbstractModule {
     const store = useStore();
     return store.deselectComponent(component);
   }
+
+  copyComponents(components) {
+    const store = useStore();
+    store.copyComponents(components);
+  }
+
+  cutComponents(components) {
+    const store = useStore();
+    store.cutComponents(components);
+  }
+
+  pasteComponents(target) {
+    const store = useStore();
+    store.pasteComponents(target);
+  }
 }

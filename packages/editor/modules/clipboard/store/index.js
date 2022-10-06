@@ -3,18 +3,18 @@ import { defineStore } from "pinia";
 export default defineStore("clipboard", {
   state: () => {
     return {
-      data: null,
       format: null,
+      data: null,
     };
   },
   actions: {
     setData(format, data) {
-      this.data = data;
       this.format = format;
+      this.data = data;
     },
     clear() {
-      this.data = null;
       this.format = null;
+      this.data = null;
     },
   },
 });
