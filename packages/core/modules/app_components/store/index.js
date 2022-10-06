@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
 import { v4 as uuid } from "uuid";
-import { omit, cloneDeep } from "lodash";
+import { omit, cloneDeep, round } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
@@ -176,19 +176,19 @@ export default defineStore("app-components", {
     async update(component, data) {
       try {
         if ("start-time" in data || "end-time" in data) {
-          const { duration: mediaDuration } = useModule("media_player");
           const parent = this.getParent(component);
           if (parent && this.getModel(parent.type).$isTimeable) {
-            if ("start-time" in data) {
+            if ("start-time" in data && data["start-time"] !== null) {
               data["start-time"] = Math.max(
                 data["start-time"],
                 parent["start-time"] ?? 0
               );
             }
-            if ("end-time" in data) {
+            if ("end-time" in data && data["end-time"] !== null) {
+              const { duration: mediaDuration } = useModule("media_player");
               data["end-time"] = Math.min(
                 data["end-time"],
-                parent["end-time"] ?? unref(mediaDuration)
+                parent["end-time"] ?? round(unref(mediaDuration), 2)
               );
             }
           }
