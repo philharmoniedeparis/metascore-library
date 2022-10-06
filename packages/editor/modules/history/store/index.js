@@ -5,7 +5,7 @@ export default defineStore("history", {
     return {
       active: false,
       stack: [],
-      group: null,
+      groups: [],
       index: 0,
       stores: {},
       processing: false,
@@ -25,33 +25,54 @@ export default defineStore("history", {
         return;
       }
 
-      if (this.group !== null) {
-        this.group.push(item);
+      if (this.groups.length > 0) {
+        this.groups[this.groups.length - 1].items.push(item);
       } else {
         this.stack.splice(this.index);
         this.stack.push(item);
         this.index++;
       }
     },
-    startGroup() {
+    startGroup(mergeable = false) {
       if (!this.active || this.processing) {
         return;
       }
 
-      this.group = [];
+      this.groups.push({
+        items: [],
+        mergeable,
+      });
     },
     endGroup() {
       if (!this.active || this.processing) {
         return;
       }
 
-      const group = this.group;
-      this.group = null;
-      if (group && group.length > 0) {
-        this.push({
-          undo: group[0].undo,
-          redo: group[group.length - 1].redo,
-        });
+      const group = this.groups.pop();
+      if (group) {
+        const { mergeable, items } = group;
+
+        if (items.length === 0) return;
+
+        if (mergeable) {
+          this.push({
+            undo: items[0].undo,
+            redo: items[items.length - 1].redo,
+          });
+        } else {
+          this.push({
+            undo: async () => {
+              for (const item of [...items].reverse()) {
+                await item.undo();
+              }
+            },
+            redo: async () => {
+              for (const item of items) {
+                await item.redo();
+              }
+            },
+          });
+        }
       }
     },
     async undo() {

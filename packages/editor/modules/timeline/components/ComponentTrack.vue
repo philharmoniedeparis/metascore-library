@@ -369,7 +369,7 @@ export default {
     },
     onResizableStart() {
       this.resizing = true;
-      this.startHistoryGroup();
+      this.startHistoryGroup(true);
     },
     onResizableMove(evt) {
       const time_wrapper = this.$refs["time-wrapper"];

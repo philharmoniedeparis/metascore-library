@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     onInputFocus() {
-      this.startHistoryGroup();
+      this.startHistoryGroup(true);
     },
     onInputBlur() {
       this.endHistoryGroup();
