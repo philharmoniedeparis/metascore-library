@@ -21,8 +21,19 @@ export default class Scenario extends mix(AbstractComponent).with(
 ) {
   static type = "Scenario";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = AbstractComponent;
 
+  /**
+   * @inheritdoc
+   */
+  static childrenProperty = "children";
+
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = super.ajv;
 
@@ -32,7 +43,7 @@ export default class Scenario extends mix(AbstractComponent).with(
           title: "Name",
           description: "The component's name",
         }),
-        children: createCollectionField({
+        [this.childrenProperty]: createCollectionField({
           ajv,
           model: [
             Animation,

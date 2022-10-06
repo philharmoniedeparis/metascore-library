@@ -57,29 +57,13 @@ export default defineStore("app-components", {
     },
     getChildrenProperty() {
       return (component) => {
-        switch (component.type) {
-          case "Block":
-            return "pages";
-          case "Page":
-          case "Scenario":
-            return "children";
-        }
-
-        return null;
+        return this.getModel(component.type).childrenProperty;
       };
     },
     hasChildren() {
       return (component) => {
         const property = this.getChildrenProperty(component);
-        switch (component.type) {
-          case "Block":
-            return component[property]?.length > 0;
-          case "Page":
-          case "Scenario":
-            return component[property]?.length > 0;
-        }
-
-        return false;
+        return property && component[property]?.length > 0;
       };
     },
     getChildren() {
@@ -132,8 +116,7 @@ export default defineStore("app-components", {
     },
     get(type, id) {
       const component = this.components?.[type]?.[id];
-      const data = component && !component.$deleted ? component.data : null;
-      return data ? readonly(data) : null;
+      return component && !component.$deleted ? readonly(component.data) : null;
     },
     async create(data, validate = true) {
       if (data.type in Models) {

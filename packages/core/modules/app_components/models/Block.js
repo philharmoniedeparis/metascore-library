@@ -20,6 +20,11 @@ export default class Block extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
+  static childrenProperty = "pages";
+
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 
@@ -48,7 +53,7 @@ export default class Block extends EmbeddableComponent {
           enum: ["auto", "hidden", "visible"],
           default: "auto",
         }),
-        pages: createCollectionField({
+        [this.childrenProperty]: createCollectionField({
           ajv,
           model: Page,
         }),

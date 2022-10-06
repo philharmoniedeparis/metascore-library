@@ -20,16 +20,30 @@ export default class Page extends mix(AbstractComponent).with(
   Backgroundable,
   Timeable
 ) {
+  /**
+   * @inheritdoc
+   */
   static type = "Page";
 
+  /**
+   * @inheritdoc
+   */
   static baseModel = AbstractComponent;
 
+  /**
+   * @inheritdoc
+   */
+  static childrenProperty = "children";
+
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 
     return merge(super.schema, {
       properties: {
-        children: createCollectionField({
+        [this.childrenProperty]: createCollectionField({
           ajv,
           model: [
             Animation,

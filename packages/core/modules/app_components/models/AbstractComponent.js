@@ -17,6 +17,11 @@ export default class AbstractComponent extends AbstractModel {
   static baseModel = AbstractModel;
 
   /**
+   * The model's children property
+   */
+  static childrenProperty = null;
+
+  /**
    * Get a list of inheritance chain classes
    *
    * @returns {Class[]} The list of Model classes in the inheritance chain
