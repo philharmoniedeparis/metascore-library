@@ -526,6 +526,7 @@ export default {
     },
     onResizableStart() {
       this.resizing = true;
+      this.startHistoryGroup();
     },
     onResizableMove(evt) {
       const position = this.component.position;
@@ -541,6 +542,7 @@ export default {
     onResizableEnd(evt) {
       this.resizing = false;
       this.snapTargets = [];
+      this.endHistoryGroup();
 
       // Prevent the next click event
       evt.target.addEventListener(
