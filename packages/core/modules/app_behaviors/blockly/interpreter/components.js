@@ -1,6 +1,6 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 const states = new Map();
 

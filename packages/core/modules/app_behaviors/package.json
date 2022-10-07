@@ -3,9 +3,9 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "@blockly/block-plus-minus": "^3.0.22",
+    "@blockly/block-plus-minus": "^4.0.0",
     "@nx-js/compiler-util": "^2.0.0",
-    "blockly": "^8.0.3",
+    "blockly": "^9.0.0",
     "timecode-input": "github:philharmoniedeparis/timecode-input"
   }
 }

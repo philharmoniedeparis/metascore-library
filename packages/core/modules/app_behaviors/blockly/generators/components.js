@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { EMPTY_OPTION } from "../blocks/components";
 
 JavaScript["components_click"] = function (block) {

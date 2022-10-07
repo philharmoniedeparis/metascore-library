@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { round } from "lodash";
 
 JavaScript["media_timecode"] = function (block) {

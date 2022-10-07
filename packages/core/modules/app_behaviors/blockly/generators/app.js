@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 JavaScript["app_startup"] = function (block) {
   const statement = JavaScript.statementToCode(block, "STATEMENT");

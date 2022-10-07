@@ -162,7 +162,10 @@ module.exports = defineConfig({
       {
         patterns: [
           {
-            from: path.resolve(__dirname, "node_modules", "blockly", "media"),
+            from: path.resolve(
+              path.dirname(require.resolve("blockly")),
+              "media"
+            ),
             to: "blockly/media/",
           },
         ],

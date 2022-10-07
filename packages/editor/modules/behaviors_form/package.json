@@ -3,10 +3,10 @@
   "private": true,
   "description": "",
   "dependencies": {
-    "@blockly/block-plus-minus": "^3.0.22",
-    "@blockly/continuous-toolbox": "^2.0.37",
-    "@blockly/disable-top-blocks": "^0.1.42",
-    "blockly": "^8.0.3",
+    "@blockly/block-plus-minus": "^4.0.0",
+    "@blockly/continuous-toolbox": "^3.0.0",
+    "@blockly/disable-top-blocks": "^0.2.0",
+    "blockly": "^9.0.0",
     "lodash": "^4.17.21"
   }
 }

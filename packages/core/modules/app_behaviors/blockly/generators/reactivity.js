@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { Variables, Names } from "blockly/core";
 
 const init = JavaScript.init;

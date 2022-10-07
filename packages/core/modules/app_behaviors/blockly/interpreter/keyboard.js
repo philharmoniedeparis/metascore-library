@@ -1,5 +1,5 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref } from "vue";
 
 const listeners = [];

@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 JavaScript["keyboard_keypressed"] = function (block) {
   const key = block.getFieldValue("KEY");

@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { watchEffect, ref, unref, isRef } from "vue";
 
 const watchers = [];

@@ -1,5 +1,5 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref } from "vue";
 import { isFunction } from "lodash";
 
@@ -39,15 +39,15 @@ export function init(context) {
             pause();
           },
           onSeekout: ({ cuepoint }) => {
-            if (isFunction(then)) {
-              then();
-            }
-
             // Remove the cuepoint.
             removeCuepoint(cuepoint);
             const index = cuepoints.findIndex((c) => c === cuepoint);
             if (index > -1) {
               cuepoints.splice(index, 1);
+            }
+
+            if (isFunction(then)) {
+              then();
             }
           },
         });

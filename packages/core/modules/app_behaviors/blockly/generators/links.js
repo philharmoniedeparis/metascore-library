@@ -1,4 +1,4 @@
-import JavaScript from "blockly/javascript";
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 JavaScript["links_click"] = function (block) {
   const id = block.getFieldValue("TRIGGER");
