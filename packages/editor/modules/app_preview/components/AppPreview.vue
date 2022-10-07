@@ -317,7 +317,11 @@ export default {
           },
           "ctrl+d": {
             handler: () => {
-              // @todo
+              const selected = this.store.getSelectedComponents;
+              if (selected.length > 0) {
+                this.store.copyComponents(selected);
+                this.store.pasteComponents(selected[0]);
+              }
             },
             description: this.$t("hotkey.ctrl+d"),
           },
