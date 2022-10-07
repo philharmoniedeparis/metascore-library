@@ -512,14 +512,14 @@ export default class FieldTimecode extends Field {
    */
   bindInputEvents_() {
     // Trap Enter without IME and Esc to hide.
-    this.onKeyDownWrapper_ = browserEvents.conditionalBind(
+    this.onKeyDownWrapper_ = browserEvents.bind(
       this.htmlInput_,
       "keydown",
       this,
       this.onHtmlInputKeyDown_
     );
     // Resize after every input change.
-    this.onKeyInputWrapper_ = browserEvents.conditionalBind(
+    this.onKeyInputWrapper_ = browserEvents.bind(
       this.htmlInput_,
       "input",
       this,
@@ -714,7 +714,8 @@ FieldTimecode.BORDERRADIUS = 4;
  * CSS for timecode buttons.
  */
 Css.register(
-  `.blocklyTimecodeButtonsWrapper {,
+  `
+  .blocklyTimecodeButtonsWrapper {
     position: absolute;
     left: 0;
     bottom: 100%;
@@ -740,13 +741,14 @@ Css.register(
     background-color: #ccc;
   }
   .blocklyTimecodeButtonsWrapper button:not(:first-child) {
-    "border-left: 0;
+    border-left: 0;
   }
   .blocklyTimecodeButtonsWrapper button svg {
-    "width: 100%;
-    "height: 100%;
-    "pointer-events: none;
-  }`
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  `
 );
 
 fieldRegistry.register("field_timecode", FieldTimecode);
