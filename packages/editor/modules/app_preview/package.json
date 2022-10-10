@@ -1,5 +1,5 @@
 {
-  "name": "@metascore-library/preview",
+  "name": "@metascore-library/app-preview",
   "private": true,
   "description": "",
   "dependencies": {
