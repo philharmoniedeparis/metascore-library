@@ -162,7 +162,10 @@
 </i18n>
 
 <template>
-  <div v-if="masterComponent" class="component-form">
+  <div
+    v-if="masterComponent"
+    :class="['component-form', paramCase(masterComponent.type)]"
+  >
     <h2 class="title">{{ title }}</h2>
     <schema-form
       :schema="schema"
@@ -176,6 +179,7 @@
 
 <script>
 import { intersection, isObject } from "lodash";
+import { paramCase } from "param-case";
 import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
@@ -534,6 +538,7 @@ export default {
     },
   },
   methods: {
+    paramCase,
     update({ property, value }) {
       // Allow controls to specify which components to update.
       if (
@@ -618,11 +623,35 @@ export default {
     flex: 0 0 auto;
     margin: 0;
     padding: 0.5em;
+    padding-left: 1em;
     font-size: 1em;
     font-weight: normal;
     background: $lightgray;
     border-bottom: 0.25em solid $mediumgray;
     z-index: 1;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.5em;
+      height: 100%;
+    }
+  }
+
+  @each $component, $color in $component-colors {
+    @if $component == default {
+      h2.title::before {
+        background-color: $color;
+      }
+    } @else {
+      &.#{$component} {
+        h2.title::before {
+          background-color: $color;
+        }
+      }
+    }
   }
 
   :deep(.form-container) {
