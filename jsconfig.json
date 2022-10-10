@@ -5,7 +5,6 @@
     "baseUrl": "./",
     "moduleResolution": "node",
     "paths": {
-      "@metascore-library/api/*": ["./packages/api/*"],
       "@metascore-library/core/*": ["./packages/core/*"],
       "@metascore-library/player/*": ["./packages/player/*"],
       "@metascore-library/editor/*": ["./packages/editor/*"],
