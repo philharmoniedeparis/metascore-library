@@ -57,9 +57,12 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    const { iframe: appPreveiwIframe, getComponentElement } =
-      useModule("app_preview");
-    return { store, appPreveiwIframe, getComponentElement };
+    const {
+      iframe: appPreveiwIframe,
+      getComponentElement,
+      preview,
+    } = useModule("app_preview");
+    return { store, appPreveiwIframe, getComponentElement, preview };
   },
   data() {
     return {
@@ -116,6 +119,11 @@ export default {
         }
       },
       immediate: true,
+    },
+    preview(value) {
+      if (value) {
+        this.stopEditing();
+      }
     },
   },
   beforeUnmount() {
