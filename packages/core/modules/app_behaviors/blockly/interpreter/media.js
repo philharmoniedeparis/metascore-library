@@ -3,7 +3,7 @@ import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref } from "vue";
 import { isFunction } from "lodash";
 
-const cuepoints = [];
+let cuepoint = null;
 
 export function init(context) {
   // Ensure 'Media' name does not conflict with variable names.
@@ -29,30 +29,26 @@ export function init(context) {
     },
     play(from = null, to = null, then = null) {
       const { play, pause, seekTo } = useModule("media_player");
-      const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+      const { setGlobalCuepoint, removeCuepoint } =
+        useModule("media_cuepoints");
 
       if (from !== null || to !== null) {
-        const cuepoint = addCuepoint({
+        cuepoint = setGlobalCuepoint({
           startTime: from,
           endTime: to,
           onStop: () => {
             pause();
           },
-          onSeekout: ({ cuepoint }) => {
+          onSeekout: ({ c }) => {
             // Remove the cuepoint.
-            removeCuepoint(cuepoint);
-            const index = cuepoints.findIndex((c) => c === cuepoint);
-            if (index > -1) {
-              cuepoints.splice(index, 1);
-            }
+            removeCuepoint(c);
+            cuepoint = null;
 
             if (isFunction(then)) {
               then();
             }
           },
         });
-
-        cuepoints.push(cuepoint);
 
         if (from !== null) {
           seekTo(from);
@@ -73,13 +69,12 @@ export function init(context) {
 }
 
 export function reset() {
-  const { pause } = useModule("media_player");
-  pause();
-
-  // Remove all cuepoints.
-  const { removeCuepoint } = useModule("media_cuepoints");
-  while (cuepoints.length > 0) {
-    const cuepoint = cuepoints.pop();
+  // Remove cuepoint.
+  if (cuepoint) {
+    const { removeCuepoint } = useModule("media_cuepoints");
     removeCuepoint(cuepoint);
   }
+
+  const { pause } = useModule("media_player");
+  pause();
 }

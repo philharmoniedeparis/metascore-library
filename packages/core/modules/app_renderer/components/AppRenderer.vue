@@ -48,7 +48,7 @@ export default {
       stop: stopMedia,
       seekTo: seekMediaTo,
     } = useModule("media_player");
-    const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    const { setGlobalCuepoint, removeCuepoint } = useModule("media_cuepoints");
     return {
       store,
       mediaSource,
@@ -64,7 +64,7 @@ export default {
       showComponent,
       hideComponent,
       toggleComponent,
-      addCuepoint,
+      setGlobalCuepoint,
       removeCuepoint,
     };
   },
@@ -228,7 +228,7 @@ export default {
               this.setActiveScenario(scenario);
             }
 
-            this.addCuepoint(cuepoint_config);
+            this.setGlobalCuepoint(cuepoint_config);
 
             if (inTime !== null) {
               this.seekMediaTo(inTime);

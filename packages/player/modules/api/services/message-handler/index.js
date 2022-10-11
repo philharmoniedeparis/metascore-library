@@ -42,7 +42,8 @@ export function processMessage(evt) {
   switch (method) {
     case "play":
       {
-        const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+        const { setGlobalCuepoint, removeCuepoint } =
+          useModule("media_cuepoints");
         const { play, pause, seekTo } = useModule("media_player");
         const { getComponent, setActiveScenario } = useModule("app_components");
 
@@ -72,7 +73,7 @@ export function processMessage(evt) {
             this.setActiveScenario(scenario);
           }
 
-          addCuepoint(cuepoint_config);
+          setGlobalCuepoint(cuepoint_config);
 
           if (inTime !== null) {
             seekTo(inTime);
