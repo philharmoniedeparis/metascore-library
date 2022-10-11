@@ -152,7 +152,10 @@ export default {
       },
       set(value) {
         if (!this.lazy) {
-          this.$emit("update:modelValue", round(value, this.decimals));
+          this.$emit(
+            "update:modelValue",
+            value === null ? value : round(value, this.decimals)
+          );
         }
       },
     },

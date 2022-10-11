@@ -599,9 +599,12 @@ export default {
       return props;
     },
     isPropertyMultival(property) {
-      return this.selectedComponents.some((component) => {
-        return component[property] !== this.masterComponent[property];
-      });
+      return (
+        this.selectedComponents.length > 1 &&
+        this.selectedComponents.some((component) => {
+          return component[property] !== this.masterComponent[property];
+        })
+      );
     },
   },
 };
