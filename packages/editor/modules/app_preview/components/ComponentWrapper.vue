@@ -234,7 +234,7 @@ export default {
                 {
                   label: this.$t("contextmenu.delete"),
                   handler: () => {
-                    this.store.deleteComponent(this.component);
+                    this.deleteComponent(this.component);
                   },
                 },
                 {
