@@ -132,8 +132,11 @@ export default {
   },
   setup() {
     const store = useStore();
-    const { time: mediaTime, duration: mediaDuration } =
-      useModule("media_player");
+    const {
+      time: mediaTime,
+      duration: mediaDuration,
+      seekTo: seekMediaTo,
+    } = useModule("media_player");
     const {
       getModel,
       getComponentParent,
@@ -157,6 +160,7 @@ export default {
       store,
       mediaTime,
       mediaDuration,
+      seekMediaTo,
       getModel,
       getComponentParent,
       componentHasChildren,
@@ -308,6 +312,17 @@ export default {
         }
       } else {
         this.selectComponent(this.component, evt.shiftKey);
+
+        if (this.timeable) {
+          if (
+            (this.component["start-time"] !== null &&
+              this.mediaTime < this.component["start-time"]) ||
+            (this.component["end-time"] !== null &&
+              this.mediaTime > this.component["end-time"])
+          ) {
+            this.seekMediaTo(this.component["start-time"] ?? 0);
+          }
+        }
       }
     },
     setupInteractions() {
