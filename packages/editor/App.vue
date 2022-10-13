@@ -161,9 +161,9 @@
           :scenarios="scenarios"
           :active-id="activeScenario"
           @update:active-id="setActiveScenario"
-          @add="onScnearioManagerAdd"
-          @clone="onScnearioManagerClone"
-          @delete="onScnearioManagerDelete"
+          @add="onScenarioManagerAdd"
+          @clone="onScenarioManagerClone"
+          @delete="onScenarioManagerDelete"
         />
         <waveform-zoom-controller />
       </div>
@@ -440,7 +440,7 @@ export default {
       this.activeLibrariesTab = 1;
       this.addAsset(asset);
     },
-    async onScnearioManagerAdd(data) {
+    async onScenarioManagerAdd(data) {
       const scenario = await this.createComponent({
         ...data,
         type: "Scenario",
@@ -448,11 +448,11 @@ export default {
       await this.addComponent(scenario);
       this.setActiveScenario(scenario.id);
     },
-    async onScnearioManagerClone({ scenario, data }) {
+    async onScenarioManagerClone({ scenario, data }) {
       const clone = await this.cloneComponent(scenario, data);
       this.setActiveScenario(clone.id);
     },
-    onScnearioManagerDelete({ scenario }) {
+    onScenarioManagerDelete({ scenario }) {
       this.deleteComponent(scenario);
       this.setActiveScenario(this.scenarios[0].id);
     },
