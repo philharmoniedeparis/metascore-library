@@ -142,19 +142,28 @@ export default {
   emits: ["load"],
   setup() {
     const store = useStore();
+
     const { deleteComponent } = useModule("app_components");
+
     const {
       el: appEl,
       width: appWidth,
       height: appHeight,
     } = useModule("app_renderer");
+
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
+
     const { addItems: addContextmenuItems } = useModule("contextmenu");
+
     return {
       store,
       appEl,
       appWidth,
       appHeight,
       deleteComponent,
+      startHistoryGroup,
+      endHistoryGroup,
       addContextmenuItems,
     };
   },
@@ -339,18 +348,22 @@ export default {
           delete: {
             handler: async () => {
               const selected = this.store.getSelectedComponents;
+              this.startHistoryGroup();
               for (const component of selected) {
                 await this.deleteComponent(component);
               }
+              this.endHistoryGroup();
             },
             description: this.$t("hotkey.delete"),
           },
           backspace: {
             handler: async () => {
               const selected = this.store.getSelectedComponents;
+              this.startHistoryGroup();
               for (const component of selected) {
                 await this.deleteComponent(component);
               }
+              this.endHistoryGroup();
             },
             description: this.$t("hotkey.backspace"),
           },
@@ -380,9 +393,11 @@ export default {
             {
               label: this.$t("contextmenu.delete"),
               handler: async () => {
+                this.startHistoryGroup();
                 for (const component of selected) {
                   await this.deleteComponent(component);
                 }
+                this.endHistoryGroup();
               },
             },
             {

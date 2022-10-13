@@ -2,7 +2,7 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import plugin from "./store/plugin";
+import storePlugin from "./store/plugin";
 import BaseButton from "@metascore-library/core/modules/button";
 import HistoryController from "./components/HistoryController";
 
@@ -15,7 +15,7 @@ export default class HistoryModule extends AbstractModule {
     super(arguments);
 
     app.component("HistoryController", HistoryController);
-    pinia.use(plugin);
+    pinia.use(storePlugin);
   }
 
   get active() {
