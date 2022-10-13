@@ -223,16 +223,70 @@ export default defineStore("app-components", {
         console.error(e);
       }
     },
-    delete({ type, id }) {
+    async delete({ type, id }) {
       const component = this.components?.[type]?.[id];
       if (component) {
+        if (type === "Page") {
+          const block = this.getParent(component);
+          if (block.synched) {
+            const pages = this.getChildren(block);
+            const index = pages.findIndex((c) => c.id === component.id);
+
+            let mid_time = component["end-time"] - component["start-time"];
+            if (component["start-time"] !== null) {
+              mid_time = component["start-time"];
+            }
+            if (component["end-time"] !== null) {
+              mid_time =
+                mid_time !== null
+                  ? round(mid_time + (component["end-time"] - mid_time) / 2, 2)
+                  : component["end-time"];
+            }
+
+            if (index < pages.length - 1) {
+              const next_page = pages[index + 1];
+              await this.components[next_page.type][next_page.id].update({
+                "start-time":
+                  component["start-time"] !== null ? mid_time : null,
+              });
+            }
+            if (index > 0) {
+              const prev_page = pages[index - 1];
+              await this.components[prev_page.type][prev_page.id].update({
+                "end-time": component["end-time"] !== null ? mid_time : null,
+              });
+            }
+          }
+        }
+
         component.$deleted = true;
       }
     },
-    restore({ type, id }) {
+    async restore({ type, id }) {
       const component = this.components?.[type]?.[id];
       if (component) {
         delete component.$deleted;
+
+        if (type === "Page") {
+          const block = this.getParent(component);
+          if (block.synched) {
+            const pages = this.getChildren(block);
+            const index = pages.findIndex((c) => c.id === component.id);
+
+            if (index < pages.length - 1) {
+              const next_page = pages[index + 1];
+              await this.components[next_page.type][next_page.id].update({
+                "start-time": component["end-time"],
+              });
+            }
+            if (index > 0) {
+              const prev_page = pages[index - 1];
+              await this.components[prev_page.type][prev_page.id].update({
+                "end-time": component["start-time"],
+              });
+            }
+          }
+        }
       }
     },
     async clone(component, data = {}, parent = null) {
@@ -333,17 +387,16 @@ export default defineStore("app-components", {
         });
         break;
 
-      case "restore":
       case "delete":
         {
           const [component] = args;
           after(() => {
             push({
               undo: () => {
-                this[name === "delete" ? "restore" : "delete"](component);
+                this.restore(component);
               },
               redo: () => {
-                this[name](component);
+                this.delete(component);
               },
             });
           });

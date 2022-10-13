@@ -2,7 +2,7 @@ import { readonly, markRaw } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import plugin from "./store/plugin";
+import storePlugin from "./store/plugin";
 import AppComponents from "../app_components";
 import MediaCuepoints from "../media_cuepoints";
 import MediaPlayer from "../media_player";
@@ -28,7 +28,7 @@ export default class AppBehaviorsModule extends AbstractModule {
   constructor({ pinia }) {
     super(arguments);
 
-    pinia.use(plugin);
+    pinia.use(storePlugin);
   }
 
   init(data) {

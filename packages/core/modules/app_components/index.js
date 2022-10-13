@@ -50,7 +50,7 @@ export default class AppComponentsModule extends AbstractModule {
     return store.toJson();
   }
 
-  init(data) {
+  async init(data) {
     const store = useStore();
     store.init(data);
   }
@@ -106,32 +106,32 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getSiblings(component);
   }
 
-  createComponent(data, validate = true) {
+  async createComponent(data, validate = true) {
     const store = useStore();
     return store.create(data, validate);
   }
 
-  addComponent(component, parent, index) {
+  async addComponent(component, parent, index) {
     const store = useStore();
     return store.add(component, parent, index);
   }
 
-  updateComponent(component, data) {
+  async updateComponent(component, data) {
     const store = useStore();
     return store.update(component, data);
   }
 
-  deleteComponent(component) {
+  async deleteComponent(component) {
     const store = useStore();
     return store.delete(component);
   }
 
-  restoreComponent(component) {
+  async restoreComponent(component) {
     const store = useStore();
     return store.restore(component);
   }
 
-  cloneComponent(component, data) {
+  async cloneComponent(component, data) {
     const store = useStore();
     return store.clone(component, data);
   }

@@ -108,7 +108,7 @@ export default class AppPreviewModule extends AbstractModule {
     store.copyComponents(components);
   }
 
-  cutComponents(components) {
+  async cutComponents(components) {
     const store = useStore();
     store.cutComponents(components);
   }

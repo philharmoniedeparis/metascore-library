@@ -298,10 +298,10 @@ export default {
             description: this.$t("hotkey.ctrl+c"),
           },
           "ctrl+x": {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.cutComponents(selected);
+                await this.store.cutComponents(selected);
               }
             },
             description: this.$t("hotkey.ctrl+x"),
@@ -337,16 +337,20 @@ export default {
             description: this.$t("hotkey.ctrl+l"),
           },
           delete: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
-              selected.forEach(this.deleteComponent);
+              for (const component of selected) {
+                await this.deleteComponent(component);
+              }
             },
             description: this.$t("hotkey.delete"),
           },
           backspace: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
-              selected.forEach(this.deleteComponent);
+              for (const component of selected) {
+                await this.deleteComponent(component);
+              }
             },
             description: this.$t("hotkey.backspace"),
           },
@@ -375,8 +379,10 @@ export default {
             },
             {
               label: this.$t("contextmenu.delete"),
-              handler: () => {
-                selected.forEach(this.deleteComponent);
+              handler: async () => {
+                for (const component of selected) {
+                  await this.deleteComponent(component);
+                }
               },
             },
             {

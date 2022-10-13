@@ -256,7 +256,6 @@ export default {
 
     const { recordingCursorKeyframes, editingTextContent } =
       useModule("component_form");
-
     const disableComponentInteractions = computed(
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
@@ -452,8 +451,8 @@ export default {
       const clone = await this.cloneComponent(scenario, data);
       this.setActiveScenario(clone.id);
     },
-    onScenarioManagerDelete({ scenario }) {
-      this.deleteComponent(scenario);
+    async onScenarioManagerDelete({ scenario }) {
+      await this.deleteComponent(scenario);
       this.setActiveScenario(this.scenarios[0].id);
     },
     onAutoSaveRestoreSubmit() {

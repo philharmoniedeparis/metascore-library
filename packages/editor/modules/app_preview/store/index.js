@@ -167,7 +167,7 @@ export default defineStore("app-preview", {
 
       setClipboardData("metascore/component", components.map(recursiveCopy));
     },
-    cutComponents(components) {
+    async cutComponents(components) {
       const { deleteComponent } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
         useModule("history");
@@ -175,7 +175,9 @@ export default defineStore("app-preview", {
       this.copyComponents(components);
 
       startHistoryGroup();
-      components.forEach(deleteComponent);
+      for (const component of components) {
+        await deleteComponent(component);
+      }
       endHistoryGroup();
     },
     getClosestPasteTarget(target) {
@@ -315,6 +317,11 @@ export default defineStore("app-preview", {
     },
     moveComponents(components, { left, top }) {
       const { getModel, updateComponent } = useModule("app_components");
+      const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+        useModule("history");
+
+      startHistoryGroup();
+
       components.forEach((component) => {
         const model = getModel(component.type);
         if (!model.$isPositionable) {
@@ -331,6 +338,8 @@ export default defineStore("app-preview", {
 
         updateComponent(component, { position });
       });
+
+      endHistoryGroup();
     },
   },
 });

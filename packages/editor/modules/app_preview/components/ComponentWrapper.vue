@@ -233,8 +233,8 @@ export default {
                 ...items,
                 {
                   label: this.$t("contextmenu.delete"),
-                  handler: () => {
-                    this.deleteComponent(this.component);
+                  handler: async () => {
+                    await this.deleteComponent(this.component);
                   },
                 },
                 {
@@ -263,8 +263,8 @@ export default {
             },
             {
               label: this.$t("contextmenu.cut"),
-              handler: () => {
-                this.store.cutComponents([this.component]);
+              handler: async () => {
+                await this.store.cutComponents([this.component]);
               },
             }
           );
@@ -276,8 +276,8 @@ export default {
                 ...items,
                 {
                   label: this.$t("contextmenu.delete"),
-                  handler: () => {
-                    this.deleteComponent(this.component);
+                  handler: async () => {
+                    await this.deleteComponent(this.component);
                   },
                 },
                 {
