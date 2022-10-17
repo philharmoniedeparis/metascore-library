@@ -62,8 +62,7 @@ export default class AppComponentsModule extends AbstractModule {
 
   getComponents() {
     const store = useStore();
-    const { components } = storeToRefs(store);
-    return readonly(components);
+    return readonly(store.all);
   }
 
   getComponentsByType(type) {

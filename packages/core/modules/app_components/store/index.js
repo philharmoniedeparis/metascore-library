@@ -16,6 +16,12 @@ export default defineStore("app-components", {
     };
   },
   getters: {
+    all() {
+      return []
+        .concat(...Object.values(this.components).map((v) => Object.values(v)))
+        .map((c) => this.get(c.type, c.id))
+        .filter((c) => c);
+    },
     getByType() {
       return (type) => {
         return Object.keys(this.components?.[type] || {})

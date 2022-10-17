@@ -1,7 +1,9 @@
+import { readonly } from "vue";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
 import Alert from "@metascore-library/core/modules/alert";
+import AppComponents from "@metascore-library/core/modules/app_components";
 import Confirm from "@metascore-library/core/modules/confirm";
 import FormControls from "../form_controls";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
@@ -15,6 +17,7 @@ export default class AssetsLibraryModule extends AbstractModule {
   static dependencies = [
     Ajax,
     Alert,
+    AppComponents,
     Confirm,
     FormControls,
     ProgressIndicator,
@@ -40,12 +43,12 @@ export default class AssetsLibraryModule extends AbstractModule {
 
   get assets() {
     const store = useStore();
-    return store.all;
+    return store.all.map(readonly);
   }
 
   getAssetsByType(type) {
     const store = useStore();
-    return store.getByType(type);
+    return store.getByType(type).map(readonly);
   }
 
   addAsset(data) {

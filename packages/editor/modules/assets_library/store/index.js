@@ -1,5 +1,6 @@
 import { readonly } from "vue";
 import { defineStore } from "pinia";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import { normalize } from "./utils/normalize";
 import * as api from "../api";
 
@@ -58,6 +59,24 @@ export default defineStore("assets-library", {
         return this.all.filter((a) => {
           return this.getType(a) === type;
         });
+      };
+    },
+    getUsage() {
+      return (asset) => {
+        const { url } = asset;
+        const { getComponents } = useModule("app_components");
+        const usage = [];
+
+        getComponents().forEach((c) => {
+          if (
+            ("background-image" in c && c["background-image"] === url) ||
+            ("src" in c && c.src === url)
+          ) {
+            usage.push(c);
+          }
+        });
+
+        return usage;
       };
     },
     canGenerateSpectrogram() {

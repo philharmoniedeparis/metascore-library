@@ -200,7 +200,7 @@
 </template>
 
 <script>
-import { computed, unref, readonly } from "vue";
+import { computed, unref } from "vue";
 import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
@@ -331,7 +331,7 @@ export default {
       return this.waveformOffset.start / this.mediaDuration;
     },
     imageAssets() {
-      return this.getAssetsByType("image").map(readonly);
+      return this.getAssetsByType("image");
     },
     scenarios() {
       return this.getComponentsByType("Scenario");

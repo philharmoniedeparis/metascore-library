@@ -2,9 +2,11 @@
 {
   "fr": {
     "delete_text": "Êtes-vous sûr de vouloir supprimer <em>{label}</em>\xa0?",
+    "usage_text": "<em>{label}</em> ne peut pas être supprimé car elle est utilisée dans les composants suivants&nbsp: <em>{components}</em>.",
   },
   "en": {
     "delete_text": "Are you sure you want to delete <em>{label}</em>?",
+    "usage_text": "<em>{label}</em> cannot be deleted as it is being used in the following components: <em>{components}</em>."
   },
 }
 </i18n>
@@ -40,6 +42,13 @@
     >
       <p v-dompurify-html="$t('delete_text', { label })"></p>
     </confirm-dialog>
+    <alert-dialog v-if="showUsageAlert" @close="onUsageClose">
+      <p
+        v-dompurify-html="
+          $t('usage_text', { label, components: usageNames.join(', ') })
+        "
+      ></p>
+    </alert-dialog>
   </div>
 </template>
 
@@ -79,6 +88,7 @@ export default {
       dragging: false,
       play: false,
       showDeleteConfirm: false,
+      showUsageAlert: false,
     };
   },
   computed: {
@@ -142,6 +152,12 @@ export default {
     deleteText() {
       return this.$t("delete_text", { label: this.label });
     },
+    usage() {
+      return this.store.getUsage(this.asset);
+    },
+    usageNames() {
+      return this.usage.map((c) => c.name);
+    },
   },
   methods: {
     onDragstart(evt) {
@@ -184,7 +200,11 @@ export default {
       this.play = false;
     },
     onDeleteClick() {
-      this.showDeleteConfirm = true;
+      if (this.usage.length > 0) {
+        this.showUsageAlert = true;
+      } else {
+        this.showDeleteConfirm = true;
+      }
     },
     onDeleteSubmit() {
       this.store.delete(this.asset.id);
@@ -192,6 +212,9 @@ export default {
     },
     onDeleteCancel() {
       this.showDeleteConfirm = false;
+    },
+    onUsageClose() {
+      this.showUsageAlert = false;
     },
   },
 };
