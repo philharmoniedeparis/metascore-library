@@ -1,7 +1,7 @@
 <template>
   <div class="snap-guides">
     <div
-      v-for="(guide, index) in snapGuides"
+      v-for="(guide, index) in guides"
       :key="index"
       class="guide"
       :style="guide"
@@ -26,19 +26,10 @@ export default {
     };
   },
   computed: {
-    snapGuides() {
-      const guides = [];
-
-      this.store.activeSnapTargets.forEach((target) => {
-        if ("x" in target) {
-          guides.push({ left: `${target.x}px`, width: "1px", height: "100%" });
-        }
-        if ("y" in target) {
-          guides.push({ top: `${target.y}px`, width: "100%", height: "1px" });
-        }
+    guides() {
+      return this.store.activeSnapTargets.map((target) => {
+        return { left: `${target}px`, width: "1px", height: "100%" };
       });
-
-      return guides;
     },
   },
 };

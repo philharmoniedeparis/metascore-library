@@ -68,7 +68,7 @@
 
     <div ref="time-wrapper" class="time-wrapper" @click="onClick">
       <div ref="time" class="time" tabindex="0" :style="timeStyle">
-        <template v-if="timeable">
+        <template v-if="resizable">
           <div class="resize-handle right"></div>
           <div class="resize-handle left"></div>
         </template>
@@ -272,6 +272,9 @@ export default {
           {}
         );
     },
+    resizable() {
+      return this.timeable && this.selected && !this.locked;
+    },
     activeSnapTargets: {
       get() {
         return this.store.activeSnapTargets;
@@ -282,6 +285,12 @@ export default {
     },
   },
   watch: {
+    component: {
+      handler(value) {
+        this.expanded = value && value.type === "Scenario";
+      },
+      immediate: true,
+    },
     selected(value) {
       if (value) {
         this.$nextTick(function () {
@@ -289,16 +298,13 @@ export default {
         });
       }
     },
-    locked(value) {
+    resizable(value) {
       if (value) {
-        this.destroyInteractions();
-      } else {
         this.setupInteractions();
+      } else {
+        this.destroyInteractions();
       }
     },
-  },
-  mounted() {
-    this.setupInteractions();
   },
   beforeUnmount() {
     this.destroyInteractions();
@@ -326,7 +332,7 @@ export default {
       }
     },
     setupInteractions() {
-      if (this.locked || !this.timeable) return;
+      if (this._interactables) return;
 
       this._interactables = interact(this.$refs.time);
       this._interactables.resizable({
@@ -336,7 +342,7 @@ export default {
         },
         modifiers: [
           interact.modifiers.snap({
-            targets: this.getInteractableSnapTargets(),
+            targets: this.getResizableSnapTargets(),
             range: this.snapRange,
           }),
         ],
@@ -353,7 +359,7 @@ export default {
         delete this._interactables;
       }
     },
-    getInteractableSnapTargets() {
+    getResizableSnapTargets() {
       const { left, width } =
         this.$refs["time-wrapper"].getBoundingClientRect();
       const targets = [];
@@ -395,7 +401,7 @@ export default {
       this.activeSnapTargets = [];
       evt.modifiers.forEach((modifier) => {
         if (modifier.inRange) {
-          this.activeSnapTargets.push(modifier.target);
+          this.activeSnapTargets.push(modifier.target.x);
         }
       });
 
@@ -576,7 +582,6 @@ export default {
       .resize-handle {
         position: absolute;
         top: 0;
-        display: none;
         width: 0.25em;
         height: 100%;
         background: #fff;
@@ -610,14 +615,6 @@ export default {
         outline-offset: 0.1em;
         outline-style: dashed;
         outline-width: 1px;
-      }
-    }
-
-    &:hover {
-      .time {
-        .resize-handle {
-          display: block;
-        }
       }
     }
   }
@@ -724,25 +721,12 @@ export default {
     }
   }
 
-  &.locked {
-    > .time-wrapper {
-      .time {
-        .resize-handle {
-          display: none;
-        }
-      }
-    }
-  }
-
   &.scenario {
     > .handle {
+      padding-left: 0.5em;
       .expander {
         display: none;
       }
-    }
-
-    > .children {
-      display: contents;
     }
   }
 

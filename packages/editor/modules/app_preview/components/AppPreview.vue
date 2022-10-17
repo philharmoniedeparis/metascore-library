@@ -97,7 +97,7 @@
       ></iframe>
 
       <preview-grid v-show="!preview" />
-      <preview-snap-guides v-show="!preview" />
+      <snap-guides v-show="!preview" />
     </div>
 
     <teleport v-if="iframeDocument" :to="iframeDocument.body">
@@ -114,13 +114,13 @@ import "../polyfills/GeomertyUtils";
 import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";
 import PreviewGrid from "./PreviewGrid.vue";
-import PreviewSnapGuides from "./PreviewSnapGuides.vue";
+import SnapGuides from "./SnapGuides.vue";
 
 export default {
   components: {
     PreviewRuler,
     PreviewGrid,
-    PreviewSnapGuides,
+    SnapGuides,
   },
   provide() {
     return {

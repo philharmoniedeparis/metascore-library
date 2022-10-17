@@ -1,7 +1,7 @@
 <template>
   <div class="preview-snap-guides">
     <div
-      v-for="(guide, index) in snapGuides"
+      v-for="(guide, index) in guides"
       :key="index"
       class="guide"
       :style="guide"
@@ -26,7 +26,7 @@ export default {
     };
   },
   computed: {
-    snapGuides() {
+    guides() {
       const guides = [];
 
       this.store.activeSnapTargets.forEach((target) => {

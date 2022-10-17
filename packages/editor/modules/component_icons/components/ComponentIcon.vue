@@ -1,5 +1,5 @@
 <template>
-  <component :is="`${type}Icon`" class="icon component-icon" />
+  <component :is="`${type}Icon`" v-if="type" class="icon component-icon" />
 </template>
 
 <script>

@@ -159,10 +159,11 @@ export default {
     },
     interactable() {
       return (
-        !this.disableComponentInteractions &&
+        (this.model.$isPositionable || this.model.$isResizable) &&
+        this.selected &&
         !this.preview &&
         !this.locked &&
-        this.selected
+        !this.disableComponentInteractions
       );
     },
     positionable() {
@@ -174,12 +175,12 @@ export default {
     siblings() {
       return this.getComponentSiblings(this.component);
     },
-    snapTargets: {
+    activeSnapTargets: {
       get() {
-        return this.store.snapTargets;
+        return this.store.activeSnapTargets;
       },
       set(value) {
-        this.store.snapTargets = value;
+        this.store.activeSnapTargets = value;
       },
     },
     contextmenuItems() {
@@ -316,32 +317,11 @@ export default {
     },
   },
   watch: {
-    preview(value) {
-      if (value) {
-        this.destroyInteractions();
-      } else {
-        this.setupInteractions();
-      }
-    },
-    selected(value) {
+    interactable(value) {
       if (value) {
         this.setupInteractions();
       } else {
         this.destroyInteractions();
-      }
-    },
-    locked(value) {
-      if (value) {
-        this.destroyInteractions();
-      } else {
-        this.setupInteractions();
-      }
-    },
-    disableComponentInteractions(value) {
-      if (value) {
-        this.destroyInteractions();
-      } else {
-        this.setupInteractions();
       }
     },
   },
@@ -367,76 +347,72 @@ export default {
       }
     },
     setupInteractions() {
-      if (this._interactables) {
-        return;
+      if (this._interactables) return;
+
+      this._interactables = interact(this.$el, {
+        context: this.$el.ownerDocument,
+      });
+
+      if (this.positionable) {
+        let allowFrom = null;
+
+        switch (this.component.type) {
+          case "Block":
+            allowFrom = ".pager";
+            break;
+          case "Controller":
+            allowFrom = ".timer";
+            break;
+        }
+
+        this._interactables.draggable({
+          allowFrom,
+          modifiers: [
+            interact.modifiers.restrict({
+              // Using "parent" as "restriction" produces an
+              // "invalid 'instanceof' operand iS.SVGElement"
+              // error in production builds.
+              restriction: () => {
+                return this.$el.parentElement.getBoundingClientRect();
+              },
+              elementRect: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
+            }),
+            interact.modifiers.snap({
+              targets: [this.getInteractableSnapTarget],
+              relativePoints: [
+                { x: 0, y: 0 },
+                { x: 0.5, y: 0.5 },
+                { x: 1, y: 1 },
+              ],
+            }),
+          ],
+          listeners: {
+            start: this.onDraggableStart,
+            move: this.onDraggableMove,
+            end: this.onDraggableEnd,
+          },
+        });
       }
 
-      if (this.positionable || this.resizable) {
-        this._interactables = interact(this.$el, {
-          context: this.$el.ownerDocument,
+      if (this.resizable) {
+        this._interactables.resizable({
+          edges: {
+            top: ".resize-handle.top",
+            right: ".resize-handle.right",
+            bottom: ".resize-handle.bottom",
+            left: ".resize-handle.left",
+          },
+          modifiers: [
+            interact.modifiers.snap({
+              targets: [this.getInteractableSnapTarget],
+            }),
+          ],
+          listeners: {
+            start: this.onResizableStart,
+            move: this.onResizableMove,
+            end: this.onResizableEnd,
+          },
         });
-
-        if (this.positionable) {
-          let allowFrom = null;
-
-          switch (this.component.type) {
-            case "Block":
-              allowFrom = ".pager";
-              break;
-            case "Controller":
-              allowFrom = ".timer";
-              break;
-          }
-
-          this._interactables.draggable({
-            allowFrom,
-            modifiers: [
-              interact.modifiers.restrict({
-                // Using "parent" as "restriction" produces an
-                // "invalid 'instanceof' operand iS.SVGElement"
-                // error in production builds.
-                restriction: () => {
-                  return this.$el.parentElement.getBoundingClientRect();
-                },
-                elementRect: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5 },
-              }),
-              interact.modifiers.snap({
-                targets: [this.getInteractableSnapTarget],
-                relativePoints: [
-                  { x: 0, y: 0 },
-                  { x: 0.5, y: 0.5 },
-                  { x: 1, y: 1 },
-                ],
-              }),
-            ],
-            listeners: {
-              start: this.onDraggableStart,
-              move: this.onDraggableMove,
-              end: this.onDraggableEnd,
-            },
-          });
-        }
-
-        if (this.resizable) {
-          this._interactables.resizable({
-            edges: {
-              top: ".resize-handle.top",
-              right: ".resize-handle.right",
-              bottom: ".resize-handle.bottom",
-              left: ".resize-handle.left",
-            },
-            modifiers: [
-              interact.modifiers.snap({
-                targets: [this.getInteractableSnapTarget],
-              }),
-            ],
-            listeners: {
-              start: this.onResizableStart,
-              move: this.onResizableMove,
-              end: this.onResizableEnd,
-            },
-          });
-        }
       }
     },
     destroyInteractions() {
@@ -450,7 +426,7 @@ export default {
       let target = null;
 
       if (relativePoint.index === 0) {
-        this.snapTargets = [];
+        this.activeSnapTargets = [];
       }
 
       this.siblings.forEach((sibling) => {
@@ -479,7 +455,7 @@ export default {
       });
 
       if (target) {
-        this.snapTargets.push(target);
+        this.activeSnapTargets.push(target);
       }
 
       return target;
@@ -501,7 +477,7 @@ export default {
     },
     onDraggableEnd(evt) {
       this.dragging = false;
-      this.snapTargets = [];
+      this.activeSnapTargets = [];
       this.endHistoryGroup();
 
       // Prevent the next click event
@@ -528,7 +504,7 @@ export default {
     },
     onResizableEnd(evt) {
       this.resizing = false;
-      this.snapTargets = [];
+      this.activeSnapTargets = [];
       this.endHistoryGroup();
 
       // Prevent the next click event
