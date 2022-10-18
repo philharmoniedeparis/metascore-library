@@ -208,7 +208,7 @@ export default class AppComponentsModule extends AbstractModule {
     if (model.$isTimeable) {
       if (component.type === "Page") {
         const block = store.getParent(component);
-        return block.synched;
+        return block && block.synched;
       }
       return true;
     }
