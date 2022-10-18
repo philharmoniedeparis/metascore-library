@@ -351,7 +351,6 @@ export default defineStore("app-components", {
     },
   },
   history(context) {
-    // @todo: group actions on multiple components
     const {
       name, // Invoked action's name.
       args, // Array of parameters passed to the action.
