@@ -259,7 +259,7 @@ export default defineStore("app-preview", {
         endHistoryGroup();
       }
     },
-    arrangeComponent(component, action) {
+    async arrangeComponent(component, action) {
       const {
         getComponentParent,
         getComponentChildrenProperty,
@@ -301,7 +301,7 @@ export default defineStore("app-preview", {
       }
 
       const property = getComponentChildrenProperty(parent);
-      updateComponent(parent, {
+      await updateComponent(parent, {
         [property]: children.map((child) => {
           return { type: child.type, id: child.id };
         }),
@@ -315,14 +315,14 @@ export default defineStore("app-preview", {
       // @todo
       console.log("addPageAfter");
     },
-    moveComponents(components, { left, top }) {
+    async moveComponents(components, { left, top }) {
       const { getModel, updateComponent } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
         useModule("history");
 
       startHistoryGroup();
 
-      components.forEach((component) => {
+      for (const component of components) {
         const model = getModel(component.type);
         if (!model.$isPositionable) {
           return;
@@ -336,8 +336,8 @@ export default defineStore("app-preview", {
           position[1] += top;
         }
 
-        updateComponent(component, { position });
-      });
+        await updateComponent(component, { position });
+      }
 
       endHistoryGroup();
     },

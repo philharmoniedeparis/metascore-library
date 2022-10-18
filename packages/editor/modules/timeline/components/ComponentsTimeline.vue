@@ -141,7 +141,7 @@ export default {
       handle.dataset.dragY = y;
       handle.style.transform = `translateY(${y}px)`;
     },
-    onHandleDraggableEnd(evt) {
+    async onHandleDraggableEnd(evt) {
       const { target: handle } = evt;
       const track = handle.parentNode;
 
@@ -165,7 +165,7 @@ export default {
             });
           });
 
-        this.updateComponent(parent, { children });
+        await this.updateComponent(parent, { children });
 
         this.sorted = false;
       }

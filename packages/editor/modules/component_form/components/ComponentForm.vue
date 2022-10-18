@@ -539,27 +539,27 @@ export default {
   },
   methods: {
     paramCase,
-    update({ property, value }) {
+    async update({ property, value }) {
       // Allow controls to specify which components to update.
       if (
         isObject(value) &&
         "componentsToUpdate" in value &&
         "value" in value
       ) {
-        value.componentsToUpdate.forEach((c) =>
-          this.updateComponent(c, {
+        for (const component of value.componentsToUpdate) {
+          await this.updateComponent(component, {
             [property]: value.value,
-          })
-        );
+          });
+        }
         return;
       }
 
       // Otherwise update all selected components.
-      this.selectedComponents.forEach((c) =>
-        this.updateComponent(c, {
+      for (const component of this.selectedComponents) {
+        await this.updateComponent(component, {
           [property]: value,
-        })
-      );
+        });
+      }
     },
     getControlProps(property, model_type = null) {
       const props = {

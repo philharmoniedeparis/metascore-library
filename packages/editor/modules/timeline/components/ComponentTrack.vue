@@ -392,7 +392,7 @@ export default {
       this.resizing = true;
       this.startHistoryGroup(true);
     },
-    onResizableMove(evt) {
+    async onResizableMove(evt) {
       const time_wrapper = this.$refs["time-wrapper"];
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
       const prop = evt.edges.right ? "end-time" : "start-time";
@@ -415,7 +415,7 @@ export default {
         2
       );
 
-      this.updateComponent(this.component, data);
+      await this.updateComponent(this.component, data);
     },
     onResizableEnd(evt) {
       this.endHistoryGroup();
@@ -429,8 +429,8 @@ export default {
         { capture: true, once: true }
       );
     },
-    onAnimatedPropertyUpdate(property, value) {
-      this.updateComponent(this.component, {
+    async onAnimatedPropertyUpdate(property, value) {
+      await this.updateComponent(this.component, {
         [property]: {
           value,
           animated: true,

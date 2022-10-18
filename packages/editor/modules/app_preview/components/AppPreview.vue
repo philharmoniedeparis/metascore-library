@@ -214,86 +214,86 @@ export default {
         group: this.$t("hotkey.group"),
         keys: {
           right: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { left: 1 });
+                await this.store.moveComponents(selected, { left: 1 });
               }
             },
             description: this.$t("hotkey.right"),
           },
           "shift+right": {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { left: 10 });
+                await this.store.moveComponents(selected, { left: 10 });
               }
             },
             description: this.$t("hotkey.shift+right"),
           },
           left: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { left: -1 });
+                await this.store.moveComponents(selected, { left: -1 });
               }
             },
             description: this.$t("hotkey.left"),
           },
           "shift+left": {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { left: -10 });
+                await this.store.moveComponents(selected, { left: -10 });
               }
             },
             description: this.$t("hotkey.shift+left"),
           },
           up: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { top: -1 });
+                await this.store.moveComponents(selected, { top: -1 });
               }
             },
             description: this.$t("hotkey.up"),
           },
           "shift+up": {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { top: -10 });
+                await this.store.moveComponents(selected, { top: -10 });
               }
             },
             description: this.$t("hotkey.shift+up"),
           },
           down: {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { top: 1 });
+                await this.store.moveComponents(selected, { top: 1 });
               }
             },
             description: this.$t("hotkey.down"),
           },
           "shift+down": {
-            handler: () => {
+            handler: async () => {
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
-                this.store.moveComponents(selected, { top: 10 });
+                await this.store.moveComponents(selected, { top: 10 });
               }
             },
             description: this.$t("hotkey.shift+down"),
           },
           tab: {
-            handler: () => {
-              this.store.moveComponentSelection();
+            handler: async () => {
+              await this.store.moveComponentSelection();
             },
             description: this.$t("hotkey.tab"),
           },
           "shift+tab": {
-            handler: () => {
-              this.store.moveComponentSelection(true);
+            handler: async () => {
+              await this.store.moveComponentSelection(true);
             },
             description: this.$t("hotkey.shift+tab"),
           },

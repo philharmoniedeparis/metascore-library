@@ -286,26 +286,38 @@ export default {
                   items: [
                     {
                       label: this.$t("contextmenu.to_front"),
-                      handler: () => {
-                        this.store.arrangeComponent(this.component, "front");
+                      handler: async () => {
+                        await this.store.arrangeComponent(
+                          this.component,
+                          "front"
+                        );
                       },
                     },
                     {
                       label: this.$t("contextmenu.to_back"),
-                      handler: () => {
-                        this.store.arrangeComponent(this.component, "back");
+                      handler: async () => {
+                        await this.store.arrangeComponent(
+                          this.component,
+                          "back"
+                        );
                       },
                     },
                     {
                       label: this.$t("contextmenu.forward"),
-                      handler: () => {
-                        this.store.arrangeComponent(this.component, "forward");
+                      handler: async () => {
+                        await this.store.arrangeComponent(
+                          this.component,
+                          "forward"
+                        );
                       },
                     },
                     {
                       label: this.$t("contextmenu.backward"),
-                      handler: () => {
-                        this.store.arrangeComponent(this.component, "backward");
+                      handler: async () => {
+                        await this.store.arrangeComponent(
+                          this.component,
+                          "backward"
+                        );
                       },
                     },
                   ],
@@ -464,16 +476,16 @@ export default {
       this.dragging = true;
       this.startHistoryGroup();
     },
-    onDraggableMove(evt) {
-      this.store.getSelectedComponents.forEach((component) => {
+    async onDraggableMove(evt) {
+      for (const component of this.store.getSelectedComponents) {
         const position = component.position;
-        this.updateComponent(component, {
+        await this.updateComponent(component, {
           position: [
             round(position[0] + evt.delta.x),
             round(position[1] + evt.delta.y),
           ],
         });
-      });
+      }
     },
     onDraggableEnd(evt) {
       this.dragging = false;
@@ -491,10 +503,10 @@ export default {
       this.resizing = true;
       this.startHistoryGroup();
     },
-    onResizableMove(evt) {
+    async onResizableMove(evt) {
       const position = this.component.position;
 
-      this.updateComponent(this.component, {
+      await this.updateComponent(this.component, {
         position: [
           round(position[0] + evt.deltaRect.left),
           round(position[1] + evt.deltaRect.top),
