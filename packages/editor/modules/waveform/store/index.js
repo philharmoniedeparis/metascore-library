@@ -3,6 +3,15 @@ import { markRaw } from "vue";
 import WaveformData from "waveform-data";
 import * as api from "../api";
 
+export const MISSING_URL_OR_AUDIOWAVEFORM_ERROR = 100;
+
+export class ValidationError extends Error {
+  constructor(code, ...params) {
+    super(...params);
+    this.code = code;
+  }
+}
+
 export default defineStore("waveform", {
   state: () => {
     return {
@@ -40,37 +49,35 @@ export default defineStore("waveform", {
     async load({ audiowaveform, url }) {
       this.loading = true;
 
-      if (!audiowaveform && !url) {
-        throw Error("Source doen't have a url or audiowaveform key");
-      }
+      try {
+        if (!audiowaveform && !url) {
+          throw ValidationError(
+            MISSING_URL_OR_AUDIOWAVEFORM_ERROR,
+            "Source doen't have a url or audiowaveform key"
+          );
+        }
 
-      api
-        .get(audiowaveform ?? url)
-        .then((data) => {
-          if (!data) {
-            this.setData(null);
-          }
-
-          if (!audiowaveform) {
-            const options = {
-              audio_context: new AudioContext(),
-              array_buffer: data,
-            };
-            WaveformData.createFromAudio(options, (err, waveform) => {
-              this.setData(err ? null : waveform);
-            });
-          } else {
-            this.setData(WaveformData.create(data));
-          }
-        })
-        .catch((e) => {
+        const data = await api.get(audiowaveform ?? url);
+        if (!data) {
           this.setData(null);
-          this.error = true;
-          console.error(e);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+        } else if (!audiowaveform) {
+          const options = {
+            audio_context: new AudioContext(),
+            array_buffer: data,
+          };
+          WaveformData.createFromAudio(options, (err, waveform) => {
+            this.setData(err ? null : waveform);
+          });
+        } else {
+          this.setData(WaveformData.create(data));
+        }
+      } catch (e) {
+        this.setData(null);
+        this.error = true;
+        console.error(e);
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

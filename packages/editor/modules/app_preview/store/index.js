@@ -4,6 +4,15 @@ import { paramCase } from "param-case";
 import { cloneDeep } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
+export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
+
+export class ValidationError extends Error {
+  constructor(code, ...params) {
+    super(...params);
+    this.code = code;
+  }
+}
+
 export default defineStore("app-preview", {
   state: () => {
     return {
@@ -269,7 +278,8 @@ export default defineStore("app-preview", {
 
       const parent = getComponentParent(component);
       if (!parent) {
-        throw new Error(
+        throw new ValidationError(
+          ARRANGE_COMPONENT_NO_PARENT_ERROR,
           `compontent ${component.type}:${component.id} can't be rearranged as it doesn't have a parent`
         );
       }

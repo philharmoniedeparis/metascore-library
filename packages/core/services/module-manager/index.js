@@ -2,6 +2,13 @@ import { isFunction } from "lodash";
 
 const modules = new Map();
 
+export class ModuleNotFoundError extends Error {
+  constructor(module, ...params) {
+    super(...params);
+    this.module = module;
+  }
+}
+
 export async function registerModules(modules, context) {
   for (const module of modules) {
     await registerModule(module, context);
@@ -38,7 +45,7 @@ export function useModule(id) {
   const module = modules.get(id);
 
   if (!module) {
-    throw Error(`Module "${id}" not found`);
+    throw ModuleNotFoundError(id, `Module "${id}" not found`);
   }
 
   return module;

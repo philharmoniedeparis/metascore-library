@@ -13,6 +13,8 @@ const SUPPORTED_TYPES = [
   "video/hls",
 ];
 
+export class UnsupportedError extends Error {}
+
 export default class HLS extends NativeRenderer {
   /**
    * Check whether the renderer supports a given mime type
@@ -28,7 +30,7 @@ export default class HLS extends NativeRenderer {
     const { default: Hls } = await import("hls.js");
 
     if (!Hls.isSupported()) {
-      throw Error("HLS playback is not supported.");
+      throw new UnsupportedError("HLS playback is not supported.");
     }
 
     this._hls = new Hls();
