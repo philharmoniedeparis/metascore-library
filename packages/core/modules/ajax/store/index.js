@@ -26,7 +26,10 @@ export default defineStore("ajax", {
           return await response.text();
       }
     },
-    load(url, { method = "GET", params = {}, data = null, ...config } = {}) {
+    async load(
+      url,
+      { method = "GET", params = {}, data = null, ...config } = {}
+    ) {
       const options = merge({}, this.defaults, {
         method: method.toUpperCase(),
         ...config,
@@ -42,22 +45,19 @@ export default defineStore("ajax", {
         options.body = data;
       }
 
-      return fetch(
+      const response = await fetch(
         _url.toString(),
         omit(options, ["baseURL", "data", "responseType"])
-      )
-        .then(async (response) => {
-          if (!response.ok) {
-            let data = await this.decodeResponse(response, responseType);
-            response.data = data;
-            throw new Error(response, response.statusText);
-          }
-          return response;
-        })
-        .then(async (response) => {
-          if (options.method === "HEAD") return true;
-          return await this.decodeResponse(response, responseType);
-        });
+      );
+
+      if (!response.ok) {
+        let data = await this.decodeResponse(response, responseType);
+        response.data = data;
+        throw new Error(response, response.statusText);
+      }
+
+      if (options.method === "HEAD") return true;
+      return await this.decodeResponse(response, responseType);
     },
   },
 });
