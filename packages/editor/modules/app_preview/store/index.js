@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
 import { paramCase } from "param-case";
-import { cloneDeep } from "lodash";
+import { cloneDeep, round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
+export const ADD_SIBLING_PAGE_TIME_ERROR = 200;
 
 export class ValidationError extends Error {
   constructor(code, ...params) {
@@ -228,6 +229,8 @@ export default defineStore("app-preview", {
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
         useModule("history");
 
+      const components = [];
+
       const recursivePaste = async (data, parent) => {
         let children = [];
         const property = getComponentChildrenProperty(data);
@@ -263,10 +266,13 @@ export default defineStore("app-preview", {
             getComponent(target.type, target.id)
           );
           this.selectComponent(component, i++ > 0);
+          components.psuh(component);
         }
 
         endHistoryGroup();
       }
+
+      return components;
     },
     async arrangeComponent(component, action) {
       const {
@@ -317,14 +323,6 @@ export default defineStore("app-preview", {
         }),
       });
     },
-    addPageBefore() {
-      // @todo
-      console.log("addPageBefore");
-    },
-    addPageAfter() {
-      // @todo
-      console.log("addPageAfter");
-    },
     async moveComponents(components, { left, top }) {
       const { getModel, updateComponent } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
@@ -334,22 +332,71 @@ export default defineStore("app-preview", {
 
       for (const component of components) {
         const model = getModel(component.type);
-        if (!model.$isPositionable) {
-          return;
-        }
+        if (!model.$isPositionable) return;
 
         const position = [...component.position];
-        if (left) {
-          position[0] += left;
-        }
-        if (top) {
-          position[1] += top;
-        }
+        if (left) position[0] += left;
+        if (top) position[1] += top;
 
         await updateComponent(component, { position });
       }
 
       endHistoryGroup();
+    },
+    async addSiblingPage(page, position = "before") {
+      const {
+        createComponent,
+        addComponent,
+        updateComponent,
+        setBlockActivePage,
+        getComponentParent,
+        getComponentChildren,
+      } = useModule("app_components");
+      let { time: mediaTime, duration: mediaDuration } =
+        useModule("media_player");
+      const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+        useModule("history");
+
+      mediaTime = round(unref(mediaTime), 2);
+      mediaDuration = round(unref(mediaDuration), 2);
+
+      const after = position !== "before";
+      const block = getComponentParent(page);
+      if (!block || block.type !== "Block") return;
+      const pages = getComponentChildren(block);
+      const index = pages.findIndex((c) => c.id === page.id);
+
+      if (
+        block.synched &&
+        ((page["start-time"] === null && mediaTime === 0) ||
+          page["start-time"] === mediaTime ||
+          (page["end-time"] === null && mediaTime === mediaDuration) ||
+          mediaTime === page["end-time"])
+      ) {
+        // Prevent adding the page at start or end of current page.
+        throw new ValidationError(
+          ADD_SIBLING_PAGE_TIME_ERROR,
+          "A new page cannot be added at the start or end time of an existing page"
+        );
+      }
+
+      startHistoryGroup();
+
+      const new_page = await createComponent({ type: "Page" });
+      await addComponent(new_page, block, after ? index + 1 : index);
+      if (block.synched) {
+        await updateComponent(new_page, {
+          "start-time": after ? mediaTime : page["start-time"],
+          "end-time": after ? page["end-time"] : mediaTime,
+        });
+      }
+
+      endHistoryGroup();
+
+      setBlockActivePage(block, after ? index + 1 : index);
+      this.selectComponent(new_page);
+
+      return new_page;
     },
   },
 });

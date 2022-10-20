@@ -122,6 +122,7 @@ export default defineStore("app-components", {
     },
     get(type, id) {
       const component = this.components?.[type]?.[id];
+      // @todo: return a readonly version of component instead of component.data
       return component && !component.$deleted ? readonly(component.data) : null;
     },
     async create(data, validate = true) {
@@ -176,6 +177,8 @@ export default defineStore("app-components", {
           [children_prop]: children,
         });
       }
+
+      // @todo: run same checks as in update
 
       return component;
     },
@@ -359,6 +362,19 @@ export default defineStore("app-components", {
     } = context;
 
     switch (name) {
+      case "add":
+        after((component) => {
+          push({
+            undo: () => {
+              this.delete(component.type, component.id);
+            },
+            redo: () => {
+              this.restore(component.type, component.id);
+            },
+          });
+        });
+        break;
+
       case "update":
         {
           const [component, data] = args;
@@ -377,19 +393,6 @@ export default defineStore("app-components", {
             });
           });
         }
-        break;
-
-      case "add":
-        after((component) => {
-          push({
-            undo: () => {
-              this.delete(component.type, component.id);
-            },
-            redo: () => {
-              this.restore(component.type, component.id);
-            },
-          });
-        });
         break;
 
       case "delete":

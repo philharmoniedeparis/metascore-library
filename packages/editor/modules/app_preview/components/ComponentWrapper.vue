@@ -17,6 +17,9 @@
       "to_back": "Mettre en arrière plan",
       "forward": "Mettre en avant",
       "backward": "Mettre en arrière",
+    },
+    "errors": {
+      "add_sibling_page_time": "Dans un bloc synchronisé, une page ne peut pas être insérée au temps de début ou de fin d'une page existante.<br/><b>Veuillez vous déplacer dans le média avant d'insérer une nouvelle page.</b>",
     }
   },
   "en": {
@@ -36,6 +39,9 @@
       "to_back": "Send to back",
       "forward": "Bring forward",
       "backward": "Send backward",
+    },
+    "errors": {
+      "add_sibling_page_time": "In a synchronized block, a page cannot be inserted at the start or end time of an existing page.<br/><b>Please move the media to a different time before inserting a new page.</b>",
     }
   }
 }
@@ -71,6 +77,10 @@
       <div class="resize-handle bottom left"></div>
       <div class="resize-handle left"></div>
     </template>
+
+    <alert-dialog v-if="error" @close="error = null">
+      <p v-dompurify-html="error"></p>
+    </alert-dialog>
   </default-component-wrapper>
 </template>
 
@@ -81,10 +91,18 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, kebabCase, startCase, camelCase } from "lodash";
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import useStore from "../store";
+import {
+  default as useStore,
+  ValidationError,
+  ADD_SIBLING_PAGE_TIME_ERROR,
+} from "../store";
 
 export default {
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
   inject: ["disableComponentInteractions"],
   props: {
     /**
@@ -110,11 +128,13 @@ export default {
       getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
+      getComponentParent,
       createComponent,
       addComponent,
       updateComponent,
       deleteComponent,
       getBlockActivePage,
+      setBlockActivePage,
     } = useModule("app_components");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -127,11 +147,13 @@ export default {
       getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
+      getComponentParent,
       createComponent,
       addComponent,
       updateComponent,
       deleteComponent,
       getBlockActivePage,
+      setBlockActivePage,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -142,6 +164,7 @@ export default {
       dragEnterCounter: 0,
       dragging: false,
       resizing: false,
+      error: null,
     };
   },
   computed: {
@@ -240,14 +263,38 @@ export default {
                 },
                 {
                   label: this.$t("contextmenu.page_before"),
-                  handler: () => {
-                    this.store.addPageBefore(this.component);
+                  handler: async () => {
+                    try {
+                      await this.store.addSiblingPage(this.component, "before");
+                    } catch (e) {
+                      if (e instanceof ValidationError) {
+                        switch (e.code) {
+                          case ADD_SIBLING_PAGE_TIME_ERROR:
+                            this.error = this.$t(
+                              "errors.add_sibling_page_time"
+                            );
+                            break;
+                        }
+                      }
+                    }
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_after"),
-                  handler: () => {
-                    this.store.addPageAfter(this.component);
+                  handler: async () => {
+                    try {
+                      await this.store.addSiblingPage(this.component, "after");
+                    } catch (e) {
+                      if (e instanceof ValidationError) {
+                        switch (e.code) {
+                          case ADD_SIBLING_PAGE_TIME_ERROR:
+                            this.error = this.$t(
+                              "errors.add_sibling_page_time"
+                            );
+                            break;
+                        }
+                      }
+                    }
                   },
                 },
               ],
@@ -608,17 +655,17 @@ export default {
       }
     },
     async addDroppedComponent(evt) {
-      const droppedComponent = await this.getComponentFromDragEvent(evt);
+      const dropped_component = await this.getComponentFromDragEvent(evt);
 
       let index = null;
-      switch (droppedComponent.type) {
+      switch (dropped_component.type) {
         case "Page":
           index = this.getBlockActivePage(this.component) + 1;
           break;
       }
 
       const component = await this.addComponent(
-        droppedComponent,
+        dropped_component,
         this.component,
         index
       );
@@ -638,16 +685,15 @@ export default {
 
             if (previous || next) {
               const data = {};
-
               if (previous) data["start-time"] = round(this.mediaTime, 2);
               if (next) data["end-time"] = next["start-time"];
-
-              await this.updateComponent(droppedComponent, data);
+              await this.updateComponent(dropped_component, data);
             }
           }
           break;
       }
 
+      this.setBlockActivePage(this.component, index);
       this.store.selectComponent(component);
     },
   },
