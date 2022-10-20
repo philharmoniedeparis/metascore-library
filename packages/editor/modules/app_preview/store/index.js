@@ -266,7 +266,7 @@ export default defineStore("app-preview", {
             getComponent(target.type, target.id)
           );
           this.selectComponent(component, i++ > 0);
-          components.psuh(component);
+          components.push(component);
         }
 
         endHistoryGroup();
