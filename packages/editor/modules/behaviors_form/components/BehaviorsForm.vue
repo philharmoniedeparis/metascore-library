@@ -32,7 +32,7 @@
 </i18n>
 
 <template>
-  <div class="behaviors-form">
+  <div class="behaviors-form" @contextmenu="onContextmenu">
     <div ref="blockly" class="blockly"></div>
   </div>
 </template>
@@ -472,6 +472,12 @@ export default {
     },
     updateSize() {
       this.Blockly.svgResize(this.workspace);
+    },
+    onContextmenu(evt) {
+      if (evt.target.closest("rect.blocklyMainBackground")) {
+        // Prevent showing the metaScore context menu.
+        evt.stopPropagation();
+      }
     },
   },
 };
