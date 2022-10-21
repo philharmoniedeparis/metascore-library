@@ -118,6 +118,7 @@ export default {
 <style lang="scss" scoped>
 .context-menu {
   position: absolute;
+  font-size: 0.975em;
   z-index: 999;
   outline: none;
 
