@@ -63,12 +63,11 @@ export default {
         group: this.$t("hotkey.group"),
         keys: {
           space: {
-            handler: () => {
-              if (this.mediaPlaying) {
-                this.pauseMedia();
-              } else {
-                this.playMedia();
-              }
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
+              if (this.mediaPlaying) this.pauseMedia();
+              else this.playMedia();
             },
             description: this.$t("hotkey.space"),
           },

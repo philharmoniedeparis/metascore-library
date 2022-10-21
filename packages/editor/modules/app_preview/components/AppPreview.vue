@@ -206,9 +206,7 @@ export default {
       };
     },
     hotkeys() {
-      if (this.preview) {
-        return {};
-      }
+      if (this.preview) return {};
 
       return {
         group: this.$t("hotkey.group"),
@@ -298,7 +296,9 @@ export default {
             description: this.$t("hotkey.shift+tab"),
           },
           "ctrl+c": {
-            handler: () => {
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 this.store.copyComponents(selected);
@@ -307,7 +307,9 @@ export default {
             description: this.$t("hotkey.ctrl+c"),
           },
           "ctrl+x": {
-            handler: async () => {
+            handler: async ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.cutComponents(selected);
@@ -316,7 +318,9 @@ export default {
             description: this.$t("hotkey.ctrl+x"),
           },
           "ctrl+v": {
-            handler: () => {
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 this.store.pasteComponents(selected[0]);
@@ -325,7 +329,9 @@ export default {
             description: this.$t("hotkey.ctrl+v"),
           },
           "ctrl+d": {
-            handler: () => {
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 this.store.copyComponents(selected);
@@ -335,7 +341,9 @@ export default {
             description: this.$t("hotkey.ctrl+d"),
           },
           "ctrl+l": {
-            handler: () => {
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 const master = selected[0];
@@ -346,7 +354,9 @@ export default {
             description: this.$t("hotkey.ctrl+l"),
           },
           delete: {
-            handler: async () => {
+            handler: async ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
               for (const component of selected) {
@@ -357,7 +367,9 @@ export default {
             description: this.$t("hotkey.delete"),
           },
           backspace: {
-            handler: async () => {
+            handler: async ({ repeat }) => {
+              if (repeat) return;
+
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
               for (const component of selected) {

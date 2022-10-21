@@ -122,11 +122,19 @@ export default {
         group: this.$t("hotkey.group"),
         keys: {
           delete: {
-            handler: this.deleteSelectedKeyframe,
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
+              this.deleteSelectedKeyframe();
+            },
             description: this.$t("hotkey.delete"),
           },
           backspace: {
-            handler: this.deleteSelectedKeyframe,
+            handler: ({ repeat }) => {
+              if (repeat) return;
+
+              this.deleteSelectedKeyframe();
+            },
             description: this.$t("hotkey.backspace"),
           },
         },
