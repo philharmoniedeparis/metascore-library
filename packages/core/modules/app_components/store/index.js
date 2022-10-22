@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
 import { v4 as uuid } from "uuid";
-import { omit, cloneDeep, round } from "lodash";
+import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import * as Models from "../models";
@@ -197,7 +197,7 @@ export default defineStore("app-components", {
               const { duration: mediaDuration } = useModule("media_player");
               data["end-time"] = Math.min(
                 data["end-time"],
-                parent["end-time"] ?? round(unref(mediaDuration), 2)
+                parent["end-time"] ?? unref(mediaDuration)
               );
             }
           }
@@ -248,7 +248,7 @@ export default defineStore("app-components", {
             if (component["end-time"] !== null) {
               mid_time =
                 mid_time !== null
-                  ? round(mid_time + (component["end-time"] - mid_time) / 2, 2)
+                  ? mid_time + (component["end-time"] - mid_time) / 2
                   : component["end-time"];
             }
 

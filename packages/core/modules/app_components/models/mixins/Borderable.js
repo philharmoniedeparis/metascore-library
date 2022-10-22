@@ -38,5 +38,12 @@ export default Mixin(
       static get $isBorderable() {
         return true;
       }
+
+      update(data, ...rest) {
+        if ("border-width" in data) {
+          data["border-width"] = Math.round(data["border-width"]);
+        }
+        return super.update(data, ...rest);
+      }
     }
 );

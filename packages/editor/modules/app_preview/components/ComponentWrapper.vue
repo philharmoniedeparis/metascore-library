@@ -90,7 +90,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round, kebabCase, startCase, camelCase } from "lodash";
+import { kebabCase, startCase, camelCase } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import {
@@ -527,10 +527,7 @@ export default {
       for (const component of this.store.getSelectedComponents) {
         const position = component.position;
         await this.updateComponent(component, {
-          position: [
-            round(position[0] + evt.delta.x),
-            round(position[1] + evt.delta.y),
-          ],
+          position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
         });
       }
     },
@@ -555,10 +552,10 @@ export default {
 
       await this.updateComponent(this.component, {
         position: [
-          round(position[0] + evt.deltaRect.left),
-          round(position[1] + evt.deltaRect.top),
+          position[0] + evt.deltaRect.left,
+          position[1] + evt.deltaRect.top,
         ],
-        dimension: [round(evt.rect.width), round(evt.rect.height)],
+        dimension: [evt.rect.width, evt.rect.height],
       });
     },
     onResizableEnd(evt) {
@@ -644,10 +641,7 @@ export default {
 
             default: {
               const { left, top } = this.$el.getBoundingClientRect();
-              data.position = [
-                Math.round(evt.clientX - left),
-                Math.round(evt.clientY - top),
-              ];
+              data.position = [evt.clientX - left, evt.clientY - top];
             }
           }
           return await this.createComponent(data);
@@ -685,7 +679,7 @@ export default {
 
             if (previous || next) {
               const data = {};
-              if (previous) data["start-time"] = round(this.mediaTime, 2);
+              if (previous) data["start-time"] = this.mediaTime;
               if (next) data["end-time"] = next["start-time"];
               await this.updateComponent(dropped_component, data);
             }

@@ -23,5 +23,13 @@ export default Mixin(
       static get $isPositionable() {
         return true;
       }
+
+      update(data, ...rest) {
+        if ("position" in data) {
+          data.position[0] = Math.round(data.position[0]);
+          data.position[1] = Math.round(data.position[1]);
+        }
+        return super.update(data, ...rest);
+      }
     }
 );
