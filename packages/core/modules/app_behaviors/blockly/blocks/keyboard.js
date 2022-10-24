@@ -5,7 +5,7 @@ const keys = [
   ["%{BKY_KEYBOARD_KEYPRESSED_SPACE}", " "],
   ["%{BKY_KEYBOARD_KEYPRESSED_UP}", "ArrowUp"],
   ["%{BKY_KEYBOARD_KEYPRESSED_DOWN}", "ArrowDown"],
-  ["%{BKY_KEYBOARD_KEYPRESSED_RIGHT}", "ArrowRight "],
+  ["%{BKY_KEYBOARD_KEYPRESSED_RIGHT}", "ArrowRight"],
   ["%{BKY_KEYBOARD_KEYPRESSED_LEFT}", "ArrowLeft"],
   ["a", "a"],
   ["b", "b"],
