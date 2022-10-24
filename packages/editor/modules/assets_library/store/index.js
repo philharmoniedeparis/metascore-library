@@ -34,9 +34,7 @@ export default defineStore("assets-library", {
     },
     getType() {
       return (item) => {
-        if (item.type) {
-          return item.type;
-        }
+        if (item.type) return item.type;
 
         const file = item.shared ? item.file : item;
         const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);

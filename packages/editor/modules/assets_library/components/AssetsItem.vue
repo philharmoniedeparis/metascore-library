@@ -54,7 +54,6 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { kebabCase } from "lodash";
 import useStore from "../store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
@@ -161,13 +160,10 @@ export default {
   },
   methods: {
     onDragstart(evt) {
-      // Some browsers transform the DataTransfer format to lowercase.
-      // Force it to kebab case to insure compatibility with other browsers.
-      const type = kebabCase(this.component.type);
-
       evt.dataTransfer.effectAllowed = "copy";
+      evt.dataTransfer.setData(`metascore/component-type`, this.component.type);
       evt.dataTransfer.setData(
-        `metascore/component:${type}`,
+        "metascore/component",
         JSON.stringify(this.component)
       );
       evt.dataTransfer.setData(`metascore/asset`, this.assetDragData);

@@ -90,7 +90,6 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { kebabCase, startCase, camelCase } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import {
@@ -571,14 +570,7 @@ export default {
       );
     },
     getModelFromDragEvent(evt) {
-      let type = null;
-      evt.dataTransfer.types.some((format) => {
-        const matches = format.match(/^metascore\/component:(.*)$/);
-        if (matches) {
-          type = startCase(camelCase(matches[1])).replace(" ", "");
-          return true;
-        }
-      });
+      const type = evt.dataTransfer.getData("metascore/component-type");
       return type ? this.getModel(type) : null;
     },
     isDropAllowed(evt) {
@@ -626,15 +618,12 @@ export default {
       }
     },
     async getComponentFromDragEvent(evt) {
-      let model = this.getModelFromDragEvent(evt);
+      const model = this.getModelFromDragEvent(evt);
       if (model) {
-        // Some browsers transform the DataTransfer format to lowercase.
-        // Force it to kebab case to insure compatibility with other browsers.
-        const type = kebabCase(model.type);
+        let data = evt.dataTransfer.getData("metascore/component");
+        if (data) {
+          data = JSON.parse(data);
 
-        const format = `metascore/component:${type}`;
-        if (evt.dataTransfer.types.includes(format)) {
-          const data = JSON.parse(evt.dataTransfer.getData(format));
           switch (data.type) {
             case "Page":
               break;

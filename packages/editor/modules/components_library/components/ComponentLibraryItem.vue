@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { omit, kebabCase } from "lodash";
+import { omit } from "lodash";
 
 export default {
   props: {
@@ -33,15 +33,9 @@ export default {
     onDragstart(evt) {
       const data = omit(this.component, ["id"]);
 
-      // Some browsers transform the DataTransfer format to lowercase.
-      // Force it to kebab case to insure compatibility with other browsers.
-      const type = kebabCase(data.type);
-
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(
-        `metascore/component:${type}`,
-        JSON.stringify(data)
-      );
+      evt.dataTransfer.setData(`metascore/component-type`, data.type);
+      evt.dataTransfer.setData("metascore/component", JSON.stringify(data));
 
       this.dragging = true;
     },
