@@ -46,6 +46,7 @@ import {
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
 import "@blockly/block-plus-minus";
+import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import Theme from "../blockly/theme";
 import Flyout from "../blockly/plugins/flyout";
@@ -53,6 +54,7 @@ import Flyout from "../blockly/plugins/flyout";
 export default {
   props: {},
   setup() {
+    const store = useStore();
     const {
       Blockly,
       data: behaviors,
@@ -61,6 +63,7 @@ export default {
     const { findComponent, getModel } = useModule("app_components");
     const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
     return {
+      store,
       Blockly,
       behaviors,
       setBehaviors,
@@ -77,6 +80,14 @@ export default {
     };
   },
   computed: {
+    viewport: {
+      get() {
+        return this.store.viewport;
+      },
+      set(value) {
+        this.store.viewport = value;
+      },
+    },
     config() {
       return {
         theme: Theme,
@@ -409,6 +420,12 @@ export default {
     this.workspace.addChangeListener(this.Blockly.Events.disableOrphans);
     new DisableTopBlocks().init();
 
+    if (this.viewport) {
+      // Restore viewport.
+      this.workspace.setScale(this.viewport.scale);
+      this.workspace.scroll(this.viewport.left, this.viewport.top);
+    }
+
     this._resize_observer = new ResizeObserver(this.updateSize);
     this._resize_observer.observe(this.$el);
     this.updateSize();
@@ -457,11 +474,20 @@ export default {
             field.setValue(this.mediaTime);
           }
           break;
+
         case "timecode_value_out":
           {
             const value = evt.value;
             this.seekMediaTo(value);
           }
+          break;
+
+        case "viewport_change":
+          this.viewport = {
+            scale: evt.scale,
+            left: evt.viewLeft * -1,
+            top: evt.viewTop * -1,
+          };
           break;
       }
 
