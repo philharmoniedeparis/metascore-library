@@ -1,8 +1,6 @@
 <template>
   <div v-if="active" class="tab-item">
-    <keep-alive>
-      <slot />
-    </keep-alive>
+    <slot />
   </div>
 </template>
 

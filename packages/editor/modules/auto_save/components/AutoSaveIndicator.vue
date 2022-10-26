@@ -10,11 +10,9 @@
 </i18n>
 
 <template>
-  <keep-alive>
-    <div v-if="store.saving" class="auto-save-indicator">
-      {{ $t("indicator_text") }}
-    </div>
-  </keep-alive>
+  <div v-if="store.saving" class="auto-save-indicator">
+    {{ $t("indicator_text") }}
+  </div>
 </template>
 
 <script>

@@ -110,9 +110,7 @@
           <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
         <template v-if="activeLibrariesTab === 2" #tabs-end>
-          <keep-alive>
-            <shared-assets-toolbar />
-          </keep-alive>
+          <shared-assets-toolbar />
         </template>
       </tabs-container>
     </resizable-pane>
