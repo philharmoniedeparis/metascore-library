@@ -14,6 +14,7 @@ function addCuepoint({
   onUpdate = null,
   onSeekout = null,
   onStop = null,
+  onDestroy = null,
   considerError = true,
 }) {
   const cuepoint = {
@@ -23,6 +24,7 @@ function addCuepoint({
     onUpdate,
     onSeekout,
     onStop,
+    onDestroy,
     considerError,
     running: false,
   };
@@ -30,10 +32,21 @@ function addCuepoint({
 
   trackErrors = trackErrors || considerError;
 
+  const { time } = useModule("media_player");
+  updateCuepoint(cuepoint, unref(time));
+
   return cuepoint;
 }
 
 function removeCuepoint(cuepoint) {
+  if (cuepoint.onDestroy) {
+    try {
+      cuepoint.onDestroy();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   cuepoints = cuepoints.filter((c) => c !== cuepoint);
 }
 
@@ -41,46 +54,51 @@ function clearCuepoints() {
   cuepoints = [];
 }
 
-function updateCuepoints(time, seeked = false) {
-  if (seeking) {
-    return;
-  }
+function updateCuepoint(cuepoint, time, seeked = false) {
+  if (seeking) return;
 
-  cuepoints.forEach((cuepoint, index) => {
-    if (!cuepoint.running) {
-      if (
-        (cuepoint.startTime === null || cuepoint.startTime <= time) &&
-        (cuepoint.endTime === null || cuepoint.endTime > time)
-      ) {
-        cuepoint.running = true;
+  if (!cuepoint.running) {
+    if (
+      (cuepoint.startTime === null || cuepoint.startTime <= time) &&
+      (cuepoint.endTime === null || cuepoint.endTime > time)
+    ) {
+      cuepoint.running = true;
 
-        if (cuepoint.onStart) {
-          cuepoint.onStart({ time, cuepoint });
-        }
-        if (cuepoint.onUpdate) {
-          cuepoint.onUpdate({ time, cuepoint });
-        }
-        return;
+      if (cuepoint.onStart) {
+        cuepoint.onStart({ time, cuepoint });
       }
-    } else {
       if (cuepoint.onUpdate) {
         cuepoint.onUpdate({ time, cuepoint });
       }
+      return;
+    }
+  } else {
+    if (cuepoint.onUpdate) {
+      cuepoint.onUpdate({ time, cuepoint });
+    }
 
-      if (cuepoint.endTime !== null && cuepoint.endTime <= time + maxError) {
-        cuepoint.running = false;
+    if (
+      (cuepoint.endTime !== null && cuepoint.endTime <= time + maxError) ||
+      (seeked && cuepoint.startTime !== null && cuepoint.startTime >= time)
+    ) {
+      cuepoint.running = false;
 
-        if (seeked && cuepoint.onSeekout) {
-          cuepoint.onSeekout({ time, cuepoint });
-        }
-        if (cuepoint.onStop) {
-          cuepoint.onStop({ time, cuepoint });
-        }
-        if (cuepoint.once) {
-          cuepoints.splice(index, 1);
-        }
+      if (seeked && cuepoint.onSeekout) {
+        cuepoint.onSeekout({ time, cuepoint });
+      }
+      if (cuepoint.onStop) {
+        cuepoint.onStop({ time, cuepoint });
+      }
+      if (cuepoint.once) {
+        removeCuepoint(cuepoint);
       }
     }
+  }
+}
+
+function updateCuepoints(time, seeked = false) {
+  cuepoints.forEach((cuepoint) => {
+    updateCuepoint(cuepoint, time, seeked);
   });
 }
 

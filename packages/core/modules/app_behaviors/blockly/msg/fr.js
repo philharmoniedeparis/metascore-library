@@ -99,9 +99,13 @@ Msg.MEDIA_PLAY = "lancer la lecture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT = "%1 lire l'extrait de %2 à %3";
+Msg.MEDIA_PLAY_EXCERPT = "%1 lire l'extrait de %2 à %3 %4";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
+
+Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Surbrillance automatique";
+Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
+  "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ces limites temporelles";
 
 Msg.MEDIA_PLAY_EXCERPT_THEN = "puis faire";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";

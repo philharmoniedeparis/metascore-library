@@ -1,7 +1,12 @@
 <template>
   <Transition name="fade">
     <div v-show="ready" class="metaScore-app" tabindex="-1" :style="style">
-      <media-player v-if="mediaSource" :source="mediaSource" type="video" />
+      <media-player
+        v-show="false"
+        v-if="mediaSource"
+        :source="mediaSource"
+        type="video"
+      />
       <template v-for="scenario in scenarios" :key="scenario.id">
         <scenario-component
           v-if="scenario.id === activeScenario"
@@ -367,8 +372,9 @@ body {
     cursor: pointer;
   }
 
-  > :deep(.media-player) {
-    display: none;
+  /* @todo: allow other modules to add CSS */
+  :deep(a.metaScore-auto-highlight) {
+    color: rgb(238, 0, 0);
   }
 }
 

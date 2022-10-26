@@ -97,9 +97,13 @@ Msg.MEDIA_PLAY = "start playback";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT = "%1 play excerpt from %2 to %3";
+Msg.MEDIA_PLAY_EXCERPT = "%1 play excerpt from %2 to %3 %4";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
+
+Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Auto highlight";
+Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
+  "Highlight the link when the current media time is between those time limits";
 
 Msg.MEDIA_PLAY_EXCERPT_THEN = "then do";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";

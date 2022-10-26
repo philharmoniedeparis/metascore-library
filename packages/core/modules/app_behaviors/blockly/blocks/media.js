@@ -1,4 +1,10 @@
-import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
+import {
+  defineBlocksWithJsonArray,
+  Extensions,
+  Msg,
+  FieldCheckbox,
+  FieldLabel,
+} from "blockly/core";
 import { createMinusField } from "@blockly/block-plus-minus/src/field_minus";
 import { createPlusField } from "@blockly/block-plus-minus/src/field_plus";
 
@@ -86,6 +92,10 @@ defineBlocksWithJsonArray([
         name: "TO",
         check: "Number",
       },
+      {
+        type: "input_dummy",
+        name: "LINK_HIGHLIGHT",
+      },
     ],
     inputsInline: true,
     previousStatement: null,
@@ -162,13 +172,18 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
    *     The state of this block.
    */
   saveExtraState: function () {
-    if (!this.hasThen_) {
+    if (!this.hasLinkHighlight_ && !this.hasThen_) {
       return null;
     }
 
-    return {
-      hasThen: true,
-    };
+    const data = {};
+    if (this.hasLinkHighlight_) {
+      data.hasLinkHighlight = true;
+    }
+    if (this.hasThen_) {
+      data.hasThen = true;
+    }
+    return data;
   },
 
   /**
@@ -176,6 +191,7 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
    * @param {*} state The state to apply to this block.
    */
   loadExtraState: function (state) {
+    this.hasLinkHighlight_ = state["hasLinkHighlight"] || false;
     this.hasThen_ = state["hasThen"] || false;
     this.updateShape_();
   },
@@ -203,6 +219,28 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
    * @private
    */
   updateShape_: function () {
+    const input = this.getInput("LINK_HIGHLIGHT");
+
+    if (this.hasLinkHighlight_) {
+      if (!this.getField("HIGHLIGHT_LINK")) {
+        const checkbox = new FieldCheckbox();
+        checkbox.setTooltip(Msg["MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP"]);
+
+        const label = new FieldLabel(Msg["MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK"]);
+        label.setTooltip(Msg["MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP"]);
+
+        input
+          .appendField(checkbox, "HIGHLIGHT_LINK")
+          .appendField(label, "HIGHLIGHT_LINK_LABEL");
+      }
+    } else {
+      input.fieldRow
+        .map((field) => field.name)
+        .forEach((name) => {
+          input.removeField(name);
+        });
+    }
+
     if (this.hasThen_) {
       // Update plus/minus buttons.
       if (this.getField("PLUS")) {
@@ -238,6 +276,19 @@ const MEDIA_PLAY_EXCERPT_MUTATOR_MIXIN = {
  * @this {Blockly.Block}
  */
 const MEDIA_PLAY_EXCERPT_MUTATOR_HELPER = function () {
+  this.setOnChange(function (evt) {
+    if (evt.isUiEvent) return;
+
+    const parent_block = this.getSurroundParent();
+    const hasLinkHighlight =
+      parent_block && parent_block.type === "links_click";
+
+    if (this.hasLinkHighlight_ !== hasLinkHighlight) {
+      this.hasLinkHighlight_ = !!hasLinkHighlight;
+      this.updateShape_();
+    }
+  });
+
   this.updateShape_();
 };
 

@@ -23,6 +23,27 @@ JavaScript["links_click"] = function (block) {
       ) + code;
   }
 
+  // Add auto highlighting.
+  block
+    .getChildren()
+    .filter(({ type }) => type === "media_play_excerpt")
+    .forEach((child) => {
+      const highlight_link = child.getFieldValue("HIGHLIGHT_LINK") || "FALSE";
+      if (highlight_link === "TRUE") {
+        const from = JavaScript.valueToCode(
+          child,
+          "FROM",
+          JavaScript.ORDER_ASSIGNMENT
+        );
+        const to = JavaScript.valueToCode(
+          child,
+          "TO",
+          JavaScript.ORDER_ASSIGNMENT
+        );
+        code += `Links.autoHighlight("${id}", ${from}, ${to});\n`;
+      }
+    });
+
   return code;
 };
 

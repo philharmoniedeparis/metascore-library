@@ -2,7 +2,24 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref } from "vue";
 
+const HIGHLIGHT_CLASS = "metaScore-auto-highlight";
+
 const listeners = [];
+const cuepoints = [];
+
+/**
+ * Get a link element by id.
+ * @param {string} id The links's id.
+ * @returns {HTMLElement?} The link
+ */
+function getLink(id) {
+  let { el: root } = useModule("app_renderer");
+  root = unref(root);
+
+  return root.querySelector(
+    `.metaScore-component.content .contents a[data-behavior-trigger="${id}"]`
+  );
+}
 
 export function init(context) {
   // Ensure 'Links' name does not conflict with variable names.
@@ -11,13 +28,8 @@ export function init(context) {
   // Add 'Links' object to context.
   context.Links = {
     addEventListener: (id, type, callback) => {
-      let { el: root } = useModule("app_renderer");
-      root = unref(root);
-
       /** @type HTMLElement */
-      const el = root.querySelector(
-        `.metaScore-component.content .contents a[data-behavior-trigger="${id}"]`
-      );
+      const el = getLink(id);
 
       if (!el) return;
 
@@ -34,6 +46,28 @@ export function init(context) {
     openUrl: (url) => {
       window.open(url, "_blank");
     },
+    autoHighlight: (id, from, to) => {
+      /** @type HTMLElement */
+      const el = getLink(id);
+
+      if (!el) return;
+
+      const { addCuepoint } = useModule("media_cuepoints");
+      const cuepoint = addCuepoint({
+        startTime: from,
+        endTime: to,
+        onStart: () => {
+          el.classList.add(HIGHLIGHT_CLASS);
+        },
+        onStop: () => {
+          el.classList.remove(HIGHLIGHT_CLASS);
+        },
+        onDestroy: () => {
+          el.classList.remove(HIGHLIGHT_CLASS);
+        },
+      });
+      cuepoints.push(cuepoint);
+    },
   };
 }
 
@@ -42,5 +76,12 @@ export function reset() {
   while (listeners.length > 0) {
     const { el, type, callback } = listeners.pop();
     el.removeEventListener(type, callback);
+  }
+
+  // Remove all cuepoints.
+  const { removeCuepoint } = useModule("media_cuepoints");
+  while (cuepoints.length > 0) {
+    const cuepoint = cuepoints.pop();
+    removeCuepoint(cuepoint);
   }
 }
