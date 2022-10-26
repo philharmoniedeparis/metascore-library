@@ -269,6 +269,10 @@ export default {
         border-radius: 50%;
         box-sizing: border-box;
 
+        > span {
+          flex: 1 0 auto;
+        }
+
         &.disabled {
           color: #ccc;
           pointer-events: none;
