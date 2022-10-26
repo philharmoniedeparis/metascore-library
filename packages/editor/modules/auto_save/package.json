@@ -3,5 +3,6 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "pinia": "^2.0.11"
   }
 }

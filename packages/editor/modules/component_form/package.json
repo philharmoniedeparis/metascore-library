@@ -31,6 +31,7 @@
     "@ckeditor/ckeditor5-widget": "^34.0.0",
     "@floating-ui/dom": "^1.0.1",
     "lodash": "^4.17.21",
+    "pinia": "^2.0.11",
     "uuid": "^9.0.0"
   }
 }

@@ -8,6 +8,7 @@
     "@interactjs/interact": "^1.10.17",
     "@interactjs/modifiers": "^1.10.17",
     "lodash": "^4.17.21",
-    "param-case": "^3.0.4"
+    "param-case": "^3.0.4",
+    "pinia": "^2.0.11"
   }
 }
