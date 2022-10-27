@@ -15,12 +15,12 @@ import ImageUpload from "@ckeditor/ckeditor5-image/src/imageupload";
 import Indent from "@ckeditor/ckeditor5-indent/src/indent";
 import IndentBlock from "@ckeditor/ckeditor5-indent/src/indentblock";
 import Italic from "@ckeditor/ckeditor5-basic-styles/src/italic";
-import Link from "@ckeditor/ckeditor5-link/src/link";
+import Link from "./plugins/link/src/link";
 import LinkImage from "@ckeditor/ckeditor5-link/src/linkimage";
 import List from "@ckeditor/ckeditor5-list/src/list";
 import Paragraph from "@ckeditor/ckeditor5-paragraph/src/paragraph";
 import RemoveFormat from "@ckeditor/ckeditor5-remove-format/src/removeformat";
-import SourceEditing from "./plugins/sourceediting";
+import SourceEditing from "./plugins/sourceediting/src/sourceediting";
 import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters";
 import SpecialCharactersEssentials from "@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials";
 import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough";
@@ -29,7 +29,7 @@ import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
 import Table from "@ckeditor/ckeditor5-table/src/table";
 import TableToolbar from "@ckeditor/ckeditor5-table/src/tabletoolbar";
 import Underline from "@ckeditor/ckeditor5-basic-styles/src/underline";
-import UploadAdapter from "./plugins/uploadadapter";
+import UploadAdapter from "./plugins/uploadadapter/src/uploadadapter";
 
 import "./styles.scss";
 
@@ -100,7 +100,7 @@ export function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "|",
         "alignment",
         "|",
-        "link",
+        "customlink",
         "addBehaviorTrigger",
         "uploadImage",
         "insertTable",
