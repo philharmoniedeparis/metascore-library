@@ -275,13 +275,25 @@ export default {
         },
         { kind: "block", type: "media_pause" },
         { kind: "block", type: "media_stop" },
-        { kind: "block", type: "media_set_time" },
+        {
+          kind: "block",
+          type: "media_set_time",
+          inputs: {
+            VALUE: { block: { type: "math_number" } },
+          },
+        },
         { kind: "block", type: "components_set_scenario" },
         hide_block,
         show_block,
         background_color_block,
         { kind: "block", type: "components_set_property" },
-        { kind: "block", type: "components_set_block_page" },
+        {
+          kind: "block",
+          type: "components_set_block_page",
+          inputs: {
+            INDEX: { block: { type: "math_number" } },
+          },
+        },
         {
           kind: "block",
           type: "links_open_url",
