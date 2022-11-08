@@ -45,7 +45,7 @@ export function useModule(id) {
   const module = modules.get(id);
 
   if (!module) {
-    throw ModuleNotFoundError(id, `Module "${id}" not found`);
+    throw new ModuleNotFoundError(id, `Module "${id}" not found`);
   }
 
   return module;

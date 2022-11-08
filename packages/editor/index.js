@@ -35,6 +35,7 @@ import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
+import Intro from "./modules/intro";
 import Waveform from "./modules/waveform";
 
 export class Editor {
@@ -90,6 +91,7 @@ export class Editor {
         SharedAssetsLibrary,
         Tabs,
         Timeline,
+        Intro,
         Waveform,
       ],
       { app, i18n, pinia }

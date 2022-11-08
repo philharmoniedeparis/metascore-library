@@ -16,6 +16,8 @@ export default defineStore("ajax", {
       this.defaults = merge({}, this.defaults, configs);
     },
     async decodeResponse(response, type = "json") {
+      if (response.status === 204) return null;
+
       switch (type) {
         case "arrayBuffer":
         case "blob":
@@ -57,6 +59,7 @@ export default defineStore("ajax", {
       }
 
       if (options.method === "HEAD") return true;
+
       return await this.decodeResponse(response, responseType);
     },
   },
