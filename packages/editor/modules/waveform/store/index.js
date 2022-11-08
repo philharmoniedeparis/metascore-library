@@ -51,7 +51,7 @@ export default defineStore("waveform", {
 
       try {
         if (!audiowaveform && !url) {
-          throw ValidationError(
+          throw new ValidationError(
             MISSING_URL_OR_AUDIOWAVEFORM_ERROR,
             "Source doen't have a url or audiowaveform key"
           );
