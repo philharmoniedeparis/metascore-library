@@ -103,7 +103,7 @@ Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Auto highlight";
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
-  "Highlight the link when the current media time is between those time limits";
+  "Highlight the link when the current media time is between its time limits";
 
 Msg.MEDIA_PLAY_EXCERPT_THEN = "then do";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";

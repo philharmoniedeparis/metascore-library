@@ -104,7 +104,7 @@ Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Surbrillance automatique";
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
-  "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ces limites temporelles";
+  "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ses limites temporelles";
 
 Msg.MEDIA_PLAY_EXCERPT_THEN = "puis faire";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";
