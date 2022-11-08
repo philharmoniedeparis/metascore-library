@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/element-highlighter",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}

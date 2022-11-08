@@ -194,6 +194,8 @@
         {{ `metaScore Editor ${version}` }}
       </template>
     </context-menu>
+
+    <intro-tour v-if="!loading" />
   </div>
 </template>
 
