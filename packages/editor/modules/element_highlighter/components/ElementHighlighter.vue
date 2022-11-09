@@ -37,7 +37,6 @@ export default {
   watch: {
     rect: {
       handler() {
-        console.log("watch rect");
         this.updateStyles();
       },
       deep: true,
