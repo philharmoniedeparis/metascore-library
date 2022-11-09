@@ -25,8 +25,8 @@
   <Transition name="fade">
     <div v-if="stepCount > 0 && !closed" class="intro-tour">
       <element-highlighter
-        :el="ref"
-        :target="null"
+        :rect="refRect"
+        :teleport-target="null"
         :allow-interaction="currentStep.allowInteraction"
         :overlay-opacity="configs.overlayOpacity"
         @click="onHighlighterClick"
@@ -139,6 +139,7 @@ export default {
   data() {
     return {
       ref: null,
+      refRect: null,
       refStyle: null,
       tooltip: null,
       tooltipStyle: null,
@@ -188,6 +189,9 @@ export default {
     },
     refStyle() {
       this.updateTooltipStyle();
+      this.$nextTick(function () {
+        this.refRect = this.ref.getBoundingClientRect();
+      });
     },
     currentStep() {
       this.updateRefStyle();
@@ -356,8 +360,8 @@ export default {
   position: absolute;
   left: 50%;
   top: 50%;
-  max-width: calc(100% - 1em);
-  max-height: calc(100% - 1em);
+  min-width: 15em;
+  max-width: 30em;
   transform: translateX(-50%) translateY(-50%);
   box-shadow: 0 0 0.5em 0 $black;
   transition: all 0.3s ease-out;
@@ -376,7 +380,6 @@ export default {
 }
 
 .intro-tour--tooltip--content {
-  min-width: 10em;
   background: $lightgray;
   border: 2px solid $lightgray;
   border-radius: 0.25em;
@@ -412,8 +415,8 @@ export default {
 
 .intro-tour--dontshowagain {
   margin: 0;
-  font-size: 0.9em;
-  opacity: 0.7;
+  font-size: 0.95em;
+  opacity: 0.75;
 }
 
 .intro-tour--progress {

@@ -1,5 +1,5 @@
 <template>
-  <teleport :to="target" :disabled="!target">
+  <teleport :to="teleportTarget" :disabled="!teleportTarget">
     <div ref="root" class="element-highlighter">
       <div class="overlay" :style="overlayStyle" @click="$emit('click')"></div>
       <div class="highlight" :style="highlightStyle"></div>
@@ -8,16 +8,14 @@
 </template>
 
 <script>
-import { debounce } from "lodash";
-
 export default {
   props: {
-    target: {
+    teleportTarget: {
       type: [String, HTMLElement, Boolean],
       default: "body",
     },
-    el: {
-      type: HTMLElement,
+    rect: {
+      type: DOMRect,
       default: null,
     },
     overlayOpacity: {
@@ -37,51 +35,28 @@ export default {
     };
   },
   watch: {
-    el(value, oldValue) {
-      if (oldValue && this._resize_observer) {
-        this._resize_observer.unobserve(oldValue);
-      }
-
-      if (value) {
-        if (!this._resize_observer) {
-          this._resize_observer = new ResizeObserver(() => {
-            this.updateStyles();
-          });
-        }
-        this._resize_observer.observe(value);
-
+    rect: {
+      handler() {
+        console.log("watch rect");
         this.updateStyles();
-      }
+      },
+      deep: true,
     },
-  },
-  created() {
-    this.onWindowResize = debounce(() => {
-      this.updateStyles();
-    }, 100);
-  },
-  mounted() {
-    this.$nextTick(function () {
-      window.addEventListener("resize", this.onWindowResize);
-    });
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onWindowResize);
   },
   methods: {
     updateStyles() {
-      if (!this.el) {
+      if (!this.rect) {
         this.highlightStyle = null;
         this.overlayStyle = null;
         return;
       }
 
-      const rect = this.el.getBoundingClientRect();
       const offset = this.$refs.root.getBoundingClientRect();
 
-      const top = rect.top - offset.top;
-      const left = rect.left - offset.left;
-      const width = rect.width;
-      const height = rect.height;
+      const top = this.rect.top - offset.top;
+      const left = this.rect.left - offset.left;
+      const width = this.rect.width;
+      const height = this.rect.height;
 
       this.highlightStyle = {
         top: `${top}px`,
