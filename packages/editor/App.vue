@@ -539,8 +539,14 @@ export default {
     }
   }
 
-  :deep(.sr-only) {
-    @include sr-only;
+  :deep(a) {
+    color: inherit;
+    text-decoration: underline;
+
+    &:hover,
+    &:active {
+      text-decoration: none;
+    }
   }
 
   :deep(button) {
@@ -561,6 +567,10 @@ export default {
 
   :deep(.icon) {
     display: block;
+  }
+
+  :deep(.sr-only) {
+    @include sr-only;
   }
 
   > .top {
