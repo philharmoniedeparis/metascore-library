@@ -129,7 +129,15 @@ export default {
     CloseIcon,
   },
   directives: {
-    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+    dompurifyHtml: buildVueDompurifyHTMLDirective({
+      hooks: {
+        afterSanitizeAttributes: (node) => {
+          if (node.tagName === "A" && node.hasAttribute("href")) {
+            node.setAttribute("target", "_blank");
+          }
+        },
+      },
+    }),
   },
   emits: ["close"],
   setup() {
