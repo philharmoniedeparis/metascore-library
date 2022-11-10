@@ -380,9 +380,10 @@ export default {
   position: absolute;
   width: 1em;
   height: 1em;
-  transition: transform 0.2s ease 0s;
+  transition: all 0.3s ease-out;
   transform: rotate(45deg);
   background-color: $lightgray;
+  box-shadow: 0 0 0.5em 0 $black;
   z-index: -1;
 }
 
