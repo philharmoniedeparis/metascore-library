@@ -99,6 +99,10 @@ export default {
       font-weight: normal;
       white-space: nowrap;
       user-select: none;
+
+      &[for] {
+        cursor: pointer;
+      }
     }
 
     :deep(input),
