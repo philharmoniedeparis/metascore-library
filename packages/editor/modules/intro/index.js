@@ -6,7 +6,7 @@ import FormControls from "../form_controls";
 import ElementHighlighter from "../element_highlighter";
 import DotNavigation from "../dot_navigation";
 
-import IntroTour from "./components/IntroTour.vue";
+import IntroTourWrapper from "./components/IntroTourWrapper.vue";
 
 export default class TutorialModule extends AbstractModule {
   static id = "intro";
@@ -22,7 +22,7 @@ export default class TutorialModule extends AbstractModule {
   constructor({ app }) {
     super(arguments);
 
-    app.component("IntroTour", IntroTour);
+    app.component("IntroTour", IntroTourWrapper);
   }
 
   configure(configs) {

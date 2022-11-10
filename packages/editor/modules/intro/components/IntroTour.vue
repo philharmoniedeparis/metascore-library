@@ -22,93 +22,91 @@
   </i18n>
 
 <template>
-  <Transition name="fade">
-    <div v-if="stepCount > 0 && !closed" class="intro-tour">
-      <element-highlighter
-        :rect="refRect"
-        :teleport-target="null"
-        :allow-interaction="currentStep.allowInteraction"
-        :overlay-opacity="configs.overlayOpacity"
-        @click="onHighlighterClick"
-      />
-      <div ref="ref" class="intro-tour--ref" :style="refStyle" />
+  <div class="intro-tour">
+    <element-highlighter
+      :rect="refRect"
+      :teleport-target="null"
+      :allow-interaction="currentStep.allowInteraction"
+      :overlay-opacity="configs.overlayOpacity"
+      @click="onHighlighterClick"
+    />
+    <div ref="ref" class="intro-tour--ref" :style="refStyle" />
 
-      <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
-        <div
-          ref="tooltip-arrow"
-          class="intro-tour--tooltip--arrow"
-          :style="tooltipArrowStyle"
-        ></div>
-        <div class="intro-tour--tooltip--content">
-          <div class="intro-tour--tooltip--header">
-            <h3 class="title">{{ currentStep.title }}</h3>
-            <base-button
-              class="close"
-              :title="$t('close_title')"
-              :aria-label="$t('close_title')"
-              @click="onCloseClick"
-            >
-              <template #icon><close-icon /></template>
-            </base-button>
-          </div>
-          <div class="intro-tour--tooltip--body">
-            <div
-              v-if="currentStep.text"
-              v-dompurify-html="currentStep.text"
-              class="intro-tour--text"
-            />
-
-            <checkbox-control
-              v-if="configs.dontShowAgainUrl"
-              v-model="dontShowAgain"
-              class="intro-tour--dontshowagain"
-              :label="$t('dont_show_again')"
-            ></checkbox-control>
-
-            <dot-navigation
-              v-if="configs.bullets"
-              v-model="currentStepIndex"
-              class="intro-tour--bullets"
-              :items-count="stepCount"
-            />
-          </div>
-
-          <progress
-            v-if="configs.progress"
-            class="intro-tour--progress"
-            :max="stepCount"
-            :value="currentStepIndex + 1"
+    <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
+      <div
+        ref="tooltip-arrow"
+        class="intro-tour--tooltip--arrow"
+        :style="tooltipArrowStyle"
+      ></div>
+      <div class="intro-tour--tooltip--content">
+        <div class="intro-tour--tooltip--header">
+          <h3 class="title">{{ currentStep.title }}</h3>
+          <base-button
+            class="close"
+            :title="$t('close_title')"
+            :aria-label="$t('close_title')"
+            @click="onCloseClick"
+          >
+            <template #icon><close-icon /></template>
+          </base-button>
+        </div>
+        <div class="intro-tour--tooltip--body">
+          <div
+            v-if="currentStep.text"
+            v-dompurify-html="currentStep.text"
+            class="intro-tour--text"
           />
 
-          <div class="intro-tour--tooltip--footer">
-            <base-button
-              class="prev"
-              :disabled="isFirstStep"
-              @click="onPrevClick"
-            >
-              {{ $t("buttons.prev") }}
-            </base-button>
-            <base-button
-              v-if="isLastStep"
-              type="button"
-              role="primary"
-              @click="onCloseClick"
-            >
-              {{ $t("buttons.close") }}
-            </base-button>
-            <base-button
-              v-else
-              type="button"
-              role="primary"
-              @click="onNextClick"
-            >
-              {{ $t("buttons.next") }}
-            </base-button>
-          </div>
+          <checkbox-control
+            v-if="configs.dontShowAgainUrl"
+            v-model="dontShowAgain"
+            class="intro-tour--dontshowagain"
+            :label="$t('dont_show_again')"
+          ></checkbox-control>
+
+          <dot-navigation
+            v-if="configs.bullets"
+            v-model="currentStepIndex"
+            class="intro-tour--bullets"
+            :items-count="stepCount"
+          />
+        </div>
+
+        <progress
+          v-if="configs.progress"
+          class="intro-tour--progress"
+          :max="stepCount"
+          :value="currentStepIndex + 1"
+        />
+
+        <div class="intro-tour--tooltip--footer">
+          <base-button
+            class="prev"
+            :disabled="isFirstStep"
+            @click="onPrevClick"
+          >
+            {{ $t("buttons.prev") }}
+          </base-button>
+          <base-button
+            v-if="isLastStep"
+            type="button"
+            role="primary"
+            @click="onCloseClick"
+          >
+            {{ $t("buttons.close") }}
+          </base-button>
+          <base-button
+            v-else
+            type="button"
+            role="primary"
+            @click="onNextClick"
+          >
+            {{ $t("buttons.next") }}
+          </base-button>
         </div>
       </div>
     </div>
-  </Transition>
+  </div>
 </template>
 
 <script>
@@ -154,7 +152,6 @@ export default {
       tooltipArrowStyle: null,
       currentStepIndex: 0,
       dontShowAgain: false,
-      closed: false,
     };
   },
   computed: {
@@ -221,6 +218,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onWindowResize);
+    window.removeEventListener("keydown", this.onKeyDown, true);
   },
   methods: {
     onHighlighterClick() {
@@ -264,11 +262,10 @@ export default {
       if (this.dontShowAgain) {
         this.store.setDontShowAgain();
       }
-      this.closed = true;
       this.$emit("close");
     },
     updateRefStyle() {
-      if (!this.ref) return;
+      if (!this.ref || !this.$el) return;
 
       if (this.currentStepEl) {
         const rect = this.currentStepEl.getBoundingClientRect();
@@ -461,15 +458,5 @@ export default {
       background: $darkgray;
     }
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
