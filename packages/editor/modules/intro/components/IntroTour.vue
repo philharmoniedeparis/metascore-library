@@ -294,11 +294,7 @@ export default {
 
       const options = {
         strategy: "fixed",
-        middleware: [
-          offset(20),
-          shift({ padding: 10 }),
-          arrow({ element: this.$refs["tooltip-arrow"] }),
-        ],
+        middleware: [offset(20), shift({ padding: 10 })],
       };
 
       if (this.currentStep.position) {
@@ -306,6 +302,9 @@ export default {
       } else {
         options.middleware.push(autoPlacement());
       }
+
+      // This needs to be after autoPlacement.
+      options.middleware.push(arrow({ element: this.$refs["tooltip-arrow"] }));
 
       const { x, y, placement, middlewareData } = await computePosition(
         this.ref,
