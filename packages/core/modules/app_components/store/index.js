@@ -49,9 +49,14 @@ export default defineStore("app-components", {
         return findMatch(this.getByType("Scenario"));
       };
     },
-    getModel() {
+    getModelByType() {
       return (type) => {
         return Models[type];
+      };
+    },
+    getModelByMime() {
+      return (mime) => {
+        return Object.values(Models).find((model) => model.mime === mime);
       };
     },
     isToggled() {
@@ -63,7 +68,7 @@ export default defineStore("app-components", {
     },
     getChildrenProperty() {
       return (component) => {
-        return this.getModel(component.type).childrenProperty;
+        return this.getModelByType(component.type).childrenProperty;
       };
     },
     hasChildren() {
@@ -186,7 +191,7 @@ export default defineStore("app-components", {
       try {
         if ("start-time" in data || "end-time" in data) {
           const parent = this.getParent(component);
-          if (parent && this.getModel(parent.type).$isTimeable) {
+          if (parent && this.getModelByType(parent.type).$isTimeable) {
             if ("start-time" in data && data["start-time"] !== null) {
               data["start-time"] = Math.max(
                 data["start-time"],

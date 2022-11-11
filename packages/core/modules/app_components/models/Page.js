@@ -23,12 +23,12 @@ export default class Page extends mix(AbstractComponent).with(
   /**
    * @inheritdoc
    */
-  static type = "Page";
+  static baseModel = AbstractComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = AbstractComponent;
+  static type = "Page";
 
   /**
    * @inheritdoc

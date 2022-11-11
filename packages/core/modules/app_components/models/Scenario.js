@@ -19,12 +19,15 @@ import Backgroundable from "./mixins/Backgroundable";
 export default class Scenario extends mix(AbstractComponent).with(
   Backgroundable
 ) {
-  static type = "Scenario";
-
   /**
    * @inheritdoc
    */
   static baseModel = AbstractComponent;
+
+  /**
+   * @inheritdoc
+   */
+  static type = "Scenario";
 
   /**
    * @inheritdoc

@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import { merge, kebabCase } from "lodash";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createStringField,
@@ -7,19 +7,27 @@ import {
 
 export default class AbstractComponent extends AbstractModel {
   /**
-   * The component's type
-   */
-  static type = "AbstractComponent";
-
-  /**
    * The model's base class
    */
   static baseModel = AbstractModel;
 
   /**
-   * The model's children property
+   * The component's type
+   */
+  static type = "AbstractComponent";
+
+  /**
+   * The component's children property
    */
   static childrenProperty = null;
+
+  /**
+   * The component's mime type.
+   * Mainly used for drag'n'drop events.
+   */
+  static get mime() {
+    return `metascore/component;type=${kebabCase(this.type)}`;
+  }
 
   /**
    * Get a list of inheritance chain classes

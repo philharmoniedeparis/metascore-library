@@ -4,7 +4,7 @@
     :id="component.id"
     :class="[
       'metaScore-component',
-      paramCase(component.type),
+      kebabCase(component.type),
       { active, hidden, toggled },
     ]"
     :style="{
@@ -30,7 +30,7 @@
 
 <script>
 import { toRef } from "vue";
-import { paramCase } from "param-case";
+import { kebabCase } from "lodash";
 import useStore from "../store";
 import useBackground from "../composables/useBackground";
 import useBorder from "../composables/useBorder";
@@ -55,7 +55,7 @@ export default {
   setup(props) {
     const store = useStore();
     const component = toRef(props, "component");
-    const model = store.getModel(component.value.type);
+    const model = store.getModelByType(component.value.type);
 
     return {
       ...useBackground(component, model),
@@ -80,7 +80,7 @@ export default {
     },
   },
   methods: {
-    paramCase,
+    kebabCase,
   },
 };
 </script>

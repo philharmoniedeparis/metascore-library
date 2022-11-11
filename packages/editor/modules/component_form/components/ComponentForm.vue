@@ -164,7 +164,7 @@
 <template>
   <div
     v-if="masterComponent"
-    :class="['component-form', paramCase(masterComponent.type)]"
+    :class="['component-form', kebabCase(masterComponent.type)]"
   >
     <h2 class="title">{{ title }}</h2>
     <schema-form
@@ -178,8 +178,7 @@
 </template>
 
 <script>
-import { intersection, isObject } from "lodash";
-import { paramCase } from "param-case";
+import { intersection, isObject, kebabCase } from "lodash";
 import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
@@ -201,7 +200,7 @@ export default {
   setup() {
     const store = useStore();
     const {
-      getModel,
+      getModelByType,
       getComponentParent,
       getComponentChildren,
       updateComponent,
@@ -211,7 +210,7 @@ export default {
       useModule("app_preview");
     return {
       store,
-      getModel,
+      getModelByType,
       getComponentParent,
       getComponentChildren,
       updateComponent,
@@ -231,7 +230,7 @@ export default {
     commonModel() {
       let models = [];
       this.selectedComponents.forEach((component, index) => {
-        const model = this.getModel(component.type);
+        const model = this.getModelByType(component.type);
         const modelChain = model.modelChain;
         models = index > 0 ? intersection(models, modelChain) : modelChain;
       });
@@ -538,7 +537,7 @@ export default {
     },
   },
   methods: {
-    paramCase,
+    kebabCase,
     async update({ property, value }) {
       // Allow controls to specify which components to update.
       if (

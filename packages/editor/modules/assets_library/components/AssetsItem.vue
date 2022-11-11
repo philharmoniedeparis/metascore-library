@@ -54,6 +54,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
@@ -80,7 +81,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    return { store };
+    const { getModelByType } = useModule("app_components");
+    return { store, getModelByType };
   },
   data() {
     return {
@@ -160,13 +162,14 @@ export default {
   },
   methods: {
     onDragstart(evt) {
+      const model = this.getModelByType(this.component.type);
+
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(`metascore/component-type`, this.component.type);
+      evt.dataTransfer.setData(model.mime, JSON.stringify(this.component));
       evt.dataTransfer.setData(
-        "metascore/component",
-        JSON.stringify(this.component)
+        `metascore/asset;type=${this.type}`,
+        this.assetDragData
       );
-      evt.dataTransfer.setData(`metascore/asset`, this.assetDragData);
       evt.dataTransfer.setData("text/uri-list", this.file.url);
       evt.dataTransfer.setData("text/plain", this.file.url);
       if (this.type === "image") {

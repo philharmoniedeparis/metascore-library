@@ -12,6 +12,7 @@
 
 <script>
 import { omit } from "lodash";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {
@@ -24,6 +25,10 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { getModelByType } = useModule("app_components");
+    return { getModelByType };
+  },
   data() {
     return {
       dragging: false,
@@ -32,10 +37,10 @@ export default {
   methods: {
     onDragstart(evt) {
       const data = omit(this.component, ["id"]);
+      const model = this.getModelByType(data.type);
 
       evt.dataTransfer.effectAllowed = "copy";
-      evt.dataTransfer.setData(`metascore/component-type`, data.type);
-      evt.dataTransfer.setData("metascore/component", JSON.stringify(data));
+      evt.dataTransfer.setData(model.mime, JSON.stringify(data));
 
       this.dragging = true;
     },

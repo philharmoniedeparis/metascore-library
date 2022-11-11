@@ -6,12 +6,12 @@ export default class Controller extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Controller";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Controller";
 
   /**
    * @inheritdoc

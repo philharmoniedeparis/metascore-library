@@ -10,12 +10,12 @@ export default class Block extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Block";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Block";
 
   /**
    * @inheritdoc

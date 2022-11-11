@@ -1,0 +1,11 @@
+{
+  "name": "@metascore-library/intro",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@floating-ui/dom": "^1.0.1",
+    "lodash": "^4.17.21",
+    "pinia": "^2.0.11",
+    "vue-dompurify-html": "^3.0.0-beta.1"
+  }
+}

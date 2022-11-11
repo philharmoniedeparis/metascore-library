@@ -35,6 +35,7 @@ import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
+import Intro from "./modules/intro";
 import Waveform from "./modules/waveform";
 
 export class Editor {
@@ -53,9 +54,6 @@ export class Editor {
     // Add webpack's public path as a global property.
     // eslint-disable-next-line no-undef
     app.config.globalProperties.publicPath = __webpack_public_path__;
-
-    // See https://github.com/vuejs/core/pull/5474
-    app.config.skipEventsTimestampCheck = true;
 
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     app.config.unwrapInjectedRef = true;
@@ -90,6 +88,7 @@ export class Editor {
         SharedAssetsLibrary,
         Tabs,
         Timeline,
+        Intro,
         Waveform,
       ],
       { app, i18n, pinia }

@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { paramCase } from "param-case";
-import { cloneDeep, round } from "lodash";
+import { cloneDeep, round, kebabCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
@@ -29,7 +28,7 @@ export default defineStore("app-preview", {
     getComponentElement() {
       return (component) => {
         return this.iframe.contentDocument.body.querySelector(
-          `.metaScore-component.${paramCase(component.type)}#${component.id}`
+          `.metaScore-component.${kebabCase(component.type)}#${component.id}`
         );
       };
     },
@@ -196,9 +195,12 @@ export default defineStore("app-preview", {
 
       if (!components) return null;
 
-      const { getModel, getComponentChildrenProperty, getComponentParent } =
-        useModule("app_components");
-      const model = getModel(target.type);
+      const {
+        getModelByType,
+        getComponentChildrenProperty,
+        getComponentParent,
+      } = useModule("app_components");
+      const model = getModelByType(target.type);
       const property = getComponentChildrenProperty(target);
 
       if (property) {
@@ -324,14 +326,14 @@ export default defineStore("app-preview", {
       });
     },
     async moveComponents(components, { left, top }) {
-      const { getModel, updateComponent } = useModule("app_components");
+      const { getModelByType, updateComponent } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
         useModule("history");
 
       startHistoryGroup();
 
       for (const component of components) {
-        const model = getModel(component.type);
+        const model = getModelByType(component.type);
         if (!model.$isPositionable) return;
 
         const position = [...component.position];

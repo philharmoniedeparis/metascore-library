@@ -42,12 +42,11 @@ Msg.COMPONENTS_SET_PROPERTY = "définir %2 de %1 à %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
 
-Msg.COMPONENTS_GET_BLOCK_PAGE = "numéro de la page active de %1";
+Msg.COMPONENTS_GET_BLOCK_PAGE = "page active de %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_GET_BLOCK_PAGE_HELPURL = "";
 
-Msg.COMPONENTS_SET_BLOCK_PAGE =
-  "définir le numéro de la page active de %1 à %2";
+Msg.COMPONENTS_SET_BLOCK_PAGE = "aller à la page %2 de %1";
 Msg.COMPONENTS_SET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_SET_BLOCK_PAGE_HELPURL = "";
 
@@ -105,7 +104,7 @@ Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Surbrillance automatique";
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
-  "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ces limites temporelles";
+  "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ses limites temporelles";
 
 Msg.MEDIA_PLAY_EXCERPT_THEN = "puis faire";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";

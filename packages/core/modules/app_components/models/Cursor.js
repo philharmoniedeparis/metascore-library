@@ -16,12 +16,12 @@ export default class Cursor extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Cursor";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Cursor";
 
   /**
    * @inheritdoc

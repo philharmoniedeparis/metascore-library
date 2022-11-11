@@ -90,8 +90,8 @@ function getPropertyOptions(component_type) {
     ];
   }
 
-  const { getModel } = useModule("app_components");
-  return Object.keys(getModel(component_type).properties)
+  const { getModelByType } = useModule("app_components");
+  return Object.keys(getModelByType(component_type).properties)
     .filter((property) => {
       return SUPPORTED_PROPERTIES.includes(property);
     })
@@ -301,8 +301,8 @@ const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
   getPropertyValueTypeCheck_: function (component_type, property_name) {
     if (component_type === EMPTY_OPTION) return null;
 
-    const { getModel } = useModule("app_components");
-    const property = getModel(component_type).properties?.[property_name];
+    const { getModelByType } = useModule("app_components");
+    const property = getModelByType(component_type).properties?.[property_name];
 
     if (property) {
       const format = property.format;

@@ -5,12 +5,12 @@ export default class VideoRenderer extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "VideoRenderer";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "VideoRenderer";
 
   /**
    * @inheritdoc
