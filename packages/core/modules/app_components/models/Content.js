@@ -6,12 +6,12 @@ export default class Content extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Content";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Content";
 
   /**
    * @inheritdoc

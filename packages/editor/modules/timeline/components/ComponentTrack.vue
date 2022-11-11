@@ -13,7 +13,7 @@
   <div
     :class="[
       'component-track',
-      paramCase(component.type),
+      kebabCase(component.type),
       {
         'has-children': hasChildren,
         'has-start-time': hasStartTime,
@@ -102,8 +102,7 @@ import "@interactjs/auto-start";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { round } from "lodash";
-import { paramCase } from "param-case";
+import { round, kebabCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
@@ -138,7 +137,7 @@ export default {
       seekTo: seekMediaTo,
     } = useModule("media_player");
     const {
-      getModel,
+      getModelByType,
       getComponentParent,
       componentHasChildren,
       getComponentChildren,
@@ -161,7 +160,7 @@ export default {
       mediaTime,
       mediaDuration,
       seekMediaTo,
-      getModel,
+      getModelByType,
       getComponentParent,
       componentHasChildren,
       getComponentChildren,
@@ -186,7 +185,7 @@ export default {
   },
   computed: {
     model() {
-      return this.getModel(this.component.type);
+      return this.getModelByType(this.component.type);
     },
     label() {
       switch (this.component.type) {
@@ -310,7 +309,7 @@ export default {
     this.destroyInteractions();
   },
   methods: {
-    paramCase,
+    kebabCase,
     onClick(evt) {
       if (this.selected) {
         if (evt.shiftKey) {

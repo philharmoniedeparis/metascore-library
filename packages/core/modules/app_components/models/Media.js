@@ -9,12 +9,12 @@ export default class Media extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Media";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Media";
 
   /**
    * @inheritdoc

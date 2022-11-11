@@ -14,12 +14,12 @@ export default class SVG extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "SVG";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "SVG";
 
   /**
    * @inheritdoc

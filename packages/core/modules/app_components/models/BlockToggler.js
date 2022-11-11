@@ -6,12 +6,12 @@ export default class BlockToggler extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "BlockToggler";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "BlockToggler";
 
   /**
    * @inheritdoc

@@ -60,7 +60,7 @@ export default {
       data: behaviors,
       setData: setBehaviors,
     } = useModule("app_behaviors");
-    const { findComponent, getModel } = useModule("app_components");
+    const { findComponent, getModelByType } = useModule("app_components");
     const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
     return {
       store,
@@ -68,7 +68,7 @@ export default {
       behaviors,
       setBehaviors,
       findComponent,
-      getModel,
+      getModelByType,
       mediaTime,
       seekMediaTo,
     };
@@ -202,7 +202,7 @@ export default {
     actionBlocks() {
       // Hide
       let hideable_component = this.findComponent((c) => {
-        const model = this.getModel(c.type);
+        const model = this.getModelByType(c.type);
         return model.$isHideable;
       });
       let hide_block = {
@@ -238,7 +238,7 @@ export default {
 
       // Background color
       let backgroundable_component = this.findComponent((c) => {
-        const model = this.getModel(c.type);
+        const model = this.getModelByType(c.type);
         return model.$isBackgroundable;
       });
       let background_color_block = {
@@ -336,7 +336,7 @@ export default {
     componentBlocks() {
       // Hidden
       let hideable_component = this.findComponent((c) => {
-        const model = this.getModel(c.type);
+        const model = this.getModelByType(c.type);
         return model.$isHideable;
       });
       let hidden_block = {
@@ -358,7 +358,7 @@ export default {
 
       // Background color
       let backgroundable_component = this.findComponent((c) => {
-        const model = this.getModel(c.type);
+        const model = this.getModelByType(c.type);
         return model.$isBackgroundable;
       });
       let background_color_block = {

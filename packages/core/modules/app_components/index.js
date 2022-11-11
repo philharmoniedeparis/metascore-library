@@ -55,9 +55,14 @@ export default class AppComponentsModule extends AbstractModule {
     store.init(data);
   }
 
-  getModel(type) {
+  getModelByType(type) {
     const store = useStore();
-    return store.getModel(type);
+    return store.getModelByType(type);
+  }
+
+  getModelByMime(mime) {
+    const store = useStore();
+    return store.getModelByMime(mime);
   }
 
   getComponents() {
@@ -168,43 +173,43 @@ export default class AppComponentsModule extends AbstractModule {
 
   isComponentBackgroundable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isBackgroundable;
   }
 
   isComponentBorderable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isBorderable;
   }
 
   isComponentHideable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isHideable;
   }
 
   isComponentOpacitable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isOpacitable;
   }
 
   isComponentPositionable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isPositionable;
   }
 
   isComponentResizable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isResizable;
   }
 
   isComponentTimeable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     if (model.$isTimeable) {
       if (component.type === "Page") {
         const block = store.getParent(component);
@@ -217,7 +222,7 @@ export default class AppComponentsModule extends AbstractModule {
 
   isComponentTransformable(component) {
     const store = useStore();
-    const model = store.getModel(component.type);
+    const model = store.getModelByType(component.type);
     return model.$isisTransformable;
   }
 

@@ -24,12 +24,12 @@ export default class EmbeddableComponent extends mix(AbstractComponent).with(
   /**
    * @inheritdoc
    */
-  static type = "EmbeddableComponent";
+  static baseModel = AbstractComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = AbstractComponent;
+  static type = "EmbeddableComponent";
 
   /**
    * @inheritdoc

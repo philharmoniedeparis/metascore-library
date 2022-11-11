@@ -123,7 +123,8 @@ export default {
       useModule("clipboard");
     const { time: mediaTime } = useModule("media_player");
     const {
-      getModel,
+      getModelByType,
+      getModelByMime,
       getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
@@ -142,7 +143,8 @@ export default {
       getClipboardData,
       setClipboardData,
       mediaTime,
-      getModel,
+      getModelByType,
+      getModelByMime,
       getComponentChildrenProperty,
       getComponentChildren,
       getComponentSiblings,
@@ -168,7 +170,7 @@ export default {
   },
   computed: {
     model() {
-      return this.getModel(this.component.type);
+      return this.getModelByType(this.component.type);
     },
     preview() {
       return this.store.preview;
@@ -570,13 +572,15 @@ export default {
       );
     },
     getModelFromDragEvent(evt) {
-      const type = evt.dataTransfer.getData("metascore/component-type");
-      return type ? this.getModel(type) : null;
+      const mime = evt.dataTransfer.types.find((type) => {
+        return type.startsWith("metascore/component;type=");
+      });
+      return mime ? this.getModelByMime(mime) : null;
     },
     isDropAllowed(evt) {
       const model = this.getModelFromDragEvent(evt);
 
-      if (model.type) {
+      if (model) {
         switch (this.component.type) {
           case "Scenario":
           case "Page":
@@ -620,7 +624,7 @@ export default {
     async getComponentFromDragEvent(evt) {
       const model = this.getModelFromDragEvent(evt);
       if (model) {
-        let data = evt.dataTransfer.getData("metascore/component");
+        let data = evt.dataTransfer.getData(model.mime);
         if (data) {
           data = JSON.parse(data);
 

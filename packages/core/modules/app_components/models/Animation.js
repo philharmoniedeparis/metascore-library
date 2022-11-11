@@ -14,12 +14,12 @@ export default class Animation extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static type = "Animation";
+  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
    */
-  static baseModel = EmbeddableComponent;
+  static type = "Animation";
 
   /**
    * @inheritdoc
