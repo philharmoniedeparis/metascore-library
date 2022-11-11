@@ -55,9 +55,6 @@ export class Editor {
     // eslint-disable-next-line no-undef
     app.config.globalProperties.publicPath = __webpack_public_path__;
 
-    // See https://github.com/vuejs/core/pull/5474
-    app.config.skipEventsTimestampCheck = true;
-
     // See https://vuejs.org/guide/components/provide-inject.html#working-with-reactivity
     app.config.unwrapInjectedRef = true;
 
