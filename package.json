@@ -15,7 +15,7 @@
     "packages/**/modules/*"
   ],
   "dependencies": {
-    "@ckeditor/ckeditor5-theme-lark": "^34.0.0",
+    "@ckeditor/ckeditor5-theme-lark": "^35.0.0",
     "blockly": "^9.0.0",
     "core-js": "^3.25.1"
   },
