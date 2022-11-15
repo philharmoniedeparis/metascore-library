@@ -216,7 +216,10 @@ module.exports = defineConfig({
     ]);
     config.module
       .rule("svg")
-      .exclude.add(path.join(__dirname, "node_modules", "@ckeditor"));
+      .exclude.add(path.join(__dirname, "node_modules/@ckeditor"))
+      .add(
+        path.join(__dirname, "packages/editor/modules/component_form/ckeditor")
+      );
     config.module
       .rule("cke-svg")
       .test(/ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/)

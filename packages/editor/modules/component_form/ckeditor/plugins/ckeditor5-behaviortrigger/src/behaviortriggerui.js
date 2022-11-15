@@ -9,7 +9,7 @@ import BehaviorTriggerFormView from "./ui/behaviortriggerformview";
 import BehaviorTriggerActionsView from "./ui/behaviortriggeractionsview";
 import { isLinkElement, TRIGGER_KEYSTROKE } from "./utils";
 
-import addBehaviorTriggerIcon from "../theme/icons/addbehaviortrigger.svg?raw";
+import addBehaviorTriggerIcon from "../theme/icons/addbehaviortrigger.svg";
 
 const VISUAL_SELECTION_MARKER_NAME = "behaviortrigger-ui";
 

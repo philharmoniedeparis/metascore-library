@@ -10,7 +10,7 @@ import { icons } from "@ckeditor/ckeditor5-core";
 import "@ckeditor/ckeditor5-ui/theme/components/responsive-form/responsiveform.css";
 import "../../theme/behaviortriggeractions.scss";
 
-import removeBehaviorTriggerIcon from "../../theme/icons/removebehaviortrigger.svg?raw";
+import removeBehaviorTriggerIcon from "../../theme/icons/removebehaviortrigger.svg";
 
 /**
  * The link actions view class. This view displays the link preview, allows

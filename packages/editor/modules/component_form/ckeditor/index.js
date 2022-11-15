@@ -1,5 +1,4 @@
 import Alignment from "@ckeditor/ckeditor5-alignment/src/alignment";
-import BehavorTrigger from "./plugins/behaviortrigger/src/behaviortrigger";
 import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote";
 import Bold from "@ckeditor/ckeditor5-basic-styles/src/bold";
 import Essentials from "@ckeditor/ckeditor5-essentials/src/essentials";
@@ -15,12 +14,9 @@ import ImageUpload from "@ckeditor/ckeditor5-image/src/imageupload";
 import Indent from "@ckeditor/ckeditor5-indent/src/indent";
 import IndentBlock from "@ckeditor/ckeditor5-indent/src/indentblock";
 import Italic from "@ckeditor/ckeditor5-basic-styles/src/italic";
-import Link from "./plugins/link/src/link";
-import LinkImage from "@ckeditor/ckeditor5-link/src/linkimage";
 import List from "@ckeditor/ckeditor5-list/src/list";
 import Paragraph from "@ckeditor/ckeditor5-paragraph/src/paragraph";
 import RemoveFormat from "@ckeditor/ckeditor5-remove-format/src/removeformat";
-import SourceEditing from "./plugins/sourceediting/src/sourceediting";
 import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters";
 import SpecialCharactersEssentials from "@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials";
 import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough";
@@ -29,7 +25,12 @@ import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
 import Table from "@ckeditor/ckeditor5-table/src/table";
 import TableToolbar from "@ckeditor/ckeditor5-table/src/tabletoolbar";
 import Underline from "@ckeditor/ckeditor5-basic-styles/src/underline";
-import UploadAdapter from "./plugins/uploadadapter/src/uploadadapter";
+
+import BehaviorTrigger from "./plugins/ckeditor5-behaviortrigger/src/behaviortrigger";
+import Link from "./plugins/ckeditor5-link/src/link";
+import LinkImage from "./plugins/ckeditor5-link/src/linkimage";
+import SourceEditing from "./plugins/ckeditor5-sourceediting/src/sourceediting";
+import UploadAdapter from "./plugins/ckeditor5-uploadadapter/src/uploadadapter";
 
 import "./styles.scss";
 
@@ -40,7 +41,7 @@ export function getConfig({ language = "fr", extraFonts = [] } = {}) {
     language,
     plugins: [
       Alignment,
-      BehavorTrigger,
+      BehaviorTrigger,
       BlockQuote,
       Bold,
       Essentials,
@@ -100,7 +101,7 @@ export function getConfig({ language = "fr", extraFonts = [] } = {}) {
         "|",
         "alignment",
         "|",
-        "customlink",
+        "link",
         "addBehaviorTrigger",
         "uploadImage",
         "insertTable",

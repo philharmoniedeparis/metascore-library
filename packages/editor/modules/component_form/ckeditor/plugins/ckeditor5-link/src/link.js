@@ -1,14 +1,13 @@
-import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
+import LinkBase from "@ckeditor/ckeditor5-link/src/link";
 import LinkEditing from "@ckeditor/ckeditor5-link/src/linkediting";
-import LinkUI from "./linkui";
 import AutoLink from "@ckeditor/ckeditor5-link/src/autolink";
+import LinkUI from "./linkui";
 
-export default class Link extends Plugin {
+export default class Link extends LinkBase {
+  /**
+   * @inheritDoc
+   */
   static get requires() {
     return [LinkEditing, LinkUI, AutoLink];
-  }
-
-  static get pluginName() {
-    return "CustomLink";
   }
 }

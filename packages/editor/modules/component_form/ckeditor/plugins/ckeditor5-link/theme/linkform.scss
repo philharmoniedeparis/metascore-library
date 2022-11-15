@@ -1,0 +1,10 @@
+.ck.ck-responsive-form.ck-link-form {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 0.5em;
+
+    > .ck-switchbutton,
+    > .ck-labeled-field-view {
+        grid-column: 1 / 5;
+    }
+}

@@ -1,60 +1,8 @@
 import LinkUIBase from "@ckeditor/ckeditor5-link/src/linkui";
-import {
-  addLinkProtocolIfApplicable,
-  LINK_KEYSTROKE,
-} from "@ckeditor/ckeditor5-link/src/utils";
-import { ButtonView } from "@ckeditor/ckeditor5-ui/src/index";
+import { addLinkProtocolIfApplicable } from "@ckeditor/ckeditor5-link/src/utils";
 import LinkFormView from "./ui/linkformview";
 
-import linkIcon from "@ckeditor/ckeditor5-link//theme/icons/link.svg";
-
 export default class LinkUI extends LinkUIBase {
-  /**
-   * @inheritDoc
-   */
-  static get pluginName() {
-    return "CustomLinkUI";
-  }
-
-  /**
-   * @inheritDoc
-   */
-  _createToolbarLinkButton() {
-    const editor = this.editor;
-    const linkCommand = editor.commands.get("link");
-    const t = editor.t;
-
-    // Handle the `Ctrl+K` keystroke and show the panel.
-    editor.keystrokes.set(LINK_KEYSTROKE, (keyEvtData, cancel) => {
-      // Prevent focusing the search bar in FF, Chrome and Edge. See https://github.com/ckeditor/ckeditor5/issues/4811.
-      cancel();
-
-      if (linkCommand.isEnabled) {
-        this._showUI(true);
-      }
-    });
-
-    editor.ui.componentFactory.add("customlink", (locale) => {
-      const button = new ButtonView(locale);
-
-      button.isEnabled = true;
-      button.label = t("Link");
-      button.icon = linkIcon;
-      button.keystroke = LINK_KEYSTROKE;
-      button.tooltip = true;
-      button.isToggleable = true;
-
-      // Bind button to the command.
-      button.bind("isEnabled").to(linkCommand, "isEnabled");
-      button.bind("isOn").to(linkCommand, "value", (value) => !!value);
-
-      // Show the panel on button click.
-      this.listenTo(button, "execute", () => this._showUI(true));
-
-      return button;
-    });
-  }
-
   /**
    * @inheritDoc
    */
