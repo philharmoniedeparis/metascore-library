@@ -1,6 +1,37 @@
 import { Collection } from "@ckeditor/ckeditor5-utils/src";
 import { Model } from "@ckeditor/ckeditor5-ui/src";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import InputTimecodeView from "./inputtimecodeview";
+
+export function createLabeledInputTimecode(
+  labeledFieldView,
+  viewUid,
+  statusUid
+) {
+  const inputView = new InputTimecodeView(labeledFieldView.locale);
+
+  inputView.set({
+    id: viewUid,
+    ariaDescribedById: statusUid,
+  });
+
+  inputView
+    .bind("isReadOnly")
+    .to(labeledFieldView, "isEnabled", (value) => !value);
+  inputView
+    .bind("hasError")
+    .to(labeledFieldView, "errorText", (value) => !!value);
+
+  inputView.on("input", () => {
+    // UX: Make the error text disappear and disable the error indicator as the user
+    // starts fixing the errors.
+    labeledFieldView.errorText = null;
+  });
+
+  labeledFieldView.bind("isEmpty", "isFocused", "placeholder").to(inputView);
+
+  return inputView;
+}
 
 export function getTypeLabels(t) {
   return {
@@ -40,26 +71,25 @@ export function getTypeDefinitions(view) {
   return itemDefinitions;
 }
 
-export function getScenarioLabels() {
+export function getComponentLabels(type) {
   const { getComponentsByType } = useModule("app_components");
 
   const labels = {};
-  getComponentsByType("Scenario").forEach((scenario) => {
-    labels[scenario.id] = scenario.name;
+  getComponentsByType(type).forEach((c) => {
+    labels[c.id] = c.name;
   });
   return labels;
 }
 
-export function getScenarioDefinitions(view) {
+export function getComponentDefinitions(labels, view) {
   const itemDefinitions = new Collection();
-  const scenarioLabels = getScenarioLabels();
 
-  for (const id in scenarioLabels) {
+  for (const id in labels) {
     const definition = {
       type: "button",
       model: new Model({
-        _scenarioId: id,
-        label: scenarioLabels[id],
+        _componentId: id,
+        label: labels[id],
         withText: true,
       }),
     };

@@ -34,7 +34,6 @@ export default class LinkCommand extends LinkCommandBase {
         (matches = value.match(/^#play(=(\d*\.?\d+)?,(\d*\.?\d+)?,([^,]+))?$/))
       ) {
         this.type = "play";
-        console.log(matches);
 
         if (typeof matches[1] !== "undefined") {
           this.params = {

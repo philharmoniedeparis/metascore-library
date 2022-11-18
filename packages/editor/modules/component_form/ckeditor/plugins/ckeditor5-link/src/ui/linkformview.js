@@ -7,10 +7,11 @@ import {
   SwitchButtonView,
 } from "@ckeditor/ckeditor5-ui/src/index";
 import {
+  createLabeledInputTimecode,
   getTypeLabels,
   getTypeDefinitions,
-  getScenarioLabels,
-  getScenarioDefinitions,
+  getComponentLabels,
+  getComponentDefinitions,
 } from "./utils";
 import FormGroupView from "./formgroupview";
 
@@ -150,7 +151,7 @@ export default class LinkFormView extends LinkFormViewBase {
 
     this.playStartInputView = new LabeledFieldView(
       locale,
-      createLabeledInputNumber
+      createLabeledInputTimecode
     );
     this.playStartInputView.set({
       label: t("Start time"),
@@ -172,7 +173,7 @@ export default class LinkFormView extends LinkFormViewBase {
 
     this.playEndInputView = new LabeledFieldView(
       locale,
-      createLabeledInputNumber
+      createLabeledInputTimecode
     );
     this.playEndInputView.set({
       label: t("End time"),
@@ -192,7 +193,7 @@ export default class LinkFormView extends LinkFormViewBase {
       },
     });
 
-    const scenarioLabels = getScenarioLabels();
+    const scenarioLabels = getComponentLabels("Scenario");
     this.playScenarioInputView = new LabeledFieldView(
       locale,
       createLabeledDropdown
@@ -225,7 +226,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     addListToDropdown(
       this.playScenarioInputView.fieldView,
-      getScenarioDefinitions(this)
+      getComponentDefinitions(scenarioLabels, this)
     );
 
     this.playHighlightInputView = new SwitchButtonView(locale);
@@ -277,7 +278,7 @@ export default class LinkFormView extends LinkFormViewBase {
 
     this.seekTimeInputView = new LabeledFieldView(
       locale,
-      createLabeledInputNumber
+      createLabeledInputTimecode
     );
     this.seekTimeInputView.set({
       label: t("Time"),
@@ -301,13 +302,36 @@ export default class LinkFormView extends LinkFormViewBase {
     const locale = this.locale;
     const t = locale.t;
 
+    const blockLabels = getComponentLabels("Block");
     this.pageBlockInputView = new LabeledFieldView(
       locale,
-      createLabeledInputNumber
+      createLabeledDropdown
     );
     this.pageBlockInputView.set({
       label: t("Block"),
     });
+    this.pageBlockInputView.fieldView.buttonView.set({
+      isOn: false,
+      withText: true,
+    });
+    this.pageBlockInputView.fieldView.buttonView
+      .bind("label")
+      .to(this, "params", (value) => {
+        return blockLabels[value?.block];
+      });
+    this.pageBlockInputView.fieldView.on("execute", (evt) => {
+      this.params = {
+        ...this.params,
+        block: evt.source._blockId,
+      };
+    });
+    this.pageBlockInputView
+      .bind("isEmpty")
+      .to(this, "params", (value) => !value?.scenario);
+    addListToDropdown(
+      this.pageBlockInputView.fieldView,
+      getComponentDefinitions(blockLabels, this)
+    );
 
     this.pagePageInputView = new LabeledFieldView(
       locale,
@@ -315,6 +339,10 @@ export default class LinkFormView extends LinkFormViewBase {
     );
     this.pagePageInputView.set({
       label: t("Page"),
+    });
+    this.pagePageInputView.fieldView.set({
+      min: 1,
+      step: 1,
     });
 
     const inputs = new FormGroupView(locale, {
