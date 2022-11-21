@@ -95,3 +95,10 @@
     /* -- Overrides the default colors used by the ckeditor5-link package. ---------------------- */
     --ck-color-link-default: hsl(190, 100%, 75%);
 }
+
+/* Overrides editable area styles. */
+.ck-editor__editable {
+  --ck-focus-ring: none;
+  --ck-border-radius: 0;
+  --ck-inner-shadow: 0 0 0 var(--ck-color-shadow-inner) inset;
+}
