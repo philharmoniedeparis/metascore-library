@@ -77,6 +77,7 @@ export default {
     return {
       containerWidth: null,
       containerHeight: null,
+      fullscreenElement: null,
     };
   },
   computed: {
@@ -159,6 +160,8 @@ export default {
       win.addEventListener("orientationchange", this.onWindowOrientationChange);
     }
 
+    document.addEventListener("fullscreenchange", this.onFullscreenChange);
+
     this.$nextTick(function () {
       this.store.el = this.$el;
     });
@@ -203,6 +206,11 @@ export default {
       const container = this.$el.parentNode;
       this.containerWidth = container.clientWidth;
       this.containerHeight = container.clientHeight;
+    },
+    onFullscreenChange() {
+      if (!document.fullscreenElement) {
+        this.fullscreenElement = null;
+      }
     },
     onComponentAction({ type, ...args }) {
       switch (type) {
@@ -257,75 +265,69 @@ export default {
           break;
 
         case "page":
-          {
-            if ("block" in args && "index" in args) {
-              const block = this.getComponentsByType("Block").find(
-                (c) => c.name === args.block
-              );
-              if (block) {
-                this.setBlockActivePage(block, args.index);
-              }
+          if ("block" in args && "index" in args) {
+            const block = this.getComponentsByType("Block").find(
+              (c) => c.name === args.block
+            );
+            if (block) {
+              this.setBlockActivePage(block, args.index);
             }
           }
           break;
 
         case "showBlock":
-          {
-            if ("name" in args) {
-              const block = this.getComponentsByType("Block").find(
-                (c) => c.name === args.name
-              );
-              if (block) this.showComponent(block);
-            }
+          if ("name" in args) {
+            const block = this.getComponentsByType("Block").find(
+              (c) => c.name === args.name
+            );
+            if (block) this.showComponent(block);
           }
           break;
 
         case "hideBlock":
-          {
-            if ("name" in args) {
-              const block = this.getComponentsByType("Block").find(
-                (c) => c.name === args.name
-              );
-              if (block) this.hideComponent(block);
-            }
+          if ("name" in args) {
+            const block = this.getComponentsByType("Block").find(
+              (c) => c.name === args.name
+            );
+            if (block) this.hideComponent(block);
           }
           break;
 
         case "toggleBlock":
-          {
-            if ("name" in args) {
-              const block = this.getComponentsByType("Block").find(
-                (c) => c.name === args.name
-              );
-              if (block) this.toggleComponent(block);
-            }
+          if ("name" in args) {
+            const block = this.getComponentsByType("Block").find(
+              (c) => c.name === args.name
+            );
+            if (block) this.toggleComponent(block);
           }
           break;
 
         case "scenario":
-          {
-            if ("id" in args) {
-              const scenario = this.getComponent("Scenario", args.id);
-              if (scenario) this.setActiveScenario(scenario.id);
-            }
+          if ("id" in args) {
+            const scenario = this.getComponent("Scenario", args.id);
+            if (scenario) this.setActiveScenario(scenario.id);
           }
           break;
 
         case "enterFullscreen":
-          this.$el.requestFullscreen();
+          this.$el.requestFullscreen().then(() => {
+            this.fullscreenElement = document.fullscreenElement;
+          });
           break;
 
         case "exitFullscreen":
-          document.exitFullscreen();
+          if (this.fullscreenElement) {
+            document.exitFullscreen();
+          }
           break;
 
         case "toggleFullscreen":
-          {
-            if (document.fullscreenElement !== this.$el) {
-              this.$el.requestFullscreen();
-            } else {
-              document.exitFullscreen();
-            }
+          if (!this.fullscreenElement) {
+            this.$el.requestFullscreen().then(() => {
+              this.fullscreenElement = document.fullscreenElement;
+            });
+          } else {
+            document.exitFullscreen();
           }
           break;
       }
