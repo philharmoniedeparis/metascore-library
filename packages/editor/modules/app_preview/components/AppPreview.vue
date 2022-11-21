@@ -90,7 +90,6 @@
     >
       <iframe
         ref="iframe"
-        src="about:blank"
         allow="fullscreen"
         allowfullscreen
         @load="onIframeLoad"
