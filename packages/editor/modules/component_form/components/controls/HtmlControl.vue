@@ -228,33 +228,30 @@ export default {
     onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
       this.componentEl.classList.toggle("sourceediting", isSourceEditingMode);
     },
-    stopEditing(component = null) {
-      if (!this.editing) {
-        return;
-      }
+    async stopEditing(component = null) {
+      if (!this.editing) return;
 
-      if (component === null) {
-        component = this.component;
-      }
+      component = component ?? this.component;
 
       if (this.editor) {
         const value = this.editor.getData();
+
+        this.editor.ui.view.toolbar.element.remove();
+        await this.editor.destroy();
+        this.editor = null;
+
         this.value = {
           componentsToUpdate: [component],
           value,
         };
-
-        this.editor.ui.view.toolbar.element.remove();
-        this.editor.destroy();
-        this.editor = null;
       }
 
-      if (this.contentsEl) {
-        this.contentsEl.removeEventListener(
+      if (this.componentInnerEl) {
+        this.componentInnerEl.removeEventListener(
           "keydown",
           this.onComponentInnerElKeyEvent
         );
-        this.contentsEl.removeEventListener(
+        this.componentInnerEl.removeEventListener(
           "keyup",
           this.onComponentInnerElKeyEvent
         );

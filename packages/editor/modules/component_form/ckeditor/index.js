@@ -196,5 +196,6 @@ export function getConfig({ language = "fr", extraFonts = [] } = {}) {
       ],
       disallow: [],
     },
+    updateSourceElementOnDestroy: true,
   };
 }
