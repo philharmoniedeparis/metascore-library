@@ -12,9 +12,9 @@ export default class LinkCommand extends LinkCommandBase {
      *
      * @observable
      * @readonly
-     * @member #value
+     * @member #type
      */
-    this.set("type", undefined);
+    this.set("type", "url");
 
     /**
      * The link parameters.
@@ -23,15 +23,20 @@ export default class LinkCommand extends LinkCommandBase {
      * @readonly
      * @member #params
      */
-    this.set("params", undefined);
+    this.set("params", null);
 
     this.on("change:value", (evt, name, value) => {
-      if (!value) return;
+      if (!value) {
+        this.type = "url";
+        this.params = null;
+        return;
+      }
 
       let matches = null;
-
       if (
-        (matches = value.match(/^#play(=(\d*\.?\d+)?,(\d*\.?\d+)?,([^,]+))?$/))
+        (matches = value.match(
+          /^#play(=(\d*\.?\d+)?,(\d*\.?\d+)?,([^,]+)(?:,([01]))?)?$/
+        ))
       ) {
         this.type = "play";
 
@@ -40,9 +45,10 @@ export default class LinkCommand extends LinkCommandBase {
             excerpt: true,
             start:
               typeof matches[2] !== "undefined" ? parseFloat(matches[2]) : null,
-            stop:
+            end:
               typeof matches[2] !== "undefined" ? parseFloat(matches[3]) : null,
             scenario: matches[4],
+            highlight: matches[5] === "1",
           };
         } else {
           this.params = {
@@ -75,27 +81,34 @@ export default class LinkCommand extends LinkCommandBase {
       if ((matches = value.match(/^#page=([^,]*),(\d+)$/))) {
         this.type = "page";
         this.params = {
-          block: matches[1],
-          page: matches[2],
+          block: decodeURIComponent(matches[1]),
+          page: parseInt(matches[2]),
         };
         return;
       }
 
       if ((matches = value.match(/^#(show|hide|toggle)Block=(.*)$/))) {
         this.type = "toggle";
-        this.params = {};
+        this.params = {
+          action: matches[1],
+          block: decodeURIComponent(matches[2]),
+        };
         return;
       }
 
       if ((matches = value.match(/^#scenario=(.+)$/))) {
         this.type = "scenario";
-        this.params = {};
+        this.params = {
+          id: decodeURIComponent(matches[1]),
+        };
         return;
       }
 
       if ((matches = value.match(/^#(enter|exit|toggle)Fullscreen$/))) {
         this.type = "fullscreen";
-        this.params = {};
+        this.params = {
+          action: matches[1],
+        };
         return;
       }
 

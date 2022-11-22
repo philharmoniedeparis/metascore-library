@@ -1,6 +1,8 @@
 import InputView from "@ckeditor/ckeditor5-ui/src/input/inputview";
 import "timecode-input";
 
+import "../../theme/inputtimecode.scss";
+
 /**
  * The timecode input view class.
  */

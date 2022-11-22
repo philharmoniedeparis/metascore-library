@@ -47,30 +47,6 @@ export function getTypeLabels(t) {
   };
 }
 
-export function getTypeDefinitions(view) {
-  const itemDefinitions = new Collection();
-  const typeLabels = getTypeLabels(view.t);
-
-  for (const type in typeLabels) {
-    const definition = {
-      type: "button",
-      model: new Model({
-        _typeValue: type,
-        label: typeLabels[type],
-        withText: true,
-      }),
-    };
-
-    definition.model.bind("isOn").to(view, "type", (value) => {
-      return value === type;
-    });
-
-    itemDefinitions.add(definition);
-  }
-
-  return itemDefinitions;
-}
-
 export function getComponentLabels(type) {
   const { getComponentsByType } = useModule("app_components");
 
@@ -81,21 +57,37 @@ export function getComponentLabels(type) {
   return labels;
 }
 
-export function getComponentDefinitions(labels, view) {
+export function getToggleActionLabels(t) {
+  return {
+    show: t("Show"),
+    hide: t("Hide"),
+    toggle: t("Toggle"),
+  };
+}
+
+export function getFullscreenActionLabels(t) {
+  return {
+    enter: t("Enter"),
+    exit: t("Exit"),
+    toggle: t("Toggle"),
+  };
+}
+
+export function getDropdownDefinitions(labels, view) {
   const itemDefinitions = new Collection();
 
-  for (const id in labels) {
+  for (const key in labels) {
     const definition = {
       type: "button",
       model: new Model({
-        _componentId: id,
-        label: labels[id],
+        _value: key,
+        label: labels[key],
         withText: true,
       }),
     };
 
     definition.model.bind("isOn").to(view, "type", (value) => {
-      return value === id;
+      return value === key;
     });
 
     itemDefinitions.add(definition);

@@ -1,0 +1,7 @@
+.ck.ck-labeled-field-view {
+    &.ck-labeled-field-view_empty:not(.ck-labeled-field-view_focused) {
+        .ck-input-timecode {
+            color: transparent;
+        }
+    }
+}

@@ -9,9 +9,10 @@ import {
 import {
   createLabeledInputTimecode,
   getTypeLabels,
-  getTypeDefinitions,
   getComponentLabels,
-  getComponentDefinitions,
+  getToggleActionLabels,
+  getFullscreenActionLabels,
+  getDropdownDefinitions,
 } from "./utils";
 import FormGroupView from "./formgroupview";
 
@@ -41,16 +42,41 @@ export default class LinkFormView extends LinkFormViewBase {
      */
     this.set("params", {});
 
-    this.bind("type").to(linkCommand);
-    this.bind("params").to(linkCommand);
+    this.on("change:type", (evt, name, value) => {
+      switch (value) {
+        case "toggle":
+          this.params = {
+            action: "show",
+          };
+          break;
 
-    this.on("change:type", () => {
-      this.params = {};
+        case "fullscreen":
+          this.params = {
+            action: "enter",
+          };
+          break;
+
+        default:
+          this.params = {};
+      }
     });
 
     this.on("change:params", () => {
       this._updateValue();
     });
+
+    this.command = linkCommand;
+  }
+
+  set command(value) {
+    this._command = value;
+
+    this.unbind("type", "params");
+
+    this.bind("type").to(value);
+    this.bind("params").to(value);
+
+    this._updateValue();
   }
 
   /**
@@ -97,11 +123,14 @@ export default class LinkFormView extends LinkFormViewBase {
       return typeLabels[value];
     });
     dropdown.fieldView.on("execute", (evt) => {
-      this.type = evt.source._typeValue;
+      this.type = evt.source._value;
     });
     dropdown.bind("isEmpty").to(this, "type", (value) => !value);
 
-    addListToDropdown(dropdown.fieldView, getTypeDefinitions(this));
+    addListToDropdown(
+      dropdown.fieldView,
+      getDropdownDefinitions(typeLabels, this)
+    );
 
     return dropdown;
   }
@@ -134,6 +163,7 @@ export default class LinkFormView extends LinkFormViewBase {
     const t = locale.t;
     const bind = this.bindTemplate;
 
+    // Excerpt.
     this.playExcerptInputView = new SwitchButtonView(locale);
     this.playExcerptInputView.set({
       label: t("Excerpt"),
@@ -141,7 +171,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.playExcerptInputView
       .bind("isOn")
-      .to(this, "params", (value) => !!value?.excerpt);
+      .to(this, "params", (params) => !!params?.excerpt);
     this.playExcerptInputView.on("execute", () => {
       this.params = {
         ...this.params,
@@ -149,6 +179,7 @@ export default class LinkFormView extends LinkFormViewBase {
       };
     });
 
+    // Start time.
     this.playStartInputView = new LabeledFieldView(
       locale,
       createLabeledInputTimecode
@@ -158,7 +189,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.playStartInputView.fieldView
       .bind("value")
-      .to(this, "params", (value) => value?.start);
+      .to(this, "params", (params) => params?.start);
     this.playStartInputView.fieldView.on("input", () => {
       this.params = {
         ...this.params,
@@ -171,6 +202,7 @@ export default class LinkFormView extends LinkFormViewBase {
       },
     });
 
+    // End time.
     this.playEndInputView = new LabeledFieldView(
       locale,
       createLabeledInputTimecode
@@ -180,7 +212,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.playEndInputView.fieldView
       .bind("value")
-      .to(this, "params", (value) => value?.stop);
+      .to(this, "params", (params) => params?.end);
     this.playEndInputView.fieldView.on("input", () => {
       this.params = {
         ...this.params,
@@ -193,6 +225,7 @@ export default class LinkFormView extends LinkFormViewBase {
       },
     });
 
+    // Scenario.
     const scenarioLabels = getComponentLabels("Scenario");
     this.playScenarioInputView = new LabeledFieldView(
       locale,
@@ -207,18 +240,16 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.playScenarioInputView.fieldView.buttonView
       .bind("label")
-      .to(this, "params", (value) => {
-        return scenarioLabels[value?.scenario];
-      });
+      .to(this, "params", (params) => scenarioLabels[params?.scenario]);
     this.playScenarioInputView.fieldView.on("execute", (evt) => {
       this.params = {
         ...this.params,
-        scenario: evt.source._scenarioId,
+        scenario: evt.source._value,
       };
     });
     this.playScenarioInputView
       .bind("isEmpty")
-      .to(this, "params", (value) => !value?.scenario);
+      .to(this, "params", (params) => !params?.scenario);
     this.playScenarioInputView.extendTemplate({
       attributes: {
         class: bind.if("params", "ck-hidden", (value) => !value?.excerpt),
@@ -226,9 +257,10 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     addListToDropdown(
       this.playScenarioInputView.fieldView,
-      getComponentDefinitions(scenarioLabels, this)
+      getDropdownDefinitions(scenarioLabels, this)
     );
 
+    // Auto-highlight.
     this.playHighlightInputView = new SwitchButtonView(locale);
     this.playHighlightInputView.set({
       label: t("Auto-highlight"),
@@ -239,7 +271,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.playHighlightInputView
       .bind("isOn")
-      .to(this, "params", (value) => !!value?.highlight);
+      .to(this, "params", (params) => !!params?.highlight);
     this.playHighlightInputView.on("execute", () => {
       this.params = {
         ...this.params,
@@ -276,12 +308,22 @@ export default class LinkFormView extends LinkFormViewBase {
     const locale = this.locale;
     const t = locale.t;
 
+    // Time.
     this.seekTimeInputView = new LabeledFieldView(
       locale,
       createLabeledInputTimecode
     );
     this.seekTimeInputView.set({
       label: t("Time"),
+    });
+    this.seekTimeInputView.fieldView
+      .bind("value")
+      .to(this, "params", (params) => params?.time);
+    this.seekTimeInputView.fieldView.on("input", () => {
+      this.params = {
+        ...this.params,
+        time: this.seekTimeInputView.fieldView.element.value,
+      };
     });
 
     const inputs = new FormGroupView(locale, {
@@ -302,6 +344,7 @@ export default class LinkFormView extends LinkFormViewBase {
     const locale = this.locale;
     const t = locale.t;
 
+    // Block.
     const blockLabels = getComponentLabels("Block");
     this.pageBlockInputView = new LabeledFieldView(
       locale,
@@ -316,23 +359,22 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.pageBlockInputView.fieldView.buttonView
       .bind("label")
-      .to(this, "params", (value) => {
-        return blockLabels[value?.block];
-      });
+      .to(this, "params", (params) => blockLabels[params?.block]);
     this.pageBlockInputView.fieldView.on("execute", (evt) => {
       this.params = {
         ...this.params,
-        block: evt.source._blockId,
+        block: evt.source._value,
       };
     });
     this.pageBlockInputView
       .bind("isEmpty")
-      .to(this, "params", (value) => !value?.scenario);
+      .to(this, "params", (params) => !params?.block);
     addListToDropdown(
       this.pageBlockInputView.fieldView,
-      getComponentDefinitions(blockLabels, this)
+      getDropdownDefinitions(blockLabels, this)
     );
 
+    // Page.
     this.pagePageInputView = new LabeledFieldView(
       locale,
       createLabeledInputNumber
@@ -344,6 +386,15 @@ export default class LinkFormView extends LinkFormViewBase {
       min: 1,
       step: 1,
     });
+    this.pagePageInputView.fieldView
+      .bind("value")
+      .to(this, "params", (params) => params?.page);
+    this.pagePageInputView.fieldView.on("input", () => {
+      this.params = {
+        ...this.params,
+        page: this.pagePageInputView.fieldView.element.value,
+      };
+    });
 
     const inputs = new FormGroupView(locale, {
       children: [this.pageBlockInputView, this.pagePageInputView],
@@ -354,58 +405,267 @@ export default class LinkFormView extends LinkFormViewBase {
   }
 
   /**
+   * Creates a group of inputs for "(show|hide|toggle)Block" links.
+   *
+   * @private
+   * @returns {FormGroupView} Form group view instance.
+   */
+  _createToggleInputs() {
+    const locale = this.locale;
+    const t = locale.t;
+
+    // Block.
+    const blockLabels = getComponentLabels("Block");
+    this.toggleBlockInputView = new LabeledFieldView(
+      locale,
+      createLabeledDropdown
+    );
+    this.toggleBlockInputView.set({
+      label: t("Block"),
+    });
+    this.toggleBlockInputView.fieldView.buttonView.set({
+      isOn: false,
+      withText: true,
+    });
+    this.toggleBlockInputView.fieldView.buttonView
+      .bind("label")
+      .to(this, "params", (params) => blockLabels[params?.block]);
+    this.toggleBlockInputView.fieldView.on("execute", (evt) => {
+      this.params = {
+        ...this.params,
+        block: evt.source._value,
+      };
+    });
+    this.toggleBlockInputView
+      .bind("isEmpty")
+      .to(this, "params", (params) => !params?.block);
+    addListToDropdown(
+      this.toggleBlockInputView.fieldView,
+      getDropdownDefinitions(blockLabels, this)
+    );
+
+    // Action.
+    const actionLabels = getToggleActionLabels(t);
+    this.toggleActionInputView = new LabeledFieldView(
+      locale,
+      createLabeledDropdown
+    );
+    this.toggleActionInputView.set({
+      label: t("Action"),
+    });
+    this.toggleActionInputView.fieldView.buttonView.set({
+      isOn: false,
+      withText: true,
+    });
+    this.toggleActionInputView.fieldView.buttonView
+      .bind("label")
+      .to(this, "params", (params) => actionLabels[params?.action]);
+    this.toggleActionInputView.fieldView.on("execute", (evt) => {
+      this.params = {
+        ...this.params,
+        action: evt.source._value,
+      };
+    });
+    this.toggleActionInputView
+      .bind("isEmpty")
+      .to(this, "params", (params) => !params?.action);
+    addListToDropdown(
+      this.toggleActionInputView.fieldView,
+      getDropdownDefinitions(actionLabels, this)
+    );
+
+    const inputs = new FormGroupView(locale, {
+      children: [this.toggleBlockInputView, this.toggleActionInputView],
+    });
+    inputs.bind("isVisible").to(this, "type", (value) => value === "toggle");
+
+    return inputs;
+  }
+
+  /**
+   * Creates a group of inputs for "scenario" links.
+   *
+   * @private
+   * @returns {FormGroupView} Form group view instance.
+   */
+  _createScenarioInputs() {
+    const locale = this.locale;
+    const t = locale.t;
+
+    // Scenario.
+    const scenarioLabels = getComponentLabels("Scenario");
+    this.scenarioScenarioInputView = new LabeledFieldView(
+      locale,
+      createLabeledDropdown
+    );
+    this.scenarioScenarioInputView.set({
+      label: t("Scenario"),
+    });
+    this.scenarioScenarioInputView.fieldView.buttonView.set({
+      isOn: false,
+      withText: true,
+    });
+    this.scenarioScenarioInputView.fieldView.buttonView
+      .bind("label")
+      .to(this, "params", (params) => {
+        return scenarioLabels[params?.id];
+      });
+    this.scenarioScenarioInputView.fieldView.on("execute", (evt) => {
+      this.params = {
+        ...this.params,
+        id: evt.source._value,
+      };
+    });
+    this.scenarioScenarioInputView
+      .bind("isEmpty")
+      .to(this, "params", (params) => !params?.id);
+    addListToDropdown(
+      this.scenarioScenarioInputView.fieldView,
+      getDropdownDefinitions(scenarioLabels, this)
+    );
+
+    const inputs = new FormGroupView(locale, {
+      children: [this.scenarioScenarioInputView],
+    });
+    inputs.bind("isVisible").to(this, "type", (value) => value === "scenario");
+
+    return inputs;
+  }
+
+  /**
+   * Creates a group of inputs for "(enter|exit|toggle)Fullscreen" links.
+   *
+   * @private
+   * @returns {FormGroupView} Form group view instance.
+   */
+  _createFullscreenInputs() {
+    const locale = this.locale;
+    const t = locale.t;
+
+    // Action.
+    const actionLabels = getFullscreenActionLabels(t);
+    this.fullscreenActionInputView = new LabeledFieldView(
+      locale,
+      createLabeledDropdown
+    );
+    this.fullscreenActionInputView.set({
+      label: t("Action"),
+    });
+    this.fullscreenActionInputView.fieldView.buttonView.set({
+      isOn: false,
+      withText: true,
+    });
+    this.fullscreenActionInputView.fieldView.buttonView
+      .bind("label")
+      .to(this, "params", (params) => actionLabels[params?.action]);
+    this.fullscreenActionInputView.fieldView.on("execute", (evt) => {
+      this.params = {
+        ...this.params,
+        action: evt.source._value,
+      };
+    });
+    this.fullscreenActionInputView
+      .bind("isEmpty")
+      .to(this, "params", (params) => !params?.action);
+    addListToDropdown(
+      this.fullscreenActionInputView.fieldView,
+      getDropdownDefinitions(actionLabels, this)
+    );
+
+    const inputs = new FormGroupView(locale, {
+      children: [this.fullscreenActionInputView],
+    });
+    inputs
+      .bind("isVisible")
+      .to(this, "type", (value) => value === "fullscreen");
+
+    return inputs;
+  }
+
+  /**
    * @inheritDoc
    */
   _createFormChildren(manualDecorators) {
     const children = super._createFormChildren(manualDecorators);
 
-    /*
-      show/hide/toggle block
-          bloc
-          action
-      scenario
-          name
-      fullscreen
-          action
-      url
-     */
-
-    let index = 0;
-
     this.typeInputView = this._createTypeInput();
-    children.add(this.typeInputView, index++);
+    children.add(this.typeInputView, 0);
 
     this._playInputsGroup = this._createPlayInputs();
-    children.add(this._playInputsGroup, index++);
+    children.add(this._playInputsGroup, 1);
 
     this._seekInputsGroup = this._createSeekInputs();
-    children.add(this._seekInputsGroup, index++);
+    children.add(this._seekInputsGroup, 1);
 
     this._pageInputsGroup = this._createPageInputs();
-    children.add(this._pageInputsGroup, index++);
+    children.add(this._pageInputsGroup, 1);
+
+    this._toggleInputsGroup = this._createToggleInputs();
+    children.add(this._toggleInputsGroup, 1);
+
+    this._scenarioInputsGroup = this._createScenarioInputs();
+    children.add(this._scenarioInputsGroup, 1);
+
+    this._fullscreenInputsGroup = this._createFullscreenInputs();
+    children.add(this._fullscreenInputsGroup, 1);
 
     return children;
   }
 
+  /**
+   * Update the URL input value.
+   */
   _updateValue() {
     if (this.type === "url") return;
 
     const type = this.type;
     const params = this.params;
 
-    let value = `#${type}`;
+    let value = "";
 
     switch (this.type) {
       case "play":
+        value = `#${type}`;
         if (params?.excerpt) {
           value += `=${params.start},${params.end},${params.scenario}`;
+          if (params?.highlight) {
+            value += ",1";
+          }
         }
         break;
+
       case "seek":
-        value += `=${params.time}`;
+        value = `#${type}=${params.time}`;
         break;
+
+      case "page":
+        value = `#${type}=${params.block},${params.page}`;
+        break;
+
+      case "toggle":
+        value = `#${params.action}Block=${params.block}`;
+        break;
+
+      case "scenario":
+        value = `#scenario=${params.scenario}`;
+        break;
+
+      case "fullscreen":
+        value = `#${params.action}Fullscreen`;
+        break;
+
+      default:
+        value = `#${type}`;
     }
 
     this.urlInputView.fieldView.value = value;
+
+    this.fire("update");
   }
 }
+
+/**
+ * Fired when the form view's value is updated.
+ *
+ * @event update
+ */

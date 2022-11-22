@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Language: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+msgctxt "Label for the type dropdown."
+msgid "Type"
+msgstr "Type"
+
+msgctxt "The label of the switch button that controls whether the play link is an excerpt."
+msgid "Excerpt"
+msgstr "Excerpt"
+
+msgctxt "Label for the excerpt start time field."
+msgid "Start time"
+msgstr "Start time"
+
+msgctxt "Label for the excerpt end time field."
+msgid "End time"
+msgstr "End time"
+
+msgctxt "Label for the excerpt scenario field."
+msgid "Scenario"
+msgstr "Scenario"
+
+msgctxt "The label of the switch button that controls whether the play link should be auto-highlighted."
+msgid "Auto-highlight"
+msgstr "Auto-highlight"
+
+msgctxt "The tooltip of the switch button that controls whether the play link should be auto-highlighted."
+msgid "Highlight the link when the current media time is between its time limits"
+msgstr "Highlight the link when the current media time is between its time limits"
+
+msgctxt "Label for the time field of seek links."
+msgid "Time"
+msgstr "Time"
+
+msgctxt "Label for the block field of page and toggle links."
+msgid "Block"
+msgstr "Block"
+
+msgctxt "Label for the page field of page links."
+msgid "Page"
+msgstr "Page"
+
+msgctxt "Label for the action field of toggle and fullscreen links."
+msgid "Action"
+msgstr "Action"
+
+msgctxt "Label for the play option of the type dropdown."
+msgid "Play"
+msgstr "Play"
+
+msgctxt "Label for the pause option of the type dropdown."
+msgid "Pause"
+msgstr "Pause"
+
+msgctxt "Label for the stop option of the type dropdown."
+msgid "Stop"
+msgstr "Stop"
+
+msgctxt "Label for the seek option of the type dropdown."
+msgid "Seek"
+msgstr "Seek"
+
+msgctxt "Label for the toggle option of the type dropdown."
+msgid "Show/Hide a Block"
+msgstr "Show/Hide a Block"
+
+msgctxt "Label for the toggle option of the toggle option of the action dropdowns."
+msgid "Toggle"
+msgstr "Toggle"
+
+msgctxt "Label for the fullscreen option of the type dropdown."
+msgid "Fullscreen"
+msgstr "Fullscreen"
+
+msgctxt "Label for the url option of the type dropdown."
+msgid "URL"
+msgstr "URL"
+
+msgctxt "Label for the show option of the toggle action dropdown."
+msgid "Show"
+msgstr "Show"
+
+msgctxt "Label for the hide option of the toggle action dropdown."
+msgid "Hide"
+msgstr "Hide"
+
+msgctxt "Label for the enter option of the fullscreen action dropdown."
+msgid "Enter"
+msgstr "Enter"
+
+msgctxt "Label for the exit option of the fullscreen action dropdown."
+msgid "Exit"
+msgstr "Exit"

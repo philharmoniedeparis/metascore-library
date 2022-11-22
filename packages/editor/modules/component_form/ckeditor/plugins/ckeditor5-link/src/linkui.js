@@ -40,6 +40,22 @@ export default class LinkUI extends LinkUIBase {
       cancel();
     });
 
+    // Update the balloon's position when the form updates.
+    formView.on("update", () => {
+      this._balloon.updatePosition();
+    });
+
     return formView;
+  }
+
+  _addFormView() {
+    super._addFormView();
+
+    const editor = this.editor;
+    const linkCommand = editor.commands.get("link");
+
+    // Make sure that each time the panel shows up, all fields remain in sync with the values of
+    // the command.
+    this.formView.command = linkCommand;
   }
 }
