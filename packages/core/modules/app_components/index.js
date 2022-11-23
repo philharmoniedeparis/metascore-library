@@ -2,8 +2,11 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+
 import Device from "../device";
 import MediaPlayer from "../media_player";
+import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
+
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
 import BlockTogglerComponent from "./components/BlockTogglerComponent";
@@ -17,10 +20,12 @@ import ScenarioComponent from "./components/ScenarioComponent";
 import SVGComponent from "./components/SVGComponent";
 import VideoRendererComponent from "./components/VideoRendererComponent";
 
+import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from "./utils/links";
+
 export default class AppComponentsModule extends AbstractModule {
   static id = "app_components";
 
-  static dependencies = [Device, MediaPlayer];
+  static dependencies = [Device, MediaPlayer, MediaCuepoints];
 
   constructor({ app }) {
     super(arguments);
@@ -48,6 +53,10 @@ export default class AppComponentsModule extends AbstractModule {
   get data() {
     const store = useStore();
     return store.toJson();
+  }
+
+  get linksAutoHighlightClass() {
+    return AUTO_HIGHLIGHT_CLASS;
   }
 
   async init(data) {
@@ -224,6 +233,10 @@ export default class AppComponentsModule extends AbstractModule {
     const store = useStore();
     const model = store.getModelByType(component.type);
     return model.$isisTransformable;
+  }
+
+  getLinkActions(href) {
+    return parseLink(href);
   }
 
   onStoreAction(callback) {

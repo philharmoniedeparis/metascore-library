@@ -47,6 +47,7 @@ export function processMessage(evt) {
         const { play, pause, seekTo } = useModule("media_player");
         const { getComponent, setActiveScenario } = useModule("app_components");
 
+        // @todo: refactor with AppRenderer's onComponentAction
         if ("inTime" in params || "outTime" in params) {
           const { inTime = null, outTime = null, scenario = null } = params;
           const cuepoint_config = {

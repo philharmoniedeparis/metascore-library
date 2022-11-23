@@ -1,4 +1,6 @@
 import LinkCommandBase from "@ckeditor/ckeditor5-link/src/linkcommand";
+import { omit } from "lodash";
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default class LinkCommand extends LinkCommandBase {
   /**
@@ -14,7 +16,7 @@ export default class LinkCommand extends LinkCommandBase {
      * @readonly
      * @member #type
      */
-    this.set("type", "url");
+    this.set("type", null);
 
     /**
      * The link parameters.
@@ -26,94 +28,19 @@ export default class LinkCommand extends LinkCommandBase {
     this.set("params", null);
 
     this.on("change:value", (evt, name, value) => {
-      if (!value) {
-        this.type = "url";
-        this.params = null;
-        return;
-      }
-
-      let matches = null;
-      if (
-        (matches = value.match(
-          /^#play(=(\d*\.?\d+)?,(\d*\.?\d+)?,([^,]+)(?:,([01]))?)?$/
-        ))
-      ) {
-        this.type = "play";
-
-        if (typeof matches[1] !== "undefined") {
-          this.params = {
-            excerpt: true,
-            start:
-              typeof matches[2] !== "undefined" ? parseFloat(matches[2]) : null,
-            end:
-              typeof matches[2] !== "undefined" ? parseFloat(matches[3]) : null,
-            scenario: matches[4],
-            highlight: matches[5] === "1",
-          };
-        } else {
-          this.params = {
-            excerpt: false,
-          };
-        }
-        return;
-      }
-
-      if (value.match(/^#pause$/)) {
-        this.type = "pause";
-        this.params = null;
-        return;
-      }
-
-      if (value.match(/^#stop$/)) {
-        this.type = "stop";
-        this.params = null;
-        return;
-      }
-
-      if ((matches = value.match(/^#seek=(\d*\.?\d+)$/))) {
-        this.type = "seek";
-        this.params = {
-          time: parseFloat(matches[1]),
-        };
-        return;
-      }
-
-      if ((matches = value.match(/^#page=([^,]*),(\d+)$/))) {
-        this.type = "page";
-        this.params = {
-          block: decodeURIComponent(matches[1]),
-          page: parseInt(matches[2]),
-        };
-        return;
-      }
-
-      if ((matches = value.match(/^#(show|hide|toggle)Block=(.*)$/))) {
-        this.type = "toggle";
-        this.params = {
-          action: matches[1],
-          block: decodeURIComponent(matches[2]),
-        };
-        return;
-      }
-
-      if ((matches = value.match(/^#scenario=(.+)$/))) {
-        this.type = "scenario";
-        this.params = {
-          id: decodeURIComponent(matches[1]),
-        };
-        return;
-      }
-
-      if ((matches = value.match(/^#(enter|exit|toggle)Fullscreen$/))) {
-        this.type = "fullscreen";
-        this.params = {
-          action: matches[1],
-        };
-        return;
-      }
-
-      this.type = "url";
+      this.type = "play";
       this.params = null;
+
+      if (value) {
+        const { getLinkActions } = useModule("app_components");
+        const actions = getLinkActions(value);
+
+        if (actions && actions.length > 0) {
+          const action = actions[0];
+          this.type = action.type;
+          this.params = omit(action, ["type"]);
+        }
+      }
     });
   }
 }

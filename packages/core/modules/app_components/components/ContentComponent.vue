@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { parse as parseLink } from "../utils/links";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 // @TODO: add link auto-highlighting
 
@@ -46,54 +47,16 @@ export default {
       evt.stopPropagation();
       evt.preventDefault();
 
-      if (/^#/.test(link.hash)) {
-        const actions = link.hash.replace(/^#/, "").split("&");
-
+      const actions = parseLink(link.href);
+      if (actions) {
         actions.forEach((action) => {
-          if (["play", "pause", "stop"].includes(action)) {
-            this.$emit("action", { type: action });
-            return;
-          }
-
-          let matches = null;
-
-          // play excerpt link.
-          if (
-            (matches = action.match(/^play=(\d*\.?\d+)?,(\d*\.?\d+)?,(.+)$/))
-          ) {
-            this.$emit("action", {
-              type: "play",
-              inTime: matches[1],
-              outTime: matches[2],
-              scenario: decodeURIComponent(matches[3]),
-            });
-            return;
-          }
-
-          // seek link.
-          if ((matches = action.match(/^seek=(\d*\.?\d+)$/))) {
-            this.$emit("action", {
-              type: "seek",
-              time: parseFloat(matches[1]),
-            });
-            return;
-          }
-
-          // page link.
-          if ((matches = action.match(/^page=([^,]*),(\d+)$/))) {
-            this.$emit("action", {
-              type: "page",
-              block: decodeURIComponent(matches[1]),
-              index: parseInt(matches[2], 10) - 1,
-            });
-            return;
-          }
-
-          // show/hide/toggleBlock link.
-          if ((matches = action.match(/^((show|hide|toggle)Block)=(.+)$/))) {
-            this.$emit("action", {
-              type: matches[1],
-              name: decodeURIComponent(matches[3]),
+          this.$emit("action", action);
+        });
+      } else {
+        // Default action, open link in new window/tab.
+        window.open(link.href, "_blank");
+      }
+    },
             });
             return;
           }

@@ -8,12 +8,12 @@ import {
   createTimeField,
 } from "@metascore-library/core/utils/schema";
 
-export const createCollectionField = ({
+export function createCollectionField({
   ajv,
   title = "",
   description = "",
   model = [],
-} = {}) => {
+} = {}) {
   ajv.addFormat("collection", { validate: () => true });
 
   const types = Array.isArray(model) ? model.map((m) => m.type) : [model.type];
@@ -33,15 +33,15 @@ export const createCollectionField = ({
     }),
     format: "collection",
   };
-};
+}
 
-export const createHtmlField = ({
+export function createHtmlField({
   ajv,
   title = "",
   description = "",
   default: default_value = null,
   nullable = true,
-} = {}) => {
+} = {}) {
   ajv.addFormat("html", urlRegex);
   return {
     ...createStringField({
@@ -52,15 +52,15 @@ export const createHtmlField = ({
     }),
     format: "html",
   };
-};
+}
 
-export const createAngleField = ({
+export function createAngleField({
   ajv,
   title = "",
   description = "",
   default: default_value = 0,
   nullable = true,
-} = {}) => {
+} = {}) {
   ajv.addFormat("angle", { validate: () => true });
   return {
     ...createIntegerField({
@@ -73,15 +73,15 @@ export const createAngleField = ({
     }),
     format: "angle",
   };
-};
+}
 
-export const createBorderRadiusField = ({
+export function createBorderRadiusField({
   ajv,
   title = "",
   description = "",
   default: default_value = 0,
   nullable = false,
-} = {}) => {
+} = {}) {
   ajv.addFormat("border-radius", { validate: () => true });
   return {
     type: nullable ? ["string", "integer", "null"] : ["string", "integer"],
@@ -90,16 +90,16 @@ export const createBorderRadiusField = ({
     default: default_value,
     format: "border-radius",
   };
-};
+}
 
-export const createAnimatedField = ({
+export function createAnimatedField({
   ajv,
   title = "",
   description = "",
   default: default_value = { animated: false, value: null },
   nullable = false,
   items,
-} = {}) => {
+} = {}) {
   ajv.addFormat("animated", { validate: () => true });
   return {
     type: nullable ? ["object", "null"] : ["object"],
@@ -138,4 +138,4 @@ export const createAnimatedField = ({
     default: default_value,
     format: "animated",
   };
-};
+}

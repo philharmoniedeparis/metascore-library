@@ -215,11 +215,11 @@ export default {
     onComponentAction({ type, ...args }) {
       switch (type) {
         case "play":
-          if ("inTime" in args || "outTime" in args) {
-            const { inTime = null, outTime = null, scenario = null } = args;
+          if ("excerpt" in args && args.excerpt) {
+            const { start = null, end = null, scenario = null } = args;
             const cuepoint_config = {
-              startTime: inTime,
-              endTime: outTime,
+              startTime: start,
+              endTime: end,
               onStop: () => {
                 this.pauseMedia();
               },
@@ -243,8 +243,8 @@ export default {
 
             this.setGlobalCuepoint(cuepoint_config);
 
-            if (inTime !== null) {
-              this.seekMediaTo(inTime);
+            if (start !== null) {
+              this.seekMediaTo(start);
             }
           }
           this.playMedia();

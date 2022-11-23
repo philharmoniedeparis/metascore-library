@@ -2,8 +2,6 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref } from "vue";
 
-const HIGHLIGHT_CLASS = "metaScore-auto-highlight";
-
 const listeners = [];
 const cuepoints = [];
 
@@ -52,18 +50,20 @@ export function init(context) {
 
       if (!el) return;
 
+      let { linksAutoHighlightClass } = useModule("app_components");
       const { addCuepoint } = useModule("media_cuepoints");
+
       const cuepoint = addCuepoint({
         startTime: from,
         endTime: to,
         onStart: () => {
-          el.classList.add(HIGHLIGHT_CLASS);
+          el.classList.add(linksAutoHighlightClass);
         },
         onStop: () => {
-          el.classList.remove(HIGHLIGHT_CLASS);
+          el.classList.remove(linksAutoHighlightClass);
         },
         onDestroy: () => {
-          el.classList.remove(HIGHLIGHT_CLASS);
+          el.classList.remove(linksAutoHighlightClass);
         },
       });
       cuepoints.push(cuepoint);
