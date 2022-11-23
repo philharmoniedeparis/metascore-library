@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import { parse as parseLink } from "../utils/links";
+import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from "../utils/links";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-// @TODO: add link auto-highlighting
+import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   directives: {
@@ -32,10 +32,33 @@ export default {
     },
   },
   emits: ["action"],
+  setup() {
+    const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    return { addCuepoint, removeCuepoint };
+  },
+  data() {
+    return {
+      cuepoints: [],
+    };
+  },
   computed: {
     text() {
       return this.component.text;
     },
+  },
+  watch: {
+    text: {
+      async handler() {
+        this.destroyLinksAutoHihglight();
+
+        await this.$nextTick();
+        this.setupLinksAutoHighlight();
+      },
+      immediate: true,
+    },
+  },
+  beforeUnmount() {
+    this.destroyLinksAutoHihglight();
   },
   methods: {
     onTextClick(evt) {
@@ -57,31 +80,38 @@ export default {
         window.open(link.href, "_blank");
       }
     },
+    setupLinksAutoHighlight() {
+      const links = this.$el.querySelectorAll("a[href^='#']");
+      links.forEach((link) => {
+        const actions = parseLink(link.href);
+        actions
+          .filter((action) => {
+            return action.type === "play" && action.highlight === true;
+          })
+          .forEach((action) => {
+            const cuepoint = this.addCuepoint({
+              startTime: action.start,
+              endTime: action.end,
+              onStart: () => {
+                link.classList.add(AUTO_HIGHLIGHT_CLASS);
+              },
+              onStop: () => {
+                link.classList.remove(AUTO_HIGHLIGHT_CLASS);
+              },
+              onDestroy: () => {
+                link.classList.remove(AUTO_HIGHLIGHT_CLASS);
+              },
             });
-            return;
-          }
 
-          // scenario link.
-          if ((matches = action.match(/^scenario=(.+)$/))) {
-            this.$emit("action", {
-              type: "scenario",
-              scenario: decodeURIComponent(matches[1]),
-            });
-            return;
-          }
-
-          // enter/exit/toggleFullscreen.
-          if ((matches = action.match(/^(enter|exit|toggle)Fullscreen$/))) {
-            this.$emit("action", { type: matches[0] });
-            return;
-          }
-        });
-
-        return;
+            this.cuepoints.push(cuepoint);
+          });
+      });
+    },
+    destroyLinksAutoHihglight() {
+      while (this.cuepoints.length > 0) {
+        const cuepoint = this.cuepoints.pop();
+        this.removeCuepoint(cuepoint);
       }
-
-      // Default action, open link in new window/tab.
-      window.open(link.href, "_blank");
     },
   },
 };
@@ -99,6 +129,11 @@ export default {
 
       &[data-behavior-trigger] {
         cursor: pointer;
+      }
+
+      &.metaScore-auto-highlight {
+        color: rgb(238, 0, 0);
+        text-decoration: none;
       }
     }
   }
