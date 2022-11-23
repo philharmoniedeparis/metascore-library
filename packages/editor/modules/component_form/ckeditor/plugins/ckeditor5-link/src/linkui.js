@@ -42,7 +42,9 @@ export default class LinkUI extends LinkUIBase {
 
     // Update the balloon's position when the form updates.
     formView.on("update", () => {
-      this._balloon.updatePosition();
+      if (this._isUIVisible) {
+        this._balloon.updatePosition();
+      }
     });
 
     return formView;
