@@ -56,8 +56,10 @@ export default class LinkUI extends LinkUIBase {
     const editor = this.editor;
     const linkCommand = editor.commands.get("link");
 
-    // Make sure that each time the panel shows up, all fields remain in sync with the values of
-    // the command.
-    this.formView.command = linkCommand;
+    // Make sure that each time the panel shows up, all fields remain in sync
+    // with the values of the command.
+    this.formView.unbind("type", "params");
+    this.formView.bind("type", "params").to(linkCommand);
+    this.formView.updateValue();
   }
 }

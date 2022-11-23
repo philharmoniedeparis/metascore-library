@@ -31,7 +31,7 @@ export default class LinkFormView extends LinkFormViewBase {
      * @observable
      * @member {String} #type
      */
-    this.set("type", undefined);
+    this.set("type", null);
 
     /**
      * A collection of link parameters.
@@ -40,9 +40,11 @@ export default class LinkFormView extends LinkFormViewBase {
      * @observable
      * @member {Object} #params
      */
-    this.set("params", {});
+    this.set("params", null);
 
     this.on("change:type", (evt, name, value) => {
+      this.urlInputView.fieldView.value = "";
+
       switch (value) {
         case "toggle":
           this.params = {
@@ -57,26 +59,13 @@ export default class LinkFormView extends LinkFormViewBase {
           break;
 
         default:
-          this.params = {};
+          this.params = null;
       }
     });
 
     this.on("change:params", () => {
-      this._updateValue();
+      this.updateValue();
     });
-
-    this.command = linkCommand;
-  }
-
-  set command(value) {
-    this._command = value;
-
-    this.unbind("type", "params");
-
-    this.bind("type").to(value);
-    this.bind("params").to(value);
-
-    this._updateValue();
   }
 
   /**
@@ -615,7 +604,7 @@ export default class LinkFormView extends LinkFormViewBase {
   /**
    * Update the URL input value.
    */
-  _updateValue() {
+  updateValue() {
     if (this.type === "url") return;
 
     const type = this.type;

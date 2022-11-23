@@ -28,7 +28,7 @@ export default class LinkCommand extends LinkCommandBase {
     this.set("params", null);
 
     this.on("change:value", (evt, name, value) => {
-      this.type = "play";
+      this.type = "url";
       this.params = null;
 
       if (value) {
