@@ -95,3 +95,15 @@ msgstr "Entrer"
 msgctxt "Label for the exit option of the fullscreen action dropdown."
 msgid "Exit"
 msgstr "Sortir"
+
+msgctxt "Tooltip for the timecode toolbar in button."
+msgid "Set value to current media time"
+msgstr "Régler la valeur du champ au temps courant du média"
+
+msgctxt "Tooltip for the timecode toolbar out button."
+msgid "Set current media time to this value"
+msgstr "Régler le temps courant du média à la valeur du champ"
+
+msgctxt "Tooltip for the timecode toolbar clear button."
+msgid "Clear value"
+msgstr "Effacer la valeur"

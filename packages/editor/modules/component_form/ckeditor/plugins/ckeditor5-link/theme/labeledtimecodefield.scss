@@ -1,0 +1,35 @@
+.ck.ck-labeled-field-view_timecode {
+    position: relative;
+
+    .ck.ck-input {
+        width: 100%;
+    }
+
+    .ck.ck-toolbar {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        padding: 0;
+
+        .ck.ck-toolbar__items {
+            button {
+                margin: 0;
+                padding: 0.5em;
+                --ck-ui-component-min-height: auto;
+                --ck-icon-size: 1em;
+            }
+        }
+    }
+
+    &:not(.ck-labeled-field-view_focused) {
+        .ck.ck-toolbar {
+            display: none;
+        }
+
+        &.ck-labeled-field-view_empty {
+            .ck-input {
+                color: transparent;
+            }
+        }
+    }
+}

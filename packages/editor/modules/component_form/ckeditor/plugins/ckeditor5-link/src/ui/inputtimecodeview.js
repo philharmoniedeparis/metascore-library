@@ -1,14 +1,12 @@
-import InputView from "@ckeditor/ckeditor5-ui/src/input/inputview";
+import { InputView } from "@ckeditor/ckeditor5-ui/src";
 import "timecode-input";
-
-import "../../theme/inputtimecode.scss";
 
 /**
  * The timecode input view class.
  */
 export default class InputTimecodeView extends InputView {
   /**
-   * Creates an instance of the input number view.
+   * Creates an instance of the input view.
    *
    * @param {module:utils/locale~Locale} locale The {@link module:core/editor/editor~Editor#locale} instance.
    * @param {Object} [options] The options of the input.
@@ -48,5 +46,12 @@ export default class InputTimecodeView extends InputView {
         max: bind.to("max"),
       },
     });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  _updateIsEmpty() {
+    this.isEmpty = this.element.value === null;
   }
 }

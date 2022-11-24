@@ -20,5 +20,8 @@
 	"Show": "Label for the show option of the toggle action dropdown.",
 	"Hide": "Label for the hide option of the toggle action dropdown.",
 	"Enter": "Label for the enter option of the fullscreen action dropdown.",
-	"Exit": "Label for the exit option of the fullscreen action dropdown."
+	"Exit": "Label for the exit option of the fullscreen action dropdown.",
+	"Set value to current media time": "Tooltip for the timecode toolbar in button",
+	"Set current media time to this value": "Tooltip for the timecode toolbar out button",
+	"Clear value": "Tooltip for the timecode toolbar clear button"
 }

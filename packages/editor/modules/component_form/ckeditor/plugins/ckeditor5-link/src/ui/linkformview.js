@@ -7,7 +7,6 @@ import {
   SwitchButtonView,
 } from "@ckeditor/ckeditor5-ui/src/index";
 import {
-  createLabeledInputTimecode,
   getTypeLabels,
   getComponentLabels,
   getToggleActionLabels,
@@ -15,6 +14,7 @@ import {
   getDropdownDefinitions,
 } from "./utils";
 import FormGroupView from "./formgroupview";
+import LabeledTimecodeFieldView from "./labeledtimecodefieldview";
 
 import "../../theme/linkform.scss";
 
@@ -169,10 +169,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
 
     // Start time.
-    this.playStartInputView = new LabeledFieldView(
-      locale,
-      createLabeledInputTimecode
-    );
+    this.playStartInputView = new LabeledTimecodeFieldView(locale);
     this.playStartInputView.set({
       label: t("Start time"),
     });
@@ -192,10 +189,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
 
     // End time.
-    this.playEndInputView = new LabeledFieldView(
-      locale,
-      createLabeledInputTimecode
-    );
+    this.playEndInputView = new LabeledTimecodeFieldView(locale);
     this.playEndInputView.set({
       label: t("End time"),
     });
@@ -298,10 +292,7 @@ export default class LinkFormView extends LinkFormViewBase {
     const t = locale.t;
 
     // Time.
-    this.seekTimeInputView = new LabeledFieldView(
-      locale,
-      createLabeledInputTimecode
-    );
+    this.seekTimeInputView = new LabeledTimecodeFieldView(locale);
     this.seekTimeInputView.set({
       label: t("Time"),
     });
@@ -578,25 +569,25 @@ export default class LinkFormView extends LinkFormViewBase {
     const children = super._createFormChildren(manualDecorators);
 
     this.typeInputView = this._createTypeInput();
-    children.add(this.typeInputView, 0);
-
     this._playInputsGroup = this._createPlayInputs();
-    children.add(this._playInputsGroup, 1);
-
     this._seekInputsGroup = this._createSeekInputs();
-    children.add(this._seekInputsGroup, 1);
-
     this._pageInputsGroup = this._createPageInputs();
-    children.add(this._pageInputsGroup, 1);
-
     this._toggleInputsGroup = this._createToggleInputs();
-    children.add(this._toggleInputsGroup, 1);
-
     this._scenarioInputsGroup = this._createScenarioInputs();
-    children.add(this._scenarioInputsGroup, 1);
-
     this._fullscreenInputsGroup = this._createFullscreenInputs();
-    children.add(this._fullscreenInputsGroup, 1);
+
+    children.addMany(
+      [
+        this.typeInputView,
+        this._playInputsGroup,
+        this._seekInputsGroup,
+        this._pageInputsGroup,
+        this._toggleInputsGroup,
+        this._scenarioInputsGroup,
+        this._fullscreenInputsGroup,
+      ],
+      0
+    );
 
     return children;
   }
