@@ -95,12 +95,7 @@
           >
             {{ $t("buttons.close") }}
           </base-button>
-          <base-button
-            v-else
-            type="button"
-            role="primary"
-            @click="onNextClick"
-          >
+          <base-button v-else type="button" role="primary" @click="onNextClick">
             {{ $t("buttons.next") }}
           </base-button>
         </div>
