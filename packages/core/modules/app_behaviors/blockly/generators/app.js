@@ -22,3 +22,18 @@ JavaScript["app_startup"] = function (block) {
 
   return code;
 };
+
+JavaScript["app_enter_fullscreen"] = function () {
+  const code = `App.toggleFullscreen(true);`;
+  return code;
+};
+
+JavaScript["app_exit_fullscreen"] = function () {
+  const code = `App.toggleFullscreen(false);`;
+  return code;
+};
+
+JavaScript["app_toggle_fullscreen"] = function () {
+  const code = `App.toggleFullscreen();`;
+  return code;
+};

@@ -8,7 +8,7 @@ export function init(context) {
   // Ensure 'Components' name does not conflict with variable names.
   JavaScript.addReservedWords("Components");
 
-  // Add 'Keyboard' object to context.
+  // Add 'Components' object to context.
   context.Components = {
     addEventListener: (type, id, event, callback) => {
       const { getComponent } = useModule("app_components");

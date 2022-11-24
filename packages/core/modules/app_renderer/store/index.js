@@ -8,6 +8,7 @@ export default defineStore("app-renderer", {
       width: null,
       height: null,
       css: null,
+      fullscreenElement: null,
     };
   },
   actions: {
@@ -24,6 +25,40 @@ export default defineStore("app-renderer", {
     },
     setCSS(value) {
       this.css = value;
+    },
+    toggleFullscreen(force) {
+      if (!this.el) return;
+
+      if (typeof force === "undefined") {
+        force = this.fullscreenElement === null;
+      }
+
+      if (force) {
+        return this.el
+          .requestFullscreen()
+          .then(() => {
+            this.fullscreenElement = document.fullscreenElement;
+
+            // Add listener to unset fullscreenElement
+            // when fullscreen is exited.
+            const listener = () => {
+              if (!document.fullscreenElement) {
+                this.fullscreenElement = null;
+                document.removeEventListener("fullscreenchange", listener);
+              }
+            };
+            document.addEventListener("fullscreenchange", listener);
+          })
+          .catch((e) => {
+            console.warn(e);
+          });
+      } else if (this.fullscreenElement) {
+        try {
+          document.exitFullscreen();
+        } catch (e) {
+          console.warn(e);
+        }
+      }
     },
   },
   history(context) {

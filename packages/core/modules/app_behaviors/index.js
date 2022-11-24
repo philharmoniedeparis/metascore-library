@@ -4,6 +4,7 @@ import AbstractModule from "@metascore-library/core/services/module-manager/Abst
 import useStore from "./store";
 import storePlugin from "./store/plugin";
 import AppComponents from "../app_components";
+import AppRenderer from "../app_renderer";
 import MediaCuepoints from "../media_cuepoints";
 import MediaPlayer from "../media_player";
 import Blockly from "./blockly";
@@ -22,7 +23,7 @@ export default class AppBehaviorsModule extends AbstractModule {
 
     Blockly.setLocale(blocklyLocale);
 
-    return [AppComponents, MediaCuepoints, MediaPlayer];
+    return [AppComponents, AppRenderer, MediaCuepoints, MediaPlayer];
   }
 
   constructor({ pinia }) {

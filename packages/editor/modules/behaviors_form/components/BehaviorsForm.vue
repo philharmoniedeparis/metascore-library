@@ -301,6 +301,18 @@ export default {
             URL: { block: { type: "text" } },
           },
         },
+        {
+          kind: "block",
+          type: "app_enter_fullscreen",
+        },
+        {
+          kind: "block",
+          type: "app_exit_fullscreen",
+        },
+        {
+          kind: "block",
+          type: "app_toggle_fullscreen",
+        },
       ];
     },
     logicBlocks() {

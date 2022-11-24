@@ -1,5 +1,6 @@
 import { compileCode } from "@nx-js/compiler-util";
 import { isEmpty } from "lodash";
+import * as App from "./app";
 import * as Components from "./components";
 import * as Keyboard from "./keyboard";
 import * as Links from "./links";
@@ -14,6 +15,7 @@ export function exec(code) {
   }
 
   const context = {};
+  App.init(context);
   Components.init(context);
   Keyboard.init(context);
   Links.init(context);

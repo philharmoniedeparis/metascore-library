@@ -5,6 +5,18 @@ Msg.APP_STARTUP_THEN = "faire %1";
 Msg.APP_STARTUP_TOOLTIP = "";
 Msg.APP_STARTUP_HELPURL = "";
 
+Msg.APP_ENTER_FULLSCREEN = "entrer en mode plein écran";
+Msg.APP_ENTER_FULLSCREEN_TOOLTIP = "";
+Msg.APP_ENTER_FULLSCREEN_HELPURL = "";
+
+Msg.APP_EXIT_FULLSCREEN = "quitter le mode plein écran";
+Msg.APP_EXIT_FULLSCREEN_TOOLTIP = "";
+Msg.APP_EXIT_FULLSCREEN_HELPURL = "";
+
+Msg.APP_TOGGLE_FULLSCREEN = "basculer le mode plein écran";
+Msg.APP_TOGGLE_FULLSCREEN_TOOLTIP = "";
+Msg.APP_TOGGLE_FULLSCREEN_HELPURL = "";
+
 Msg.COMPONENTS_CLICK = "au clic sur le composant %1";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";

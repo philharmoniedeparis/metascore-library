@@ -77,7 +77,6 @@ export default {
     return {
       containerWidth: null,
       containerHeight: null,
-      fullscreenElement: null,
     };
   },
   computed: {
@@ -160,8 +159,6 @@ export default {
       win.addEventListener("orientationchange", this.onWindowOrientationChange);
     }
 
-    document.addEventListener("fullscreenchange", this.onFullscreenChange);
-
     this.$nextTick(function () {
       this.store.el = this.$el;
     });
@@ -206,11 +203,6 @@ export default {
       const container = this.$el.parentNode;
       this.containerWidth = container.clientWidth;
       this.containerHeight = container.clientHeight;
-    },
-    onFullscreenChange() {
-      if (!document.fullscreenElement) {
-        this.fullscreenElement = null;
-      }
     },
     onComponentAction({ type, ...args }) {
       switch (type) {
@@ -310,25 +302,15 @@ export default {
           break;
 
         case "enterFullscreen":
-          this.$el.requestFullscreen().then(() => {
-            this.fullscreenElement = document.fullscreenElement;
-          });
+          this.store.toggleFullscreen(true);
           break;
 
         case "exitFullscreen":
-          if (this.fullscreenElement) {
-            document.exitFullscreen();
-          }
+          this.store.toggleFullscreen(false);
           break;
 
         case "toggleFullscreen":
-          if (!this.fullscreenElement) {
-            this.$el.requestFullscreen().then(() => {
-              this.fullscreenElement = document.fullscreenElement;
-            });
-          } else {
-            document.exitFullscreen();
-          }
+          this.store.toggleFullscreen();
           break;
       }
     },
