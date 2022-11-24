@@ -1,3 +1,22 @@
+<i18n>
+  {
+    "fr": {
+      "buttons": {
+        "in": "Régler la valeur du champ au temps courant du média",
+        "out": "Régler le temps courant du média à la valeur du champ",
+        "clear": "Effacer la valeur",
+      },
+    },
+    "en": {
+      "buttons": {
+        "in": "Set value to current media time",
+        "out": "Set current media time to this value",
+        "clear": "Clear value",
+      },
+    },
+  }
+</i18n>
+
 <template>
   <form-group
     :class="['control', 'time', { readonly, disabled }]"
@@ -33,6 +52,7 @@
           v-if="inButton && !readonly"
           type="button"
           class="in"
+          :title="$t('buttons.in')"
           @click="onInClick"
         >
           <template #icon><in-icon /></template>
@@ -41,6 +61,7 @@
           v-if="outButton"
           type="button"
           class="out"
+          :title="$t('buttons.out')"
           @click="onOutClick"
         >
           <template #icon><out-icon /></template>
@@ -49,6 +70,7 @@
           v-if="clearButton && !readonly"
           type="button"
           class="clear"
+          :title="$t('buttons.clear')"
           @click="onClearClick"
         >
           <template #icon><clear-icon /></template>
