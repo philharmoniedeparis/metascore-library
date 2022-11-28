@@ -42,12 +42,19 @@ export default class LinkFormView extends LinkFormViewBase {
      * @observable
      * @member {Object} #params
      */
-    this.set("params", null);
+    this.set("params", {});
 
     this.on("change:type", (evt, name, value) => {
       this.urlInputView.fieldView.value = "";
 
+      // Set action defaults.
       switch (value) {
+        case "seek":
+          this.params = {
+            time: 0,
+          };
+          break;
+
         case "toggle":
           this.params = {
             action: "show",
@@ -61,7 +68,7 @@ export default class LinkFormView extends LinkFormViewBase {
           break;
 
         default:
-          this.params = null;
+          this.params = {};
       }
     });
 

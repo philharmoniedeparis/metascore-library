@@ -25,11 +25,11 @@ export default class LinkCommand extends LinkCommandBase {
      * @readonly
      * @member #params
      */
-    this.set("params", null);
+    this.set("params", {});
 
     this.on("change:value", (evt, name, value) => {
       this.type = "url";
-      this.params = null;
+      this.params = {};
 
       if (value) {
         const { getLinkActions } = useModule("app_components");
