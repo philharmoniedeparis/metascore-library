@@ -614,7 +614,10 @@ export default class LinkFormView extends LinkFormViewBase {
       case "play":
         value = `#${type}`;
         if (params?.excerpt) {
-          value += `=${params.start},${params.end},${params.scenario}`;
+          value += `=${params.start ?? ""}`;
+          value += `,${params.end ?? ""}`;
+          value += `,${params.scenario ?? ""}`;
+
           if (params?.highlight) {
             value += ",1";
           }
