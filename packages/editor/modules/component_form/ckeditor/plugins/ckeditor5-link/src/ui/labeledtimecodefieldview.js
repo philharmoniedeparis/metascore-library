@@ -47,6 +47,7 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
     });
     in_button.on("execute", () => {
       this.fieldView.value = unref(mediaTime);
+      this.fieldView.fire("input");
     });
 
     const out_button = new ButtonView(locale);
@@ -65,6 +66,7 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
     });
     clear_button.on("execute", () => {
       this.fieldView.value = null;
+      this.fieldView.fire("input");
     });
 
     const toolbar = new ToolbarView(locale);
