@@ -25,6 +25,8 @@ export default class LinkFormView extends LinkFormViewBase {
   constructor(locale, linkCommand) {
     super(locale, linkCommand);
 
+    const t = this.locale.t;
+
     /**
      * The link type
      *
@@ -66,6 +68,9 @@ export default class LinkFormView extends LinkFormViewBase {
     this.on("change:params", () => {
       this.updateValue();
     });
+
+    // Add a placeholder to the URL field
+    this.urlInputView.fieldView.placeholder = t("https://example.com");
   }
 
   /**

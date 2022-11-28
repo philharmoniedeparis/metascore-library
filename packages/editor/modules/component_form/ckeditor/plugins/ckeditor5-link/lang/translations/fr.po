@@ -4,6 +4,10 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
+msgctxt "Placeholder for the URL field."
+msgid "https://example.com"
+msgstr "https://exemple.com"
+
 msgctxt "Label for the type dropdown."
 msgid "Type"
 msgstr "Type"

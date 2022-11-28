@@ -4,6 +4,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+msgctxt "Placeholder for the URL field."
+msgid "https://example.com"
+msgstr "https://example.com"
+
 msgctxt "Label for the type dropdown."
 msgid "Type"
 msgstr "Type"
