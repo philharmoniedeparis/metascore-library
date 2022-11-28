@@ -16,15 +16,60 @@ import "../../theme/labeledtimecodefield.scss";
  */
 export default class LabeledTimecodeFieldView extends LabeledFieldView {
   /**
-   * Creates an instance of the input view.
+   * Creates an instance of the labeled field view.
    *
    * @param {module:utils/locale~Locale} locale The {@link module:core/editor/editor~Editor#locale} instance.
    * @param {Object} [options] The options of the input.
-   * @param {Number} [options.min] The value of the `min` DOM attribute (the lowest accepted value).
-   * @param {Number} [options.max] The value of the `max` DOM attribute (the highest accepted value).
+   * @param {Boolean} [options.in_button=true] Whether to add the 'in' button.
+   * @param {Boolean} [options.out_button=true] Whether to add the 'out' button.
+   * @param {Boolean} [options.clear_button=true] Whether to add the 'clear' button.
    */
-  constructor(locale) {
+  constructor(
+    locale,
+    { in_button = true, out_button = true, clear_button = true } = {}
+  ) {
     super(locale, createLabeledInputTimecode);
+
+    const t = locale.t;
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+
+    this._buttons = [];
+
+    if (in_button) {
+      this.inButton = new ButtonView(locale);
+      this.inButton.set({
+        icon: inIcon,
+        tooltip: t("Set value to current media time"),
+      });
+      this.inButton.on("execute", () => {
+        this.fieldView.value = unref(mediaTime);
+        this.fieldView.fire("input");
+      });
+      this._buttons.push(this.inButton);
+    }
+    if (out_button) {
+      this.outButton = new ButtonView(locale);
+      this.outButton.set({
+        icon: outIcon,
+        tooltip: t("Set current media time to this value"),
+      });
+      this.outButton.on("execute", () => {
+        seekMediaTo(this.fieldView.value);
+      });
+      this._buttons.push(this.outButton);
+    }
+    if (clear_button) {
+      this.clearButton = new ButtonView(locale);
+      this.clearButton.set({
+        icon: clearIcon,
+        tooltip: t("Clear value"),
+      });
+      this.clearButton.on("execute", () => {
+        this.fieldView.value = null;
+        this.fieldView.fire("input");
+      });
+      this._buttons.push(this.clearButton);
+    }
 
     this.extendTemplate({
       attributes: {
@@ -34,45 +79,16 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
   }
 
   render() {
-    const locale = this.locale;
-    const t = locale.t;
-    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
-
     super.render();
 
-    const in_button = new ButtonView(locale);
-    in_button.set({
-      icon: inIcon,
-      tooltip: t("Set value to current media time"),
-    });
-    in_button.on("execute", () => {
-      this.fieldView.value = unref(mediaTime);
-      this.fieldView.fire("input");
-    });
+    if (this._buttons.length > 0) {
+      const locale = this.locale;
 
-    const out_button = new ButtonView(locale);
-    out_button.set({
-      icon: outIcon,
-      tooltip: t("Set current media time to this value"),
-    });
-    out_button.on("execute", () => {
-      seekMediaTo(this.fieldView.value);
-    });
+      const toolbar = new ToolbarView(locale);
+      toolbar.items.addMany(this._buttons);
+      toolbar.render();
 
-    const clear_button = new ButtonView(locale);
-    clear_button.set({
-      icon: clearIcon,
-      tooltip: t("Clear value"),
-    });
-    clear_button.on("execute", () => {
-      this.fieldView.value = null;
-      this.fieldView.fire("input");
-    });
-
-    const toolbar = new ToolbarView(locale);
-    toolbar.items.addMany([in_button, out_button, clear_button]);
-    toolbar.render();
-
-    this.element.appendChild(toolbar.element);
+      this.element.appendChild(toolbar.element);
+    }
   }
 }

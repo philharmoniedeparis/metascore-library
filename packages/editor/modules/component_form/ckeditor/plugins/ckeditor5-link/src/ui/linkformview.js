@@ -297,7 +297,9 @@ export default class LinkFormView extends LinkFormViewBase {
     const t = locale.t;
 
     // Time.
-    this.seekTimeInputView = new LabeledTimecodeFieldView(locale);
+    this.seekTimeInputView = new LabeledTimecodeFieldView(locale, {
+      clear_button: false,
+    });
     this.seekTimeInputView.set({
       label: t("Time"),
     });
