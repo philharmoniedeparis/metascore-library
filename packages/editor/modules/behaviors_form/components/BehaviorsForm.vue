@@ -112,7 +112,7 @@ export default {
           wheel: false,
           pinch: true,
           startScale: 0.675,
-          maxScale: 3,
+          maxScale: 1,
           minScale: 0.3,
           scaleSpeed: 1.2,
         },
