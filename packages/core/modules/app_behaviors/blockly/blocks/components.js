@@ -146,7 +146,6 @@ Extensions.register("components_component_options", function () {
   const component_input = this.getInput("COMPONENT");
   if (!component_input) return;
 
-  const property_input = this.getInput("PROPERTY");
   const mock = this.type.endsWith("_mock");
 
   const component_field = new FieldEnhancedDropdown(function () {
@@ -162,22 +161,9 @@ Extensions.register("components_component_options", function () {
       ],
     ];
 
-    if (mock) {
-      return options;
-    }
+    if (mock) return options;
 
-    if (property_input) {
-      return [...options, ...getComponentOptions(null, true)];
-    }
-
-    return [
-      ...options,
-      ...getComponentOptions(null, true, (option, c) => {
-        if (c.type === "Scenario") {
-          option[0] = { label: option[0], disabled: true };
-        }
-      }),
-    ];
+    return [...options, ...getComponentOptions(null, true)];
   });
   component_input.appendField(component_field, "COMPONENT");
 
