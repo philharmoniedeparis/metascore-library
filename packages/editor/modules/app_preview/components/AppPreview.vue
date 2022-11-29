@@ -479,7 +479,7 @@ export default {
           .querySelectorAll("link[rel='stylesheet'][data-metascore-library]")
           .forEach((tag) => {
             const url = tag.getAttribute("href");
-            const link = document.createElement("link");
+            const link = this.iframeDocument.createElement("link");
             link.setAttribute("rel", "stylesheet");
             link.setAttribute("type", "text/css");
             link.setAttribute("href", url);
