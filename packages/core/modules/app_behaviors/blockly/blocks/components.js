@@ -1,11 +1,5 @@
-import {
-  defineBlocksWithJsonArray,
-  Extensions,
-  FieldDropdown,
-  Msg,
-} from "blockly/core";
-import { isFunction } from "lodash";
-import FieldEnhancedDropdown from "../fields/field_enhanced_dropdown";
+import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
+import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const EMPTY_OPTION = "%EMPTY_OPTION%";
@@ -26,18 +20,17 @@ const SUPPORTED_PROPERTIES = [
  * @param {string?} type The type of components
  * @param {boolean|array} recursive Whether to recurse to child components.
  *  An array of children is passed when recursed from within the function.
- * @param {function?} alter_hook An optional function to alter each option.
- * @param {string?} prefix A string to prefix options, used internally.
+ * @param {number?} level The current recursion level, used internally.
  * @returns {array} An options array
  */
-function getComponentOptions(
-  type = null,
-  recursive = false,
-  alter_hook = null,
-  prefix = ""
-) {
-  const { getComponents, getComponentsByType, getComponentChildren } =
-    useModule("app_components");
+function getComponentOptions(type = null, recursive = false, level = 0) {
+  const {
+    getComponents,
+    getComponentsByType,
+    getComponentChildren,
+    getComponentLabel,
+    getComponentIconURL,
+  } = useModule("app_components");
   let components = [];
   let options = [];
 
@@ -51,12 +44,27 @@ function getComponentOptions(
 
   if (components.length > 0) {
     components.forEach((c) => {
-      const name = c.name || "untitled";
-      const option = [`${prefix} ${name}`, `${c.type}:${c.id}`];
+      const name = getComponentLabel(c);
+      let label = name;
 
-      if (alter_hook && isFunction(alter_hook)) {
-        alter_hook(option, c);
+      const icon_url = getComponentIconURL(c);
+      if (icon_url) {
+        label = document.createElement("div");
+        label.classList.add("blocklyMenuItemLabel");
+        if (level) {
+          label.style.setProperty("--level", level);
+        }
+
+        const icon = document.createElement("img");
+        icon.src = icon_url;
+        icon.classList.add("blocklyMenuItemLabelIcon");
+        label.appendChild(icon);
+
+        const text = document.createTextNode(name);
+        label.appendChild(text);
       }
+
+      const option = [{ label }, `${c.type}:${c.id}`];
 
       options.push(option);
 
@@ -64,7 +72,7 @@ function getComponentOptions(
         const children = getComponentChildren(c);
         options = [
           ...options,
-          ...getComponentOptions(type, children, alter_hook, `—${prefix}`),
+          ...getComponentOptions(type, children, level + 1),
         ];
       }
     });
@@ -148,22 +156,19 @@ Extensions.register("components_component_options", function () {
 
   const mock = this.type.endsWith("_mock");
 
-  const component_field = new FieldEnhancedDropdown(function () {
-    const options = [
-      [
-        {
-          label: Msg.COMPONENTS_EMPTY_OPTION,
-          disabled: true,
-          default: true,
-          hiddenInMenu: true,
-        },
-        EMPTY_OPTION,
-      ],
+  const component_field = new FieldDropdown(function () {
+    const empty_option = [
+      {
+        label: Msg.COMPONENTS_EMPTY_OPTION,
+        default: true,
+        hidden: true,
+      },
+      EMPTY_OPTION,
     ];
 
-    if (mock) return options;
+    if (mock) return [empty_option];
 
-    return [...options, ...getComponentOptions(null, true)];
+    return [empty_option, ...getComponentOptions(null, true)];
   });
   component_input.appendField(component_field, "COMPONENT");
 
@@ -186,7 +191,7 @@ Extensions.register("components_property_options", function () {
 
   const mock = this.type.endsWith("_mock");
 
-  const property_field = new FieldEnhancedDropdown(() => {
+  const property_field = new FieldDropdown(() => {
     if (mock) {
       if (this.property_) {
         return [[Msg.COMPONENTS_PROPERTY[this.property_], this.property_]];

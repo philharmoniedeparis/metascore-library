@@ -1,4 +1,5 @@
 import Theme from "../blockly/theme";
+import "../blockly/renderer";
 import Flyout from "../blockly/plugins/flyout";
 import {
   ContinuousToolbox,
@@ -18,7 +19,7 @@ import { default as getPresetBlocks } from "./toolbox/categories/presets";
 export default function getConfig({ $t, publicPath = "" } = {}) {
   return {
     theme: Theme,
-    renderer: "zelos",
+    renderer: "metascore_renderer",
     media: `${publicPath}blockly/media/`,
     grid: {
       spacing: 100,

@@ -1,5 +1,6 @@
 import Blockly from "blockly/core";
-import "./fields";
+import "./core";
+
 import "blockly/blocks";
 import "./blocks";
 

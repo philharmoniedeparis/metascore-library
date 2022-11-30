@@ -9,8 +9,8 @@ import {
   Css,
 } from "blockly/core";
 import TimecodeInput from "timecode-input";
-import "../events/timecode_value_in";
-import "../events/timecode_value_out";
+import "./events/timecode_value_in";
+import "./events/timecode_value_out";
 
 import ClearIcon from "../../assets/icons/timecode-clear.svg?raw";
 import InIcon from "../../assets/icons/timecode-in.svg?raw";

@@ -1,4 +1,4 @@
-import { default as Blockly, Themes, Theme, Css } from "blockly/core";
+import { default as Blockly, Themes, Theme } from "blockly/core";
 
 Blockly.HSV_SATURATION = 0.99;
 Blockly.HSV_VALUE = 0.9;
@@ -85,31 +85,3 @@ export default Theme.defineTheme("metaScore", {
     },
   },
 });
-
-Css.register(
-  `
-  .blocklyWidgetDiv {
-    font-size: 14px;
-  }
-  .blocklyWidgetDiv .blocklyMenu {
-    background: #3f3f3f;
-    padding: 0.25em;
-    font-size: 0.975em;
-    box-sizing: content-box;
-    border: 1px solid #777;
-    box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
-  }
-  .blocklyMenuItem {
-    color: #fff;
-  }
-  .blocklyMenuItemHighlight {
-    background-color: #606060;
-  }
-  .blocklyMenuItemDisabled {
-    opacity: 0.5;
-  }
-  .blocklyContextMenu {
-    border-radius: 0;
-  }
-  `
-);

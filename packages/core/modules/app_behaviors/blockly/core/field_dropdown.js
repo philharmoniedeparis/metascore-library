@@ -1,36 +1,53 @@
 import {
-  FieldDropdown,
+  FieldDropdown as FieldDropdownBase,
+  Field,
   fieldRegistry,
   Menu,
   MenuItem,
   utils,
 } from "blockly/core";
 
-const { aria } = utils;
+const { aria, string: utilsString, parsing } = utils;
 
 /**
- * Class for an enhanced editable dropdown field
+ * Class for an editable dropdown field
  * that allows creating disabled options.
  */
-export default class FieldEnhancedDropdown extends FieldDropdown {
+export default class FieldDropdown extends FieldDropdownBase {
   /**
    * @inheritdocs
    */
   constructor(menuGenerator, opt_validator, opt_config) {
-    super(menuGenerator, opt_validator, opt_config);
+    super(Field.SKIP_SETUP);
 
-    this.setValidator(null);
+    // If we pass SKIP_SETUP, don't do *anything* with the menu generator.
+    if (!isMenuGenerator(menuGenerator)) return;
+
+    if (Array.isArray(menuGenerator)) {
+      validateOptions(menuGenerator);
+      const trimmed = trimOptions(menuGenerator);
+      this.menuGenerator_ = trimmed.options;
+      this.prefixField = trimmed.prefix || null;
+      this.suffixField = trimmed.suffix || null;
+    } else {
+      this.menuGenerator_ = menuGenerator;
+    }
 
     /**
-     * @inheritdocs
+     * The currently selected option. The field is initialized with the
+     * first option selected.
      */
     this.selectedOption_ = this.getOptions(false).find((o) => {
       return typeof o[0] === "string" || o[0].default || !o[0].disabled;
     });
 
+    if (opt_config) {
+      this.configure_(opt_config);
+    }
     this.setValue(this.selectedOption_[1]);
-
-    if (opt_validator) this.setValidator(opt_validator);
+    if (opt_validator) {
+      this.setValidator(opt_validator);
+    }
   }
 
   /**
@@ -53,7 +70,7 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
       let enabled = true;
       const content = (() => {
         if (typeof label === "object") {
-          if ("hiddenInMenu" in label && label.hiddenInMenu) {
+          if ("hidden" in label && label.hidden) {
             // Don't add a menu item.
             return null;
           }
@@ -150,18 +167,82 @@ export default class FieldEnhancedDropdown extends FieldDropdown {
     return option;
   }
 }
+/**
+ * Copied as is from blockly.
+ */
+function isMenuGenerator(menuGenerator) {
+  return menuGenerator !== Field.SKIP_SETUP;
+}
 
 /**
- * @inheritdoc
+ * Copied with slight modification from blockly.
+ */
+function trimOptions(options) {
+  let hasImages = false;
+  const trimmedOptions = options.map(([label, value]) => {
+    if (typeof label === "string") {
+      return [parsing.replaceMessageReferences(label), value];
+    }
+
+    hasImages = true;
+    // Copy the image properties so they're not influenced by the original.
+    // NOTE: No need to deep copy since image properties are only 1 level deep.
+    const imageLabel =
+      "alt" in label && label.alt !== null
+        ? { ...label, alt: parsing.replaceMessageReferences(label.alt) }
+        : { ...label };
+    return [imageLabel, value];
+  });
+
+  if (hasImages || options.length < 2) return { options: trimmedOptions };
+
+  const stringOptions = trimmedOptions;
+  const stringLabels = stringOptions.map(([label]) => label);
+
+  const shortest = utilsString.shortestStringLength(stringLabels);
+  const prefixLength = utilsString.commonWordPrefix(stringLabels, shortest);
+  const suffixLength = utilsString.commonWordSuffix(stringLabels, shortest);
+
+  if (
+    (!prefixLength && !suffixLength) ||
+    shortest <= prefixLength + suffixLength
+  ) {
+    // One or more strings will entirely vanish if we proceed.  Abort.
+    return { options: stringOptions };
+  }
+
+  const prefix = prefixLength
+    ? stringLabels[0].substring(0, prefixLength - 1)
+    : undefined;
+  const suffix = suffixLength
+    ? stringLabels[0].substr(1 - suffixLength)
+    : undefined;
+  return {
+    options: applyTrim(stringOptions, prefixLength, suffixLength),
+    prefix,
+    suffix,
+  };
+}
+
+/**
+ * Copied as is from blockly.
+ */
+function applyTrim(options, prefixLength, suffixLength) {
+  return options.map(([text, value]) => [
+    text.substring(prefixLength, text.length - suffixLength),
+    value,
+  ]);
+}
+
+/**
+ * Copied with slight modification from blockly.
  */
 const validateOptions = function (options) {
   if (!Array.isArray(options)) {
-    throw TypeError("FieldEnhancedDropdown options must be an array.");
+    throw TypeError("FieldDropdown options must be an array.");
   }
   if (!options.length) {
-    throw TypeError(
-      "FieldEnhancedDropdown options must not be an empty array."
-    );
+    throw TypeError("FieldDropdown options must not be an empty array.");
   }
   let foundError = false;
   for (let i = 0; i < options.length; i++) {
@@ -171,7 +252,7 @@ const validateOptions = function (options) {
       console.error(
         "Invalid option[" +
           i +
-          "]: Each FieldEnhancedDropdown option must be an " +
+          "]: Each FieldDropdown option must be an " +
           "array. Found: ",
         tuple
       );
@@ -180,7 +261,7 @@ const validateOptions = function (options) {
       console.error(
         "Invalid option[" +
           i +
-          "]: Each FieldEnhancedDropdown option id must be " +
+          "]: Each FieldDropdown option id must be " +
           "a string. Found " +
           tuple[1] +
           " in: ",
@@ -189,15 +270,18 @@ const validateOptions = function (options) {
     } else if (
       tuple[0] &&
       typeof tuple[0] !== "string" &&
+      !(tuple[0] instanceof HTMLElement) &&
       typeof tuple[0].src !== "string" &&
-      typeof tuple[0].label !== "string"
+      typeof tuple[0].label !== "string" &&
+      !(tuple[0].label instanceof HTMLElement)
     ) {
       foundError = true;
       console.error(
         "Invalid option[" +
           i +
-          "]: Each FieldEnhancedDropdown option must have a " +
-          "string label or image description. Found" +
+          "]: Each FieldDropdown option must have a " +
+          "string or HTML element label, or be an object with a src or label property. " +
+          "Found" +
           tuple[0] +
           " in: ",
         tuple
@@ -205,8 +289,9 @@ const validateOptions = function (options) {
     }
   }
   if (foundError) {
-    throw TypeError("Found invalid FieldEnhancedDropdown options.");
+    throw TypeError("Found invalid FieldDropdown options.");
   }
 };
 
-fieldRegistry.register("field_enhanced_dropdown", FieldEnhancedDropdown);
+fieldRegistry.unregister("field_dropdown");
+fieldRegistry.register("field_dropdown", FieldDropdown);
