@@ -1,6 +1,7 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import { addMessages } from "@metascore-library/core/services/i18n";
 import useStore from "./store";
 import * as IconManager from "./utils/icons";
 
@@ -31,6 +32,17 @@ export default class AppComponentsModule extends AbstractModule {
 
   constructor({ app }) {
     super(arguments);
+
+    addMessages({
+      fr: {
+        "app_components.page_label": "Page {index}/{count}",
+        "app_components.untitled": "[sans titre]",
+      },
+      en: {
+        "app_components.page_label": "Page {index}/{count}",
+        "app_components.untitled": "[untitled]",
+      },
+    });
 
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
@@ -150,6 +162,14 @@ export default class AppComponentsModule extends AbstractModule {
   async cloneComponent(component, data) {
     const store = useStore();
     return store.clone(component, data);
+  }
+
+  /**
+   * Get a component's label
+   */
+  getComponentLabel(component) {
+    const store = useStore();
+    return store.getLabel(component);
   }
 
   /**

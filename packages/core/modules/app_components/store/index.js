@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { t as $t } from "@metascore-library/core/services/i18n";
 import * as Models from "../models";
 
 export default defineStore("app-components", {
@@ -64,6 +65,22 @@ export default defineStore("app-components", {
         return this.toggled.some(({ type, id }) => {
           return component.type === type && component.id === id;
         });
+      };
+    },
+    getLabel() {
+      return (component) => {
+        switch (component.type) {
+          case "Page": {
+            const block = this.getParent(component);
+            const pages = this.getChildren(block);
+            const count = pages.length;
+            const index = pages.findIndex((c) => c.id === component.id) + 1;
+            return $t("app_components.page_label", { index, count });
+          }
+
+          default:
+            return component.name || $t("app_components.untitled");
+        }
       };
     },
     getChildrenProperty() {

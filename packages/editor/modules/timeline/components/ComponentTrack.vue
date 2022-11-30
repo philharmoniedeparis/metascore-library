@@ -1,14 +1,3 @@
-<i18n>
-{
-  "fr": {
-    "page_label": "Page {index}/{count}",
-  },
-  "en": {
-    "page_label": "Page {index}/{count}",
-  },
-}
-</i18n>
-
 <template>
   <div
     :class="[
@@ -138,7 +127,7 @@ export default {
     } = useModule("media_player");
     const {
       getModelByType,
-      getComponentParent,
+      getComponentLabel,
       componentHasChildren,
       getComponentChildren,
       updateComponent,
@@ -161,7 +150,7 @@ export default {
       mediaDuration,
       seekMediaTo,
       getModelByType,
-      getComponentParent,
+      getComponentLabel,
       componentHasChildren,
       getComponentChildren,
       updateComponent,
@@ -188,18 +177,7 @@ export default {
       return this.getModelByType(this.component.type);
     },
     label() {
-      switch (this.component.type) {
-        case "Page": {
-          const block = this.getComponentParent(this.component);
-          const pages = this.getComponentChildren(block);
-          const count = pages.length;
-          const index = pages.findIndex((c) => c.id === this.component.id) + 1;
-          return this.$t("page_label", { index, count });
-        }
-
-        default:
-          return this.component.name;
-      }
+      return this.getComponentLabel(this.component);
     },
     selected() {
       return this.isComponentSelected(this.component);
