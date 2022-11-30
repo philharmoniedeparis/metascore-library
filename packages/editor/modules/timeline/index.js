@@ -1,5 +1,5 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import ComponentIcons from "../component_icons";
+import AppComponents from "@metascore-library/core/modules/app_components";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import History from "../history";
 import Hotkey from "../hotkey";
@@ -10,7 +10,7 @@ export default class TimelineModule extends AbstractModule {
   static id = "timeline";
 
   static dependencies = [
-    ComponentIcons,
+    AppComponents,
     ContextMenu,
     History,
     Hotkey,

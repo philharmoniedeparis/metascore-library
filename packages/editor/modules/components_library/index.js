@@ -1,12 +1,11 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import AppComponents from "@metascore-library/core/modules/app_components";
 import ComponentsLibrary from "./components/ComponentsLibrary";
-import ComponentIcons from "../component_icons";
 
 export default class ComponentsLibraryModule extends AbstractModule {
   static id = "components_library";
 
-  static dependencies = [AppComponents, ComponentIcons];
+  static dependencies = [AppComponents];
 
   constructor({ app }) {
     super(arguments);

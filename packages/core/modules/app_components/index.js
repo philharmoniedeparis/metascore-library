@@ -2,6 +2,7 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import * as IconManager from "./utils/icons";
 
 import Device from "../device";
 import MediaPlayer from "../media_player";
@@ -10,6 +11,7 @@ import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
 import BlockTogglerComponent from "./components/BlockTogglerComponent";
+import ComponentIcon from "./components/ComponentIcon";
 import ComponentWrapper from "./components/ComponentWrapper";
 import ContentComponent from "./components/ContentComponent";
 import ControllerComponent from "./components/ControllerComponent";
@@ -33,6 +35,7 @@ export default class AppComponentsModule extends AbstractModule {
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
     app.component("BlockTogglerComponent", BlockTogglerComponent);
+    app.component("ComponentIcon", ComponentIcon);
     app.component("ComponentWrapper", ComponentWrapper);
     app.component("ContentComponent", ContentComponent);
     app.component("ControllerComponent", ControllerComponent);
@@ -147,6 +150,13 @@ export default class AppComponentsModule extends AbstractModule {
   async cloneComponent(component, data) {
     const store = useStore();
     return store.clone(component, data);
+  }
+
+  /**
+   * Get a component's icon URL
+   */
+  getComponentIconURL(component) {
+    return IconManager.getURL(component);
   }
 
   showComponent(component) {
