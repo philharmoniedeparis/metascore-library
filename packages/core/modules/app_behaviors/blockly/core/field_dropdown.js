@@ -6,6 +6,8 @@ import {
   MenuItem,
   utils,
 } from "blockly/core";
+import SearchableMenu from "./searchable_menu";
+import SearchableMenuItem from "./searchable_menuitem";
 
 const { aria, string: utilsString, parsing } = utils;
 
@@ -34,6 +36,13 @@ export default class FieldDropdown extends FieldDropdownBase {
     }
 
     /**
+     * Whether the menu should be searchable.
+     * @type {boolean}
+     * @private
+     */
+    this.searchable_ = false;
+
+    /**
      * The currently selected option. The field is initialized with the
      * first option selected.
      */
@@ -53,13 +62,22 @@ export default class FieldDropdown extends FieldDropdownBase {
   /**
    * @inheritdoc
    */
+  configure_(config) {
+    super.configure_(config);
+
+    if (config.searchable) this.searchable_ = config.searchable;
+  }
+
+  /**
+   * @inheritdoc
+   */
   dropdownCreate_() {
     const block = this.getSourceBlock();
     if (!block) {
       throw new Error();
     }
 
-    const menu = new Menu();
+    const menu = this.searchable_ ? new SearchableMenu() : new Menu();
     menu.setRole(aria.Role.LISTBOX);
     this.menu_ = menu;
 
@@ -68,6 +86,7 @@ export default class FieldDropdown extends FieldDropdownBase {
     for (let i = 0; i < options.length; i++) {
       const [label, value] = options[i];
       let enabled = true;
+      let searchable_text = null;
       const content = (() => {
         if (typeof label === "object") {
           if ("hidden" in label && label.hidden) {
@@ -86,6 +105,7 @@ export default class FieldDropdown extends FieldDropdownBase {
             image.alt = label["alt"] || "";
             return image;
           } else {
+            searchable_text = label.text;
             return label.label;
           }
         }
@@ -94,7 +114,15 @@ export default class FieldDropdown extends FieldDropdownBase {
 
       if (content === null) continue;
 
-      const menuItem = new MenuItem(content, value);
+      let menuItem = null;
+      if (this.searchable_) {
+        menuItem = new SearchableMenuItem(content, value);
+        if (searchable_text) {
+          menuItem.setSearchableText(searchable_text);
+        }
+      } else {
+        menuItem = new MenuItem(content, value);
+      }
       menuItem.setRole(aria.Role.OPTION);
       menuItem.setRightToLeft(block.RTL);
       menu.addChild(menuItem);
@@ -171,6 +199,7 @@ export default class FieldDropdown extends FieldDropdownBase {
     return option;
   }
 }
+
 /**
  * Copied as is from blockly.
  */

@@ -140,7 +140,7 @@ Extensions.register("components_block_options", function () {
     options.push([Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]);
   }
 
-  const block_field = new FieldDropdown(options);
+  const block_field = new FieldDropdown(options, null, { searchable: true });
   block_input.appendField(block_field, "COMPONENT");
 
   if (empty) {
@@ -156,20 +156,24 @@ Extensions.register("components_component_options", function () {
 
   const mock = this.type.endsWith("_mock");
 
-  const component_field = new FieldDropdown(function () {
-    const empty_option = [
-      {
-        label: Msg.COMPONENTS_EMPTY_OPTION,
-        default: true,
-        hidden: true,
-      },
-      EMPTY_OPTION,
-    ];
+  const component_field = new FieldDropdown(
+    function () {
+      const empty_option = [
+        {
+          label: Msg.COMPONENTS_EMPTY_OPTION,
+          default: true,
+          hidden: true,
+        },
+        EMPTY_OPTION,
+      ];
 
-    if (mock) return [empty_option];
+      if (mock) return [empty_option];
 
-    return [empty_option, ...getComponentOptions(null, true)];
-  });
+      return [empty_option, ...getComponentOptions(null, true)];
+    },
+    null,
+    { searchable: true }
+  );
   component_input.appendField(component_field, "COMPONENT");
 
   if (mock) {
