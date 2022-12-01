@@ -166,7 +166,7 @@ Css.register(
   }
   .blocklySearchableMenu .blocklyMenuSearch input {
     width: 100%;
-    padding: 0.5em;
+    padding: 0.25em 0.5em;
     padding-right: 1.5em;
     border: none;
     border-radius: 1em;
