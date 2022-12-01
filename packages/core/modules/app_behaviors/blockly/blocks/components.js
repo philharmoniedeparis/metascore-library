@@ -592,7 +592,9 @@ Css.register(
   }
   .blocklyDropDownDiv .blocklyMenuItemLabelText {
     grid-area: label;
-    width: 1.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .blocklyDropDownDiv .blocklyMenuItemLabelBreadcrumb {
     display: none;
