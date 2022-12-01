@@ -64,7 +64,7 @@ function getComponentOptions(type = null, recursive = false, level = 0) {
         label.appendChild(text);
       }
 
-      const option = [{ label }, `${c.type}:${c.id}`];
+      const option = [{ label, text: name }, `${c.type}:${c.id}`];
 
       options.push(option);
 

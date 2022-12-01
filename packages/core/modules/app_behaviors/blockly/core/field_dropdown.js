@@ -162,6 +162,10 @@ export default class FieldDropdown extends FieldDropdownBase {
         return option.alt;
       }
 
+      if ("text" in option) {
+        return option.text;
+      }
+
       return option.label;
     }
     return option;
@@ -270,7 +274,6 @@ const validateOptions = function (options) {
     } else if (
       tuple[0] &&
       typeof tuple[0] !== "string" &&
-      !(tuple[0] instanceof HTMLElement) &&
       typeof tuple[0].src !== "string" &&
       typeof tuple[0].label !== "string" &&
       !(tuple[0].label instanceof HTMLElement)
@@ -280,7 +283,23 @@ const validateOptions = function (options) {
         "Invalid option[" +
           i +
           "]: Each FieldDropdown option must have a " +
-          "string or HTML element label, or be an object with a src or label property. " +
+          "string or an object with a 'src' or 'label' property. " +
+          "Found" +
+          tuple[0] +
+          " in: ",
+        tuple
+      );
+    } else if (
+      tuple[0]?.label instanceof HTMLElement &&
+      !(typeof tuple[0].text === "string")
+    ) {
+      foundError = true;
+      console.error(
+        "Invalid option[" +
+          i +
+          "]: If a FieldDropdown option has an object" +
+          "with an HTML element as the 'label' property, " +
+          "it must also have a 'text' property. " +
           "Found" +
           tuple[0] +
           " in: ",
