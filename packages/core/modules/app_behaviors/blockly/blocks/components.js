@@ -1,8 +1,10 @@
-import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
+import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const EMPTY_OPTION = "%EMPTY_OPTION%";
+
+const BREADCRUMB_SEPARATOR = " › ";
 
 const SUPPORTED_PROPERTIES = [
   "background-color",
@@ -20,10 +22,16 @@ const SUPPORTED_PROPERTIES = [
  * @param {string?} type The type of components
  * @param {boolean|array} recursive Whether to recurse to child components.
  *  An array of children is passed when recursed from within the function.
- * @param {number?} level The current recursion level, used internally.
+ * @param {number} level_ The current recursion level, used internally.
+ * @param {string} breadcrumb_ The current recursion breadcrumb, used internally.
  * @returns {array} An options array
  */
-function getComponentOptions(type = null, recursive = false, level = 0) {
+function getComponentOptions(
+  type = null,
+  recursive = false,
+  level_ = 0,
+  breadcrumb_ = ""
+) {
   const {
     getComponents,
     getComponentsByType,
@@ -51,8 +59,8 @@ function getComponentOptions(type = null, recursive = false, level = 0) {
       if (icon_url) {
         label = document.createElement("div");
         label.classList.add("blocklyMenuItemLabel");
-        if (level) {
-          label.style.setProperty("--level", level);
+        if (level_) {
+          label.style.setProperty("--level", level_);
         }
 
         const icon = document.createElement("img");
@@ -60,8 +68,22 @@ function getComponentOptions(type = null, recursive = false, level = 0) {
         icon.classList.add("blocklyMenuItemLabelIcon");
         label.appendChild(icon);
 
-        const text = document.createTextNode(name);
+        const text = document.createElement("div");
+        text.classList.add("blocklyMenuItemLabelText");
+        text.appendChild(document.createTextNode(name));
         label.appendChild(text);
+
+        if (breadcrumb_) {
+          const breadcrumb = document.createElement("div");
+          breadcrumb.classList.add("blocklyMenuItemLabelBreadcrumb");
+          breadcrumb.appendChild(document.createTextNode(breadcrumb_));
+          label.appendChild(breadcrumb);
+        }
+
+        label.setAttribute(
+          "title",
+          breadcrumb_ ? `${breadcrumb_}${BREADCRUMB_SEPARATOR}${name}` : name
+        );
       }
 
       const option = [{ label, text: name }, `${c.type}:${c.id}`];
@@ -72,7 +94,12 @@ function getComponentOptions(type = null, recursive = false, level = 0) {
         const children = getComponentChildren(c);
         options = [
           ...options,
-          ...getComponentOptions(type, children, level + 1),
+          ...getComponentOptions(
+            type,
+            children,
+            level_ + 1,
+            level_ > 0 ? `${breadcrumb_}${BREADCRUMB_SEPARATOR}${name}` : name
+          ),
         ];
       }
     });
@@ -545,3 +572,43 @@ defineBlocksWithJsonArray([
     helpUrl: "%{BKY_COMPONENTS_SET_BLOCK_PAGE_HELPURL}",
   },
 ]);
+
+Css.register(
+  `
+  .blocklyDropDownDiv .blocklyMenuItemLabel {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "icon label"
+      "breadcrumb breadcrumb";
+    align-items: center;
+    padding-left: calc(var(--level, 0) * 0.5em);
+    gap: 0 0.5em;
+  }
+  .blocklyDropDownDiv .blocklyMenuItemLabelIcon {
+    grid-area: icon;
+    width: 1.5em;
+  }
+  .blocklyDropDownDiv .blocklyMenuItemLabelText {
+    grid-area: label;
+    width: 1.5em;
+  }
+  .blocklyDropDownDiv .blocklyMenuItemLabelBreadcrumb {
+    display: none;
+    grid-area: breadcrumb;
+    font-size: 0.75em;
+    opacity: 0.5;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .blocklyDropDownDiv .blocklySearchableMenuSearching .blocklyMenuItemLabel {
+    padding-left: 0;
+  }
+  .blocklyDropDownDiv .blocklySearchableMenuSearching .blocklyMenuItemLabelBreadcrumb {
+    display: block;
+  }
+  `
+);

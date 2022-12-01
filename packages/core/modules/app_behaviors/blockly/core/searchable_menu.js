@@ -137,6 +137,8 @@ export default class SearchableMenu extends Menu {
         menuItem.element.classList.add("blocklyMenuItemMismatch");
       }
     });
+
+    this.element.classList.toggle("blocklySearchableMenuSearching", term);
   }
 
   /**
@@ -158,11 +160,15 @@ export default class SearchableMenu extends Menu {
 
 Css.register(
   `
+  .blocklySearchableMenu {
+    max-width: 250px;
+  }
   .blocklySearchableMenu .blocklyMenuSearch {
     position: sticky;
     top: 0;
     padding: 1em;
     background: inherit;
+    z-index: 1;
   }
   .blocklySearchableMenu .blocklyMenuSearch input {
     width: 100%;

@@ -126,18 +126,6 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       ${selector}.blocklyDropDownDiv .blocklyMenuItemCheckbox {
         display: none;
       }
-      ${selector}.blocklyWidgetDiv .blocklyMenuItemLabel,
-      ${selector}.blocklyDropDownDiv .blocklyMenuItemLabel {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0.5em;
-        padding-left: calc(var(--level, 0) * 0.5em);
-      }
-      ${selector}.blocklyWidgetDiv .blocklyMenuItemLabelIcon,
-      ${selector}.blocklyDropDownDiv .blocklyMenuItemLabelIcon {
-        width: 1.5em;
-      }
       `,
 
       // Connection highlight.
