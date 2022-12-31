@@ -29,6 +29,7 @@
         <li>
           <a
             href="#"
+            data-action="first"
             aria-label="First"
             :class="{ disabled: activePageIndex === 0 }"
             @click.stop.prevent="reset"
@@ -40,6 +41,7 @@
         <li>
           <a
             href="#"
+            data-action="previous"
             aria-label="Previous"
             :class="{ disabled: activePageIndex === 0 }"
             @click.stop.prevent="turnPageBackward"
@@ -51,6 +53,7 @@
         <li>
           <a
             href="#"
+            data-action="next"
             aria-label="Next"
             :class="{ disabled: activePageIndex === pageCount - 1 }"
             @click.stop.prevent="turnPageForward"

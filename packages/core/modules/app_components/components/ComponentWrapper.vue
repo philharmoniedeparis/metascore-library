@@ -7,6 +7,7 @@
       kebabCase(component.type),
       { active, hidden, toggled },
     ]"
+    :data-name="component.name"
     :style="{
       ...position,
       ...size,
