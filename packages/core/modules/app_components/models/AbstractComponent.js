@@ -1,4 +1,5 @@
 import { merge, kebabCase } from "lodash";
+import { v4 as uuid } from "uuid";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createStringField,
@@ -60,6 +61,7 @@ export default class AbstractComponent extends AbstractModel {
         id: createStringField({
           title: "ID",
           description: "The component's unique identifier",
+          default: `component-${uuid()}`,
         }),
         // @TODO: move to seperate data model in editor
         editor: {

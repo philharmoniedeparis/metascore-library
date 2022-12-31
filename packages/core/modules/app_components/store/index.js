@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
-import { v4 as uuid } from "uuid";
 import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
@@ -161,9 +160,6 @@ export default defineStore("app-components", {
                 data.id = `scenario-${next_id}`;
               }
               break;
-
-            default:
-              data.id = `component-${uuid()}`;
           }
         }
 
