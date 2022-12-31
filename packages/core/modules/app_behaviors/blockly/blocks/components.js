@@ -139,42 +139,44 @@ Extensions.register("components_scenario_options", function () {
   const scenario_input = this.getInput("COMPONENT");
   if (!scenario_input) return;
 
-  let empty = false;
-  const options = getComponentOptions("Scenario");
-  if (options.length === 0) {
-    empty = true;
-    options.push([Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]);
-  }
+  const scenario_field = new FieldDropdown(() => {
+    let options = getComponentOptions("Scenario");
+    const empty = options.length === 0;
 
-  const scenario_field = new FieldDropdown(options);
+    if (empty) {
+      scenario_field.setEnabled(false);
+      this.setEnabled(false);
+      this.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
+      options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+    }
+
+    return options;
+  });
   scenario_input.appendField(scenario_field, "COMPONENT");
-
-  if (empty) {
-    scenario_field.setEnabled(false);
-    this.setEnabled(false);
-    this.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
-  }
 });
 
 Extensions.register("components_block_options", function () {
   const block_input = this.getInput("COMPONENT");
   if (!block_input) return;
 
-  let empty = false;
-  const options = getComponentOptions("Block");
-  if (options.length === 0) {
-    empty = true;
-    options.push([Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]);
-  }
+  const block_field = new FieldDropdown(
+    () => {
+      let options = getComponentOptions("Block");
+      const empty = options.length === 0;
 
-  const block_field = new FieldDropdown(options, null, { searchable: true });
+      if (empty) {
+        block_field.setEnabled(false);
+        this.setEnabled(false);
+        this.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
+        options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+      }
+
+      return options;
+    },
+    null,
+    { searchable: true }
+  );
   block_input.appendField(block_field, "COMPONENT");
-
-  if (empty) {
-    block_field.setEnabled(false);
-    this.setEnabled(false);
-    this.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
-  }
 });
 
 Extensions.register("components_component_options", function () {
@@ -184,7 +186,7 @@ Extensions.register("components_component_options", function () {
   const mock = this.type.endsWith("_mock");
 
   const component_field = new FieldDropdown(
-    function () {
+    () => {
       const empty_option = [
         {
           label: Msg.COMPONENTS_EMPTY_OPTION,
