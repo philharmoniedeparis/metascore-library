@@ -36,9 +36,6 @@ export default class Cursor extends EmbeddableComponent {
           enum: ["linear", "circular"],
           default: "linear",
         }),
-        direction: createStringField({
-          title: "Direction",
-        }),
         acceleration: createNumberField({
           title: "Acceleration",
           minimum: 0.01,
@@ -67,10 +64,11 @@ export default class Cursor extends EmbeddableComponent {
       },
       then: {
         properties: {
-          direction: {
+          direction: createStringField({
+            title: "Direction",
             enum: ["cw", "ccw"],
             default: "cw",
-          },
+          }),
           "start-angle": createAngleField({
             ajv,
             title: "Start angle",
@@ -83,10 +81,11 @@ export default class Cursor extends EmbeddableComponent {
       },
       else: {
         properties: {
-          direction: {
+          direction: createStringField({
+            title: "Direction",
             enum: ["right", "left", "bottom", "top"],
             default: "right",
-          },
+          }),
           keyframes: createArrayField({
             title: "Keyframes",
             default: [],
