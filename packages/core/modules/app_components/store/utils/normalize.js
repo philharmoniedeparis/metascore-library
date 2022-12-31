@@ -20,7 +20,7 @@ async function normalizeItem(data, entities, parent = null) {
       if (item[key]) {
         item[key] = await Promise.all(
           item[key].map(async (child) => {
-            await normalizeItem(
+            const normalized_child = await normalizeItem(
               {
                 ...child,
               },
@@ -29,8 +29,8 @@ async function normalizeItem(data, entities, parent = null) {
             );
 
             return {
-              id: child.id,
-              type: child.type,
+              id: normalized_child.id,
+              type: normalized_child.type,
             };
           })
         );
@@ -46,6 +46,8 @@ async function normalizeItem(data, entities, parent = null) {
   }
 
   entities[item.type] = { ...entities[item.type], [item.id]: item };
+
+  return item;
 }
 
 export async function normalize(data) {
@@ -53,11 +55,11 @@ export async function normalize(data) {
   const result = [];
 
   for (const item of data) {
-    await normalizeItem(item, entities);
+    const normalized_item = await normalizeItem(item, entities);
 
     result.push({
-      id: item.id,
-      type: item.type,
+      id: normalized_item.id,
+      type: normalized_item.type,
     });
   }
 
