@@ -88,6 +88,7 @@ export default {
       $t: this.$t,
       publicPath: unref(this.publicPath),
     });
+
     this.workspace = markRaw(this.Blockly.inject(this.$refs.blockly, config));
 
     this.deserialize(this.behaviors);
@@ -108,6 +109,8 @@ export default {
     this._resize_observer = new ResizeObserver(this.updateSize);
     this._resize_observer.observe(this.$el);
     this.updateSize();
+
+    this.$el.ownerDocument.addEventListener("click", this.onDocumentClick);
   },
   beforeUnmount() {
     this.workspace.dispose();
@@ -117,6 +120,8 @@ export default {
       this._resize_observer.disconnect();
       delete this._resize_observer;
     }
+
+    this.$el.ownerDocument.removeEventListener("click", this.onDocumentClick);
   },
   methods: {
     serialize() {
@@ -177,6 +182,12 @@ export default {
     },
     updateSize() {
       this.Blockly.svgResize(this.workspace);
+    },
+    onDocumentClick(evt) {
+      // Close tooltips, context menus and dropdowns if clicked outside.
+      if (!evt.target.closest(".behaviors-form")) {
+        this.workspace.hideChaff();
+      }
     },
     onContextmenu(evt) {
       if (evt.target.closest("rect.blocklyMainBackground")) {
