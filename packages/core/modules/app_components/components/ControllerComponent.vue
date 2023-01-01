@@ -128,7 +128,8 @@ export default {
     align-items: center;
     justify-content: space-evenly;
     flex: 1 1 auto;
-    padding: 0 5%;
+    padding: 0 0.75em;
+    gap: 0.5em;
 
     button {
       position: relative;
@@ -156,12 +157,12 @@ export default {
       }
 
       &[data-action="rewind"] {
-        width: 10%;
+        flex: 1;
       }
 
       &[data-action="play"],
       &[data-action="pause"] {
-        width: 48%;
+        flex: 3;
         border: 0.5em solid #fff;
         border-radius: 50%;
 
@@ -178,7 +179,7 @@ export default {
 
     &::after {
       content: "";
-      width: 10%;
+      flex: 1;
     }
   }
 
