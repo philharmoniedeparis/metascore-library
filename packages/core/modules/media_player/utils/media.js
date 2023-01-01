@@ -1,4 +1,3 @@
-import { padStart } from "lodash";
 import renderers from "../renderers";
 
 const MIME_TYPES = {
@@ -22,9 +21,9 @@ const MIME_TYPES = {
  * @returns {string} The string represetation
  */
 export function formatTime(time) {
-  const centiseconds = padStart(parseInt((time * 100) % 100, 10), 2, "0");
-  const seconds = padStart(parseInt(time % 60, 10), 2, "0");
-  const minutes = padStart(parseInt(time / 60, 10), 2, "0");
+  const minutes = `${parseInt(time / 60, 10)}`.padStart(2, "0");
+  const seconds = `${parseInt(time % 60, 10)}`.padStart(2, "0");
+  const centiseconds = `${parseInt((time * 100) % 100, 10)}`.padStart(2, "0");
 
   return `${minutes}:${seconds}.${centiseconds}`;
 }
