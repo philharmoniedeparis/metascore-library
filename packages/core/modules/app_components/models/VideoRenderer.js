@@ -21,6 +21,9 @@ export default class VideoRenderer extends EmbeddableComponent {
         dimension: {
           default: [320, 240],
         },
+        "border-radius": {
+          default: "10px",
+        },
       },
     });
   }

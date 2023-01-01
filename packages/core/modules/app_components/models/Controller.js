@@ -19,14 +19,14 @@ export default class Controller extends EmbeddableComponent {
   static get schema() {
     return merge(super.schema, {
       properties: {
+        dimension: {
+          default: [90, 100],
+        },
         "background-color": {
           default: "#ccc",
         },
         "border-radius": {
           default: "10px",
-        },
-        dimension: {
-          default: [90, 100],
         },
       },
     });

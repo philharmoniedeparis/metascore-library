@@ -106,8 +106,6 @@ export default {
     justify-content: space-between;
     color: rgb(221, 221, 221);
     font-weight: bold;
-    background-color: rgb(204, 204, 204);
-    border-radius: 10px;
     overflow: hidden;
     user-select: none;
   }

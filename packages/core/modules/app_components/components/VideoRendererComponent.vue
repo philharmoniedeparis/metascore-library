@@ -76,9 +76,6 @@ export default {
 
 <style lang="scss" scoped>
 .video-renderer {
-  background-color: rgb(0, 0, 0);
-  border: 0 solid rgb(0, 0, 0);
-  border-radius: 10px;
   overflow: hidden;
 
   canvas {
