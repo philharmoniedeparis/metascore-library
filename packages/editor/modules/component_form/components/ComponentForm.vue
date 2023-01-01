@@ -32,6 +32,11 @@
     "Block": {
       "title": "Attributs du bloc | Attributs de {count} blocs",
       "pager-visibility": "Visibilité du tourne page",
+      "pager-visibility-options": {
+        "auto": "Auto",
+        "hidden": "Caché",
+        "visible": "Affiché",
+      }
     },
     "BlockToggler": {
       "title": "Attributs du contrôleur de blocs | Attributs de {count} contrôleurs de blocs",
@@ -111,6 +116,11 @@
     "Block": {
       "title": "Attributes of block | Attributes of {count} blocks",
       "pager-visibility": "Pager visibility",
+      "pager-visibility-options": {
+        "auto": "Auto",
+        "hidden": "Hidden",
+        "visible": "Visible",
+      }
     },
     "BlockToggler": {
       "title": "Attributes of block toggler | Attributes of {count} block togglers",
@@ -349,9 +359,18 @@ export default {
           break;
 
         case "Block":
-          layout.items[0].items.push(
-            this.getControlProps("pager-visibility", this.commonModel.type)
-          );
+          layout.items[0].items.push({
+            type: "select",
+            options: this.schema.properties["pager-visibility"].enum.map(
+              (v) => {
+                return {
+                  label: this.$t(`Block.pager-visibility-options.${v}`),
+                  value: v,
+                };
+              }
+            ),
+            ...this.getControlProps("pager-visibility", this.commonModel.type),
+          });
           break;
 
         case "BlockToggler":
