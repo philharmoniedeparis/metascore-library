@@ -3,7 +3,7 @@
     <template v-for="block in sortedBlocks" :key="block.id">
       <button
         type="button"
-        :class="{ toggled: isBlockToggled(block) }"
+        :class="{ hidden: isBlockHidden(block) }"
         @click="toggleBlock(block)"
       >
         <svg preserveAspectRatio="xMidYMid meet" :viewBox="viewBox">
@@ -71,8 +71,8 @@ export default {
     },
   },
   methods: {
-    isBlockToggled(block) {
-      return this.store.isToggled(block);
+    isBlockHidden(block) {
+      return this.store.isHidden(block);
     },
     toggleBlock(block) {
       this.store.toggle(block);
@@ -111,7 +111,7 @@ export default {
       }
     }
 
-    &.toggled {
+    &.hidden {
       opacity: 0.75;
     }
 

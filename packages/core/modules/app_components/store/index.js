@@ -12,7 +12,7 @@ export default defineStore("app-components", {
       components: {},
       activeScenario: null,
       blocksActivePage: {},
-      toggled: [],
+      toggled: {},
     };
   },
   getters: {
@@ -59,11 +59,15 @@ export default defineStore("app-components", {
         return Object.values(Models).find((model) => model.mime === mime);
       };
     },
-    isToggled() {
+    isHidden() {
       return (component) => {
-        return this.toggled.some(({ type, id }) => {
-          return component.type === type && component.id === id;
-        });
+        const { type, id, hidden } = component;
+        const key = `${type}:${id}`;
+        if (key in this.toggled) {
+          return !this.toggled[key];
+        } else {
+          return hidden;
+        }
       };
     },
     getLabel() {
@@ -351,24 +355,23 @@ export default defineStore("app-components", {
     },
     show(component) {
       const { type, id } = component;
-      if (this.isToggled(component)) {
-        this.toggled = this.toggled.filter(
-          (t) => !(t.type === type && t.id === id)
-        );
-      }
+      this.toggled[`${type}:${id}`] = true;
     },
     hide(component) {
       const { type, id } = component;
-      if (!this.isToggled(component)) {
-        this.toggled.push({ type, id });
-      }
+      this.toggled[`${type}:${id}`] = false;
     },
     toggle(component) {
-      if (this.isToggled(component)) {
-        this.show(component);
+      const { type, id, hidden } = component;
+      const key = `${type}:${id}`;
+      if (key in this.toggled) {
+        this.toggled[key] = !this.toggled[key];
       } else {
-        this.hide(component);
+        this.toggled[key] = !!hidden;
       }
+    },
+    resetToggles() {
+      this.toggled = {};
     },
   },
   history(context) {
