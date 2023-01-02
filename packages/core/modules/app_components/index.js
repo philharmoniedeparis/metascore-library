@@ -194,6 +194,11 @@ export default class AppComponentsModule extends AbstractModule {
     store.toggle(component);
   }
 
+  resetComponentToggles() {
+    const store = useStore();
+    store.resetToggles();
+  }
+
   setActiveScenario(value) {
     const store = useStore();
     store.activeScenario = value;

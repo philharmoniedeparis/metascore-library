@@ -142,13 +142,14 @@ export default {
   setup() {
     const store = useStore();
 
-    const { deleteComponent } = useModule("app_components");
-
     const {
       el: appEl,
       width: appWidth,
       height: appHeight,
     } = useModule("app_renderer");
+
+    const { resetComponentToggles, deleteComponent } =
+      useModule("app_components");
 
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -160,6 +161,7 @@ export default {
       appEl,
       appWidth,
       appHeight,
+      resetComponentToggles,
       deleteComponent,
       startHistoryGroup,
       endHistoryGroup,
@@ -435,8 +437,13 @@ export default {
   },
   watch: {
     preview(value) {
-      if (value && this.appEl) {
-        this.appEl.focus();
+      if (value) {
+        if (this.appEl) {
+          this.appEl.focus();
+        }
+      } else {
+        // Reset manual component toggles when exiting preview mode.
+        this.resetComponentToggles();
       }
     },
     appWidth() {
