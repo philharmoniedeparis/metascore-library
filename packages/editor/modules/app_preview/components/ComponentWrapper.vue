@@ -731,6 +731,13 @@ export default {
       }
     }
 
+    &.controller,
+    &.block-toggler {
+      :deep(button) {
+        pointer-events: none;
+      }
+    }
+
     &.block {
       &:hover > :deep(.metaScore-component--inner .pager) {
         display: flex !important;
