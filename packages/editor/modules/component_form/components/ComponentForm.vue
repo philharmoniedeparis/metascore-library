@@ -228,8 +228,12 @@ export default {
       updateComponent,
       isComponentTimeable,
     } = useModule("app_components");
-    const { selectedComponents, getComponentElement, isComponentLocked } =
-      useModule("app_preview");
+    const {
+      selectedComponents,
+      getComponentElement,
+      isComponentLocked,
+      preview,
+    } = useModule("app_preview");
     return {
       store,
       getModelByType,
@@ -240,6 +244,7 @@ export default {
       getComponentElement,
       selectedComponents,
       isComponentLocked,
+      preview,
     };
   },
   computed: {
@@ -627,6 +632,7 @@ export default {
       }
 
       if (
+        this.preview ||
         (this.recordingCursorKeyframes && property !== "keyframes") ||
         (this.editingTextContent && property !== "text")
       ) {

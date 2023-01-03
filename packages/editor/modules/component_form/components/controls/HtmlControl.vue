@@ -152,10 +152,10 @@ export default {
   },
   methods: {
     onComponentDblclick() {
-      this.startEditing();
+      if (!this.disabled) this.startEditing();
     },
     onComponentInnerElKeyEvent(evt) {
-      evt.stopPropagation();
+      if (!this.disabled) evt.stopPropagation();
     },
     onButtonClick() {
       if (!this.editing) {
