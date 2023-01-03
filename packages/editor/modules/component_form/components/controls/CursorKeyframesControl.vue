@@ -1,12 +1,12 @@
 <i18n>
 {
   "fr": {
-    "start_recording": "Enregistrer les positions",
-    "stop_recording": "Arrêter l'enregistrement",
+    "on": "Enregistrer les positions",
+    "off": "Arrêter l'enregistrement",
   },
   "en": {
-    "start_recording": "Record positions",
-    "stop_recording": "Stop recording",
+    "on": "Record positions",
+    "off": "Stop recording",
   },
 }
 </i18n>
@@ -17,12 +17,7 @@
     :description="description"
   >
     <base-button type="button" @click="onButtonClick">
-      <template v-if="recording">
-        {{ $t("stop_recording") }}
-      </template>
-      <template v-else>
-        {{ $t("start_recording") }}
-      </template>
+      {{ formattedLabel }}
     </base-button>
 
     <teleport v-if="recording" :to="componentEl">
@@ -33,6 +28,7 @@
 
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { isObject } from "lodash";
 import useStore from "../../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 
@@ -46,8 +42,14 @@ export default {
       required: true,
     },
     label: {
-      type: String,
+      type: [String, Object],
       default: null,
+      validator(value) {
+        if (isObject(value)) {
+          return "on" in value && "off" in value;
+        }
+        return true;
+      },
     },
     description: {
       type: String,
@@ -93,6 +95,13 @@ export default {
       set(value) {
         this.store.recordingCursorKeyframes = value;
       },
+    },
+    formattedLabel() {
+      if (isObject(this.label)) {
+        return this.recording ? this.label.off : this.label.on;
+      }
+
+      return this.label;
     },
   },
   beforeUnmount() {

@@ -167,7 +167,7 @@ export default {
   }
 
   &.disabled {
-    opacity: 0.75;
+    opacity: 0.5;
   }
 
   &.error {

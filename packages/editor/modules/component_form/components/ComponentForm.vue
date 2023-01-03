@@ -44,7 +44,10 @@
     },
     "Content": {
       "title": "Attributs du texte | Attributs de {count} textes",
-      "text": "Éditer le contenu",
+      "text": {
+        "on": "Éditer le contenu",
+        "off": "Arrêter l'édition du contenu",
+      },
     },
     "Controller": {
       "title": "Attributs du contrôleur | Attributs de {count} contrôleurs",
@@ -54,7 +57,10 @@
       "form": "Forme",
       "direction": "Direction",
       "acceleration": "Accélération",
-      "keyframes": "Enregistrer les positions",
+      "keyframes": {
+        "on": "Enregistrer les positions",
+        "off": "Arrêter l'enregistrement",
+      },
       "start-angle": "Angle de départ",
       "loop-duration": "Durée d'un boucle",
       "cursor-width": "Largeur du curseur",
@@ -128,7 +134,10 @@
     },
     "Content": {
       "title": "Attributes of text | Attributes of {count} texts",
-      "text": "Edit the content",
+      "text": {
+        "on": "Edit the content",
+        "off": "Stop content editing",
+      },
     },
     "Controller": {
       "title": "Attributes of controller | Attributes of {count} controllers",
@@ -138,7 +147,10 @@
       "form": "Form",
       "direction": "Direction",
       "acceleration": "Acceleration",
-      "keyframes": "Record positions",
+      "keyframes": {
+        "on": "Record positions",
+        "off": "Stop recording",
+      },
       "start-angle": "Start angle",
       "loop-duration": "Loop duration",
       "cursor-width": "Cursor width",
@@ -587,8 +599,15 @@ export default {
       switch (property) {
         case "name":
         case "border-width":
-        case "keyframes":
           props.label = "";
+          break;
+
+        case "text":
+        case "keyframes":
+          props.label = {
+            on: this.$t(`${model_type}.${property}.on`),
+            off: this.$t(`${model_type}.${property}.off`),
+          };
           break;
 
         case "border-color":
@@ -717,6 +736,12 @@ export default {
           }
           > .form-group.checkbox {
             grid-column: 1/1;
+          }
+        }
+
+        &.disabled {
+          > .input-wrapper > label {
+            opacity: 0.5;
           }
         }
       }

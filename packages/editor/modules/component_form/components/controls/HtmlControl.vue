@@ -9,7 +9,7 @@
       :loading="settingUpEditor"
       @click="onButtonClick"
     >
-      {{ label }}
+      {{ formattedLabel }}
     </base-button>
 
     <div ref="toolbar-container" class="toolbar-container" />
@@ -18,6 +18,7 @@
 
 <script>
 import { markRaw } from "vue";
+import { isObject } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../../store";
 
@@ -34,8 +35,14 @@ export default {
       },
     },
     label: {
-      type: String,
+      type: [String, Object],
       default: null,
+      validator(value) {
+        if (isObject(value)) {
+          return "on" in value && "off" in value;
+        }
+        return true;
+      },
     },
     description: {
       type: String,
@@ -91,6 +98,13 @@ export default {
       set(value) {
         this.store.editingTextContent = value;
       },
+    },
+    formattedLabel() {
+      if (isObject(this.label)) {
+        return this.editing ? this.label.off : this.label.on;
+      }
+
+      return this.label;
     },
   },
   watch: {
@@ -220,6 +234,9 @@ export default {
           this.onEditorSourceEditingModeChange
         );
       }
+
+      // Scroll editor into view.
+      this.$refs["toolbar-container"].scrollIntoView();
     },
     onEditorContextualBallonPositionSet(evt, prop, value) {
       const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
@@ -285,6 +302,12 @@ export default {
     button {
       color: $white;
       background: $darkgray;
+    }
+  }
+
+  .toolbar-container {
+    :deep(button) {
+      opacity: 1;
     }
   }
 }
