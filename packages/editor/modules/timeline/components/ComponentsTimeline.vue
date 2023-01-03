@@ -3,7 +3,7 @@
     <div class="tracks-container">
       <template v-for="scenario in scenarios" :key="scenario.id">
         <component-track
-          v-show="scenario.id === activeScenario"
+          v-if="scenario.id === activeScenario"
           :component="scenario"
         />
       </template>
