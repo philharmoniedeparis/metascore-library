@@ -14,8 +14,12 @@ export default defineStore("player", {
       const { setSource: setMediaSource } = useModule("media_player");
       setMediaSource(data.media);
 
-      const { init: initComponents } = useModule("app_components");
-      initComponents(data.components);
+      const {
+        init: initComponents,
+        enableOverrides: enableComponentsOverrides,
+      } = useModule("app_components");
+      await initComponents(data.components);
+      enableComponentsOverrides();
 
       const { init: initBehaviors, enable: enableBehaviors } =
         useModule("app_behaviors");

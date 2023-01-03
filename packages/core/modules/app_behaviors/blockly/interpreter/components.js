@@ -1,5 +1,4 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
-import useStore from "../../store";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 const states = new Map();
@@ -50,18 +49,6 @@ export function init(context) {
       const { setActiveScenario } = useModule("app_components");
       setActiveScenario(id);
     },
-    show: (type, id) => {
-      const store = useStore();
-      store.setComponentState(type, id, {
-        hidden: false,
-      });
-    },
-    hide: (type, id) => {
-      const store = useStore();
-      store.setComponentState(type, id, {
-        hidden: true,
-      });
-    },
     getProperty: (type, id, name) => {
       const { getComponent } = useModule("app_components");
 
@@ -73,10 +60,13 @@ export function init(context) {
       return component[name];
     },
     setProperty: (type, id, name, value) => {
-      const store = useStore();
-      store.setComponentState(type, id, {
-        [name]: value,
-      });
+      const { overrideComponent } = useModule("app_components");
+      overrideComponent(
+        { type, id },
+        {
+          [name]: value,
+        }
+      );
     },
     getBlockPage: (id) => {
       const { getComponent, getBlockActivePage } = useModule("app_components");

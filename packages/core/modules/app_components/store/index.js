@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { readonly, unref } from "vue";
-import { omit, cloneDeep } from "lodash";
+import { omit, cloneDeep, assign } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { t as $t } from "@metascore-library/core/services/i18n";
@@ -12,7 +12,8 @@ export default defineStore("app-components", {
       components: {},
       activeScenario: null,
       blocksActivePage: {},
-      toggled: {},
+      overrides: new Map(),
+      overridesEnabled: false,
     };
   },
   getters: {
@@ -57,17 +58,6 @@ export default defineStore("app-components", {
     getModelByMime() {
       return (mime) => {
         return Object.values(Models).find((model) => model.mime === mime);
-      };
-    },
-    isHidden() {
-      return (component) => {
-        const { type, id, hidden } = component;
-        const key = `${type}:${id}`;
-        if (key in this.toggled) {
-          return !this.toggled[key];
-        } else {
-          return hidden;
-        }
       };
     },
     getLabel() {
@@ -147,8 +137,16 @@ export default defineStore("app-components", {
     },
     get(type, id) {
       const component = this.components?.[type]?.[id];
+
       // @todo: return a readonly version of component instead of component.data
-      return component && !component.$deleted ? readonly(component.data) : null;
+      let data = component && !component.$deleted ? component.data : null;
+
+      if (this.overridesEnabled && this.hasOverrides(component)) {
+        // Apply component overrides.
+        data = assign({}, data, this.getOverrides(component));
+      }
+
+      return readonly(data);
     },
     async create(data, validate = true) {
       if (data.type in Models) {
@@ -353,25 +351,30 @@ export default defineStore("app-components", {
         this.blocksActivePage[block.id] = index;
       }
     },
-    show(component) {
-      const { type, id } = component;
-      this.toggled[`${type}:${id}`] = true;
+    enableOverrides() {
+      this.overridesEnabled = true;
     },
-    hide(component) {
-      const { type, id } = component;
-      this.toggled[`${type}:${id}`] = false;
+    disableOverrides() {
+      this.overridesEnabled = false;
     },
-    toggle(component) {
-      const { type, id, hidden } = component;
+    hasOverrides({ type, id }) {
       const key = `${type}:${id}`;
-      if (key in this.toggled) {
-        this.toggled[key] = !this.toggled[key];
-      } else {
-        this.toggled[key] = !!hidden;
-      }
+      return this.overrides.has(key);
     },
-    resetToggles() {
-      this.toggled = {};
+    getOverrides({ type, id }) {
+      const key = `${type}:${id}`;
+      return this.overrides.get(key);
+    },
+    override({ type, id }, state) {
+      const key = `${type}:${id}`;
+      const previous = this.hasOverrides({ type, id })
+        ? this.getOverrides({ type, id })
+        : {};
+
+      this.overrides.set(key, assign(previous, state));
+    },
+    clearOverrides() {
+      this.overrides.clear();
     },
   },
   history(context) {

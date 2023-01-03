@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { assign } from "lodash";
 import Blockly from "../blockly";
 import "../blockly/generators";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
@@ -10,7 +9,6 @@ export default defineStore("app-behaviors", {
   state: () => {
     return {
       behaviors: {},
-      components: {},
       enabled: false,
     };
   },
@@ -39,13 +37,6 @@ export default defineStore("app-behaviors", {
     disable() {
       this.enabled = false;
       interpreter.reset();
-      this.components = {};
-    },
-    setComponentState(type, id, state) {
-      this.components[type] = this.components[type] || {};
-      this.components[type][id] = this.components[type][id] || {};
-
-      assign(this.components[type][id], state);
     },
   },
 });

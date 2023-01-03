@@ -35,6 +35,7 @@ import { kebabCase } from "lodash";
 import useStore from "../store";
 import useBackground from "../composables/useBackground";
 import useBorder from "../composables/useBorder";
+import useHidden from "../composables/useHidden";
 import useOpacity from "../composables/useOpacity";
 import usePosition from "../composables/usePosition";
 import useSize from "../composables/useSize";
@@ -60,6 +61,7 @@ export default {
     return {
       ...useBackground(component, model),
       ...useBorder(component, model),
+      ...useHidden(component, model),
       ...useOpacity(component, model),
       ...usePosition(component, model),
       ...useSize(component, model),
@@ -67,11 +69,6 @@ export default {
       ...useTransform(component, model),
       store,
     };
-  },
-  computed: {
-    hidden() {
-      return this.store.isHidden(this.component);
-    },
   },
   watch: {
     active(value) {

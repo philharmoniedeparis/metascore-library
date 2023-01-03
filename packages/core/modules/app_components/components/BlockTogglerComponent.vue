@@ -72,10 +72,12 @@ export default {
   },
   methods: {
     isBlockHidden(block) {
-      return this.store.isHidden(block);
+      return block.hidden;
     },
     toggleBlock(block) {
-      this.store.toggle(block);
+      this.store.override(block, {
+        hidden: !block.hidden,
+      });
     },
   },
 };

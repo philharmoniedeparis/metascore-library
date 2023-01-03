@@ -42,9 +42,7 @@ export default {
       activeScenario,
       setActiveScenario,
       setBlockActivePage,
-      showComponent,
-      hideComponent,
-      toggleComponent,
+      overrideComponent,
     } = useModule("app_components");
     const {
       source: mediaSource,
@@ -66,9 +64,7 @@ export default {
       activeScenario,
       setActiveScenario,
       setBlockActivePage,
-      showComponent,
-      hideComponent,
-      toggleComponent,
+      overrideComponent,
       setGlobalCuepoint,
       removeCuepoint,
     };
@@ -272,7 +268,7 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.showComponent(block);
+            if (block) this.overrideComponent(block, { hidden: false });
           }
           break;
 
@@ -281,7 +277,7 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.hideComponent(block);
+            if (block) this.overrideComponent(block, { hidden: true });
           }
           break;
 
@@ -290,7 +286,7 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.toggleComponent(block);
+            if (block) this.overrideComponent(block, { hidden: !block.hidden });
           }
           break;
 

@@ -2,7 +2,6 @@ import { readonly, markRaw } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import storePlugin from "./store/plugin";
 import AppComponents from "../app_components";
 import AppRenderer from "../app_renderer";
 import MediaCuepoints from "../media_cuepoints";
@@ -24,12 +23,6 @@ export default class AppBehaviorsModule extends AbstractModule {
     Blockly.setLocale(blocklyLocale);
 
     return [AppComponents, AppRenderer, MediaCuepoints, MediaPlayer];
-  }
-
-  constructor({ pinia }) {
-    super(arguments);
-
-    pinia.use(storePlugin);
   }
 
   init(data) {

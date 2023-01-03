@@ -179,26 +179,6 @@ export default class AppComponentsModule extends AbstractModule {
     return IconManager.getURL(component);
   }
 
-  showComponent(component) {
-    const store = useStore();
-    store.show(component);
-  }
-
-  hideComponent(component) {
-    const store = useStore();
-    store.hide(component);
-  }
-
-  toggleComponent(component) {
-    const store = useStore();
-    store.toggle(component);
-  }
-
-  resetComponentToggles() {
-    const store = useStore();
-    store.resetToggles();
-  }
-
   setActiveScenario(value) {
     const store = useStore();
     store.activeScenario = value;
@@ -272,6 +252,26 @@ export default class AppComponentsModule extends AbstractModule {
 
   getLinkActions(href) {
     return parseLink(href);
+  }
+
+  enableOverrides() {
+    const store = useStore();
+    store.enableOverrides();
+  }
+
+  disableOverrides() {
+    const store = useStore();
+    store.disableOverrides();
+  }
+
+  overrideComponent(component, state) {
+    const store = useStore();
+    store.override(component, state);
+  }
+
+  clearOverrides() {
+    const store = useStore();
+    store.clearOverrides();
   }
 
   onStoreAction(callback) {

@@ -233,6 +233,7 @@ export default {
       addComponent,
       deleteComponent,
       cloneComponent,
+      clearOverrides: clearComponentsOverrides,
     } = useModule("app_components");
 
     const { enable: enableBehaviors, disable: disableBehaviors } =
@@ -273,6 +274,7 @@ export default {
       addComponent,
       deleteComponent,
       cloneComponent,
+      clearComponentsOverrides,
       enableBehaviors,
       disableBehaviors,
       getAssetsByType,
@@ -398,6 +400,9 @@ export default {
     preview(value) {
       if (value) this.enableBehaviors();
       else {
+        // Reset component overrides and behaviors
+        // when exiting preview mode.
+        this.clearComponentsOverrides();
         this.disableBehaviors();
       }
     },
