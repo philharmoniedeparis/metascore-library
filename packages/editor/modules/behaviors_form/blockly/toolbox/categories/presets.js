@@ -2,7 +2,7 @@ export default function getBlocks() {
   return [
     {
       kind: "block",
-      type: "components_click",
+      type: "links_click",
       inputs: {
         STATEMENT: {
           block: {
