@@ -110,7 +110,11 @@ export default {
     this._resize_observer.observe(this.$el);
     this.updateSize();
 
-    this.$el.ownerDocument.addEventListener("click", this.onDocumentClick);
+    this.$el.ownerDocument.addEventListener(
+      "mousedown",
+      this.onDocumentMousedown
+    );
+    this.$el.ownerDocument.addEventListener("blur", this.onDocumentBlur);
   },
   beforeUnmount() {
     this.workspace.dispose();
@@ -121,7 +125,11 @@ export default {
       delete this._resize_observer;
     }
 
-    this.$el.ownerDocument.removeEventListener("click", this.onDocumentClick);
+    this.$el.ownerDocument.removeEventListener(
+      "mousedown",
+      this.onDocumentMousedown
+    );
+    this.$el.ownerDocument.removeEventListener("blur", this.onDocumentBlur);
   },
   methods: {
     serialize() {
@@ -183,11 +191,15 @@ export default {
     updateSize() {
       this.Blockly.svgResize(this.workspace);
     },
-    onDocumentClick(evt) {
+    onDocumentMousedown(evt) {
       // Close tooltips, context menus and dropdowns if clicked outside.
-      if (!evt.target.closest(".behaviors-form")) {
+      if (!evt.target.closest(".behaviors-form, .blocklyDropDownDiv")) {
         this.workspace.hideChaff();
       }
+    },
+    onDocumentBlur() {
+      // Close tooltips, context menus and dropdowns if clicked in iframe.
+      this.workspace.hideChaff();
     },
     onContextmenu(evt) {
       if (evt.target.closest("rect.blocklyMainBackground")) {
