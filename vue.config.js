@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const LodashPlugin = require("lodash-webpack-plugin");
 const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
@@ -238,18 +237,5 @@ module.exports = defineConfig({
           minify: true,
         }),
       });
-
-    // Improve lodash builds.
-    config.module
-      .rule("lodash")
-      .test(/\.js$/)
-      .exclude.add(/node_modules/)
-      .end()
-      .use("babel-loader")
-      .loader("babel-loader")
-      .options({
-        plugins: ["lodash"],
-      });
-    config.plugin("lodash").use(LodashPlugin);
   },
 });
