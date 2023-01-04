@@ -69,49 +69,6 @@ module.exports = defineConfig({
       })
       .filename("[name].js");
 
-    // Split vendors to separate chunks.
-    config.optimization.merge({
-      splitChunks: {
-        cacheGroups: {
-          lottie: {
-            test: /lottie-web/,
-            name: "lottie",
-            priority: 1,
-            filename: "metaScore.vendors.[name].js",
-            reuseExistingChunk: true,
-          },
-          hammerjs: {
-            test: /hammerjs/,
-            name: "hammerjs",
-            priority: 2,
-            filename: "metaScore.vendors.[name].js",
-            reuseExistingChunk: true,
-          },
-          dashjs: {
-            test: /dashjs/,
-            name: "dashjs",
-            priority: 3,
-            filename: "metaScore.vendors.[name].js",
-            reuseExistingChunk: true,
-          },
-          hlsjs: {
-            test: /hls\.js/,
-            name: "hlsjs",
-            priority: 4,
-            filename: "metaScore.vendors.[name].js",
-            reuseExistingChunk: true,
-          },
-          ckeditor: {
-            test: /ckeditor/,
-            name: "ckeditor",
-            priority: 5,
-            filename: "metaScore.vendors.[name].js",
-            reuseExistingChunk: true,
-          },
-        },
-      },
-    });
-
     // Add the "data-metascore" attribute to all link tags
     // to be used by the app_preview module.
     config.plugin("htmllinkattr").use(HtmlWebpackAssetsAttrPlugin, [
