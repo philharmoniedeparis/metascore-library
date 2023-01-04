@@ -92,6 +92,10 @@ function getComponentOptions(
 
       if (recursive) {
         const children = getComponentChildren(c);
+        if (["Scenario", "Page"].includes(c.type)) {
+          children.reverse();
+        }
+
         options = [
           ...options,
           ...getComponentOptions(
