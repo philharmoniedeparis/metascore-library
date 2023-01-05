@@ -100,13 +100,16 @@
       @update:width="librariesWidth = `${$event}px`"
     >
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
-        <tabs-item :title="$t('components_library_title')">
+        <tabs-item :title="$t('components_library_title')" :keep-alive="true">
           <components-library />
         </tabs-item>
-        <tabs-item :title="$t('assets_library_title')">
+        <tabs-item :title="$t('assets_library_title')" :keep-alive="true">
           <assets-library />
         </tabs-item>
-        <tabs-item :title="$t('shared_assets_library_title')">
+        <tabs-item
+          :title="$t('shared_assets_library_title')"
+          :keep-alive="true"
+        >
           <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
         <template v-if="activeLibrariesTab === 2" #tabs-end>

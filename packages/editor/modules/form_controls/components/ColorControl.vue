@@ -49,10 +49,10 @@
       @focusout="onOverlayFocusout"
     >
       <tabs-container>
-        <tabs-item v-if="picker" title="Picker">
+        <tabs-item v-if="picker" title="Picker" :keep-alive="true">
           <color-picker v-model="internalValue" />
         </tabs-item>
-        <tabs-item v-if="swatches" title="Swatches">
+        <tabs-item v-if="swatches" title="Swatches" :keep-alive="true">
           <color-swatches
             v-model="internalValue"
             v-bind="isArray(swatches) ? { swatches } : null"

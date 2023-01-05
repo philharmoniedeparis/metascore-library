@@ -1,5 +1,9 @@
 <template>
-  <div v-if="active" class="tab-item">
+  <div
+    v-if="active || (keepAlive && initialized)"
+    v-show="active"
+    class="tab-item"
+  >
     <slot />
   </div>
 </template>
@@ -12,9 +16,14 @@ export default {
       type: String,
       required: true,
     },
+    keepAlive: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
+      initialized: false,
       active: false,
     };
   },
@@ -23,6 +32,7 @@ export default {
   },
   methods: {
     activate() {
+      this.initialized = true;
       this.active = true;
     },
     deactivate() {
