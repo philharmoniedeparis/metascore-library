@@ -522,15 +522,17 @@ export default {
     },
     onDraggableStart() {
       this.dragging = true;
-      this.startHistoryGroup();
+      this.startHistoryGroup(true);
     },
     async onDraggableMove(evt) {
+      this.startHistoryGroup();
       for (const component of this.store.getSelectedComponents) {
         const position = component.position;
         await this.updateComponent(component, {
           position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
         });
       }
+      this.endHistoryGroup();
     },
     onDraggableEnd(evt) {
       this.dragging = false;
@@ -546,7 +548,7 @@ export default {
     },
     onResizableStart() {
       this.resizing = true;
-      this.startHistoryGroup();
+      this.startHistoryGroup(true);
     },
     async onResizableMove(evt) {
       const position = this.component.position;
