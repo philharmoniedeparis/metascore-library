@@ -42,7 +42,7 @@ export default Mixin(
       /**
        * @inheritdoc
        */
-      async update(data) {
+      async update(data, ...rest) {
         ["translate", "scale"].forEach((property) => {
           // If the last keyframe has been deleted,
           // mark the property as unanimated.
@@ -59,7 +59,7 @@ export default Mixin(
           }
         });
 
-        return super.update(data);
+        return super.update(data, ...rest);
       }
     }
 );
