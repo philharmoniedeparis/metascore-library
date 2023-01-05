@@ -34,9 +34,9 @@ export default class HistoryModule extends AbstractModule {
     store.active = false;
   }
 
-  startGroup(mergeable) {
+  startGroup(coalesce = false) {
     const store = useStore();
-    store.startGroup(mergeable);
+    return store.startGroup(coalesce);
   }
 
   endGroup() {

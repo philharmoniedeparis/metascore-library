@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import HistoryItem from "./HistoryItem";
+import HistoryGroup from "./HistoryGroup";
 
 export default defineStore("history", {
   state: () => {
@@ -7,7 +9,6 @@ export default defineStore("history", {
       stack: [],
       groups: [],
       index: 0,
-      stores: {},
       processing: false,
     };
   },
@@ -20,80 +21,58 @@ export default defineStore("history", {
     },
   },
   actions: {
-    push(item) {
+    push({ redo, undo }) {
       if (!this.active || this.processing) {
         return;
       }
 
+      const item = new HistoryItem({ redo, undo });
+
       if (this.groups.length > 0) {
-        this.groups[this.groups.length - 1].items.push(item);
+        this.groups.at(-1).push(item);
       } else {
         this.stack.splice(this.index);
         this.stack.push(item);
         this.index++;
       }
     },
-    startGroup(mergeable = false) {
+    startGroup(coalesce = false) {
       if (!this.active || this.processing) {
         return;
       }
 
-      this.groups.push({
-        items: [],
-        mergeable,
-      });
+      const group = new HistoryGroup(coalesce);
+      this.groups.push(group);
     },
     endGroup() {
       if (!this.active || this.processing) {
         return;
       }
 
-      const group = this.groups.pop();
-      if (group) {
-        const { mergeable, items } = group;
-
-        if (items.length === 0) return;
-
-        if (mergeable) {
-          this.push({
-            undo: items[0].undo,
-            redo: items[items.length - 1].redo,
-          });
-        } else {
-          this.push({
-            undo: async () => {
-              for (const item of [...items].reverse()) {
-                await item.undo();
-              }
-            },
-            redo: async () => {
-              for (const item of items) {
-                await item.redo();
-              }
-            },
-          });
-        }
+      if (this.groups.length > 0) {
+        const group = this.groups.pop();
+        this.push(group);
       }
     },
     async undo() {
-      if (this.canUndo) {
-        this.processing = true;
+      if (!this.canUndo) return;
 
-        const item = this.stack[--this.index];
-        await item.undo();
+      this.processing = true;
 
-        this.processing = false;
-      }
+      const item = this.stack[--this.index];
+      await item.undo();
+
+      this.processing = false;
     },
     async redo() {
-      if (this.canRedo) {
-        this.processing = true;
+      if (!this.canRedo) return;
 
-        const item = this.stack[this.index++];
-        await item.redo();
+      this.processing = true;
 
-        this.processing = false;
-      }
+      const item = this.stack[this.index++];
+      await item.redo();
+
+      this.processing = false;
     },
   },
 });
