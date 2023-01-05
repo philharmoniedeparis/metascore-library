@@ -84,8 +84,11 @@ export default {
         const normalized = chroma(value).css();
         if (this.normalizedSwatches.includes(normalized)) {
           this.selected = normalized;
+          return;
         }
       }
+
+      this.selected = null;
     },
     onSwatchClick(value) {
       this.setSelected(value);
