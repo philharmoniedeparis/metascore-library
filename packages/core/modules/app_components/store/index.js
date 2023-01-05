@@ -402,10 +402,13 @@ export default defineStore("app-components", {
       case "update":
         {
           const [component, data] = args;
-          const oldValue = Object.keys(data).reduce(
-            (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
-            {}
+          const oldValue = structuredClone(
+            Object.keys(data).reduce(
+              (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
+              {}
+            )
           );
+
           after(() => {
             push({
               undo: async () => {
