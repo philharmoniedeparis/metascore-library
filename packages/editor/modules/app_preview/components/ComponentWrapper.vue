@@ -644,6 +644,8 @@ export default {
       }
     },
     async addDroppedComponent(evt) {
+      this.startHistoryGroup();
+
       const dropped_component = await this.getComponentFromDragEvent(evt);
 
       let index = null;
@@ -684,6 +686,8 @@ export default {
 
       this.setBlockActivePage(this.component, index);
       this.store.selectComponent(component);
+
+      this.endHistoryGroup();
     },
   },
 };
