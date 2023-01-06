@@ -109,9 +109,15 @@ export default {
   },
   watch: {
     component(value, oldValue) {
-      if (oldValue) {
-        this.stopEditing(oldValue);
+      if (
+        value &&
+        oldValue &&
+        value.type === oldValue.type &&
+        value.id === oldValue.id
+      ) {
+        return;
       }
+      this.stopEditing();
     },
     componentEl: {
       handler(value, oldValue) {
@@ -140,7 +146,7 @@ export default {
       }
     },
   },
-  beforeUnmount() {
+  async beforeUnmount() {
     if (this.componentEl) {
       this.componentEl.removeEventListener(
         "dblclick",
@@ -148,7 +154,7 @@ export default {
       );
     }
 
-    this.stopEditing(this.component);
+    await this.stopEditing();
   },
   methods: {
     onComponentDblclick() {
@@ -212,6 +218,9 @@ export default {
       this.editor = markRaw(editor);
       this.$refs["toolbar-container"].appendChild(toolbar);
 
+      // Listener to document data changes.
+      editor.model.document.on("change:data", this.onEditorDocumentDataChange);
+
       // Add listeners to ContextualBalloon positions
       if (editor.plugins.has("ContextualBalloon")) {
         const contextualballoon_view =
@@ -238,6 +247,9 @@ export default {
       // Scroll editor into view.
       this.$refs["toolbar-container"].scrollIntoView();
     },
+    onEditorDocumentDataChange() {
+      this.value = this.editor.getData();
+    },
     onEditorContextualBallonPositionSet(evt, prop, value) {
       const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
       evt.return = value + offset;
@@ -245,22 +257,13 @@ export default {
     onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
       this.componentEl.classList.toggle("sourceediting", isSourceEditingMode);
     },
-    async stopEditing(component = null) {
+    async stopEditing() {
       if (!this.editing) return;
 
-      component = component ?? this.component;
-
       if (this.editor) {
-        const value = this.editor.getData();
-
         this.editor.ui.view.toolbar.element.remove();
         await this.editor.destroy();
         this.editor = null;
-
-        this.value = {
-          componentsToUpdate: [component],
-          value,
-        };
       }
 
       if (this.componentInnerEl) {
