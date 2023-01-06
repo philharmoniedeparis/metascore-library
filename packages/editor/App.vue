@@ -16,6 +16,11 @@
       "submit_button": "Oui",
       "cancel_button": "Non",
     },
+    "load_revision_confirm": {
+      "confirm_text": "Êtes-vous sûr de vouloir charger une ancienne révision ? Toutes les données non sauvegardées seront perdues.",
+      "submit_button": "Oui",
+      "cancel_button": "Non",
+    },
     "autosave_confirm": {
       "confirm_text": "Des données d'enregistrement automatique ont été trouvées pour cette application. Souhaitez-vous les récupérer ?",
       "submit_button": "Oui",
@@ -42,6 +47,11 @@
     "saving_indicator_label": "Saving...",
     "revert_confirm": {
       "confirm_text": "Are you sure you want to revert back to the last saved version? Any unsaved data will be lost.",
+      "submit_button": "Yes",
+      "cancel_button": "No",
+    },
+    "load_revision_confirm": {
+      "confirm_text": "Are you sure you want to load an old revision ? Any unsaved data will be lost.",
       "submit_button": "Yes",
       "cancel_button": "No",
     },
@@ -112,9 +122,10 @@
         </div>
         <div class="right">
           <revision-selector
-            v-model:active="activeRevision"
+            :active="activeRevision"
             :revisions="revisions"
             :latest="latestRevision"
+            @update:active="loadRevision"
             @restore="onRevisionSelectorRestore"
           />
         </div>
@@ -210,6 +221,16 @@
       :cancel-label="$t('revert_confirm.cancel_button')"
       @submit="onRevertSubmit"
       @cancel="onRevertCancel"
+    >
+      <p>{{ $t("revert_confirm.confirm_text") }}</p>
+    </confirm-dialog>
+
+    <confirm-dialog
+      v-if="showLoadRevisionConfirm"
+      :submit-label="$t('load_revision_confirm.submit_button')"
+      :cancel-label="$t('load_revision_confirm.cancel_button')"
+      @submit="onLoadRevisionSubmit"
+      @cancel="onLoadRevisionCancel"
     >
       <p>{{ $t("revert_confirm.confirm_text") }}</p>
     </confirm-dialog>
@@ -346,6 +367,7 @@ export default {
       activeFormsTab: 0,
       behaviorsOpen: false,
       showRevertConfirm: false,
+      showLoadRevisionConfirm: false,
       showAutoSaveRestoreConfirm: false,
       showHotkeyList: false,
       showContextmenu: false,
@@ -394,13 +416,8 @@ export default {
     latestRevision() {
       return this.store.latestRevision;
     },
-    activeRevision: {
-      get() {
-        return this.store.activeRevision;
-      },
-      set(value) {
-        this.store.loadRevision(value);
-      },
+    activeRevision() {
+      return this.store.activeRevision;
     },
     isLatestRevision() {
       return this.activeRevision === this.latestRevision;
@@ -491,6 +508,15 @@ export default {
       this.showRevertConfirm = false;
       this.store.load(this.url);
     },
+    loadRevision(vid, confirm = true) {
+      if (confirm && this.dirty) {
+        this.showLoadRevisionConfirm = vid;
+        return;
+      }
+
+      this.showLoadRevisionConfirm = false;
+      this.store.loadRevision(vid);
+    },
     onAppTitleFocusin() {
       this.appTitleFocused = true;
     },
@@ -528,6 +554,12 @@ export default {
     },
     onRevertCancel() {
       this.showRevertConfirm = false;
+    },
+    onLoadRevisionSubmit() {
+      this.loadRevision(this.showLoadRevisionConfirm, false);
+    },
+    onLoadRevisionCancel() {
+      this.showLoadRevisionConfirm = false;
     },
     onAutoSaveRestoreSubmit() {
       this.showAutoSaveRestoreConfirm = false;
