@@ -34,6 +34,16 @@ export default class HistoryModule extends AbstractModule {
     store.active = false;
   }
 
+  async undo() {
+    const store = useStore();
+    return store.undo();
+  }
+
+  redo() {
+    const store = useStore();
+    return store.redo();
+  }
+
   startGroup({ coalesce = false, coalesceId } = {}) {
     const store = useStore();
     return store.startGroup({ coalesce, coalesceId });

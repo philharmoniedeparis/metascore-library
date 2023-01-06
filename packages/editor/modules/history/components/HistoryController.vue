@@ -1,8 +1,32 @@
+<i18n>
+  {
+    "fr": {
+      "undo": "Annuler [Ctrl+Z]",
+      "redo": "Rétablir [Ctrl+Y]",
+      "hotkey": {
+        "group": "Général",
+        "ctrl+z": "Annuler",
+        "ctrl+y": "Rétablir",
+      },
+    },
+    "en": {
+      "undo": "Undo [Ctrl+Z]",
+      "redo": "Redo [Ctrl+Y]",
+      "hotkey": {
+        "group": "General",
+        "ctrl+z": "Undo",
+        "ctrl+y": "Redo",
+      },
+    },
+  }
+</i18n>
+
 <template>
-  <div class="history-controller">
+  <div v-hotkey="hotkeys" class="history-controller">
     <base-button
       type="button"
       :disabled="!canUndo || disabled"
+      :title="$t('undo')"
       @click="onUndoClick"
     >
       <template #icon><undo-icon /></template>
@@ -11,6 +35,7 @@
     <base-button
       type="button"
       :disabled="!canRedo || disabled"
+      :title="$t('redo')"
       @click="onRedoClick"
     >
       <template #icon><redo-icon /></template>
@@ -44,6 +69,21 @@ export default {
     },
     canRedo() {
       return this.store.canRedo;
+    },
+    hotkeys() {
+      return {
+        group: this.$t("hotkey.group"),
+        keys: {
+          "ctrl+z": {
+            handler: this.store.undo,
+            description: this.$t("hotkey.ctrl+z"),
+          },
+          "ctrl+y": {
+            handler: this.store.redo,
+            description: this.$t("hotkey.ctrl+y"),
+          },
+        },
+      };
     },
   },
   methods: {

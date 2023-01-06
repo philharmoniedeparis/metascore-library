@@ -1,6 +1,7 @@
 <i18n>
 {
   "fr": {
+    "save": "Enregistrer [Ctrl+S]",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
     "assets_library_title": "Bibliothèque",
@@ -16,11 +17,13 @@
     },
     "hotkey": {
       "group": "Général",
+      "ctrl+s": "Enregistrer",
       "ctrl+h": "Afficher les raccourcis clavier",
     },
     "unload_dirty": "Les données non sauvegardées seront perdues.",
   },
   "en": {
+    "save": "Save [Ctrl+S]",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
     "assets_library_title": "Library",
@@ -35,7 +38,8 @@
       "cancel_button": "No",
     },
     "hotkey": {
-      "group": "Général",
+      "group": "General",
+      "ctrl+s": "Save",
       "ctrl+h": "Show keyboard shortcuts",
     },
     "unload_dirty": "Any unsaved data will be lost.",
@@ -64,7 +68,8 @@
           <base-button
             :disabled="!dirty || !isLatestRevision"
             class="save"
-            @click="onSaveClick"
+            :title="$t('save')"
+            @click="save"
           >
             <template #icon><save-icon /></template>
           </base-button>
@@ -369,8 +374,12 @@ export default {
       return {
         group: this.$t("hotkey.group"),
         keys: {
-          // @todo: fix hotkeys code handling for ?
+          "ctrl+s": {
+            handler: this.save,
+            description: this.$t("hotkey.ctrl+s"),
+          },
           "ctrl+h": {
+            // @todo: fix hotkeys code handling for ?
             handler: () => {
               this.showHotkeyList = true;
             },
@@ -426,7 +435,7 @@ export default {
     window.removeEventListener("beforeunload", this.onWindowBeforeunload);
   },
   methods: {
-    onSaveClick() {
+    save() {
       this.store.save(this.url).catch((e) => {
         // @todo: handle errors
         console.error(e);
