@@ -34,6 +34,16 @@ export default class HistoryModule extends AbstractModule {
     store.active = false;
   }
 
+  startGroup({ coalesce = false, coalesceId } = {}) {
+    const store = useStore();
+    return store.startGroup({ coalesce, coalesceId });
+  }
+
+  endGroup() {
+    const store = useStore();
+    store.endGroup();
+  }
+
   async undo() {
     const store = useStore();
     return store.undo();
@@ -44,13 +54,8 @@ export default class HistoryModule extends AbstractModule {
     return store.redo();
   }
 
-  startGroup({ coalesce = false, coalesceId } = {}) {
+  clear() {
     const store = useStore();
-    return store.startGroup({ coalesce, coalesceId });
-  }
-
-  endGroup() {
-    const store = useStore();
-    store.endGroup();
+    return store.clear();
   }
 }

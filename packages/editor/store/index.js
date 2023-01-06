@@ -178,6 +178,11 @@ export default defineStore("editor", {
       try {
         const data = await api.load(url);
         await this.setData(data);
+
+        const { clear: clearHistory } = useModule("history");
+        clearHistory();
+        this.dirty.clear();
+
         this.ready = true;
       } catch (error) {
         console.error(error);

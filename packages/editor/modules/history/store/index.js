@@ -1,3 +1,4 @@
+import { watch } from "vue";
 import { defineStore } from "pinia";
 import HistoryItem from "./HistoryItem";
 import HistoryGroup from "./HistoryGroup";
@@ -88,6 +89,20 @@ export default defineStore("history", {
       await item.redo();
 
       this.processing = false;
+    },
+    clear() {
+      if (this.processing) {
+        // Wait until the current process is done.
+        const unwatch = watch(this.processing, () => {
+          unwatch();
+          this.clear();
+        });
+        return;
+      }
+
+      this.stack = [];
+      this.groups = [];
+      this.index = 0;
     },
   },
 });
