@@ -178,14 +178,12 @@ export default {
       this.editing = true;
       this.settingUpEditor = true;
 
-      const { Editor, getConfig } = await import("../../ckeditor");
+      const { default: createEditor } = await import("../../ckeditor");
 
-      const config = getConfig({
+      createEditor(this.contentsEl, {
         language: this.$i18n.locale,
         extraFonts: this.extraFonts,
-      });
-
-      Editor.create(this.contentsEl, config)
+      })
         .then(this.onEditorCreate)
         .catch((e) => {
           // @todo: handle errors.

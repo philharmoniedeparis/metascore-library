@@ -32,12 +32,15 @@ import LinkImage from "./plugins/ckeditor5-link/src/linkimage";
 import SourceEditing from "./plugins/ckeditor5-sourceediting/src/sourceediting";
 import UploadAdapter from "./plugins/ckeditor5-uploadadapter/src/uploadadapter";
 
+import DecoupledEditor from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
+
 import "./styles.scss";
 
-export { default as Editor } from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
-
-export function getConfig({ language = "fr", extraFonts = [] } = {}) {
-  return {
+export default function createEditor(
+  el,
+  { language = "fr", extraFonts = [] } = {}
+) {
+  return DecoupledEditor.create(el, {
     language,
     plugins: [
       Alignment,
@@ -197,5 +200,5 @@ export function getConfig({ language = "fr", extraFonts = [] } = {}) {
       disallow: [],
     },
     updateSourceElementOnDestroy: true,
-  };
+  });
 }
