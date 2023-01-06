@@ -63,6 +63,7 @@
         <div class="left">
           <base-button
             :disabled="!dirty || !isLatestRevision"
+            class="save"
             @click="onSaveClick"
           >
             <template #icon><save-icon /></template>
