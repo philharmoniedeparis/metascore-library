@@ -1,15 +1,20 @@
 export default class HistoryItem {
-  constructor({ undo, redo } = {}) {
+  constructor({ undo, redo, coalesceId } = {}) {
     this._undo = undo;
     this._redo = redo;
+    this._coalesceId = coalesceId;
   }
 
-  set undo(undo) {
-    this._undo = undo;
+  set undo(value) {
+    this._undo = value;
   }
 
-  set redo(redo) {
-    this._redo = redo;
+  set redo(value) {
+    this._redo = value;
+  }
+
+  set coalesceId(value) {
+    this._coalesceId = value;
   }
 
   get undo() {
@@ -18,5 +23,9 @@ export default class HistoryItem {
 
   get redo() {
     return this._redo;
+  }
+
+  get coalesceId() {
+    return this._coalesceId;
   }
 }

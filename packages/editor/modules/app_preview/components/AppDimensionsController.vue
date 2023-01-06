@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     onInputFocus() {
-      this.startHistoryGroup(true);
+      this.startHistoryGroup({ coalesce: true });
     },
     onInputBlur() {
       this.endHistoryGroup();

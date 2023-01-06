@@ -1,7 +1,19 @@
-export default class HistoryGroup {
-  constructor(coalesce = false) {
+import HistoryItem from "./HistoryItem";
+
+export default class HistoryGroup extends HistoryItem {
+  constructor({ coalesce = false, ...rest } = {}) {
+    super(rest);
+
     this._coalesce = coalesce;
     this._items = [];
+  }
+
+  set undo(value) {
+    super.undo = value;
+  }
+
+  set redo(value) {
+    super.redo = value;
   }
 
   get items() {
@@ -9,19 +21,25 @@ export default class HistoryGroup {
   }
 
   get undo() {
-    return async () => {
-      for (const item of [...this._items].reverse()) {
-        await item.undo();
-      }
-    };
+    return (
+      super.undo ||
+      (async () => {
+        for (const item of [...this._items].reverse()) {
+          await item.undo();
+        }
+      })
+    );
   }
 
   get redo() {
-    return async () => {
-      for (const item of this._items) {
-        await item.redo();
-      }
-    };
+    return (
+      super.redo ||
+      (async () => {
+        for (const item of this._items) {
+          await item.redo();
+        }
+      })
+    );
   }
 
   push(item) {

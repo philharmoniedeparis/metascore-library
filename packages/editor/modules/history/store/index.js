@@ -21,27 +21,42 @@ export default defineStore("history", {
     },
   },
   actions: {
-    push({ redo, undo }) {
+    push(item) {
       if (!this.active || this.processing) {
         return;
       }
 
-      const item = new HistoryItem({ redo, undo });
+      if (!(item instanceof HistoryItem)) {
+        item = new HistoryItem(item);
+      }
 
       if (this.groups.length > 0) {
         this.groups.at(-1).push(item);
       } else {
-        this.stack.splice(this.index);
-        this.stack.push(item);
-        this.index++;
+        const previous = this.stack.at(-1);
+
+        if (
+          previous &&
+          item.coalesceId &&
+          item.coalesceId === previous.coalesceId
+        ) {
+          previous.redo = item.redo;
+        } else {
+          if (previous) {
+            previous.coalesceId = null;
+          }
+          this.stack.splice(this.index);
+          this.stack.push(item);
+          this.index++;
+        }
       }
     },
-    startGroup(coalesce = false) {
+    startGroup({ coalesce = false, coalesceId } = {}) {
       if (!this.active || this.processing) {
         return;
       }
 
-      const group = new HistoryGroup(coalesce);
+      const group = new HistoryGroup({ coalesce, coalesceId });
       this.groups.push(group);
     },
     endGroup() {

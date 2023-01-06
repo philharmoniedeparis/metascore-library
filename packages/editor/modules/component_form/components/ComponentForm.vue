@@ -200,7 +200,7 @@
 </template>
 
 <script>
-import { intersection, isObject, kebabCase } from "lodash";
+import { intersection, kebabCase } from "lodash";
 import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
@@ -234,6 +234,8 @@ export default {
       isComponentLocked,
       preview,
     } = useModule("app_preview");
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
     return {
       store,
       getModelByType,
@@ -245,6 +247,13 @@ export default {
       selectedComponents,
       isComponentLocked,
       preview,
+      startHistoryGroup,
+      endHistoryGroup,
+    };
+  },
+  data() {
+    return {
+      historyCoalesceId: null,
     };
   },
   computed: {
@@ -571,30 +580,30 @@ export default {
     title(value) {
       this.store.title = value;
     },
+    selectedComponents(value) {
+      const ids = [];
+      for (const component of value) {
+        ids.push(`${component.type}:${component.id}`);
+      }
+      this.historyCoalesceId = ids.join();
+    },
   },
   methods: {
     kebabCase,
     async update({ property, value }) {
-      // Allow controls to specify which components to update.
-      if (
-        isObject(value) &&
-        "componentsToUpdate" in value &&
-        "value" in value
-      ) {
-        for (const component of value.componentsToUpdate) {
-          await this.updateComponent(component, {
-            [property]: value.value,
-          });
-        }
-        return;
-      }
+      this.startHistoryGroup({
+        coalesce: true,
+        coalesceId: `${this.historyCoalesceId}|${property}`,
+      });
 
-      // Otherwise update all selected components.
+      // Update all selected components.
       for (const component of this.selectedComponents) {
         await this.updateComponent(component, {
           [property]: value,
         });
       }
+
+      this.endHistoryGroup();
     },
     getControlProps(property, model_type = null) {
       const props = {

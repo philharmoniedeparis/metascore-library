@@ -367,7 +367,7 @@ export default {
     },
     onResizableStart() {
       this.resizing = true;
-      this.startHistoryGroup(true);
+      this.startHistoryGroup({ coalesce: true });
     },
     async onResizableMove(evt) {
       const time_wrapper = this.$refs["time-wrapper"];

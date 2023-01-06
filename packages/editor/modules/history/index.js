@@ -34,9 +34,9 @@ export default class HistoryModule extends AbstractModule {
     store.active = false;
   }
 
-  startGroup(coalesce = false) {
+  startGroup({ coalesce = false, coalesceId } = {}) {
     const store = useStore();
-    return store.startGroup(coalesce);
+    return store.startGroup({ coalesce, coalesceId });
   }
 
   endGroup() {

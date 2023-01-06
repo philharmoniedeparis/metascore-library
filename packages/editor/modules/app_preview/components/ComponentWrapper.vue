@@ -522,7 +522,7 @@ export default {
     },
     onDraggableStart() {
       this.dragging = true;
-      this.startHistoryGroup(true);
+      this.startHistoryGroup({ coalesce: true });
     },
     async onDraggableMove(evt) {
       this.startHistoryGroup();
@@ -548,7 +548,7 @@ export default {
     },
     onResizableStart() {
       this.resizing = true;
-      this.startHistoryGroup(true);
+      this.startHistoryGroup({ coalesce: true });
     },
     async onResizableMove(evt) {
       const position = this.component.position;

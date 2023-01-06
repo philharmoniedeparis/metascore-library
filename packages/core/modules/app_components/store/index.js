@@ -138,7 +138,6 @@ export default defineStore("app-components", {
     get(type, id) {
       const component = this.components?.[type]?.[id];
 
-      // @todo: return a readonly version of component instead of component.data
       let data = component && !component.$deleted ? component.data : null;
 
       if (this.overridesEnabled && this.hasOverrides(component)) {
