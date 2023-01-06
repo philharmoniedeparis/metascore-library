@@ -2,6 +2,7 @@
 {
   "fr": {
     "save": "Enregistrer [Ctrl+S]",
+    "revert": "Revenir à la version précédente [Ctrl+R]",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
     "assets_library_title": "Bibliothèque",
@@ -10,7 +11,12 @@
     "behaviors_form_title": "Comportements",
     "loading_indicator_label": "Chargement ...",
     "saving_indicator_label": "Sauvegarde en cours ...",
-    "autosave": {
+    "revert_confirm": {
+      "confirm_text": "Êtes-vous sûr de vouloir revenir à la dernière version enregistrée ? Toutes les données non sauvegardées seront perdues.",
+      "submit_button": "Oui",
+      "cancel_button": "Non",
+    },
+    "autosave_confirm": {
       "confirm_text": "Des données d'enregistrement automatique ont été trouvées pour cette application. Souhaitez-vous les récupérer ?",
       "submit_button": "Oui",
       "cancel_button": "Non",
@@ -18,12 +24,14 @@
     "hotkey": {
       "group": "Général",
       "ctrl+s": "Enregistrer",
+      "ctrl+r": "Revenir à la version précédente",
       "ctrl+h": "Afficher les raccourcis clavier",
     },
     "unload_dirty": "Les données non sauvegardées seront perdues.",
   },
   "en": {
     "save": "Save [Ctrl+S]",
+    "revert": "Revert [Ctrl+R]",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
     "assets_library_title": "Library",
@@ -32,7 +40,12 @@
     "behaviors_form_title": "Behaviors",
     "loading_indicator_label": "Loading...",
     "saving_indicator_label": "Saving...",
-    "autosave": {
+    "revert_confirm": {
+      "confirm_text": "Are you sure you want to revert back to the last saved version? Any unsaved data will be lost.",
+      "submit_button": "Yes",
+      "cancel_button": "No",
+    },
+    "autosave_confirm": {
       "confirm_text": "Auto-save data were found for this application. Would you like to recover them?",
       "submit_button": "Yes",
       "cancel_button": "No",
@@ -40,6 +53,7 @@
     "hotkey": {
       "group": "General",
       "ctrl+s": "Save",
+      "ctrl+r": "Revert",
       "ctrl+h": "Show keyboard shortcuts",
     },
     "unload_dirty": "Any unsaved data will be lost.",
@@ -72,6 +86,14 @@
             @click="save"
           >
             <template #icon><save-icon /></template>
+          </base-button>
+          <base-button
+            :disabled="!dirty || !isLatestRevision"
+            class="revert"
+            :title="$t('revert')"
+            @click="revert"
+          >
+            <template #icon><revert-icon /></template>
           </base-button>
           <history-controller :disabled="!isLatestRevision" />
           <text-control
@@ -183,13 +205,23 @@
     />
 
     <confirm-dialog
+      v-if="showRevertConfirm"
+      :submit-label="$t('revert_confirm.submit_button')"
+      :cancel-label="$t('revert_confirm.cancel_button')"
+      @submit="onRevertSubmit"
+      @cancel="onRevertCancel"
+    >
+      <p>{{ $t("revert_confirm.confirm_text") }}</p>
+    </confirm-dialog>
+
+    <confirm-dialog
       v-if="showAutoSaveRestoreConfirm"
-      :submit-label="$t('autosave.submit_button')"
-      :cancel-label="$t('autosave.cancel_button')"
+      :submit-label="$t('autosave_confirm.submit_button')"
+      :cancel-label="$t('autosave_confirm.cancel_button')"
       @submit="onAutoSaveRestoreSubmit"
       @cancel="onAutoSaveRestoreCancel"
     >
-      <p>{{ $t("autosave.confirm_text") }}</p>
+      <p>{{ $t("autosave_confirm.confirm_text") }}</p>
     </confirm-dialog>
     <auto-save-indicator v-else :enabled="isLatestRevision" />
 
@@ -214,10 +246,12 @@ import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?inline";
+import RevertIcon from "./assets/icons/revert.svg?inline";
 
 export default {
   components: {
     SaveIcon,
+    RevertIcon,
   },
   provide() {
     return {
@@ -311,6 +345,7 @@ export default {
       formsWidth: "20em",
       activeFormsTab: 0,
       behaviorsOpen: false,
+      showRevertConfirm: false,
       showAutoSaveRestoreConfirm: false,
       showHotkeyList: false,
       showContextmenu: false,
@@ -378,6 +413,12 @@ export default {
             handler: this.save,
             description: this.$t("hotkey.ctrl+s"),
           },
+          "ctrl+r": {
+            handler: () => {
+              this.showRevertConfirm = true;
+            },
+            description: this.$t("hotkey.ctrl+r"),
+          },
           "ctrl+h": {
             // @todo: fix hotkeys code handling for ?
             handler: () => {
@@ -441,6 +482,15 @@ export default {
         console.error(e);
       });
     },
+    revert(confirm = true) {
+      if (confirm) {
+        this.showRevertConfirm = true;
+        return;
+      }
+
+      this.showRevertConfirm = false;
+      this.store.load(this.url);
+    },
     onAppTitleFocusin() {
       this.appTitleFocused = true;
     },
@@ -472,6 +522,12 @@ export default {
     async onScenarioManagerDelete({ scenario }) {
       await this.deleteComponent(scenario);
       this.setActiveScenario(this.scenarios[0].id);
+    },
+    onRevertSubmit() {
+      this.revert(false);
+    },
+    onRevertCancel() {
+      this.showRevertConfirm = false;
     },
     onAutoSaveRestoreSubmit() {
       this.showAutoSaveRestoreConfirm = false;
