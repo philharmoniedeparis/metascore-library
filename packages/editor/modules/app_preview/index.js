@@ -2,6 +2,7 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import storePlugin from "./store/plugin";
 import AppComponents from "@metascore-library/core/modules/app_components";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
@@ -31,7 +32,7 @@ export default class AppPreviewModule extends AbstractModule {
     MediaPlayer,
   ];
 
-  constructor({ app }) {
+  constructor({ app, pinia }) {
     super(arguments);
 
     // Override the app_components' component-wrapper.
@@ -43,6 +44,8 @@ export default class AppPreviewModule extends AbstractModule {
     app.component("AppZoomController", AppZoomController);
     app.component("AppDimensionsController", AppDimensionsController);
     app.component("AppPreviewToggler", AppPreviewToggler);
+
+    pinia.use(storePlugin);
   }
 
   get preview() {
@@ -86,6 +89,21 @@ export default class AppPreviewModule extends AbstractModule {
   unlockComponent(component) {
     const store = useStore();
     return store.unlockComponent(component);
+  }
+
+  isComponentFrozen(component) {
+    const store = useStore();
+    return store.isComponentFrozen(component);
+  }
+
+  freezeComponent(component) {
+    const store = useStore();
+    return store.freezeComponent(component);
+  }
+
+  unfreezeComponent(component) {
+    const store = useStore();
+    return store.unfreezeComponent(component);
   }
 
   componentHasSelectedDescendents(component) {

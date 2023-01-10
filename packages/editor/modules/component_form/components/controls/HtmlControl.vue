@@ -68,14 +68,23 @@ export default {
       iframe: appPreveiwIframe,
       getComponentElement,
       preview,
+      freezeComponent,
+      unfreezeComponent,
     } = useModule("app_preview");
-    return { store, appPreveiwIframe, getComponentElement, preview };
+    return {
+      store,
+      appPreveiwIframe,
+      getComponentElement,
+      preview,
+      freezeComponent,
+      unfreezeComponent,
+    };
   },
   data() {
     return {
       settingUpEditor: false,
-      componentInner: null,
-      contentsEl: null,
+      editingComponent: null,
+      editingComponentEl: null,
       editor: null,
     };
   },
@@ -87,9 +96,6 @@ export default {
       set(value) {
         this.$emit("update:modelValue", value);
       },
-    },
-    componentEl() {
-      return this.getComponentElement(this.component);
     },
     editing: {
       get() {
@@ -119,23 +125,14 @@ export default {
       }
       this.stopEditing();
     },
-    componentEl: {
+    editingComponentEl: {
       handler(value, oldValue) {
         if (value) {
           value.addEventListener("dblclick", this.onComponentDblclick);
-
-          this.componentInnerEl = value.querySelector(
-            ":scope > .metaScore-component--inner"
-          );
-
-          this.contentsEl =
-            this.componentInnerEl.querySelector(":scope > .contents");
         } else {
           if (oldValue) {
             oldValue.removeEventListener("dblclick", this.onComponentDblclick);
           }
-          this.componentInnerEl = null;
-          this.contentsEl = null;
         }
       },
       immediate: true,
@@ -147,8 +144,8 @@ export default {
     },
   },
   async beforeUnmount() {
-    if (this.componentEl) {
-      this.componentEl.removeEventListener(
+    if (this.editingComponentEl) {
+      this.editingComponentEl.removeEventListener(
         "dblclick",
         this.onComponentDblclick
       );
@@ -157,6 +154,14 @@ export default {
     await this.stopEditing();
   },
   methods: {
+    getInnerElement() {
+      return this.editingComponentEl?.querySelector(
+        ":scope > .metaScore-component--inner"
+      );
+    },
+    getContentsElement() {
+      return this.getInnerElement()?.querySelector(":scope > .contents");
+    },
     onComponentDblclick() {
       if (!this.disabled) this.startEditing();
     },
@@ -177,10 +182,14 @@ export default {
 
       this.editing = true;
       this.settingUpEditor = true;
+      this.editingComponent = this.component;
+      this.editingComponentEl = this.getComponentElement(this.editingComponent);
+
+      this.freezeComponent(this.editingComponent);
 
       const { default: createEditor } = await import("../../ckeditor");
 
-      createEditor(this.contentsEl, {
+      createEditor(this.getContentsElement(), {
         language: this.$i18n.locale,
         extraFonts: this.extraFonts,
       })
@@ -194,14 +203,11 @@ export default {
         });
 
       // Prevent key events from propagating.
-      this.componentInnerEl.addEventListener(
-        "keydown",
-        this.onComponentInnerElKeyEvent
-      );
-      this.componentInnerEl.addEventListener(
-        "keyup",
-        this.onComponentInnerElKeyEvent
-      );
+      const inner_el = this.getInnerElement();
+      if (inner_el) {
+        inner_el.addEventListener("keydown", this.onComponentInnerElKeyEvent);
+        inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
+      }
     },
     onEditorCreate(editor) {
       editor.editing.view.change((writer) => {
@@ -253,7 +259,10 @@ export default {
       evt.return = value + offset;
     },
     onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
-      this.componentEl.classList.toggle("sourceediting", isSourceEditingMode);
+      this.editingComponentEl.classList.toggle(
+        "sourceediting",
+        isSourceEditingMode
+      );
     },
     async stopEditing() {
       if (!this.editing) return;
@@ -264,16 +273,16 @@ export default {
         this.editor = null;
       }
 
-      if (this.componentInnerEl) {
-        this.componentInnerEl.removeEventListener(
+      const inner_el = this.getInnerElement();
+      if (inner_el) {
+        inner_el.removeEventListener(
           "keydown",
           this.onComponentInnerElKeyEvent
         );
-        this.componentInnerEl.removeEventListener(
-          "keyup",
-          this.onComponentInnerElKeyEvent
-        );
+        inner_el.removeEventListener("keyup", this.onComponentInnerElKeyEvent);
       }
+
+      this.unfreezeComponent(this.editingComponent);
 
       this.editing = false;
     },

@@ -57,6 +57,7 @@
       preview,
       dragging,
       resizing,
+      frozen,
       'drag-over': dragOver,
     }"
     @click="onClick"
@@ -180,6 +181,9 @@ export default {
     },
     locked() {
       return this.store.isComponentLocked(this.component);
+    },
+    frozen() {
+      return this.store.isComponentFrozen(this.component);
     },
     interactable() {
       return (

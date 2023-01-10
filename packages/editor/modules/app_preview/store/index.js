@@ -19,8 +19,9 @@ export default defineStore("app-preview", {
       zoom: 1,
       preview: false,
       iframe: null,
-      selectedComponents: [],
-      lockedComponents: [],
+      selectedComponents: {},
+      lockedComponents: {},
+      frozenComponents: {},
       activeSnapTargets: [],
     };
   },
@@ -33,24 +34,28 @@ export default defineStore("app-preview", {
       };
     },
     isComponentSelected() {
-      return (component) => {
+      return ({ type, id }) => {
         const { getComponent } = useModule("app_components");
-        return this.selectedComponents.some(({ type, id }) => {
-          return (
-            component.type === type &&
-            component.id === id &&
-            getComponent(type, id)
-          );
-        });
+        return (
+          this.selectedComponents[type]?.includes(id) && getComponent(type, id)
+        );
       };
     },
     getSelectedComponents() {
       const { getComponent } = useModule("app_components");
-      return this.selectedComponents
-        .map(({ type, id }) => {
-          return getComponent(type, id);
-        })
-        .filter((c) => c);
+      return Object.entries(this.selectedComponents).reduce(
+        (acc, [type, ids]) => {
+          return [
+            ...acc,
+            ...ids
+              .map((id) => {
+                return getComponent(type, id);
+              })
+              .filter((c) => c),
+          ];
+        },
+        []
+      );
     },
     componentHasSelectedDescendents() {
       return (component) => {
@@ -66,24 +71,42 @@ export default defineStore("app-preview", {
       };
     },
     isComponentLocked() {
-      return (component) => {
+      return ({ type, id }) => {
         const { getComponent } = useModule("app_components");
-        return this.lockedComponents.some(({ type, id }) => {
-          return (
-            component.type === type &&
-            component.id === id &&
-            getComponent(type, id)
-          );
-        });
+        return (
+          this.lockedComponents[type]?.includes(id) && getComponent(type, id)
+        );
       };
     },
     getLockedComponents() {
       const { getComponent } = useModule("app_components");
-      return this.lockedComponents
-        .map(({ type, id }) => {
-          return getComponent(type, id);
-        })
-        .filter((c) => c);
+      return Object.entries(this.lockedComponents).reduce(
+        (acc, [type, ids]) => {
+          return [
+            ...acc,
+            ...ids
+              .map((id) => {
+                return getComponent(type, id);
+              })
+              .filter((c) => c),
+          ];
+        },
+        []
+      );
+    },
+    isComponentFrozen() {
+      return ({ type, id }) => {
+        return (
+          type in this.frozenComponents && id in this.frozenComponents[type]
+        );
+      };
+    },
+    getFrozenComponent() {
+      return ({ type, id }) => {
+        if (this.isComponentFrozen({ type, id })) {
+          return this.frozenComponents[type][id];
+        }
+      };
     },
   },
   actions: {
@@ -92,24 +115,25 @@ export default defineStore("app-preview", {
         this.deselectAllComponents();
       }
       if (!this.isComponentSelected(component)) {
-        this.selectedComponents.push({
-          type: component.type,
-          id: component.id,
-        });
+        this.selectedComponents[component.type] =
+          this.selectedComponents[component.type] || [];
+        this.selectedComponents[component.type].push(component.id);
       }
     },
     deselectComponent(component) {
-      this.selectedComponents = this.selectedComponents.filter(
-        ({ type, id }) => {
-          return !(component.type === type && component.id === id);
-        }
-      );
+      if (this.isComponentSelected(component)) {
+        this.selectedComponents[component.type] = this.selectedComponents[
+          component.type
+        ].filter((id) => {
+          return component.id !== id;
+        });
+      }
     },
     deselectComponents(components) {
       components.map(this.deselectComponent);
     },
     deselectAllComponents() {
-      this.selectedComponents = [];
+      this.selectedComponents = {};
     },
     moveComponentSelection(reverse = false) {
       const selected = this.getSelectedComponents;
@@ -137,25 +161,43 @@ export default defineStore("app-preview", {
     },
     lockComponent(component) {
       if (!this.isComponentLocked(component)) {
-        this.lockedComponents.push({
-          type: component.type,
-          id: component.id,
-        });
+        this.lockedComponents[component.type] =
+          this.lockedComponents[component.type] || [];
+        this.lockedComponents[component.type].push(component.id);
       }
     },
     lockComponents(components) {
       components.map(this.lockComponent);
     },
     unlockComponent(component) {
-      this.lockedComponents = this.lockedComponents.filter(({ type, id }) => {
-        return !(component.type === type && component.id === id);
-      });
+      if (this.isComponentLocked(component)) {
+        this.lockedComponents[component.type] = this.lockedComponents[
+          component.type
+        ].filter((id) => {
+          return component.id !== id;
+        });
+      }
     },
     unlockComponents(components) {
       components.map(this.unlockComponent);
     },
     unlockAllComponents() {
-      this.lockedComponents = [];
+      this.lockedComponents = {};
+    },
+    freezeComponent(component) {
+      if (!this.isComponentFrozen(component)) {
+        const { getComponent } = useModule("app_components");
+        this.frozenComponents[component.type] =
+          this.frozenComponents[component.type] || {};
+        this.frozenComponents[component.type][component.id] = structuredClone(
+          getComponent(component.type, component.id)
+        );
+      }
+    },
+    unfreezeComponent(component) {
+      if (this.isComponentFrozen(component)) {
+        delete this.frozenComponents[component.type][component.id];
+      }
     },
     copyComponents(components) {
       const { setData: setClipboardData } = useModule("clipboard");
