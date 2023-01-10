@@ -1,11 +1,5 @@
 $metascore-color: rgb(0, 0, 254);
 
-$scrollbar-width: 8px;
-$scrollbar-track-color: #818181;
-$scrollbar-thumb-color: #d8d8d8;
-$scrollbar-thumb-active-color: $metascore-color;
-$scrollbar-thumb-min-height: 8px;
-
 $white: #fff;
 $lightgray: #777;
 $mediumgray: #606060;
@@ -24,3 +18,9 @@ $component-colors: (
   svg: rgb(255, 0, 255),
   animation: rgb(255, 138, 0),
 );
+
+$scrollbar-width: 8px;
+$scrollbar-track-color: $lightgray;
+$scrollbar-thumb-color: $mediumgray;
+$scrollbar-thumb-active-color: $metascore-color;
+$scrollbar-thumb-min-height: 8px;
