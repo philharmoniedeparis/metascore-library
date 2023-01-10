@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import HistoryItem from "./HistoryItem";
 import HistoryGroup from "./HistoryGroup";
 
+const COALESCE_THRESHOLD = 2000;
+
 export default defineStore("history", {
   state: () => {
     return {
@@ -11,6 +13,7 @@ export default defineStore("history", {
       groups: [],
       index: 0,
       processing: false,
+      previousCoalesceTime: null,
     };
   },
   getters: {
@@ -27,30 +30,39 @@ export default defineStore("history", {
         return;
       }
 
+      this.stack.splice(this.index);
+
       if (!(item instanceof HistoryItem)) {
         item = new HistoryItem(item);
       }
 
       if (this.groups.length > 0) {
+        // Add to open group.
         this.groups.at(-1).push(item);
-      } else {
-        const previous = this.stack.at(-1);
+        return;
+      }
 
-        if (
-          previous &&
-          item.coalesceId &&
-          item.coalesceId === previous.coalesceId
-        ) {
+      const previous = this.stack.at(-1);
+      if (
+        previous &&
+        item.coalesceId &&
+        item.coalesceId === previous.coalesceId
+      ) {
+        const now = Date.now();
+        const previousCoalesceTime = this.previousCoalesceTime || now;
+        this.previousCoalesceTime = now;
+        if (previousCoalesceTime + COALESCE_THRESHOLD > now) {
+          // Coalesce with previous.
           previous.redo = item.redo;
-        } else {
-          if (previous) {
-            previous.coalesceId = null;
-          }
-          this.stack.splice(this.index);
-          this.stack.push(item);
-          this.index++;
+          return;
         }
       }
+
+      // Add to stack.
+      this.previousCoalesceTime = null;
+      if (previous) previous.coalesceId = null;
+      this.stack.push(item);
+      this.index++;
     },
     startGroup({ coalesce = false, coalesceId } = {}) {
       if (!this.active || this.processing) {

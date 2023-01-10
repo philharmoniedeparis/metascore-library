@@ -43,10 +43,6 @@ export default class HistoryGroup extends HistoryItem {
   }
 
   push(item) {
-    if (this._closed) {
-      return false;
-    }
-
     if (this._coalesce && this._items.length > 0) {
       this._items[0].redo = item.redo;
     } else {
