@@ -114,25 +114,30 @@ export default {
     },
   },
   watch: {
-    component(value, oldValue) {
-      if (
-        value &&
-        oldValue &&
-        value.type === oldValue.type &&
-        value.id === oldValue.id
-      ) {
-        return;
-      }
-      this.stopEditing();
-    },
-    editingComponentEl: {
+    component: {
       handler(value, oldValue) {
+        if (
+          value &&
+          oldValue &&
+          value.type === oldValue.type &&
+          value.id === oldValue.id
+        ) {
+          return;
+        }
+
+        this.stopEditing();
+
+        if (oldValue) {
+          this.getComponentElement(oldValue).removeEventListener(
+            "dblclick",
+            this.onComponentDblclick
+          );
+        }
         if (value) {
-          value.addEventListener("dblclick", this.onComponentDblclick);
-        } else {
-          if (oldValue) {
-            oldValue.removeEventListener("dblclick", this.onComponentDblclick);
-          }
+          this.getComponentElement(value).addEventListener(
+            "dblclick",
+            this.onComponentDblclick
+          );
         }
       },
       immediate: true,
