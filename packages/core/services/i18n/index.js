@@ -7,7 +7,9 @@ export function init(configs) {
   return instance;
 }
 
-export default instance;
+export function getLocale() {
+  return instance?.global.locale;
+}
 
 export function t(...args) {
   if (!instance) {

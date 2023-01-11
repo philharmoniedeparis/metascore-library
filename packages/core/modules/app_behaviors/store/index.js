@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { getLocale } from "@metascore-library/core/services/i18n";
 import Blockly from "../blockly";
 import "../blockly/generators";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
@@ -8,12 +9,27 @@ import * as interpreter from "../blockly/interpreter";
 export default defineStore("app-behaviors", {
   state: () => {
     return {
+      locale_loaded: false,
       behaviors: {},
       enabled: false,
     };
   },
   actions: {
-    init(data) {
+    async init(data) {
+      if (!this.locale_loaded) {
+        // Import the locale.
+        const locale = getLocale();
+        const { default: blocklyLocale } = await import(
+          /* webpackMode: "lazy" */
+          /* webpackChunkName: "blockly-locale-[request]" */
+          `../blockly/msg/${locale}`
+        );
+
+        Blockly.setLocale(blocklyLocale);
+
+        this.locale_loaded = true;
+      }
+
       this.behaviors = data || {};
     },
     update(value) {

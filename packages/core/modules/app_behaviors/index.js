@@ -11,21 +11,14 @@ import Blockly from "./blockly";
 export default class AppBehaviorsModule extends AbstractModule {
   static id = "app_behaviors";
 
-  static async dependencies({ i18n }) {
-    // Import the locale.
-    const locale = i18n.global.locale;
-    const { default: blocklyLocale } = await import(
-      /* webpackMode: "lazy" */
-      /* webpackChunkName: "blockly-locale-[request]" */
-      `./blockly/msg/${locale}`
-    );
+  static dependencies = [
+    AppComponents,
+    AppRenderer,
+    MediaCuepoints,
+    MediaPlayer,
+  ];
 
-    Blockly.setLocale(blocklyLocale);
-
-    return [AppComponents, AppRenderer, MediaCuepoints, MediaPlayer];
-  }
-
-  init(data) {
+  async init(data) {
     const store = useStore();
     store.init(data);
   }

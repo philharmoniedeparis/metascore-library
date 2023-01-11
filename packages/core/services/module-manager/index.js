@@ -1,5 +1,3 @@
-import { isFunction } from "lodash";
-
 const modules = new Map();
 
 export class ModuleNotFoundError extends Error {
@@ -9,13 +7,13 @@ export class ModuleNotFoundError extends Error {
   }
 }
 
-export async function registerModules(modules, context) {
-  for (const module of modules) {
-    await registerModule(module, context);
-  }
+export function registerModules(modules, context) {
+  modules.forEach((module) => {
+    registerModule(module, context);
+  });
 }
 
-export async function registerModule(module, context) {
+export function registerModule(module, context) {
   if (modules.has(module.id)) {
     // Skip if already registerd.
     return;
@@ -25,12 +23,9 @@ export async function registerModule(module, context) {
   modules.set(module.id, null);
 
   // Register dependencies.
-  const dependencies = isFunction(module.dependencies)
-    ? await module.dependencies(context)
-    : module.dependencies;
-  for (const dependency of dependencies) {
-    await registerModule(dependency, context);
-  }
+  module.dependencies.forEach((dependency) => {
+    registerModule(dependency, context);
+  });
 
   // Install.
   const instance = new module(context);
