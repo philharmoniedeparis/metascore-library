@@ -55,6 +55,7 @@ export default class AbstractComponent extends AbstractModel {
           ...createStringField({
             title: "Type",
             description: "The component's type",
+            default: this.type,
           }),
           const: this.type,
         },
