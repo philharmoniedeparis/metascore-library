@@ -1,10 +1,11 @@
 import { mount } from "@vue/test-utils";
 import { createTestingPinia } from "@pinia/testing";
 import {
-  registerModule,
+  registerModules,
   useModule,
 } from "@metascore-library/core/services/module-manager";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
 import Cursor from "../models/Cursor";
 import ComponentWrapper from "../components/ComponentWrapper.vue";
 import Component from "../components/CursorComponent.vue";
@@ -13,20 +14,26 @@ jest.mock("@metascore-library/core/modules/media_player");
 
 describe("CursorComponent.vue", () => {
   it("renders line", async () => {
+    const pinia = createTestingPinia();
+
     const cursor = await Cursor.create({
-      type: "Cursor",
       id: "cursor-test",
       form: "linear",
     });
 
     const wrapper = mount(Component, {
       global: {
+        components: {
+          ComponentWrapper,
+        },
         plugins: [
-          createTestingPinia(),
+          pinia,
           {
-            install(app) {
-              registerModule(MediaPlayer, { app });
-              app.component("ComponentWrapper", ComponentWrapper);
+            install: async (app) => {
+              registerModules([MediaPlayer, MediaCuepoints], {
+                app,
+                pinia,
+              });
             },
           },
         ],

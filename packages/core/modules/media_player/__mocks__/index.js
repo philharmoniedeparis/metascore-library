@@ -11,6 +11,7 @@ export default class MediaPlayerModule extends AbstractModule {
       ready: true,
       duration: 100,
       time: 0,
+      seeking: false,
     });
   }
 
@@ -27,6 +28,11 @@ export default class MediaPlayerModule extends AbstractModule {
   get time() {
     const { time } = toRefs(this._state);
     return readonly(time);
+  }
+
+  get seeking() {
+    const { seeking } = toRefs(this._state);
+    return readonly(seeking);
   }
 
   seekTo(value) {
