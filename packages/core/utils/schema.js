@@ -133,7 +133,7 @@ export const createEnumField = ({
   title = "",
   description = "",
   default: default_value,
-  nullable = true,
+  nullable = false,
   enum: allowed_values = [],
 } = {}) => {
   return {

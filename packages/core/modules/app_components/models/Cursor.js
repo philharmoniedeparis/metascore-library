@@ -3,7 +3,6 @@ import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
   createEnumField,
-  createStringField,
   createArrayField,
   createNumberField,
   createIntegerField,
@@ -58,30 +57,13 @@ export default class Cursor extends EmbeddableComponent {
         $id: uuid(), // Used for Ajv caching.
         properties: {
           form: {
-            const: "circular",
+            const: "linear",
           },
         },
       },
       then: {
         properties: {
-          direction: createStringField({
-            title: "Direction",
-            enum: ["cw", "ccw"],
-            default: "cw",
-          }),
-          "start-angle": createAngleField({
-            ajv,
-            title: "Start angle",
-          }),
-          "loop-duration": createTimeField({
-            ajv,
-            title: "Loop duration",
-          }),
-        },
-      },
-      else: {
-        properties: {
-          direction: createStringField({
+          direction: createEnumField({
             title: "Direction",
             enum: ["right", "left", "bottom", "top"],
             default: "right",
@@ -95,6 +77,23 @@ export default class Cursor extends EmbeddableComponent {
               minItems: 2,
               additionalItems: false,
             },
+          }),
+        },
+      },
+      else: {
+        properties: {
+          direction: createEnumField({
+            title: "Direction",
+            enum: ["cw", "ccw"],
+            default: "cw",
+          }),
+          "start-angle": createAngleField({
+            ajv,
+            title: "Start angle",
+          }),
+          "loop-duration": createTimeField({
+            ajv,
+            title: "Loop duration",
           }),
         },
       },
