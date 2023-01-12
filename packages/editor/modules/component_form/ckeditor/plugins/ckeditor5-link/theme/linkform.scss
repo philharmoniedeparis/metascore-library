@@ -26,4 +26,17 @@
             }
         }
     }
+
+    .ck.ck-link__tip {
+        grid-column: 4 / 5;
+
+        .ck.ck-icon {
+            font-size: 0.6em;
+        }
+
+        .ck.ck-tooltip__text {
+            white-space: pre;
+            text-align: center;
+        }
+    }
 }

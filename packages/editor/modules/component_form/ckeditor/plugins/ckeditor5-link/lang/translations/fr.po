@@ -111,3 +111,7 @@ msgstr "Régler le temps courant du média à la valeur du champ"
 msgctxt "Tooltip for the timecode toolbar clear button."
 msgid "Clear value"
 msgstr "Effacer la valeur"
+
+msgctxt "Text of the tip."
+msgid "TIP: Use the \"behaviors\" to program all the actions\nyou want when clicking on a text or an image!"
+msgstr "TIP : Utilisez les « comportements » pour programmer toutes les actions\nque vous souhaitez lors du click sur un texte ou une image !"

@@ -111,3 +111,7 @@ msgstr "Set current media time to this value"
 msgctxt "Tooltip for the timecode toolbar clear button."
 msgid "Clear value"
 msgstr "Clear value"
+
+msgctxt "Text of the tip."
+msgid "TIP: Use the \"behaviors\" to program all the actions\nyou want when clicking on a text or an image!"
+msgstr "TIP: Use the \"behaviors\" to program all the actions\nyou want when clicking on a text or an image!"

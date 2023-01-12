@@ -5,6 +5,7 @@ import {
   createLabeledInputNumber,
   addListToDropdown,
   SwitchButtonView,
+  ButtonView,
 } from "@ckeditor/ckeditor5-ui/src/index";
 import {
   getTypeLabels,
@@ -15,6 +16,8 @@ import {
 } from "./utils";
 import FormGroupView from "./formgroupview";
 import LabeledTimecodeFieldView from "./labeledtimecodefieldview";
+
+import tipIcon from "../../theme/icons/tip.svg";
 
 import "../../theme/linkform.scss";
 
@@ -577,6 +580,34 @@ export default class LinkFormView extends LinkFormViewBase {
   }
 
   /**
+   * Creates the tip icon view.
+   *
+   * @private
+   * @returns {IconView}
+   */
+  _createTipView() {
+    const locale = this.locale;
+    const t = locale.t;
+    const view = new ButtonView(locale);
+
+    view.set({
+      icon: tipIcon,
+      withText: false,
+      tooltip: t(
+        'TIP: Use the "behaviors" to program all the actions\nyou want when clicking on a text or an image!'
+      ),
+    });
+
+    view.extendTemplate({
+      attributes: {
+        class: "ck-link__tip",
+      },
+    });
+
+    return view;
+  }
+
+  /**
    * @inheritDoc
    */
   _createFormChildren(manualDecorators) {
@@ -589,6 +620,7 @@ export default class LinkFormView extends LinkFormViewBase {
     this._toggleInputsGroup = this._createToggleInputs();
     this._scenarioInputsGroup = this._createScenarioInputs();
     this._fullscreenInputsGroup = this._createFullscreenInputs();
+    this._tipView = this._createTipView();
 
     children.addMany(
       [
@@ -602,6 +634,8 @@ export default class LinkFormView extends LinkFormViewBase {
       ],
       0
     );
+
+    children.add(this._tipView);
 
     return children;
   }

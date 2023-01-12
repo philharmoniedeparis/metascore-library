@@ -24,5 +24,6 @@
   "Exit": "Label for the exit option of the fullscreen action dropdown.",
   "Set value to current media time": "Tooltip for the timecode toolbar in button",
   "Set current media time to this value": "Tooltip for the timecode toolbar out button",
-  "Clear value": "Tooltip for the timecode toolbar clear button"
+  "Clear value": "Tooltip for the timecode toolbar clear button",
+  "TIP: Use the \"behaviors\" to program all the actions\nyou want when clicking on a text or an image!": "Text of the tip"
 }
