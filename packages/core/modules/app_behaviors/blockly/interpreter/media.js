@@ -4,6 +4,7 @@ import { unref } from "vue";
 import { isFunction } from "lodash";
 
 let cuepoint = null;
+let previous_then = null;
 
 export function init(context) {
   // Ensure 'Media' name does not conflict with variable names.
@@ -36,16 +37,25 @@ export function init(context) {
         cuepoint = setGlobalCuepoint({
           startTime: from,
           endTime: to,
+          onStart: () => {
+            // Execute the previous link's "then" action.
+            if (previous_then) {
+              previous_then();
+            }
+
+            previous_then = then;
+          },
           onStop: () => {
             pause();
           },
-          onSeekout: ({ c }) => {
+          onSeekout: ({ cuepoint: c }) => {
             // Remove the cuepoint.
             removeCuepoint(c);
             cuepoint = null;
 
             if (isFunction(then)) {
               then();
+              previous_then = null;
             }
           },
         });
