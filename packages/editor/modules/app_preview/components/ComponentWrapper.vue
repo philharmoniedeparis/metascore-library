@@ -741,7 +741,6 @@ export default {
       }
     }
 
-    &.controller,
     &.block-toggler {
       :deep(button) {
         pointer-events: none;
