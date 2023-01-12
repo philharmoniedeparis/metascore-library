@@ -78,8 +78,8 @@ function updateCuepoint(cuepoint, time, seeked = false) {
     }
 
     if (
-      (cuepoint.endTime !== null && cuepoint.endTime <= time + maxError) ||
-      (seeked && cuepoint.startTime !== null && cuepoint.startTime >= time)
+      (cuepoint.endTime !== null && cuepoint.endTime < time + maxError) ||
+      (seeked && cuepoint.startTime !== null && cuepoint.startTime > time)
     ) {
       cuepoint.running = false;
 
