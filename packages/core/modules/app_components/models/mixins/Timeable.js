@@ -30,14 +30,14 @@ export default Mixin(
         return true;
       }
 
-      update(data, ...rest) {
+      async update(data, ...rest) {
         if ("start-time" in data && data["start-time"] !== null) {
           data["start-time"] = round(data["start-time"], 2);
         }
         if ("end-time" in data && data["end-time"] !== null) {
           data["end-time"] = round(data["end-time"], 2);
         }
-        return super.update(data, ...rest);
+        return await super.update(data, ...rest);
       }
     }
 );

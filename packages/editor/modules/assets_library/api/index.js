@@ -1,20 +1,20 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-function uploadFiles(url, files, progress_callback) {
+async function uploadFiles(url, files, progress_callback) {
   const data = new FormData();
 
   files.forEach((file) => {
     data.append(`files[asset][]`, file);
   });
 
-  return useModule("ajax").post(url, {
+  return await useModule("ajax").post(url, {
     data,
     onUploadProgress: progress_callback,
   });
 }
 
-function generateAsset(url, data) {
-  return useModule("ajax").post(url, {
+async function generateAsset(url, data) {
+  return await useModule("ajax").post(url, {
     headers: {
       "Content-Type": "application/json",
     },

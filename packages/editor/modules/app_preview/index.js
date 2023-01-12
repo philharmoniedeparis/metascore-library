@@ -128,11 +128,11 @@ export default class AppPreviewModule extends AbstractModule {
 
   async cutComponents(components) {
     const store = useStore();
-    store.cutComponents(components);
+    return await store.cutComponents(components);
   }
 
-  pasteComponents(target) {
+  async pasteComponents(target) {
     const store = useStore();
-    store.pasteComponents(target);
+    return await store.pasteComponents(target);
   }
 }

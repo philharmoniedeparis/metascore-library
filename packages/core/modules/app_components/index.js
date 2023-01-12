@@ -76,7 +76,7 @@ export default class AppComponentsModule extends AbstractModule {
 
   async init(data) {
     const store = useStore();
-    store.init(data);
+    await store.init(data);
   }
 
   getModelByType(type) {
@@ -136,32 +136,32 @@ export default class AppComponentsModule extends AbstractModule {
 
   async createComponent(data, validate = true) {
     const store = useStore();
-    return store.create(data, validate);
+    return await store.create(data, validate);
   }
 
   async addComponent(component, parent, index) {
     const store = useStore();
-    return store.add(component, parent, index);
+    return await store.add(component, parent, index);
   }
 
   async updateComponent(component, data) {
     const store = useStore();
-    return store.update(component, data);
+    return await store.update(component, data);
   }
 
   async deleteComponent(component) {
     const store = useStore();
-    return store.delete(component);
+    return await store.delete(component);
   }
 
   async restoreComponent(component) {
     const store = useStore();
-    return store.restore(component);
+    return await store.restore(component);
   }
 
   async cloneComponent(component, data) {
     const store = useStore();
-    return store.clone(component, data);
+    return await store.clone(component, data);
   }
 
   /**

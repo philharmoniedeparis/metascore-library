@@ -145,7 +145,7 @@ export default defineStore("app-components", {
         data = assign({}, data, this.getOverrides(component));
       }
 
-      return readonly(data);
+      return data ? readonly(data) : null;
     },
     async create(data, validate = true) {
       if (data.type in Models) {

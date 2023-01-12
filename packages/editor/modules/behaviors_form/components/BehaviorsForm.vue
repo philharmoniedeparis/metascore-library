@@ -83,7 +83,7 @@ export default {
       },
     },
   },
-  async mounted() {
+  mounted() {
     const config = getConfig({
       $t: this.$t,
       publicPath: unref(this.publicPath),

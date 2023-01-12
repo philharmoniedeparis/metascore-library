@@ -39,11 +39,11 @@ export default Mixin(
         return true;
       }
 
-      update(data, ...rest) {
+      async update(data, ...rest) {
         if ("border-width" in data) {
           data["border-width"] = Math.round(data["border-width"]);
         }
-        return super.update(data, ...rest);
+        return await super.update(data, ...rest);
       }
     }
 );

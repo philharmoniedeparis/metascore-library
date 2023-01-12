@@ -125,7 +125,7 @@ export default class MediaPlayerModule extends AbstractModule {
   }
 
   async getFileDuration(file) {
-    return utils.getFileDuration(file);
+    return await utils.getFileDuration(file);
   }
 
   onStoreAction(callback) {

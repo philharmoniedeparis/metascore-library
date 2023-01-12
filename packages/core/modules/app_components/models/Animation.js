@@ -154,6 +154,6 @@ export default class Animation extends EmbeddableComponent {
       Object.assign(data, embedded_data);
     }
 
-    return super.validate(data);
+    return await super.validate(data);
   }
 }

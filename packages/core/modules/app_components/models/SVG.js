@@ -138,7 +138,7 @@ export default class SVG extends EmbeddableComponent {
    * @param {string} url The SVG's Url
    * @returns {Promise<object>} A promise that resolves with the embedded data
    */
-  static async getEmbeddedData(url) {
+  static getEmbeddedData(url) {
     return new Promise((resolve) => {
       const data = {};
 
@@ -207,6 +207,6 @@ export default class SVG extends EmbeddableComponent {
       Object.assign(data, embedded_data);
     }
 
-    return super.validate(data);
+    return await super.validate(data);
   }
 }

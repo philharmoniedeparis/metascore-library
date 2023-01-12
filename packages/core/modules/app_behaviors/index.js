@@ -20,7 +20,7 @@ export default class AppBehaviorsModule extends AbstractModule {
 
   async init(data) {
     const store = useStore();
-    store.init(data);
+    return await store.init(data);
   }
 
   get Blockly() {

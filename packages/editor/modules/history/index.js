@@ -46,12 +46,12 @@ export default class HistoryModule extends AbstractModule {
 
   async undo() {
     const store = useStore();
-    return store.undo();
+    return await store.undo();
   }
 
-  redo() {
+  async redo() {
     const store = useStore();
-    return store.redo();
+    return await store.redo();
   }
 
   clear() {

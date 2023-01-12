@@ -56,9 +56,9 @@ export default class AssetsLibraryModule extends AbstractModule {
     return store.add(data);
   }
 
-  uploadFiles(files) {
+  async uploadFiles(files) {
     const store = useStore();
-    return store.upload(files);
+    return await store.upload(files);
   }
 
   onStoreAction(callback) {

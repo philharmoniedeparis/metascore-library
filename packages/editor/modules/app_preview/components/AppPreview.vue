@@ -467,38 +467,32 @@ export default {
   },
   methods: {
     async onIframeLoad() {
-      this.$nextTick(function () {
-        const iframe = this.$refs.iframe;
+      await this.$nextTick();
 
-        this.iframeDocument = iframe.contentDocument;
-        this.iframeBody = this.iframeDocument.body;
+      const iframe = this.$refs.iframe;
 
-        // Find all metascore link tags
-        // and add them to the iframe.
-        document
-          .querySelectorAll("link[rel='stylesheet'][data-metascore-library]")
-          .forEach((tag) => {
-            const url = tag.getAttribute("href");
-            const link = this.iframeDocument.createElement("link");
-            link.setAttribute("rel", "stylesheet");
-            link.setAttribute("type", "text/css");
-            link.setAttribute("href", url);
-            this.iframeDocument.head.appendChild(link);
-          });
+      this.iframeDocument = iframe.contentDocument;
+      this.iframeBody = this.iframeDocument.body;
 
-        this.iframeDocument.addEventListener("keydown", this.bubbleIframeEvent);
-        this.iframeDocument.addEventListener("keyup", this.bubbleIframeEvent);
-        this.iframeDocument.addEventListener(
-          "mousemove",
-          this.bubbleIframeEvent
-        );
-        this.iframeBody.addEventListener(
-          "contextmenu",
-          this.onIframeContextMenu
-        );
+      // Find all metascore link tags
+      // and add them to the iframe.
+      document
+        .querySelectorAll("link[rel='stylesheet'][data-metascore-library]")
+        .forEach((tag) => {
+          const url = tag.getAttribute("href");
+          const link = this.iframeDocument.createElement("link");
+          link.setAttribute("rel", "stylesheet");
+          link.setAttribute("type", "text/css");
+          link.setAttribute("href", url);
+          this.iframeDocument.head.appendChild(link);
+        });
 
-        this.$emit("load", { iframe });
-      });
+      this.iframeDocument.addEventListener("keydown", this.bubbleIframeEvent);
+      this.iframeDocument.addEventListener("keyup", this.bubbleIframeEvent);
+      this.iframeDocument.addEventListener("mousemove", this.bubbleIframeEvent);
+      this.iframeBody.addEventListener("contextmenu", this.onIframeContextMenu);
+
+      this.$emit("load", { iframe });
     },
 
     /**

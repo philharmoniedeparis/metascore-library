@@ -107,22 +107,24 @@ export default defineStore("assets-library", {
         item.$deleted = true;
       }
     },
-    upload(files) {
+    async upload(files) {
       this.uploading = true;
       this.uploadProgress = 0;
 
-      return api
-        .uploadFiles(this.configs.uploadUrl, files, (evt) => {
+      let items = [];
+
+      try {
+        items = await api.uploadFiles(this.configs.uploadUrl, files, (evt) => {
           this.uploadProgress = evt.loaded / evt.total;
-        })
-        .then((items) => {
-          items.map(this.add);
-          return items;
-        })
-        .finally(() => {
-          this.uploading = false;
-          this.uploadProgress = null;
         });
+      } finally {
+        this.uploading = false;
+        this.uploadProgress = null;
+      }
+
+      items.map(this.add);
+
+      return items;
     },
     generateSpectrogram(data) {
       this.generatingSpectrogram = true;

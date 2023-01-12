@@ -24,12 +24,12 @@ export default Mixin(
         return true;
       }
 
-      update(data, ...rest) {
+      async update(data, ...rest) {
         if ("position" in data) {
           data.position[0] = Math.round(data.position[0]);
           data.position[1] = Math.round(data.position[1]);
         }
-        return super.update(data, ...rest);
+        return await super.update(data, ...rest);
       }
     }
 );

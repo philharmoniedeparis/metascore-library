@@ -31,12 +31,12 @@ export default Mixin(
         return true;
       }
 
-      update(data, ...rest) {
+      async update(data, ...rest) {
         if ("dimension" in data) {
           data.dimension[0] = Math.round(data.dimension[0]);
           data.dimension[1] = Math.round(data.dimension[1]);
         }
-        return super.update(data, ...rest);
+        return await super.update(data, ...rest);
       }
     }
 );

@@ -119,6 +119,6 @@ export default class Cursor extends EmbeddableComponent {
         }
     }
 
-    return super.validate(data);
+    return await super.validate(data);
   }
 }

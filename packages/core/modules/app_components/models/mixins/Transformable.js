@@ -59,7 +59,7 @@ export default Mixin(
           }
         });
 
-        return super.update(data, ...rest);
+        return await super.update(data, ...rest);
       }
     }
 );

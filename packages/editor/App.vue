@@ -529,7 +529,7 @@ export default {
         console.error(e);
       });
     },
-    async onSharedAssetsImportClick(asset) {
+    onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
       this.addAsset(asset);
     },
