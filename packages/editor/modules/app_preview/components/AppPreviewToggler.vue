@@ -3,15 +3,15 @@
   "fr": {
     "hotkey": {
       "group": "Général",
-      "ctrl+e": "Basculer temporairement le mode de prévisualisation",
-      "ctrl+shift+e": "Basculer le mode de prévisualisation",
+      "mod+e": "Basculer temporairement le mode de prévisualisation",
+      "mod+shift+e": "Basculer le mode de prévisualisation",
     },
   },
   "en": {
     "hotkey": {
       "group": "General",
-      "ctrl+e": "Toggle preview mode temporarily",
-      "ctrl+shift+e": "Toggle preview mode",
+      "mod+e": "Toggle preview mode temporarily",
+      "mod+shift+e": "Toggle preview mode",
     },
   }
 }
@@ -59,16 +59,16 @@ export default {
       return {
         group: this.$t("hotkey.group"),
         keys: {
-          "ctrl+e": {
+          "mod+e": {
             handler: {
               keydown: this.onHotkey,
               keyup: this.onHotkey,
             },
-            description: this.$t("hotkey.ctrl+e"),
+            description: this.$t("hotkey.mod+e"),
           },
-          "ctrl+shift+e": {
+          "mod+shift+e": {
             handler: this.onHotkey,
-            description: this.$t("hotkey.ctrl+shift+e"),
+            description: this.$t("hotkey.mod+shift+e"),
           },
         },
       };

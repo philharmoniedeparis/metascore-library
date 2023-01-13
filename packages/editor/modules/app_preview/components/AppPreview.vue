@@ -11,14 +11,14 @@
       "shift+up": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
       "down": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le bas",
       "shift+down": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le bas",
-      "ctrl+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n'est déjà sélectionné",
+      "mod+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n'est déjà sélectionné",
       "tab": "Sélectionner le composant suivant",
       "shift+tab": "Sélectionner le composant précédent",
-      "ctrl+c": "Copier le(s) composant(s) sélectionné(s)",
-      "ctrl+v": "Coller le(s) composant(s)",
-      "ctrl+x": "Couper le(s) composant(s) sélectionné(s)",
-      "ctrl+d": "Dupliquer le(s) composant(s) sélectionné(s)",
-      "ctrl+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
+      "mod+c": "Copier le(s) composant(s) sélectionné(s)",
+      "mod+v": "Coller le(s) composant(s)",
+      "mod+x": "Couper le(s) composant(s) sélectionné(s)",
+      "mod+d": "Dupliquer le(s) composant(s) sélectionné(s)",
+      "mod+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
       "delete": "Supprimer le(s) composant(s) sélectionné(s)",
       "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
     },
@@ -42,14 +42,14 @@
       "shift+up": "Move selected component(s) by 10 pixels upwards",
       "down": "Move selected component(s) by 1 pixel downwards",
       "shift+down": "Move selected component(s) by 10 pixels downwards",
-      "ctrl+a": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
+      "mod+a": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
       "tab": "Select the next component",
       "shift+tab": "Select the previous component",
-      "ctrl+c": "Copy selected component(s)",
-      "ctrl+v": "Paste component(s)",
-      "ctrl+x": "Cut selected component(s)",
-      "ctrl+d": "Duplicate selected component(s)",
-      "ctrl+l": "Lock/unlock selected component(s)",
+      "mod+c": "Copy selected component(s)",
+      "mod+v": "Paste component(s)",
+      "mod+x": "Cut selected component(s)",
+      "mod+d": "Duplicate selected component(s)",
+      "mod+l": "Lock/unlock selected component(s)",
       "delete": "Delete selected component(s)",
       "backspace": "Delete selected component(s)",
     },
@@ -294,7 +294,7 @@ export default {
             },
             description: this.$t("hotkey.shift+tab"),
           },
-          "ctrl+c": {
+          "mod+c": {
             handler: ({ repeat }) => {
               if (repeat) return;
 
@@ -303,9 +303,9 @@ export default {
                 this.store.copyComponents(selected);
               }
             },
-            description: this.$t("hotkey.ctrl+c"),
+            description: this.$t("hotkey.mod+c"),
           },
-          "ctrl+x": {
+          "mod+x": {
             handler: async ({ repeat }) => {
               if (repeat) return;
 
@@ -314,9 +314,9 @@ export default {
                 await this.store.cutComponents(selected);
               }
             },
-            description: this.$t("hotkey.ctrl+x"),
+            description: this.$t("hotkey.mod+x"),
           },
-          "ctrl+v": {
+          "mod+v": {
             handler: ({ repeat }) => {
               if (repeat) return;
 
@@ -325,9 +325,9 @@ export default {
                 this.store.pasteComponents(selected[0]);
               }
             },
-            description: this.$t("hotkey.ctrl+v"),
+            description: this.$t("hotkey.mod+v"),
           },
-          "ctrl+d": {
+          "mod+d": {
             handler: ({ repeat }) => {
               if (repeat) return;
 
@@ -337,9 +337,9 @@ export default {
                 this.store.pasteComponents(selected[0]);
               }
             },
-            description: this.$t("hotkey.ctrl+d"),
+            description: this.$t("hotkey.mod+d"),
           },
-          "ctrl+l": {
+          "mod+l": {
             handler: ({ repeat }) => {
               if (repeat) return;
 
@@ -350,7 +350,7 @@ export default {
                 this.store[`${locked ? "un" : ""}lockComponents`](selected);
               }
             },
-            description: this.$t("hotkey.ctrl+l"),
+            description: this.$t("hotkey.mod+l"),
           },
           delete: {
             handler: async ({ repeat }) => {

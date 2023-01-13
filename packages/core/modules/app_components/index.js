@@ -5,7 +5,6 @@ import { addMessages } from "@metascore-library/core/services/i18n";
 import useStore from "./store";
 import * as IconManager from "./utils/icons";
 
-import Device from "../device";
 import MediaPlayer from "../media_player";
 import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
 
@@ -28,7 +27,7 @@ import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from "./utils/links";
 export default class AppComponentsModule extends AbstractModule {
   static id = "app_components";
 
-  static dependencies = [Device, MediaPlayer, MediaCuepoints];
+  static dependencies = [MediaPlayer, MediaCuepoints];
 
   constructor({ app }) {
     super(arguments);

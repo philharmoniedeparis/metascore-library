@@ -19,6 +19,16 @@ export function replaceAll(str, search, replacement) {
 }
 
 /**
+ * Capitalize the first letter of a given string.
+ *
+ * @param {string} str The string to capitalize
+ * @returns {string} The capitalized string
+ */
+export function capitalizeFirstLetter(str) {
+  return str ? str[0].toUpperCase() + str.slice(1) : "";
+}
+
+/**
  * A natural comparision function
  *
  * @author Jim Palmer (http://www.overset.com/2008/09/01/javascript-natural-sort-algorithm-with-unicode-support/) - version 0.7

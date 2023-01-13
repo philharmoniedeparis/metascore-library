@@ -5,7 +5,11 @@
     "combo": "Combinaison de touches",
     "description": "Description",
     "keys": {
+      "cmd": "Cmd",
+      "ctrl": "Ctrl",
       "space": "Barre d'espace",
+      "delete": "Supp",
+      "backspace": "Retour arrière",
       "up": "▲",
       "right": "▶",
       "down": "▼",
@@ -17,7 +21,11 @@
     "combo": "Key combination",
     "description": "Description",
     "keys": {
+      "cmd": "Cmd",
+      "ctrl": "Ctrl",
       "space": "Spacebar",
+      "delete": "Del",
+      "backspace": "Backspace",
       "up": "▲",
       "right": "▶",
       "down": "▼",
@@ -52,9 +60,7 @@
                 <kbd class="combo">
                   <template v-for="(key, index) in keys.split('+')" :key="key">
                     <span v-if="index !== 0" class="separator">+</span>
-                    <kbd class="key">{{
-                      $te(`keys.${key}`) ? $t(`keys.${key}`) : key
-                    }}</kbd>
+                    <kbd class="key">{{ getKeyName(key) }}</kbd>
                   </template>
                 </kbd>
               </td>
@@ -68,6 +74,7 @@
 </template>
 
 <script>
+import { isApplePlatform } from "@metascore-library/core/utils/device";
 import useStore from "../store";
 
 export default {
@@ -79,6 +86,15 @@ export default {
   computed: {
     hotkeys() {
       return Object.fromEntries(this.store.hotkeys);
+    },
+  },
+  methods: {
+    getKeyName(key) {
+      if (key === "mod") {
+        key = isApplePlatform() ? "cmd" : "ctrl";
+      }
+
+      return this.$te(`keys.${key}`) ? this.$t(`keys.${key}`) : key;
     },
   },
 };

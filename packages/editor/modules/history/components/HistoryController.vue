@@ -1,21 +1,21 @@
 <i18n>
   {
     "fr": {
-      "undo": "Annuler [Ctrl+Z]",
-      "redo": "Rétablir [Ctrl+Y]",
+      "undo": "Annuler",
+      "redo": "Rétablir",
       "hotkey": {
         "group": "Général",
-        "ctrl+z": "Annuler",
-        "ctrl+y": "Rétablir",
+        "mod+z": "Annuler",
+        "mod+y": "Rétablir",
       },
     },
     "en": {
-      "undo": "Undo [Ctrl+Z]",
-      "redo": "Redo [Ctrl+Y]",
+      "undo": "Undo",
+      "redo": "Redo",
       "hotkey": {
         "group": "General",
-        "ctrl+z": "Undo",
-        "ctrl+y": "Redo",
+        "mod+z": "Undo",
+        "mod+y": "Redo",
       },
     },
   }
@@ -24,6 +24,7 @@
 <template>
   <div v-hotkey="hotkeys" class="history-controller">
     <base-button
+      v-hotkeyhelp="'mod+z'"
       type="button"
       :disabled="!canUndo || disabled"
       :title="$t('undo')"
@@ -33,6 +34,7 @@
     </base-button>
 
     <base-button
+      v-hotkeyhelp="'mod+y'"
       type="button"
       :disabled="!canRedo || disabled"
       :title="$t('redo')"
@@ -74,13 +76,13 @@ export default {
       return {
         group: this.$t("hotkey.group"),
         keys: {
-          "ctrl+z": {
+          "mod+z": {
             handler: this.store.undo,
-            description: this.$t("hotkey.ctrl+z"),
+            description: this.$t("hotkey.mod+z"),
           },
-          "ctrl+y": {
+          "mod+y": {
             handler: this.store.redo,
-            description: this.$t("hotkey.ctrl+y"),
+            description: this.$t("hotkey.mod+y"),
           },
         },
       };

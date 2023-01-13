@@ -1,8 +1,8 @@
 <i18n>
 {
   "fr": {
-    "save": "Enregistrer [Ctrl+S]",
-    "revert": "Revenir à la version précédente [Ctrl+R]",
+    "save": "Enregistrer",
+    "revert": "Revenir à la version précédente",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
     "assets_library_title": "Bibliothèque",
@@ -28,15 +28,15 @@
     },
     "hotkey": {
       "group": "Général",
-      "ctrl+s": "Enregistrer",
-      "ctrl+r": "Revenir à la version précédente",
-      "ctrl+h": "Afficher les raccourcis clavier",
+      "mod+s": "Enregistrer",
+      "mod+r": "Revenir à la version précédente",
+      "mod+h": "Afficher les raccourcis clavier",
     },
     "unload_dirty": "Les données non sauvegardées seront perdues.",
   },
   "en": {
-    "save": "Save [Ctrl+S]",
-    "revert": "Revert [Ctrl+R]",
+    "save": "Save",
+    "revert": "Revert",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
     "assets_library_title": "Library",
@@ -62,9 +62,9 @@
     },
     "hotkey": {
       "group": "General",
-      "ctrl+s": "Save",
-      "ctrl+r": "Revert",
-      "ctrl+h": "Show keyboard shortcuts",
+      "mod+s": "Save",
+      "mod+r": "Revert",
+      "mod+h": "Show keyboard shortcuts",
     },
     "unload_dirty": "Any unsaved data will be lost.",
   },
@@ -90,6 +90,7 @@
       <nav class="main-menu">
         <div class="left">
           <base-button
+            v-hotkeyhelp="'mod+s'"
             :disabled="!dirty || !isLatestRevision"
             class="save"
             :title="$t('save')"
@@ -98,6 +99,7 @@
             <template #icon><save-icon /></template>
           </base-button>
           <base-button
+            v-hotkeyhelp="'mod+r'"
             :disabled="!dirty || !isLatestRevision"
             class="revert"
             :title="$t('revert')"
@@ -426,22 +428,22 @@ export default {
       return {
         group: this.$t("hotkey.group"),
         keys: {
-          "ctrl+s": {
+          "mod+s": {
             handler: this.save,
-            description: this.$t("hotkey.ctrl+s"),
+            description: this.$t("hotkey.mod+s"),
           },
-          "ctrl+r": {
+          "mod+r": {
             handler: () => {
               this.showRevertConfirm = true;
             },
-            description: this.$t("hotkey.ctrl+r"),
+            description: this.$t("hotkey.mod+r"),
           },
-          "ctrl+h": {
+          "mod+h": {
             // @todo: fix hotkeys code handling for ?
             handler: () => {
               this.showHotkeyList = true;
             },
-            description: this.$t("hotkey.ctrl+h"),
+            description: this.$t("hotkey.mod+h"),
           },
         },
       };

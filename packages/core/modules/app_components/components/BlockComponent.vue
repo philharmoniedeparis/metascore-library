@@ -86,6 +86,7 @@
 </template>
 
 <script>
+import { hasTouch as deviceHasTouch } from "@metascore-library/core/utils/device";
 import useStore from "../store";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
@@ -97,7 +98,6 @@ export default {
     PagerPreviousIcon,
     PagerNextIcon,
   },
-  inject: ["$deviceHasTouch"],
   props: {
     /**
      * The associated component
@@ -160,7 +160,7 @@ export default {
   },
   methods: {
     async setupSwipe() {
-      if (!this.$deviceHasTouch) {
+      if (deviceHasTouch()) {
         return;
       }
 
