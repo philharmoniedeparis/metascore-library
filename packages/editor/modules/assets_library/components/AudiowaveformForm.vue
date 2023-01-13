@@ -226,9 +226,12 @@ export default {
     grid-template-columns: 1fr 1fr;
     grid-gap: 0.5em 1em;
     margin-bottom: 0.5em;
+    padding: 0 1em;
     border: 1px solid $darkgray;
 
     > legend {
+      display: inline-block;
+      width: auto;
       padding: 0.25em 0.5em;
       color: $white;
       text-align: left;

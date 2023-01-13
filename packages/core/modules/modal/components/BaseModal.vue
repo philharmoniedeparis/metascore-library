@@ -35,10 +35,10 @@
 
                 <div class="body">
                   <slot />
-                </div>
 
-                <div v-if="$slots.footer" class="footer">
-                  <slot name="footer" />
+                  <div v-if="$slots.footer" class="footer">
+                    <slot name="footer" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -136,8 +136,6 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
   }
 
   .header {
@@ -162,11 +160,8 @@ export default {
 
   .body {
     padding: 1em;
-
-    &.scroll {
-      overflow-y: auto;
-      overscroll-behavior-y: contain;
-    }
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
   }
 
   .footer {
