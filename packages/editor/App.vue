@@ -905,7 +905,7 @@ export default {
   &.preview:not(.preview-persistant) {
     > .left,
     > .right,
-    > .bottom .media-selector,
+    > .bottom .media-selector :deep(button),
     > .bottom .timeline,
     > .bottom > .bottom {
       pointer-events: none;
