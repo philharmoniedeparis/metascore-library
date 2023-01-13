@@ -78,6 +78,7 @@
       'metaScore-editor',
       {
         preview,
+        'preview-persistant': previewPersistant,
         'app-title-focused': appTitleFocused,
         'libraries-expanded': librariesExpanded,
         'behaviors-open': behaviorsOpen,
@@ -308,7 +309,7 @@ export default {
 
     const { getAssetsByType, addAsset } = useModule("assets_library");
 
-    const { preview } = useModule("app_preview");
+    const { preview, previewPersistant } = useModule("app_preview");
 
     const { ready: appRendererReady } = useModule("app_renderer");
 
@@ -347,6 +348,7 @@ export default {
       getAssetsByType,
       addAsset,
       preview,
+      previewPersistant,
       appRendererReady,
       maxWaveformScale,
       waveformScale,
@@ -900,7 +902,18 @@ export default {
     }
   }
 
-  &.preview,
+  &.preview:not(.preview-persistant) {
+    > .left,
+    > .right,
+    > .bottom .media-selector,
+    > .bottom .timeline,
+    > .bottom > .bottom {
+      pointer-events: none;
+      opacity: 0.25;
+    }
+  }
+
+  &.preview.preview-persistant,
   &:not(.latest-revision) {
     grid-template-columns: auto 1fr auto;
 

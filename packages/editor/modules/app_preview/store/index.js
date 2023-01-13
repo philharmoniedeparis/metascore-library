@@ -18,6 +18,7 @@ export default defineStore("app-preview", {
     return {
       zoom: 1,
       preview: false,
+      previewPersistant: false,
       iframe: null,
       selectedComponents: {},
       lockedComponents: {},
@@ -110,6 +111,10 @@ export default defineStore("app-preview", {
     },
   },
   actions: {
+    togglePreview(force, persistant = true) {
+      this.preview = typeof force !== "undefined" ? force : !this.preview;
+      this.previewPersistant = this.preview && persistant;
+    },
     selectComponent(component, append = false) {
       if (!append) {
         this.deselectAllComponents();

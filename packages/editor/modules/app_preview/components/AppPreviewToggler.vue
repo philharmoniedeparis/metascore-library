@@ -61,13 +61,8 @@ export default {
     return { store };
   },
   computed: {
-    preview: {
-      get() {
-        return this.store.preview;
-      },
-      set(value) {
-        this.store.preview = value;
-      },
+    preview() {
+      return this.store.preview;
     },
     hotkeys() {
       return {
@@ -75,13 +70,13 @@ export default {
         keys: {
           "mod+e": {
             handler: {
-              keydown: this.onHotkey,
-              keyup: this.onHotkey,
+              keydown: this.onTemporaryHotkeyDown,
+              keyup: this.onTemporaryHotkeyUp,
             },
             description: this.$t("hotkey.mod+e"),
           },
           "mod+shift+e": {
-            handler: this.onHotkey,
+            handler: this.onPersistentHotkey,
             description: this.$t("hotkey.mod+shift+e"),
           },
         },
@@ -89,12 +84,20 @@ export default {
     },
   },
   methods: {
-    onHotkey(evt) {
-      if (evt.repeat) {
-        return;
-      }
-
-      this.preview = !this.preview;
+    onTogglerClick() {
+      this.store.togglePreview();
+    },
+    onTemporaryHotkeyDown(evt) {
+      if (evt.repeat) return;
+      this.store.togglePreview(true, false);
+    },
+    onTemporaryHotkeyUp(evt) {
+      if (evt.repeat) return;
+      this.store.togglePreview(false, false);
+    },
+    onPersistentHotkey(evt) {
+      if (evt.repeat) return;
+      this.store.togglePreview();
     },
   },
 };
