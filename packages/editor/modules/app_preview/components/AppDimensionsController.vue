@@ -1,8 +1,9 @@
 <template>
-  <div class="app-dimensions-controller">
+  <div :class="['app-dimensions-controller', { disabled }]">
     <number-control
       v-model="width"
       class="width"
+      :disabled="disabled"
       :min="1"
       :spinners="false"
       @focus="onInputFocus"
@@ -12,6 +13,7 @@
     <number-control
       v-model="height"
       class="height"
+      :disabled="disabled"
       :min="1"
       :spinners="false"
       @focus="onInputFocus"
@@ -24,6 +26,12 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
     const {
       width: appWidth,
@@ -80,6 +88,12 @@ export default {
     input {
       width: 3em;
       text-align: center;
+    }
+  }
+
+  &.disabled {
+    .separator {
+      opacity: 0.25;
     }
   }
 }

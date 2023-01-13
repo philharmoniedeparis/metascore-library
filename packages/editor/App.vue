@@ -91,7 +91,7 @@
         <div class="left">
           <base-button
             v-hotkeyhelp="'mod+s'"
-            :disabled="!dirty || !isLatestRevision"
+            :disabled="preview || !dirty || !isLatestRevision"
             class="save"
             :title="$t('save')"
             @click="save"
@@ -100,18 +100,18 @@
           </base-button>
           <base-button
             v-hotkeyhelp="'mod+r'"
-            :disabled="!dirty || !isLatestRevision"
+            :disabled="preview || !dirty || !isLatestRevision"
             class="revert"
             :title="$t('revert')"
             @click="revert"
           >
             <template #icon><revert-icon /></template>
           </base-button>
-          <history-controller :disabled="!isLatestRevision" />
+          <history-controller :disabled="preview || !isLatestRevision" />
           <text-control
             v-model="appTitle"
             :lazy="true"
-            :disabled="!isLatestRevision"
+            :disabled="preview || !isLatestRevision"
             class="app-title"
             @focusin="onAppTitleFocusin"
             @focusout="onAppTitleFocusout"
@@ -119,14 +119,15 @@
         </div>
         <div class="center">
           <app-zoom-controller />
-          <app-dimensions-controller />
           <app-preview-toggler :disabled="!isLatestRevision" />
+          <app-dimensions-controller :disabled="preview" />
         </div>
         <div class="right">
           <revision-selector
             :active="activeRevision"
             :revisions="revisions"
             :latest="latestRevision"
+            :disabled="preview"
             @update:active="loadRevision"
             @restore="onRevisionSelectorRestore"
           />

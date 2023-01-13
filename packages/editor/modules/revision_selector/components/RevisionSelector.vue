@@ -14,10 +14,18 @@
 </i18n>
 
 <template>
-  <div class="revision-selector">
-    <select-control v-model="internalValue" :options="options" />
+  <div :class="['revision-selector', { disabled }]">
+    <select-control
+      v-model="internalValue"
+      :options="options"
+      :disabled="disabled"
+    />
 
-    <base-button type="button" :disabled="!canRestore" @click="onRestoreClick">
+    <base-button
+      type="button"
+      :disabled="disabled || !canRestore"
+      @click="onRestoreClick"
+    >
       {{ $t("restore_button") }}
     </base-button>
 
@@ -45,6 +53,10 @@ export default {
     active: {
       type: [String, Number],
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
     dateFormatter: {
       type: Object,
