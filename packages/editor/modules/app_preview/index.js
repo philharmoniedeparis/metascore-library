@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import storePlugin from "./store/plugin";
+import Button from "@metascore-library/core/modules/button";
 import AppComponents from "@metascore-library/core/modules/app_components";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
@@ -22,6 +23,7 @@ export default class AppPreviewModule extends AbstractModule {
   static id = "app_preview";
 
   static dependencies = [
+    Button,
     AppComponents,
     AppRenderer,
     ContextMenu,
