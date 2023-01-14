@@ -261,7 +261,7 @@
       </template>
     </context-menu>
 
-    <intro-tour v-if="!loading" />
+    <intro-tour v-if="!loading && isLatestRevision" />
   </div>
 </template>
 
