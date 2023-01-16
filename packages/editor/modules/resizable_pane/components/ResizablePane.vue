@@ -197,6 +197,8 @@ export default {
   }
 
   &.collapsed {
+    user-select: none;
+
     > :not(.resize-handle) {
       display: none;
     }
