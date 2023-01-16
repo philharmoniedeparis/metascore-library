@@ -136,12 +136,7 @@
       </nav>
     </div>
 
-    <resizable-pane
-      class="left"
-      :right="{ collapse: true }"
-      :apply-styles="false"
-      @update:width="librariesWidth = `${$event}px`"
-    >
+    <resizable-pane class="left" :right="{ collapse: true }">
       <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
         <tabs-item :title="$t('components_library_title')" :keep-alive="true">
           <components-library />
@@ -167,12 +162,7 @@
       />
     </div>
 
-    <resizable-pane
-      class="right"
-      :left="{ collapse: true }"
-      :apply-styles="false"
-      @update:width="formsWidth = `${$event}px`"
-    >
+    <resizable-pane class="right" :left="{ collapse: true }">
       <tabs-container v-model:activeTab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
@@ -365,10 +355,8 @@ export default {
       version: packageInfo.version,
       modalsTarget: null,
       appTitleFocused: false,
-      librariesWidth: "20em",
       activeLibrariesTab: 0,
       librariesExpanded: false,
-      formsWidth: "20em",
       activeFormsTab: 0,
       behaviorsOpen: false,
       showRevertConfirm: false,
@@ -611,17 +599,13 @@ export default {
   display: grid;
   margin: 0;
   padding: 0;
-  grid-template-columns:
-    minmax(15em, min(25vw, v-bind(librariesWidth)))
-    1fr
-    minmax(15em, min(50vw, v-bind(formsWidth)));
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: min-content 1fr auto;
   grid-template-areas:
     "top top top"
     "left center right"
     "bottom bottom bottom";
   align-items: stretch;
-  flex-wrap: nowrap;
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
@@ -748,6 +732,8 @@ export default {
 
   > .left {
     grid-area: left;
+    min-width: 15em;
+    max-width: 25vw;
   }
 
   > .center {
@@ -759,6 +745,8 @@ export default {
 
   > .right {
     grid-area: right;
+    min-width: 15em;
+    max-width: 50vw;
   }
 
   > .bottom {
@@ -874,10 +862,10 @@ export default {
   }
 
   &.behaviors-open {
-    grid-template-columns:
-      minmax(15em, min(25vw, v-bind(librariesWidth)))
-      1fr
-      minmax(60em, min(100vw, v-bind(formsWidth)));
+    > .right {
+      min-width: 60em;
+      max-width: 80vw;
+    }
   }
 
   &.libraries-expanded {
