@@ -88,8 +88,8 @@ export default {
   },
   methods: {
     onContextmenu(evt) {
-      // Show the native menu if the Ctrl key is down.
-      if (evt.ctrlKey) {
+      // Show the native menu if the shift key is down.
+      if (evt.shiftKey) {
         return;
       }
 
