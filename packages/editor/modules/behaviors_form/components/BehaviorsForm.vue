@@ -193,7 +193,11 @@ export default {
     },
     onDocumentMousedown(evt) {
       // Close tooltips, context menus and dropdowns if clicked outside.
-      if (!evt.target.closest(".behaviors-form, .blocklyDropDownDiv")) {
+      if (
+        !evt.target.closest(
+          ".behaviors-form, [class^='blockly'], [class*=' blockly']"
+        )
+      ) {
         this.workspace.hideChaff();
       }
     },
