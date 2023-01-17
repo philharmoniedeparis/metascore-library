@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Language-Team: \n"
+"Language: fr\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+
+msgctxt "Label for the toolbar button."
+msgid "Behavior"
+msgstr "Comportement"
+
+msgctxt "Label for the remove button."
+msgid "Remove"
+msgstr "Retirer"
+
+msgctxt "Label for the edit button."
+msgid "Edit"
+msgstr "Modifier"
+
+msgctxt "Text shown when a trigger has no id."
+msgid "This trigger has no ID"
+msgstr "Ce déclencheur n'a pas d'identifiant"
+
+msgctxt "Label for the save button."
+msgid "Save"
+msgstr "Enregistrer"
+
+msgctxt "Label for the cancel button."
+msgid "Cancel"
+msgstr "Annuler"
+
+msgctxt "Label for the trigger id field."
+msgid "Trigger ID"
+msgstr "Identifiant du déclencheur"

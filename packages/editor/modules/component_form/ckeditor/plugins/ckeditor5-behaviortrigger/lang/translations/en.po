@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Language: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+msgctxt "Label for the toolbar button."
+msgid "Behavior"
+msgstr "Behavior"
+
+msgctxt "Label for the remove button."
+msgid "Remove"
+msgstr "Remove"
+
+msgctxt "Label for the edit button."
+msgid "Edit"
+msgstr "Edit"
+
+msgctxt "Text shown when a trigger has no id."
+msgid "This trigger has no ID"
+msgstr "This trigger has no ID"
+
+msgctxt "Label for the save button."
+msgid "Save"
+msgstr "Save"
+
+msgctxt "Label for the cancel button."
+msgid "Cancel"
+msgstr "Cancel"
+
+msgctxt "Label for the trigger id field."
+msgid "Trigger ID"
+msgstr "Trigger ID"

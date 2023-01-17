@@ -1,0 +1,9 @@
+{
+  "Behavior": "Label for the toolbar button.",
+  "Remove": "Label for the remove button.",
+  "Edit": "Label for the edit button.",
+  "This trigger has no ID": "Text shown when a trigger has no id.",
+  "Save": "Label for the save button.",
+  "Cancel": "Label for the cancel button.",
+  "Trigger ID": "Label for the trigger id field."
+}
