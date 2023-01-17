@@ -49,6 +49,13 @@ export default {
 .alert-dialog {
   .text {
     color: $white;
+    text-align: center;
+
+    :deep(p) {
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 </style>
