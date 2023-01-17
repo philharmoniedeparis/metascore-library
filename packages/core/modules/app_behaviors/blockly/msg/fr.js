@@ -114,7 +114,7 @@ Msg.MEDIA_PLAY_EXCERPT = "%1 lire l'extrait de %2 à %3 %4";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Surbrillance automatique";
+Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK = "Surbrillance auto";
 Msg.MEDIA_PLAY_EXCERPT_HIGHLIGHT_LINK_TOOLTIP =
   "Mettre le lien en évidence lorsque le temps actuel du média se situe entre ses limites temporelles";
 
