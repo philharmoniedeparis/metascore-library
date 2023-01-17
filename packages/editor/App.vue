@@ -119,7 +119,7 @@
           />
         </div>
         <div class="center">
-          <app-zoom-controller />
+          <app-zoom-controller :disabled="preview && !previewPersistant" />
           <app-preview-toggler :disabled="!isLatestRevision" />
           <app-dimensions-controller :disabled="preview" />
         </div>
