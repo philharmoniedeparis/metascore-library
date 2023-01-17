@@ -732,6 +732,7 @@ export default {
 
   > .left {
     grid-area: left;
+    width: 20em;
     min-width: 15em;
     max-width: 25vw;
   }
@@ -745,7 +746,8 @@ export default {
 
   > .right {
     grid-area: right;
-    min-width: 15em;
+    width: 20em;
+    min-width: 20em;
     max-width: 50vw;
   }
 
