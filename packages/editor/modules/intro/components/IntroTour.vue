@@ -253,9 +253,14 @@ export default {
     goto(index) {
       this.currentStepIndex = Math.min(this.stepCount - 1, Math.max(0, index));
     },
-    close() {
+    async close() {
       if (this.dontShowAgain) {
-        this.store.setDontShowAgain();
+        try {
+          await this.store.setDontShowAgain();
+        } catch (e) {
+          // @todo: handle.
+          console.error(e);
+        }
       }
       this.$emit("close");
     },

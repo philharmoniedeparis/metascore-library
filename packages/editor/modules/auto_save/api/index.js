@@ -1,19 +1,19 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-function head(url) {
-  return useModule("ajax").head(url);
+async function head(url) {
+  return await useModule("ajax").head(url);
 }
 
-function load(url) {
-  return useModule("ajax").get(url);
+async function load(url) {
+  return await useModule("ajax").get(url);
 }
 
-function save(url, data) {
-  return useModule("ajax").put(url, { data });
+async function save(url, data) {
+  return await useModule("ajax").put(url, { data });
 }
 
-function _delete(url) {
-  return useModule("ajax").delete(url, { keepalive: true });
+async function _delete(url) {
+  return await useModule("ajax").delete(url, { keepalive: true });
 }
 
 export { head, load, save, _delete as delete };

@@ -1,15 +1,15 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-function load(url) {
-  return useModule("ajax").get(url);
+async function load(url) {
+  return await useModule("ajax").get(url);
 }
 
-function save(url, data) {
-  return useModule("ajax").patch(url, { data });
+async function save(url, data) {
+  return await useModule("ajax").patch(url, { data });
 }
 
-function restore(url, vid) {
-  return useModule("ajax").patch(url, {
+async function restore(url, vid) {
+  return await useModule("ajax").patch(url, {
     headers: {
       "Content-Type": "application/json",
     },

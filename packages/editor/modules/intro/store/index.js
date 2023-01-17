@@ -23,14 +23,9 @@ export default defineStore("intro", {
         ...configs,
       };
     },
-    setDontShowAgain() {
+    async setDontShowAgain() {
       if (this.configs.dontShowAgainUrl) {
-        try {
-          api.setDontShowAgain(this.configs.dontShowAgainUrl);
-        } catch (e) {
-          // @todo: handle.
-          console.error(e);
-        }
+        return await api.setDontShowAgain(this.configs.dontShowAgainUrl);
       }
     },
   },
