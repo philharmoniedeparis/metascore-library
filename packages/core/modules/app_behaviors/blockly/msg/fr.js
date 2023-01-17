@@ -75,7 +75,7 @@ Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
 Msg.LINKS_EMPTY_OPTION = "    ";
 
-Msg.LINKS_CLICK = "au clic sur le lien %1";
+Msg.LINKS_CLICK = "au clic sur l'élément déclencheur %1";
 Msg.LINKS_CLICK_THEN = "faire %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";

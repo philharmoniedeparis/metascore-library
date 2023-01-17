@@ -75,7 +75,7 @@ Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
 Msg.LINKS_EMPTY_OPTION = " -- ";
 
-Msg.LINKS_CLICK = "when link %1 is clicked";
+Msg.LINKS_CLICK = "when the triggering element %1 is clicked";
 Msg.LINKS_CLICK_THEN = "do %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
