@@ -228,6 +228,8 @@ export default {
           width: this.width,
         });
         this.store.maxScale = this.resampledData.scale;
+      } else {
+        this.resampledData = null;
       }
     },
 
@@ -365,11 +367,15 @@ export default {
           Math.max(parseInt(value, 10), this.waveformMinScale),
           this.waveformMaxScale
         );
+      } else {
+        this.store.scale = 0;
       }
     },
 
     setOffsetX(value) {
-      this.offsetX = clamp(value, 0, this.resampledData.length - this.width);
+      this.offsetX = this.resampledData
+        ? clamp(value, 0, this.resampledData.length - this.width)
+        : 0;
     },
 
     /**
