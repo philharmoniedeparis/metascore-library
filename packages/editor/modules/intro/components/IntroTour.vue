@@ -4,7 +4,7 @@
       "close_title": "Fermer",
       "dont_show_again": "Ne plus afficher",
       "buttons": {
-        "prev": "Retour",
+        "prev": "Précédent",
         "next": "Suivant",
         "close": "Terminé",
       }
@@ -13,7 +13,7 @@
       "close_title": "Close",
       "dont_show_again": "Don't show again",
       "buttons": {
-        "prev": "Back",
+        "prev": "Previous",
         "next": "Next",
         "close": "Done",
       }
