@@ -1,6 +1,12 @@
 import LinkUIBase from "@ckeditor/ckeditor5-link/src/linkui";
-import { addLinkProtocolIfApplicable } from "@ckeditor/ckeditor5-link/src/utils";
+import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
+import {
+  addLinkProtocolIfApplicable,
+  LINK_KEYSTROKE,
+} from "@ckeditor/ckeditor5-link/src/utils";
 import LinkFormView from "./ui/linkformview";
+
+import linkIcon from "../theme/icons/link.svg";
 
 export default class LinkUI extends LinkUIBase {
   /**
@@ -48,6 +54,36 @@ export default class LinkUI extends LinkUIBase {
     });
 
     return formView;
+  }
+
+  /**
+   * @inheritDoc
+   */
+  _createToolbarLinkButton() {
+    const editor = this.editor;
+    const linkCommand = editor.commands.get("link");
+    const t = editor.t;
+
+    editor.ui.componentFactory.add("link", (locale) => {
+      const button = new ButtonView(locale);
+
+      button.isEnabled = true;
+      button.label = t("Link");
+      button.icon = linkIcon;
+      button.keystroke = LINK_KEYSTROKE;
+      button.tooltip = true;
+      button.withText = true;
+      button.isToggleable = true;
+
+      // Bind button to the command.
+      button.bind("isEnabled").to(linkCommand, "isEnabled");
+      button.bind("isOn").to(linkCommand, "value", (value) => !!value);
+
+      // Show the panel on button click.
+      this.listenTo(button, "execute", () => this._showUI(true));
+
+      return button;
+    });
   }
 
   _addFormView() {

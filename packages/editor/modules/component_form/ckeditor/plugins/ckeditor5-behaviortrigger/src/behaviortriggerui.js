@@ -223,11 +223,11 @@ export default class BehaviorTriggerUI extends Plugin {
     editor.ui.componentFactory.add("addBehaviorTrigger", (locale) => {
       const button = new ButtonView(locale);
 
-      button.isEnabled = true;
-      button.label = t("Add behavior trigger");
+      button.label = t("Behavior");
       button.icon = addBehaviorTriggerIcon;
       button.keystroke = TRIGGER_KEYSTROKE;
       button.tooltip = true;
+      button.withText = true;
       button.isToggleable = true;
 
       // Bind button to the command.

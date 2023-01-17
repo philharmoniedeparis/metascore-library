@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { NormalModuleReplacementPlugin } = require("webpack");
 const { styles } = require("@ckeditor/ckeditor5-dev-utils");
 
 module.exports = defineConfig({
@@ -168,8 +169,18 @@ module.exports = defineConfig({
         buildAllTranslationsToSeparateFiles: true,
         outputDirectory: "translations/ckeditor",
         chunks: ["metaScore.Editor"],
+        verbose: true,
       },
     ]);
+    config
+      .plugin("ckeditor-icons")
+      .use(NormalModuleReplacementPlugin, [
+        /ckeditor5-link\/theme\/icons\/unlink\.svg/,
+        path.join(
+          __dirname,
+          "packages/editor/modules/component_form/ckeditor/plugins/ckeditor5-link/theme/icons/unlink.svg"
+        ),
+      ]);
     config.module
       .rule("svg")
       .exclude.add(path.join(__dirname, "node_modules/@ckeditor"))
