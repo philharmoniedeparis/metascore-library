@@ -132,6 +132,12 @@ export default {
       },
     }),
   },
+  props: {
+    context: {
+      type: HTMLElement,
+      default: document,
+    },
+  },
   emits: ["close"],
   setup() {
     const store = useStore();
@@ -175,8 +181,7 @@ export default {
         if (typeof el === "object") {
           return el;
         } else if (typeof el === "string") {
-          // @todo: use a context element.
-          return document.querySelector(el);
+          return this.context.querySelector(el);
         }
       }
 
