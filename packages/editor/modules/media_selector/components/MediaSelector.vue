@@ -1,12 +1,14 @@
 <i18n>
 {
   "fr": {
+    "title": "Changer la source du média",
     "loading_indicator_label": "Chargement ...",
     "needs_review": "La durée du média sélectionné ({new}) est inférieure à celui en cours ({old}).<br/><strong>Les pages commençant au-delà de {new} seront donc hors de portée.<br/>Cela concerne les blocs suivants&nbsp;: {blocks}.</strong><br/>Veuillez supprimer ces pages ou modifier leur temps de début et ré-essayer.",
     "shorter": "La durée du média sélectionné ({new}) est inférieure à celui en cours ({old}).<br/><strong>Il faudra probablement resynchroniser les pages et éléments dont le temps de fin est supérieur à celui du média sélectionné.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
     "longer": "La durée du média sélectionné ({new}) est supérieure à celui en cours ({old}).<br/><strong>Il faudra probablement resynchroniser les pages et éléments dont le temps de fin est égal à celui du média en cours.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
   },
   "en": {
+    "title": "Change media source",
     "loading_indicator_label": "Loading...",
     "needs_review": "The duration of selected media ({new}) is less than the current one ({old}).<br/><strong>Pages with a start time after {new} will therefore be out of reach.<br/>This applies to the following blocks: {blocks}.</strong><br/>Delete those pages or modify their start time and try again.",
     "shorter": "The duration of selected media ({new}) is less than the current one ({old}).<br/><strong>It will probably be necessary to resynchronize the pages and elements whose end time is greater than that of the selected media.</strong><br/>Are you sure you want to use the new media file?",
@@ -17,7 +19,7 @@
 
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <base-button type="button" @click="showForm = true">
+    <base-button type="button" :title="$t('title')" @click="showForm = true">
       {{ mediaSource.name }}
     </base-button>
 
