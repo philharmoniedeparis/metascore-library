@@ -388,11 +388,11 @@ export default defineStore("app-components", {
       case "add":
         after((component) => {
           push({
-            undo: () => {
-              this.delete(component.type, component.id);
+            undo: async () => {
+              await this.delete(component);
             },
-            redo: () => {
-              this.restore(component.type, component.id);
+            redo: async () => {
+              await this.restore(component);
             },
           });
         });
@@ -426,11 +426,11 @@ export default defineStore("app-components", {
           const [component] = args;
           after(() => {
             push({
-              undo: () => {
-                this.restore(component);
+              undo: async () => {
+                await this.restore(component);
               },
-              redo: () => {
-                this.delete(component);
+              redo: async () => {
+                await this.delete(component);
               },
             });
           });

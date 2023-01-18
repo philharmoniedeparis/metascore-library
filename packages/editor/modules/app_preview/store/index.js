@@ -432,7 +432,16 @@ export default defineStore("app-preview", {
 
       startHistoryGroup();
 
-      const new_page = await createComponent({ ...data, type: "Page" });
+      const new_page = await createComponent({
+        ...data,
+        type: "Page",
+        "start-time": block.synched
+          ? page[after ? "end-time" : "start-time"]
+          : null,
+        "end-time": block.synched
+          ? page[after ? "end-time" : "start-time"]
+          : null,
+      });
       await addComponent(new_page, block, after ? index + 1 : index);
       if (block.synched) {
         await updateComponent(new_page, {
