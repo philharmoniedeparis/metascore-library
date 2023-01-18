@@ -215,7 +215,7 @@ export default {
       if (this.waveformData && this.width) {
         if (
           this.resampledData &&
-          this.waveformScale !== null &&
+          this.waveformScale != null &&
           this.resampledData.scale !== this.waveformScale
         ) {
           this.resampledData = this.waveformData.resample({
