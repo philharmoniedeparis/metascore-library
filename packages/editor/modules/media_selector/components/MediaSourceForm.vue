@@ -5,7 +5,7 @@
     "file_label": "Sélectionnez un fichier",
     "file_maxsize_description": "Le fichier doit peser moins de&nbsp;: {maxsize}",
     "file_types_description": "Formats pris en charge&nbsp;: {types}",
-    "url_label": "Entrez l'URL d'un flux multimédia",
+    "url_label": "Entrez l’URL d’un flux multimédia",
     "url_description": "Formats pris en charge: {types}",
     "separator": "ou",
     "apply_button": "Appliquer",

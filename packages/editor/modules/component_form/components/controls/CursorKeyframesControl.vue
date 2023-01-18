@@ -2,7 +2,7 @@
 {
   "fr": {
     "on": "Enregistrer les positions",
-    "off": "Arrêter l'enregistrement",
+    "off": "Arrêter l’enregistrement",
   },
   "en": {
     "on": "Record positions",

@@ -11,7 +11,7 @@
       "shift+up": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
       "down": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le bas",
       "shift+down": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le bas",
-      "mod+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n'est déjà sélectionné",
+      "mod+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n’est déjà sélectionné",
       "tab": "Sélectionner le composant suivant",
       "shift+tab": "Sélectionner le composant précédent",
       "mod+c": "Copier le(s) composant(s) sélectionné(s)",

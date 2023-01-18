@@ -19,7 +19,7 @@
       "backward": "Mettre en arrière",
     },
     "errors": {
-      "add_sibling_page_time": "Dans un bloc synchronisé, une page ne peut pas être insérée au temps de début ou de fin d'une page existante.<br/><b>Veuillez vous déplacer dans le média avant d'insérer une nouvelle page.</b>",
+      "add_sibling_page_time": "Dans un bloc synchronisé, une page ne peut pas être insérée au temps de début ou de fin d’une page existante.<br/><b>Veuillez vous déplacer dans le média avant d’insérer une nouvelle page.</b>",
     }
   },
   "en": {

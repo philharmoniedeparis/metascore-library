@@ -7,8 +7,8 @@
     "shorter": "La durée du média sélectionné ({new}) est inférieure à celui en cours ({old}).<br/><strong>Il faudra probablement resynchroniser les pages et éléments dont le temps de fin est supérieur à celui du média sélectionné.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
     "longer": "La durée du média sélectionné ({new}) est supérieure à celui en cours ({old}).<br/><strong>Il faudra probablement resynchroniser les pages et éléments dont le temps de fin est égal à celui du média en cours.</strong><br/>Etes-vous sûr que vous voulez utiliser le nouveau fichier&nbsp;?",
     "error": {
-      "url": "Une erreur s'est produite.<br/>Veuillez vérifier l'URL et réessayer.",
-      "generic": "Une erreur s'est produite.<br/>Veuillez réessayer plus tard.",
+      "url": "Une erreur s’est produite.<br/>Veuillez vérifier l’URL et réessayer.",
+      "generic": "Une erreur s’est produite.<br/>Veuillez réessayer plus tard.",
     },
   },
   "en": {

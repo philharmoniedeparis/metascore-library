@@ -18,7 +18,7 @@ msgstr "Modifier"
 
 msgctxt "Text shown when a trigger has no id."
 msgid "This trigger has no ID"
-msgstr "Ce déclencheur n'a pas d'identifiant"
+msgstr "Ce déclencheur n’a pas d’identifiant"
 
 msgctxt "Label for the save button."
 msgid "Save"

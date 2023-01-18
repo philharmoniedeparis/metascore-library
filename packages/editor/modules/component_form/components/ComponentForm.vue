@@ -23,9 +23,9 @@
       "title": "Attributs du composant | Attributs de {count} composants"
     },
     "Animation": {
-      "title": "Attributs de l'animation | Attributs de {count} animations",
+      "title": "Attributs de l’animation | Attributs de {count} animations",
       "start-frame": "Image de départ",
-      "loop-duration": "Durée d'un boucle",
+      "loop-duration": "Durée d’un boucle",
       "reversed": "Inversé",
       "colors": "Couleurs",
     },
@@ -46,7 +46,7 @@
       "title": "Attributs du texte | Attributs de {count} textes",
       "text": {
         "on": "Éditer le contenu",
-        "off": "Arrêter l'édition du contenu",
+        "off": "Arrêter l’édition du contenu",
       },
     },
     "Controller": {
@@ -59,10 +59,10 @@
       "acceleration": "Accélération",
       "keyframes": {
         "on": "Enregistrer les positions",
-        "off": "Arrêter l'enregistrement",
+        "off": "Arrêter l’enregistrement",
       },
       "start-angle": "Angle de départ",
-      "loop-duration": "Durée d'un boucle",
+      "loop-duration": "Durée d’un boucle",
       "cursor-width": "Largeur du curseur",
       "cursor-color": "Couleur du curseur",
     },

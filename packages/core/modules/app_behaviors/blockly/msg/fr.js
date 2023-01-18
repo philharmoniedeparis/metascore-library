@@ -1,6 +1,6 @@
 import Msg from "blockly/msg/fr";
 
-Msg.APP_STARTUP = "au chargement de l'application";
+Msg.APP_STARTUP = "au chargement de l’application";
 Msg.APP_STARTUP_THEN = "faire %1";
 Msg.APP_STARTUP_TOOLTIP = "";
 Msg.APP_STARTUP_HELPURL = "";
@@ -32,7 +32,7 @@ Msg.COMPONENTS_PROPERTY["background-image"] = "image de fond";
 Msg.COMPONENTS_PROPERTY["border-color"] = "couleur de bordure";
 Msg.COMPONENTS_PROPERTY["border-width"] = "largeur de bordure";
 Msg.COMPONENTS_PROPERTY["hidden"] = "caché";
-Msg.COMPONENTS_PROPERTY["loop-duration"] = "durée d'un boucle";
+Msg.COMPONENTS_PROPERTY["loop-duration"] = "durée d’un boucle";
 Msg.COMPONENTS_PROPERTY["reversed"] = "inversé";
 Msg.COMPONENTS_PROPERTY["text"] = "texte";
 Msg.COMPONENTS_PROPERTY["cursor-width"] = "largeur du curseur";
@@ -40,11 +40,11 @@ Msg.COMPONENTS_PROPERTY["cursor-color"] = "couleur du curseur";
 
 Msg.COMPONENTS_EMPTY_OPTION = " -- ";
 Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP =
-  "il n'y a actuellement aucun composant dans l'espace de travail qui supporte l'attribut « %2 ».";
+  "il n’y a actuellement aucun composant dans l’espace de travail qui supporte l’attribut « %2 ».";
 Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
-  "il n'y a actuellement aucun scénario dans l'espace de travail";
+  "il n’y a actuellement aucun scénario dans l’espace de travail";
 Msg.COMPONENTS_NO_BLOCK_TOOLTIP =
-  "il n'y a actuellement aucun bloc dans l'espace de travail";
+  "il n’y a actuellement aucun bloc dans l’espace de travail";
 
 Msg.COMPONENTS_GET_PROPERTY = "%2 de %1";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
@@ -66,8 +66,8 @@ Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
 Msg.KEYBOARD_KEYPRESSED_THEN = "faire %1";
 Msg.KEYBOARD_KEYPRESSED_TOOLTIP = "";
 Msg.KEYBOARD_KEYPRESSED_HELPURL = "";
-Msg.KEYBOARD_KEYPRESSED_ANY = "n'importe quelle";
-Msg.KEYBOARD_KEYPRESSED_SPACE = "barre d'espace";
+Msg.KEYBOARD_KEYPRESSED_ANY = "n’importe quelle";
+Msg.KEYBOARD_KEYPRESSED_SPACE = "barre d’espace";
 Msg.KEYBOARD_KEYPRESSED_UP = "▲";
 Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
@@ -75,13 +75,13 @@ Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
 Msg.LINKS_EMPTY_OPTION = "    ";
 
-Msg.LINKS_CLICK = "au clic sur l'élément déclencheur %1";
+Msg.LINKS_CLICK = "au clic sur l’élément déclencheur %1";
 Msg.LINKS_CLICK_THEN = "faire %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
 Msg.LINKS_CLICK_HELPURL = "";
 
-Msg.LINKS_OPEN_URL = "ouvrir l'url %1";
+Msg.LINKS_OPEN_URL = "ouvrir l’url %1";
 Msg.LINKS_OPEN_URL_TOOLTIP = "";
 Msg.LINKS_OPEN_URL_HELPURL = "";
 
@@ -110,7 +110,7 @@ Msg.MEDIA_PLAY = "lancer la lecture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
-Msg.MEDIA_PLAY_EXCERPT = "%1 lire l'extrait de %2 à %3 %4";
+Msg.MEDIA_PLAY_EXCERPT = "%1 lire l’extrait de %2 à %3 %4";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
 

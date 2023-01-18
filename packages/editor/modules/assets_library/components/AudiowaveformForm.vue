@@ -1,18 +1,18 @@
 <i18n>
 {
   "fr": {
-    "title": "Générer une image de forme d'onde",
+    "title": "Générer une image de forme d’onde",
     "image_group_label": "Image",
     "width_label": "Largeur",
     "height_label": "Hauteur",
     "split_channels_label": "Séparer les canaux",
-    "no_axis_labels_label": "Pas d'étiquettes d'axe",
+    "no_axis_labels_label": "Pas d’étiquettes d’axe",
     "time_group_label": "Temps",
     "start_label": "Temps de début",
     "end_label": "Temps de fin",
     "color_group_label": "Couleur",
     "background_color_label": "Couleur de fond",
-    "waveform_color_label": "Couleur de la forme d'onde",
+    "waveform_color_label": "Couleur de la forme d’onde",
     "axis_label_label": "Couleur des étiquettes",
     "border_color_label": "Couleur de bordure",
     "apply_button": "Générer",

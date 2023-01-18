@@ -2,7 +2,7 @@
 {
   "fr": {
     "loading_message": "Chargement ...",
-    "error_message": "Aucune donnée de forme d'onde disponible",
+    "error_message": "Aucune donnée de forme d’onde disponible",
   },
   "en": {
     "loading_message": "Loading...",

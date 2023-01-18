@@ -7,7 +7,7 @@
     "keys": {
       "cmd": "Cmd",
       "ctrl": "Ctrl",
-      "space": "Barre d'espace",
+      "space": "Barre d’espace",
       "delete": "Supp",
       "backspace": "Retour arrière",
       "up": "▲",

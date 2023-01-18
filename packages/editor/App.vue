@@ -22,7 +22,7 @@
       "cancel_button": "Non",
     },
     "autosave_confirm": {
-      "confirm_text": "Des données d'enregistrement automatique ont été trouvées pour cette application. Souhaitez-vous les récupérer ?",
+      "confirm_text": "Des données d’enregistrement automatique ont été trouvées pour cette application. Souhaitez-vous les récupérer ?",
       "submit_button": "Oui",
       "cancel_button": "Non",
     },
