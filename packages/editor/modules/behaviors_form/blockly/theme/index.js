@@ -12,8 +12,8 @@ export default Theme.defineTheme("metaScore", {
     flyoutOpacity: 1,
     insertionMarkerColour: "#fff",
     insertionMarkerOpacity: 0.3,
-    scrollbarColour: "#797979",
-    scrollbarOpacity: 0.4,
+    scrollbarColour: "#606060",
+    scrollbarOpacity: 0.75,
     cursorColour: "#d0d0d0",
   },
   fontStyle: {
