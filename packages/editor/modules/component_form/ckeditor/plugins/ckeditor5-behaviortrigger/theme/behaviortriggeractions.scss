@@ -2,9 +2,17 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
+	align-items: center;
 
 	.ck-behaviortrigger-actions__preview {
 		display: inline-block;
+		max-width: var(--ck-input-width);
+		min-width: 3em;
+		padding: 0 var(--ck-spacing-medium);
+		text-align: center;
+		font-weight: normal;
+		overflow: hidden;
+		text-overflow: ellipsis;
 
 		.ck-label {
             display: inline-block;
