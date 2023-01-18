@@ -392,7 +392,7 @@ export default defineStore("app-preview", {
 
       endHistoryGroup();
     },
-    async addSiblingPage(page, position = "before") {
+    async addSiblingPage(page, position = "before", data = {}) {
       const {
         createComponent,
         addComponent,
@@ -415,23 +415,24 @@ export default defineStore("app-preview", {
       const pages = getComponentChildren(block);
       const index = pages.findIndex((c) => c.id === page.id);
 
-      if (
-        block.synched &&
-        ((page["start-time"] === null && mediaTime === 0) ||
+      if (block.synched) {
+        if (
+          (page["start-time"] === null && mediaTime === 0) ||
           page["start-time"] === mediaTime ||
           (page["end-time"] === null && mediaTime === mediaDuration) ||
-          mediaTime === page["end-time"])
-      ) {
-        // Prevent adding the page at start or end of current page.
-        throw new ValidationError(
-          ADD_SIBLING_PAGE_TIME_ERROR,
-          "A new page cannot be added at the start or end time of an existing page"
-        );
+          page["end-time"] === mediaTime
+        ) {
+          // Prevent adding the page at start or end of current page.
+          throw new ValidationError(
+            ADD_SIBLING_PAGE_TIME_ERROR,
+            "A new page cannot be added at the start or end time of an existing page"
+          );
+        }
       }
 
       startHistoryGroup();
 
-      const new_page = await createComponent({ type: "Page" });
+      const new_page = await createComponent({ ...data, type: "Page" });
       await addComponent(new_page, block, after ? index + 1 : index);
       if (block.synched) {
         await updateComponent(new_page, {

@@ -72,14 +72,16 @@ export default defineStore("history", {
       const group = new HistoryGroup({ coalesce, coalesceId });
       this.groups.push(group);
     },
-    endGroup() {
+    endGroup(discard = false) {
       if (!this.active || this.processing) {
         return;
       }
 
       if (this.groups.length > 0) {
         const group = this.groups.pop();
-        this.push(group);
+        if (!discard) {
+          this.push(group);
+        }
       }
     },
     async undo() {

@@ -269,37 +269,13 @@ export default {
                 {
                   label: this.$t("contextmenu.page_before"),
                   handler: async () => {
-                    try {
-                      await this.store.addSiblingPage(this.component, "before");
-                    } catch (e) {
-                      if (e instanceof ValidationError) {
-                        switch (e.code) {
-                          case ADD_SIBLING_PAGE_TIME_ERROR:
-                            this.error = this.$t(
-                              "errors.add_sibling_page_time"
-                            );
-                            break;
-                        }
-                      }
-                    }
+                    await this.addSiblingPage(this.component, "before");
                   },
                 },
                 {
                   label: this.$t("contextmenu.page_after"),
                   handler: async () => {
-                    try {
-                      await this.store.addSiblingPage(this.component, "after");
-                    } catch (e) {
-                      if (e instanceof ValidationError) {
-                        switch (e.code) {
-                          case ADD_SIBLING_PAGE_TIME_ERROR:
-                            this.error = this.$t(
-                              "errors.add_sibling_page_time"
-                            );
-                            break;
-                        }
-                      }
-                    }
+                    await this.addSiblingPage(this.component, "after");
                   },
                 },
               ],
@@ -651,47 +627,64 @@ export default {
       this.startHistoryGroup();
 
       const dropped_component = await this.getComponentFromDragEvent(evt);
+      let component = null;
 
-      let index = null;
       switch (dropped_component.type) {
         case "Page":
-          index = this.getBlockActivePage(this.component) + 1;
+          {
+            const pages = this.getComponentChildren(this.component);
+            const index = this.getBlockActivePage(this.component);
+            component = await this.addSiblingPage(
+              pages[index],
+              "after",
+              dropped_component
+            );
+            if (component) {
+              this.setBlockActivePage(this.component, index + 1);
+            }
+          }
           break;
-      }
 
-      const component = await this.addComponent(
-        dropped_component,
-        this.component,
-        index
-      );
-
-      switch (component.type) {
         case "Block":
           {
+            component = await this.addComponent(
+              dropped_component,
+              this.component
+            );
             const page = await this.createComponent({ type: "Page" });
             await this.addComponent(page, component);
           }
           break;
-        case "Page":
-          if (this.component.synched) {
-            const pages = this.getComponentChildren(this.component);
-            const previous = pages[index - 1];
-            const next = pages[index + 1];
 
-            if (previous || next) {
-              const data = {};
-              if (previous) data["start-time"] = this.mediaTime;
-              if (next) data["end-time"] = next["start-time"];
-              await this.updateComponent(dropped_component, data);
-            }
-          }
-          break;
+        default:
+          component = await this.addComponent(
+            dropped_component,
+            this.component
+          );
       }
 
-      this.setBlockActivePage(this.component, index);
-      this.store.selectComponent(component);
+      if (component) {
+        this.store.selectComponent(component);
+      }
 
-      this.endHistoryGroup();
+      this.endHistoryGroup(!component);
+    },
+    async addSiblingPage(page, position, data) {
+      try {
+        return await this.store.addSiblingPage(page, position, data);
+      } catch (e) {
+        if (e instanceof ValidationError) {
+          switch (e.code) {
+            case ADD_SIBLING_PAGE_TIME_ERROR:
+              this.error = this.$t("errors.add_sibling_page_time");
+              break;
+            default:
+              console.error(e);
+          }
+        } else {
+          console.error(e);
+        }
+      }
     },
   },
 };

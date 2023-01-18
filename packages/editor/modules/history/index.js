@@ -39,9 +39,9 @@ export default class HistoryModule extends AbstractModule {
     return store.startGroup({ coalesce, coalesceId });
   }
 
-  endGroup() {
+  endGroup(discard = false) {
     const store = useStore();
-    store.endGroup();
+    store.endGroup(discard);
   }
 
   async undo() {
