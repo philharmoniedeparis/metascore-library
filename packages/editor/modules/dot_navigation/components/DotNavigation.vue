@@ -46,6 +46,7 @@ export default {
       button {
         width: 0.5em;
         height: 0.5em;
+        padding: 0;
         background: $mediumgray;
         border-radius: 0.25em;
         transition: width 0.1s ease-in;
