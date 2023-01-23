@@ -45,7 +45,8 @@ export function processMessage(evt) {
         const { setGlobalCuepoint, removeCuepoint } =
           useModule("media_cuepoints");
         const { play, pause, seekTo } = useModule("media_player");
-        const { getComponent, setActiveScenario } = useModule("app_components");
+        const { getComponent, activeScenario, setActiveScenario } =
+          useModule("app_components");
 
         // @todo: refactor with AppRenderer's onComponentAction
         if ("inTime" in params || "outTime" in params) {
@@ -64,14 +65,14 @@ export function processMessage(evt) {
           if (
             scenario !== null &&
             getComponent("Scenario", scenario) &&
-            scenario !== this.activeScenario
+            scenario !== unref(activeScenario)
           ) {
-            const previous_scenario = this.activeScenario;
+            const previous_scenario = unref(activeScenario);
             cuepoint_config.onSeekout = ({ cuepoint }) => {
               setActiveScenario(previous_scenario);
               removeCuepoint(cuepoint);
             };
-            this.setActiveScenario(scenario);
+            setActiveScenario(scenario);
           }
 
           setGlobalCuepoint(cuepoint_config);
@@ -139,8 +140,9 @@ export function processMessage(evt) {
 
     case "scenario":
       if ("id" in params) {
-        const scenario = this.getComponent("Scenario", params.value);
-        if (scenario) this.setActiveScenario(scenario.id);
+        const { getComponent, setActiveScenario } = useModule("app_components");
+        const scenario = getComponent("Scenario", params.value);
+        if (scenario) setActiveScenario(scenario.id);
       }
       break;
 
@@ -176,12 +178,17 @@ export function processMessage(evt) {
           {
             const store = useStore();
             const { ready } = storeToRefs(store);
-            const unwatch = watch(
+            let unwatch = null;
+
+            unwatch = watch(
               ready,
               (value) => {
                 if (!value) return;
 
-                unwatch();
+                if (unwatch) {
+                  unwatch();
+                  unwatch = null;
+                }
 
                 source.postMessage(
                   JSON.stringify({
