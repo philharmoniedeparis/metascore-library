@@ -69,7 +69,6 @@ export default class AbstractComponent extends AbstractModel {
         id: createStringField({
           title: "ID",
           description: "The component's unique identifier",
-          default: `component-${uuid()}`,
         }),
         // @TODO: move to seperate data model in editor
         editor: {
@@ -85,6 +84,13 @@ export default class AbstractComponent extends AbstractModel {
       },
       required: ["type", "id"],
     });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  static create(data = {}, ...rest) {
+    return super.create({ id: `component-${uuid()}`, ...data }, ...rest);
   }
 
   /**
