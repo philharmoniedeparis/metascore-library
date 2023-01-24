@@ -18,6 +18,13 @@ export default class AbstractComponent extends AbstractModel {
   static type = "AbstractComponent";
 
   /**
+   * @inheritdoc
+   */
+  static get schemaId() {
+    return `app-components:${this.type}`;
+  }
+
+  /**
    * The component's children property
    */
   static childrenProperty = null;

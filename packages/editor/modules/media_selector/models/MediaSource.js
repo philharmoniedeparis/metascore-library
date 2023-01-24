@@ -6,6 +6,16 @@ import {
 } from "@metascore-library/core/utils/schema";
 
 export default class MediaSource extends AbstractModel {
+  /**
+   * @inheritdoc
+   */
+  static get schemaId() {
+    return "media-selector:media-source";
+  }
+
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 

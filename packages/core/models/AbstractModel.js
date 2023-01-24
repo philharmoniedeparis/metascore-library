@@ -1,7 +1,18 @@
-import { v4 as uuid } from "uuid";
 import Ajv from "ajv";
 import { isString } from "lodash";
 import { markRaw } from "vue";
+
+/**
+ * @type {Ajv} The global Ajv instance.
+ */
+const _ajv = new Ajv({
+  allErrors: true,
+  verbose: true,
+  strict: false,
+  useDefaults: true,
+  multipleOfPrecision: 2,
+});
+markRaw(_ajv);
 
 /**
  * Retreive properties from a JSON schema.
@@ -56,24 +67,21 @@ function getProperties(schema, validator = null) {
  */
 export default class AbstractModel {
   /**
-   * Get the ajv instance.
+   * Get the AJV instance.
    *
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    if (!this._ajv) {
-      this._ajv = new Ajv({
-        allErrors: true,
-        verbose: true,
-        strict: false,
-        useDefaults: true,
-        multipleOfPrecision: 2,
-      });
+    return _ajv;
+  }
 
-      markRaw(this._ajv);
-    }
-
-    return this._ajv;
+  /**
+   * Get the Schema identifier.
+   *
+   * @returns {String} The schema identifier
+   */
+  static get schemaId() {
+    return "abstract-model";
   }
 
   /**
@@ -83,7 +91,7 @@ export default class AbstractModel {
    */
   static get schema() {
     return {
-      $id: uuid(), // Used for Ajv caching.
+      $id: this.schemaId,
       type: "object",
       properties: {},
       unevaluatedProperties: false,
@@ -105,19 +113,21 @@ export default class AbstractModel {
   }
 
   /**
-   * Get current validation errors.
-   */
-  static get errors() {
-    return this.ajv.errors;
-  }
-
-  /**
    * Get the list of required properties from the schema.
    *
    * @returns {string[]} The list of required properties
    */
   static get requiredProperties() {
     return this.schema.required;
+  }
+
+  /**
+   * Get the validation function.
+   *
+   * @returns {Function} The data validation function.
+   */
+  static get validate() {
+    return _ajv.getSchema(this.schemaId) || _ajv.compile(this.schema);
   }
 
   static create(data = {}, validate = true) {
@@ -157,7 +167,7 @@ export default class AbstractModel {
    * @returns {Ajv} The Ajv instance
    */
   get ajv() {
-    return this.constructor.ajv;
+    return _ajv;
   }
 
   /**
@@ -188,14 +198,14 @@ export default class AbstractModel {
   }
 
   /**
-   * Alias to the static method of the same name
+   * Validate data against the schema.
    *
    * @param {Object} data The data to validate
    * @returns {Promise} A promise that resolves with validated data or rejects with errors
    */
   validate(data) {
     return new Promise((resolve, reject) => {
-      const result = this.ajv.validate(this.schema, data);
+      const result = this.constructor.validate(data);
 
       if (!!result && typeof result.then === "function") {
         result.then(resolve).catch((e) => {

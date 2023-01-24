@@ -8,6 +8,16 @@ import {
 } from "@metascore-library/core/utils/schema";
 
 export default class Spectrogram extends AbstractModel {
+  /**
+   * @inheritdoc
+   */
+  static get schemaId() {
+    return "assets-library:audiowaveform";
+  }
+
+  /**
+   * @inheritdoc
+   */
   static get schema() {
     const ajv = this.ajv;
 
