@@ -215,7 +215,7 @@ export default class AbstractModel {
         if (result) {
           resolve(data);
         } else {
-          reject(this.ajv.errors);
+          reject(this.constructor.validate.errors);
         }
       }
     });
