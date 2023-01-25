@@ -143,14 +143,17 @@ Extensions.register("components_scenario_options", function () {
   const scenario_input = this.getInput("COMPONENT");
   if (!scenario_input) return;
 
-  const scenario_field = new FieldDropdown(() => {
+  const scenario_field = new FieldDropdown(function () {
     let options = getComponentOptions("Scenario");
     const empty = options.length === 0;
 
     if (empty) {
-      scenario_field.setEnabled(false);
+      const block = this.getSourceBlock();
+      if (block) {
+        block.setEnabled(false);
+        block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
+      }
       this.setEnabled(false);
-      this.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
       options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
     }
 
@@ -164,14 +167,17 @@ Extensions.register("components_block_options", function () {
   if (!block_input) return;
 
   const block_field = new FieldDropdown(
-    () => {
+    function () {
       let options = getComponentOptions("Block");
       const empty = options.length === 0;
 
       if (empty) {
-        block_field.setEnabled(false);
+        const block = this.getSourceBlock();
+        if (block) {
+          block.setEnabled(false);
+          block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
+        }
         this.setEnabled(false);
-        this.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
         options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
       }
 
@@ -190,7 +196,7 @@ Extensions.register("components_component_options", function () {
   const mock = this.type.endsWith("_mock");
 
   const component_field = new FieldDropdown(
-    () => {
+    function () {
       const empty_option = [
         {
           label: Msg.COMPONENTS_EMPTY_OPTION,
@@ -228,16 +234,18 @@ Extensions.register("components_property_options", function () {
 
   const mock = this.type.endsWith("_mock");
 
-  const property_field = new FieldDropdown(() => {
-    if (mock) {
-      if (this.property_) {
-        return [[Msg.COMPONENTS_PROPERTY[this.property_], this.property_]];
+  const property_field = new FieldDropdown(function () {
+    const block = this.getSourceBlock();
+
+    if (!block || mock) {
+      if (block && block.property_) {
+        return [[Msg.COMPONENTS_PROPERTY[block.property_], block.property_]];
       }
       return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
     }
 
-    const component_value = this.getFieldValue("COMPONENT");
-    const component_type = this.getComponentType_(component_value);
+    const component_value = block.getFieldValue("COMPONENT");
+    const component_type = block.getComponentType_(component_value);
     return getPropertyOptions(component_type);
   });
   property_input.appendField(property_field, "PROPERTY");
