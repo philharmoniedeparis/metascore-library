@@ -20,6 +20,7 @@
 import { markRaw } from "vue";
 import { isObject } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { getLocale } from "@metascore-library/core/services/i18n";
 import useStore from "../../store";
 
 export default {
@@ -174,16 +175,10 @@ export default {
       if (!this.disabled) evt.stopPropagation();
     },
     onButtonClick() {
-      if (!this.editing) {
-        this.startEditing();
-      } else {
-        this.stopEditing();
-      }
+      this.editing ? this.stopEditing() : this.startEditing();
     },
     async startEditing() {
-      if (this.editing) {
-        return;
-      }
+      if (this.editing) return;
 
       this.editing = true;
       this.settingUpEditor = true;
@@ -195,7 +190,7 @@ export default {
       const { default: createEditor } = await import("../../ckeditor");
 
       createEditor(this.getContentsElement(), {
-        language: this.$i18n.locale,
+        language: getLocale(),
         extraFonts: this.extraFonts,
       })
         .then(this.onEditorCreate)
