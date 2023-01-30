@@ -26,7 +26,7 @@ export function parse(href) {
       // play excerpt link.
       if (
         (matches = action.match(
-          /^play=(\d*\.?\d+)?,(\d*\.?\d+)?,([^,]+)(?:,([01]))?$/
+          /^play=(\d*\.?\d+)?,(\d*\.?\d+)?,(?:([^,]+)(?:,([01]))?)?$/
         ))
       ) {
         return {
@@ -34,7 +34,10 @@ export function parse(href) {
           excerpt: true,
           start: matches[1],
           end: matches[2],
-          scenario: decodeURIComponent(matches[3]),
+          scenario:
+            typeof matches[3] !== "undefined"
+              ? decodeURIComponent(matches[3])
+              : null,
           highlight: matches[4] === "1",
         };
       }
