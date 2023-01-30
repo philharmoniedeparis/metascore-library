@@ -126,15 +126,15 @@ export default {
     list-style: none;
     margin: 0;
     padding: 0.25em;
-    border: 1px solid $lightgray;
-    background: $darkgray;
+    border: 1px solid var(--color-bg-tertiary);
+    background: var(--color-bg-primary);
     box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
   }
 
   .header,
   .footer {
     padding: 0.5em;
-    color: $white;
+    color: var(--color-white);
     opacity: 0.5;
   }
   .header {

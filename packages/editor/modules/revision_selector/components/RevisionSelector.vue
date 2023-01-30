@@ -146,9 +146,9 @@ export default {
 
   :deep(button) {
     padding: 0 1em;
-    color: $darkgray;
-    background: $white;
-    border: 1px solid $white;
+    color: var(--color-bg-primary);
+    background: var(--color-white);
+    border: 1px solid var(--color-white);
     border-radius: 1.5em;
   }
 }

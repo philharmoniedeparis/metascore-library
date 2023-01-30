@@ -107,7 +107,7 @@ export default {
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 2em;
-    color: $white;
+    color: var(--color-white);
   }
 
   th,
@@ -117,7 +117,7 @@ export default {
 
   th {
     font-weight: normal;
-    border-bottom: 2px solid $white;
+    border-bottom: 2px solid var(--color-white);
     white-space: nowrap;
   }
 
@@ -132,13 +132,13 @@ export default {
     &.key {
       display: inline-block;
       padding: 0.25em 0.5em;
-      color: $black;
+      color: var(--color-black);
       line-height: 1em;
       text-align: center;
-      background: $white;
-      border: 1px solid $lightgray;
+      background: var(--color-white);
+      border: 1px solid var(--color-bg-tertiary);
       border-radius: 0.25em;
-      box-shadow: 1px 1px 1px $darkgray;
+      box-shadow: 1px 1px 1px var(--color-bg-primary);
 
       &:first-letter {
         text-transform: uppercase;

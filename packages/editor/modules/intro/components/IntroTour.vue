@@ -356,7 +356,7 @@ export default {
 
   :deep(.element-highlighter) {
     .highlight {
-      border: 2px solid $white;
+      border: 2px solid var(--color-white);
     }
   }
 }
@@ -372,7 +372,7 @@ export default {
   min-width: 15em;
   max-width: 30em;
   transform: translateX(-50%) translateY(-50%);
-  box-shadow: 0 0 0.5em 0 $black;
+  box-shadow: 0 0 0.5em 0 var(--color-black);
   transition: all 0.3s ease-out;
   pointer-events: auto;
   z-index: 999999;
@@ -384,14 +384,14 @@ export default {
   height: 1em;
   transition: all 0.3s ease-out;
   transform: rotate(45deg);
-  background-color: $lightgray;
-  box-shadow: 0 0 0.5em 0 $black;
+  background-color: var(--color-bg-tertiary);
+  box-shadow: 0 0 0.5em 0 var(--color-black);
   z-index: -1;
 }
 
 .intro-tour--tooltip--content {
-  background: $lightgray;
-  border: 2px solid $lightgray;
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-bg-tertiary);
   border-radius: 0.25em;
   overflow: hidden;
   box-sizing: border-box;
@@ -403,8 +403,8 @@ export default {
   padding: 0.5em;
   justify-content: space-between;
   align-items: center;
-  background: $darkgray;
-  color: $white;
+  background: var(--color-bg-primary);
+  color: var(--color-white);
 
   .title {
     margin: 0;
@@ -434,15 +434,15 @@ export default {
   width: 100%;
   height: 1px;
   margin-bottom: 1em;
-  color: $white;
-  background-color: $mediumgray;
+  color: var(--color-white);
+  background-color: var(--color-bg-secondary);
   border: none;
 
   &::-webkit-progress-value {
-    background-color: $white;
+    background-color: var(--color-white);
   }
   &::-moz-progress-bar {
-    background-color: $white;
+    background-color: var(--color-white);
   }
 }
 
@@ -457,10 +457,10 @@ export default {
 
   :deep(.base-button) {
     padding: 0.5em 1em;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
 
     &.primary {
-      background: $darkgray;
+      background: var(--color-bg-primary);
     }
   }
 }

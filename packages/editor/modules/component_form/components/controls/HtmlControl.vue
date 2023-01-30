@@ -302,16 +302,16 @@ export default {
 
   button {
     padding: 0.5em 1em;
-    color: $black;
-    background: $white;
+    color: var(--color-black);
+    background: var(--color-white);
     border-radius: 1.5em;
     opacity: 1;
   }
 
   &.editing {
     button {
-      color: $white;
-      background: $darkgray;
+      color: var(--color-white);
+      background: var(--color-bg-primary);
     }
   }
 

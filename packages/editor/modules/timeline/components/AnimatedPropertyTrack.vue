@@ -239,7 +239,7 @@ export default {
 
   .keyframes-wrapper {
     position: relative;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
     cursor: copy;
   }
 
@@ -262,7 +262,7 @@ export default {
       display: block;
       width: 100%;
       height: 100%;
-      background: $white;
+      background: var(--color-white);
       transform: rotate(45deg);
       transform-origin: center;
     }

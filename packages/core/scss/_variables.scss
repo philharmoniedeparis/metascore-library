@@ -1,14 +1,3 @@
-$metascore-color: rgb(0, 0, 254);
-
-$white: #fff;
-$lightgray: #777;
-$mediumgray: #606060;
-$darkgray: #3f3f3f;
-$black: #000;
-
-$danger: #dc3545;
-$warning: #ffc107;
-
 $component-colors: (
   default: rgb(51, 49, 47),
   page: rgb(0, 0, 254),
@@ -19,8 +8,32 @@ $component-colors: (
   animation: rgb(255, 138, 0),
 );
 
-$scrollbar-width: 8px;
-$scrollbar-track-color: $lightgray;
-$scrollbar-thumb-color: $mediumgray;
-$scrollbar-thumb-active-color: $metascore-color;
-$scrollbar-thumb-min-height: 8px;
+:root {
+  --metascore-color: rgb(0, 0, 254);
+
+  --color-bg-primary: #3f3f3f;
+  --color-bg-secondary: #606060;
+  --color-bg-tertiary: #777;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b8b8b8;
+
+  --color-accent-primary: #ff4181;
+  --color-accent-secondary: #03dac5;
+
+  --color-white: #fff;
+  --color-black: #000;
+
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+
+  @each $component, $color in $component-colors {
+    --color-component-#{$component}: #{$color};
+  }
+
+  --scrollbar-width: 8px;
+  --scrollbar-track-color: var(--color-bg-tertiary);
+  --scrollbar-thumb-color: var(--color-bg-secondary);
+  --scrollbar-thumb-active-color: var(--metascore-color);
+  --scrollbar-thumb-min-height: 8px;
+}

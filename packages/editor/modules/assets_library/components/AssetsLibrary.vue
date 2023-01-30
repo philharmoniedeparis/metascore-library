@@ -310,7 +310,7 @@ export default {
         padding: 0.25em 0.5em;
         flex-direction: row;
         align-items: center;
-        color: $white;
+        color: var(--color-white);
         opacity: 1;
         cursor: pointer;
 
@@ -331,7 +331,7 @@ export default {
       }
 
       &:hover {
-        background-color: $mediumgray;
+        background-color: var(--color-bg-secondary);
       }
     }
 
@@ -347,7 +347,7 @@ export default {
       }
 
       &:hover {
-        background-color: $mediumgray;
+        background-color: var(--color-bg-secondary);
       }
     }
   }
@@ -364,7 +364,7 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 0.5em;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
     box-sizing: border-box;
     border: 2px #fff dashed;
     box-shadow: inset 0 0 0.5em 0 #fff;

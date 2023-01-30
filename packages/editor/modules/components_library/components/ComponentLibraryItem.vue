@@ -58,9 +58,9 @@ export default {
   align-items: center;
   height: 2.5em;
   padding: 0.25em;
-  background-color: $lightgray;
-  border-top: 1px solid $mediumgray;
-  border-bottom: 1px solid $mediumgray;
+  background-color: var(--color-bg-tertiary);
+  border-top: 1px solid var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-bg-secondary);
   box-sizing: border-box;
   cursor: grab;
 
@@ -91,7 +91,7 @@ export default {
 
   &:hover,
   &.dragging {
-    background-color: $mediumgray;
+    background-color: var(--color-bg-secondary);
   }
 
   &.dragging {

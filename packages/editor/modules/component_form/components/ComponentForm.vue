@@ -667,10 +667,10 @@ export default {
   display: flex;
   height: 100%;
   flex-direction: column;
-  background: $mediumgray;
+  background: var(--color-bg-secondary);
   overflow-x: hidden;
   overflow-y: auto;
-  color: $white;
+  color: var(--color-white);
 
   h2.title {
     position: sticky;
@@ -681,8 +681,8 @@ export default {
     padding-left: 1em;
     font-size: 1em;
     font-weight: normal;
-    background: $lightgray;
-    border-bottom: 0.25em solid $mediumgray;
+    background: var(--color-bg-tertiary);
+    border-bottom: 0.25em solid var(--color-bg-secondary);
     z-index: 1;
 
     &::before {
@@ -698,12 +698,12 @@ export default {
   @each $component, $color in $component-colors {
     @if $component == default {
       h2.title::before {
-        background-color: $color;
+        background-color: var(--color-component-#{$component});
       }
     } @else {
       &.#{$component} {
         h2.title::before {
-          background-color: $color;
+          background-color: var(--color-component-#{$component});
         }
       }
     }
@@ -711,7 +711,7 @@ export default {
 
   :deep(.form-container) {
     display: flex;
-    background: $lightgray;
+    background: var(--color-bg-tertiary);
     gap: 0.75em;
     padding: 0.5em;
 
@@ -725,7 +725,7 @@ export default {
     }
 
     &.time {
-      border-top: 2px solid $mediumgray;
+      border-top: 2px solid var(--color-bg-secondary);
 
       input {
         width: 6em;
@@ -763,7 +763,7 @@ export default {
 
       input {
         &:not([type="checkbox"]):not([type="radio"]) {
-          background: $lightgray;
+          background: var(--color-bg-tertiary);
         }
       }
     }

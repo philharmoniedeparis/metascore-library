@@ -166,13 +166,13 @@ export default {
 .resizable-pane {
   position: relative;
   overflow: hidden;
-  background: $lightgray;
-  color: $white;
+  background: var(--color-bg-tertiary);
+  color: var(--color-white);
   box-sizing: border-box;
 
   .resize-handle {
     position: absolute;
-    background: $darkgray;
+    background: var(--color-bg-primary);
 
     &[data-direction="top"] {
       top: 0;

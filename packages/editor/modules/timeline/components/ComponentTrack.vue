@@ -428,8 +428,8 @@ export default {
   .aniamted-properties :deep(.handle),
   .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
-    border-top: 1px solid $darkgray;
-    border-bottom: 1px solid $darkgray;
+    border-top: 1px solid var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-bg-primary);
     box-sizing: border-box;
   }
 
@@ -445,8 +445,8 @@ export default {
     justify-content: flex-start;
     align-items: center;
     gap: 0.25em;
-    background: $mediumgray;
-    border-right: 2px solid $darkgray;
+    background: var(--color-bg-secondary);
+    border-right: 2px solid var(--color-bg-primary);
     touch-action: none;
     user-select: none;
     z-index: 2;
@@ -458,7 +458,7 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: $black;
+      background: var(--color-black);
       opacity: min(calc(var(--depth) * 0.05), 0.5);
       pointer-events: none;
     }
@@ -500,7 +500,7 @@ export default {
         .icon {
           width: 1em;
           height: 1em;
-          color: $white;
+          color: var(--color-white);
           opacity: 0.5;
         }
       }
@@ -521,7 +521,7 @@ export default {
       .toggle {
         label {
           padding: 0.25em;
-          background: $darkgray;
+          background: var(--color-bg-primary);
         }
 
         input:checked + label {
@@ -546,7 +546,7 @@ export default {
     position: relative;
     height: 100%;
     grid-column: 2;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
     cursor: pointer;
 
     .time {
@@ -624,12 +624,12 @@ export default {
   @each $component, $color in $component-colors {
     @if $component == default {
       > .time-wrapper .time .background {
-        background-color: $color;
+        background-color: var(--color-component-#{$component});
       }
     } @else {
       &.#{$component} {
         > .time-wrapper .time .background {
-          background-color: $color;
+          background-color: var(--color-component-#{$component});
         }
       }
     }
@@ -689,7 +689,7 @@ export default {
   &.selected {
     > .handle,
     > .time-wrapper {
-      background: $lightgray;
+      background: var(--color-bg-tertiary);
       .time {
         .background {
           opacity: 1;

@@ -92,7 +92,7 @@ export default {
     width: 100%;
     text-align: left;
     padding: 0.5em;
-    color: $white;
+    color: var(--color-white);
     white-space: nowrap;
     user-select: none;
     box-sizing: border-box;
@@ -108,7 +108,7 @@ export default {
   &.has-handler,
   &.has-subitems {
     &:hover {
-      background: $mediumgray;
+      background: var(--color-bg-secondary);
     }
   }
 

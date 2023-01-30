@@ -95,7 +95,7 @@ export default {
     gap: 0.75em;
 
     > label {
-      color: $white;
+      color: var(--color-white);
       font-weight: normal;
       white-space: nowrap;
       user-select: none;
@@ -109,19 +109,19 @@ export default {
     :deep(select) {
       width: 100%;
       padding: 0.3125em;
-      color: $white;
+      color: var(--color-white);
       font-family: inherit;
-      background: $mediumgray;
+      background: var(--color-bg-secondary);
       line-height: normal;
-      border: 1px solid $mediumgray;
+      border: 1px solid var(--color-bg-secondary);
       border-radius: 0.25em;
       box-sizing: border-box;
 
       &:focus,
       &:active,
       &:focus-visible {
-        outline: 1px solid $lightgray;
-        border-color: $lightgray;
+        outline: 1px solid var(--color-bg-tertiary);
+        border-color: var(--color-bg-tertiary);
       }
     }
   }
@@ -130,7 +130,7 @@ export default {
     font-size: 0.9em;
     margin-top: 0.25em;
     margin-bottom: 0.4em;
-    color: $white;
+    color: var(--color-white);
     opacity: 0.75;
   }
 
@@ -141,7 +141,7 @@ export default {
     margin-top: 0.25em;
 
     .icon {
-      color: $danger;
+      color: var(--color-danger);
       width: 1em;
       height: 1em;
       margin-right: 0.5em;
@@ -151,7 +151,7 @@ export default {
       margin: 0;
       padding: 0;
       list-style: none;
-      color: $white;
+      color: var(--color-white);
       opacity: 0.75;
     }
   }
@@ -173,7 +173,7 @@ export default {
   &.error {
     :deep(input),
     :deep(select) {
-      outline: 2px solid $danger;
+      outline: 2px solid var(--color-danger);
       outline-offset: -2px;
     }
   }

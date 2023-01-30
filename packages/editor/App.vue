@@ -609,27 +609,27 @@ export default {
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
-  color: $white;
+  color: var(--color-white);
 
   &,
   :deep(*) {
-    scrollbar-color: $scrollbar-thumb-color $scrollbar-track-color;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
     scrollbar-width: thin;
 
     ::-webkit-scrollbar {
       appearance: none;
-      background-color: $scrollbar-track-color;
-      width: $scrollbar-width;
-      height: $scrollbar-thumb-min-height;
+      background-color: var(--scrollbar-track-color);
+      width: var(--scrollbar-width);
+      height: var(--scrollbar-thumb-min-height);
     }
 
     ::-webkit-scrollbar-thumb {
       border-radius: 0;
-      background-color: $scrollbar-thumb-color;
+      background-color: var(--scrollbar-thumb-color);
 
       &:active,
       &:hover {
-        background-color: $scrollbar-thumb-active-color;
+        background-color: var(--scrollbar-thumb-active-color);
       }
     }
   }
@@ -670,7 +670,7 @@ export default {
 
   > .top {
     grid-area: top;
-    background: $darkgray;
+    background: var(--color-bg-primary);
 
     .main-menu {
       display: flex;
@@ -766,15 +766,15 @@ export default {
       grid-template-columns: $controller-left-width 1fr;
       grid-template-rows: 15% 1fr;
       flex: 0 0 $controller-top-height;
-      background: $mediumgray;
-      border-bottom: 2px solid $darkgray;
+      background: var(--color-bg-secondary);
+      border-bottom: 2px solid var(--color-bg-primary);
       z-index: 1;
 
       .playback-time {
         display: flex;
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
-        border-right: 2px solid $darkgray;
+        border-right: 2px solid var(--color-bg-primary);
 
         :deep(input) {
           border-radius: 0;
@@ -811,21 +811,21 @@ export default {
         display: grid;
         grid-template-columns: $controller-left-width 1fr;
         grid-template-rows: 1fr auto;
-        background: $lightgray;
-        border-bottom: 2px solid $darkgray;
+        background: var(--color-bg-tertiary);
+        border-bottom: 2px solid var(--color-bg-primary);
         z-index: 4;
 
         .playback-controller {
           grid-area: 1 / 1;
           box-sizing: border-box;
-          border-right: 2px solid $darkgray;
+          border-right: 2px solid var(--color-bg-primary);
         }
 
         .media-selector {
           grid-area: 2 / 1;
           padding: 0.25em 0.5em;
           box-sizing: border-box;
-          border-right: 2px solid $darkgray;
+          border-right: 2px solid var(--color-bg-primary);
         }
 
         .waveform--zoom {
@@ -838,8 +838,8 @@ export default {
       display: flex;
       flex-direction: row;
       flex: 0 0 $controller-bottom-sticky-bottom-height;
-      background: $mediumgray;
-      border-top: 1px solid $darkgray;
+      background: var(--color-bg-secondary);
+      border-top: 1px solid var(--color-bg-primary);
       z-index: 1;
 
       .scenario-manager {
@@ -848,7 +848,7 @@ export default {
 
       .waveform--zoom-controller {
         flex: 0 0 auto;
-        background: $darkgray;
+        background: var(--color-bg-primary);
       }
     }
   }

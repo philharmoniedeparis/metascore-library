@@ -97,7 +97,7 @@ export default {
       width: 100%;
       text-align: center;
       line-height: 2em;
-      background: $lightgray;
+      background: var(--color-bg-tertiary);
       box-sizing: border-box;
       white-space: nowrap;
       overflow: hidden;
@@ -115,13 +115,13 @@ export default {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: $black;
+      color: var(--color-black);
       pointer-events: none;
 
       .content {
         min-width: 50%;
         padding: 0.5em;
-        background: $white;
+        background: var(--color-white);
         border-radius: 5em;
         box-shadow: 0 0 0.25em 0 rgba(0, 0, 0, 0.5);
         pointer-events: auto;
