@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     text() {
-      return this.component.text;
+      return this.component.text ?? "";
     },
   },
   watch: {
