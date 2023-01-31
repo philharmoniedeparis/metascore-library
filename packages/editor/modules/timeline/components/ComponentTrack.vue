@@ -319,8 +319,11 @@ export default {
         },
         modifiers: [
           interact.modifiers.snap({
-            targets: this.getResizableSnapTargets(),
-            range: this.snapRange,
+            targets: [this.getResizableSnapTarget],
+            relativePoints: [
+              { x: 0, y: 0 },
+              { x: 1, y: 1 },
+            ],
           }),
         ],
         listeners: {
@@ -336,16 +339,23 @@ export default {
         delete this._interactables;
       }
     },
-    getResizableSnapTargets() {
+    getResizableSnapTarget(x) {
+      let min_distance = this.snapRange;
+      let target = null;
+
+      this.activeSnapTargets = [];
+
+      //Check if playhead is in range.
       const { left, width } =
         this.$refs["time-wrapper"].getBoundingClientRect();
-      const targets = [];
+      const playhead_x = (this.mediaTime / this.mediaDuration) * width + left;
+      const distance = Math.abs(playhead_x - x);
+      if (distance <= min_distance) {
+        min_distance = distance;
+        target = { x: playhead_x };
+      }
 
-      // Add playhead.
-      const playhead_x = this.mediaTime * (width / this.mediaDuration) + left;
-      targets.push({ x: playhead_x });
-
-      // Loop through tracks to check if they are legitimate target.
+      // Loop through tracks to check if they are in range.
       this.$el
         .closest(".component-track[data-type='Scenario']")
         .querySelectorAll(
@@ -359,11 +369,20 @@ export default {
 
           const { left: track_left, width: track_width } =
             track_time.getBoundingClientRect();
-          targets.push({ x: track_left });
-          targets.push({ x: track_left + track_width });
+          [track_left, track_left + track_width].forEach((pos) => {
+            const distance = Math.abs(pos - x);
+            if (distance <= min_distance) {
+              min_distance = distance;
+              target = { x: pos };
+            }
+          });
         });
 
-      return targets;
+      if (target) {
+        this.activeSnapTargets.push(target.x);
+      }
+
+      return target;
     },
     onResizableStart() {
       this.resizing = true;
@@ -374,13 +393,6 @@ export default {
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
       const prop = evt.edges.right ? "end-time" : "start-time";
       const data = {};
-
-      this.activeSnapTargets = [];
-      evt.modifiers.forEach((modifier) => {
-        if (modifier.inRange) {
-          this.activeSnapTargets.push(modifier.target.x);
-        }
-      });
 
       let previous_value = this.component[prop];
       if (previous_value === null) {
@@ -428,8 +440,8 @@ export default {
   .aniamted-properties :deep(.handle),
   .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
-    border-top: 1px solid $darkgray;
-    border-bottom: 1px solid $darkgray;
+    border-top: 1px solid var(--color-bg-primary);
+    border-bottom: 1px solid var(--color-bg-primary);
     box-sizing: border-box;
   }
 
@@ -445,8 +457,8 @@ export default {
     justify-content: flex-start;
     align-items: center;
     gap: 0.25em;
-    background: $mediumgray;
-    border-right: 2px solid $darkgray;
+    background: var(--color-bg-secondary);
+    border-right: 2px solid var(--color-bg-primary);
     touch-action: none;
     user-select: none;
     z-index: 2;
@@ -458,7 +470,7 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: $black;
+      background: var(--color-black);
       opacity: min(calc(var(--depth) * 0.05), 0.5);
       pointer-events: none;
     }
@@ -500,7 +512,7 @@ export default {
         .icon {
           width: 1em;
           height: 1em;
-          color: $white;
+          color: var(--color-white);
           opacity: 0.5;
         }
       }
@@ -521,7 +533,7 @@ export default {
       .toggle {
         label {
           padding: 0.25em;
-          background: $darkgray;
+          background: var(--color-bg-primary);
         }
 
         input:checked + label {
@@ -546,7 +558,7 @@ export default {
     position: relative;
     height: 100%;
     grid-column: 2;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
     cursor: pointer;
 
     .time {
@@ -624,12 +636,12 @@ export default {
   @each $component, $color in $component-colors {
     @if $component == default {
       > .time-wrapper .time .background {
-        background-color: $color;
+        background-color: var(--color-component-#{$component});
       }
     } @else {
       &.#{$component} {
         > .time-wrapper .time .background {
-          background-color: $color;
+          background-color: var(--color-component-#{$component});
         }
       }
     }
@@ -689,7 +701,7 @@ export default {
   &.selected {
     > .handle,
     > .time-wrapper {
-      background: $lightgray;
+      background: var(--color-bg-tertiary);
       .time {
         .background {
           opacity: 1;

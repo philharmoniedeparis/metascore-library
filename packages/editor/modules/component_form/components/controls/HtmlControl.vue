@@ -12,7 +12,7 @@
       {{ formattedLabel }}
     </base-button>
 
-    <div ref="toolbar-container" class="toolbar-container" />
+    <div ref="toolbar-container" class="toolbar-container"></div>
   </form-group>
 </template>
 
@@ -84,8 +84,6 @@ export default {
   data() {
     return {
       settingUpEditor: false,
-      editingComponent: null,
-      editingComponentEl: null,
       editor: null,
     };
   },
@@ -116,7 +114,7 @@ export default {
   },
   watch: {
     component: {
-      handler(value, oldValue) {
+      async handler(value, oldValue) {
         if (
           value &&
           oldValue &&
@@ -126,7 +124,7 @@ export default {
           return;
         }
 
-        this.stopEditing();
+        await this.stopEditing();
 
         if (oldValue) {
           this.getComponentElement(oldValue).removeEventListener(
@@ -134,6 +132,7 @@ export default {
             this.onComponentDblclick
           );
         }
+
         if (value) {
           this.getComponentElement(value).addEventListener(
             "dblclick",
@@ -150,8 +149,8 @@ export default {
     },
   },
   async beforeUnmount() {
-    if (this.editingComponentEl) {
-      this.editingComponentEl.removeEventListener(
+    if (this.component) {
+      this.getComponentElement(this.component).removeEventListener(
         "dblclick",
         this.onComponentDblclick
       );
@@ -161,7 +160,9 @@ export default {
   },
   methods: {
     getInnerElement() {
-      return this.editingComponentEl?.querySelector(
+      if (!this.component) return null;
+
+      return this.getComponentElement(this.component)?.querySelector(
         ":scope > .metaScore-component--inner"
       );
     },
@@ -182,25 +183,24 @@ export default {
 
       this.editing = true;
       this.settingUpEditor = true;
-      this.editingComponent = this.component;
-      this.editingComponentEl = this.getComponentElement(this.editingComponent);
 
-      this.freezeComponent(this.editingComponent);
+      this.freezeComponent(this.component);
 
       const { default: createEditor } = await import("../../ckeditor");
 
-      createEditor(this.getContentsElement(), {
-        language: getLocale(),
-        extraFonts: this.extraFonts,
-      })
-        .then(this.onEditorCreate)
-        .catch((e) => {
-          // @todo: handle errors.
-          console.error(e);
-        })
-        .finally(() => {
-          this.settingUpEditor = false;
+      try {
+        const editor = await createEditor(this.getContentsElement(), {
+          language: getLocale(),
+          extraFonts: this.extraFonts,
         });
+        this.editor = markRaw(editor);
+        this.setupEditor();
+      } catch (e) {
+        // @todo: handle errors.
+        console.error(e);
+      } finally {
+        this.settingUpEditor = false;
+      }
 
       // Prevent key events from propagating.
       const inner_el = this.getInnerElement();
@@ -209,26 +209,32 @@ export default {
         inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
       }
     },
-    onEditorCreate(editor) {
-      editor.editing.view.change((writer) => {
+    setupEditor() {
+      this.editor.editing.view.change((writer) => {
         // Remove ck-editor special classes.
         // See https://github.com/ckeditor/ckeditor5/issues/6280#issuecomment-597059725
-        const viewEditableRoot = editor.editing.view.document.getRoot();
+        const viewEditableRoot = this.editor.editing.view.document.getRoot();
         writer.removeClass("ck-editor__editable_inline", viewEditableRoot);
         writer.removeClass("ck-content", viewEditableRoot);
       });
 
-      const toolbar = editor.ui.view.toolbar.element;
-      this.editor = markRaw(editor);
+      // Append editor toolbar.
+      const toolbar = this.editor.ui.view.toolbar.element;
       this.$refs["toolbar-container"].appendChild(toolbar);
 
+      // Scroll toolbar into view.
+      this.$refs["toolbar-container"].scrollIntoView();
+
       // Listener to document data changes.
-      editor.model.document.on("change:data", this.onEditorDocumentDataChange);
+      this.editor.model.document.on(
+        "change:data",
+        this.onEditorDocumentDataChange
+      );
 
       // Add listeners to ContextualBalloon positions
-      if (editor.plugins.has("ContextualBalloon")) {
+      if (this.editor.plugins.has("ContextualBalloon")) {
         const contextualballoon_view =
-          editor.plugins.get("ContextualBalloon").view;
+          this.editor.plugins.get("ContextualBalloon").view;
         contextualballoon_view.on(
           "set:left",
           this.onEditorContextualBallonPositionSet
@@ -240,16 +246,13 @@ export default {
       }
 
       // Add listeners to SourceEditing mode
-      if (editor.plugins.has("SourceEditing")) {
-        const sourceediting = editor.plugins.get("SourceEditing");
+      if (this.editor.plugins.has("SourceEditing")) {
+        const sourceediting = this.editor.plugins.get("SourceEditing");
         sourceediting.on(
           "change:isSourceEditingMode",
           this.onEditorSourceEditingModeChange
         );
       }
-
-      // Scroll editor into view.
-      this.$refs["toolbar-container"].scrollIntoView();
     },
     onEditorDocumentDataChange() {
       this.value = this.editor.getData();
@@ -259,7 +262,9 @@ export default {
       evt.return = value + offset;
     },
     onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
-      this.editingComponentEl.classList.toggle(
+      if (!this.component) return;
+
+      this.getComponentElement(this.component)?.classList.toggle(
         "sourceediting",
         isSourceEditingMode
       );
@@ -282,7 +287,7 @@ export default {
         inner_el.removeEventListener("keyup", this.onComponentInnerElKeyEvent);
       }
 
-      this.unfreezeComponent(this.editingComponent);
+      this.unfreezeComponent(this.component);
 
       this.editing = false;
     },
@@ -302,16 +307,16 @@ export default {
 
   button {
     padding: 0.5em 1em;
-    color: $black;
-    background: $white;
+    color: var(--color-black);
+    background: var(--color-white);
     border-radius: 1.5em;
     opacity: 1;
   }
 
   &.editing {
     button {
-      color: $white;
-      background: $darkgray;
+      color: var(--color-white);
+      background: var(--color-bg-primary);
     }
   }
 

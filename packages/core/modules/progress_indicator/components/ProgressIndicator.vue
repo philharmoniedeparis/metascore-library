@@ -49,7 +49,7 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: 0.75em;
-    color: $white;
+    color: var(--color-white);
   }
 
   progress {
@@ -58,7 +58,7 @@ export default {
     inline-size: 100%;
     width: 10em;
     height: 0.5em;
-    background-color: $mediumgray;
+    background-color: var(--color-bg-secondary);
     border: none;
     border-radius: 1em;
     overflow: hidden;
@@ -66,10 +66,10 @@ export default {
     &[value] {
       &::-moz-progress-bar,
       &::-webkit-progress-value {
-        background-color: $white;
+        background-color: var(--color-white);
       }
       &::-webkit-progress-bar {
-        background-color: $mediumgray;
+        background-color: var(--color-bg-secondary);
       }
     }
 
@@ -79,10 +79,10 @@ export default {
       &::after {
         background: linear-gradient(
           to right,
-          $mediumgray 45%,
-          $white 0%,
-          $white 55%,
-          $mediumgray 0%
+          var(--color-bg-secondary) 45%,
+          var(--color-white) 0%,
+          var(--color-white) 55%,
+          var(--color-bg-secondary) 0%
         );
         background-size: 225% 100%;
         background-position: right;

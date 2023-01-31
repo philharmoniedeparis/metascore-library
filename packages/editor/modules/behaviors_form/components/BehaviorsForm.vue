@@ -219,8 +219,8 @@ export default {
 .behaviors-form {
   position: relative;
   height: 100%;
-  background: $lightgray;
-  color: $white;
+  background: var(--color-bg-tertiary);
+  color: var(--color-white);
 }
 
 .blockly {

@@ -267,12 +267,12 @@ export default {
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    background-color: $darkgray;
+    background-color: var(--color-bg-primary);
 
     button {
       flex: 0 0 50%;
       padding: 0;
-      color: $white;
+      color: var(--color-white);
     }
   }
 

@@ -4,6 +4,7 @@ import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
 import Alert from "@metascore-library/core/modules/alert";
 import AppComponents from "@metascore-library/core/modules/app_components";
+import AppPreview from "@metascore-library/editor/modules/app_preview";
 import Confirm from "@metascore-library/core/modules/confirm";
 import FormControls from "../form_controls";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
@@ -18,6 +19,7 @@ export default class AssetsLibraryModule extends AbstractModule {
     Ajax,
     Alert,
     AppComponents,
+    AppPreview,
     Confirm,
     FormControls,
     ProgressIndicator,

@@ -59,6 +59,7 @@
         </base-button>
         <spectrogram-form
           v-if="showSpectrogramForm"
+          :defaults="spectrogramDefaults"
           @submit="onSpectrogramFormSubmit"
           @close="onSpectrogramFormClose"
         />
@@ -71,6 +72,7 @@
         </base-button>
         <audiowaveform-form
           v-if="showAudiowaveformForm"
+          :defaults="audiowaveformDefaults"
           @submit="onAudiowaveformFormSubmit"
           @close="onAudiowaveformFormClose"
         />
@@ -112,6 +114,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 import AssetsItem from "./AssetsItem.vue";
 import UploadIcon from "../assets/icons/upload.svg?inline";
@@ -134,7 +137,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    return { store };
+    const { selectedComponents } = useModule("app_preview");
+    return { store, selectedComponents };
   },
   data() {
     return {
@@ -153,6 +157,38 @@ export default {
     },
     uploadProgress() {
       return this.store.uploadProgress;
+    },
+    spectrogramDefaults() {
+      const defaults = {};
+      if (this.selectedComponents.length > 0) {
+        const component = this.selectedComponents[0];
+        if (component.dimension) {
+          defaults.width = component.dimension[0];
+
+          defaults.height = component.dimension[1];
+          defaults.height = Math.min(Math.max(defaults.height, 16), 2048);
+          // Get the largest power of 2 <= height.
+          for (let i = defaults.height; i >= 1; i--) {
+            if ((i & (i - 1)) == 0) {
+              defaults.height = i;
+              break;
+            }
+          }
+          defaults.height = `${defaults.height}`;
+        }
+      }
+      return defaults;
+    },
+    audiowaveformDefaults() {
+      const defaults = {};
+      if (this.selectedComponents.length > 0) {
+        const component = this.selectedComponents[0];
+        if (component.dimension) {
+          defaults.width = component.dimension[0];
+          defaults.height = component.dimension[1];
+        }
+      }
+      return defaults;
     },
     generatingSpectrogram() {
       return this.store.generatingSpectrogram;
@@ -310,7 +346,7 @@ export default {
         padding: 0.25em 0.5em;
         flex-direction: row;
         align-items: center;
-        color: $white;
+        color: var(--color-white);
         opacity: 1;
         cursor: pointer;
 
@@ -331,7 +367,7 @@ export default {
       }
 
       &:hover {
-        background-color: $mediumgray;
+        background-color: var(--color-bg-secondary);
       }
     }
 
@@ -347,7 +383,7 @@ export default {
       }
 
       &:hover {
-        background-color: $mediumgray;
+        background-color: var(--color-bg-secondary);
       }
     }
   }
@@ -364,7 +400,7 @@ export default {
     align-items: center;
     justify-content: center;
     gap: 0.5em;
-    background: $mediumgray;
+    background: var(--color-bg-secondary);
     box-sizing: border-box;
     border: 2px #fff dashed;
     box-shadow: inset 0 0 0.5em 0 #fff;

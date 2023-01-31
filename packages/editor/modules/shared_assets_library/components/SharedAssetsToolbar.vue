@@ -101,7 +101,7 @@ export default {
       // #\9 is used here to increase specificity.
       &:not(#\9) {
         padding: 0 0 0 2em;
-        background-color: $darkgray;
+        background-color: var(--color-bg-primary);
         background-image: url(../assets/icons/search.svg);
         background-size: 1em;
         background-position: 0.5em 50%;
@@ -118,14 +118,14 @@ export default {
     align-items: center;
     justify-content: center;
     background: none;
-    color: $white;
-    border: 1px solid $white;
+    color: var(--color-white);
+    border: 1px solid var(--color-white);
     border-radius: 1.5em;
     opacity: 1;
 
     &.active {
-      color: $darkgray;
-      background: $white;
+      color: var(--color-bg-primary);
+      background: var(--color-white);
     }
 
     &:hover {

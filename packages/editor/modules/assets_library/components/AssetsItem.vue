@@ -104,13 +104,17 @@ export default {
     },
     component() {
       switch (this.type) {
-        case "image":
-          return {
+        case "image": {
+          const data = {
             name: this.label,
             type: "Content",
             "background-image": this.file.url,
-            dimension: [this.file.width, this.file.height],
           };
+          if (this.file.width && this.file.height) {
+            data.dimension = [this.file.width, this.file.height];
+          }
+          return data;
+        }
 
         case "lottie_animation":
           return {
@@ -134,14 +138,18 @@ export default {
             src: this.file.url,
           };
 
-        case "video":
-          return {
+        case "video": {
+          const data = {
             name: this.label,
             type: "Media",
             tag: this.type,
             src: this.file.url,
-            dimension: [this.file.width, this.file.height],
           };
+          if (this.file.width && this.file.height) {
+            data.dimension = [this.file.width, this.file.height];
+          }
+          return data;
+        }
 
         default:
           return null;
@@ -226,9 +234,9 @@ export default {
   align-items: center;
   height: 2.5em;
   padding: 0.25em;
-  background-color: $lightgray;
-  border-top: 1px solid $mediumgray;
-  border-bottom: 1px solid $mediumgray;
+  background-color: var(--color-bg-tertiary);
+  border-top: 1px solid var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-bg-secondary);
   box-sizing: border-box;
   cursor: grab;
 
@@ -239,7 +247,7 @@ export default {
     flex: 1 1 auto;
     height: 100%;
     margin: 0;
-    color: $mediumgray;
+    color: var(--color-bg-secondary);
     overflow: hidden;
     pointer-events: none;
 
@@ -255,14 +263,14 @@ export default {
     }
 
     .icon {
-      color: $white;
+      color: var(--color-white);
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
     }
 
     figcaption {
       flex: 1 1 auto;
       margin-left: 0.5em;
-      color: $white;
+      color: var(--color-white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -271,7 +279,7 @@ export default {
   }
 
   button {
-    color: $white;
+    color: var(--color-white);
   }
 
   &::before {
@@ -288,10 +296,10 @@ export default {
 
   &:hover,
   &.dragging {
-    background-color: $mediumgray;
+    background-color: var(--color-bg-secondary);
 
     figure {
-      color: $darkgray;
+      color: var(--color-bg-primary);
     }
   }
 

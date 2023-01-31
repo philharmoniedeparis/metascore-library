@@ -47,14 +47,14 @@ export default {
         width: 0.5em;
         height: 0.5em;
         padding: 0;
-        background: $mediumgray;
+        background: var(--color-bg-secondary);
         border-radius: 0.25em;
         transition: width 0.1s ease-in;
 
         &:hover,
         &.active {
           width: 1em;
-          background: $darkgray;
+          background: var(--color-bg-primary);
         }
       }
     }

@@ -48,7 +48,7 @@ export default {
   padding: 0.5em 2em;
   flex-direction: row;
   align-items: center;
-  color: $white;
+  color: var(--color-white);
   border: none;
   border-radius: 2px;
   text-align: center;
@@ -59,7 +59,7 @@ export default {
   &:focus,
   &:active,
   &:focus-visible {
-    outline: 1px solid $metascore-color;
+    outline: 1px solid var(--metascore-color);
     border: none;
   }
 
@@ -70,22 +70,22 @@ export default {
   }
 
   &.primary {
-    background-color: $white;
+    background-color: var(--color-white);
 
     &:hover,
     &:active {
-      color: $white;
-      background-color: $darkgray;
+      color: var(--color-white);
+      background-color: var(--color-bg-primary);
     }
   }
 
   &.secondary {
-    background-color: $lightgray;
+    background-color: var(--color-bg-tertiary);
 
     &:hover,
     &:active {
-      color: $white;
-      background-color: $darkgray;
+      color: var(--color-white);
+      background-color: var(--color-bg-primary);
     }
   }
 

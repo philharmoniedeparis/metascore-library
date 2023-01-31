@@ -549,7 +549,7 @@ export default {
     top: 50%;
     left: 0;
     right: 0;
-    color: $white;
+    color: var(--color-white);
     transform: translateY(-50%);
     text-align: center;
   }

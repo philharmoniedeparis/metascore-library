@@ -91,6 +91,14 @@ import { toRaw } from "vue";
 import Model from "../models/Spectrogram";
 
 export default {
+  props: {
+    defaults: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
+  },
   emits: ["submit", "close"],
   data() {
     return {
@@ -193,7 +201,7 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({});
+    this.model = await Model.create(this.defaults);
   },
   methods: {
     onUpdate({ property, value }) {
@@ -231,13 +239,13 @@ export default {
     grid-gap: 0.5em 1em;
     margin-bottom: 0.5em;
     padding: 0 1em;
-    border: 1px solid $darkgray;
+    border: 1px solid var(--color-bg-primary);
 
     > legend {
       display: inline-block;
       width: auto;
       padding: 0.25em 0.5em;
-      color: $white;
+      color: var(--color-white);
       text-align: left;
     }
 

@@ -82,7 +82,7 @@ export default {
     padding: 0;
     overflow: hidden;
     list-style: none;
-    border-bottom: 2px solid $mediumgray;
+    border-bottom: 2px solid var(--color-bg-secondary);
 
     > li {
       flex: 1 1 auto;
@@ -92,7 +92,7 @@ export default {
         display: block;
         padding: 0.25em 0.5em;
         color: #fff;
-        background: $mediumgray;
+        background: var(--color-bg-secondary);
         line-height: 2em;
         user-select: none;
         text-align: center;
@@ -106,7 +106,7 @@ export default {
         flex: 1 0 auto;
 
         a {
-          background: $lightgray;
+          background: var(--color-bg-tertiary);
         }
       }
     }

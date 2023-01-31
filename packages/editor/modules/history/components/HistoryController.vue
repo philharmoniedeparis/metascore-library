@@ -103,6 +103,6 @@ export default {
 .history-controller {
   display: flex;
   flex-direction: row;
-  background-color: $darkgray;
+  background-color: var(--color-bg-primary);
 }
 </style>

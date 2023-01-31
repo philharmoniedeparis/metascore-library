@@ -11,7 +11,7 @@
     "@interactjs/pointer-events": "^1.10.17",
     "chroma-js": "^2.4.2",
     "lodash": "^4.17.21",
-    "timecode-input": "github:philharmoniedeparis/timecode-input",
+    "timecode-input": "github:philharmoniedeparis/timecode-input#v1.0.0",
     "uuid": "^9.0.0"
   }
 }

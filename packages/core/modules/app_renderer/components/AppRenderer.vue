@@ -340,7 +340,7 @@ body {
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  background: $white;
+  background: var(--color-white);
 
   :deep(.sr-only) {
     @include sr-only;
