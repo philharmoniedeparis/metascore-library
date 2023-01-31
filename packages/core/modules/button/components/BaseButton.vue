@@ -48,7 +48,7 @@ export default {
   padding: 0.5em 2em;
   flex-direction: row;
   align-items: center;
-  color: var(--color-white);
+  color: var(--metascore-color-white);
   border: none;
   border-radius: 2px;
   text-align: center;
@@ -59,7 +59,7 @@ export default {
   &:focus,
   &:active,
   &:focus-visible {
-    outline: 1px solid var(--metascore-color);
+    outline: 1px solid var(--metascore-color-blue);
     border: none;
   }
 
@@ -70,22 +70,22 @@ export default {
   }
 
   &.primary {
-    background-color: var(--color-white);
+    background-color: var(--metascore-color-white);
 
     &:hover,
     &:active {
-      color: var(--color-white);
-      background-color: var(--color-bg-primary);
+      color: var(--metascore-color-white);
+      background-color: var(--metascore-color-bg-primary);
     }
   }
 
   &.secondary {
-    background-color: var(--color-bg-tertiary);
+    background-color: var(--metascore-color-bg-tertiary);
 
     &:hover,
     &:active {
-      color: var(--color-white);
-      background-color: var(--color-bg-primary);
+      color: var(--metascore-color-white);
+      background-color: var(--metascore-color-bg-primary);
     }
   }
 

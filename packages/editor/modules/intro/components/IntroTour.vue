@@ -356,7 +356,7 @@ export default {
 
   :deep(.element-highlighter) {
     .highlight {
-      border: 2px solid var(--color-white);
+      border: 2px solid var(--metascore-color-white);
     }
   }
 }
@@ -372,7 +372,7 @@ export default {
   min-width: 15em;
   max-width: 30em;
   transform: translateX(-50%) translateY(-50%);
-  box-shadow: 0 0 0.5em 0 var(--color-black);
+  box-shadow: 0 0 0.5em 0 var(--metascore-color-black);
   transition: all 0.3s ease-out;
   pointer-events: auto;
   z-index: 999999;
@@ -384,14 +384,14 @@ export default {
   height: 1em;
   transition: all 0.3s ease-out;
   transform: rotate(45deg);
-  background-color: var(--color-bg-tertiary);
-  box-shadow: 0 0 0.5em 0 var(--color-black);
+  background-color: var(--metascore-color-bg-tertiary);
+  box-shadow: 0 0 0.5em 0 var(--metascore-color-black);
   z-index: -1;
 }
 
 .intro-tour--tooltip--content {
-  background: var(--color-bg-tertiary);
-  border: 2px solid var(--color-bg-tertiary);
+  background: var(--metascore-color-bg-tertiary);
+  border: 2px solid var(--metascore-color-bg-tertiary);
   border-radius: 0.25em;
   overflow: hidden;
   box-sizing: border-box;
@@ -403,8 +403,8 @@ export default {
   padding: 0.5em;
   justify-content: space-between;
   align-items: center;
-  background: var(--color-bg-primary);
-  color: var(--color-white);
+  background: var(--metascore-color-bg-primary);
+  color: var(--metascore-color-white);
 
   .title {
     margin: 0;
@@ -434,15 +434,15 @@ export default {
   width: 100%;
   height: 1px;
   margin-bottom: 1em;
-  color: var(--color-white);
-  background-color: var(--color-bg-secondary);
+  color: var(--metascore-color-white);
+  background-color: var(--metascore-color-bg-secondary);
   border: none;
 
   &::-webkit-progress-value {
-    background-color: var(--color-white);
+    background-color: var(--metascore-color-white);
   }
   &::-moz-progress-bar {
-    background-color: var(--color-white);
+    background-color: var(--metascore-color-white);
   }
 }
 
@@ -457,10 +457,10 @@ export default {
 
   :deep(.base-button) {
     padding: 0.5em 1em;
-    background: var(--color-bg-secondary);
+    background: var(--metascore-color-bg-secondary);
 
     &.primary {
-      background: var(--color-bg-primary);
+      background: var(--metascore-color-bg-primary);
     }
   }
 }

@@ -275,7 +275,7 @@ export default {
     top: 50%;
     transform: translateX(-50%) translateY(-50%);
     box-sizing: border-box;
-    border: 2px solid var(--color-white);
+    border: 2px solid var(--metascore-color-white);
     border-radius: 50%;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.5);
     pointer-events: none;
@@ -356,7 +356,11 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, var(--color-black));
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--metascore-color-black)
+      );
       border-radius: 0.5em;
     }
   }
@@ -379,10 +383,10 @@ export default {
 
     button {
       padding: 0.5em;
-      background: var(--color-bg-secondary);
+      background: var(--metascore-color-bg-secondary);
 
       &.selected {
-        background: var(--color-bg-primary);
+        background: var(--metascore-color-bg-primary);
       }
     }
   }

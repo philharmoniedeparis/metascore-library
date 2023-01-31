@@ -59,8 +59,8 @@ export default {
 .auto-save-indicator {
   padding: 0.25em 0.5em;
   font-size: 0.9em;
-  color: var(--color-white);
-  background: var(--color-bg-primary);
+  color: var(--metascore-color-white);
+  background: var(--metascore-color-bg-primary);
   pointer-events: none;
 }
 </style>

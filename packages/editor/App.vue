@@ -609,7 +609,7 @@ export default {
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
-  color: var(--color-white);
+  color: var(--metascore-color-white);
 
   &,
   :deep(*) {
@@ -670,7 +670,7 @@ export default {
 
   > .top {
     grid-area: top;
-    background: var(--color-bg-primary);
+    background: var(--metascore-color-bg-primary);
 
     .main-menu {
       display: flex;
@@ -766,15 +766,15 @@ export default {
       grid-template-columns: $controller-left-width 1fr;
       grid-template-rows: 15% 1fr;
       flex: 0 0 $controller-top-height;
-      background: var(--color-bg-secondary);
-      border-bottom: 2px solid var(--color-bg-primary);
+      background: var(--metascore-color-bg-secondary);
+      border-bottom: 2px solid var(--metascore-color-bg-primary);
       z-index: 1;
 
       .playback-time {
         display: flex;
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
-        border-right: 2px solid var(--color-bg-primary);
+        border-right: 2px solid var(--metascore-color-bg-primary);
 
         :deep(input) {
           border-radius: 0;
@@ -811,21 +811,21 @@ export default {
         display: grid;
         grid-template-columns: $controller-left-width 1fr;
         grid-template-rows: 1fr auto;
-        background: var(--color-bg-tertiary);
-        border-bottom: 2px solid var(--color-bg-primary);
+        background: var(--metascore-color-bg-tertiary);
+        border-bottom: 2px solid var(--metascore-color-bg-primary);
         z-index: 4;
 
         .playback-controller {
           grid-area: 1 / 1;
           box-sizing: border-box;
-          border-right: 2px solid var(--color-bg-primary);
+          border-right: 2px solid var(--metascore-color-bg-primary);
         }
 
         .media-selector {
           grid-area: 2 / 1;
           padding: 0.25em 0.5em;
           box-sizing: border-box;
-          border-right: 2px solid var(--color-bg-primary);
+          border-right: 2px solid var(--metascore-color-bg-primary);
         }
 
         .waveform--zoom {
@@ -838,8 +838,8 @@ export default {
       display: flex;
       flex-direction: row;
       flex: 0 0 $controller-bottom-sticky-bottom-height;
-      background: var(--color-bg-secondary);
-      border-top: 1px solid var(--color-bg-primary);
+      background: var(--metascore-color-bg-secondary);
+      border-top: 1px solid var(--metascore-color-bg-primary);
       z-index: 1;
 
       .scenario-manager {
@@ -848,7 +848,7 @@ export default {
 
       .waveform--zoom-controller {
         flex: 0 0 auto;
-        background: var(--color-bg-primary);
+        background: var(--metascore-color-bg-primary);
       }
     }
   }

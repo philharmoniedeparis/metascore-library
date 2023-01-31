@@ -267,12 +267,12 @@ export default {
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    background-color: var(--color-bg-primary);
+    background-color: var(--metascore-color-bg-primary);
 
     button {
       flex: 0 0 50%;
       padding: 0;
-      color: var(--color-white);
+      color: var(--metascore-color-white);
     }
   }
 

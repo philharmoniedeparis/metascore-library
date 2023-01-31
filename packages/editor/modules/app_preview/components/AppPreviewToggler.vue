@@ -107,9 +107,9 @@ export default {
 .app-preview-toggler {
   &.base-button {
     padding: 0 1em;
-    color: var(--color-bg-primary);
-    background: var(--color-white);
-    border: 1px solid var(--color-white);
+    color: var(--metascore-color-bg-primary);
+    background: var(--metascore-color-white);
+    border: 1px solid var(--metascore-color-white);
     border-radius: 1.5em;
   }
 }

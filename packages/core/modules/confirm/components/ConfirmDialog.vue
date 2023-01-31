@@ -61,7 +61,7 @@ export default {
 <style scoped lang="scss">
 .confirm-dialog {
   .text {
-    color: var(--color-white);
+    color: var(--metascore-color-white);
   }
 }
 </style>

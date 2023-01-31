@@ -704,8 +704,8 @@ export default {
       height: 1em;
       margin-top: -0.45em;
       margin-left: -0.45em;
-      background: var(--color-white);
-      border: 0.25em solid var(--metascore-color);
+      background: var(--metascore-color-white);
+      border: 0.25em solid var(--metascore-color-blue);
       box-sizing: border-box;
       z-index: 2;
 
@@ -725,11 +725,11 @@ export default {
     @each $component, $color in $component-colors {
       @if $component == default {
         .resize-handle {
-          border-color: var(--color-component-#{$component});
+          border-color: var(--metascore-color-component-#{$component});
         }
       } @else {
         &.#{$component} .resize-handle {
-          border-color: var(--color-component-#{$component});
+          border-color: var(--metascore-color-component-#{$component});
         }
       }
     }
@@ -771,7 +771,7 @@ export default {
         right: 0;
         bottom: 0;
         left: 0;
-        border: 0.25em dashed var(--metascore-color);
+        border: 0.25em dashed var(--metascore-color-blue);
         pointer-events: none;
         z-index: 1;
       }
@@ -779,18 +779,18 @@ export default {
       @each $component, $color in $component-colors {
         @if $component == default {
           &:after {
-            border-color: var(--color-component-#{$component});
+            border-color: var(--metascore-color-component-#{$component});
           }
         } @else if $component == page {
           &.#{$component} {
             &:after {
-              border-color: var(--color-component-#{$component});
+              border-color: var(--metascore-color-component-#{$component});
             }
           }
         } @else {
           &.#{$component} {
             &:after {
-              border-color: var(--color-component-#{$component});
+              border-color: var(--metascore-color-component-#{$component});
             }
           }
         }
@@ -798,7 +798,7 @@ export default {
     }
 
     &.drag-over {
-      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color);
+      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-blue);
     }
 
     &.dragging,

@@ -235,13 +235,13 @@ export default {
     grid-gap: 0.5em 1em;
     margin-bottom: 0.5em;
     padding: 0 1em;
-    border: 1px solid var(--color-bg-primary);
+    border: 1px solid var(--metascore-color-bg-primary);
 
     > legend {
       display: inline-block;
       width: auto;
       padding: 0.25em 0.5em;
-      color: var(--color-white);
+      color: var(--metascore-color-white);
       text-align: left;
     }
 

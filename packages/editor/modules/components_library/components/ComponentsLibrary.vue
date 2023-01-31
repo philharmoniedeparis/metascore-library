@@ -89,7 +89,7 @@ export default {
   display: flex;
   position: relative;
   flex-direction: column;
-  background: var(--color-bg-secondary);
+  background: var(--metascore-color-bg-secondary);
   overflow-y: auto;
 
   :deep(.components-library--item) {

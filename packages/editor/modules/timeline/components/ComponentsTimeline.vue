@@ -242,7 +242,7 @@ export default {
 .timeline {
   display: flex;
   flex-direction: row;
-  background: var(--color-bg-primary);
+  background: var(--metascore-color-bg-primary);
   z-index: 0;
 
   .tracks-container {
@@ -267,7 +267,7 @@ export default {
 
       > .handle,
       > .time-wrapper {
-        background: var(--color-bg-primary);
+        background: var(--metascore-color-bg-primary);
       }
 
       .handle {

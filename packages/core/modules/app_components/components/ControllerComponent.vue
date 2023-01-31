@@ -116,8 +116,8 @@ export default {
     flex: 0 0 2.75em;
     justify-content: center;
     align-items: center;
-    color: var(--color-white);
-    background-color: var(--metascore-color);
+    color: var(--metascore-color-white);
+    background-color: var(--metascore-color-blue);
     font-weight: 700;
     line-height: 2.7em;
   }
@@ -134,7 +134,7 @@ export default {
     button {
       position: relative;
       padding: 0;
-      color: var(--metascore-color);
+      color: var(--metascore-color-blue);
       box-sizing: border-box;
 
       span {

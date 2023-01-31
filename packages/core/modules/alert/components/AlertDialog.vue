@@ -48,7 +48,7 @@ export default {
 <style scoped lang="scss">
 .alert-dialog {
   .text {
-    color: var(--color-white);
+    color: var(--metascore-color-white);
     text-align: center;
 
     :deep(p) {

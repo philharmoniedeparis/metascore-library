@@ -107,7 +107,7 @@ export default {
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 2em;
-    color: var(--color-white);
+    color: var(--metascore-color-white);
   }
 
   th,
@@ -117,7 +117,7 @@ export default {
 
   th {
     font-weight: normal;
-    border-bottom: 2px solid var(--color-white);
+    border-bottom: 2px solid var(--metascore-color-white);
     white-space: nowrap;
   }
 
@@ -132,13 +132,13 @@ export default {
     &.key {
       display: inline-block;
       padding: 0.25em 0.5em;
-      color: var(--color-black);
+      color: var(--metascore-color-black);
       line-height: 1em;
       text-align: center;
-      background: var(--color-white);
-      border: 1px solid var(--color-bg-tertiary);
+      background: var(--metascore-color-white);
+      border: 1px solid var(--metascore-color-bg-tertiary);
       border-radius: 0.25em;
-      box-shadow: 1px 1px 1px var(--color-bg-primary);
+      box-shadow: 1px 1px 1px var(--metascore-color-bg-primary);
 
       &:first-letter {
         text-transform: uppercase;

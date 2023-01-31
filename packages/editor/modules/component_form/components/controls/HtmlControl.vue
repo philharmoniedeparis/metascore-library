@@ -307,16 +307,16 @@ export default {
 
   button {
     padding: 0.5em 1em;
-    color: var(--color-black);
-    background: var(--color-white);
+    color: var(--metascore-color-black);
+    background: var(--metascore-color-white);
     border-radius: 1.5em;
     opacity: 1;
   }
 
   &.editing {
     button {
-      color: var(--color-white);
-      background: var(--color-bg-primary);
+      color: var(--metascore-color-white);
+      background: var(--metascore-color-bg-primary);
     }
   }
 

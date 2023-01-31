@@ -234,9 +234,9 @@ export default {
   align-items: center;
   height: 2.5em;
   padding: 0.25em;
-  background-color: var(--color-bg-tertiary);
-  border-top: 1px solid var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-bg-secondary);
+  background-color: var(--metascore-color-bg-tertiary);
+  border-top: 1px solid var(--metascore-color-bg-secondary);
+  border-bottom: 1px solid var(--metascore-color-bg-secondary);
   box-sizing: border-box;
   cursor: grab;
 
@@ -247,7 +247,7 @@ export default {
     flex: 1 1 auto;
     height: 100%;
     margin: 0;
-    color: var(--color-bg-secondary);
+    color: var(--metascore-color-bg-secondary);
     overflow: hidden;
     pointer-events: none;
 
@@ -263,14 +263,14 @@ export default {
     }
 
     .icon {
-      color: var(--color-white);
+      color: var(--metascore-color-white);
       filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.5));
     }
 
     figcaption {
       flex: 1 1 auto;
       margin-left: 0.5em;
-      color: var(--color-white);
+      color: var(--metascore-color-white);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -279,7 +279,7 @@ export default {
   }
 
   button {
-    color: var(--color-white);
+    color: var(--metascore-color-white);
   }
 
   &::before {
@@ -296,10 +296,10 @@ export default {
 
   &:hover,
   &.dragging {
-    background-color: var(--color-bg-secondary);
+    background-color: var(--metascore-color-bg-secondary);
 
     figure {
-      color: var(--color-bg-primary);
+      color: var(--metascore-color-bg-primary);
     }
   }
 

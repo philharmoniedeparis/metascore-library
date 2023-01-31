@@ -106,7 +106,7 @@ export default {
     display: block;
     width: 1em;
     height: 1em;
-    background: var(--color-white);
+    background: var(--metascore-color-white);
     cursor: pointer;
 
     .icon {
@@ -114,7 +114,7 @@ export default {
       top: -0.1em;
       left: 0.2em;
       width: 1em;
-      color: var(--color-black);
+      color: var(--metascore-color-black);
       pointer-events: none;
     }
   }
@@ -134,7 +134,7 @@ export default {
 
   &.error {
     .input-container {
-      outline: 2px solid var(--color-danger);
+      outline: 2px solid var(--metascore-color-danger);
     }
   }
 }

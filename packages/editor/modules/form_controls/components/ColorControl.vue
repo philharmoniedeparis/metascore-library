@@ -250,8 +250,8 @@ export default {
 
     .icon {
       padding: 0.25em;
-      color: var(--color-bg-primary);
-      background-color: var(--color-bg-secondary);
+      color: var(--metascore-color-bg-primary);
+      background-color: var(--metascore-color-bg-secondary);
       box-sizing: content-box;
     }
 
@@ -269,8 +269,8 @@ export default {
   .overlay {
     position: fixed;
     width: 20em;
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-bg-secondary);
+    background: var(--metascore-color-bg-tertiary);
+    border: 1px solid var(--metascore-color-bg-secondary);
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
     z-index: 9999;
 
@@ -287,10 +287,10 @@ export default {
 
       button {
         padding: 0.5em;
-        background: var(--color-bg-primary);
+        background: var(--metascore-color-bg-primary);
 
         &.secondary {
-          background: var(--color-bg-secondary);
+          background: var(--metascore-color-bg-secondary);
         }
       }
     }
@@ -305,7 +305,7 @@ export default {
 
   &.error {
     .opener {
-      outline: 2px solid var(--color-danger);
+      outline: 2px solid var(--metascore-color-danger);
     }
   }
 }

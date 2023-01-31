@@ -341,8 +341,8 @@ export default {
   .overlay {
     position: fixed;
     width: 20em;
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-bg-secondary);
+    background: var(--metascore-color-bg-tertiary);
+    border: 1px solid var(--metascore-color-bg-secondary);
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
     z-index: 9999;
 
@@ -399,8 +399,8 @@ export default {
       position: relative;
       grid-area: preview;
       margin: 1em;
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-white);
+      background: var(--metascore-color-bg-secondary);
+      border: 1px solid var(--metascore-color-white);
       box-sizing: border-box;
 
       .resize-handle {
@@ -408,7 +408,7 @@ export default {
         width: 0.75em;
         height: 0.75em;
         margin: -0.35em;
-        background: var(--color-white);
+        background: var(--metascore-color-white);
         box-sizing: border-box;
         opacity: 0.5;
         z-index: 2;
@@ -447,10 +447,10 @@ export default {
 
       button {
         padding: 0.5em;
-        background: var(--color-bg-primary);
+        background: var(--metascore-color-bg-primary);
 
         &.secondary {
-          background: var(--color-bg-secondary);
+          background: var(--metascore-color-bg-secondary);
         }
       }
     }
