@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
@@ -33,6 +34,30 @@ export default class Media extends EmbeddableComponent {
           ajv,
           title: "Source",
         }),
+      },
+      if: {
+        $id: uuid(), // Used for Ajv caching.
+        properties: {
+          tag: {
+            const: "video",
+          },
+        },
+      },
+      then: {
+        properties: {
+          dimension: {
+            ...super.schema.properties.dimension,
+            default: [160, 120],
+          },
+        },
+      },
+      else: {
+        properties: {
+          dimension: {
+            ...super.schema.properties.dimension,
+            default: [50, 50],
+          },
+        },
       },
     });
   }

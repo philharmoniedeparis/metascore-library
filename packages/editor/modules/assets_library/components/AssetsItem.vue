@@ -104,13 +104,17 @@ export default {
     },
     component() {
       switch (this.type) {
-        case "image":
-          return {
+        case "image": {
+          const data = {
             name: this.label,
             type: "Content",
             "background-image": this.file.url,
-            dimension: [this.file.width, this.file.height],
           };
+          if (this.file.width && this.file.height) {
+            data.dimension = [this.file.width, this.file.height];
+          }
+          return data;
+        }
 
         case "lottie_animation":
           return {
@@ -134,14 +138,18 @@ export default {
             src: this.file.url,
           };
 
-        case "video":
-          return {
+        case "video": {
+          const data = {
             name: this.label,
             type: "Media",
             tag: this.type,
             src: this.file.url,
-            dimension: [this.file.width, this.file.height],
           };
+          if (this.file.width && this.file.height) {
+            data.dimension = [this.file.width, this.file.height];
+          }
+          return data;
+        }
 
         default:
           return null;
