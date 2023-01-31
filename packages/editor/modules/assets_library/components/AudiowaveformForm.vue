@@ -79,6 +79,14 @@ import { toRaw } from "vue";
 import Model from "../models/Audiowaveform";
 
 export default {
+  props: {
+    defaults: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
+  },
   emits: ["submit", "close"],
   data() {
     return {
@@ -177,7 +185,7 @@ export default {
     },
   },
   async mounted() {
-    this.model = await Model.create({});
+    this.model = await Model.create(this.defaults);
   },
   methods: {
     onUpdate({ property, value }) {
