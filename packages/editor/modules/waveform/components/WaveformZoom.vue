@@ -549,7 +549,7 @@ export default {
     top: 50%;
     left: 0;
     right: 0;
-    color: var(--color-white);
+    color: var(--metascore-color-white);
     transform: translateY(-50%);
     text-align: center;
   }

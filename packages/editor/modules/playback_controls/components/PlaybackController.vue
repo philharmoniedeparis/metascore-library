@@ -119,8 +119,8 @@ export default {
       height: 4em;
       margin-right: 2.5em;
       padding: 0;
-      background: var(--color-white);
-      color: var(--color-bg-secondary);
+      background: var(--metascore-color-white);
+      color: var(--metascore-color-bg-secondary);
       border-radius: 50%;
       box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.5);
 

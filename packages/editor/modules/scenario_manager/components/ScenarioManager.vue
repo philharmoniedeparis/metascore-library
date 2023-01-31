@@ -325,19 +325,19 @@ export default {
 
     .item {
       padding: 0 0.5em;
-      border-right: 1px solid var(--color-bg-primary);
-      border-left: 1px solid var(--color-bg-primary);
+      border-right: 1px solid var(--metascore-color-bg-primary);
+      border-left: 1px solid var(--metascore-color-bg-primary);
       white-space: nowrap;
 
       a {
-        color: var(--color-white);
+        color: var(--metascore-color-white);
         border-bottom: 1px solid transparent;
         opacity: 0.5;
       }
 
       &.active {
         a {
-          border-bottom-color: var(--color-white);
+          border-bottom-color: var(--metascore-color-white);
           opacity: 1;
           cursor: default;
         }

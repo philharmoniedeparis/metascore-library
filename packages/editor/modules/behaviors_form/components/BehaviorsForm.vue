@@ -219,8 +219,8 @@ export default {
 .behaviors-form {
   position: relative;
   height: 100%;
-  background: var(--color-bg-tertiary);
-  color: var(--color-white);
+  background: var(--metascore-color-bg-tertiary);
+  color: var(--metascore-color-white);
 }
 
 .blockly {

@@ -129,8 +129,8 @@ export default {
 
   button {
     padding: 0.5em 1em 0.5em 0.5em;
-    color: var(--color-black);
-    background: var(--color-white);
+    color: var(--metascore-color-black);
+    background: var(--metascore-color-white);
     border-radius: 1.5em;
     opacity: 1;
 
@@ -147,7 +147,7 @@ export default {
 
   &.recording {
     button {
-      background: var(--color-bg-primary);
+      background: var(--metascore-color-bg-primary);
 
       &::before {
         animation: pulse 1s ease infinite;

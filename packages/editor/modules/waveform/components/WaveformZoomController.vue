@@ -158,7 +158,7 @@ export default {
   width: 12em;
   flex-direction: row;
   align-items: center;
-  background-color: var(--color-bg-primary);
+  background-color: var(--metascore-color-bg-primary);
 
   // #\9 is used here to increase specificity.
   button:not(#\9) {
@@ -185,7 +185,7 @@ export default {
       height: 0.75em;
       top: 50%;
       transform: translateX(-50%) translateY(-50%);
-      background: var(--color-white);
+      background: var(--metascore-color-white);
       box-sizing: border-box;
       border-radius: 50%;
       box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.5);
@@ -198,7 +198,7 @@ export default {
       top: 50%;
       width: 100%;
       height: 1px;
-      background: var(--color-bg-tertiary);
+      background: var(--metascore-color-bg-tertiary);
     }
   }
 }

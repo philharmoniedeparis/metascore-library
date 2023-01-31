@@ -440,8 +440,8 @@ export default {
   .aniamted-properties :deep(.handle),
   .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
-    border-top: 1px solid var(--color-bg-primary);
-    border-bottom: 1px solid var(--color-bg-primary);
+    border-top: 1px solid var(--metascore-color-bg-primary);
+    border-bottom: 1px solid var(--metascore-color-bg-primary);
     box-sizing: border-box;
   }
 
@@ -457,8 +457,8 @@ export default {
     justify-content: flex-start;
     align-items: center;
     gap: 0.25em;
-    background: var(--color-bg-secondary);
-    border-right: 2px solid var(--color-bg-primary);
+    background: var(--metascore-color-bg-secondary);
+    border-right: 2px solid var(--metascore-color-bg-primary);
     touch-action: none;
     user-select: none;
     z-index: 2;
@@ -470,7 +470,7 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: var(--color-black);
+      background: var(--metascore-color-black);
       opacity: min(calc(var(--depth) * 0.05), 0.5);
       pointer-events: none;
     }
@@ -512,7 +512,7 @@ export default {
         .icon {
           width: 1em;
           height: 1em;
-          color: var(--color-white);
+          color: var(--metascore-color-white);
           opacity: 0.5;
         }
       }
@@ -533,7 +533,7 @@ export default {
       .toggle {
         label {
           padding: 0.25em;
-          background: var(--color-bg-primary);
+          background: var(--metascore-color-bg-primary);
         }
 
         input:checked + label {
@@ -558,7 +558,7 @@ export default {
     position: relative;
     height: 100%;
     grid-column: 2;
-    background: var(--color-bg-secondary);
+    background: var(--metascore-color-bg-secondary);
     cursor: pointer;
 
     .time {
@@ -636,12 +636,12 @@ export default {
   @each $component, $color in $component-colors {
     @if $component == default {
       > .time-wrapper .time .background {
-        background-color: var(--color-component-#{$component});
+        background-color: var(--metascore-color-component-#{$component});
       }
     } @else {
       &.#{$component} {
         > .time-wrapper .time .background {
-          background-color: var(--color-component-#{$component});
+          background-color: var(--metascore-color-component-#{$component});
         }
       }
     }
@@ -701,7 +701,7 @@ export default {
   &.selected {
     > .handle,
     > .time-wrapper {
-      background: var(--color-bg-tertiary);
+      background: var(--metascore-color-bg-tertiary);
       .time {
         .background {
           opacity: 1;

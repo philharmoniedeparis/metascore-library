@@ -196,14 +196,14 @@ export default {
         content: "";
         display: block;
         height: 100%;
-        background: var(--metascore-color);
+        background: var(--metascore-color-blue);
       }
     }
 
     &.active {
       .marker {
         &::after {
-          box-shadow: 0 0 0.25em 0 var(--metascore-color);
+          box-shadow: 0 0 0.25em 0 var(--metascore-color-blue);
         }
       }
     }
@@ -219,14 +219,14 @@ export default {
     .time {
       font-size: 0.9em;
       padding: 0.25em 0.5em;
-      color: var(--color-white);
-      background: var(--metascore-color);
+      color: var(--metascore-color-white);
+      background: var(--metascore-color-blue);
     }
 
     // #\9 is used here to increase specificity.
     button:not(#\9) {
       padding: 0.25em;
-      background: var(--color-danger);
+      background: var(--metascore-color-danger);
 
       .icon {
         display: block;

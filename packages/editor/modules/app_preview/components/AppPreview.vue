@@ -584,7 +584,7 @@ export default {
 .iframe-wrapper {
   position: relative;
   grid-area: 3/3/4/4;
-  background: var(--color-white);
+  background: var(--metascore-color-white);
   transform-origin: 0 0;
   transition: all 0.25s;
 }
@@ -592,7 +592,7 @@ export default {
 .preview-ruler {
   position: sticky;
   z-index: 1;
-  background: var(--color-bg-secondary);
+  background: var(--metascore-color-bg-secondary);
   overflow: hidden;
 
   &[data-axis="x"] {
@@ -614,7 +614,7 @@ export default {
   height: v-bind(cssRulerThikness);
   margin-left: calc(-1 * v-bind(cssRulerThikness));
   margin-top: calc(-1 * v-bind(cssRulerThikness));
-  background: var(--color-bg-secondary);
+  background: var(--metascore-color-bg-secondary);
   z-index: 3;
 }
 

@@ -191,7 +191,7 @@ export default {
     flex-direction: row;
     align-items: center;
     gap: 0.5em;
-    color: var(--color-white);
+    color: var(--metascore-color-white);
     text-transform: uppercase;
 
     &::before,
@@ -200,7 +200,7 @@ export default {
       display: block;
       flex: 1;
       height: 1px;
-      background: var(--color-bg-primary);
+      background: var(--metascore-color-bg-primary);
     }
   }
 }
