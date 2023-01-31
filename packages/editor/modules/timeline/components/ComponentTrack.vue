@@ -319,8 +319,11 @@ export default {
         },
         modifiers: [
           interact.modifiers.snap({
-            targets: this.getResizableSnapTargets(),
-            range: this.snapRange,
+            targets: [this.getResizableSnapTarget],
+            relativePoints: [
+              { x: 0, y: 0 },
+              { x: 1, y: 1 },
+            ],
           }),
         ],
         listeners: {
@@ -336,16 +339,23 @@ export default {
         delete this._interactables;
       }
     },
-    getResizableSnapTargets() {
+    getResizableSnapTarget(x) {
+      let min_distance = this.snapRange;
+      let target = null;
+
+      this.activeSnapTargets = [];
+
+      //Check if playhead is in range.
       const { left, width } =
         this.$refs["time-wrapper"].getBoundingClientRect();
-      const targets = [];
+      const playhead_x = (this.mediaTime / this.mediaDuration) * width + left;
+      const distance = Math.abs(playhead_x - x);
+      if (distance <= min_distance) {
+        min_distance = distance;
+        target = { x: playhead_x };
+      }
 
-      // Add playhead.
-      const playhead_x = this.mediaTime * (width / this.mediaDuration) + left;
-      targets.push({ x: playhead_x });
-
-      // Loop through tracks to check if they are legitimate target.
+      // Loop through tracks to check if they are in range.
       this.$el
         .closest(".component-track[data-type='Scenario']")
         .querySelectorAll(
@@ -359,11 +369,20 @@ export default {
 
           const { left: track_left, width: track_width } =
             track_time.getBoundingClientRect();
-          targets.push({ x: track_left });
-          targets.push({ x: track_left + track_width });
+          [track_left, track_left + track_width].forEach((pos) => {
+            const distance = Math.abs(pos - x);
+            if (distance <= min_distance) {
+              min_distance = distance;
+              target = { x: pos };
+            }
+          });
         });
 
-      return targets;
+      if (target) {
+        this.activeSnapTargets.push(target.x);
+      }
+
+      return target;
     },
     onResizableStart() {
       this.resizing = true;
@@ -374,13 +393,6 @@ export default {
       const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
       const prop = evt.edges.right ? "end-time" : "start-time";
       const data = {};
-
-      this.activeSnapTargets = [];
-      evt.modifiers.forEach((modifier) => {
-        if (modifier.inRange) {
-          this.activeSnapTargets.push(modifier.target.x);
-        }
-      });
 
       let previous_value = this.component[prop];
       if (previous_value === null) {
