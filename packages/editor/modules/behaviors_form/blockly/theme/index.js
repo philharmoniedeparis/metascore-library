@@ -3,6 +3,19 @@ import { default as Blockly, Themes, Theme } from "blockly/core";
 Blockly.HSV_SATURATION = 0.99;
 Blockly.HSV_VALUE = 0.9;
 
+const category_colors = {
+  triggers: "120",
+  logic: "18",
+  math: "18",
+  text: "18",
+  color: "18",
+  actions: "43",
+  media: "43",
+  components: "43",
+  variables: "180",
+  presets: "43",
+};
+
 export default Theme.defineTheme("metaScore", {
   base: Themes.Classic,
   componentStyles: {
@@ -24,64 +37,64 @@ export default Theme.defineTheme("metaScore", {
   },
   categoryStyles: {
     triggers_category: {
-      colour: "120",
+      colour: category_colors.triggers,
     },
     logic_category: {
-      colour: "18",
+      colour: category_colors.logic,
     },
     math_category: {
-      colour: "18",
+      colour: category_colors.math,
     },
     text_category: {
-      colour: "18",
+      colour: category_colors.text,
     },
     color_category: {
-      colour: "18",
+      colour: category_colors.color,
     },
     actions_category: {
-      colour: "43",
+      colour: category_colors.actions,
     },
     media_category: {
-      colour: "43",
+      colour: category_colors.media,
     },
     components_category: {
-      colour: "43",
+      colour: category_colors.components,
     },
     variables_category: {
-      colour: "180",
+      colour: category_colors.variables,
     },
     presets_category: {
-      colour: "43",
+      colour: category_colors.presets,
     },
   },
   blockStyles: {
     trigger_blocks: {
-      colourPrimary: "120",
+      colourPrimary: category_colors.triggers,
       hat: "cap",
     },
     actions_blocks: {
-      colourPrimary: "43",
+      colourPrimary: category_colors.actions,
     },
     logic_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.logic,
     },
     math_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.math,
     },
     text_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.text,
     },
     color_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.color,
     },
     media_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.media,
     },
     component_blocks: {
-      colourPrimary: "18",
+      colourPrimary: category_colors.components,
     },
     variable_blocks: {
-      colourPrimary: "180",
+      colourPrimary: category_colors.variables,
     },
   },
 });
