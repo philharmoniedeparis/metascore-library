@@ -82,6 +82,7 @@ export default class SVG extends EmbeddableComponent {
               ajv,
               title: "Stroke",
               nullable: true,
+              default: null,
             }),
             "stroke-width": createNumberField({
               ajv,
@@ -89,6 +90,7 @@ export default class SVG extends EmbeddableComponent {
               multipleOf: 1,
               minimum: 0,
               nullable: true,
+              default: null,
             }),
             "stroke-dasharray": createEnumField({
               title: "Stroke dasharray",
@@ -100,6 +102,7 @@ export default class SVG extends EmbeddableComponent {
               ajv,
               title: "Fill",
               nullable: true,
+              default: null,
             }),
           },
           if: {
@@ -115,14 +118,17 @@ export default class SVG extends EmbeddableComponent {
               "marker-start": createStringField({
                 title: "Marker start",
                 nullable: true,
+                default: null,
               }),
               "marker-mid": createStringField({
                 title: "Marker mid",
                 nullable: true,
+                default: null,
               }),
               "marker-end": createStringField({
                 title: "Marker end",
                 nullable: true,
+                default: null,
               }),
             },
           },
@@ -166,6 +172,15 @@ export default class SVG extends EmbeddableComponent {
             });
           }
         } else {
+          // @todo: fix empty values in CMS
+          ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach(
+            (prop) => {
+              if (!(prop in data) || !data[prop]) {
+                data[prop] = null;
+              }
+            }
+          );
+
           // Set markers
           // @todo: move out of the model's data
           const markers = [];
@@ -174,6 +189,12 @@ export default class SVG extends EmbeddableComponent {
           });
           if (markers.length > 0) {
             data.markers = markers;
+            // @todo: fix empty values in CMS
+            ["marker-start", "marker-mid", "marker-end"].forEach((prop) => {
+              if (!(prop in data) || !data[prop]) {
+                data[prop] = null;
+              }
+            });
           }
         }
 
