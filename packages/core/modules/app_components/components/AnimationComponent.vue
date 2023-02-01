@@ -1,6 +1,6 @@
 <template>
   <component-wrapper :component="component">
-    <div ref="animation-wrapper" :style="style" />
+    <div ref="animation-wrapper" class="animation-wrapper" :style="style" />
   </component-wrapper>
 </template>
 
@@ -186,11 +186,16 @@ export default {
 
 <style lang="scss" scoped>
 .animation {
-  :deep(.color1 path) {
-    fill: var(--color1);
-  }
-  :deep(.color2 path) {
-    fill: var(--color2);
+  .animation-wrapper {
+    width: 100%;
+    height: 100%;
+
+    :deep(.color1 path) {
+      fill: var(--color1);
+    }
+    :deep(.color2 path) {
+      fill: var(--color2);
+    }
   }
 }
 </style>
