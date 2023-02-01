@@ -93,17 +93,16 @@ export default class Animation extends EmbeddableComponent {
   }
 
   /**
-   * Get data embedded in the SVG content
+   * Set defaults embedded in the SVG content
    *
    * @param {string} url The SVG's Url
-   * @returns {Promise<object>} A promise that resolves with the embedded data
+   * @param {object} data The model's data
+   * @returns {Promise<object>} A promise that resolves after defaults have been set
    */
-  static async getEmbeddedData(url) {
+  static async setEmbeddedDefaults(url, data) {
     const { default: Lottie } = await import("lottie-web");
 
     return new Promise((resolve) => {
-      const data = {};
-
       const container = document.createElement("div");
       container.style.visibility = "hidden";
       container.style.pointerEvents = "none";
@@ -116,31 +115,42 @@ export default class Animation extends EmbeddableComponent {
         autoplay: false,
       });
       animation.addEventListener("DOMLoaded", () => {
-        // Get duration.
-        data.duration = animation.getDuration();
+        // Set loop duration.
+        data["loop-duration"] = animation.getDuration();
+        if (!("loop-duration" in data) || data["loop-duration"] === null) {
+          data["loop-duration"] = animation.getDuration();
+        }
 
-        // Get colors.
+        // Set colors.
         const colors = [];
-        ["color1", "color2"].forEach((c) => {
-          const path = container.querySelector(`.${c} path`);
+        ["color1", "color2"].forEach((name) => {
+          const path = container.querySelector(`.${name} path`);
           if (path) {
             const style = getComputedStyle(path);
             colors.push(style.fill);
           }
         });
         if (colors.length > 0) {
-          data.colors = colors;
+          if (!("colors" in data) || data.colors === null) {
+            data.colors = colors;
+          } else {
+            colors.forEach((color, index) => {
+              if (!data.colors[index]) {
+                data.colors[index] = color;
+              }
+            });
+          }
         }
 
         animation.destroy();
         container.remove();
-        resolve(data);
+        resolve();
       });
 
       animation.addEventListener("error", () => {
         animation.destroy();
         container.remove();
-        resolve({});
+        resolve();
       });
     });
   }
@@ -150,8 +160,7 @@ export default class Animation extends EmbeddableComponent {
    */
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      const embedded_data = await this.constructor.getEmbeddedData(data.src);
-      Object.assign(data, embedded_data);
+      await this.constructor.setEmbeddedDefaults(data.src, data);
     }
 
     return await super.validate(data);

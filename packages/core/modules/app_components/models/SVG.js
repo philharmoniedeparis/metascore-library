@@ -133,22 +133,20 @@ export default class SVG extends EmbeddableComponent {
   }
 
   /**
-   * Get data embedded in the SVG content
+   * Set defaults embedded in the SVG content
    *
-   * @param {string} url The SVG's Url
-   * @returns {Promise<object>} A promise that resolves with the embedded data
+   * @param {object} data The model's data
+   * @returns {Promise<object>} A promise that resolves after defaults have been set
    */
-  static getEmbeddedData(url) {
+  static setEmbeddedDefaults(url, data) {
     return new Promise((resolve) => {
-      const data = {};
-
       const obj = document.createElement("object");
       obj.style.visibility = "hidden";
       obj.style.pointerEvents = "none";
       obj.addEventListener("load", (evt) => {
         const svg = evt.target.contentDocument.querySelector("svg");
 
-        // Get colors.
+        // Set colors.
         const colors = [];
         [".color1", ".color2"].forEach((c) => {
           const el = svg.querySelector(c);
@@ -158,38 +156,34 @@ export default class SVG extends EmbeddableComponent {
           }
         });
         if (colors.length > 0) {
-          data.colors = colors;
+          if (!("colors" in data) || data.colors === null) {
+            data.colors = colors;
+          } else {
+            colors.forEach((color, index) => {
+              if (!data.colors[index]) {
+                data.colors[index] = color;
+              }
+            });
+          }
         } else {
-          data.stroke = null;
-          data["stroke-width"] = null;
-          data["stroke-dasharray"] = null;
-          data.fill = null;
-
-          // Get markers
+          // Set markers
+          // @todo: move out of the model's data
           const markers = [];
           svg.querySelectorAll("defs marker").forEach((marker) => {
             markers.push(marker.getAttribute("id"));
           });
           if (markers.length > 0) {
             data.markers = markers;
-            data["marker-start"] = null;
-            data["marker-mid"] = null;
-            data["marker-end"] = null;
           }
         }
 
         evt.target.remove();
-        resolve(data);
+        resolve();
       });
 
       obj.addEventListener("error", (evt) => {
         evt.target.remove();
-        resolve({
-          stroke: null,
-          "stroke-width": null,
-          "stroke-dasharray": null,
-          fill: null,
-        });
+        resolve();
       });
 
       obj.setAttribute("type", "image/svg+xml");
@@ -203,8 +197,7 @@ export default class SVG extends EmbeddableComponent {
    */
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      const embedded_data = await this.constructor.getEmbeddedData(data.src);
-      Object.assign(data, embedded_data);
+      await this.constructor.setEmbeddedDefaults(data.src, data);
     }
 
     return await super.validate(data);
