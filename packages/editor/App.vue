@@ -613,23 +613,24 @@ export default {
 
   &,
   :deep(*) {
-    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+    scrollbar-color: var(--metascore-scrollbar-thumb-color)
+      var(--metascore-scrollbar-track-color);
     scrollbar-width: thin;
 
     ::-webkit-scrollbar {
       appearance: none;
-      background-color: var(--scrollbar-track-color);
-      width: var(--scrollbar-width);
-      height: var(--scrollbar-thumb-min-height);
+      background-color: var(--metascore-scrollbar-track-color);
+      width: var(--metascore-scrollbar-width);
+      height: var(--metascore-scrollbar-thumb-min-height);
     }
 
     ::-webkit-scrollbar-thumb {
       border-radius: 0;
-      background-color: var(--scrollbar-thumb-color);
+      background-color: var(--metascore-scrollbar-thumb-color);
 
       &:active,
       &:hover {
-        background-color: var(--scrollbar-thumb-active-color);
+        background-color: var(--metascore-scrollbar-thumb-active-color);
       }
     }
   }
