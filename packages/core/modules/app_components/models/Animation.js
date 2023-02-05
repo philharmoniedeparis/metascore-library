@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { merge } from "lodash";
+import { merge, round } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
   createUrlField,
@@ -116,9 +116,8 @@ export default class Animation extends EmbeddableComponent {
       });
       animation.addEventListener("DOMLoaded", () => {
         // Set loop duration.
-        data["loop-duration"] = animation.getDuration();
         if (!("loop-duration" in data) || data["loop-duration"] === null) {
-          data["loop-duration"] = animation.getDuration();
+          data["loop-duration"] = round(animation.getDuration(), 2);
         }
 
         // Set colors.
