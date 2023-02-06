@@ -3,6 +3,9 @@ import { javascriptGenerator as JavaScript } from "blockly/javascript";
 
 const states = new Map();
 
+const SET_PROPERTY_OVERRIDES_KEY = "app_behaviors:set_property";
+const SET_PROPERTY_OVERRIDES_PRIORITY = 10;
+
 export function init(context) {
   // Ensure 'Components' name does not conflict with variable names.
   JavaScript.addReservedWords("Components");
@@ -14,15 +17,11 @@ export function init(context) {
       const { getComponentElement } = useModule("app_preview");
 
       const component = getComponent(type, id);
-      if (!component) {
-        return;
-      }
+      if (!component) return;
 
       /** @type HTMLElement */
       const el = getComponentElement(component);
-      if (!el) {
-        return;
-      }
+      if (!el) return;
 
       // Add the event listener.
       el.addEventListener(event, callback);
@@ -53,19 +52,23 @@ export function init(context) {
       const { getComponent } = useModule("app_components");
 
       const component = getComponent(type, id);
-      if (!component) {
-        return;
-      }
+      if (!component) return;
 
       return component[name];
     },
     setProperty: (type, id, name, value) => {
-      const { overrideComponent } = useModule("app_components");
-      overrideComponent(
-        { type, id },
+      const { getComponent, setOverrides } = useModule("app_components");
+
+      const component = getComponent(type, id);
+      if (!component) return;
+
+      setOverrides(
+        component,
+        SET_PROPERTY_OVERRIDES_KEY,
         {
           [name]: value,
-        }
+        },
+        SET_PROPERTY_OVERRIDES_PRIORITY
       );
     },
     getBlockPage: (id) => {
@@ -88,6 +91,9 @@ export function init(context) {
 }
 
 export function reset() {
+  const { clearOverrides } = useModule("app_components");
+  clearOverrides(null, SET_PROPERTY_OVERRIDES_KEY);
+
   states.forEach((state, el) => {
     // Remove all listeners.
     const { listeners, cursor } = state;

@@ -23,6 +23,9 @@ import { debounce } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
 
+const BLOCK_TOGGLE_LINKS_OVERRIDES_KEY = "app_renderer:block_toggle_links";
+const BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY = 100;
+
 export default {
   props: {
     responsive: {
@@ -42,7 +45,7 @@ export default {
       activeScenario,
       setActiveScenario,
       setBlockActivePage,
-      overrideComponent,
+      setOverrides: setComponentOverrides,
     } = useModule("app_components");
     const {
       source: mediaSource,
@@ -64,7 +67,7 @@ export default {
       activeScenario,
       setActiveScenario,
       setBlockActivePage,
-      overrideComponent,
+      setComponentOverrides,
       setGlobalCuepoint,
       removeCuepoint,
     };
@@ -268,7 +271,14 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.overrideComponent(block, { hidden: false });
+            if (block) {
+              this.setComponentOverrides(
+                block,
+                BLOCK_TOGGLE_LINKS_OVERRIDES_KEY,
+                { hidden: false },
+                BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY
+              );
+            }
           }
           break;
 
@@ -277,7 +287,14 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.overrideComponent(block, { hidden: true });
+            if (block) {
+              this.setComponentOverrides(
+                block,
+                BLOCK_TOGGLE_LINKS_OVERRIDES_KEY,
+                { hidden: true },
+                BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY
+              );
+            }
           }
           break;
 
@@ -286,7 +303,13 @@ export default {
             const block = this.getComponentsByType("Block").find(
               (c) => c.name === args.name
             );
-            if (block) this.overrideComponent(block, { hidden: !block.hidden });
+            if (block)
+              this.setComponentOverrides(
+                block,
+                BLOCK_TOGGLE_LINKS_OVERRIDES_KEY,
+                { hidden: !block.hidden },
+                BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY
+              );
           }
           break;
 

@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
@@ -35,7 +34,7 @@ export default class SVG extends EmbeddableComponent {
         }),
       },
       if: {
-        $id: uuid(), // Used for Ajv caching.
+        $id: `${this.schemaId}:colors-if`, // Used for Ajv caching.
         properties: {
           colors: createArrayField({
             items: createColorField({ ajv, nullable: false }),
@@ -58,7 +57,7 @@ export default class SVG extends EmbeddableComponent {
       },
       else: {
         if: {
-          $id: uuid(), // Used for Ajv caching.
+          $id: `${this.schemaId}:colors-else-if`, // Used for Ajv caching.
           properties: {
             colors: createArrayField({
               items: createColorField({ ajv, nullable: false }),

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { readonly, unref } from "vue";
-import { omit, cloneDeep, assign } from "lodash";
+import { readonly, unref, isReadonly } from "vue";
+import { omit, cloneDeep } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { t as $t } from "@metascore-library/core/services/i18n";
@@ -17,6 +17,12 @@ export default defineStore("app-components", {
     };
   },
   getters: {
+    get() {
+      return (type, id) => {
+        const component = this.components?.[type]?.[id];
+        return component && !component.$deleted ? readonly(component) : null;
+      };
+    },
     all() {
       return []
         .concat(...Object.values(this.components).map((v) => Object.values(v)))
@@ -135,18 +141,6 @@ export default defineStore("app-components", {
       this.components = normalized.entities;
       this.activeScenario = normalized.result[0].id;
     },
-    get(type, id) {
-      const component = this.components?.[type]?.[id];
-
-      let data = component && !component.$deleted ? component.data : null;
-
-      if (this.overridesEnabled && this.hasOverrides(component)) {
-        // Apply component overrides.
-        data = assign({}, data, this.getOverrides(component));
-      }
-
-      return data ? readonly(data) : null;
-    },
     async create(data, validate = true) {
       if (data.type in Models) {
         if (!("id" in data)) {
@@ -251,68 +245,73 @@ export default defineStore("app-components", {
         console.error(e);
       }
     },
-    async delete({ type, id }) {
-      const component = this.components?.[type]?.[id];
-      if (component) {
-        if (type === "Page") {
-          const block = this.getParent(component);
-          if (block.synched) {
-            const pages = this.getChildren(block);
-            const index = pages.findIndex((c) => c.id === component.id);
+    async delete(component) {
+      const { type, id } = component;
 
-            let mid_time = component["end-time"] - component["start-time"];
-            if (component["start-time"] !== null) {
-              mid_time = component["start-time"];
-            }
-            if (component["end-time"] !== null) {
-              mid_time =
-                mid_time !== null
-                  ? mid_time + (component["end-time"] - mid_time) / 2
-                  : component["end-time"];
-            }
+      if (isReadonly(component)) {
+        component = this.components?.[type]?.[id];
+      }
 
-            if (index < pages.length - 1) {
-              const next_page = pages[index + 1];
-              await this.components[next_page.type][next_page.id].update({
-                "start-time":
-                  component["start-time"] !== null ? mid_time : null,
-              });
-            }
-            if (index > 0) {
-              const prev_page = pages[index - 1];
-              await this.components[prev_page.type][prev_page.id].update({
-                "end-time": component["end-time"] !== null ? mid_time : null,
-              });
-            }
+      if (type === "Page") {
+        const block = this.getParent(component);
+        if (block.synched) {
+          const pages = this.getChildren(block);
+          const index = pages.findIndex((c) => c.id === component.id);
+
+          let mid_time = component["end-time"] - component["start-time"];
+          if (component["start-time"] !== null) {
+            mid_time = component["start-time"];
+          }
+          if (component["end-time"] !== null) {
+            mid_time =
+              mid_time !== null
+                ? mid_time + (component["end-time"] - mid_time) / 2
+                : component["end-time"];
+          }
+
+          if (index < pages.length - 1) {
+            const next_page = pages[index + 1];
+            await this.components[next_page.type][next_page.id].update({
+              "start-time": component["start-time"] !== null ? mid_time : null,
+            });
+          }
+          if (index > 0) {
+            const prev_page = pages[index - 1];
+            await this.components[prev_page.type][prev_page.id].update({
+              "end-time": component["end-time"] !== null ? mid_time : null,
+            });
           }
         }
-
-        component.$deleted = true;
       }
+
+      component.$deleted = true;
     },
-    async restore({ type, id }) {
-      const component = this.components?.[type]?.[id];
-      if (component) {
-        delete component.$deleted;
+    async restore(component) {
+      const { type, id } = component;
 
-        if (type === "Page") {
-          const block = this.getParent(component);
-          if (block.synched) {
-            const pages = this.getChildren(block);
-            const index = pages.findIndex((c) => c.id === component.id);
+      if (isReadonly(component)) {
+        component = this.components?.[type]?.[id];
+      }
 
-            if (index < pages.length - 1) {
-              const next_page = pages[index + 1];
-              await this.components[next_page.type][next_page.id].update({
-                "start-time": component["end-time"],
-              });
-            }
-            if (index > 0) {
-              const prev_page = pages[index - 1];
-              await this.components[prev_page.type][prev_page.id].update({
-                "end-time": component["start-time"],
-              });
-            }
+      delete component.$deleted;
+
+      if (type === "Page") {
+        const block = this.getParent(component);
+        if (block.synched) {
+          const pages = this.getChildren(block);
+          const index = pages.findIndex((c) => c.id === component.id);
+
+          if (index < pages.length - 1) {
+            const next_page = pages[index + 1];
+            await this.components[next_page.type][next_page.id].update({
+              "start-time": component["end-time"],
+            });
+          }
+          if (index > 0) {
+            const prev_page = pages[index - 1];
+            await this.components[prev_page.type][prev_page.id].update({
+              "end-time": component["start-time"],
+            });
           }
         }
       }
@@ -356,24 +355,101 @@ export default defineStore("app-components", {
     disableOverrides() {
       this.overridesEnabled = false;
     },
-    hasOverrides({ type, id }) {
-      const key = `${type}:${id}`;
-      return this.overrides.has(key);
-    },
-    getOverrides({ type, id }) {
-      const key = `${type}:${id}`;
-      return this.overrides.get(key);
-    },
-    override({ type, id }, state) {
-      const key = `${type}:${id}`;
-      const previous = this.hasOverrides({ type, id })
-        ? this.getOverrides({ type, id })
-        : {};
 
-      this.overrides.set(key, assign(previous, state));
+    /**
+     * Check if overrides are set.
+     *
+     * @param {object} component The component.
+     * @param {[string]} key An overrides' key to check against.
+     */
+    hasOverrides(component, key) {
+      if (component) {
+        const { type, id } = component;
+        if (!this.overrides.has(`${type}:${id}`)) {
+          return false;
+        }
+
+        const overrides = this.overrides.get(`${type}:${id}`);
+        if (key) return overrides.has(key);
+        return true;
+      }
+
+      return this.overrides.size > 0;
     },
-    clearOverrides() {
-      this.overrides.clear();
+
+    /**
+     * Add/update a set of data overrides.
+     *
+     * @param {object} component The component.
+     * @param {string} key A key to identify the overrides.
+     * @param {object} values The data to override.
+     * @param {[number = 0]} priority The overrides' priority, overrides with higher priority will have precedence.
+     */
+    setOverrides(component, key, values, priority) {
+      const { type, id } = component;
+      if (!this.hasOverrides(`${type}:${id}`)) {
+        this.overrides.set(`${type}:${id}`, new Map());
+      }
+
+      const overrides = this.overrides.get(`${type}:${id}`);
+      const existing = overrides.get(key) ?? {
+        priority: 0,
+      };
+
+      overrides.set(key, {
+        values,
+        priority: priority ?? existing.priority,
+      });
+    },
+
+    /**
+     * Get a set of data overrides.
+     *
+     * @param {object} component The component.
+     * @param {string} key A key to identify the overrides.
+     * @return {object | Map} The associated data, or a Map of associated data.
+     */
+    getOverrides(component, key) {
+      if (component) {
+        const { type, id } = component;
+        const overrides = this.overrides.get(`${type}:${id}`);
+        if (key) {
+          return overrides.get(key);
+        }
+
+        return overrides;
+      }
+
+      return this.overrides;
+    },
+
+    /**
+     * Delete a set of overrides.
+     *
+     * @param {object} component The component.
+     * @param {string} key The overrides' key.
+     */
+    clearOverrides(component, key) {
+      if (component) {
+        const { type, id } = component;
+        if (this.hasOverrides(component, key)) {
+          if (key) {
+            // Delete specific overrides for a specific component.
+            this.overrides.get(`${type}:${id}`).delete(key);
+          } else {
+            // Delete all overrides for a specific component.
+            this.overrides.delete(`${type}:${id}`);
+          }
+        }
+      } else if (key) {
+        // Delete specific overrides for all components.
+        this.overrides.forEach((overrides) => {
+          overrides.delete(key);
+        });
+      } else {
+        // Delete all overrides.
+        this.overrides.clear();
+      }
     },
   },
   history(context) {

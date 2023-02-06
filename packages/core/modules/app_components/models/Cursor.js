@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
 import {
@@ -54,7 +53,7 @@ export default class Cursor extends EmbeddableComponent {
         }),
       },
       if: {
-        $id: uuid(), // Used for Ajv caching.
+        $id: `${this.schemaId}:form-if`, // Used for Ajv caching.
         properties: {
           form: {
             const: "linear",

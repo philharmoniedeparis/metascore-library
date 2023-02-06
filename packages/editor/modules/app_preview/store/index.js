@@ -6,6 +6,9 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
 export const ADD_SIBLING_PAGE_TIME_ERROR = 200;
 
+const FROZEN_OVERRIDES_KEY = "app_preview:frozen";
+const FROZEN_OVERRIDES_PRIORITY = 1000;
+
 export class ValidationError extends Error {
   constructor(code, ...params) {
     super(...params);
@@ -35,7 +38,8 @@ export default defineStore("app-preview", {
       };
     },
     isComponentSelected() {
-      return ({ type, id }) => {
+      return (component) => {
+        const { type, id } = component;
         const { getComponent } = useModule("app_components");
         return (
           this.selectedComponents[type]?.includes(id) && getComponent(type, id)
@@ -96,17 +100,9 @@ export default defineStore("app-preview", {
       );
     },
     isComponentFrozen() {
-      return ({ type, id }) => {
-        return (
-          type in this.frozenComponents && id in this.frozenComponents[type]
-        );
-      };
-    },
-    getFrozenComponent() {
-      return ({ type, id }) => {
-        if (this.isComponentFrozen({ type, id })) {
-          return this.frozenComponents[type][id];
-        }
+      return (component) => {
+        const { hasOverrides } = useModule("app_components");
+        return hasOverrides(component, FROZEN_OVERRIDES_KEY);
       };
     },
   },
@@ -190,19 +186,19 @@ export default defineStore("app-preview", {
       this.lockedComponents = {};
     },
     freezeComponent(component) {
+      const { setOverrides } = useModule("app_components");
       if (!this.isComponentFrozen(component)) {
-        const { getComponent } = useModule("app_components");
-        this.frozenComponents[component.type] =
-          this.frozenComponents[component.type] || {};
-        this.frozenComponents[component.type][component.id] = structuredClone(
-          getComponent(component.type, component.id)
+        setOverrides(
+          component,
+          FROZEN_OVERRIDES_KEY,
+          structuredClone(component.data),
+          FROZEN_OVERRIDES_PRIORITY
         );
       }
     },
     unfreezeComponent(component) {
-      if (this.isComponentFrozen(component)) {
-        delete this.frozenComponents[component.type][component.id];
-      }
+      const { clearOverrides } = useModule("app_components");
+      clearOverrides(component, FROZEN_OVERRIDES_KEY);
     },
     copyComponents(components) {
       const { setData: setClipboardData } = useModule("clipboard");

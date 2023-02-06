@@ -51,7 +51,10 @@ function flattenConditions(schema, ajv, value) {
     delete schema.then;
     delete schema.else;
 
-    const valid = ajv.validate(_if, value);
+    const validate = _if.$id
+      ? ajv.getSchema(_if.$id) || ajv.compile(_if)
+      : ajv.compile(_if);
+    const valid = validate(value);
     if (valid && _then) {
       merge(schema, _then);
     } else if (!valid && _else) {
