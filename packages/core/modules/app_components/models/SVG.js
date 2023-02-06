@@ -103,33 +103,18 @@ export default class SVG extends EmbeddableComponent {
               nullable: true,
               default: null,
             }),
-          },
-          if: {
-            $id: uuid(), // Used for Ajv caching.
-            properties: {
-              markers: createArrayField({
-                minItems: 1,
-              }),
-            },
-          },
-          then: {
-            properties: {
-              "marker-start": createStringField({
-                title: "Marker start",
-                nullable: true,
-                default: null,
-              }),
-              "marker-mid": createStringField({
-                title: "Marker mid",
-                nullable: true,
-                default: null,
-              }),
-              "marker-end": createStringField({
-                title: "Marker end",
-                nullable: true,
-                default: null,
-              }),
-            },
+            "marker-start": createStringField({
+              title: "Marker start",
+              nullable: true,
+            }),
+            "marker-mid": createStringField({
+              title: "Marker mid",
+              nullable: true,
+            }),
+            "marker-end": createStringField({
+              title: "Marker end",
+              nullable: true,
+            }),
           },
         },
       },
@@ -138,12 +123,14 @@ export default class SVG extends EmbeddableComponent {
   }
 
   /**
-   * Set defaults embedded in the SVG content
+   * Get defaults embedded in the SVG content
    *
-   * @param {object} data The model's data
-   * @returns {Promise<object>} A promise that resolves after defaults have been set
+   * @param {string} url The SVG's Url
+   * @returns {Promise<object>} A promise that resolves with the defaults
    */
-  static setEmbeddedDefaults(url, data) {
+  static getEmbeddedData(url) {
+    const data = {};
+
     return new Promise((resolve) => {
       const obj = document.createElement("object");
       obj.style.visibility = "hidden";
@@ -152,43 +139,27 @@ export default class SVG extends EmbeddableComponent {
         const svg = evt.target.contentDocument.querySelector("svg");
 
         // Set colors.
-        const colors = [];
+        data.colors = [];
         [".color1", ".color2"].forEach((c) => {
           const el = svg.querySelector(c);
           if (el) {
             const style = getComputedStyle(el);
-            colors.push(style.fill);
+            data.colors.push(style.fill);
           }
         });
-        if (colors.length > 0) {
-          if (!("colors" in data) || data.colors === null) {
-            data.colors = colors;
-          } else {
-            colors.forEach((color, index) => {
-              if (!data.colors[index]) {
-                data.colors[index] = color;
-              }
-            });
-          }
-        } else {
-          // @todo: fix empty values in CMS
+        if (data.colors.length === 0) {
           ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach(
             (prop) => {
-              if (!(prop in data) || !data[prop]) {
-                data[prop] = null;
-              }
+              data[prop] = null;
             }
           );
 
           // Set markers
-          // @todo: move out of the model's data
-          const markers = [];
+          data.markers = [];
           svg.querySelectorAll("defs marker").forEach((marker) => {
-            markers.push(marker.getAttribute("id"));
+            data.markers.push(marker.getAttribute("id"));
           });
-          if (markers.length > 0) {
-            data.markers = markers;
-            // @todo: fix empty values in CMS
+          if (data.markers.length > 0) {
             ["marker-start", "marker-mid", "marker-end"].forEach((prop) => {
               if (!(prop in data) || !data[prop]) {
                 data[prop] = null;
@@ -198,12 +169,12 @@ export default class SVG extends EmbeddableComponent {
         }
 
         evt.target.remove();
-        resolve();
+        resolve(data);
       });
 
       obj.addEventListener("error", (evt) => {
         evt.target.remove();
-        resolve();
+        resolve(data);
       });
 
       obj.setAttribute("type", "image/svg+xml");
@@ -215,9 +186,66 @@ export default class SVG extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
+  constructor() {
+    super();
+
+    this._embedded_data = {};
+  }
+
+  /**
+   * Get embedded SVG markers.
+   *
+   * @return {array} A list of available markers.
+   */
+  get markers() {
+    return this._embedded_data.markers ?? [];
+  }
+
+  /**
+   * Set defaults from embedded data.
+   *
+   * @param {Object} data The data to set defaults on.
+   */
+  setEmbeddedDefaults(data) {
+    const { colors = [], markers = [] } = this._embedded_data;
+
+    if (colors.length > 0) {
+      if (!("colors" in data) || data.colors === null) {
+        data.colors = colors;
+      } else {
+        colors.forEach((color, index) => {
+          if (!data.colors[index]) {
+            data.colors[index] = color;
+          }
+        });
+      }
+    } else {
+      // @todo: fix empty values in CMS
+      ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach((prop) => {
+        if (!(prop in data) || !data[prop]) {
+          data[prop] = null;
+        }
+      });
+
+      // Set markers
+      if (markers.length > 0) {
+        // @todo: fix empty values in CMS
+        ["marker-start", "marker-mid", "marker-end"].forEach((prop) => {
+          if (!(prop in data) || !data[prop]) {
+            data[prop] = null;
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      await this.constructor.setEmbeddedDefaults(data.src, data);
+      this._embedded_data = await this.constructor.getEmbeddedData(data.src);
+      this.setEmbeddedDefaults(data);
     }
 
     return await super.validate(data);

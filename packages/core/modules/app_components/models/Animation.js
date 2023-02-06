@@ -92,14 +92,14 @@ export default class Animation extends EmbeddableComponent {
   }
 
   /**
-   * Set defaults embedded in the SVG content
+   * Get defaults embedded in the SVG content
    *
    * @param {string} url The SVG's Url
-   * @param {object} data The model's data
-   * @returns {Promise<object>} A promise that resolves after defaults have been set
+   * @returns {Promise<object>} A promise that resolves with the defaults
    */
-  static async setEmbeddedDefaults(url, data) {
+  static async getEmbeddedData(url) {
     const { default: Lottie } = await import("lottie-web");
+    const data = {};
 
     return new Promise((resolve) => {
       const container = document.createElement("div");
@@ -120,35 +120,24 @@ export default class Animation extends EmbeddableComponent {
         }
 
         // Set colors.
-        const colors = [];
+        data.colors = [];
         ["color1", "color2"].forEach((name) => {
           const path = container.querySelector(`.${name} path`);
           if (path) {
             const style = getComputedStyle(path);
-            colors.push(style.fill);
+            data.colors.push(style.fill);
           }
         });
-        if (colors.length > 0) {
-          if (!("colors" in data) || data.colors === null) {
-            data.colors = colors;
-          } else {
-            colors.forEach((color, index) => {
-              if (!data.colors[index]) {
-                data.colors[index] = color;
-              }
-            });
-          }
-        }
 
         animation.destroy();
         container.remove();
-        resolve();
+        resolve(data);
       });
 
       animation.addEventListener("error", () => {
         animation.destroy();
         container.remove();
-        resolve();
+        resolve(data);
       });
     });
   }
@@ -156,9 +145,46 @@ export default class Animation extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
+  constructor() {
+    super();
+
+    this._embedded_data = {};
+  }
+
+  /**
+   * Set defaults from embedded data.
+   *
+   * @param {Object} data The data to set defaults on.
+   */
+  setEmbeddedDefaults(data) {
+    const { loop_duration = null, colors = [] } = this._embedded_data;
+
+    // Set loop duration.
+    if (!("loop-duration" in data) || data["loop-duration"] === null) {
+      data["loop-duration"] = loop_duration;
+    }
+
+    // Set colors.
+    if (colors.length > 0) {
+      if (!("colors" in data) || data.colors === null) {
+        data.colors = colors;
+      } else {
+        colors.forEach((color, index) => {
+          if (!data.colors[index]) {
+            data.colors[index] = color;
+          }
+        });
+      }
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      await this.constructor.setEmbeddedDefaults(data.src, data);
+      this._embedded_data = await this.constructor.getEmbeddedData(data.src);
+      this.setEmbeddedDefaults(data);
     }
 
     return await super.validate(data);
