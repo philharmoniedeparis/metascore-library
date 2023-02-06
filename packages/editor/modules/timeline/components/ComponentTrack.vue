@@ -240,8 +240,7 @@ export default {
           return (
             "format" in definition &&
             definition.format === "animated" &&
-            prop in this.component &&
-            this.component[prop].animated
+            this.component[prop]?.animated
           );
         })
         .reduce(
