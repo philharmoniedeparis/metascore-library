@@ -206,7 +206,7 @@ export default defineStore("app-preview", {
         useModule("app_components");
 
       const recursiveCopy = (component) => {
-        const copy = cloneDeep(unref(component));
+        const copy = cloneDeep(unref(component.data));
         delete copy.id;
 
         const property = getComponentChildrenProperty(component);
