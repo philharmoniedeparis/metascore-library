@@ -31,6 +31,14 @@ export default Mixin(
                 items: [createNumberField(), createNumberField()],
               }),
             }),
+            rotate: createAnimatedField({
+              ajv,
+              title: "Rotate",
+              default: { animated: false, value: 0 },
+              items: createNumberField({
+                multipleOf: 1,
+              }),
+            }),
           },
         });
       }
@@ -43,7 +51,7 @@ export default Mixin(
        * @inheritdoc
        */
       async update(data, ...rest) {
-        ["translate", "scale"].forEach((property) => {
+        ["translate", "scale", "rotate"].forEach((property) => {
           // If the last keyframe has been deleted,
           // mark the property as unanimated.
           if (

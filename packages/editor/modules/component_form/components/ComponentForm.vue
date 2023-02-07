@@ -15,6 +15,7 @@
     "opacity": "Opacité",
     "translate": "Translation",
     "scale": "Échelle",
+    "rotate": "Rotation",
     "multival": "La valeur correspond à celle du premier composant sélectionné",
     "AbstractComponent": {
       "title": "Attributs du composant | Attributs de {count} composants"
@@ -105,6 +106,7 @@
     "opacity": "Opacity",
     "translate": "Translation",
     "scale": "Scale",
+    "rotate": "Rotation",
     "multival": "The value corresponds to that of the first selected component",
     "AbstractComponent": {
       "title": "Attributes of component | Attributes of {count} components"
@@ -558,6 +560,7 @@ export default {
           },
           ...this.getControlProps("translate"),
         });
+        animated.push(this.getControlProps("rotate"));
       }
       if (animated.length > 0) {
         layout.items.push({
