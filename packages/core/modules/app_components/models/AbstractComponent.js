@@ -126,9 +126,11 @@ export default class AbstractComponent extends AbstractModel {
    * @inheritdoc
    */
   getPropertyValue(name) {
-    for (const overrides of unref(this._sorted_overrides)) {
-      if (Object.prototype.hasOwnProperty.call(overrides, name)) {
-        return overrides[name];
+    if (!["type", "id"].includes(name)) {
+      for (const overrides of unref(this._sorted_overrides)) {
+        if (Object.prototype.hasOwnProperty.call(overrides, name)) {
+          return overrides[name];
+        }
       }
     }
 

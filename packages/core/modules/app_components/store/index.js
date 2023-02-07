@@ -413,8 +413,9 @@ export default defineStore("app-components", {
       if (component) {
         const { type, id } = component;
         const overrides = this.overrides.get(`${type}:${id}`);
+
         if (key) {
-          return overrides.get(key);
+          return overrides?.get(key);
         }
 
         return overrides;

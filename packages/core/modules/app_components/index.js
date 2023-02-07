@@ -275,7 +275,7 @@ export default class AppComponentsModule extends AbstractModule {
 
   getOverrides(component, key) {
     const store = useStore();
-    store.setOverrides(component, key);
+    store.getOverrides(component, key);
   }
 
   clearOverrides(component, key) {
