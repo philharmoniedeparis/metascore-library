@@ -257,7 +257,7 @@ export default class AbstractModel {
       return new Promise((resolve, reject) => {
         this.validate(updated)
           .then((result) => {
-            Object.assign(this._data, result);
+            Object.assign(this, result);
             resolve(this);
           })
           .catch((errors) => {
@@ -265,7 +265,7 @@ export default class AbstractModel {
           });
       });
     } else {
-      Object.assign(this._data, data);
+      Object.assign(this, data);
       return this;
     }
   }
