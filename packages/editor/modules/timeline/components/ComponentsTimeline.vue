@@ -280,7 +280,8 @@ export default {
     }
   }
 
-  :deep(.component-track > .time-wrapper) {
+  :deep(.component-track > .time-wrapper),
+  :deep(.animated-property-track > .keyframes-wrapper) {
     width: v-bind(trackTimeWidth);
     margin-left: v-bind(trackTimeOffset);
   }
