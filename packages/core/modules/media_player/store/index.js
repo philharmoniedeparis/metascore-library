@@ -28,7 +28,10 @@ export default defineStore("media_player", {
       this.element = element;
 
       if (element) {
-        this.type = element instanceof HTMLVideoElement ? "video" : "audio";
+        this.type =
+          element instanceof element.ownerDocument.defaultView.HTMLVideoElement
+            ? "video"
+            : "audio";
 
         element.addEventListener("loadedmetadata", (evt) => {
           this.ready = true;
