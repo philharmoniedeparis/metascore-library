@@ -90,7 +90,9 @@ export default {
       return {
         borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
         left: `${this.playheadPosition}%`,
-        marginRight: `-${this.playheadWidth / 2}px`,
+        marginLeft: `calc(${this.trackTimeOffset} - ${
+          this.playheadWidth / 2
+        }px)`,
       };
     },
   },
