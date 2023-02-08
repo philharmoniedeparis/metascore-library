@@ -316,7 +316,7 @@ export default {
   &.editing {
     button {
       color: var(--metascore-color-white);
-      background: var(--metascore-color-bg-primary);
+      background: var(--metascore-color-bg-tertiary);
     }
   }
 

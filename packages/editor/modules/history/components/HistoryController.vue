@@ -103,6 +103,6 @@ export default {
 .history-controller {
   display: flex;
   flex-direction: row;
-  background-color: var(--metascore-color-bg-primary);
+  background-color: var(--metascore-color-bg-tertiary);
 }
 </style>

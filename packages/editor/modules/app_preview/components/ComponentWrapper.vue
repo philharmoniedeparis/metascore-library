@@ -691,6 +691,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@metascore-library/editor/scss/variables";
+
 .metaScore-component {
   &:not(.preview) {
     touch-action: none;
@@ -705,7 +707,7 @@ export default {
       margin-top: -0.45em;
       margin-left: -0.45em;
       background: var(--metascore-color-white);
-      border: 0.25em solid var(--metascore-color-blue);
+      border: 0.25em solid var(--metascore-color-accent);
       box-sizing: border-box;
       z-index: 2;
 
@@ -771,7 +773,7 @@ export default {
         right: 0;
         bottom: 0;
         left: 0;
-        border: 0.25em dashed var(--metascore-color-blue);
+        border: 0.25em dashed var(--metascore-color-accent);
         pointer-events: none;
         z-index: 1;
       }
@@ -798,7 +800,7 @@ export default {
     }
 
     &.drag-over {
-      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-blue);
+      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-accent);
     }
 
     &.dragging,

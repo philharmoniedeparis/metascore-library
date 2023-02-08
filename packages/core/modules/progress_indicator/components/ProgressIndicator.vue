@@ -49,7 +49,7 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: 0.75em;
-    color: var(--metascore-color-white);
+    color: var(--metascore-color-text-primary);
   }
 
   progress {
@@ -63,14 +63,12 @@ export default {
     border-radius: 1em;
     overflow: hidden;
 
-    &[value] {
-      &::-moz-progress-bar,
-      &::-webkit-progress-value {
-        background-color: var(--metascore-color-white);
-      }
-      &::-webkit-progress-bar {
-        background-color: var(--metascore-color-bg-secondary);
-      }
+    &::-moz-progress-bar,
+    &::-webkit-progress-value {
+      background-color: var(--metascore-color-bg-tertiary);
+    }
+    &::-webkit-progress-bar {
+      background-color: var(--metascore-color-bg-secondary);
     }
 
     &:indeterminate {
@@ -80,8 +78,8 @@ export default {
         background: linear-gradient(
           to right,
           var(--metascore-color-bg-secondary) 45%,
-          var(--metascore-color-white) 0%,
-          var(--metascore-color-white) 55%,
+          var(--metascore-color-bg-tertiary) 0%,
+          var(--metascore-color-bg-tertiary) 55%,
           var(--metascore-color-bg-secondary) 0%
         );
         background-size: 225% 100%;

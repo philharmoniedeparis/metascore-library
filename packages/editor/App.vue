@@ -588,11 +588,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
-@import "./scss/variables.scss";
+@import "./scss/theme.scss";
+</style>
 
+<style lang="scss" scoped>
 .metaScore-editor {
   position: relative;
   height: 100%;
@@ -671,7 +673,7 @@ export default {
 
   > .top {
     grid-area: top;
-    background: var(--metascore-color-bg-primary);
+    background: var(--metascore-color-bg-tertiary);
 
     .main-menu {
       display: flex;
@@ -764,18 +766,18 @@ export default {
 
     > .top {
       display: grid;
-      grid-template-columns: $controller-left-width 1fr;
+      grid-template-columns: var(--metascore-controller-left-width) 1fr;
       grid-template-rows: 15% 1fr;
-      flex: 0 0 $controller-top-height;
+      flex: 0 0 var(--metascore-controller-top-height);
       background: var(--metascore-color-bg-secondary);
-      border-bottom: 2px solid var(--metascore-color-bg-primary);
+      border-bottom: 2px solid var(--metascore-color-bg-tertiary);
       z-index: 1;
 
       .playback-time {
         display: flex;
         grid-area: 1 / 1 / span 2 / 1;
         box-sizing: border-box;
-        border-right: 2px solid var(--metascore-color-bg-primary);
+        border-right: 2px solid var(--metascore-color-bg-tertiary);
 
         :deep(input) {
           border-radius: 0;
@@ -801,32 +803,32 @@ export default {
       position: relative;
       overflow-y: scroll;
       scroll-behavior: smooth;
-      scroll-padding-top: $controller-bottom-sticky-top-height;
+      scroll-padding-top: var(--metascore-controller-bottom-sticky-top-height);
 
       > .sticky-top {
         position: sticky;
         top: 0;
         left: 0;
         width: 100%;
-        height: $controller-bottom-sticky-top-height;
+        height: var(--metascore-controller-bottom-sticky-top-height);
         display: grid;
-        grid-template-columns: $controller-left-width 1fr;
+        grid-template-columns: var(--metascore-controller-left-width) 1fr;
         grid-template-rows: 1fr auto;
-        background: var(--metascore-color-bg-tertiary);
-        border-bottom: 2px solid var(--metascore-color-bg-primary);
+        background: var(--metascore-color-bg-primary);
+        border-bottom: 2px solid var(--metascore-color-bg-tertiary);
         z-index: 4;
 
         .playback-controller {
           grid-area: 1 / 1;
           box-sizing: border-box;
-          border-right: 2px solid var(--metascore-color-bg-primary);
+          border-right: 2px solid var(--metascore-color-bg-tertiary);
         }
 
         .media-selector {
           grid-area: 2 / 1;
           padding: 0.25em 0.5em;
           box-sizing: border-box;
-          border-right: 2px solid var(--metascore-color-bg-primary);
+          border-right: 2px solid var(--metascore-color-bg-tertiary);
         }
 
         .waveform--zoom {
@@ -838,9 +840,9 @@ export default {
     > .bottom {
       display: flex;
       flex-direction: row;
-      flex: 0 0 $controller-bottom-sticky-bottom-height;
+      flex: 0 0 var(--metascore-controller-bottom-sticky-bottom-height);
       background: var(--metascore-color-bg-secondary);
-      border-top: 1px solid var(--metascore-color-bg-primary);
+      border-top: 1px solid var(--metascore-color-bg-tertiary);
       z-index: 1;
 
       .scenario-manager {
@@ -849,7 +851,7 @@ export default {
 
       .waveform--zoom-controller {
         flex: 0 0 auto;
-        background: var(--metascore-color-bg-primary);
+        background: var(--metascore-color-bg-tertiary);
       }
     }
   }

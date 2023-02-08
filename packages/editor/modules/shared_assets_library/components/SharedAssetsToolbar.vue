@@ -101,7 +101,7 @@ export default {
       // #\9 is used here to increase specificity.
       &:not(#\9) {
         padding: 0 0 0 2em;
-        background-color: var(--metascore-color-bg-primary);
+        background-color: var(--metascore-color-bg-tertiary);
         background-image: url(../assets/icons/search.svg);
         background-size: 1em;
         background-position: 0.5em 50%;
@@ -124,7 +124,7 @@ export default {
     opacity: 1;
 
     &.active {
-      color: var(--metascore-color-bg-primary);
+      color: var(--metascore-color-bg-tertiary);
       background: var(--metascore-color-white);
     }
 

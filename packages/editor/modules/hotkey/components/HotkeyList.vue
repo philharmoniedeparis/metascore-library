@@ -136,9 +136,9 @@ export default {
       line-height: 1em;
       text-align: center;
       background: var(--metascore-color-white);
-      border: 1px solid var(--metascore-color-bg-tertiary);
+      border: 1px solid var(--metascore-color-bg-primary);
       border-radius: 0.25em;
-      box-shadow: 1px 1px 1px var(--metascore-color-bg-primary);
+      box-shadow: 1px 1px 1px var(--metascore-color-bg-tertiary);
 
       &:first-letter {
         text-transform: uppercase;

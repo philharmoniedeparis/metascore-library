@@ -119,22 +119,27 @@ export default {
 .context-menu {
   position: absolute;
   font-size: 0.975em;
-  z-index: 999;
+  z-index: 9999;
   outline: none;
 
   :deep(ul) {
     list-style: none;
     margin: 0;
     padding: 0.25em;
-    border: 1px solid var(--metascore-color-bg-tertiary);
-    background: var(--metascore-color-bg-primary);
+    border: 1px solid var(--metascore-color-bg-primary);
+    background: var(--metascore-color-bg-tertiary);
     box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
+
+    li {
+      margin: 0;
+      padding: 0;
+    }
   }
 
   .header,
   .footer {
     padding: 0.5em;
-    color: var(--metascore-color-white);
+    color: var(--metascore-color-text-tertiary);
     opacity: 0.5;
   }
   .header {

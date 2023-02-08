@@ -1,10 +1,12 @@
 <i18n>
 {
   "fr": {
-    "loading_indicator_label": "Chargement ...",
+    "loading_indicator_label": "créé avec <strong>metaScore</strong>",
+    "contextmenu_footer_prefix": "créé avec",
   },
   "en": {
-    "loading_indicator_label": "Loading...",
+    "loading_indicator_label": "created with <strong>metaScore</strong>",
+    "contextmenu_footer_prefix": "created with",
   },
 }
 </i18n>
@@ -17,14 +19,28 @@
       :allow-upscaling="allowUpscaling"
     />
 
-    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
+    <progress-indicator v-if="loading" class="loading-indicator">
+      <template #text>
+        <logo-mini />
+        <p v-dompurify-html="$t('loading_indicator_label')"></p>
+      </template>
+    </progress-indicator>
 
     <context-menu
       v-model:show="showContextmenu"
       :position="contextmenuPosition"
     >
       <template #footer>
-        {{ `metaScore Player ${version}` }}
+        <span class="prefix">{{ $t("contextmenu_footer_prefix") }}</span>
+        <div @mousedown.prevent>
+          <a
+            href="https://metascore.philharmoniedeparis.fr/"
+            target="_blank"
+            :title="`metaScore ${version}`"
+          >
+            <logo />
+          </a>
+        </div>
       </template>
     </context-menu>
   </div>
@@ -32,11 +48,21 @@
 
 <script>
 import { computed } from "vue";
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "./store";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
+import Logo from "./assets/logo.svg?inline";
+import LogoMini from "./assets/logo-mini.svg?inline";
 
 export default {
+  components: {
+    Logo,
+    LogoMini,
+  },
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
   provide() {
     return {
       modalsTarget: computed(() => this.modalsTarget),
@@ -105,10 +131,13 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import "normalize.css";
 @import "source-sans/source-sans-3VF.css";
+@import "./scss/theme.scss";
+</style>
 
+<style lang="scss" scoped>
 .metaScore-player {
   position: relative;
   display: flex;
@@ -120,5 +149,83 @@ export default {
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
+
+  :deep(.loading-indicator) {
+    .dialog {
+      border: 0;
+    }
+
+    .body {
+      padding: 0;
+    }
+
+    label {
+      gap: 0;
+
+      .text {
+        display: flex;
+        flex-direction: row;
+        padding: 0.5em;
+        align-items: center;
+        gap: 0.5em;
+        color: var(--metascore-color-text-primary);
+        user-select: none;
+
+        svg {
+          width: 1em;
+        }
+
+        p {
+          margin: 0;
+
+          strong {
+            font-weight: 600;
+          }
+        }
+      }
+
+      progress {
+        width: 100%;
+        height: 0.25em;
+        margin: 0;
+        border-radius: 0;
+      }
+    }
+  }
+
+  :deep(.context-menu) {
+    > ul {
+      padding: 0;
+      background: var(--metascore-color-bg-primary);
+    }
+
+    .footer {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      opacity: 1;
+
+      .prefix {
+        padding: 0.25em 0.5em;
+        user-select: none;
+      }
+
+      a {
+        display: block;
+        padding: 0.5em;
+        color: inherit;
+
+        &:hover {
+          color: var(--metascore-color-text-secondary);
+          background-color: var(--metascore-color-bg-secondary);
+        }
+      }
+
+      svg {
+        display: block;
+        width: 9em;
+      }
+    }
+  }
 }
 </style>

@@ -325,8 +325,8 @@ export default {
 
     .item {
       padding: 0 0.5em;
-      border-right: 1px solid var(--metascore-color-bg-primary);
-      border-left: 1px solid var(--metascore-color-bg-primary);
+      border-right: 1px solid var(--metascore-color-bg-tertiary);
+      border-left: 1px solid var(--metascore-color-bg-tertiary);
       white-space: nowrap;
 
       a {

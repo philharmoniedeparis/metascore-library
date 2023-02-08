@@ -147,7 +147,7 @@ export default {
 
   &.recording {
     button {
-      background: var(--metascore-color-bg-primary);
+      background: var(--metascore-color-bg-tertiary);
 
       &::before {
         animation: pulse 1s ease infinite;

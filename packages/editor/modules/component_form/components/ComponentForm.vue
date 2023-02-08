@@ -663,6 +663,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@metascore-library/editor/scss/variables";
+
 .component-form {
   display: flex;
   height: 100%;
@@ -681,7 +683,7 @@ export default {
     padding-left: 1em;
     font-size: 1em;
     font-weight: normal;
-    background: var(--metascore-color-bg-tertiary);
+    background: var(--metascore-color-bg-primary);
     border-bottom: 0.25em solid var(--metascore-color-bg-secondary);
     z-index: 1;
 
@@ -711,7 +713,7 @@ export default {
 
   :deep(.form-container) {
     display: flex;
-    background: var(--metascore-color-bg-tertiary);
+    background: var(--metascore-color-bg-primary);
     gap: 0.75em;
     padding: 0.5em;
 
@@ -763,7 +765,7 @@ export default {
 
       input {
         &:not([type="checkbox"]):not([type="radio"]) {
-          background: var(--metascore-color-bg-tertiary);
+          background: var(--metascore-color-bg-primary);
         }
       }
     }

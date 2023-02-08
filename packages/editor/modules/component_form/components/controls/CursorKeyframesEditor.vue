@@ -196,14 +196,14 @@ export default {
         content: "";
         display: block;
         height: 100%;
-        background: var(--metascore-color-blue);
+        background: var(--metascore-color-accent);
       }
     }
 
     &.active {
       .marker {
         &::after {
-          box-shadow: 0 0 0.25em 0 var(--metascore-color-blue);
+          box-shadow: 0 0 0.25em 0 var(--metascore-color-accent);
         }
       }
     }
@@ -220,7 +220,7 @@ export default {
       font-size: 0.9em;
       padding: 0.25em 0.5em;
       color: var(--metascore-color-white);
-      background: var(--metascore-color-blue);
+      background: var(--metascore-color-accent);
     }
 
     // #\9 is used here to increase specificity.
