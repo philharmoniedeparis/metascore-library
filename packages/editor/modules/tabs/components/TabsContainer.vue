@@ -106,7 +106,7 @@ export default {
         flex: 1 0 auto;
 
         a {
-          background: var(--metascore-color-bg-tertiary);
+          background: var(--metascore-color-bg-primary);
         }
       }
     }

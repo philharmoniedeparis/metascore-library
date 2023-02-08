@@ -1000,6 +1000,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@metascore-library/editor/scss/variables";
+
 .metaScore-component {
   &:not(.preview) {
     touch-action: none;
@@ -1035,7 +1037,7 @@ export default {
     }
 
     &.drag-over {
-      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-blue);
+      box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-accent);
     }
 
     &.locked {

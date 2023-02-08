@@ -54,7 +54,7 @@ export default {
         &:hover,
         &.active {
           width: 1em;
-          background: var(--metascore-color-bg-primary);
+          background: var(--metascore-color-bg-tertiary);
         }
       }
     }

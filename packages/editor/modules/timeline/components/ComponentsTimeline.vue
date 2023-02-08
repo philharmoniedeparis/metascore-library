@@ -90,7 +90,9 @@ export default {
       return {
         borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
         left: `${this.playheadPosition}%`,
-        marginRight: `-${this.playheadWidth / 2}px`,
+        marginLeft: `calc(${this.trackTimeOffset} - ${
+          this.playheadWidth / 2
+        }px)`,
       };
     },
   },
@@ -237,18 +239,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../scss/variables.scss";
-
 .timeline {
   display: flex;
   flex-direction: row;
-  background: var(--metascore-color-bg-primary);
+  background: var(--metascore-color-bg-tertiary);
   z-index: 0;
 
   .tracks-container {
     display: grid;
     position: relative;
-    grid-template-columns: $controller-left-width auto;
+    grid-template-columns: var(--metascore-controller-left-width) auto;
     flex: 1;
 
     .playhead {
@@ -267,7 +267,7 @@ export default {
 
       > .handle,
       > .time-wrapper {
-        background: var(--metascore-color-bg-primary);
+        background: var(--metascore-color-bg-tertiary);
       }
 
       .handle {

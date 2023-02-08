@@ -384,14 +384,14 @@ export default {
   height: 1em;
   transition: all 0.3s ease-out;
   transform: rotate(45deg);
-  background-color: var(--metascore-color-bg-tertiary);
+  background-color: var(--metascore-color-bg-primary);
   box-shadow: 0 0 0.5em 0 var(--metascore-color-black);
   z-index: -1;
 }
 
 .intro-tour--tooltip--content {
-  background: var(--metascore-color-bg-tertiary);
-  border: 2px solid var(--metascore-color-bg-tertiary);
+  background: var(--metascore-color-bg-primary);
+  border: 2px solid var(--metascore-color-bg-primary);
   border-radius: 0.25em;
   overflow: hidden;
   box-sizing: border-box;
@@ -403,7 +403,7 @@ export default {
   padding: 0.5em;
   justify-content: space-between;
   align-items: center;
-  background: var(--metascore-color-bg-primary);
+  background: var(--metascore-color-bg-tertiary);
   color: var(--metascore-color-white);
 
   .title {
@@ -460,7 +460,7 @@ export default {
     background: var(--metascore-color-bg-secondary);
 
     &.primary {
-      background: var(--metascore-color-bg-primary);
+      background: var(--metascore-color-bg-tertiary);
     }
   }
 }

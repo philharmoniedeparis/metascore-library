@@ -386,7 +386,7 @@ export default {
       background: var(--metascore-color-bg-secondary);
 
       &.selected {
-        background: var(--metascore-color-bg-primary);
+        background: var(--metascore-color-bg-tertiary);
       }
     }
   }

@@ -200,7 +200,7 @@ export default {
       display: block;
       flex: 1;
       height: 1px;
-      background: var(--metascore-color-bg-primary);
+      background: var(--metascore-color-bg-tertiary);
     }
   }
 }

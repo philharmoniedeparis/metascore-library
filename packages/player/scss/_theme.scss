@@ -1,0 +1,25 @@
+:root {
+  --metascore-color-white: #fff;
+  --metascore-color-black: #000;
+
+  --metascore-color-bg-primary: var(--metascore-color-white);
+  --metascore-color-bg-secondary: var(--metascore-color-black);
+  --metascore-color-bg-tertiary: #ccc;
+
+  --metascore-color-text-primary: #1d1d1b;
+  --metascore-color-text-secondary: #fff;
+  --metascore-color-text-tertiary: #1d1d1b;
+
+  --metascore-color-accent: #0000fe;
+
+  --metascore-scrollbar-width: 8px;
+  --metascore-scrollbar-track-color: var(--metascore-color-bg-tertiary);
+  --metascore-scrollbar-thumb-color: var(--metascore-color-bg-secondary);
+  --metascore-scrollbar-thumb-active-color: var(--metascore-color-accent);
+  --metascore-scrollbar-thumb-min-height: 8px;
+
+  --metascore-controller-top-height: 2.5em;
+  --metascore-controller-left-width: 12em;
+  --metascore-controller-bottom-sticky-top-height: 8em;
+  --metascore-controller-bottom-sticky-bottom-height: 1.5em;
+}

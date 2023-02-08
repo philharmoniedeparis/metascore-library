@@ -28,7 +28,6 @@ module.exports = defineConfig({
     loaderOptions: {
       scss: {
         additionalData: `
-          @import "@metascore-library/core/scss/_variables.scss";
           @import "@metascore-library/core/scss/_mixins.scss";
         `,
       },

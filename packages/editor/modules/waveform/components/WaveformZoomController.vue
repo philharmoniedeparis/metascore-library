@@ -158,7 +158,7 @@ export default {
   width: 12em;
   flex-direction: row;
   align-items: center;
-  background-color: var(--metascore-color-bg-primary);
+  background-color: var(--metascore-color-bg-tertiary);
 
   // #\9 is used here to increase specificity.
   button:not(#\9) {
@@ -198,7 +198,7 @@ export default {
       top: 50%;
       width: 100%;
       height: 1px;
-      background: var(--metascore-color-bg-tertiary);
+      background: var(--metascore-color-bg-primary);
     }
   }
 }

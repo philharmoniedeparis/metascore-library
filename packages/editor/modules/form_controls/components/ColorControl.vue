@@ -250,7 +250,7 @@ export default {
 
     .icon {
       padding: 0.25em;
-      color: var(--metascore-color-bg-primary);
+      color: var(--metascore-color-bg-tertiary);
       background-color: var(--metascore-color-bg-secondary);
       box-sizing: content-box;
     }
@@ -269,7 +269,7 @@ export default {
   .overlay {
     position: fixed;
     width: 20em;
-    background: var(--metascore-color-bg-tertiary);
+    background: var(--metascore-color-bg-primary);
     border: 1px solid var(--metascore-color-bg-secondary);
     box-shadow: 0 0 0.5em 0 rgba(0, 0, 0, 0.5);
     z-index: 9999;
@@ -287,7 +287,7 @@ export default {
 
       button {
         padding: 0.5em;
-        background: var(--metascore-color-bg-primary);
+        background: var(--metascore-color-bg-tertiary);
 
         &.secondary {
           background: var(--metascore-color-bg-secondary);

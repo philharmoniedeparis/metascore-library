@@ -430,6 +430,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@metascore-library/editor/scss/variables";
+
 .component-track {
   display: contents;
   user-select: none;
@@ -439,8 +441,8 @@ export default {
   .aniamted-properties :deep(.handle),
   .aniamted-properties :deep(.keyframes-wrapper) {
     height: 2em;
-    border-top: 1px solid var(--metascore-color-bg-primary);
-    border-bottom: 1px solid var(--metascore-color-bg-primary);
+    border-top: 1px solid var(--metascore-color-bg-tertiary);
+    border-bottom: 1px solid var(--metascore-color-bg-tertiary);
     box-sizing: border-box;
   }
 
@@ -457,7 +459,7 @@ export default {
     align-items: center;
     gap: 0.25em;
     background: var(--metascore-color-bg-secondary);
-    border-right: 2px solid var(--metascore-color-bg-primary);
+    border-right: 2px solid var(--metascore-color-bg-tertiary);
     touch-action: none;
     user-select: none;
     z-index: 2;
@@ -532,7 +534,7 @@ export default {
       .toggle {
         label {
           padding: 0.25em;
-          background: var(--metascore-color-bg-primary);
+          background: var(--metascore-color-bg-tertiary);
         }
 
         input:checked + label {
@@ -700,7 +702,7 @@ export default {
   &.selected {
     > .handle,
     > .time-wrapper {
-      background: var(--metascore-color-bg-tertiary);
+      background: var(--metascore-color-bg-primary);
       .time {
         .background {
           opacity: 1;

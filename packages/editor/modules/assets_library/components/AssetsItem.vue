@@ -234,7 +234,7 @@ export default {
   align-items: center;
   height: 2.5em;
   padding: 0.25em;
-  background-color: var(--metascore-color-bg-tertiary);
+  background-color: var(--metascore-color-bg-primary);
   border-top: 1px solid var(--metascore-color-bg-secondary);
   border-bottom: 1px solid var(--metascore-color-bg-secondary);
   box-sizing: border-box;
@@ -299,7 +299,7 @@ export default {
     background-color: var(--metascore-color-bg-secondary);
 
     figure {
-      color: var(--metascore-color-bg-primary);
+      color: var(--metascore-color-bg-tertiary);
     }
   }
 

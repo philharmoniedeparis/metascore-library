@@ -267,7 +267,7 @@ export default {
     flex-direction: column;
     align-items: stretch;
     justify-content: center;
-    background-color: var(--metascore-color-bg-primary);
+    background-color: var(--metascore-color-bg-tertiary);
 
     button {
       flex: 0 0 50%;
