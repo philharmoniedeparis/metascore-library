@@ -613,6 +613,9 @@ export default {
 
         interactable.draggable({
           allowFrom: ".rotate .handle",
+          cursorChecker() {
+            return "grab";
+          },
           listeners: {
             start: this.onRotateStart,
             move: this.onRotateMove,
