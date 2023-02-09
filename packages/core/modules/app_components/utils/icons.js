@@ -32,7 +32,7 @@ function getName(component) {
       return;
 
     case "Block":
-      return component.synched === "video" ? "SynchedBlock" : "NonSynchedBlock";
+      return component.synched ? "SynchedBlock" : "NonSynchedBlock";
 
     case "Media":
       return component.tag === "video" ? "MediaVideo" : "MediaAudio";
