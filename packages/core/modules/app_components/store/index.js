@@ -166,6 +166,10 @@ export default defineStore("app-components", {
       this.components[component.type][component.id] = component;
 
       if (parent) {
+        if (isReadonly(parent)) {
+          parent = this.components[parent.type][parent.id];
+        }
+
         component.$parent = {
           type: parent.type,
           id: parent.id,
@@ -181,9 +185,7 @@ export default defineStore("app-components", {
             ...children.slice(index),
           ];
         } else {
-          children = children.concat([
-            { type: component.type, id: component.id },
-          ]);
+          children.push({ type: component.type, id: component.id });
         }
 
         await this.update(parent, {
@@ -196,6 +198,10 @@ export default defineStore("app-components", {
       return component;
     },
     async update(component, data) {
+      if (isReadonly(component)) {
+        component = this.components[component.type][component.id];
+      }
+
       try {
         if ("start-time" in data || "end-time" in data) {
           const parent = this.getParent(component);
@@ -216,7 +222,7 @@ export default defineStore("app-components", {
           }
         }
 
-        await this.components[component.type][component.id].update(data);
+        await component.update(data);
 
         if (component.type === "Page") {
           if ("start-time" in data || "end-time" in data) {
@@ -321,13 +327,13 @@ export default defineStore("app-components", {
 
       let clone = await this.create(
         {
-          ...omit(cloneDeep(component), ["id", children_prop]),
+          ...omit(cloneDeep(component.data), ["id", children_prop]),
           ...data,
         },
         false
       );
 
-      await this.add(clone, parent, false);
+      await this.add(clone, parent);
 
       if (this.hasChildren(component)) {
         for (const c of this.getChildren(component)) {
