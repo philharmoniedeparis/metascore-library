@@ -1,6 +1,6 @@
 <template>
   <div
-    v-show="active && !hidden"
+    v-show="(active || !hideWhenInactive) && !hidden"
     :id="component.id"
     :class="[
       'metaScore-component',
@@ -51,6 +51,10 @@ export default {
       type: Object,
       required: true,
     },
+    hideWhenInactive: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["activated", "deactivated", "action"],
   setup(props) {
@@ -71,8 +75,11 @@ export default {
     };
   },
   watch: {
-    active(value) {
-      this.$emit(value ? "activated" : "deactivated", this.component);
+    active: {
+      handler(value) {
+        this.$emit(value ? "activated" : "deactivated", this.component);
+      },
+      immediate: true,
     },
   },
   methods: {

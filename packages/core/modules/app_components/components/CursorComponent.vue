@@ -1,5 +1,9 @@
 <template>
-  <component-wrapper :component="component" @click="onClick">
+  <component-wrapper
+    :component="component"
+    :hide-when-inactive="false"
+    @click="onClick"
+  >
     <canvas ref="canvas" />
   </component-wrapper>
 </template>
@@ -410,6 +414,10 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  &:not(.active) {
+    opacity: 0;
   }
 }
 </style>
