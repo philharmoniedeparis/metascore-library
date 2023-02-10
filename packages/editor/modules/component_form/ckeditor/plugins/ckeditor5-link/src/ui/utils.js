@@ -73,25 +73,21 @@ export function getFullscreenActionLabels(t) {
   };
 }
 
-export function getDropdownDefinitions(labels, view) {
+export function getDropdownDefinitions(labels) {
   const itemDefinitions = new Collection();
 
-  for (const key in labels) {
+  Object.entries(labels).forEach(([key, label]) => {
     const definition = {
       type: "button",
       model: new Model({
         _value: key,
-        label: labels[key],
+        label: label,
         withText: true,
       }),
     };
 
-    definition.model.bind("isOn").to(view, "type", (value) => {
-      return value === key;
-    });
-
     itemDefinitions.add(definition);
-  }
+  });
 
   return itemDefinitions;
 }
