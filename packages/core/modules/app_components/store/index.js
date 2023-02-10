@@ -339,12 +339,10 @@ export default defineStore("app-components", {
     },
     setBlockActivePage(block, index) {
       if (block.synched) {
+        const { seekTo: seekMediaTo } = useModule("media_player");
         const pages = this.getChildren(block);
         const page = pages[index];
-        if (page && "start-time" in page) {
-          const { seekTo: seekMediaTo } = useModule("media_player");
-          seekMediaTo(page["start-time"]);
-        }
+        seekMediaTo(page["start-time"] ?? 0);
       } else {
         this.blocksActivePage[block.id] = index;
       }
