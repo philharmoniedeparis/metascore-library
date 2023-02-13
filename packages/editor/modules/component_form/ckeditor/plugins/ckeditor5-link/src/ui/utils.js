@@ -40,7 +40,7 @@ export function getTypeLabels(t) {
     stop: t("Stop"),
     seek: t("Seek"),
     page: t("Page"),
-    toggle: t("Toggle"),
+    toggle: t("Show/hide a block"),
     scenario: t("Scenario"),
     fullscreen: t("Fullscreen"),
     url: t("URL"),

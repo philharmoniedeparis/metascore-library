@@ -423,7 +423,7 @@ export default class LinkFormView extends LinkFormViewBase {
    * @private
    * @returns {FormGroupView} Form group view instance.
    */
-  _createToggleInputs() {
+  _createBlockToggleInputs() {
     const locale = this.locale;
     const t = locale.t;
 
@@ -659,7 +659,7 @@ export default class LinkFormView extends LinkFormViewBase {
     this._playInputsGroup = this._createPlayInputs();
     this._seekInputsGroup = this._createSeekInputs();
     this._pageInputsGroup = this._createPageInputs();
-    this._toggleInputsGroup = this._createToggleInputs();
+    this._blockToggleInputsGroup = this._createBlockToggleInputs();
     this._scenarioInputsGroup = this._createScenarioInputs();
     this._fullscreenInputsGroup = this._createFullscreenInputs();
     this._tipView = this._createTipView();
@@ -670,7 +670,7 @@ export default class LinkFormView extends LinkFormViewBase {
         this._playInputsGroup,
         this._seekInputsGroup,
         this._pageInputsGroup,
-        this._toggleInputsGroup,
+        this._blockToggleInputsGroup,
         this._scenarioInputsGroup,
         this._fullscreenInputsGroup,
       ],
