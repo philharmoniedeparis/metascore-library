@@ -80,10 +80,7 @@
       ></div>
     </template>
 
-    <teleport
-      v-if="interactable && $el?.ownerDocument?.body"
-      :to="$el.ownerDocument.body"
-    >
+    <teleport v-if="interactable && controlboxTarget" :to="controlboxTarget">
       <div
         ref="controlbox"
         :class="['component-wrapper-controlbox', kebabCase(component.type)]"
@@ -215,6 +212,7 @@ export default {
   data() {
     return {
       controlboxLastUpdated: 0,
+      controlboxTarget: null,
       dragOver: false,
       dragEnterCounter: 0,
       error: null,
@@ -441,23 +439,13 @@ export default {
     },
   },
   watch: {
-    async interactable(value) {
-      if (value) {
-        await this.$nextTick();
-        this.setupInteractions();
-      } else {
-        this.destroyInteractions();
-      }
-    },
-    selected: {
-      handler() {
-        this.updateInteractibleControlBox();
-      },
-      flush: "post",
-    },
-    preview: {
-      handler() {
-        this.updateInteractibleControlBox();
+    interactable: {
+      handler(value) {
+        if (value) {
+          this.setupInteractions();
+        } else {
+          this.destroyInteractions();
+        }
       },
       flush: "post",
     },
@@ -509,6 +497,12 @@ export default {
       },
       flush: "post",
     },
+  },
+  async mounted() {
+    this.controlboxTarget = this.$el.ownerDocument.body;
+
+    await this.$nextTick();
+    this.setupInteractions();
   },
   beforeUnmount() {
     this.destroyInteractions();
@@ -584,53 +578,51 @@ export default {
         this._interactables.push(interactable);
       }
 
-      if (this.resizable) {
-        const interactable = interact(this.$refs["controlbox"], {
+      if (this.resizable || this.transformable) {
+        const interactable = interact(this.$refs.controlbox, {
           context: this.$el.ownerDocument,
         });
 
-        interactable.resizable({
-          edges: {
-            top: ".resize-handle.top",
-            right: ".resize-handle.right",
-            bottom: ".resize-handle.bottom",
-            left: ".resize-handle.left",
-          },
-          invert: "negate",
-          modifiers: [
-            interact.modifiers.snap({
-              targets: [this.getInteractableSnapTarget],
-            }),
-          ],
-          listeners: {
-            start: this.onResizableStart,
-            move: this.onResizableMove,
-            end: this.onResizableEnd,
-          },
-        });
+        if (this.resizable) {
+          interactable.resizable({
+            edges: {
+              top: ".resize-handle.top",
+              right: ".resize-handle.right",
+              bottom: ".resize-handle.bottom",
+              left: ".resize-handle.left",
+            },
+            invert: "negate",
+            modifiers: [
+              interact.modifiers.snap({
+                targets: [this.getInteractableSnapTarget],
+              }),
+            ],
+            listeners: {
+              start: this.onResizableStart,
+              move: this.onResizableMove,
+              end: this.onResizableEnd,
+            },
+          });
+        }
+
+        if (this.transformable) {
+          interactable.draggable({
+            allowFrom: ".rotate .handle",
+            cursorChecker() {
+              return "grab";
+            },
+            listeners: {
+              start: this.onRotateStart,
+              move: this.onRotateMove,
+              end: this.onRotateEnd,
+            },
+          });
+        }
 
         this._interactables.push(interactable);
       }
 
-      if (this.transformable) {
-        const interactable = interact(this.$refs["controlbox"], {
-          context: this.$el.ownerDocument,
-        });
-
-        interactable.draggable({
-          allowFrom: ".rotate .handle",
-          cursorChecker() {
-            return "grab";
-          },
-          listeners: {
-            start: this.onRotateStart,
-            move: this.onRotateMove,
-            end: this.onRotateEnd,
-          },
-        });
-
-        this._interactables.push(interactable);
-      }
+      this.updateInteractibleControlBox();
     },
     destroyInteractions() {
       if (this._interactables) {
