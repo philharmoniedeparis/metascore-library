@@ -4,7 +4,7 @@ import { javascriptGenerator as JavaScript } from "blockly/javascript";
 const states = new Map();
 
 const SET_PROPERTY_OVERRIDES_KEY = "app_behaviors:set_property";
-const SET_PROPERTY_OVERRIDES_PRIORITY = 10;
+const SET_PROPERTY_OVERRIDES_PRIORITY = 100;
 
 export function init(context) {
   // Ensure 'Components' name does not conflict with variable names.

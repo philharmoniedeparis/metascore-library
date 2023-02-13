@@ -26,6 +26,9 @@
 import useStore from "../store";
 import { sortBy } from "lodash";
 
+const BLOCK_TOGGLER_OVERRIDES_KEY = "app_components:block_toggler";
+const BLOCK_TOGGLER_OVERRIDES_PRIORITY = 100;
+
 export default {
   props: {
     /**
@@ -75,9 +78,14 @@ export default {
       return block.hidden;
     },
     toggleBlock(block) {
-      this.store.override(block, {
-        hidden: !block.hidden,
-      });
+      this.store.setOverrides(
+        block,
+        BLOCK_TOGGLER_OVERRIDES_KEY,
+        {
+          hidden: !block.hidden,
+        },
+        BLOCK_TOGGLER_OVERRIDES_PRIORITY
+      );
     },
   },
 };
