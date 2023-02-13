@@ -115,18 +115,9 @@ export default {
   watch: {
     component: {
       async handler(value, oldValue) {
-        if (
-          value &&
-          oldValue &&
-          value.type === oldValue.type &&
-          value.id === oldValue.id
-        ) {
-          return;
-        }
-
-        await this.stopEditing();
-
         if (oldValue) {
+          await this.stopEditing(oldValue);
+
           this.getComponentElement(oldValue).removeEventListener(
             "dblclick",
             this.onComponentDblclick
@@ -159,10 +150,10 @@ export default {
     await this.stopEditing();
   },
   methods: {
-    getInnerElement() {
-      if (!this.component) return null;
+    getInnerElement(component = this.component) {
+      if (!component) return null;
 
-      return this.getComponentElement(this.component)?.querySelector(
+      return this.getComponentElement(component)?.querySelector(
         ":scope > .metaScore-component--inner"
       );
     },
@@ -269,7 +260,7 @@ export default {
         isSourceEditingMode
       );
     },
-    async stopEditing() {
+    async stopEditing(component = this.component) {
       if (!this.editing) return;
 
       if (this.editor) {
@@ -278,7 +269,7 @@ export default {
         this.editor = null;
       }
 
-      const inner_el = this.getInnerElement();
+      const inner_el = this.getInnerElement(component);
       if (inner_el) {
         inner_el.removeEventListener(
           "keydown",
@@ -287,7 +278,7 @@ export default {
         inner_el.removeEventListener("keyup", this.onComponentInnerElKeyEvent);
       }
 
-      this.unfreezeComponent(this.component);
+      this.unfreezeComponent(component);
 
       this.editing = false;
     },
