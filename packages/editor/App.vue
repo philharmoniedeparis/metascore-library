@@ -629,11 +629,6 @@ export default {
     ::-webkit-scrollbar-thumb {
       border-radius: 0;
       background-color: var(--metascore-scrollbar-thumb-color);
-
-      &:active,
-      &:hover {
-        background-color: var(--metascore-scrollbar-thumb-active-color);
-      }
     }
   }
 
