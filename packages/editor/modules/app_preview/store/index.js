@@ -38,12 +38,8 @@ export default defineStore("app-preview", {
       };
     },
     isComponentSelected() {
-      return (component) => {
-        const { type, id } = component;
-        const { getComponent } = useModule("app_components");
-        return (
-          this.selectedComponents[type]?.includes(id) && getComponent(type, id)
-        );
+      return ({ type, id }) => {
+        return this.selectedComponents[type]?.includes(id);
       };
     },
     getSelectedComponents() {
@@ -77,10 +73,7 @@ export default defineStore("app-preview", {
     },
     isComponentLocked() {
       return ({ type, id }) => {
-        const { getComponent } = useModule("app_components");
-        return (
-          this.lockedComponents[type]?.includes(id) && getComponent(type, id)
-        );
+        return this.lockedComponents[type]?.includes(id);
       };
     },
     getLockedComponents() {
