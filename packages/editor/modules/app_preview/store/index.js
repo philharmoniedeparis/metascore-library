@@ -267,8 +267,7 @@ export default defineStore("app-preview", {
       target = this.getClosestPasteTarget(target);
       if (!target) return;
 
-      const { getComponent, createComponent, addComponent } =
-        useModule("app_components");
+      const { createComponent, addComponent } = useModule("app_components");
       const { getData: getClipboardData } = useModule("clipboard");
       const { getComponentChildrenProperty } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
@@ -284,7 +283,7 @@ export default defineStore("app-preview", {
           data[property] = [];
         }
 
-        const component = await createComponent(data);
+        const component = await createComponent(data, false);
         await addComponent(component, parent);
 
         for (const child of children) {
@@ -306,10 +305,7 @@ export default defineStore("app-preview", {
             item.position[1] += 10;
           }
 
-          const component = await recursivePaste(
-            item,
-            getComponent(target.type, target.id)
-          );
+          const component = await recursivePaste(item, target);
           this.selectComponent(component, i++ > 0);
           components.push(component);
         }
