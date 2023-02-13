@@ -92,7 +92,7 @@ export default {
     width: 100%;
     text-align: left;
     padding: 0.5em;
-    color: var(--metascore-color-white);
+    color: var(--metascore-color-white, white);
     white-space: nowrap;
     user-select: none;
     box-sizing: border-box;
@@ -108,7 +108,7 @@ export default {
   &.has-handler,
   &.has-subitems {
     &:hover {
-      background: var(--metascore-color-bg-secondary);
+      background: var(--metascore-color-bg-secondary, #606060);
     }
   }
 

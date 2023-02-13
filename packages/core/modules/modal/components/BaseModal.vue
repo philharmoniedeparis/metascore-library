@@ -124,8 +124,8 @@ export default {
     display: flex;
     max-width: calc(100% - 1em);
     max-height: calc(100% - 1em);
-    background: var(--metascore-color-bg-primary);
-    border: 2px solid var(--metascore-color-bg-primary);
+    background: var(--metascore-color-bg-primary, #777);
+    border: 2px solid var(--metascore-color-bg-primary, #777);
     border-radius: 0.25em;
     box-shadow: 0 0 0.5em 0 rgb(0, 0, 0);
     box-sizing: border-box;
@@ -143,8 +143,8 @@ export default {
     padding: 0.5em;
     justify-content: space-between;
     align-items: center;
-    background: var(--metascore-color-bg-tertiary);
-    color: var(--metascore-color-text-tertiary);
+    background: var(--metascore-color-bg-tertiary, #3f3f3f);
+    color: var(--metascore-color-text-tertiary, white);
 
     .title {
       margin: 0;
@@ -173,10 +173,10 @@ export default {
     gap: 0.5em;
 
     :deep(.base-button) {
-      background: var(--metascore-color-bg-secondary);
+      background: var(--metascore-color-bg-secondary, #606060);
 
       &.primary {
-        background: var(--metascore-color-bg-tertiary);
+        background: var(--metascore-color-bg-tertiary, #3f3f3f);
       }
     }
   }

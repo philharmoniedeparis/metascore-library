@@ -363,7 +363,7 @@ body {
   height: 100%;
   font-size: 11px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  background: var(--metascore-color-white);
+  background: var(--metascore-color-white, white);
 
   :deep(.sr-only) {
     @include sr-only;

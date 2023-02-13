@@ -48,7 +48,7 @@ export default {
   padding: 0.5em 2em;
   flex-direction: row;
   align-items: center;
-  color: var(--metascore-color-white);
+  color: var(--metascore-color-white, white);
   border: none;
   border-radius: 2px;
   text-align: center;
@@ -59,7 +59,7 @@ export default {
   &:focus,
   &:active,
   &:focus-visible {
-    outline: 1px solid var(--metascore-color-blue);
+    outline: 1px solid var(--metascore-color-accent, #0000fe);
     border: none;
   }
 
@@ -70,22 +70,22 @@ export default {
   }
 
   &.primary {
-    background-color: var(--metascore-color-white);
+    background-color: var(--metascore-color-white, white);
 
     &:hover,
     &:active {
-      color: var(--metascore-color-white);
-      background-color: var(--metascore-color-bg-primary);
+      color: var(--metascore-color-white, white);
+      background-color: var(--metascore-color-bg-primary, #777);
     }
   }
 
   &.secondary {
-    background-color: var(--metascore-color-bg-tertiary);
+    background-color: var(--metascore-color-bg-tertiary, #3f3f3f);
 
     &:hover,
     &:active {
-      color: var(--metascore-color-white);
-      background-color: var(--metascore-color-bg-primary);
+      color: var(--metascore-color-white, white);
+      background-color: var(--metascore-color-bg-primary, #777);
     }
   }
 

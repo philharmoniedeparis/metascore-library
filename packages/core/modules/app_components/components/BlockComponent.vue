@@ -266,7 +266,7 @@ export default {
         padding: 0.4em;
         align-items: center;
         justify-content: center;
-        color: var(--metascore-color-blue);
+        color: var(--metascore-color-accent, #0000fe);
         background-color: #fff;
         border-radius: 50%;
         box-sizing: border-box;
