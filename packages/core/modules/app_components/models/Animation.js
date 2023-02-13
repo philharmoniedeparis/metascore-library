@@ -115,9 +115,7 @@ export default class Animation extends EmbeddableComponent {
       });
       animation.addEventListener("DOMLoaded", () => {
         // Set loop duration.
-        if (!("loop-duration" in data) || data["loop-duration"] === null) {
-          data["loop-duration"] = round(animation.getDuration(), 2);
-        }
+        data["loop-duration"] = round(animation.getDuration(), 2);
 
         // Set colors.
         data.colors = [];
@@ -157,7 +155,8 @@ export default class Animation extends EmbeddableComponent {
    * @param {Object} data The data to set defaults on.
    */
   setEmbeddedDefaults(data) {
-    const { loop_duration = null, colors = [] } = this._embedded_data;
+    const { "loop-duration": loop_duration = null, colors = [] } =
+      this._embedded_data;
 
     // Set loop duration.
     if (!("loop-duration" in data) || data["loop-duration"] === null) {
