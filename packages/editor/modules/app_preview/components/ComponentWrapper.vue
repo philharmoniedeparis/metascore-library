@@ -455,6 +455,12 @@ export default {
       },
       flush: "post",
     },
+    preview: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
     "component.position": {
       handler() {
         this.updateInteractibleControlBox();
