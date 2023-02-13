@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { cloneDeep, round, kebabCase } from "lodash";
+import { round, kebabCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
@@ -206,7 +206,7 @@ export default defineStore("app-preview", {
         useModule("app_components");
 
       const recursiveCopy = (component) => {
-        const copy = cloneDeep(component.data);
+        const copy = structuredClone(component.data);
         delete copy.id;
 
         const property = getComponentChildrenProperty(component);
@@ -296,7 +296,7 @@ export default defineStore("app-preview", {
 
       let data = getClipboardData("metascore/component");
       if (data) {
-        data = cloneDeep(unref(data));
+        data = structuredClone(unref(data));
         startHistoryGroup();
 
         let i = 0;

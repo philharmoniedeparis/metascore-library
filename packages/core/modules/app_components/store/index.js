@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { readonly, unref, isReadonly } from "vue";
-import { omit, cloneDeep } from "lodash";
+import { omit } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { t as $t } from "@metascore-library/core/services/i18n";
@@ -327,7 +327,7 @@ export default defineStore("app-components", {
 
       let clone = await this.create(
         {
-          ...omit(cloneDeep(component.data), ["id", children_prop]),
+          ...omit(structuredClone(component.data), ["id", children_prop]),
           ...data,
         },
         false
