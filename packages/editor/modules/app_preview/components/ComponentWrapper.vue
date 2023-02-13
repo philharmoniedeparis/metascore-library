@@ -55,8 +55,6 @@
       selected,
       locked,
       preview,
-      dragging,
-      resizing,
       frozen,
       'drag-over': dragOver,
     }"
@@ -68,16 +66,56 @@
   >
     <slot />
 
-    <template v-if="resizable" #outer>
-      <div class="resize-handle top left"></div>
-      <div class="resize-handle top"></div>
-      <div class="resize-handle top right"></div>
-      <div class="resize-handle right"></div>
-      <div class="resize-handle bottom right"></div>
-      <div class="resize-handle bottom"></div>
-      <div class="resize-handle bottom left"></div>
-      <div class="resize-handle left"></div>
+    <template v-if="selected && !preview" #outer>
+      <div
+        v-for="point in [
+          'top left',
+          'top right',
+          'bottom right',
+          'bottom left',
+        ]"
+        :key="point"
+        ref="controlbox-ref-points"
+        :class="`controlbox-ref-point ${point}`"
+      ></div>
     </template>
+
+    <teleport
+      v-if="interactable && $el?.ownerDocument?.body"
+      :to="$el.ownerDocument.body"
+    >
+      <div
+        ref="controlbox"
+        :class="['component-wrapper-controlbox', kebabCase(component.type)]"
+      >
+        <!-- eslint-disable-next-line vue/require-v-for-key, vue/no-unused-vars -->
+        <div v-for="n in 4" ref="controlbox-edges" class="edge"></div>
+
+        <template v-if="transformable">
+          <div class="rotate">
+            <div ref="controlbox-rotate-line" class="line"></div>
+            <div ref="controlbox-rotate-handle" class="handle"></div>
+          </div>
+        </template>
+        <template v-if="resizable">
+          <div
+            v-for="corner in [
+              'top left',
+              'top',
+              'top right',
+              'right',
+              'bottom right',
+              'bottom',
+              'bottom left',
+              'left',
+            ]"
+            :key="corner"
+            ref="controlbox-resize-handles"
+            :class="`resize-handle ${corner}`"
+          ></div>
+        </template>
+      </div>
+    </teleport>
 
     <alert-dialog v-if="error" @close="error = null">
       <p v-dompurify-html="error"></p>
@@ -86,13 +124,16 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import "@interactjs/auto-start";
 import "@interactjs/actions/drag";
 import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
+import { round, kebabCase } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import {
   default as useStore,
   ValidationError,
@@ -103,7 +144,18 @@ export default {
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
-  inject: ["disableComponentInteractions"],
+  provide() {
+    return {
+      controlboxLastUpdated: computed(() => this.controlboxLastUpdated),
+    };
+  },
+  inject: {
+    disableComponentInteractions: {},
+    parentControlboxLastUpdated: {
+      from: "controlboxLastUpdated",
+      default: 0,
+    },
+  },
   props: {
     /**
      * The associated component
@@ -162,10 +214,9 @@ export default {
   },
   data() {
     return {
+      controlboxLastUpdated: 0,
       dragOver: false,
       dragEnterCounter: 0,
-      dragging: false,
-      resizing: false,
       error: null,
     };
   },
@@ -185,20 +236,23 @@ export default {
     frozen() {
       return this.store.isComponentFrozen(this.component);
     },
+    positionable() {
+      return this.model.$isPositionable;
+    },
+    resizable() {
+      return this.model.$isResizable;
+    },
+    transformable() {
+      return this.model.$isTransformable;
+    },
     interactable() {
       return (
-        (this.model.$isPositionable || this.model.$isResizable) &&
+        (this.positionable || this.resizable || this.transformable) &&
         this.selected &&
         !this.preview &&
         !this.locked &&
         !this.disableComponentInteractions
       );
-    },
-    positionable() {
-      return this.interactable && this.model.$isPositionable;
-    },
-    resizable() {
-      return this.interactable && this.model.$isResizable;
     },
     siblings() {
       return this.getComponentSiblings(this.component);
@@ -210,6 +264,36 @@ export default {
       set(value) {
         this.store.activeSnapTargets = value;
       },
+    },
+    roundedMediaTime() {
+      return round(this.mediaTime, 2);
+    },
+    currentScale() {
+      if (this.component.scale?.animated) {
+        return getAnimatedValueAtTime(
+          this.component.scale.value,
+          this.mediaTime
+        );
+      }
+      return this.component.scale?.value;
+    },
+    currentTranslate() {
+      if (this.component.translate?.animated) {
+        return getAnimatedValueAtTime(
+          this.component.translate.value,
+          this.mediaTime
+        );
+      }
+      return this.component.translate?.value;
+    },
+    currentRotation() {
+      if (this.component.rotate?.animated) {
+        return getAnimatedValueAtTime(
+          this.component.rotate.value,
+          this.mediaTime
+        );
+      }
+      return this.component.rotate?.value;
     },
     contextmenuItems() {
       const items = [
@@ -357,18 +441,74 @@ export default {
     },
   },
   watch: {
-    interactable(value) {
+    async interactable(value) {
       if (value) {
+        await this.$nextTick();
         this.setupInteractions();
       } else {
         this.destroyInteractions();
       }
+    },
+    selected: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    "component.position": {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    "component.dimension": {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    "component.scale": {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    "component.translate": {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    currentScale: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    currentTranslate: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    currentRotation: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
+    },
+    parentControlboxLastUpdated: {
+      handler() {
+        this.updateInteractibleControlBox();
+      },
+      flush: "post",
     },
   },
   beforeUnmount() {
     this.destroyInteractions();
   },
   methods: {
+    kebabCase,
     onClick(evt) {
       if (this.preview) {
         return;
@@ -387,13 +527,15 @@ export default {
       }
     },
     setupInteractions() {
-      if (this._interactables) return;
+      if (!this.interactable || this._interactables) return;
 
-      this._interactables = interact(this.$el, {
-        context: this.$el.ownerDocument,
-      });
+      this._interactables = [];
 
       if (this.positionable) {
+        const interactable = interact(this.$el, {
+          context: this.$el.ownerDocument,
+        });
+
         let allowFrom = null;
 
         switch (this.component.type) {
@@ -405,7 +547,7 @@ export default {
             break;
         }
 
-        this._interactables.draggable({
+        interactable.draggable({
           allowFrom,
           modifiers: [
             interact.modifiers.restrict({
@@ -432,16 +574,23 @@ export default {
             end: this.onDraggableEnd,
           },
         });
+
+        this._interactables.push(interactable);
       }
 
       if (this.resizable) {
-        this._interactables.resizable({
+        const interactable = interact(this.$refs["controlbox"], {
+          context: this.$el.ownerDocument,
+        });
+
+        interactable.resizable({
           edges: {
             top: ".resize-handle.top",
             right: ".resize-handle.right",
             bottom: ".resize-handle.bottom",
             left: ".resize-handle.left",
           },
+          invert: "negate",
           modifiers: [
             interact.modifiers.snap({
               targets: [this.getInteractableSnapTarget],
@@ -453,13 +602,115 @@ export default {
             end: this.onResizableEnd,
           },
         });
+
+        this._interactables.push(interactable);
+      }
+
+      if (this.transformable) {
+        const interactable = interact(this.$refs["controlbox"], {
+          context: this.$el.ownerDocument,
+        });
+
+        interactable.draggable({
+          allowFrom: ".rotate .handle",
+          cursorChecker() {
+            return "grab";
+          },
+          listeners: {
+            start: this.onRotateStart,
+            move: this.onRotateMove,
+            end: this.onRotateEnd,
+          },
+        });
+
+        this._interactables.push(interactable);
       }
     },
     destroyInteractions() {
       if (this._interactables) {
-        this._interactables.unset();
+        this._interactables.map((interactable) => interactable.unset());
         delete this._interactables;
       }
+    },
+    updateInteractibleControlBox() {
+      if (this.interactable) {
+        const ref_points = this.$refs["controlbox-ref-points"].map((point) =>
+          point.getBoundingClientRect()
+        );
+
+        // Update edges.
+        ref_points.forEach((p1, i, points) => {
+          const p2 = points[(i + 1) % points.length];
+          const length = Math.sqrt(
+            Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
+          );
+          const center = {
+            x: (p1.x + p2.x) / 2,
+            y: (p1.y + p2.y) / 2,
+          };
+          const angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
+
+          const edge = this.$refs["controlbox-edges"][i];
+          edge.style.left = `${center.x - length / 2}px`;
+          edge.style.top = `${center.y}px`;
+          edge.style.width = `${length}px`;
+          edge.style.transform = `rotate(${angle}rad)`;
+        });
+
+        if (this.resizable) {
+          // Update resize handles.
+          this.$refs["controlbox-resize-handles"].forEach((handle, i) => {
+            if (i % 2 === 1) {
+              const p1_index = (i - 1) / 2;
+              const p1 = ref_points[p1_index];
+              const p2_index = (p1_index + 1) % ref_points.length;
+              const p2 = ref_points[p2_index];
+              handle.style.top = `${(p1.top + p2.top) / 2}px`;
+              handle.style.left = `${(p1.left + p2.left) / 2}px`;
+            } else {
+              const p = ref_points[Math.floor(i / 2)];
+              handle.style.top = `${p.top}px`;
+              handle.style.left = `${p.left}px`;
+            }
+          });
+        }
+
+        if (this.transformable) {
+          const p1 = ref_points[0];
+          const p2 = ref_points[1];
+          const length = Math.sqrt(
+            Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
+          );
+          const center = {
+            x: (p1.x + p2.x) / 2,
+            y: (p1.y + p2.y) / 2,
+          };
+          const distance = 20;
+          const pos = {
+            x: center.x - (distance * (p1.y - center.y)) / (length / 2),
+            y: center.y + (distance * (p1.x - center.x)) / (length / 2),
+          };
+
+          // Update rotate line.
+          const line_center = {
+            x: (center.x + pos.x) / 2,
+            y: (center.y + pos.y) / 2,
+          };
+          const angle = Math.atan2(center.y - pos.y, center.x - pos.x);
+          const line = this.$refs["controlbox-rotate-line"];
+          line.style.left = `${line_center.x - distance / 2}px`;
+          line.style.top = `${line_center.y}px`;
+          line.style.width = `${distance}px`;
+          line.style.transform = `rotate(${angle}rad)`;
+
+          // Update rotate handle.
+          const handle = this.$refs["controlbox-rotate-handle"];
+          handle.style.top = `${pos.y}px`;
+          handle.style.left = `${pos.x}px`;
+        }
+      }
+
+      this.controlboxLastUpdated = performance.now();
     },
     getInteractableSnapTarget(x, y, interaction, relativePoint) {
       let min_distance = { x: this.snapRange, y: this.snapRange };
@@ -501,7 +752,6 @@ export default {
       return target;
     },
     onDraggableStart() {
-      this.dragging = true;
       this.startHistoryGroup({ coalesce: true });
     },
     async onDraggableMove(evt) {
@@ -515,7 +765,6 @@ export default {
       this.endHistoryGroup();
     },
     onDraggableEnd(evt) {
-      this.dragging = false;
       this.activeSnapTargets = [];
       this.endHistoryGroup();
 
@@ -527,22 +776,23 @@ export default {
       );
     },
     onResizableStart() {
-      this.resizing = true;
       this.startHistoryGroup({ coalesce: true });
     },
     async onResizableMove(evt) {
-      const position = this.component.position;
+      const { position, dimension } = this.component;
 
       await this.updateComponent(this.component, {
         position: [
           position[0] + evt.deltaRect.left,
           position[1] + evt.deltaRect.top,
         ],
-        dimension: [evt.rect.width, evt.rect.height],
+        dimension: [
+          dimension[0] + evt.deltaRect.width,
+          dimension[1] + evt.deltaRect.height,
+        ],
       });
     },
     onResizableEnd(evt) {
-      this.resizing = false;
       this.activeSnapTargets = [];
       this.endHistoryGroup();
 
@@ -551,6 +801,65 @@ export default {
         "click",
         (evt) => evt.stopImmediatePropagation(),
         { capture: true, once: true }
+      );
+    },
+    onRotateStart(evt) {
+      this.startHistoryGroup({ coalesce: true });
+      this._rotate_prev_angle = this.getRotateAngle(evt);
+    },
+    async onRotateMove(evt) {
+      const angle = this.getRotateAngle(evt);
+      const prev_angle = this._rotate_prev_angle;
+
+      const diff = round(angle - prev_angle);
+      let { animated, value } = this.component.rotate;
+
+      if (animated) {
+        const time = this.roundedMediaTime;
+        const index = value.findIndex((v) => v[0] === time);
+        if (index >= 0) {
+          const new_value = value[index][1] + diff;
+          value = [
+            ...value.slice(0, index),
+            [time, new_value],
+            ...value.slice(index + 1),
+          ];
+        } else {
+          const new_value = round(
+            getAnimatedValueAtTime(value, this.mediaTime) + diff
+          );
+          value = value.concat([[time, new_value]]).sort((a, b) => a[0] - b[0]);
+        }
+      } else {
+        value += diff;
+      }
+
+      await this.updateComponent(this.component, {
+        rotate: { animated, value },
+      });
+
+      this._rotate_prev_angle = angle;
+    },
+    onRotateEnd(evt) {
+      this.endHistoryGroup();
+      delete this._rotate_prev_angle;
+
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
+      );
+    },
+    getRotateAngle(evt) {
+      const { left, top, width, height } = this.$el.getBoundingClientRect();
+      const center = {
+        x: left + width / 2,
+        y: top + height / 2,
+      };
+      return (
+        Math.atan2(center.y - evt.clientY, center.x - evt.clientX) *
+        (180 / Math.PI)
       );
     },
     getModelFromDragEvent(evt) {
@@ -698,44 +1007,6 @@ export default {
     touch-action: none;
     user-select: none;
 
-    .resize-handle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 1em;
-      height: 1em;
-      margin-top: -0.45em;
-      margin-left: -0.45em;
-      background: var(--metascore-color-white);
-      border: 0.25em solid var(--metascore-color-accent);
-      box-sizing: border-box;
-      z-index: 2;
-
-      &.top {
-        top: 0;
-      }
-      &.right {
-        left: 100%;
-      }
-      &.bottom {
-        top: 100%;
-      }
-      &.left {
-        left: 0;
-      }
-    }
-    @each $component, $color in $component-colors {
-      @if $component == default {
-        .resize-handle {
-          border-color: var(--metascore-color-component-#{$component});
-        }
-      } @else {
-        &.#{$component} .resize-handle {
-          border-color: var(--metascore-color-component-#{$component});
-        }
-      }
-    }
-
     &.block-toggler {
       :deep(button) {
         pointer-events: none;
@@ -765,52 +1036,92 @@ export default {
       }
     }
 
-    &.selected {
-      &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        border: 0.25em dashed var(--metascore-color-accent);
-        pointer-events: none;
-        z-index: 1;
-      }
-
-      @each $component, $color in $component-colors {
-        @if $component == default {
-          &:after {
-            border-color: var(--metascore-color-component-#{$component});
-          }
-        } @else if $component == page {
-          &.#{$component} {
-            &:after {
-              border-color: var(--metascore-color-component-#{$component});
-            }
-          }
-        } @else {
-          &.#{$component} {
-            &:after {
-              border-color: var(--metascore-color-component-#{$component});
-            }
-          }
-        }
-      }
-    }
-
     &.drag-over {
       box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-accent);
-    }
-
-    &.dragging,
-    &.resizing {
-      z-index: 999;
     }
 
     &.locked {
       pointer-events: none;
     }
+  }
+
+  .controlbox-ref-point {
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    pointer-events: none;
+
+    &.top {
+      top: 0;
+    }
+    &.bottom {
+      bottom: 0;
+    }
+    &.left {
+      left: 0;
+    }
+    &.right {
+      right: 0;
+    }
+  }
+}
+
+.component-wrapper-controlbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+
+  @each $component, $color in $component-colors {
+    @if $component == default {
+      --color: var(--metascore-color-component-#{$component});
+    } @else {
+      &.#{$component} {
+        --color: var(--metascore-color-component-#{$component});
+      }
+    }
+  }
+
+  .edge {
+    position: absolute;
+    height: 1px;
+    border-top: 3px dotted var(--color);
+    transform-origin: 50% 0;
+  }
+
+  .rotate {
+    position: absolute;
+    pointer-events: all;
+
+    .line {
+      position: absolute;
+      height: 1px;
+      margin-left: -1px;
+      border-top: 3px dotted var(--color);
+    }
+
+    .handle {
+      position: absolute;
+      width: 0.5em;
+      height: 0.5em;
+      margin-left: -0.25em;
+      margin-top: -0.25em;
+      background: var(--metascore-color-white);
+      outline: 2px solid var(--color);
+      border-radius: 50%;
+    }
+  }
+
+  .resize-handle {
+    position: absolute;
+    width: 0.5em;
+    height: 0.5em;
+    margin-top: -0.25em;
+    margin-left: -0.25em;
+    background: var(--color);
+    border-radius: 50%;
+    pointer-events: all;
   }
 }
 </style>
