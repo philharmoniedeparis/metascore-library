@@ -538,7 +538,9 @@ export default {
         return;
       }
 
-      this.addContextmenuItems(this.contextmenuItems);
+      if (!this.preview) {
+        this.addContextmenuItems(this.contextmenuItems);
+      }
 
       evt.preventDefault();
       this.bubbleIframeEvent(evt);

@@ -294,6 +294,8 @@ export default {
       return this.component.rotate?.value;
     },
     contextmenuItems() {
+      if (this.preview) return [];
+
       const items = [
         {
           label: this.$t(`contextmenu.${this.selected ? "de" : ""}select`),
