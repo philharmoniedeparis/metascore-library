@@ -219,7 +219,7 @@ export default {
 .behaviors-form {
   position: relative;
   height: 100%;
-  background: var(--metascore-color-bg-tertiary);
+  background: var(--metascore-color-bg-primary);
   color: var(--metascore-color-white);
 }
 

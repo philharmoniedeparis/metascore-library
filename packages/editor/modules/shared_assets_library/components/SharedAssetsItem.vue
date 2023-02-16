@@ -97,7 +97,7 @@ export default {
       width: 100%;
       text-align: center;
       line-height: 2em;
-      background: var(--metascore-color-bg-tertiary);
+      background: var(--metascore-color-bg-primary);
       box-sizing: border-box;
       white-space: nowrap;
       overflow: hidden;

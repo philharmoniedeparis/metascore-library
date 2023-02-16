@@ -1,5 +1,4 @@
 import * as Models from "../../models";
-import { cloneDeep } from "lodash";
 
 // Get collection properties.
 const collections = {};
@@ -71,7 +70,7 @@ function denormalizeItem(item, all) {
     return null;
   }
 
-  const data = all[item.type][item.id].data;
+  const data = structuredClone(all[item.type][item.id].data);
 
   if (data.type in collections) {
     collections[data.type].forEach((key) => {
@@ -87,8 +86,6 @@ function denormalizeItem(item, all) {
 }
 
 export function denormalize(input, data) {
-  data = cloneDeep(data);
-
   return input
     .map((item) => denormalizeItem(item, data))
     .filter((item) => item !== null);

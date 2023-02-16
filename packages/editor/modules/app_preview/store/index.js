@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { cloneDeep, round, kebabCase } from "lodash";
+import { round, kebabCase } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
 export const ADD_SIBLING_PAGE_TIME_ERROR = 200;
+
+const FROZEN_OVERRIDES_KEY = "app_preview:frozen";
+const FROZEN_OVERRIDES_PRIORITY = 1000;
 
 export class ValidationError extends Error {
   constructor(code, ...params) {
@@ -36,10 +39,7 @@ export default defineStore("app-preview", {
     },
     isComponentSelected() {
       return ({ type, id }) => {
-        const { getComponent } = useModule("app_components");
-        return (
-          this.selectedComponents[type]?.includes(id) && getComponent(type, id)
-        );
+        return this.selectedComponents[type]?.includes(id);
       };
     },
     getSelectedComponents() {
@@ -73,10 +73,7 @@ export default defineStore("app-preview", {
     },
     isComponentLocked() {
       return ({ type, id }) => {
-        const { getComponent } = useModule("app_components");
-        return (
-          this.lockedComponents[type]?.includes(id) && getComponent(type, id)
-        );
+        return this.lockedComponents[type]?.includes(id);
       };
     },
     getLockedComponents() {
@@ -96,17 +93,9 @@ export default defineStore("app-preview", {
       );
     },
     isComponentFrozen() {
-      return ({ type, id }) => {
-        return (
-          type in this.frozenComponents && id in this.frozenComponents[type]
-        );
-      };
-    },
-    getFrozenComponent() {
-      return ({ type, id }) => {
-        if (this.isComponentFrozen({ type, id })) {
-          return this.frozenComponents[type][id];
-        }
+      return (component) => {
+        const { hasOverrides } = useModule("app_components");
+        return hasOverrides(component, FROZEN_OVERRIDES_KEY);
       };
     },
   },
@@ -190,19 +179,19 @@ export default defineStore("app-preview", {
       this.lockedComponents = {};
     },
     freezeComponent(component) {
+      const { setOverrides } = useModule("app_components");
       if (!this.isComponentFrozen(component)) {
-        const { getComponent } = useModule("app_components");
-        this.frozenComponents[component.type] =
-          this.frozenComponents[component.type] || {};
-        this.frozenComponents[component.type][component.id] = structuredClone(
-          getComponent(component.type, component.id)
+        setOverrides(
+          component,
+          FROZEN_OVERRIDES_KEY,
+          structuredClone(component.data),
+          FROZEN_OVERRIDES_PRIORITY
         );
       }
     },
     unfreezeComponent(component) {
-      if (this.isComponentFrozen(component)) {
-        delete this.frozenComponents[component.type][component.id];
-      }
+      const { clearOverrides } = useModule("app_components");
+      clearOverrides(component, FROZEN_OVERRIDES_KEY);
     },
     copyComponents(components) {
       const { setData: setClipboardData } = useModule("clipboard");
@@ -210,7 +199,7 @@ export default defineStore("app-preview", {
         useModule("app_components");
 
       const recursiveCopy = (component) => {
-        const copy = cloneDeep(unref(component));
+        const copy = structuredClone(component.data);
         delete copy.id;
 
         const property = getComponentChildrenProperty(component);
@@ -271,8 +260,7 @@ export default defineStore("app-preview", {
       target = this.getClosestPasteTarget(target);
       if (!target) return;
 
-      const { getComponent, createComponent, addComponent } =
-        useModule("app_components");
+      const { createComponent, addComponent } = useModule("app_components");
       const { getData: getClipboardData } = useModule("clipboard");
       const { getComponentChildrenProperty } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
@@ -288,7 +276,7 @@ export default defineStore("app-preview", {
           data[property] = [];
         }
 
-        const component = await createComponent(data);
+        const component = await createComponent(data, false);
         await addComponent(component, parent);
 
         for (const child of children) {
@@ -300,7 +288,7 @@ export default defineStore("app-preview", {
 
       let data = getClipboardData("metascore/component");
       if (data) {
-        data = cloneDeep(unref(data));
+        data = structuredClone(unref(data));
         startHistoryGroup();
 
         let i = 0;
@@ -310,10 +298,7 @@ export default defineStore("app-preview", {
             item.position[1] += 10;
           }
 
-          const component = await recursivePaste(
-            item,
-            getComponent(target.type, target.id)
-          );
+          const component = await recursivePaste(item, target);
           this.selectComponent(component, i++ > 0);
           components.push(component);
         }

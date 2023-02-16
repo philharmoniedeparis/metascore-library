@@ -1,0 +1,33 @@
+@import "./variables.scss";
+
+:root {
+    --metascore-color-white: #fff;
+    --metascore-color-black: #000;
+
+    --metascore-color-bg-primary: #777;
+    --metascore-color-bg-secondary: #606060;
+    --metascore-color-bg-tertiary: #3f3f3f;
+
+    --metascore-color-text-primary: var(--metascore-color-white);
+    --metascore-color-text-secondary: #b8b8b8;
+    --metascore-color-text-tertiary: var(--metascore-color-white);
+
+    --metascore-color-accent: #0000fe;
+
+    --metascore-color-danger: #dc3545;
+    --metascore-color-warning: #ffc107;
+
+    @each $component, $color in $component-colors {
+      --metascore-color-component-#{$component}: #{$color};
+    }
+
+    --metascore-scrollbar-width: 8px;
+    --metascore-scrollbar-track-color: var(--metascore-color-bg-primary);
+    --metascore-scrollbar-thumb-color: var(--metascore-color-bg-tertiary);
+    --metascore-scrollbar-thumb-min-height: 8px;
+
+    --metascore-controller-top-height: 2.5em;
+    --metascore-controller-left-width: 12em;
+    --metascore-controller-bottom-sticky-top-height: 8em;
+    --metascore-controller-bottom-sticky-bottom-height: 1.5em;
+  }

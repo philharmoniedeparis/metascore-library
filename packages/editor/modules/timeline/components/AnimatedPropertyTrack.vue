@@ -4,6 +4,7 @@
     "opacity": "Opacité",
     "scale": "Échelle",
     "translate": "Translation",
+    "rotate": "Rotation",
     "hotkey": {
       "group": "Timeline",
       "delete": "Supprimer le(s) composant(s) sélectionné(s)",
@@ -19,6 +20,7 @@
     "opacity": "Opacity",
     "scale": "Scale",
     "translate": "Translation",
+    "rotate": "Rotation",
     "hotkey": {
       "group": "Timeline",
       "delete": "Delete selected component(s)",

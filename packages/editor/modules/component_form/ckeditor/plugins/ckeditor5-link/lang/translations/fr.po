@@ -69,12 +69,8 @@ msgid "Seek"
 msgstr "Aller à"
 
 msgctxt "Label for the toggle option of the type dropdown."
-msgid "Show/Hide a Block"
-msgstr "Afficher/Masquer un Bloc"
-
-msgctxt "Label for the toggle option of the toggle option of the action dropdowns."
-msgid "Toggle"
-msgstr "Basculer"
+msgid "Show/hide a block"
+msgstr "Afficher/masquer un bloc"
 
 msgctxt "Label for the fullscreen option of the type dropdown."
 msgid "Fullscreen"
@@ -91,6 +87,10 @@ msgstr "Afficher"
 msgctxt "Label for the hide option of the toggle action dropdown."
 msgid "Hide"
 msgstr "Masquer"
+
+msgctxt "Label for the toggle option of the toggle option of the action dropdowns."
+msgid "Toggle"
+msgstr "Basculer"
 
 msgctxt "Label for the enter option of the fullscreen action dropdown."
 msgid "Enter"

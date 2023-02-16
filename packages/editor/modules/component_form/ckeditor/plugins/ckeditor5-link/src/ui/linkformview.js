@@ -131,10 +131,13 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     dropdown.bind("isEmpty").to(this, "type", (value) => !value);
 
-    addListToDropdown(
-      dropdown.fieldView,
-      getDropdownDefinitions(typeLabels, this)
-    );
+    const dropdownDefinitions = getDropdownDefinitions(typeLabels);
+    dropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "type", (value) => {
+        return value === definition.model._value;
+      });
+    });
+    addListToDropdown(dropdown.fieldView, dropdownDefinitions);
 
     return dropdown;
   }
@@ -253,9 +256,16 @@ export default class LinkFormView extends LinkFormViewBase {
         class: bind.if("params", "ck-hidden", (value) => !value?.excerpt),
       },
     });
+
+    const dropdownDefinitions = getDropdownDefinitions(scenarioLabels);
+    dropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.scenario === definition.model._value;
+      });
+    });
     addListToDropdown(
       this.playScenarioInputView.fieldView,
-      getDropdownDefinitions(scenarioLabels, this)
+      dropdownDefinitions
     );
 
     // Auto-highlight.
@@ -342,7 +352,9 @@ export default class LinkFormView extends LinkFormViewBase {
     const t = locale.t;
 
     // Block.
-    const blockLabels = getComponentLabels("Block");
+    const blockLabels = Object.fromEntries(
+      Object.values(getComponentLabels("Block")).map((val) => [val, val])
+    );
     this.pageBlockInputView = new LabeledFieldView(
       locale,
       createLabeledDropdown
@@ -356,7 +368,7 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.pageBlockInputView.fieldView.buttonView
       .bind("label")
-      .to(this, "params", (params) => blockLabels[params?.block]);
+      .to(this, "params", (params) => params?.block);
     this.pageBlockInputView.fieldView.on("execute", (evt) => {
       this.params = {
         ...this.params,
@@ -366,35 +378,39 @@ export default class LinkFormView extends LinkFormViewBase {
     this.pageBlockInputView
       .bind("isEmpty")
       .to(this, "params", (params) => !params?.block);
-    addListToDropdown(
-      this.pageBlockInputView.fieldView,
-      getDropdownDefinitions(blockLabels, this)
-    );
 
-    // Page.
-    this.pagePageInputView = new LabeledFieldView(
+    const dropdownDefinitions = getDropdownDefinitions(blockLabels);
+    dropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.block === definition.model._value;
+      });
+    });
+    addListToDropdown(this.pageBlockInputView.fieldView, dropdownDefinitions);
+
+    // Index.
+    this.pageIndexInputView = new LabeledFieldView(
       locale,
       createLabeledInputNumber
     );
-    this.pagePageInputView.set({
+    this.pageIndexInputView.set({
       label: t("Page"),
     });
-    this.pagePageInputView.fieldView.set({
+    this.pageIndexInputView.fieldView.set({
       min: 1,
       step: 1,
     });
-    this.pagePageInputView.fieldView
+    this.pageIndexInputView.fieldView
       .bind("value")
-      .to(this, "params", (params) => params?.page);
-    this.pagePageInputView.fieldView.on("input", () => {
+      .to(this, "params", (params) => params?.index);
+    this.pageIndexInputView.fieldView.on("input", () => {
       this.params = {
         ...this.params,
-        page: this.pagePageInputView.fieldView.element.value,
+        index: parseInt(this.pageIndexInputView.fieldView.element.value),
       };
     });
 
     const inputs = new FormGroupView(locale, {
-      children: [this.pageBlockInputView, this.pagePageInputView],
+      children: [this.pageBlockInputView, this.pageIndexInputView],
     });
     inputs.bind("isVisible").to(this, "type", (value) => value === "page");
 
@@ -407,12 +423,14 @@ export default class LinkFormView extends LinkFormViewBase {
    * @private
    * @returns {FormGroupView} Form group view instance.
    */
-  _createToggleInputs() {
+  _createBlockToggleInputs() {
     const locale = this.locale;
     const t = locale.t;
 
     // Block.
-    const blockLabels = getComponentLabels("Block");
+    const blockLabels = Object.fromEntries(
+      Object.values(getComponentLabels("Block")).map((val) => [val, val])
+    );
     this.toggleBlockInputView = new LabeledFieldView(
       locale,
       createLabeledDropdown
@@ -426,19 +444,25 @@ export default class LinkFormView extends LinkFormViewBase {
     });
     this.toggleBlockInputView.fieldView.buttonView
       .bind("label")
-      .to(this, "params", (params) => blockLabels[params?.block]);
+      .to(this, "params", (params) => params?.name);
     this.toggleBlockInputView.fieldView.on("execute", (evt) => {
       this.params = {
         ...this.params,
-        block: evt.source._value,
+        name: evt.source._value,
       };
     });
     this.toggleBlockInputView
       .bind("isEmpty")
-      .to(this, "params", (params) => !params?.block);
+      .to(this, "params", (params) => !params?.name);
+    const nameDropdownDefinitions = getDropdownDefinitions(blockLabels);
+    nameDropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.name === definition.model._value;
+      });
+    });
     addListToDropdown(
       this.toggleBlockInputView.fieldView,
-      getDropdownDefinitions(blockLabels, this)
+      nameDropdownDefinitions
     );
 
     // Action.
@@ -466,9 +490,15 @@ export default class LinkFormView extends LinkFormViewBase {
     this.toggleActionInputView
       .bind("isEmpty")
       .to(this, "params", (params) => !params?.action);
+    const actionDropdownDefinitions = getDropdownDefinitions(actionLabels);
+    actionDropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.action === definition.model._value;
+      });
+    });
     addListToDropdown(
       this.toggleActionInputView.fieldView,
-      getDropdownDefinitions(actionLabels, this)
+      actionDropdownDefinitions
     );
 
     const inputs = new FormGroupView(locale, {
@@ -516,9 +546,15 @@ export default class LinkFormView extends LinkFormViewBase {
     this.scenarioScenarioInputView
       .bind("isEmpty")
       .to(this, "params", (params) => !params?.id);
+    const idDropdownDefinitions = getDropdownDefinitions(scenarioLabels);
+    idDropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.id === definition.model._value;
+      });
+    });
     addListToDropdown(
       this.scenarioScenarioInputView.fieldView,
-      getDropdownDefinitions(scenarioLabels, this)
+      idDropdownDefinitions
     );
 
     const inputs = new FormGroupView(locale, {
@@ -564,9 +600,15 @@ export default class LinkFormView extends LinkFormViewBase {
     this.fullscreenActionInputView
       .bind("isEmpty")
       .to(this, "params", (params) => !params?.action);
+    const actionDropdownDefinitions = getDropdownDefinitions(actionLabels);
+    actionDropdownDefinitions.map((definition) => {
+      definition.model.bind("isOn").to(this, "params", (value) => {
+        return value?.action === definition.model._value;
+      });
+    });
     addListToDropdown(
       this.fullscreenActionInputView.fieldView,
-      getDropdownDefinitions(actionLabels, this)
+      actionDropdownDefinitions
     );
 
     const inputs = new FormGroupView(locale, {
@@ -617,7 +659,7 @@ export default class LinkFormView extends LinkFormViewBase {
     this._playInputsGroup = this._createPlayInputs();
     this._seekInputsGroup = this._createSeekInputs();
     this._pageInputsGroup = this._createPageInputs();
-    this._toggleInputsGroup = this._createToggleInputs();
+    this._blockToggleInputsGroup = this._createBlockToggleInputs();
     this._scenarioInputsGroup = this._createScenarioInputs();
     this._fullscreenInputsGroup = this._createFullscreenInputs();
     this._tipView = this._createTipView();
@@ -628,7 +670,7 @@ export default class LinkFormView extends LinkFormViewBase {
         this._playInputsGroup,
         this._seekInputsGroup,
         this._pageInputsGroup,
-        this._toggleInputsGroup,
+        this._blockToggleInputsGroup,
         this._scenarioInputsGroup,
         this._fullscreenInputsGroup,
       ],
@@ -670,15 +712,15 @@ export default class LinkFormView extends LinkFormViewBase {
         break;
 
       case "page":
-        value = `#${type}=${params.block},${params.page}`;
+        value = `#${type}=${params.block},${params.index}`;
         break;
 
       case "toggle":
-        value = `#${params.action}Block=${params.block}`;
+        value = `#${params.action}Block=${params.name}`;
         break;
 
       case "scenario":
-        value = `#scenario=${params.scenario}`;
+        value = `#scenario=${params.id}`;
         break;
 
       case "fullscreen":

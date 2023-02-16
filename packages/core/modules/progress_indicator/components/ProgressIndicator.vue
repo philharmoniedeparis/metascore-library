@@ -49,7 +49,7 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: 0.75em;
-    color: var(--metascore-color-white);
+    color: var(--metascore-color-text-primary, white);
   }
 
   progress {
@@ -58,19 +58,17 @@ export default {
     inline-size: 100%;
     width: 10em;
     height: 0.5em;
-    background-color: var(--metascore-color-bg-secondary);
+    background-color: var(--metascore-color-bg-secondary, #606060);
     border: none;
     border-radius: 1em;
     overflow: hidden;
 
-    &[value] {
-      &::-moz-progress-bar,
-      &::-webkit-progress-value {
-        background-color: var(--metascore-color-white);
-      }
-      &::-webkit-progress-bar {
-        background-color: var(--metascore-color-bg-secondary);
-      }
+    &::-moz-progress-bar,
+    &::-webkit-progress-value {
+      background-color: var(--metascore-color-bg-tertiary, #3f3f3f);
+    }
+    &::-webkit-progress-bar {
+      background-color: var(--metascore-color-bg-secondary, #606060);
     }
 
     &:indeterminate {
@@ -79,10 +77,10 @@ export default {
       &::after {
         background: linear-gradient(
           to right,
-          var(--metascore-color-bg-secondary) 45%,
-          var(--metascore-color-white) 0%,
-          var(--metascore-color-white) 55%,
-          var(--metascore-color-bg-secondary) 0%
+          var(--metascore-color-bg-secondary, #606060) 45%,
+          var(--metascore-color-bg-tertiary, #3f3f3f) 0%,
+          var(--metascore-color-bg-tertiary, #3f3f3f) 55%,
+          var(--metascore-color-bg-secondary, #606060) 0%
         );
         background-size: 225% 100%;
         background-position: right;

@@ -239,7 +239,7 @@ export default {
     grid-gap: 0.5em 1em;
     margin-bottom: 0.5em;
     padding: 0 1em;
-    border: 1px solid var(--metascore-color-bg-primary);
+    border: 1px solid var(--metascore-color-bg-tertiary);
 
     > legend {
       display: inline-block;

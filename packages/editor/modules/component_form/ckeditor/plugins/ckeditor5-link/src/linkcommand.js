@@ -37,8 +37,44 @@ export default class LinkCommand extends LinkCommandBase {
 
         if (actions && actions.length > 0) {
           const action = actions[0];
-          this.type = action.type;
+
           this.params = omit(action, ["type"]);
+
+          switch (action.type) {
+            case "page":
+              this.type = action.type;
+              this.params.index++;
+              break;
+
+            case "showBlock":
+              this.type = "toggle";
+              this.params.action = "show";
+              break;
+            case "hideBlock":
+              this.type = "toggle";
+              this.params.action = "hide";
+              break;
+            case "toggleBlock":
+              this.type = "toggle";
+              this.params.action = "toggle";
+              break;
+
+            case "enterFullscreen":
+              this.type = "fullscreen";
+              this.params.action = "enter";
+              break;
+            case "exitFullscreen":
+              this.type = "fullscreen";
+              this.params.action = "exit";
+              break;
+            case "toggleFullscreen":
+              this.type = "fullscreen";
+              this.params.action = "toggle";
+              break;
+
+            default:
+              this.type = action.type;
+          }
         }
       }
     });

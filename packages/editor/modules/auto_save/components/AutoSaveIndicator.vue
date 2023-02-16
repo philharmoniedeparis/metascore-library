@@ -60,7 +60,7 @@ export default {
   padding: 0.25em 0.5em;
   font-size: 0.9em;
   color: var(--metascore-color-white);
-  background: var(--metascore-color-bg-primary);
+  background: var(--metascore-color-bg-tertiary);
   pointer-events: none;
 }
 </style>

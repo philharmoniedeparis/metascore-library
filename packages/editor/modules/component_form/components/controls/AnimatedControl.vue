@@ -135,7 +135,7 @@ export default {
         if (index >= 0) {
           value = [
             ...value.slice(0, index),
-            [value[index][0], input],
+            [time, input],
             ...value.slice(index + 1),
           ];
         } else {

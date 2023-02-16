@@ -103,14 +103,37 @@ export default {
     waveformRange() {
       return this.store.range;
     },
-    waveformScale() {
-      return this.store.scale;
+    waveformScale: {
+      get() {
+        return this.store.scale;
+      },
+      set(value) {
+        this.store.scale = value;
+      },
     },
-    waveformMinScale() {
-      return this.store.minScale;
+    waveformMinScale: {
+      get() {
+        return this.store.minScale;
+      },
+      set(value) {
+        this.store.minScale = value;
+      },
     },
-    waveformMaxScale() {
-      return this.store.maxScale;
+    waveformMaxScale: {
+      get() {
+        return this.store.maxScale;
+      },
+      set(value) {
+        this.store.maxScale = value;
+      },
+    },
+    waveformOffset: {
+      get() {
+        return this.store.offset;
+      },
+      set(value) {
+        this.store.offset = value;
+      },
     },
     playheadPosition() {
       return Math.round(this.getPositionAt(this.mediaTime));
@@ -132,26 +155,31 @@ export default {
     },
   },
   watch: {
-    height() {
-      this.$nextTick(function () {
+    height: {
+      handler() {
         this.resampleData();
-      });
+      },
+      flush: "post",
     },
-    width() {
-      this.$nextTick(function () {
+    width: {
+      handler() {
         this.resampleData();
-      });
+      },
+      flush: "post",
     },
-    waveformData(value) {
-      this.$nextTick(function () {
-        this.store.minScale = value?.scale;
+    waveformData: {
+      handler(value) {
+        this.waveformMinScale = value?.scale;
         this.resampleData();
-      });
+      },
+      flush: "post",
     },
-    waveformScale() {
-      this.$nextTick(function () {
+    waveformScale: {
+      handler() {
         this.resampleData();
-      });
+        this.centerToTime(this.mediaTime);
+      },
+      flush: "post",
     },
     mediaTime() {
       if (this.resampledData && !this.dragging) {
@@ -167,29 +195,25 @@ export default {
       }
     },
     resampledData(value) {
-      this.store.scale = value?.scale;
-      this.setOffsetX(0);
+      this.waveformScale = value?.scale;
 
-      this.store.offset = {
+      this.waveformOffset = {
         start: this.getTimeAt(0),
         end: this.getTimeAt(this.width),
       };
-
-      this.$nextTick(function () {
-        this.drawWave();
-        this.drawAxis();
-      });
     },
     offsetX() {
-      this.store.offset = {
+      this.waveformOffset = {
         start: this.getTimeAt(0),
         end: this.getTimeAt(this.width),
       };
-
-      this.$nextTick(function () {
+    },
+    waveformOffset: {
+      handler() {
         this.drawWave();
         this.drawAxis();
-      });
+      },
+      flush: "post",
     },
   },
   mounted() {
@@ -227,7 +251,7 @@ export default {
         this.resampledData = this.waveformData.resample({
           width: this.width,
         });
-        this.store.maxScale = this.resampledData.scale;
+        this.waveformMaxScale = this.resampledData.scale;
       } else {
         this.resampledData = null;
       }
@@ -363,12 +387,12 @@ export default {
      */
     setScale(value) {
       if (this.resampledData && this.width) {
-        this.store.scale = Math.min(
+        this.waveformScale = Math.min(
           Math.max(parseInt(value, 10), this.waveformMinScale),
           this.waveformMaxScale
         );
       } else {
-        this.store.scale = 0;
+        this.waveformScale = 0;
       }
     },
 

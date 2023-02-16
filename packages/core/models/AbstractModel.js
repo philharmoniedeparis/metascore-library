@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import { isString } from "lodash";
-import { markRaw } from "vue";
+import { markRaw, reactive } from "vue";
 
 /**
  * @type {Ajv} The global Ajv instance.
@@ -136,7 +136,7 @@ export default class AbstractModel {
   }
 
   constructor() {
-    this._data = {};
+    this._data = reactive({});
 
     return new Proxy(this, {
       get(target, name) {
@@ -144,7 +144,7 @@ export default class AbstractModel {
           isString(name) &&
           Object.prototype.hasOwnProperty.call(target.properties, name)
         ) {
-          return target._data[name];
+          return target.getPropertyValue(name);
         }
         return Reflect.get(...arguments);
       },
@@ -153,7 +153,7 @@ export default class AbstractModel {
           isString(name) &&
           Object.prototype.hasOwnProperty.call(target.properties, name)
         ) {
-          target._data[name] = value;
+          target.setPropertyValue(name, value);
           return true;
         }
         return Reflect.set(...arguments);
@@ -198,6 +198,26 @@ export default class AbstractModel {
   }
 
   /**
+   * Get the value of a property
+   *
+   * @param {string} name The property name
+   * @returns {*} The assosiated value
+   */
+  getPropertyValue(name) {
+    return this._data[name];
+  }
+
+  /**
+   * Set the value of a property
+   *
+   * @param {string} name The property name
+   * @param {*} value The value
+   */
+  setPropertyValue(name, value) {
+    this._data[name] = value;
+  }
+
+  /**
    * Validate data against the schema.
    *
    * @param {Object} data The data to validate
@@ -229,16 +249,15 @@ export default class AbstractModel {
    * @returns {Promise<this, Error>} True if the data is valid, false otherwise
    */
   update(data, validate = true) {
-    const updated = {
-      ...this._data,
-      ...data,
-    };
-
     if (validate) {
+      const updated = {
+        ...this._data,
+        ...data,
+      };
       return new Promise((resolve, reject) => {
         this.validate(updated)
           .then((result) => {
-            this._data = result;
+            Object.assign(this, result);
             resolve(this);
           })
           .catch((errors) => {
@@ -246,7 +265,7 @@ export default class AbstractModel {
           });
       });
     } else {
-      this._data = updated;
+      Object.assign(this, data);
       return this;
     }
   }

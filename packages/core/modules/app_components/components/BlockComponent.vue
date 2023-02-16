@@ -222,7 +222,6 @@ export default {
     color: rgb(66, 66, 66);
     background-repeat: no-repeat;
     background-position: left top;
-    background-size: contain;
     font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
     overflow: hidden;
   }
@@ -267,7 +266,7 @@ export default {
         padding: 0.4em;
         align-items: center;
         justify-content: center;
-        color: var(--metascore-color-blue);
+        color: var(--metascore-color-accent, #0000fe);
         background-color: #fff;
         border-radius: 50%;
         box-sizing: border-box;

@@ -263,14 +263,24 @@ export default class AppComponentsModule extends AbstractModule {
     store.disableOverrides();
   }
 
-  overrideComponent(component, state) {
+  hasOverrides(component, key) {
     const store = useStore();
-    store.override(component, state);
+    return store.hasOverrides(component, key);
   }
 
-  clearOverrides() {
+  setOverrides(component, key, values, priority) {
     const store = useStore();
-    store.clearOverrides();
+    store.setOverrides(component, key, values, priority);
+  }
+
+  getOverrides(component, key) {
+    const store = useStore();
+    store.getOverrides(component, key);
+  }
+
+  clearOverrides(component, key) {
+    const store = useStore();
+    store.clearOverrides(component, key);
   }
 
   onStoreAction(callback) {

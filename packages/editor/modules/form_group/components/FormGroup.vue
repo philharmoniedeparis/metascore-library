@@ -120,8 +120,8 @@ export default {
       &:focus,
       &:active,
       &:focus-visible {
-        outline: 1px solid var(--metascore-color-bg-tertiary);
-        border-color: var(--metascore-color-bg-tertiary);
+        outline: 1px solid var(--metascore-color-bg-primary);
+        border-color: var(--metascore-color-bg-primary);
       }
     }
   }

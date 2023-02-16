@@ -8,7 +8,7 @@ export default function (component, model) {
 
   if (unref(model).$isTransformable) {
     const transform = computed(() => {
-      const { translate, scale } = unref(component);
+      const { translate, scale, rotate } = unref(component);
       const ret = {};
 
       if (!isUndefined(translate) && !isNull(translate)) {
@@ -48,6 +48,21 @@ export default function (component, model) {
           if (value[1] !== 1) {
             ret.scaleY = value[1];
           }
+        }
+      }
+
+      if (!isUndefined(rotate) && !isNull(rotate)) {
+        let value = null;
+
+        if (!rotate.animated) {
+          value = rotate.value;
+        } else {
+          const time = unref(mediaTime);
+          value = getAnimatedValueAtTime(rotate.value, time);
+        }
+
+        if (!isUndefined(value) && !isNull(value)) {
+          ret.rotate = `${value % 360}deg`;
         }
       }
 

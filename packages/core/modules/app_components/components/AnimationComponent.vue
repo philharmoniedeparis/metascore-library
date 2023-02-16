@@ -60,7 +60,7 @@ export default {
       return this.component.colors;
     },
     style() {
-      return this.colors.reduce((acc, color, index) => {
+      return this.colors?.reduce((acc, color, index) => {
         return {
           ...acc,
           [`--color${index + 1}`]: color,

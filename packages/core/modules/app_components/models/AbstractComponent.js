@@ -1,10 +1,12 @@
 import { merge, kebabCase } from "lodash";
+import { computed, unref } from "vue";
 import { v4 as uuid } from "uuid";
 import AbstractModel from "@metascore-library/core/models/AbstractModel";
 import {
   createStringField,
   createBooleanField,
 } from "@metascore-library/core/utils/schema";
+import useStore from "../store";
 
 export default class AbstractComponent extends AbstractModel {
   /**
@@ -91,6 +93,48 @@ export default class AbstractComponent extends AbstractModel {
    */
   static create(data = {}, ...rest) {
     return super.create({ id: `component-${uuid()}`, ...data }, ...rest);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  constructor() {
+    const proxy = super();
+
+    /**
+     * @var {Array} _sorted_overrides
+     * @private
+     * */
+    this._sorted_overrides = computed(() => {
+      const { overridesEnabled, getOverrides } = useStore();
+      if (overridesEnabled) {
+        const overrides = getOverrides(this);
+        if (overrides) {
+          return Array.from(overrides.values())
+            .sort((o1, o2) => o1.priority > o2.priority)
+            .map((o) => o.values);
+        }
+      }
+
+      return [];
+    });
+
+    return proxy;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getPropertyValue(name) {
+    if (!["type", "id"].includes(name)) {
+      for (const overrides of unref(this._sorted_overrides)) {
+        if (Object.prototype.hasOwnProperty.call(overrides, name)) {
+          return overrides[name];
+        }
+      }
+    }
+
+    return this._data[name];
   }
 
   /**

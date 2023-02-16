@@ -1,4 +1,4 @@
-import { assign, cloneDeep } from "lodash";
+import { assign } from "lodash";
 
 /**
  * Merge one or more sub-schemas into the root JSON Schema
@@ -51,7 +51,10 @@ function flattenConditions(schema, ajv, value) {
     delete schema.then;
     delete schema.else;
 
-    const valid = ajv.validate(_if, value);
+    const validate = _if.$id
+      ? ajv.getSchema(_if.$id) || ajv.compile(_if)
+      : ajv.compile(_if);
+    const valid = validate(value);
     if (valid && _then) {
       merge(schema, _then);
     } else if (!valid && _else) {
@@ -73,7 +76,7 @@ function flattenConditions(schema, ajv, value) {
  * @returns {object} The flattened schema
  */
 export function flatten(schema, ajv, value, recursive = false) {
-  const flattened = cloneDeep(schema);
+  const flattened = structuredClone(schema);
 
   if (!flattened.type) {
     const combination = flattened.anyOf || flattened.oneOf || flattened.allOf;
