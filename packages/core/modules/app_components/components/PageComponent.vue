@@ -40,5 +40,9 @@ export default {
 .page {
   width: 100%;
   height: 100%;
+
+  > :deep(.metaScore-component--inner) {
+    background-size: auto;
+  }
 }
 </style>

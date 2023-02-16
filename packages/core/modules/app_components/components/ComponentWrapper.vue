@@ -102,6 +102,9 @@ export default {
     min-height: 1px;
     box-sizing: border-box;
     overflow: hidden;
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: contain;
   }
 }
 </style>
