@@ -1,19 +1,16 @@
-import { default as Blockly, Themes, Theme } from "blockly/core";
-
-Blockly.HSV_SATURATION = 0.99;
-Blockly.HSV_VALUE = 0.9;
+import { Themes, Theme } from "blockly/core";
 
 const category_colors = {
-  triggers: "120",
-  logic: "18",
-  math: "18",
-  text: "18",
-  color: "18",
-  actions: "43",
-  media: "43",
-  components: "43",
-  variables: "180",
-  presets: "43",
+  triggers: "#C62828",
+  actions: "#558B2F",
+  logic: "#01579B",
+  math: "#263238",
+  text: "#263238",
+  color: "#263238",
+  media: "#263238",
+  components: "#263238",
+  variables: "#263238",
+  presets: "#263238",
 };
 
 export default Theme.defineTheme("metaScore", {
