@@ -26,7 +26,7 @@
     "Animation": {
       "title": "Attributs de l’animation | Attributs de {count} animations",
       "start-frame": "Image de départ",
-      "loop-duration": "Durée d’un boucle",
+      "loop-duration": "Durée d’une boucle",
       "reversed": "Inversé",
       "colors": "Couleurs",
     },
@@ -63,7 +63,7 @@
         "off": "Arrêter l’enregistrement",
       },
       "start-angle": "Angle de départ",
-      "loop-duration": "Durée d’un boucle",
+      "loop-duration": "Durée d’une boucle",
       "cursor-width": "Largeur du curseur",
       "cursor-color": "Couleur du curseur",
     },
