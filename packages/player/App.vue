@@ -12,7 +12,7 @@
 </i18n>
 
 <template>
-  <div class="metaScore-player" @contextmenu="onContextmenu">
+  <div v-hotkey="hotkeys" class="metaScore-player" @contextmenu="onContextmenu">
     <app-renderer
       :url="url"
       :responsive="responsive"
@@ -93,7 +93,12 @@ export default {
   setup() {
     const store = useStore();
     const { ready: appRendererReady } = useModule("app_renderer");
-    return { store, appRendererReady };
+    const {
+      playing: mediaPlaying,
+      play: playMedia,
+      pause: pauseMedia,
+    } = useModule("media_player");
+    return { store, appRendererReady, mediaPlaying, playMedia, pauseMedia };
   },
   data() {
     return {
@@ -106,6 +111,32 @@ export default {
   computed: {
     loading() {
       return this.store.loading || !this.appRendererReady;
+    },
+    hotkeys() {
+      if (!this.keyboard) return;
+
+      return {
+        space: ({ repeat }) => {
+          if (repeat) return;
+
+          if (this.mediaPlaying) this.pauseMedia();
+          else this.playMedia();
+        },
+        left: () => {
+          this.$el
+            .querySelector(
+              ".metaScore-component.block:hover .pager a[data-action='previous']"
+            )
+            ?.click();
+        },
+        right: () => {
+          this.$el
+            .querySelector(
+              ".metaScore-component.block:hover .pager a[data-action='next']"
+            )
+            ?.click();
+        },
+      };
     },
   },
   mounted() {
