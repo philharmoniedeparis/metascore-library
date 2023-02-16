@@ -5,7 +5,10 @@
 </template>
 
 <script>
+import { toRef } from "vue";
+import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useTime from "../composables/useTime";
 
 export default {
   props: {
@@ -24,15 +27,24 @@ export default {
       },
     },
   },
-  setup() {
+  setup(props) {
+    const store = useStore();
+    const component = toRef(props, "component");
+    const model = store.getModelByType(component.value.type);
+
     const { ready: mediaReady, time: mediaTime } = useModule("media_player");
-    return { mediaReady, mediaTime };
+    return {
+      mediaReady,
+      mediaTime,
+      ...useTime(component, model),
+    };
   },
   data() {
     return {
       loaded: false,
       animation: null,
-      playing: false,
+      duration: 0,
+      totalFrames: 0,
     };
   },
   computed: {
@@ -51,7 +63,7 @@ export default {
     loopDuration() {
       return this.component["loop-duration"]
         ? this.component["loop-duration"]
-        : this.getDuration();
+        : this.duration;
     },
     reversed() {
       return this.component.reversed;
@@ -75,11 +87,17 @@ export default {
     mediaTime() {
       this.update();
     },
-    component: {
-      handler() {
-        this.update();
-      },
-      deep: true,
+    startTime() {
+      this.update();
+    },
+    endTime() {
+      this.update();
+    },
+    startFrame() {
+      this.update();
+    },
+    reversed() {
+      this.update();
     },
     src() {
       this.setupAdnimation();
@@ -111,34 +129,14 @@ export default {
   },
   methods: {
     update() {
-      if (!this.loaded) {
-        return;
-      }
+      if (!this.loaded || !this.active) return;
 
       this.animation.goToAndStop(this.getCurrentFrame(), true);
-    },
-    play() {
-      if (!this.loaded || this.playing) {
-        return;
-      }
-
-      this.animation.play();
-      this.playing = true;
-    },
-    stop() {
-      if (!this.loaded || !this.playing) {
-        return;
-      }
-
-      this.animation.stop();
-      this.playing = false;
     },
     async setupAdnimation() {
       this.loaded = false;
 
-      if (!this.src) {
-        return;
-      }
+      if (!this.src) return;
 
       const { default: Lottie } = await import("lottie-web");
 
@@ -154,31 +152,24 @@ export default {
     },
     onAnimationLoaded() {
       this.loaded = true;
+      this.duration = this.animation.getDuration();
+      this.totalFrames = this.animation.getDuration(true);
+
+      this.updateSpeed();
     },
     updateSpeed() {
-      if (!this.loaded) {
-        return;
-      }
+      if (!this.loaded) return;
 
-      this.animation.setSpeed(this.getDuration() / this.loopDuration);
-    },
-    getDuration() {
-      return this.loaded ? this.animation.getDuration() : 0;
-    },
-    getTotalFrames() {
-      return this.loaded ? this.animation.getDuration(true) : 0;
+      this.animation.setSpeed(this.duration / this.loopDuration);
     },
     getCurrentFrame() {
-      if (!this.loaded) {
-        return null;
-      }
+      if (!this.loaded) return null;
 
       const time = this.mediaTime - this.startTime;
-      const total_frames = this.getTotalFrames();
-      const fps = total_frames / this.loopDuration;
-      const frame = (time * fps + (this.startFrame - 1)) % total_frames;
+      const fps = this.totalFrames / this.loopDuration;
+      const frame = (time * fps + (this.startFrame - 1)) % this.totalFrames;
 
-      return this.reversed ? total_frames - frame : frame;
+      return this.reversed ? this.totalFrames - frame : frame;
     },
   },
 };

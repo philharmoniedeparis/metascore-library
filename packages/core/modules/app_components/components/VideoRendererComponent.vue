@@ -5,7 +5,10 @@
 </template>
 
 <script>
+import { toRef } from "vue";
+import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useTime from "../composables/useTime";
 
 export default {
   props: {
@@ -17,7 +20,11 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props) {
+    const store = useStore();
+    const component = toRef(props, "component");
+    const model = store.getModelByType(component.value.type);
+
     const {
       element: mediaElement,
       type: mediaType,
@@ -33,6 +40,7 @@ export default {
       mediaWidth,
       mediaHeight,
       mediaTime,
+      ...useTime(component, model),
     };
   },
   computed: {
@@ -56,9 +64,7 @@ export default {
   },
   methods: {
     update() {
-      if (!this.mediaReady) {
-        return;
-      }
+      if (!this.mediaReady || !this.active) return;
 
       if (this.mediaType === "video") {
         try {

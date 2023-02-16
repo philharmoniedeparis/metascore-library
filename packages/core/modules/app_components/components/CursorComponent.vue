@@ -9,8 +9,11 @@
 </template>
 
 <script>
-import "../../../polyfills/GeomertyUtils";
+import { toRef } from "vue";
+import useStore from "../store";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import useTime from "../composables/useTime";
+import "../../../polyfills/GeomertyUtils";
 import { map, radians } from "@metascore-library/core/utils/math";
 
 export default {
@@ -23,14 +26,24 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props) {
+    const store = useStore();
+    const component = toRef(props, "component");
+    const model = store.getModelByType(component.value.type);
+
     const {
       ready: mediaReady,
       time: mediaTime,
       duration: mediaDuration,
       seekTo: seekMediaTo,
     } = useModule("media_player");
-    return { mediaReady, mediaTime, mediaDuration, seekMediaTo };
+    return {
+      mediaReady,
+      mediaTime,
+      mediaDuration,
+      seekMediaTo,
+      ...useTime(component, model),
+    };
   },
   computed: {
     canvas() {
@@ -110,6 +123,8 @@ export default {
   },
   methods: {
     update() {
+      if (!this.active) return;
+
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       switch (this.form) {
