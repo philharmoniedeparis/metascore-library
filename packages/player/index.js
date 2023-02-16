@@ -11,6 +11,7 @@ import API from "./modules/api";
 import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
 import AppRenderer from "@metascore-library/core/modules/app_renderer";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
+import MediaPlayer from "@metascore-library/core/modules/media_player";
 import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
 
 export class Player {
@@ -42,7 +43,15 @@ export class Player {
 
     // Register root modules.
     await registerModules(
-      [Ajax, API, AppBehaviors, AppRenderer, ContextMenu, ProgressIndicator],
+      [
+        Ajax,
+        API,
+        AppBehaviors,
+        AppRenderer,
+        ContextMenu,
+        MediaPlayer,
+        ProgressIndicator,
+      ],
       {
         app,
         i18n,
