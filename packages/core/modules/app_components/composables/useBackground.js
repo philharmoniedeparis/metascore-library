@@ -18,7 +18,6 @@ export default function (component, model) {
         ret["background-image"] = `url(${backgroundImage})`;
         ret["background-position"] = "left top";
         ret["background-repeat"] = "no-repeat";
-        ret["background-size"] = "contain";
       }
 
       return ret;
