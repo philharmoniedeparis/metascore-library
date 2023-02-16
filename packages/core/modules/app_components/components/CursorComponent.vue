@@ -348,10 +348,18 @@ export default {
      * @returns {Number} The corresponding media time
      */
     getTimeFromCircularAngle(angle) {
+      const revolution = Math.PI * 2;
+
       angle -= this.startAngle;
       angle -= Math.PI / 2; // Adjust the angle so that 0 start at top
 
-      let time = map(angle, 0, Math.PI * 2, 0, this.loopDuration);
+      if (angle < 0) {
+        angle += revolution;
+      } else if (angle > revolution) {
+        angle -= revolution;
+      }
+
+      let time = map(angle, 0, revolution, 0, this.loopDuration);
       time += this.startTime;
 
       const currentLoop = Math.floor(
