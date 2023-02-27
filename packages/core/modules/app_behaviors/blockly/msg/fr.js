@@ -92,13 +92,13 @@ Msg.MEDIA_GET_DURATION = "durée du média";
 Msg.MEDIA_GET_DURATION_TOOLTIP = "Retourne la durée du média en secondes.";
 Msg.MEDIA_GET_DURATION_HELPURL = "";
 
-Msg.MEDIA_GET_TIME = "temp du média";
+Msg.MEDIA_GET_TIME = "temps du média";
 Msg.MEDIA_GET_TIME_TOOLTIP = "Retourne le temps actuel du média en secondes.";
 Msg.MEDIA_GET_TIME_HELPURL = "";
 
-Msg.MEDIA_SET_TIME = "définir le temp du média à %1";
+Msg.MEDIA_SET_TIME = "définir le temps du média à %1";
 Msg.MEDIA_SET_TIME_TOOLTIP =
-  "Définit le temp du média pour qu’il soit égale à la valeur de l’entrée.";
+  "Définit le temps du média pour qu’il soit égale à la valeur de l’entrée.";
 Msg.MEDIA_SET_TIME_HELPURL = "";
 
 Msg.MEDIA_PLAYING = "la lecture est en cours";
@@ -126,7 +126,7 @@ Msg.MEDIA_PAUSE = "suspendre la lecture";
 Msg.MEDIA_PAUSE_TOOLTIP = "";
 Msg.MEDIA_PAUSE_HELPURL = "";
 
-Msg.MEDIA_STOP = "arrêter la lacture";
+Msg.MEDIA_STOP = "arrêter la lecture";
 Msg.MEDIA_STOP_TOOLTIP = "";
 Msg.MEDIA_STOP_HELPURL = "";
 
