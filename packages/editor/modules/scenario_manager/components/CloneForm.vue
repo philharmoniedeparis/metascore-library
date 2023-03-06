@@ -2,7 +2,7 @@
 {
   "fr": {
     "title": "Dupliquer le scénario <em>{name}</em>",
-    "name_label": "Nom du nouvea scénario",
+    "name_label": "Nom du nouveau scénario",
     "apply_button": "Dupliquer",
     "cancel_button": "Annuler",
   },
