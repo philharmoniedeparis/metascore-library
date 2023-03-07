@@ -82,6 +82,7 @@
 
     <teleport v-if="interactable && controlBoxTarget" :to="controlBoxTarget">
       <div
+        v-show="visibleInViewport"
         ref="controlbox"
         :class="['component-wrapper--controlbox', kebabCase(component.type)]"
       >
@@ -213,6 +214,7 @@ export default {
   },
   data() {
     return {
+      visibleInViewport: true,
       controlBoxLastUpdated: 0,
       dragOver: false,
       dragEnterCounter: 0,
@@ -633,12 +635,25 @@ export default {
         this._interactables.push(interactable);
       }
 
+      this._intersection_observer = new IntersectionObserver(
+        (entries) => {
+          this.visibleInViewport = entries[0].isIntersecting;
+        },
+        { root: this.$el.ownerDocument, threshold: 0 }
+      );
+      this._intersection_observer.observe(this.$el);
+
       this.updateControlBox();
     },
     destroyInteractions() {
       if (this._interactables) {
         this._interactables.map((interactable) => interactable.unset());
         delete this._interactables;
+      }
+
+      if (this._intersection_observer) {
+        this._intersection_observer.disconnect();
+        delete this._intersection_observer;
       }
     },
     updateControlBox() {
