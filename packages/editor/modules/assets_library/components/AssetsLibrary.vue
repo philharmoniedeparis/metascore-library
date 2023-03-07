@@ -249,31 +249,14 @@ export default {
     onDrop(evt) {
       const files = this.getDraggedFiles(evt.dataTransfer);
       this.dragover = false;
-      this.store
-        .upload(files)
-        .then(() => {
-          this.error = null;
-        })
-        .catch((e) => {
-          this.error = e;
-        });
+      this.store.upload(files).catch((e) => {
+        this.error = e;
+      });
     },
     onUploadChange(value) {
-      Promise.all(
-        value.map((file) => {
-          return fetch(file.url).then((response) => {
-            return response.blob();
-          });
-        })
-      ).then((files) => {
-        this.store
-          .upload(files)
-          .then(() => {
-            this.error = null;
-          })
-          .catch((e) => {
-            this.error = e;
-          });
+      const files = value.map((file) => file.file);
+      this.store.upload(files).catch((e) => {
+        this.error = e;
       });
     },
     onSpectrogramFormSubmit(data) {
@@ -281,7 +264,6 @@ export default {
         .generateSpectrogram(data)
         .then(() => {
           this.showSpectrogramForm = false;
-          this.error = null;
         })
         .catch((error) => {
           this.error = error;
@@ -289,14 +271,12 @@ export default {
     },
     onSpectrogramFormClose() {
       this.showSpectrogramForm = false;
-      this.error = null;
     },
     onAudiowaveformFormSubmit(data) {
       this.store
         .generateAudiowaveform(data)
         .then(() => {
           this.showAudiowaveformForm = false;
-          this.error = null;
         })
         .catch((error) => {
           this.error = error;
@@ -304,7 +284,6 @@ export default {
     },
     onAudiowaveformFormClose() {
       this.showAudiowaveformForm = false;
-      this.error = null;
     },
   },
 };
