@@ -65,16 +65,10 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    const {
-      iframe: appPreveiwIframe,
-      getComponentElement,
-      preview,
-      freezeComponent,
-      unfreezeComponent,
-    } = useModule("app_preview");
+    const { getComponentElement, preview, freezeComponent, unfreezeComponent } =
+      useModule("app_preview");
     return {
       store,
-      appPreveiwIframe,
       getComponentElement,
       preview,
       freezeComponent,
@@ -222,20 +216,6 @@ export default {
         this.onEditorDocumentDataChange
       );
 
-      // Add listeners to ContextualBalloon positions
-      if (this.editor.plugins.has("ContextualBalloon")) {
-        const contextualballoon_view =
-          this.editor.plugins.get("ContextualBalloon").view;
-        contextualballoon_view.on(
-          "set:left",
-          this.onEditorContextualBallonPositionSet
-        );
-        contextualballoon_view.on(
-          "set:top",
-          this.onEditorContextualBallonPositionSet
-        );
-      }
-
       // Add listeners to SourceEditing mode
       if (this.editor.plugins.has("SourceEditing")) {
         const sourceediting = this.editor.plugins.get("SourceEditing");
@@ -247,10 +227,6 @@ export default {
     },
     onEditorDocumentDataChange() {
       this.value = this.editor.getData();
-    },
-    onEditorContextualBallonPositionSet(evt, prop, value) {
-      const offset = this.appPreveiwIframe.getBoundingClientRect()[prop];
-      evt.return = value + offset;
     },
     onEditorSourceEditingModeChange(evt, name, isSourceEditingMode) {
       if (!this.component) return;

@@ -26,15 +26,32 @@ export default {
     };
   },
   computed: {
+    zoom() {
+      return this.store.zoom;
+    },
+    offsetRect() {
+      return this.store.appRendererWrapperRect;
+    },
     guides() {
       const guides = [];
 
       this.store.activeSnapTargets.forEach((target) => {
+        const { x: offsetX, y: offsetY } = this.offsetRect;
+
         if ("x" in target) {
-          guides.push({ left: `${target.x}px`, width: "1px", height: "100%" });
+          guides.push({
+            left: `${(target.x - offsetX) / this.zoom}px`,
+            width: "1px",
+            height: "100%",
+          });
         }
+
         if ("y" in target) {
-          guides.push({ top: `${target.y}px`, width: "100%", height: "1px" });
+          guides.push({
+            top: `${(target.y - offsetY) / this.zoom}px`,
+            width: "100%",
+            height: "1px",
+          });
         }
       });
 

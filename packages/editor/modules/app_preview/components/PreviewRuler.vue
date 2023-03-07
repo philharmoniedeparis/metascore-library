@@ -108,10 +108,6 @@ export default {
         return ["x", "y"].includes(value);
       },
     },
-    offset: {
-      type: Number,
-      default: 0,
-    },
     tickWidth: {
       type: Number,
       default: 1,
@@ -141,7 +137,7 @@ export default {
       default: 60,
     },
     trackTarget: {
-      type: Object,
+      type: HTMLElement,
       default: null,
     },
     trackerWidth: {
@@ -168,6 +164,11 @@ export default {
     },
     zoom() {
       return this.store.zoom;
+    },
+    offset() {
+      return this.vertical
+        ? this.store.appRendererWrapperRect.y - this.store.appPreviewRect.y
+        : this.store.appRendererWrapperRect.x - this.store.appPreviewRect.x;
     },
     adjustedMinorTickStep() {
       let step = this.minorTickStep;
@@ -267,8 +268,9 @@ export default {
       this.tracking = true;
     },
     onTrackTargetMousemove(evt) {
+      const { left, top } = this.$el.getBoundingClientRect();
       this.trackerPosition =
-        (this.vertical ? evt.clientY : evt.clientX) * this.zoom + this.offset;
+        (this.vertical ? evt.clientY - top : evt.clientX - left) * this.zoom;
     },
     onTrackTargetMouseout() {
       this.tracking = false;
