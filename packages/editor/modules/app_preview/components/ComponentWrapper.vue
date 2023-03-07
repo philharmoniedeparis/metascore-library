@@ -80,10 +80,10 @@
       ></div>
     </template>
 
-    <teleport v-if="interactable && controlboxTarget" :to="controlboxTarget">
+    <teleport v-if="interactable && controlBoxTarget" :to="controlBoxTarget">
       <div
         ref="controlbox"
-        :class="['component-wrapper-controlbox', kebabCase(component.type)]"
+        :class="['component-wrapper--controlbox', kebabCase(component.type)]"
       >
         <!-- eslint-disable-next-line vue/require-v-for-key, vue/no-unused-vars -->
         <div v-for="n in 4" ref="controlbox-edges" class="edge"></div>
@@ -143,13 +143,13 @@ export default {
   },
   provide() {
     return {
-      controlboxLastUpdated: computed(() => this.controlboxLastUpdated),
+      controlBoxLastUpdated: computed(() => this.controlBoxLastUpdated),
     };
   },
   inject: {
     disableComponentInteractions: {},
-    parentControlboxLastUpdated: {
-      from: "controlboxLastUpdated",
+    parentControlBoxLastUpdated: {
+      from: "controlBoxLastUpdated",
       default: 0,
     },
   },
@@ -213,19 +213,24 @@ export default {
   },
   data() {
     return {
-      controlboxLastUpdated: 0,
-      controlboxTarget: null,
+      controlBoxLastUpdated: 0,
       dragOver: false,
       dragEnterCounter: 0,
       error: null,
     };
   },
   computed: {
+    controlBoxTarget() {
+      return this.store.controlboxContainer;
+    },
     model() {
       return this.getModelByType(this.component.type);
     },
     preview() {
       return this.store.preview;
+    },
+    zoom() {
+      return this.store.zoom;
     },
     selected() {
       return this.store.isComponentSelected(this.component);
@@ -463,58 +468,52 @@ export default {
     },
     "component.position": {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     "component.dimension": {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     "component.scale": {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     "component.translate": {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     currentScale: {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     currentTranslate: {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
     currentRotation: {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
-    parentControlboxLastUpdated: {
+    parentControlBoxLastUpdated: {
       handler() {
-        this.updateInteractibleControlBox();
+        this.updateControlBox();
       },
       flush: "post",
     },
-  },
-  async mounted() {
-    this.controlboxTarget = this.$el.ownerDocument.body;
-
-    await this.$nextTick();
-    this.setupInteractions();
   },
   beforeUnmount() {
     this.destroyInteractions();
@@ -634,7 +633,7 @@ export default {
         this._interactables.push(interactable);
       }
 
-      this.updateInteractibleControlBox();
+      this.updateControlBox();
     },
     destroyInteractions() {
       if (this._interactables) {
@@ -642,11 +641,22 @@ export default {
         delete this._interactables;
       }
     },
-    updateInteractibleControlBox() {
+    updateControlBox() {
       if (this.interactable) {
-        const ref_points = this.$refs["controlbox-ref-points"].map((point) =>
-          point.getBoundingClientRect()
-        );
+        // Calculate ref points with offset.
+        const offset = this.controlBoxTarget.getBoundingClientRect();
+        const ref_points = this.$refs["controlbox-ref-points"].map((point) => {
+          const rect = point.getBoundingClientRect();
+          return ["x", "y", "left", "right", "top", "bottom"].reduce(
+            (acc, prop) => {
+              return {
+                ...acc,
+                [prop]: (rect[prop] - offset[prop]) / this.zoom,
+              };
+            },
+            { ...rect }
+          );
+        });
 
         // Update edges.
         ref_points.forEach((p1, i, points) => {
@@ -720,7 +730,7 @@ export default {
         }
       }
 
-      this.controlboxLastUpdated = performance.now();
+      this.controlBoxLastUpdated = performance.now();
     },
     getInteractableSnapTarget(x, y, interaction, relativePoint) {
       let min_distance = { x: this.snapRange, y: this.snapRange };
@@ -735,8 +745,8 @@ export default {
           return;
         }
 
-        const [left, top] = sibling.position;
-        const [width, height] = sibling.dimension;
+        const sibling_el = this.store.getComponentElement(sibling);
+        const { left, top, width, height } = sibling_el.getBoundingClientRect();
 
         [left, (left + width) / 2, left + width].forEach((value) => {
           const distance = Math.abs(value - x);
@@ -769,7 +779,10 @@ export default {
       for (const component of this.store.getSelectedComponents) {
         const position = component.position;
         await this.updateComponent(component, {
-          position: [position[0] + evt.delta.x, position[1] + evt.delta.y],
+          position: [
+            position[0] + evt.delta.x / this.zoom,
+            position[1] + evt.delta.y / this.zoom,
+          ],
         });
       }
       this.endHistoryGroup();
@@ -793,12 +806,12 @@ export default {
 
       await this.updateComponent(this.component, {
         position: [
-          position[0] + evt.deltaRect.left,
-          position[1] + evt.deltaRect.top,
+          position[0] + evt.deltaRect.left / this.zoom,
+          position[1] + evt.deltaRect.top / this.zoom,
         ],
         dimension: [
-          dimension[0] + evt.deltaRect.width,
-          dimension[1] + evt.deltaRect.height,
+          dimension[0] + evt.deltaRect.width / this.zoom,
+          dimension[1] + evt.deltaRect.height / this.zoom,
         ],
       });
     },
@@ -1076,12 +1089,11 @@ export default {
   }
 }
 
-.component-wrapper-controlbox {
+.component-wrapper--controlbox {
   position: absolute;
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 9999;
 
   @each $component, $color in $component-colors {
     @if $component == default {

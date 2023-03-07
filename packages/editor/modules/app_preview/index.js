@@ -59,12 +59,6 @@ export default class AppPreviewModule extends AbstractModule {
     return readonly(previewPersistant);
   }
 
-  get iframe() {
-    const store = useStore();
-    const { iframe } = storeToRefs(store);
-    return readonly(iframe);
-  }
-
   get selectedComponents() {
     const store = useStore();
     const { getSelectedComponents } = storeToRefs(store);

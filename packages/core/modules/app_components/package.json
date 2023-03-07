@@ -11,7 +11,7 @@
     "url-regex": "^5.0.0",
     "uuid": "^9.0.0",
     "validate-color": "2.2.1",
-    "vue-dompurify-html": "^3.0.0-beta.1",
+    "vue-dompurify-html": "^4.0.0",
     "vue-inline-svg": "^3.1.0"
   },
   "devDependencies": {

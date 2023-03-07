@@ -114,7 +114,6 @@ export default {
       "mousedown",
       this.onDocumentMousedown
     );
-    this.$el.ownerDocument.addEventListener("blur", this.onDocumentBlur);
   },
   beforeUnmount() {
     this.workspace.dispose();
@@ -129,7 +128,6 @@ export default {
       "mousedown",
       this.onDocumentMousedown
     );
-    this.$el.ownerDocument.removeEventListener("blur", this.onDocumentBlur);
   },
   methods: {
     serialize() {
@@ -200,10 +198,6 @@ export default {
       ) {
         this.workspace.hideChaff();
       }
-    },
-    onDocumentBlur() {
-      // Close tooltips, context menus and dropdowns if clicked in iframe.
-      this.workspace.hideChaff();
     },
     onContextmenu(evt) {
       if (evt.target.closest("rect.blocklyMainBackground")) {
