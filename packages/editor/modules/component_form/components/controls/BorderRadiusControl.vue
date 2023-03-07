@@ -6,7 +6,7 @@
     "cancel_button": "Annuler",
   },
   "en": {
-    "apply_button": "Appliquer",
+    "apply_button": "Apply",
     "clear_button": "Clear",
     "cancel_button": "Cancel",
   },

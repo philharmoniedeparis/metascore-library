@@ -23,7 +23,7 @@
       "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
     },
     "contextmenu": {
-      "selection": "Sélection",
+      "selection": "Sélection ({count} composant) | Sélection ({count} composants)",
       "deselect": "Désélectionner",
       "copy": "Copier",
       "delete": "Supprimer",
@@ -54,7 +54,7 @@
       "backspace": "Delete selected component(s)",
     },
     "contextmenu": {
-      "selection": "Selection",
+      "selection": "Selection ({count} component) | Selection ({count} components)",
       "deselect": "Deselect",
       "copy": "Copy",
       "delete": "Delete",
@@ -387,7 +387,9 @@ export default {
 
       if (selected.length > 0) {
         items.push({
-          label: this.$t("contextmenu.selection"),
+          label: this.$tc("contextmenu.selection", selected.length, {
+            count: selected.length,
+          }),
           items: [
             {
               label: this.$t("contextmenu.deselect"),

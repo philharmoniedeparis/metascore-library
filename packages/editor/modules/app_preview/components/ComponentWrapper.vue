@@ -2,8 +2,8 @@
 {
   "fr": {
     "contextmenu": {
-      "page_before": "Add a page before",
-      "page_after": "Add a page after",
+      "page_before": "Ajouter une page avant",
+      "page_after": "Ajouter une page après",
       "select": "Sélectionner",
       "deselect": "Désélectionner",
       "copy": "Copier",
@@ -179,6 +179,7 @@ export default {
       getComponentChildren,
       getComponentSiblings,
       getComponentParent,
+      getComponentLabel,
       createComponent,
       addComponent,
       updateComponent,
@@ -199,6 +200,7 @@ export default {
       getComponentChildren,
       getComponentSiblings,
       getComponentParent,
+      getComponentLabel,
       createComponent,
       addComponent,
       updateComponent,
@@ -330,18 +332,22 @@ export default {
       }
 
       switch (this.component.type) {
-        case "Scenario":
+        case "Scenario": {
+          const type = this.$t(`app_components.labels.${this.component.type}`);
+          const name = this.getComponentLabel(this.component);
+
           return [
             {
-              label: `${this.component.type} (${this.component.name})`,
+              label: `${type} (<i>${name}</i>)`,
               items,
             },
           ];
+        }
 
         case "Page":
           return [
             {
-              label: this.component.type,
+              label: this.getComponentLabel(this.component),
               items: [
                 ...items,
                 {
@@ -366,7 +372,7 @@ export default {
             },
           ];
 
-        default:
+        default: {
           items.push(
             {
               label: this.$t("contextmenu.copy"),
@@ -382,9 +388,12 @@ export default {
             }
           );
 
+          const type = this.$t(`app_components.labels.${this.component.type}`);
+          const name = this.getComponentLabel(this.component);
+
           return [
             {
-              label: `${this.component.type} (${this.component.name})`,
+              label: `${type} (<i>${name}</i>)`,
               items: [
                 ...items,
                 {
@@ -437,6 +446,7 @@ export default {
               ],
             },
           ];
+        }
       }
     },
   },

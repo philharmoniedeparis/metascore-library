@@ -32,17 +32,6 @@ export default class AppComponentsModule extends AbstractModule {
   constructor({ app }) {
     super(arguments);
 
-    addMessages({
-      fr: {
-        "app_components.page_label": "Page {index}/{count}",
-        "app_components.untitled": "[sans titre]",
-      },
-      en: {
-        "app_components.page_label": "Page {index}/{count}",
-        "app_components.untitled": "[untitled]",
-      },
-    });
-
     app.component("AnimationComponent", AnimationComponent);
     app.component("BlockComponent", BlockComponent);
     app.component("BlockTogglerComponent", BlockTogglerComponent);
@@ -56,6 +45,45 @@ export default class AppComponentsModule extends AbstractModule {
     app.component("ScenarioComponent", ScenarioComponent);
     app.component("SVGComponent", SVGComponent);
     app.component("VideoRendererComponent", VideoRendererComponent);
+
+    addMessages({
+      fr: {
+        app_components: {
+          labels: {
+            untitled: "[sans titre]",
+            Animation: "Animation {name}",
+            Block: "Bloc {name}",
+            BlockToggler: "Contrôleur de blocs {name}",
+            Content: "Texte {name}",
+            Controller: "Contrôleur {name}",
+            Cursor: "Curseur {name}",
+            Media: "Média {name}",
+            Page: "Page {index}/{count}",
+            Scenario: "Scénario {name}",
+            SVG: "SVG {name}",
+            VideoRenderer: "Rendu vidéo {name}",
+          },
+        },
+      },
+      en: {
+        app_components: {
+          labels: {
+            untitled: "[untitled]",
+            Animation: "Animation {name}",
+            Block: "Block {name}",
+            BlockToggler: "Block toggler {name}",
+            Content: "Text {name}",
+            Controller: "Controller {name}",
+            Cursor: "Cursor {name}",
+            Media: "Media {name}",
+            Page: "Page {index}/{count}",
+            Scenario: "Scenario {name}",
+            SVG: "SVG {name}",
+            VideoRenderer: "Video renderer {name}",
+          },
+        },
+      },
+    });
   }
 
   get activeScenario() {

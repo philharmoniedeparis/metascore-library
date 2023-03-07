@@ -3,8 +3,8 @@
   "fr": {
     "upload_label": "Importer des fichiers",
     "upload_indicator_label": "Téléchargement ...",
-    "spectrogram_button": "Create spectrogram image",
-    "audiowaveform_button": "Create audio waveform image",
+    "spectrogram_button": "Créer une image de spectrogramme",
+    "audiowaveform_button": "Créer une image de forme d'onde",
     "error": "Une erreur s’est produite. Veuillez réessayer plus tard.",
     "dropzone_text": "Déposez ici des fichiers pour les importer",
     "dropzone_maxsize_description": "Chaque fichier doit peser moins de&nbsp;: {size}",
