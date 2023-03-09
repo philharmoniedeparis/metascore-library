@@ -66,7 +66,7 @@
   >
     <slot />
 
-    <template v-if="selected && !preview" #outer>
+    <template v-if="selected" #outer>
       <div
         v-for="point in [
           'top left',
@@ -80,7 +80,7 @@
       ></div>
     </template>
 
-    <teleport v-if="interactable && controlBoxTarget" :to="controlBoxTarget">
+    <teleport v-if="selected && controlBoxTarget" :to="controlBoxTarget">
       <div
         v-show="visibleInViewport"
         ref="controlbox"
@@ -89,28 +89,30 @@
         <!-- eslint-disable-next-line vue/require-v-for-key, vue/no-unused-vars -->
         <div v-for="n in 4" ref="controlbox-edges" class="edge"></div>
 
-        <template v-if="transformable">
-          <div class="rotate">
-            <div ref="controlbox-rotate-line" class="line"></div>
-            <div ref="controlbox-rotate-handle" class="handle"></div>
-          </div>
-        </template>
-        <template v-if="resizable">
-          <div
-            v-for="corner in [
-              'top left',
-              'top',
-              'top right',
-              'right',
-              'bottom right',
-              'bottom',
-              'bottom left',
-              'left',
-            ]"
-            :key="corner"
-            ref="controlbox-resize-handles"
-            :class="`resize-handle ${corner}`"
-          ></div>
+        <template v-if="interactable">
+          <template v-if="transformable">
+            <div class="rotate">
+              <div ref="controlbox-rotate-line" class="line"></div>
+              <div ref="controlbox-rotate-handle" class="handle"></div>
+            </div>
+          </template>
+          <template v-if="resizable">
+            <div
+              v-for="corner in [
+                'top left',
+                'top',
+                'top right',
+                'right',
+                'bottom right',
+                'bottom',
+                'bottom left',
+                'left',
+              ]"
+              :key="corner"
+              ref="controlbox-resize-handles"
+              :class="`resize-handle ${corner}`"
+            ></div>
+          </template>
         </template>
       </div>
     </teleport>
@@ -235,7 +237,7 @@ export default {
       return this.store.zoom;
     },
     selected() {
-      return this.store.isComponentSelected(this.component);
+      return !this.preview && this.store.isComponentSelected(this.component);
     },
     locked() {
       return this.store.isComponentLocked(this.component);
@@ -256,7 +258,6 @@ export default {
       return (
         (this.positionable || this.resizable || this.transformable) &&
         this.selected &&
-        !this.preview &&
         !this.locked &&
         !this.disableComponentInteractions
       );
@@ -458,6 +459,12 @@ export default {
     },
   },
   watch: {
+    selected: {
+      handler() {
+        this.updateControlBox();
+      },
+      flush: "post",
+    },
     interactable: {
       handler(value) {
         if (value) {
@@ -657,41 +664,43 @@ export default {
       }
     },
     updateControlBox() {
+      if (!this.selected) return;
+
+      // Calculate ref points with offset.
+      const offset = this.controlBoxTarget.getBoundingClientRect();
+      const ref_points = this.$refs["controlbox-ref-points"].map((point) => {
+        const rect = point.getBoundingClientRect();
+        return ["x", "y", "left", "right", "top", "bottom"].reduce(
+          (acc, prop) => {
+            return {
+              ...acc,
+              [prop]: (rect[prop] - offset[prop]) / this.zoom,
+            };
+          },
+          { ...rect }
+        );
+      });
+
+      // Update edges.
+      ref_points.forEach((p1, i, points) => {
+        const p2 = points[(i + 1) % points.length];
+        const length = Math.sqrt(
+          Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
+        );
+        const center = {
+          x: (p1.x + p2.x) / 2,
+          y: (p1.y + p2.y) / 2,
+        };
+        const angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
+
+        const edge = this.$refs["controlbox-edges"][i];
+        edge.style.left = `${center.x - length / 2}px`;
+        edge.style.top = `${center.y}px`;
+        edge.style.width = `${length}px`;
+        edge.style.transform = `rotate(${angle}rad)`;
+      });
+
       if (this.interactable) {
-        // Calculate ref points with offset.
-        const offset = this.controlBoxTarget.getBoundingClientRect();
-        const ref_points = this.$refs["controlbox-ref-points"].map((point) => {
-          const rect = point.getBoundingClientRect();
-          return ["x", "y", "left", "right", "top", "bottom"].reduce(
-            (acc, prop) => {
-              return {
-                ...acc,
-                [prop]: (rect[prop] - offset[prop]) / this.zoom,
-              };
-            },
-            { ...rect }
-          );
-        });
-
-        // Update edges.
-        ref_points.forEach((p1, i, points) => {
-          const p2 = points[(i + 1) % points.length];
-          const length = Math.sqrt(
-            Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2)
-          );
-          const center = {
-            x: (p1.x + p2.x) / 2,
-            y: (p1.y + p2.y) / 2,
-          };
-          const angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
-
-          const edge = this.$refs["controlbox-edges"][i];
-          edge.style.left = `${center.x - length / 2}px`;
-          edge.style.top = `${center.y}px`;
-          edge.style.width = `${length}px`;
-          edge.style.transform = `rotate(${angle}rad)`;
-        });
-
         if (this.resizable) {
           // Update resize handles.
           this.$refs["controlbox-resize-handles"].forEach((handle, i) => {
