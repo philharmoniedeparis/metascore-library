@@ -9,6 +9,26 @@ import {
   createColorField,
 } from "@metascore-library/core/utils/schema";
 
+export const SVG_PROPERTIES = [
+  "stroke",
+  "stroke-width",
+  "stroke-dasharray",
+  "fill",
+  "marker-start",
+  "marker-mid",
+  "marker-end",
+];
+
+export const SVG_ELEMENTS = [
+  "circle",
+  "ellipse",
+  "line",
+  "path",
+  "polygon",
+  "polyline",
+  "rect",
+];
+
 export default class SVG extends EmbeddableComponent {
   /**
    * @inheritdoc
@@ -148,24 +168,18 @@ export default class SVG extends EmbeddableComponent {
           }
         });
         if (data.colors.length === 0) {
-          ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach(
-            (prop) => {
-              data[prop] = null;
-            }
-          );
-
           // Set markers
           data.markers = [];
           svg.querySelectorAll("defs marker").forEach((marker) => {
             data.markers.push(marker.getAttribute("id"));
           });
-          if (data.markers.length > 0) {
-            ["marker-start", "marker-mid", "marker-end"].forEach((prop) => {
-              if (!(prop in data) || !data[prop]) {
-                data[prop] = null;
-              }
-            });
-          }
+
+          // Fill other props.
+          const root = svg.querySelector(SVG_ELEMENTS.join(","));
+          const style = root ? getComputedStyle(root) : null;
+          SVG_PROPERTIES.forEach((property) => {
+            data[property] = style?.[property] || null;
+          });
         }
 
         evt.target.remove();
@@ -207,7 +221,7 @@ export default class SVG extends EmbeddableComponent {
    * @param {Object} data The data to set defaults on.
    */
   setEmbeddedDefaults(data) {
-    const { colors = [], markers = [] } = this._embedded_data;
+    const { colors = [] } = this._embedded_data;
 
     if (colors.length > 0) {
       if (!("colors" in data) || data.colors === null) {
@@ -220,22 +234,9 @@ export default class SVG extends EmbeddableComponent {
         });
       }
     } else {
-      // @todo: fix empty values in CMS
-      ["stroke", "stroke-width", "stroke-dasharray", "fill"].forEach((prop) => {
-        if (!(prop in data) || !data[prop]) {
-          data[prop] = null;
-        }
+      SVG_PROPERTIES.forEach((property) => {
+        data[property] = data[property] ?? null;
       });
-
-      // Set markers
-      if (markers.length > 0) {
-        // @todo: fix empty values in CMS
-        ["marker-start", "marker-mid", "marker-end"].forEach((prop) => {
-          if (!(prop in data) || !data[prop]) {
-            data[prop] = null;
-          }
-        });
-      }
     }
   }
 
