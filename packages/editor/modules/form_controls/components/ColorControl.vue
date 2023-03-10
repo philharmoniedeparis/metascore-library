@@ -46,7 +46,6 @@
       class="overlay"
       tabindex="-1"
       :style="overlayStyle"
-      @focusout="onOverlayFocusout"
     >
       <tabs-container>
         <tabs-item v-if="picker" title="Picker" :keep-alive="true">
@@ -170,11 +169,27 @@ export default {
             }
           );
         });
+
+        this.$el.ownerDocument.addEventListener(
+          "focusin",
+          this.onDocumentFocusin
+        );
       } else if (this.overlayUpdateCleanup) {
         this.overlayUpdateCleanup();
         this.overlayUpdateCleanup = null;
+
+        this.$el.ownerDocument.removeEventListener(
+          "focusin",
+          this.onDocumentFocusin
+        );
       }
     },
+  },
+  beforeUnmount() {
+    this.$el.ownerDocument.removeEventListener(
+      "focusin",
+      this.onDocumentFocusin
+    );
   },
   methods: {
     isArray,
@@ -196,11 +211,6 @@ export default {
     },
     onOpenerClick() {
       this.showOverlay = true;
-    },
-    onOverlayFocusout(evt) {
-      if (!evt.currentTarget.contains(evt.relatedTarget)) {
-        this.showOverlay = false;
-      }
     },
     onApplyClick() {
       this.showOverlay = false;
@@ -224,6 +234,11 @@ export default {
     },
     onCancelClick() {
       this.showOverlay = false;
+    },
+    onDocumentFocusin(evt) {
+      if (!this.$refs.overlay.contains(evt.target)) {
+        this.showOverlay = false;
+      }
     },
   },
 };
