@@ -35,6 +35,7 @@
       <div v-if="spinners && !readonly && !disabled" class="spinners">
         <button
           type="button"
+          tabindex="-1"
           @mousedown="onSpinUpMousedown"
           @mouseup="onSpinUpMouseup"
           @mouseout="onSpinUpMouseout"
@@ -44,6 +45,7 @@
         </button>
         <button
           type="button"
+          tabindex="-1"
           @mousedown="onSpinDownMousedown"
           @mouseup="onSpinDownMouseup"
           @mouseout="onSpinDownMouseout"
