@@ -27,11 +27,11 @@
   >
     <text-control
       ref="opener"
+      v-model="value"
       class="opener"
       :autofocus="autofocus"
-      :readonly="true"
+      :readonly="readonly"
       :disabled="disabled"
-      :model-value="modelValue"
       @click="onOpenerClick"
     />
 
@@ -47,16 +47,16 @@
       :style="overlayStyle"
     >
       <div class="shape">
-        <template v-for="(value, key) in internalValue" :key="key">
+        <template v-for="(subvalue, key) in internalValue" :key="key">
           <number-control
-            v-model="value.x"
+            v-model="subvalue.x"
             class="prop-control"
             :min="0"
             :data-prop="key"
             data-axis="x"
           />
           <number-control
-            v-model="value.y"
+            v-model="subvalue.y"
             class="prop-control"
             :min="0"
             :data-prop="key"
@@ -205,6 +205,16 @@ export default {
     };
   },
   computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        if (!this.lazy) {
+          this.$emit("update:modelValue", value);
+        }
+      },
+    },
     previewStyle() {
       let borderRadius = null;
 
