@@ -73,7 +73,7 @@
 
 <template>
   <div
-    v-hotkey="hotkeys"
+    v-hotkey.prevent="hotkeys"
     :class="[
       'metaScore-editor',
       {

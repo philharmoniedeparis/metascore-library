@@ -58,6 +58,8 @@
       frozen,
       'drag-over': dragOver,
     }"
+    tabindex="0"
+    @focus="onFocus"
     @click="onClick"
     @dragenter="onDragenter"
     @dragover="onDragover"
@@ -529,6 +531,13 @@ export default {
   },
   methods: {
     kebabCase,
+    onFocus() {
+      if (this.preview) {
+        return;
+      }
+
+      this.store.selectComponent(this.component);
+    },
     onClick(evt) {
       if (this.preview) {
         return;

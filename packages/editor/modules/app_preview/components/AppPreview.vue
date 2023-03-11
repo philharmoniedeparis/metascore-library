@@ -86,7 +86,7 @@
       :style="appRendererWrapperStyle"
       @transitionend="onAppRendererTransitionend"
     >
-      <app-renderer v-hotkey="hotkeys" />
+      <app-renderer ref="app-renderer" v-hotkey="hotkeys" />
       <preview-grid v-show="!preview" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
@@ -97,6 +97,7 @@
 <script>
 import { computed } from "vue";
 import { debounce } from "lodash";
+import { trapTabFocus } from "@metascore-library/core/utils/dom";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import "../polyfills/GeomertyUtils";
 import useStore from "../store";
@@ -230,7 +231,9 @@ export default {
         group: this.$t("hotkey.group"),
         keys: {
           right: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: 1 });
@@ -239,7 +242,9 @@ export default {
             description: this.$t("hotkey.right"),
           },
           "shift+right": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: 10 });
@@ -248,7 +253,9 @@ export default {
             description: this.$t("hotkey.shift+right"),
           },
           left: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: -1 });
@@ -257,7 +264,9 @@ export default {
             description: this.$t("hotkey.left"),
           },
           "shift+left": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: -10 });
@@ -266,7 +275,9 @@ export default {
             description: this.$t("hotkey.shift+left"),
           },
           up: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: -1 });
@@ -275,7 +286,9 @@ export default {
             description: this.$t("hotkey.up"),
           },
           "shift+up": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: -10 });
@@ -284,7 +297,9 @@ export default {
             description: this.$t("hotkey.shift+up"),
           },
           down: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: 1 });
@@ -293,7 +308,9 @@ export default {
             description: this.$t("hotkey.down"),
           },
           "shift+down": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: 10 });
@@ -302,20 +319,22 @@ export default {
             description: this.$t("hotkey.shift+down"),
           },
           tab: {
-            handler: async () => {
-              await this.store.moveComponentSelection();
+            handler: (evt) => {
+              trapTabFocus(this.$refs["app-renderer"]?.$el, evt);
             },
             description: this.$t("hotkey.tab"),
           },
           "shift+tab": {
-            handler: async () => {
-              await this.store.moveComponentSelection(true);
+            handler: (evt) => {
+              trapTabFocus(this.$refs["app-renderer"]?.$el, evt);
             },
             description: this.$t("hotkey.shift+tab"),
           },
           "mod+c": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -325,8 +344,10 @@ export default {
             description: this.$t("hotkey.mod+c"),
           },
           "mod+x": {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -336,8 +357,10 @@ export default {
             description: this.$t("hotkey.mod+x"),
           },
           "mod+v": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -347,8 +370,10 @@ export default {
             description: this.$t("hotkey.mod+v"),
           },
           "mod+d": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -359,8 +384,10 @@ export default {
             description: this.$t("hotkey.mod+d"),
           },
           "mod+l": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -372,8 +399,10 @@ export default {
             description: this.$t("hotkey.mod+l"),
           },
           delete: {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
@@ -385,8 +414,10 @@ export default {
             description: this.$t("hotkey.delete"),
           },
           backspace: {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
@@ -493,7 +524,6 @@ export default {
     onAppRendererTransitionend() {
       this.updateRects();
     },
-
     updateRects() {
       this.appPreviewRect = this.$el.getBoundingClientRect();
       this.appRendererWrapperRect =

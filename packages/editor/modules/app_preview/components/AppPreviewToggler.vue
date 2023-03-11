@@ -29,7 +29,7 @@
 
 <template>
   <base-button
-    v-hotkey="hotkeys"
+    v-hotkey.prevent="hotkeys"
     v-hotkeyhelp="'mod+shift+e'"
     :title="$t('title')"
     type="button"

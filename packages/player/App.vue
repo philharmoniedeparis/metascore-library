@@ -12,7 +12,11 @@
 </i18n>
 
 <template>
-  <div v-hotkey="hotkeys" class="metaScore-player" @contextmenu="onContextmenu">
+  <div
+    v-hotkey.prevent="hotkeys"
+    class="metaScore-player"
+    @contextmenu="onContextmenu"
+  >
     <app-renderer
       :url="url"
       :responsive="responsive"

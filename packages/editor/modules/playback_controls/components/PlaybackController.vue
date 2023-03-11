@@ -16,7 +16,7 @@
 </i18n>
 
 <template>
-  <div v-hotkey="hotkeys" class="playback-controller">
+  <div v-hotkey.prevent="hotkeys" class="playback-controller">
     <base-button type="button" class="rewind" @click="onRewindClick">
       <template #icon><rewind-icon /></template>
     </base-button>

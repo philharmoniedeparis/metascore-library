@@ -3,6 +3,7 @@
     <object
       ref="object"
       type="image/svg+xml"
+      tabindex="-1"
       :data="src"
       @load="onLoad"
     ></object>

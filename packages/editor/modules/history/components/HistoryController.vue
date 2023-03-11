@@ -22,7 +22,7 @@
 </i18n>
 
 <template>
-  <div v-hotkey="hotkeys" class="history-controller">
+  <div v-hotkey.prevent="hotkeys" class="history-controller">
     <base-button
       v-hotkeyhelp="'mod+z'"
       type="button"
