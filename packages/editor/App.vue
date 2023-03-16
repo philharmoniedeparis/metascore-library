@@ -632,36 +632,6 @@ export default {
     }
   }
 
-  :deep(a) {
-    color: inherit;
-    text-decoration: underline;
-
-    &:hover,
-    &:active {
-      text-decoration: none;
-    }
-  }
-
-  :deep(button) {
-    background: none;
-    border: none;
-    opacity: 0.5;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  :deep(input, select) {
-    font-family: inherit;
-    color: inherit;
-  }
-
-  :deep(.icon) {
-    display: block;
-  }
-
   :deep(.sr-only) {
     @include sr-only;
   }

@@ -185,6 +185,25 @@ export default {
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
 
+  &,
+  :deep(*) {
+    scrollbar-color: var(--metascore-scrollbar-thumb-color)
+      var(--metascore-scrollbar-track-color);
+    scrollbar-width: thin;
+
+    ::-webkit-scrollbar {
+      appearance: none;
+      background-color: var(--metascore-scrollbar-track-color);
+      width: var(--metascore-scrollbar-width);
+      height: var(--metascore-scrollbar-thumb-min-height);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 0;
+      background-color: var(--metascore-scrollbar-thumb-color);
+    }
+  }
+
   :deep(.loading-indicator) {
     .dialog {
       border: 0;
