@@ -1,6 +1,6 @@
 <template>
   <div class="color-swatches">
-    <button
+    <base-button
       v-for="color in normalizedSwatches"
       :key="color"
       type="button"
@@ -107,6 +107,7 @@ export default {
   margin: 0.75em;
 
   .swatch {
+    width: 100%;
     padding: 0;
     opacity: 1;
     cursor: pointer;

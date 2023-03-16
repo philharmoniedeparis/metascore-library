@@ -581,7 +581,6 @@ export default {
 }
 
 .app-renderer-wrapper {
-  all: initial; // Prevent editor style from affecting app styles.
   position: relative;
   grid-area: 3/3/4/4;
   background: var(--metascore-color-white);

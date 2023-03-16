@@ -8,11 +8,11 @@
     @mouseleave="onMouseleave"
     @mousedown.prevent
   >
-    <button
+    <base-button
       v-dompurify-html="item.label"
       type="button"
       @click="onClick"
-    ></button>
+    ></base-button>
 
     <ul v-if="hover" ref="submenu" :style="submenuStyle">
       <context-menu-item

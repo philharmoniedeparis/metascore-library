@@ -1,10 +1,13 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import BaseButton from "../button";
 import directive from "./directives/contexmenu";
 import ContextMenu from "./components/ContextMenu";
 
 export default class ContextMenuModule extends AbstractModule {
   static id = "contextmenu";
+
+  static dependencies = [BaseButton];
 
   constructor({ app }) {
     super(arguments);

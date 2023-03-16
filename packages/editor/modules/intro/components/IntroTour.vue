@@ -423,6 +423,18 @@ export default {
   padding: 1em;
 }
 
+.intro-tour--text {
+  :deep(a) {
+    color: inherit;
+    text-decoration: underline;
+
+    &:hover,
+    &:active {
+      text-decoration: none;
+    }
+  }
+}
+
 .intro-tour--dontshowagain {
   margin: 0;
   font-size: 0.95em;

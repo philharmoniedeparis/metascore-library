@@ -33,26 +33,24 @@
         @change="onInputChange"
       />
       <div v-if="spinners && !readonly && !disabled" class="spinners">
-        <button
+        <base-button
           type="button"
           tabindex="-1"
           @mousedown="onSpinUpMousedown"
           @mouseup="onSpinUpMouseup"
           @mouseout="onSpinUpMouseout"
         >
-          <span aria-hidden="true"><spin-up-icon class="icon" /></span>
-          <span class="sr-only">+</span>
-        </button>
-        <button
+          <template #icon><spin-up-icon /></template>
+        </base-button>
+        <base-button
           type="button"
           tabindex="-1"
           @mousedown="onSpinDownMousedown"
           @mouseup="onSpinDownMouseup"
           @mouseout="onSpinDownMouseout"
         >
-          <span aria-hidden="true"><spin-down-icon class="icon" /></span>
-          <span class="sr-only">-</span>
-        </button>
+          <template #icon><spin-down-icon /></template>
+        </base-button>
       </div>
     </div>
 
@@ -271,7 +269,7 @@ export default {
     justify-content: center;
     background-color: var(--metascore-color-bg-tertiary);
 
-    button {
+    button.base-button {
       flex: 0 0 50%;
       padding: 0;
       color: var(--metascore-color-white);

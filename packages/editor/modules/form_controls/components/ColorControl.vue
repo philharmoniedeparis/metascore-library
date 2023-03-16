@@ -21,7 +21,7 @@
     :description="description"
     :required="required"
   >
-    <button
+    <base-button
       :id="inputId"
       ref="opener"
       v-autofocus="autofocus"
@@ -34,7 +34,7 @@
       <span v-if="!modelValue" aria-hidden="true">
         <clear-icon class="icon" />
       </span>
-    </button>
+    </base-button>
 
     <template v-if="$slots.label" #label>
       <slot name="label" />

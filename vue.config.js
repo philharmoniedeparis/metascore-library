@@ -36,7 +36,6 @@ module.exports = defineConfig({
       chunkFilename: function () {
         return "metaScore.[name].[chunkhash].chunk.css";
       },
-      ignoreOrder: true,
     },
   },
   chainWebpack: (config) => {
