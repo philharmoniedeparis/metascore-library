@@ -709,7 +709,6 @@ export default {
     grid-area: center;
     overflow: hidden;
     background: #777;
-    color: #fff;
   }
 
   > .right {

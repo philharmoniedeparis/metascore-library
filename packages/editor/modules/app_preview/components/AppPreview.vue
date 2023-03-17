@@ -586,6 +586,7 @@ export default {
   background: var(--metascore-color-white);
   transform-origin: 0 0;
   transition: all 0.25s;
+  color: initial;
 }
 
 .controlbox-container {
