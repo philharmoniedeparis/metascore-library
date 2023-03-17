@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "pinia": "^2.0.11",
-    "v-hotkey": "https://github.com/philharmoniedeparis/v-hotkey/tarball/6ba503e",
+    "v-hotkey": "https://github.com/philharmoniedeparis/v-hotkey/tarball/5fe3475",
     "vue": "^3.2.31",
     "vue-i18n": "^9.1.9"
   }

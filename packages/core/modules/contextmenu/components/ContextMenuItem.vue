@@ -8,9 +8,11 @@
     @mouseleave="onMouseleave"
     @mousedown.prevent
   >
-    <button type="button" @click="onClick">
-      {{ item.label }}
-    </button>
+    <base-button
+      v-dompurify-html="item.label"
+      type="button"
+      @click="onClick"
+    ></base-button>
 
     <ul v-if="hover" ref="submenu" :style="submenuStyle">
       <context-menu-item
@@ -24,9 +26,13 @@
 </template>
 
 <script>
+import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 
 export default {
+  directives: {
+    dompurifyHtml: buildVueDompurifyHTMLDirective(),
+  },
   props: {
     item: {
       type: Object,
@@ -90,10 +96,12 @@ export default {
 
   button {
     width: 100%;
-    text-align: left;
     padding: 0.5em;
-    color: var(--metascore-color-white, white);
+    overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+    color: var(--metascore-color-white, white);
     user-select: none;
     box-sizing: border-box;
     cursor: default;

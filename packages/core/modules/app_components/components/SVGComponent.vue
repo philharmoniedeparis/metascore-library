@@ -3,6 +3,7 @@
     <object
       ref="object"
       type="image/svg+xml"
+      tabindex="-1"
       :data="src"
       @load="onLoad"
     ></object>
@@ -11,26 +12,7 @@
 
 <script>
 import { isFunction } from "lodash";
-
-const SVG_PROPERTIES = [
-  "stroke",
-  "stroke-width",
-  "stroke-dasharray",
-  "fill",
-  "marker-start",
-  "marker-mid",
-  "marker-end",
-];
-
-const SVG_ELEMENTS = [
-  "circle",
-  "ellipse",
-  "line",
-  "path",
-  "polygon",
-  "polyline",
-  "rect",
-];
+import { SVG_PROPERTIES, SVG_ELEMENTS } from "../models/SVG";
 
 export default {
   props: {

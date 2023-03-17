@@ -74,11 +74,11 @@ export default defineStore("app-components", {
             const pages = this.getChildren(block);
             const count = pages.length;
             const index = pages.findIndex((c) => c.id === component.id) + 1;
-            return $t("app_components.page_label", { index, count });
+            return $t("app_components.labels.Page", { index, count });
           }
 
           default:
-            return component.name || $t("app_components.untitled");
+            return component.name || $t("app_components.labels.untitled");
         }
       };
     },

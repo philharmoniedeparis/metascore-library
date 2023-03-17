@@ -73,7 +73,7 @@
 
 <template>
   <div
-    v-hotkey="hotkeys"
+    v-hotkey.prevent="hotkeys"
     :class="[
       'metaScore-editor',
       {
@@ -630,36 +630,6 @@ export default {
       border-radius: 0;
       background-color: var(--metascore-scrollbar-thumb-color);
     }
-  }
-
-  :deep(a) {
-    color: inherit;
-    text-decoration: underline;
-
-    &:hover,
-    &:active {
-      text-decoration: none;
-    }
-  }
-
-  :deep(button) {
-    background: none;
-    border: none;
-    opacity: 0.5;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  :deep(input, select) {
-    font-family: inherit;
-    color: inherit;
-  }
-
-  :deep(.icon) {
-    display: block;
   }
 
   :deep(.sr-only) {

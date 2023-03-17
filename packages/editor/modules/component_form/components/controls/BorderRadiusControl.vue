@@ -6,7 +6,7 @@
     "cancel_button": "Annuler",
   },
   "en": {
-    "apply_button": "Appliquer",
+    "apply_button": "Apply",
     "clear_button": "Clear",
     "cancel_button": "Cancel",
   },
@@ -27,11 +27,11 @@
   >
     <text-control
       ref="opener"
+      v-model="value"
       class="opener"
       :autofocus="autofocus"
-      :readonly="true"
+      :readonly="readonly"
       :disabled="disabled"
-      :model-value="modelValue"
       @click="onOpenerClick"
     />
 
@@ -45,19 +45,18 @@
       class="overlay"
       tabindex="-1"
       :style="overlayStyle"
-      @focusout="onOverlayFocusout"
     >
       <div class="shape">
-        <template v-for="(value, key) in internalValue" :key="key">
+        <template v-for="(subvalue, key) in internalValue" :key="key">
           <number-control
-            v-model="value.x"
+            v-model="subvalue.x"
             class="prop-control"
             :min="0"
             :data-prop="key"
             data-axis="x"
           />
           <number-control
-            v-model="value.y"
+            v-model="subvalue.y"
             class="prop-control"
             :min="0"
             :data-prop="key"
@@ -206,6 +205,16 @@ export default {
     };
   },
   computed: {
+    value: {
+      get() {
+        return this.modelValue;
+      },
+      set(value) {
+        if (!this.lazy) {
+          this.$emit("update:modelValue", value);
+        }
+      },
+    },
     previewStyle() {
       let borderRadius = null;
 
@@ -238,9 +247,19 @@ export default {
             }
           );
         });
+
+        this.$el.ownerDocument.addEventListener(
+          "focusin",
+          this.onDocumentFocusin
+        );
       } else if (this.overlayUpdateCleanup) {
         this.overlayUpdateCleanup();
         this.overlayUpdateCleanup = null;
+
+        this.$el.ownerDocument.removeEventListener(
+          "focusin",
+          this.onDocumentFocusin
+        );
       }
     },
   },
@@ -265,6 +284,11 @@ export default {
       this._interactable.unset();
       delete this._interactable;
     }
+
+    this.$el.ownerDocument.removeEventListener(
+      "focusin",
+      this.onDocumentFocusin
+    );
   },
   methods: {
     parseCSS(css) {
@@ -301,11 +325,6 @@ export default {
     onOpenerClick() {
       this.showOverlay = true;
     },
-    onOverlayFocusout(evt) {
-      if (!evt.currentTarget.contains(evt.relatedTarget)) {
-        this.showOverlay = false;
-      }
-    },
     onHandleDraggableMove(evt) {
       const { target: handle, dx, dy } = evt;
       const prop = handle.dataset.prop;
@@ -329,6 +348,11 @@ export default {
     },
     onCancelClick() {
       this.showOverlay = false;
+    },
+    onDocumentFocusin(evt) {
+      if (!this.$refs.overlay.contains(evt.target)) {
+        this.showOverlay = false;
+      }
     },
   },
 };

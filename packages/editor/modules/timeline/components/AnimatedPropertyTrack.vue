@@ -37,7 +37,7 @@
 
 <template>
   <div
-    v-hotkey="hotkeys"
+    v-hotkey.prevent="hotkeys"
     class="animated-property-track"
     :data-property="property"
   >

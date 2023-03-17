@@ -22,7 +22,10 @@ export default defineStore("app-preview", {
       zoom: 1,
       preview: false,
       previewPersistant: false,
-      iframe: null,
+      appPreviewRect: { x: 0, y: 0, width: 0, height: 0 },
+      appRendererWrapperEl: null,
+      appRendererWrapperRect: { x: 0, y: 0, width: 0, height: 0 },
+      controlboxContainer: null,
       selectedComponents: {},
       lockedComponents: {},
       frozenComponents: {},
@@ -32,7 +35,7 @@ export default defineStore("app-preview", {
   getters: {
     getComponentElement() {
       return (component) => {
-        return this.iframe.contentDocument.body.querySelector(
+        return this.appRendererWrapperEl?.querySelector(
           `.metaScore-component.${kebabCase(component.type)}#${component.id}`
         );
       };

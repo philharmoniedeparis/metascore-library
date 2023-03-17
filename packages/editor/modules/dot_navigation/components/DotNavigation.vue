@@ -2,7 +2,7 @@
   <div class="dot-navigation">
     <ul>
       <li v-for="i in itemsCount" :key="i" role="presentation">
-        <button
+        <base-button
           type="button"
           tabindex="0"
           :class="{ active: i - 1 === modelValue }"

@@ -1,17 +1,17 @@
 <i18n>
 {
-  "en": {
-    "pager": {
-      "first": "First",
-      "previous": "Previous",
-      "next": "Next",
-    }
-  },
   "fr": {
     "pager": {
       "first": "Première",
       "previous": "Précédente",
       "next": "Suivante",
+    }
+  },
+  "en": {
+    "pager": {
+      "first": "First",
+      "previous": "Previous",
+      "next": "Next",
     }
   },
 }

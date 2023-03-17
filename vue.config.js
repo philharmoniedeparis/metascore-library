@@ -1,7 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const HtmlWebpackAssetsAttrPlugin = require("./webpack/plugins/html-webpack-assets-attr-plugin");
 const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { NormalModuleReplacementPlugin } = require("webpack");
@@ -37,18 +36,6 @@ module.exports = defineConfig({
       chunkFilename: function () {
         return "metaScore.[name].[chunkhash].chunk.css";
       },
-      insert: function (linkTag) {
-        // Insert a clone in the preview iframe.
-        var preview = document.querySelector(
-          ".metaScore-editor .app-preview iframe"
-        );
-        if (preview) {
-          preview.contentDocument.head.appendChild(linkTag.cloneNode());
-        }
-
-        document.head.appendChild(linkTag);
-      },
-      ignoreOrder: true,
     },
   },
   chainWebpack: (config) => {
@@ -68,20 +55,6 @@ module.exports = defineConfig({
         type: "assign-properties",
       })
       .filename("[name].js");
-
-    // Add the "data-metascore" attribute to all link tags
-    // to be used by the app_preview module.
-    config.plugin("htmllinkattr").use(HtmlWebpackAssetsAttrPlugin, [
-      {
-        attrs(asset) {
-          if (asset.tagName === "link") {
-            return {
-              "data-metascore-library": true,
-            };
-          }
-        },
-      },
-    ]);
 
     const isDevServer = process.env.WEBPACK_SERVE;
     if (isDevServer) {

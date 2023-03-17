@@ -2,7 +2,7 @@
 {
   "fr": {
     "title": "Ajouter un scénario",
-    "name_label": "Nom du nouvea scénario",
+    "name_label": "Nom du nouveau scénario",
     "apply_button": "Ajouter",
     "cancel_button": "Annuler",
   },

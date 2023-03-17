@@ -23,7 +23,7 @@
       "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
     },
     "contextmenu": {
-      "selection": "Sélection",
+      "selection": "Sélection ({count} composant) | Sélection ({count} composants)",
       "deselect": "Désélectionner",
       "copy": "Copier",
       "delete": "Supprimer",
@@ -54,7 +54,7 @@
       "backspace": "Delete selected component(s)",
     },
     "contextmenu": {
-      "selection": "Selection",
+      "selection": "Selection ({count} component) | Selection ({count} components)",
       "deselect": "Deselect",
       "copy": "Copy",
       "delete": "Delete",
@@ -69,45 +69,35 @@
   <div class="app-preview">
     <preview-ruler
       v-show="!preview"
-      :track-target="iframeBody"
+      :track-target="appRendererWrapperEl"
       :major-tick-length="rulerThikness"
-      :offset="appOffset.x"
     />
     <preview-ruler
       v-show="!preview"
       axis="y"
-      :track-target="iframeBody"
+      :track-target="appRendererWrapperEl"
       :major-tick-length="rulerThikness"
-      :offset="appOffset.y"
     />
     <div v-show="!preview" class="rulers-corner" />
 
     <div
-      ref="iframe-wrapper"
-      class="iframe-wrapper"
-      :style="iFrameWrapperStyle"
-      @transitionend="onIframeTransitionend"
+      ref="app-renderer-wrapper"
+      class="app-renderer-wrapper"
+      :style="appRendererWrapperStyle"
+      @transitionend="onAppRendererTransitionend"
     >
-      <iframe
-        ref="iframe"
-        allow="fullscreen"
-        allowfullscreen
-        @load="onIframeLoad"
-      ></iframe>
-
+      <app-renderer ref="app-renderer" v-hotkey="hotkeys" />
       <preview-grid v-show="!preview" />
+      <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
     </div>
-
-    <teleport v-if="iframeDocument" :to="iframeDocument.body">
-      <app-renderer v-hotkey="hotkeys" />
-    </teleport>
   </div>
 </template>
 
 <script>
 import { computed } from "vue";
 import { debounce } from "lodash";
+import { trapTabFocus } from "@metascore-library/core/utils/dom";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import "../polyfills/GeomertyUtils";
 import useStore from "../store";
@@ -168,8 +158,6 @@ export default {
   },
   data() {
     return {
-      iframeDocument: null,
-      iframeBody: null,
       appOffset: {
         x: 0,
         y: 0,
@@ -183,7 +171,39 @@ export default {
     preview() {
       return this.store.preview;
     },
-    iFrameWrapperStyle() {
+    appPreviewRect: {
+      get() {
+        return this.store.appPreviewRect;
+      },
+      set(value) {
+        this.store.appPreviewRect = value;
+      },
+    },
+    appRendererWrapperEl: {
+      get() {
+        return this.store.appRendererWrapperEl;
+      },
+      set(value) {
+        this.store.appRendererWrapperEl = value;
+      },
+    },
+    appRendererWrapperRect: {
+      get() {
+        return this.store.appRendererWrapperRect;
+      },
+      set(value) {
+        this.store.appRendererWrapperRect = value;
+      },
+    },
+    controlboxContainer: {
+      get() {
+        return this.store.controlboxContainer;
+      },
+      set(value) {
+        this.store.controlboxContainer = value;
+      },
+    },
+    appRendererWrapperStyle() {
       if (this.zoom !== 1) {
         const width = this.appWidth * this.zoom;
         const height = this.appHeight * this.zoom;
@@ -211,7 +231,9 @@ export default {
         group: this.$t("hotkey.group"),
         keys: {
           right: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: 1 });
@@ -220,7 +242,9 @@ export default {
             description: this.$t("hotkey.right"),
           },
           "shift+right": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: 10 });
@@ -229,7 +253,9 @@ export default {
             description: this.$t("hotkey.shift+right"),
           },
           left: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: -1 });
@@ -238,7 +264,9 @@ export default {
             description: this.$t("hotkey.left"),
           },
           "shift+left": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { left: -10 });
@@ -247,7 +275,9 @@ export default {
             description: this.$t("hotkey.shift+left"),
           },
           up: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: -1 });
@@ -256,7 +286,9 @@ export default {
             description: this.$t("hotkey.up"),
           },
           "shift+up": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: -10 });
@@ -265,7 +297,9 @@ export default {
             description: this.$t("hotkey.shift+up"),
           },
           down: {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: 1 });
@@ -274,7 +308,9 @@ export default {
             description: this.$t("hotkey.down"),
           },
           "shift+down": {
-            handler: async () => {
+            handler: async (evt) => {
+              evt.preventDefault();
+
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
                 await this.store.moveComponents(selected, { top: 10 });
@@ -283,20 +319,22 @@ export default {
             description: this.$t("hotkey.shift+down"),
           },
           tab: {
-            handler: async () => {
-              await this.store.moveComponentSelection();
+            handler: (evt) => {
+              trapTabFocus(this.$refs["app-renderer"]?.$el, evt);
             },
             description: this.$t("hotkey.tab"),
           },
           "shift+tab": {
-            handler: async () => {
-              await this.store.moveComponentSelection(true);
+            handler: (evt) => {
+              trapTabFocus(this.$refs["app-renderer"]?.$el, evt);
             },
             description: this.$t("hotkey.shift+tab"),
           },
           "mod+c": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -306,8 +344,10 @@ export default {
             description: this.$t("hotkey.mod+c"),
           },
           "mod+x": {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -317,8 +357,10 @@ export default {
             description: this.$t("hotkey.mod+x"),
           },
           "mod+v": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -328,8 +370,10 @@ export default {
             description: this.$t("hotkey.mod+v"),
           },
           "mod+d": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -340,8 +384,10 @@ export default {
             description: this.$t("hotkey.mod+d"),
           },
           "mod+l": {
-            handler: ({ repeat }) => {
-              if (repeat) return;
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               if (selected.length > 0) {
@@ -353,8 +399,10 @@ export default {
             description: this.$t("hotkey.mod+l"),
           },
           delete: {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
@@ -366,8 +414,10 @@ export default {
             description: this.$t("hotkey.delete"),
           },
           backspace: {
-            handler: async ({ repeat }) => {
-              if (repeat) return;
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
 
               const selected = this.store.getSelectedComponents;
               this.startHistoryGroup();
@@ -387,7 +437,9 @@ export default {
 
       if (selected.length > 0) {
         items.push({
-          label: this.$t("contextmenu.selection"),
+          label: this.$tc("contextmenu.selection", selected.length, {
+            count: selected.length,
+          }),
           items: [
             {
               label: this.$t("contextmenu.deselect"),
@@ -440,126 +492,42 @@ export default {
       }
     },
     appWidth() {
-      this.updateAppOffset();
+      this.updateRects();
     },
     appHeight() {
-      this.updateAppOffset();
+      this.updateRects();
     },
   },
-  mounted() {
+  async mounted() {
+    await this.$nextTick();
+
     this._resize_observer = new ResizeObserver(
       debounce(() => {
-        this.updateAppOffset();
+        this.updateRects();
       }, 500)
     );
     this._resize_observer.observe(this.$el);
+    this.updateRects();
 
-    this.$nextTick(function () {
-      this.store.iframe = this.$refs.iframe;
-    });
+    this.appRendererWrapperEl = this.$refs["app-renderer-wrapper"];
+    this.controlboxContainer = this.$refs["controlbox-container"];
   },
   beforeUnmount() {
     if (this._resize_observer) {
       this._resize_observer.disconnect();
     }
 
-    this.store.iframe = null;
+    this.appRendererWrapperEl = null;
+    this.controlboxContainer = null;
   },
   methods: {
-    async onIframeLoad() {
-      await this.$nextTick();
-
-      const iframe = this.$refs.iframe;
-
-      this.iframeDocument = iframe.contentDocument;
-      this.iframeBody = this.iframeDocument.body;
-
-      // Find all metascore link tags
-      // and add them to the iframe.
-      document
-        .querySelectorAll("link[rel='stylesheet'][data-metascore-library]")
-        .forEach((tag) => {
-          const url = tag.getAttribute("href");
-          const link = this.iframeDocument.createElement("link");
-          link.setAttribute("rel", "stylesheet");
-          link.setAttribute("type", "text/css");
-          link.setAttribute("href", url);
-          this.iframeDocument.head.appendChild(link);
-        });
-
-      this.iframeDocument.addEventListener("keydown", this.bubbleIframeEvent);
-      this.iframeDocument.addEventListener("keyup", this.bubbleIframeEvent);
-      this.iframeDocument.addEventListener("mousemove", this.bubbleIframeEvent);
-      this.iframeBody.addEventListener("contextmenu", this.onIframeContextMenu);
-
-      this.$emit("load", { iframe });
+    onAppRendererTransitionend() {
+      this.updateRects();
     },
-
-    /**
-     * Bubble an event up from inside the iframe to the iframe element
-     * @param {Event} evt The event to bubble
-     */
-    bubbleIframeEvent(evt) {
-      const iframe = this.$refs.iframe;
-      const init = {};
-
-      for (let prop in evt) {
-        init[prop] = evt[prop];
-      }
-
-      if ("clientX" in evt) {
-        const { left, top } = iframe.getBoundingClientRect();
-        init["clientX"] += left;
-        init["clientY"] += top;
-      }
-
-      if ("pageX" in evt) {
-        const { x: pageX, y: pageY } = window.convertPointFromNodeToPage(
-          iframe,
-          evt.pageX,
-          evt.pageY
-        );
-
-        init["pageX"] = pageX;
-        init["pageY"] = pageY;
-      }
-
-      const new_evt = new evt.constructor(evt.type, init);
-
-      if (!iframe.dispatchEvent(new_evt)) {
-        // Cancel original event if bubbled event was canceled.
-        evt.preventDefault();
-      }
-    },
-
-    onIframeContextMenu(evt) {
-      // Show the native menu if the Ctrl key is down.
-      if (evt.ctrlKey) {
-        return;
-      }
-
-      if (!this.preview) {
-        this.addContextmenuItems(this.contextmenuItems);
-      }
-
-      evt.preventDefault();
-      this.bubbleIframeEvent(evt);
-    },
-
-    onIframeTransitionend() {
-      this.updateAppOffset();
-    },
-
-    updateAppOffset() {
-      const iframe_wrapper = this.$refs["iframe-wrapper"];
-      const { left, top } = this.$el.getBoundingClientRect();
-      const { left: appLeft, top: appTop } =
-        iframe_wrapper.getBoundingClientRect();
-
-      this.appOffset = {
-        x: appLeft - left,
-        y: appTop - top,
-      };
+    updateRects() {
+      this.appPreviewRect = this.$el.getBoundingClientRect();
+      this.appRendererWrapperRect =
+        this.$refs["app-renderer-wrapper"].getBoundingClientRect();
     },
   },
 };
@@ -581,14 +549,6 @@ export default {
     v-bind(cssRulerThikness);
   box-sizing: border-box;
   overflow: auto;
-}
-
-.iframe-wrapper {
-  position: relative;
-  grid-area: 3/3/4/4;
-  background: var(--metascore-color-white);
-  transform-origin: 0 0;
-  transition: all 0.25s;
 }
 
 .preview-ruler {
@@ -620,10 +580,21 @@ export default {
   z-index: 3;
 }
 
-iframe {
-  display: block;
+.app-renderer-wrapper {
+  position: relative;
+  grid-area: 3/3/4/4;
+  background: var(--metascore-color-white);
+  transform-origin: 0 0;
+  transition: all 0.25s;
+}
+
+.controlbox-container {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  border: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 </style>
