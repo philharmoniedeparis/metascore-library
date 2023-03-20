@@ -59,6 +59,7 @@
       'drag-over': dragOver,
     }"
     tabindex="0"
+    @mousedown="onMousedown"
     @focus="onFocus"
     @click="onClick"
     @dragenter="onDragenter"
@@ -531,18 +532,26 @@ export default {
   },
   methods: {
     kebabCase,
+    onMousedown() {
+      if (this.preview) return;
+
+      // Skip focus handler.
+      this._skipFocus = true;
+    },
     onFocus() {
-      if (this.preview) {
+      if (this._skipFocus) {
+        delete this._skipFocus;
         return;
       }
+
+      if (this.preview) return;
 
       this.store.selectComponent(this.component);
     },
     onClick(evt) {
-      if (this.preview) {
-        return;
-      }
+      if (this.preview) return;
 
+      delete this._skipFocus;
       evt.stopPropagation();
 
       if (this.selected) {
