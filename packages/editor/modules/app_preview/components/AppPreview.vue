@@ -86,7 +86,7 @@
       :style="appRendererWrapperStyle"
       @transitionend="onAppRendererTransitionend"
     >
-      <app-renderer ref="app-renderer" v-hotkey="hotkeys" />
+      <app-renderer ref="app-renderer" v-hotkey.local="hotkeys" />
       <preview-grid v-show="!preview" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
