@@ -64,6 +64,9 @@ export default {
     preview() {
       return this.store.preview;
     },
+    previewPersistant() {
+      return this.store.previewPersistant;
+    },
     hotkeys() {
       return {
         group: this.$t("hotkey.group"),
@@ -71,6 +74,14 @@ export default {
           "mod+e": {
             handler: {
               keydown: this.onTemporaryHotkeyDown,
+              keyup: this.onTemporaryHotkeyUp,
+            },
+            description: this.$t("hotkey.mod+e"),
+          },
+          cmd: {
+            // Workaround a macOS specific handling of ⌘ combinations,
+            // where the keyup event is never triggered.
+            handler: {
               keyup: this.onTemporaryHotkeyUp,
             },
             description: this.$t("hotkey.mod+e"),
@@ -93,6 +104,10 @@ export default {
     },
     onTemporaryHotkeyUp(evt) {
       if (evt.repeat) return;
+
+      // This check is for the macOS workaround (see hotkeys computed propoerty).
+      if (!this.preview || this.previewPersistant) return;
+
       this.store.togglePreview(false, false);
     },
     onPersistentHotkey(evt) {
