@@ -6,6 +6,7 @@
     "hidden": "Caché au démarrage",
     "background-color": "Couleur de fond",
     "background-image": "Image de fond",
+    "background-image.empty": "-- aucune --",
     "border": "Bordure",
     "border-radius": "Rayon",
     "position": "Position",
@@ -97,6 +98,7 @@
     "hidden": "Hidden on start",
     "background-color": "Background color",
     "background-image": "Background image",
+    "background-image.empty": "-- none --",
     "border": "Border",
     "border-radius": "Radius",
     "position": "Position",
@@ -327,7 +329,10 @@ export default {
         });
         layout.items[0].items.push({
           type: "select",
-          options: [{ name: "", id: -1, url: null }, ...this.images],
+          options: [
+            { name: this.$t("background-image.empty"), id: -1, url: null },
+            ...this.images,
+          ],
           optionLabel: (o) => o?.name,
           optionKey: (o) => o?.id,
           optionValue: (o) => o.url,
