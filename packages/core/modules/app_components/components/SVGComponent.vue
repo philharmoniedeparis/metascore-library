@@ -140,6 +140,7 @@ export default {
 <style lang="scss" scoped>
 .svg {
   :deep(object) {
+    display: block;
     width: 100%;
     height: 100%;
     pointer-events: none;
