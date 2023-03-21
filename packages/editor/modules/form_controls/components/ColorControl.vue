@@ -161,7 +161,7 @@ export default {
           this.$refs.overlay.focus();
           this.updateOverlayStyle();
           this.overlayUpdateCleanup = autoUpdate(
-            this.$refs.opener,
+            this.$refs.opener.$el,
             this.$refs.overlay,
             this.updateOverlayStyle,
             {
@@ -195,7 +195,7 @@ export default {
     isArray,
     async updateOverlayStyle() {
       const { x, y } = await computePosition(
-        this.$refs.opener,
+        this.$refs.opener.$el,
         this.$refs.overlay,
         {
           strategy: "fixed",
