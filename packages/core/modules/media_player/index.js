@@ -39,6 +39,12 @@ export default class MediaPlayerModule extends AbstractModule {
     return readonly(ready);
   }
 
+  get dataLoaded() {
+    const store = useStore();
+    const { dataLoaded } = storeToRefs(store);
+    return readonly(dataLoaded);
+  }
+
   get width() {
     const store = useStore();
     const { width } = storeToRefs(store);

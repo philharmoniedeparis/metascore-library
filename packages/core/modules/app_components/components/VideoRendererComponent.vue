@@ -29,6 +29,7 @@ export default {
       element: mediaElement,
       type: mediaType,
       ready: mediaReady,
+      dataLoaded: mediaDataLoaded,
       width: mediaWidth,
       height: mediaHeight,
       time: mediaTime,
@@ -37,6 +38,7 @@ export default {
       mediaElement,
       mediaType,
       mediaReady,
+      mediaDataLoaded,
       mediaWidth,
       mediaHeight,
       mediaTime,
@@ -53,6 +55,9 @@ export default {
   },
   watch: {
     mediaReady() {
+      this.update();
+    },
+    mediaDataLoaded() {
       this.update();
     },
     mediaTime() {

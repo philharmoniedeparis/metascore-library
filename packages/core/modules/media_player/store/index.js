@@ -5,6 +5,7 @@ export default defineStore("media_player", {
   state: () => {
     return {
       ready: false,
+      dataLoaded: false,
       useRequestAnimationFrame: true,
       source: null,
       element: null,
@@ -38,6 +39,9 @@ export default defineStore("media_player", {
           this.width = this.type === "video" ? element.videoWidth : null;
           this.height = this.type === "video" ? element.videoHeight : null;
           this.duration = evt.target.duration;
+        });
+        element.addEventListener("loadeddata", () => {
+          this.dataLoaded = true;
         });
         element.addEventListener("play", () => {
           this.playing = true;
