@@ -141,6 +141,7 @@ export default {
       componentHasSelectedDescendents,
       selectComponent,
       deselectComponent,
+      selectedComponents,
     } = useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -162,6 +163,7 @@ export default {
       componentHasSelectedDescendents,
       selectComponent,
       deselectComponent,
+      selectedComponents,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -295,7 +297,9 @@ export default {
       } else {
         this.selectComponent(this.component, evt.shiftKey);
 
-        if (this.timeable) {
+        // If this is the only selected component and the current time is outside
+        // its time limits, set the current time to its start time.
+        if (this.selected && this.selectedComponents.length === 1 && this.timeable) {
           if (
             (this.component["start-time"] !== null &&
               this.mediaTime < this.component["start-time"]) ||
