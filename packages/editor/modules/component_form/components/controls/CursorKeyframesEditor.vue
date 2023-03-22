@@ -83,22 +83,23 @@ export default {
     },
   },
   watch: {
-    activeKeyframe(value) {
+    async activeKeyframe(value) {
       if (value !== null) {
-        this.$nextTick(function () {
-          const keyframe = this.$el.querySelector(".keyframe.active");
-          const overlay = keyframe.querySelector(".overlay");
-          computePosition(keyframe, overlay, {
-            placement: "right-start",
-            middleware: [flip()],
-          }).then(({ x, y, placement }) => {
-            this.overlayPlacement = placement;
-            this.overlayStyle = {
-              left: `${x}px`,
-              top: `${y}px`,
-            };
-          });
+        await this.$nextTick();
+
+        const keyframe = this.$el.querySelector(".keyframe.active");
+        const overlay = keyframe.querySelector(".overlay");
+
+        const { x, y, placement } = await computePosition(keyframe, overlay, {
+          placement: "right-start",
+          middleware: [flip()],
         });
+
+        this.overlayPlacement = placement;
+        this.overlayStyle = {
+          left: `${x}px`,
+          top: `${y}px`,
+        };
       } else {
         this.overlayPlacement = null;
         this.overlayStyle = null;
@@ -191,6 +192,7 @@ export default {
       width: 1px;
       height: 100%;
       padding: 0 2px;
+      box-sizing: content-box;
 
       &::after {
         content: "";

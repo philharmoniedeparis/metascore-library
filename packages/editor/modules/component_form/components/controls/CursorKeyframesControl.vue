@@ -23,6 +23,17 @@
     <teleport v-if="recording" :to="componentEl">
       <cursor-keyframes-editor v-model="value" />
     </teleport>
+
+    <element-highlighter
+      v-if="recording"
+      v-bind:[scopeAttribute]="''"
+      class="cursor-keyframes-control-highlighter"
+      :border-width="0"
+      :rect="highlighterRect"
+      :teleport-target="appRendererEl"
+      :allow-interaction="true"
+      @click="onHighlighterClick"
+    />
   </form-group>
 </template>
 
@@ -73,8 +84,15 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
+    const { el: appRendererEl } = useModule("app_renderer");
     const { getComponentElement } = useModule("app_preview");
-    return { store, getComponentElement };
+    return { store, appRendererEl, getComponentElement };
+  },
+  data() {
+    return {
+      scopeId: null,
+      highlighterRect: null,
+    };
   },
   computed: {
     value: {
@@ -104,12 +122,29 @@ export default {
       return this.label;
     },
   },
+  watch: {
+    recording(value) {
+      if (value) {
+        this.highlighterRect = this.componentEl.getBoundingClientRect();
+        this.componentEl.setAttribute(this.scopeAttribute, "");
+      } else {
+        this.highlighterRect = null;
+        this.componentEl.removeAttribute(this.scopeAttribute);
+      }
+    },
+  },
+  mounted() {
+    this.scopeAttribute = this.$options.__scopeId;
+  },
   beforeUnmount() {
     this.recording = false;
   },
   methods: {
     onButtonClick() {
       this.recording = !this.recording;
+    },
+    onHighlighterClick() {
+      this.recording = false;
     },
   },
 };
@@ -154,5 +189,23 @@ export default {
       }
     }
   }
+}
+
+.cursor-keyframes-control-highlighter {
+  z-index: 0;
+
+  :deep(.overlay) {
+    z-index: 998;
+  }
+
+  :deep(.highlight) {
+    border-radius: 0;
+    z-index: 999;
+  }
+}
+
+// The scoping is done via scopeAttribute.
+.metaScore-component {
+  z-index: 1;
 }
 </style>
