@@ -55,7 +55,6 @@ export default {
   opacity: 0.5;
   text-align: center;
   font-size: 1em;
-  font-family: "SourceSansPro", "Source-Sans-Pro", "Source Sans Pro", sans-serif;
   cursor: pointer;
 
   &:hover {
