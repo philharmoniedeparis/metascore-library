@@ -5,6 +5,7 @@ import AbstractModule from "@metascore-library/core/services/module-manager/Abst
 import useStore from "./store";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
+import ElementHighlighter from "../element_highlighter";
 import FormGroup from "../form_group";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import SchemaForm from "../schema_form";
@@ -24,6 +25,7 @@ export default class ComponentFormModule extends AbstractModule {
   static dependencies = [
     AppPreview,
     AssetsLibrary,
+    ElementHighlighter,
     FormGroup,
     MediaPlayer,
     SchemaForm,
