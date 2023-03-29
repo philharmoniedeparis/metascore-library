@@ -13,6 +13,18 @@
     </base-button>
 
     <div ref="toolbar-container" class="toolbar-container"></div>
+
+    <element-highlighter
+      v-if="editing"
+      :[scopeAttribute]="''"
+      class="html-control-highlighter"
+      :border-width="0"
+      :rect="highlighterRect"
+      :teleport-target="appRendererEl"
+      :overlay-opacity="0.5"
+      :allow-interaction="true"
+      @click="onHighlighterClick"
+    />
   </form-group>
 </template>
 
@@ -65,10 +77,12 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
+    const { el: appRendererEl } = useModule("app_renderer");
     const { getComponentElement, preview, freezeComponent, unfreezeComponent } =
       useModule("app_preview");
     return {
       store,
+      appRendererEl,
       getComponentElement,
       preview,
       freezeComponent,
@@ -79,6 +93,8 @@ export default {
     return {
       settingUpEditor: false,
       editor: null,
+      scopeAttribute: null,
+      highlighterRect: null,
     };
   },
   computed: {
@@ -132,6 +148,21 @@ export default {
         this.stopEditing();
       }
     },
+    editing(value) {
+      if (value) {
+        this.getComponentElement(this.component).setAttribute(
+          this.scopeAttribute,
+          ""
+        );
+      } else {
+        this.getComponentElement(this.component).removeAttribute(
+          this.scopeAttribute
+        );
+      }
+    },
+  },
+  mounted() {
+    this.scopeAttribute = this.$options.__scopeId;
   },
   async beforeUnmount() {
     if (this.component) {
@@ -174,24 +205,29 @@ export default {
       const { default: createEditor } = await import("../../ckeditor");
 
       try {
-        const editor = await createEditor(this.getContentsElement(), {
+        const el = this.getContentsElement();
+        const editor = await createEditor(el, {
           language: getLocale(),
           extraFonts: this.extraFonts,
         });
         this.editor = markRaw(editor);
         this.setupEditor();
+
+        // Prevent key events from propagating.
+        const inner_el = this.getInnerElement();
+        if (inner_el) {
+          inner_el.addEventListener("keydown", this.onComponentInnerElKeyEvent);
+          inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
+        }
+
+        this.highlighterRect = this.getComponentElement(
+          this.component
+        ).getBoundingClientRect();
       } catch (e) {
         // @todo: handle errors.
         console.error(e);
       } finally {
         this.settingUpEditor = false;
-      }
-
-      // Prevent key events from propagating.
-      const inner_el = this.getInnerElement();
-      if (inner_el) {
-        inner_el.addEventListener("keydown", this.onComponentInnerElKeyEvent);
-        inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
       }
     },
     setupEditor() {
@@ -236,6 +272,9 @@ export default {
         isSourceEditingMode
       );
     },
+    onHighlighterClick() {
+      this.stopEditing();
+    },
     async stopEditing(component = this.component) {
       if (!this.editing) return;
 
@@ -257,6 +296,7 @@ export default {
       this.unfreezeComponent(component);
 
       this.editing = false;
+      this.highlighterRect = null;
     },
   },
 };
@@ -292,5 +332,24 @@ export default {
       opacity: 1;
     }
   }
+}
+
+// Scoping is done via scopeAttribute.
+.html-control-highlighter {
+  z-index: 0;
+
+  :deep(.overlay) {
+    z-index: 998;
+  }
+
+  :deep(.highlight) {
+    border-radius: 0;
+    z-index: 999;
+  }
+}
+
+// Scoping is done via scopeAttribute.
+.metaScore-component {
+  z-index: 1;
 }
 </style>
