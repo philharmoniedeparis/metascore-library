@@ -252,6 +252,14 @@ export default {
         this.onEditorDocumentDataChange
       );
 
+      // Listener to drag and drop events.
+      this.editor.editing.view.document.on("dragover", this.onEditorDragover, {
+        priority: "high",
+      });
+      this.editor.editing.view.document.on("drop", this.onEditorDrop, {
+        priority: "high",
+      });
+
       // Add listeners to SourceEditing mode
       if (this.editor.plugins.has("SourceEditing")) {
         const sourceediting = this.editor.plugins.get("SourceEditing");
@@ -271,6 +279,30 @@ export default {
         "sourceediting",
         isSourceEditingMode
       );
+    },
+    isDropAllowed(evt) {
+      const { types } = evt.dataTransfer;
+      const is_metascore_data = types.some((type) => {
+        return type.startsWith("metascore/");
+      });
+
+      return !is_metascore_data || types.includes("text/html");
+    },
+    onEditorDragover(evt, data) {
+      const { domEvent } = data;
+      if (!this.isDropAllowed(domEvent)) {
+        domEvent.stopPropagation();
+        domEvent.dataTransfer.dropEffect = "none";
+        evt.stop();
+      }
+    },
+    onEditorDrop(evt, data) {
+      const { domEvent } = data;
+      if (!this.isDropAllowed(domEvent)) {
+        domEvent.preventDefault();
+        domEvent.stopPropagation();
+        evt.stop();
+      }
     },
     onHighlighterClick() {
       this.stopEditing();

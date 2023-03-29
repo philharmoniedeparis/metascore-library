@@ -299,7 +299,11 @@ export default {
 
         // If this is the only selected component and the current time is outside
         // its time limits, set the current time to its start time.
-        if (this.selected && this.selectedComponents.length === 1 && this.timeable) {
+        if (
+          this.selected &&
+          this.selectedComponents.length === 1 &&
+          this.timeable
+        ) {
           if (
             (this.component["start-time"] !== null &&
               this.mediaTime < this.component["start-time"]) ||
