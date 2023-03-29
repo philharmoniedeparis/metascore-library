@@ -26,11 +26,12 @@
 
     <element-highlighter
       v-if="recording"
-      v-bind:[scopeAttribute]="''"
+      :[scopeAttribute]="''"
       class="cursor-keyframes-control-highlighter"
       :border-width="0"
       :rect="highlighterRect"
       :teleport-target="appRendererEl"
+      :overlay-opacity="0.5"
       :allow-interaction="true"
       @click="onHighlighterClick"
     />
@@ -191,6 +192,7 @@ export default {
   }
 }
 
+// Scoping is done via scopeAttribute.
 .cursor-keyframes-control-highlighter {
   z-index: 0;
 
@@ -204,7 +206,7 @@ export default {
   }
 }
 
-// The scoping is done via scopeAttribute.
+// Scoping is done via scopeAttribute.
 .metaScore-component {
   z-index: 1;
 }

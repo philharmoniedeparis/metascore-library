@@ -16,11 +16,12 @@
 
     <element-highlighter
       v-if="editing"
-      v-bind:[scopeAttribute]="''"
+      :[scopeAttribute]="''"
       class="html-control-highlighter"
       :border-width="0"
       :rect="highlighterRect"
       :teleport-target="appRendererEl"
+      :overlay-opacity="0.5"
       :allow-interaction="true"
       @click="onHighlighterClick"
     />
@@ -149,11 +150,16 @@ export default {
     },
     editing(value) {
       if (value) {
-        this.getComponentElement(this.component).setAttribute(this.scopeAttribute, "");
+        this.getComponentElement(this.component).setAttribute(
+          this.scopeAttribute,
+          ""
+        );
       } else {
-        this.getComponentElement(this.component).removeAttribute(this.scopeAttribute);
+        this.getComponentElement(this.component).removeAttribute(
+          this.scopeAttribute
+        );
       }
-    }
+    },
   },
   mounted() {
     this.scopeAttribute = this.$options.__scopeId;
@@ -328,6 +334,7 @@ export default {
   }
 }
 
+// Scoping is done via scopeAttribute.
 .html-control-highlighter {
   z-index: 0;
 
@@ -341,7 +348,7 @@ export default {
   }
 }
 
-// The scoping is done via scopeAttribute.
+// Scoping is done via scopeAttribute.
 .metaScore-component {
   z-index: 1;
 }
