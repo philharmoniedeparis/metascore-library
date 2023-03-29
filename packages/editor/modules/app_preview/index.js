@@ -110,9 +110,9 @@ export default class AppPreviewModule extends AbstractModule {
     return store.componentHasSelectedDescendents(component);
   }
 
-  selectComponent(component) {
+  selectComponent(component, append = false) {
     const store = useStore();
-    return store.selectComponent(component);
+    return store.selectComponent(component, append);
   }
 
   deselectComponent(component) {

@@ -1,6 +1,6 @@
 <template>
   <teleport :to="teleportTarget" :disabled="!teleportTarget">
-    <div ref="root" class="element-highlighter">
+    <div ref="root" class="element-highlighter" v-bind="$attrs">
       <div class="overlay" :style="overlayStyle" @click="$emit('click')"></div>
       <div class="highlight" :style="highlightStyle"></div>
     </div>
@@ -17,6 +17,14 @@ export default {
     rect: {
       type: DOMRect,
       default: null,
+    },
+    borderWidth: {
+      type: Number,
+      default: 2,
+    },
+    borderColor: {
+      type: String,
+      default: "rgba(0, 0, 0, 0.8)",
     },
     overlayOpacity: {
       type: Number,
@@ -42,6 +50,9 @@ export default {
       deep: true,
     },
   },
+  mounted() {
+    this.updateStyles();
+  },
   methods: {
     updateStyles() {
       if (!this.rect) {
@@ -62,7 +73,7 @@ export default {
         left: `${left}px`,
         width: `${width}px`,
         height: `${height}px`,
-        boxShadow: `0 0 1px 2px rgba(0, 0, 0, 0.8), rgba(0, 0, 0, ${this.overlayOpacity}) 0 0 0 5000px`,
+        boxShadow: `0 0 1px ${this.borderWidth}px ${this.borderColor}, rgba(0, 0, 0, ${this.overlayOpacity}) 0 0 0 5000px`,
       };
 
       if (this.allowInteraction) {
@@ -99,6 +110,7 @@ export default {
   position: absolute;
   inset: 0px;
   pointer-events: none;
+  overflow: hidden;
 
   .overlay {
     position: absolute;
