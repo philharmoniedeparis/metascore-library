@@ -50,6 +50,11 @@
         "on": "Éditer le contenu",
         "off": "Arrêter l’édition du contenu",
       },
+      "overflow": "Défilement",
+      "overflow-options": {
+        "auto": "Auto",
+        "hidden": "Désactivé",
+      }
     },
     "Controller": {
       "title": "Attributs du contrôleur | Attributs de {count} contrôleurs",
@@ -142,6 +147,11 @@
         "on": "Edit the content",
         "off": "Stop content editing",
       },
+      "overflow": "Scroll",
+      "overflow-options": {
+        "auto": "Auto",
+        "hidden": "Disabled",
+      }
     },
     "Controller": {
       "title": "Attributes of controller | Attributes of {count} controllers",
@@ -315,19 +325,20 @@ export default {
           },
         ],
       };
+      const control_items = layout.items[0].items;
 
       ["name", "hidden"].forEach((property) => {
-        layout.items[0].items.push({
+        control_items.push({
           ...this.getControlProps(property),
         });
       });
 
       if (this.commonModel.$isBackgroundable) {
-        layout.items[0].items.push({
+        control_items.push({
           swatches: this.store.configs.colorSwatches,
           ...this.getControlProps("background-color"),
         });
-        layout.items[0].items.push({
+        control_items.push({
           type: "select",
           options: [
             { name: this.$t("background-image.empty"), id: -1, url: null },
@@ -341,7 +352,7 @@ export default {
       }
 
       if (this.commonModel.$isBorderable) {
-        layout.items[0].items.push({
+        control_items.push({
           type: "markup",
           class: "form-container horizontal",
           items: [
@@ -357,7 +368,7 @@ export default {
       }
 
       if (this.commonModel.$isPositionable) {
-        layout.items[0].items.push({
+        control_items.push({
           itemProps: [
             { spinnersDirection: "horizontal" },
             { flipSpinners: true },
@@ -368,7 +379,7 @@ export default {
       }
 
       if (this.commonModel.$isResizable) {
-        layout.items[0].items.push({
+        control_items.push({
           itemProps: [
             { spinnersDirection: "horizontal" },
             { flipSpinners: true },
@@ -381,18 +392,18 @@ export default {
       switch (this.commonModel.type) {
         case "Animation":
           ["start-frame", "loop-duration", "reversed"].forEach((property) => {
-            layout.items[0].items.push({
+            control_items.push({
               ...this.getControlProps(property, this.commonModel.type),
             });
           });
-          layout.items[0].items.push({
+          control_items.push({
             swatches: this.store.configs.colorSwatches,
             ...this.getControlProps("colors", this.commonModel.type),
           });
           break;
 
         case "Block":
-          layout.items[0].items.push({
+          control_items.push({
             type: "select",
             options: this.schema.properties["pager-visibility"].enum.map(
               (v) => {
@@ -407,7 +418,7 @@ export default {
           break;
 
         case "BlockToggler":
-          layout.items[0].items.push({
+          control_items.push({
             type: "select",
             multiple: true,
             options: this.firstLevelComponents,
@@ -420,8 +431,17 @@ export default {
           break;
 
         case "Content":
+          control_items.push({
+            ...this.getControlProps("overflow", this.commonModel.type),
+            options: this.schema.properties["overflow"].enum.map((v) => {
+              return {
+                label: this.$t(`Content.overflow-options.${v}`),
+                value: v,
+              };
+            }),
+          });
           if (this.selectedComponentsCount === 1) {
-            layout.items[0].items.push({
+            control_items.push({
               type: "html",
               component: this.masterComponent,
               "extra-fonts": this.store.configs.extraFonts,
@@ -440,12 +460,12 @@ export default {
             "start-angle",
             "loop-duration",
           ].forEach((property) => {
-            layout.items[0].items.push(
+            control_items.push(
               this.getControlProps(property, this.commonModel.type)
             );
           });
           if (this.selectedComponentsCount === 1) {
-            layout.items[0].items.push({
+            control_items.push({
               type: "cursor-keyframes",
               component: this.masterComponent,
               ...this.getControlProps("keyframes", this.commonModel.type),
@@ -458,7 +478,7 @@ export default {
             this.masterComponent.colors &&
             this.masterComponent.colors.length > 0
           ) {
-            layout.items[0].items.push({
+            control_items.push({
               itemProps: {
                 swatches: this.store.configs.colorSwatches,
               },
@@ -466,11 +486,11 @@ export default {
             });
           } else {
             ["stroke", "stroke-width"].forEach((property) => {
-              layout.items[0].items.push(
+              control_items.push(
                 this.getControlProps(property, this.commonModel.type)
               );
             });
-            layout.items[0].items.push({
+            control_items.push({
               type: "select",
               options: [
                 { label: "—", value: null },
@@ -485,7 +505,7 @@ export default {
                 this.commonModel.type
               ),
             });
-            layout.items[0].items.push(
+            control_items.push(
               this.getControlProps("fill", this.commonModel.type)
             );
 
@@ -495,7 +515,7 @@ export default {
             ) {
               ["marker-start", "marker-mid", "marker-end"].forEach(
                 (property) => {
-                  layout.items[0].items.push({
+                  control_items.push({
                     type: "select",
                     options: [null, ...this.masterComponent.markers],
                     ...this.getControlProps(property, this.commonModel.type),

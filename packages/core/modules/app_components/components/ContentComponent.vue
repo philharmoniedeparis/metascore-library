@@ -1,6 +1,11 @@
 <template>
   <component-wrapper :component="component">
-    <div v-dompurify-html="text" class="contents" @click="onTextClick"></div>
+    <div
+      v-dompurify-html="text"
+      class="contents"
+      :style="`overflow: ${overflow};`"
+      @click="onTextClick"
+    ></div>
   </component-wrapper>
 </template>
 
@@ -44,6 +49,9 @@ export default {
   computed: {
     text() {
       return this.component.text ?? "";
+    },
+    overflow() {
+      return this.component.overflow ?? "hidden";
     },
   },
   watch: {
@@ -121,7 +129,7 @@ export default {
 .content {
   .contents {
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
 
     :deep(a) {
       color: rgb(0, 0, 238);

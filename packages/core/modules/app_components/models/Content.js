@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
+import { createEnumField } from "@metascore-library/core/utils/schema";
 import { createHtmlField } from "../utils/schema";
 
 export default class Content extends EmbeddableComponent {
@@ -24,6 +25,11 @@ export default class Content extends EmbeddableComponent {
         text: createHtmlField({
           ajv,
           title: "Text",
+        }),
+        overflow: createEnumField({
+          title: "Overflow",
+          enum: ["auto", "hidden"],
+          default: "hidden",
         }),
       },
     });

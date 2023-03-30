@@ -43,6 +43,7 @@ export default {
 
   > :deep(.metaScore-component--inner) {
     background-size: auto;
+    overflow: hidden;
   }
 }
 </style>
