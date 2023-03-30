@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
-import { round, kebabCase } from "lodash";
+import { round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
 export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
@@ -33,13 +33,6 @@ export default defineStore("app-preview", {
     };
   },
   getters: {
-    getComponentElement() {
-      return (component) => {
-        return this.appRendererWrapperEl?.querySelector(
-          `.metaScore-component.${kebabCase(component.type)}#${component.id}`
-        );
-      };
-    },
     isComponentSelected() {
       return ({ type, id }) => {
         return this.selectedComponents[type]?.includes(id);

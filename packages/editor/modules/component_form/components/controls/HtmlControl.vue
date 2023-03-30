@@ -77,8 +77,9 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const store = useStore();
-    const { el: appRendererEl } = useModule("app_renderer");
-    const { getComponentElement, preview, freezeComponent, unfreezeComponent } =
+    const { el: appRendererEl, getComponentElement } =
+      useModule("app_renderer");
+    const { preview, freezeComponent, unfreezeComponent } =
       useModule("app_preview");
     return {
       store,

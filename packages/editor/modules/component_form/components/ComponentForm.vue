@@ -232,12 +232,8 @@ export default {
       updateComponent,
       isComponentTimeable,
     } = useModule("app_components");
-    const {
-      selectedComponents,
-      getComponentElement,
-      isComponentLocked,
-      preview,
-    } = useModule("app_preview");
+    const { selectedComponents, isComponentLocked, preview } =
+      useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
     return {
@@ -247,7 +243,6 @@ export default {
       getComponentChildren,
       updateComponent,
       isComponentTimeable,
-      getComponentElement,
       selectedComponents,
       isComponentLocked,
       preview,

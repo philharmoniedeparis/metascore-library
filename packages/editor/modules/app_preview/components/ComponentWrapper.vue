@@ -193,6 +193,7 @@ export default {
       getBlockActivePage,
       setBlockActivePage,
     } = useModule("app_components");
+    const { getComponentElement } = useModule("app_renderer");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
     return {
@@ -213,6 +214,7 @@ export default {
       deleteComponent,
       getBlockActivePage,
       setBlockActivePage,
+      getComponentElement,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -787,7 +789,7 @@ export default {
           return;
         }
 
-        const sibling_el = this.store.getComponentElement(sibling);
+        const sibling_el = this.getComponentElement(sibling);
         const { left, top, width, height } = sibling_el.getBoundingClientRect();
 
         [left, (left + width) / 2, left + width].forEach((value) => {

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { kebabCase } from "lodash";
 
 export default defineStore("app-renderer", {
   state: () => {
@@ -10,6 +11,15 @@ export default defineStore("app-renderer", {
       css: null,
       fullscreenElement: null,
     };
+  },
+  getters: {
+    getComponentElement() {
+      return (component) => {
+        return this.el?.querySelector(
+          `.metaScore-component.${kebabCase(component.type)}#${component.id}`
+        );
+      };
+    },
   },
   actions: {
     init({ width, height, css }) {
