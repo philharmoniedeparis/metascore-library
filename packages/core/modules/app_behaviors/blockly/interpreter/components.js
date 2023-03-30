@@ -14,7 +14,7 @@ export function init(context) {
   context.Components = {
     addEventListener: (type, id, event, callback) => {
       const { getComponent } = useModule("app_components");
-      const { getComponentElement } = useModule("app_preview");
+      const { getComponentElement } = useModule("app_renderer");
 
       const component = getComponent(type, id);
       if (!component) return;

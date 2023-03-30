@@ -65,11 +65,6 @@ export default class AppPreviewModule extends AbstractModule {
     return getSelectedComponents;
   }
 
-  getComponentElement(component) {
-    const store = useStore();
-    return store.getComponentElement(component);
-  }
-
   isComponentSelected(component) {
     const store = useStore();
     return store.isComponentSelected(component);

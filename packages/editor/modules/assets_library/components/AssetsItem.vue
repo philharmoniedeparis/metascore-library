@@ -178,9 +178,7 @@ export default {
         `metascore/asset;type=${this.type}`,
         this.assetDragData
       );
-      evt.dataTransfer.setData("text/uri-list", this.file.url);
-      evt.dataTransfer.setData("text/plain", this.file.url);
-      if (this.type === "image") {
+      if (["image", "svg"].includes(this.type)) {
         if ("width" in this.file && "height" in this.file) {
           evt.dataTransfer.setData(
             "text/html",
@@ -193,6 +191,8 @@ export default {
           );
         }
       }
+      evt.dataTransfer.setData("text/uri-list", this.file.url);
+      evt.dataTransfer.setData("text/plain", this.file.url);
 
       this.play = false;
       this.dragging = true;
