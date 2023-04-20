@@ -84,7 +84,6 @@ export default {
             handler: {
               keyup: this.onTemporaryHotkeyUp,
             },
-            description: this.$t("hotkey.mod+e"),
           },
           "mod+shift+e": {
             handler: this.onPersistentHotkey,
