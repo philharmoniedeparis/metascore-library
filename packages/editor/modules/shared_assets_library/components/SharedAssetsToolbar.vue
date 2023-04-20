@@ -100,7 +100,7 @@ export default {
     :deep(input) {
       // #\9 is used here to increase specificity.
       &:not(#\9) {
-        padding: 0 0 0 2em;
+        padding: 0.25em 0 0.25em 2em;
         background-color: var(--metascore-color-bg-tertiary);
         background-image: url(../assets/icons/search.svg);
         background-size: 1em;
