@@ -123,6 +123,7 @@ export default {
     justify-content: center;
 
     :deep(svg) {
+      display: block;
       width: 100%;
       height: 100%;
     }

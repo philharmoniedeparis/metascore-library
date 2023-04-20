@@ -141,10 +141,11 @@ export default {
     margin-top: 0.25em;
 
     .icon {
-      color: var(--metascore-color-danger);
+      display: block;
       width: 1em;
       height: 1em;
       margin-right: 0.5em;
+      color: var(--metascore-color-danger);
     }
 
     ul {

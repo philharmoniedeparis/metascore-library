@@ -264,10 +264,13 @@ export default {
     overflow: hidden;
 
     .icon {
+      display: block;
+      width: 100%;
+      height: 100%;
       padding: 0.25em;
       color: var(--metascore-color-bg-tertiary);
       background-color: var(--metascore-color-bg-secondary);
-      box-sizing: content-box;
+      box-sizing: border-box;
     }
 
     &::after {

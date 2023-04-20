@@ -273,6 +273,10 @@ export default {
           flex: 1 0 auto;
         }
 
+        svg {
+          display: block;
+        }
+
         &.disabled {
           color: #ccc;
           pointer-events: none;

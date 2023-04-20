@@ -519,6 +519,7 @@ export default {
         cursor: pointer;
 
         .icon {
+          display: block;
           width: 1em;
           height: 1em;
           color: var(--metascore-color-white);
@@ -543,6 +544,10 @@ export default {
         label {
           padding: 0.25em;
           background: var(--metascore-color-bg-tertiary);
+        }
+
+        .icon {
+          display: block;
         }
 
         input:checked + label {

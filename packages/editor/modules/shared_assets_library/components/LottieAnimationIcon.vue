@@ -74,3 +74,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.lottie-animation-icon {
+  :deep(svg) {
+    display: block;
+  }
+}
+</style>

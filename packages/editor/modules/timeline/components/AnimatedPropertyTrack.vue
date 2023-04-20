@@ -239,6 +239,12 @@ export default {
 .animated-property-track {
   display: contents;
 
+  .handle {
+    .icon {
+      display: block;
+    }
+  }
+
   .keyframes-wrapper {
     position: relative;
     background: var(--metascore-color-bg-secondary);
