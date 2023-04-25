@@ -15,7 +15,7 @@
 
 <template>
   <form-group
-    :class="['control', 'color', { readonly, disabled, empty: !modelValue }]"
+    :class="['control', 'color', { readonly, disabled, empty }]"
     :label="label"
     :label-for="inputId"
     :description="description"
@@ -27,7 +27,7 @@
       v-autofocus="autofocus"
       type="button"
       class="opener"
-      :style="`color: ${modelValue};`"
+      :style="openerStyle"
       :disabled="disabled"
       @click="onOpenerClick"
     >
@@ -150,6 +150,14 @@ export default {
       overlayStyle: null,
       overlayUpdateCleanup: null,
     };
+  },
+  computed: {
+    empty() {
+      return this.modelValue ? false : true;
+    },
+    openerStyle() {
+      return !this.empty ? { color: this.modelValue } : null;
+    },
   },
   watch: {
     modelValue(value) {
