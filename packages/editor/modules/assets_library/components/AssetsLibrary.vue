@@ -335,6 +335,7 @@ export default {
           margin-right: 0.5em;
 
           svg {
+            display: block;
             width: 100%;
             height: 100%;
           }

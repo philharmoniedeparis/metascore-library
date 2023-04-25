@@ -145,6 +145,7 @@ export default {
         height: 100%;
 
         .icon {
+          display: block;
           width: 100%;
           height: 100%;
         }

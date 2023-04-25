@@ -167,6 +167,10 @@ export default {
     input:not(:checked) + label {
       opacity: 0.25;
     }
+
+    svg {
+      display: block;
+    }
   }
 }
 </style>

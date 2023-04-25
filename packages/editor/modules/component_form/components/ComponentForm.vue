@@ -57,6 +57,10 @@
     "Cursor": {
       "title": "Attributs du curseur | Attributs de {count} curseurs",
       "form": "Forme",
+      "form-options": {
+        "linear": "Linéaire",
+        "circular": "Circulaire",
+      },
       "direction": "Direction",
       "acceleration": "Accélération",
       "keyframes": {
@@ -149,6 +153,10 @@
     "Cursor": {
       "title": "Attributes of cursor | Attributes of {count} cursors",
       "form": "Form",
+      "form-options": {
+        "linear": "Linear",
+        "circular": "Circular",
+      },
       "direction": "Direction",
       "acceleration": "Acceleration",
       "keyframes": {
@@ -426,8 +434,17 @@ export default {
           break;
 
         case "Cursor":
+          layout.items[0].items.push({
+            type: "select",
+            options: this.schema.properties["form"].enum.map((v) => {
+              return {
+                label: this.$t(`Cursor.form-options.${v}`),
+                value: v,
+              };
+            }),
+            ...this.getControlProps("form", this.commonModel.type),
+          });
           [
-            "form",
             "direction",
             "acceleration",
             "cursor-width",

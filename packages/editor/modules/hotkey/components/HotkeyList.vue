@@ -52,20 +52,25 @@
             </tr>
           </thead>
           <tbody>
-            <tr
+            <template
               v-for="(description, keys) in Object.fromEntries(combinations)"
               :key="keys"
             >
-              <td>
-                <kbd class="combo">
-                  <template v-for="(key, index) in keys.split('+')" :key="key">
-                    <span v-if="index !== 0" class="separator">+</span>
-                    <kbd class="key">{{ getKeyName(key) }}</kbd>
-                  </template>
-                </kbd>
-              </td>
-              <td>{{ description }}</td>
-            </tr>
+              <tr v-if="description">
+                <td>
+                  <kbd class="combo">
+                    <template
+                      v-for="(key, index) in keys.split('+')"
+                      :key="key"
+                    >
+                      <span v-if="index !== 0" class="separator">+</span>
+                      <kbd class="key">{{ getKeyName(key) }}</kbd>
+                    </template>
+                  </kbd>
+                </td>
+                <td>{{ description }}</td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </section>
