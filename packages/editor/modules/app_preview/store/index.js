@@ -22,6 +22,7 @@ export default defineStore("app-preview", {
       zoom: 1,
       preview: false,
       previewPersistant: false,
+      appPreviewEl: null,
       appPreviewRect: { x: 0, y: 0, width: 0, height: 0 },
       appRendererWrapperEl: null,
       appRendererWrapperRect: { x: 0, y: 0, width: 0, height: 0 },

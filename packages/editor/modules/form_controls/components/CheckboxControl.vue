@@ -84,7 +84,6 @@ export default {
 <style lang="scss" scoped>
 .control {
   position: relative;
-  cursor: pointer;
 
   .input-wrapper {
     flex-direction: row;

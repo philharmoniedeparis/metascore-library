@@ -29,7 +29,10 @@ export class Player {
     locale = "fr",
   } = {}) {
     const pinia = createPinia();
-    const i18n = createI18n({ locale, fallbackLocale: "fr" });
+    const i18n = createI18n({
+      locale,
+      fallbackLocale: "fr",
+    });
 
     const app = createApp(App, { url, api, responsive, allowUpscaling })
       .use(pinia)

@@ -153,6 +153,18 @@ export default {
     };
   },
   inject: {
+    gridStep: {
+      default: 10,
+    },
+    snapToGrid: {
+      default: false,
+    },
+    snapToSiblings: {
+      default: true,
+    },
+    snapRange: {
+      default: 5,
+    },
     disableComponentInteractions: {},
     parentControlBoxLastUpdated: {
       from: "controlBoxLastUpdated",
@@ -166,10 +178,6 @@ export default {
     component: {
       type: Object,
       required: true,
-    },
-    snapRange: {
-      type: Number,
-      default: 5,
     },
   },
   emits: ["componentclick"],
@@ -633,7 +641,7 @@ export default {
             },
             invert: "negate",
             modifiers: [
-              interact.modifiers.snap({
+              interact.modifiers.snapEdges({
                 targets: [this.getInteractableSnapTarget],
               }),
             ],
@@ -777,37 +785,66 @@ export default {
       this.controlBoxLastUpdated = performance.now();
     },
     getInteractableSnapTarget(x, y, interaction, relativePoint) {
-      let min_distance = { x: this.snapRange, y: this.snapRange };
       let target = null;
+      let min_distance = { x: this.snapRange, y: this.snapRange };
 
-      if (relativePoint.index === 0) {
+      if (!relativePoint?.index) {
         this.activeSnapTargets = [];
       }
 
-      this.siblings.forEach((sibling) => {
-        if (this.store.isComponentSelected(sibling)) {
-          return;
-        }
-
-        const sibling_el = this.getComponentElement(sibling);
-        const { left, top, width, height } = sibling_el.getBoundingClientRect();
-
-        [left, (left + width) / 2, left + width].forEach((value) => {
-          const distance = Math.abs(value - x);
-          if (distance <= min_distance.x) {
-            min_distance.x = distance;
-            target = { ...(target ?? {}), x: value };
+      if (this.snapToGrid && !relativePoint?.index) {
+        const step = this.gridStep * this.zoom;
+        ["x", "y"].forEach((axis) => {
+          const offset =
+            this.store.appRendererWrapperRect[axis] +
+            this.store.appPreviewEl[axis === "y" ? "scrollTop" : "scrollLeft"];
+          const closest =
+            Math.round(((axis === "y" ? y : x) - offset) / step) * step +
+            offset;
+          const distance = Math.abs(closest - (axis === "y" ? y : x));
+          if (distance <= min_distance[axis]) {
+            min_distance[axis] = distance;
+            target = {
+              ...(target ?? {}),
+              [axis]: closest,
+            };
           }
         });
+      }
 
-        [top, (top + height) / 2, top + height].forEach((value) => {
-          const distance = Math.abs(value - y);
-          if (distance <= min_distance.y) {
-            min_distance.y = distance;
-            target = { ...(target ?? {}), y: value };
+      if (this.snapToSiblings) {
+        this.siblings.forEach((sibling) => {
+          if (this.store.isComponentSelected(sibling)) {
+            return;
           }
+
+          const sibling_el = this.getComponentElement(sibling);
+          const { left, top, width, height } =
+            sibling_el.getBoundingClientRect();
+
+          [left, (left + width) / 2, left + width].forEach((value) => {
+            const distance = Math.abs(value - x);
+            if (distance <= min_distance.x) {
+              min_distance.x = distance;
+              target = {
+                ...(target ?? {}),
+                x: value,
+              };
+            }
+          });
+
+          [top, (top + height) / 2, top + height].forEach((value) => {
+            const distance = Math.abs(value - y);
+            if (distance <= min_distance.y) {
+              min_distance.y = distance;
+              target = {
+                ...(target ?? {}),
+                y: value,
+              };
+            }
+          });
         });
-      });
+      }
 
       if (target) {
         this.activeSnapTargets.push(target);
