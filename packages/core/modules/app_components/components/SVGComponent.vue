@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      loaded: false,
+      svg: null,
     };
   },
   computed: {
@@ -36,22 +36,10 @@ export default {
     colors() {
       return this.component.colors;
     },
-    svg() {
-      if (!this.loaded) {
-        return null;
-      }
-
-      const contentDocument = this.$refs.object.contentDocument;
-      if (!contentDocument) {
-        return null;
-      }
-
-      return contentDocument.querySelector("svg");
-    },
     markers() {
       const markers = {};
 
-      if (this.loaded) {
+      if (this.svg) {
         this.svg.querySelectorAll("defs marker").forEach((el) => {
           const id = el.getAttribute("id");
           markers[id] = el;
@@ -63,11 +51,7 @@ export default {
   },
   watch: {
     src() {
-      this.loaded = false;
-    },
-    loaded() {
-      this.updateProperties();
-      this.updateColors();
+      this.svg = null;
     },
     component: {
       handler() {
@@ -77,9 +61,38 @@ export default {
       deep: true,
     },
   },
+  mounted() {
+    this._mutation_observer = new MutationObserver(this.onMutation);
+    this._mutation_observer.observe(this.$el.parentNode, {
+      attributes: false,
+      childList: true,
+      subtree: false,
+    });
+  },
+  unmounted() {
+    if (this._mutation_observer) {
+      this._mutation_observer.disconnect();
+      delete this._mutation_observer;
+    }
+  },
   methods: {
     onLoad() {
-      this.loaded = true;
+      this.svg = this.$refs.object?.contentDocument?.querySelector("svg");
+      this.updateProperties();
+      this.updateColors();
+    },
+    onMutation() {
+      // The SVG object's document reference seems to point
+      // to a wrong element when moved around the DOM tree.
+      if (
+        this.svg !== this.$refs.object.contentDocument?.querySelector("svg")
+      ) {
+        if (this.$refs.object.contentDocument) {
+          this.onLoad();
+        } else {
+          this.$refs.object.addEventListener("load", this.onLoad);
+        }
+      }
     },
     /**
      * Update SVG properties with component property values.
