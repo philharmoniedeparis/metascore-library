@@ -5,11 +5,11 @@
     "workspace": {
       "group_label": "Espace de travail",
       "grid_color": {
-        "label": "Couleur",
+        "label": "Couleur de la grille",
         "description": "La couleur des lignes de la grille",
       },
       "grid_step": {
-        "label": "Pas",
+        "label": "Pas de la grille",
         "description": "La distance entre chaque ligne de la grille en pixels",
       },
       "snap_to_grid": {
@@ -22,7 +22,7 @@
       },
       "snap_range": {
         "label": "Portée du magnétisme",
-        "description": "La distance à laquelle un accrochage à une cible est possible",
+        "description": "La distance à laquelle un accrochage à une cible (grille ou composant) est possible",
       },
     },
     "apply_button": "Appliquer",
@@ -33,11 +33,11 @@
     "workspace": {
       "group_label": "Workspace",
       "grid_color": {
-        "label": "Color",
+        "label": "Grid color",
         "description": "The color of grid lines",
       },
       "grid_step": {
-        "label": "Step",
+        "label": "Grid step",
         "description": "The distance between each grid line in pixels",
       },
       "snap_to_grid": {
@@ -50,7 +50,7 @@
       },
       "snap_range": {
         "label": "Snap range",
-        "description": "The distance at which a snap to a target is possible",
+        "description": "The distance at which a snap to a target (grid or component) is possible",
       },
     },
     "apply_button": "Apply",
