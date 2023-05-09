@@ -3,6 +3,7 @@
   "fr": {
     "save": "Enregistrer",
     "revert": "Revenir à la version précédente",
+    "preferences": "Préférences",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
     "assets_library_title": "Bibliothèque",
@@ -30,6 +31,7 @@
       "group": "Général",
       "mod+s": "Enregistrer",
       "mod+r": "Revenir à la version précédente",
+      "mod+p": "Modifier les préférences",
       "mod+h": "Afficher les raccourcis clavier",
     },
     "unload_dirty": "Les données non sauvegardées seront perdues.",
@@ -37,6 +39,7 @@
   "en": {
     "save": "Save",
     "revert": "Revert",
+    "preferences": "Preferences",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
     "assets_library_title": "Library",
@@ -64,6 +67,7 @@
       "group": "General",
       "mod+s": "Save",
       "mod+r": "Revert",
+      "mod+p": "Edit preferences",
       "mod+h": "Show keyboard shortcuts",
     },
     "unload_dirty": "Any unsaved data will be lost.",
@@ -132,6 +136,15 @@
             @update:active="loadRevision"
             @restore="onRevisionSelectorRestore"
           />
+          <base-button
+            v-hotkeyhelp="'mod+p'"
+            :disabled="preview || !isLatestRevision"
+            class="user-preferences"
+            :title="$t('preferences')"
+            @click="showPreferencesForm = true"
+          >
+            <template #icon><user-preferences-icon /></template>
+          </base-button>
         </div>
       </nav>
     </div>
@@ -158,6 +171,11 @@
 
     <div class="center">
       <app-preview
+        :grid-color="userPreferences?.['workspace.grid-color']"
+        :grid-step="userPreferences?.['workspace.grid-step']"
+        :snap-to-grid="userPreferences?.['workspace.snap-to-grid']"
+        :snap-to-siblings="userPreferences?.['workspace.snap-to-siblings']"
+        :snap-range="userPreferences?.['workspace.snap-range']"
         :disable-component-interactions="disableComponentInteractions"
       />
     </div>
@@ -240,6 +258,12 @@
     </confirm-dialog>
     <auto-save-indicator v-else :enabled="isLatestRevision" />
 
+    <user-preferences-form
+      v-if="showPreferencesForm"
+      @submit="onPreferencesSubmit"
+      @close="onPreferencesClose"
+    />
+
     <hotkey-list v-if="showHotkeyList" @close="showHotkeyList = false" />
 
     <context-menu
@@ -262,11 +286,13 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?inline";
 import RevertIcon from "./assets/icons/revert.svg?inline";
+import UserPreferencesIcon from "./assets/icons/user-preferences.svg?inline";
 
 export default {
   components: {
     SaveIcon,
     RevertIcon,
+    UserPreferencesIcon,
   },
   provide() {
     return {
@@ -319,6 +345,8 @@ export default {
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
 
+    const { data: userPreferences } = useModule("user_preferences");
+
     const { isDataAvailable: isAutoSaveDataAvailable } = useModule("auto_save");
 
     return {
@@ -347,6 +375,7 @@ export default {
       mediaSource,
       mediaDuration,
       disableComponentInteractions,
+      userPreferences,
       isAutoSaveDataAvailable,
     };
   },
@@ -362,6 +391,7 @@ export default {
       showRevertConfirm: false,
       showLoadRevisionConfirm: false,
       showAutoSaveRestoreConfirm: false,
+      showPreferencesForm: false,
       showHotkeyList: false,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
@@ -428,6 +458,12 @@ export default {
               this.showRevertConfirm = true;
             },
             description: this.$t("hotkey.mod+r"),
+          },
+          "mod+p": {
+            handler: () => {
+              this.showPreferencesForm = true;
+            },
+            description: this.$t("hotkey.mod+p"),
           },
           "mod+h": {
             // @todo: fix hotkeys code handling for ?
@@ -563,6 +599,12 @@ export default {
       this.store.deleteAutoSaveData();
 
       this.store.load(this.url);
+    },
+    onPreferencesSubmit() {
+      this.showPreferencesForm = false;
+    },
+    onPreferencesClose() {
+      this.showPreferencesForm = false;
     },
     onContextmenu(evt) {
       // Show the native menu if the shift key is down.

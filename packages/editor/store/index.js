@@ -162,6 +162,9 @@ export default defineStore("editor", {
         }
       });
 
+      const { init: initUserPreferences } = useModule("user_preferences");
+      await initUserPreferences();
+
       const { activate: activateHistory } = useModule("history");
       activateHistory();
     },

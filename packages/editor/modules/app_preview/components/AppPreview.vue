@@ -87,7 +87,7 @@
       @transitionend="onAppRendererTransitionend"
     >
       <app-renderer ref="app-renderer" v-hotkey.local="hotkeys" />
-      <preview-grid v-show="!preview" />
+      <preview-grid v-show="!preview" :step="gridStep" :color="gridColor" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
     </div>
@@ -113,6 +113,10 @@ export default {
   },
   provide() {
     return {
+      gridStep: computed(() => this.gridStep),
+      snapToGrid: computed(() => this.snapToGrid),
+      snapToSiblings: computed(() => this.snapToSiblings),
+      snapRange: computed(() => this.snapRange),
       disableComponentInteractions: computed(
         () => this.disableComponentInteractions
       ),
@@ -122,6 +126,26 @@ export default {
     rulerThikness: {
       type: Number,
       default: 20,
+    },
+    gridColor: {
+      type: String,
+      default: "rgba(0, 0, 0, 0.1)",
+    },
+    gridStep: {
+      type: Number,
+      default: 10,
+    },
+    snapToGrid: {
+      type: Boolean,
+      default: false,
+    },
+    snapToSiblings: {
+      type: Boolean,
+      default: true,
+    },
+    snapRange: {
+      type: Number,
+      default: 5,
     },
     disableComponentInteractions: {
       type: Boolean,
@@ -156,20 +180,20 @@ export default {
       addContextmenuItems,
     };
   },
-  data() {
-    return {
-      appOffset: {
-        x: 0,
-        y: 0,
-      },
-    };
-  },
   computed: {
     zoom() {
       return this.store.zoom;
     },
     preview() {
       return this.store.preview;
+    },
+    appPreviewEl: {
+      get() {
+        return this.store.appPreviewEl;
+      },
+      set(value) {
+        this.store.appPreviewEl = value;
+      },
     },
     appPreviewRect: {
       get() {
@@ -509,6 +533,7 @@ export default {
     this._resize_observer.observe(this.$el);
     this.updateRects();
 
+    this.appPreviewEl = this.$el;
     this.appRendererWrapperEl = this.$refs["app-renderer-wrapper"];
     this.controlboxContainer = this.$refs["controlbox-container"];
   },
@@ -517,6 +542,7 @@ export default {
       this._resize_observer.disconnect();
     }
 
+    this.appPreviewEl = null;
     this.appRendererWrapperEl = null;
     this.controlboxContainer = null;
   },

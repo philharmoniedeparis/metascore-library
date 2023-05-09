@@ -3,7 +3,10 @@ import { createI18n } from "vue-i18n";
 let instance = null;
 
 export function init(configs) {
-  instance = createI18n(configs);
+  instance = createI18n({
+    silentFallbackWarn: true,
+    ...configs,
+  });
   return instance;
 }
 
