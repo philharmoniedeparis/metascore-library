@@ -86,6 +86,9 @@ export default defineStore("editor", {
       this.latestRevision = data.latest_revision;
       this.activeRevision = data.vid;
 
+      const { init: initUserPreferences } = useModule("user_preferences");
+      await initUserPreferences();
+
       this.setAppTitle(data.title);
       this.$onAction(({ name }) => {
         switch (name) {
@@ -161,9 +164,6 @@ export default defineStore("editor", {
           this.setDirty("assets");
         }
       });
-
-      const { init: initUserPreferences } = useModule("user_preferences");
-      await initUserPreferences();
 
       const { activate: activateHistory } = useModule("history");
       activateHistory();
