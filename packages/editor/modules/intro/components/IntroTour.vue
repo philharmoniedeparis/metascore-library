@@ -3,6 +3,8 @@
     "fr": {
       "close_title": "Fermer",
       "dont_show_again": "Ne plus afficher",
+      "loading": "Chargement ...",
+      "error": "Une erreur s’est produite. Veuillez réessayer plus tard.",
       "buttons": {
         "prev": "Précédent",
         "next": "Suivant",
@@ -12,6 +14,8 @@
     "en": {
       "close_title": "Close",
       "dont_show_again": "Don't show again",
+      "loading": "Loading...",
+      "error": "An error occurred. Please try again later.",
       "buttons": {
         "prev": "Previous",
         "next": "Next",
@@ -19,7 +23,7 @@
       }
     },
   }
-  </i18n>
+</i18n>
 
 <template>
   <div class="intro-tour">
@@ -30,7 +34,7 @@
       :overlay-opacity="configs.overlayOpacity"
       @click="onHighlighterClick"
     />
-    <div ref="ref" class="intro-tour--ref" :style="refStyle" />
+    <div ref="ref" class="intro-tour--ref" :style="refStyle"></div>
 
     <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
       <div
@@ -51,25 +55,29 @@
           </base-button>
         </div>
         <div class="intro-tour--tooltip--body">
-          <div
-            v-if="currentStep.text"
-            v-dompurify-html="currentStep.text"
-            class="intro-tour--text"
-          />
+          <template v-if="error">{{ $t("error") }}</template>
+          <template v-else-if="processing">{{ $t("loading") }}</template>
+          <template v-else>
+            <div
+              v-if="currentStep.text"
+              v-dompurify-html="currentStep.text"
+              class="intro-tour--text"
+            ></div>
 
-          <checkbox-control
-            v-if="configs.dontShowAgainUrl"
-            v-model="dontShowAgain"
-            class="intro-tour--dontshowagain"
-            :label="$t('dont_show_again')"
-          ></checkbox-control>
+            <checkbox-control
+              v-if="configs.dontShowAgainUrl"
+              v-model="dontShowAgain"
+              class="intro-tour--dontshowagain"
+              :label="$t('dont_show_again')"
+            />
 
-          <dot-navigation
-            v-if="configs.bullets"
-            v-model="currentStepIndex"
-            class="intro-tour--bullets"
-            :items-count="stepCount"
-          />
+            <dot-navigation
+              v-if="configs.bullets"
+              v-model="currentStepIndex"
+              class="intro-tour--bullets"
+              :items-count="stepCount"
+            />
+          </template>
         </div>
 
         <progress
@@ -77,7 +85,7 @@
           class="intro-tour--progress"
           :max="stepCount"
           :value="currentStepIndex + 1"
-        />
+        ></progress>
 
         <div class="intro-tour--tooltip--footer">
           <base-button
@@ -145,7 +153,8 @@ export default {
   },
   data() {
     return {
-      ref: null,
+      processing: false,
+      error: null,
       refRect: null,
       refStyle: null,
       tooltip: null,
@@ -174,32 +183,23 @@ export default {
     isLastStep() {
       return this.currentStepIndex === this.stepCount - 1;
     },
-    currentStepEl() {
-      const el = this.currentStep.element;
-
-      if (el) {
-        if (typeof el === "object") {
-          return el;
-        } else if (typeof el === "string") {
-          return this.context.querySelector(el);
-        }
-      }
-
-      return null;
-    },
   },
   watch: {
-    ref() {
+    processing() {
       this.updateRefStyle();
-    },
-    refStyle() {
       this.updateTooltipStyle();
-      this.$nextTick(function () {
-        this.refRect = this.ref.getBoundingClientRect();
-      });
     },
-    currentStep() {
-      this.updateRefStyle();
+    async refStyle() {
+      await this.$nextTick();
+      this.refRect = this.$refs.ref.getBoundingClientRect();
+    },
+    async currentStepIndex(value, oldValue) {
+      try {
+        await this.processSteps(value, oldValue);
+      } catch (error) {
+        this.error = error;
+        console.error(error);
+      }
     },
   },
   created() {
@@ -209,11 +209,12 @@ export default {
   },
   mounted() {
     this.$nextTick(function () {
-      this.ref = this.$refs.ref;
       this.tooltip = this.$refs.tooltip;
 
       window.addEventListener("resize", this.onWindowResize);
       window.addEventListener("keydown", this.onKeyDown, true);
+
+      this.updateRefStyle();
     });
   },
   beforeUnmount() {
@@ -221,6 +222,17 @@ export default {
     window.removeEventListener("keydown", this.onKeyDown, true);
   },
   methods: {
+    getElement(el) {
+      if (typeof el === "object") {
+        return el;
+      }
+
+      if (typeof el === "string") {
+        return this.context.querySelector(el);
+      }
+
+      return null;
+    },
     onHighlighterClick() {
       if (this.configs.exitOnOverlyClick) {
         this.close();
@@ -269,11 +281,89 @@ export default {
       }
       this.$emit("close");
     },
-    updateRefStyle() {
-      if (!this.ref || !this.$el) return;
+    async processSteps(index, oldIndex) {
+      this.processing = true;
 
-      if (this.currentStepEl) {
-        const rect = this.currentStepEl.getBoundingClientRect();
+      let direction = "forward";
+      if (oldIndex && oldIndex > index) {
+        direction = "backward";
+      }
+
+      const steps = [];
+
+      if (direction === "backward") {
+        for (let i = oldIndex; i >= index; i--) {
+          const step = this.steps.at(i);
+          steps.push(step);
+        }
+      } else {
+        for (let i = oldIndex; i <= index; i++) {
+          const step = this.steps.at(i);
+          steps.push(step);
+        }
+      }
+
+      for (let i = 0; i < steps.length; i++) {
+        await this.processStep(steps.at(i), direction);
+      }
+
+      this.processing = false;
+    },
+    async processStep(step, direction) {
+      switch (step.type) {
+        case "text":
+          await this.processTextStep(step, direction);
+          break;
+
+        case "interactive":
+          await this.processInteractiveStep(step);
+          break;
+
+        case "wait":
+          await this.processWaitStep(step);
+          break;
+      }
+    },
+    async processTextStep(step, direction) {
+      const beforeSteps = step[direction];
+      if (beforeSteps) {
+        for (let i = 0; i < beforeSteps.length; i++) {
+          await this.processStep(beforeSteps.at(i));
+        }
+      }
+    },
+    processInteractiveStep(step) {
+      const { element, event } = step;
+      const stepEl = this.getElement(element);
+
+      switch (event) {
+        case "click":
+          if (stepEl) stepEl.click();
+          break;
+      }
+    },
+    async processWaitStep(step, _time = Date.now()) {
+      const { element, timeout } = step;
+
+      if (!this.getElement(element)) {
+        if (timeout && timeout < Date.now() - _time) {
+          throw new Error("Wait step timed out.");
+        }
+
+        await new Promise((resolve) => {
+          setTimeout(resolve, 50);
+        }).then(() => {
+          return this.processWaitStep(step, _time);
+        });
+      }
+    },
+    updateRefStyle() {
+      if (!this.$refs.ref || !this.$el) return;
+
+      const stepEl = this.processing ? null : this.getElement(this.currentStep.element);
+
+      if (stepEl) {
+        const rect = stepEl.getBoundingClientRect();
         const offset = this.$el.getBoundingClientRect();
 
         this.refStyle = {
@@ -282,19 +372,20 @@ export default {
           top: `${rect.top - offset.top}px`,
           left: `${rect.left - offset.left}px`,
         };
-      } else {
-        this.refStyle = {
-          width: "0px",
-          height: "0px",
-          top: "50%",
-          left: "50%",
-        };
+        return;
       }
+
+      this.refStyle = {
+        width: "0px",
+        height: "0px",
+        top: "50%",
+        left: "50%",
+      };
     },
     async updateTooltipStyle() {
-      if (!this.ref || !this.tooltip) return;
+      if (!this.$refs.ref || !this.tooltip) return;
 
-      if (!this.currentStep.element) {
+      if (this.processing || !this.currentStep.element) {
         this.tooltipStyle = null;
         this.tooltipArrowStyle = {
           display: "none",
@@ -317,7 +408,7 @@ export default {
       options.middleware.push(arrow({ element: this.$refs["tooltip-arrow"] }));
 
       const { x, y, placement, middlewareData } = await computePosition(
-        this.ref,
+        this.$refs.ref,
         this.tooltip,
         options
       );
