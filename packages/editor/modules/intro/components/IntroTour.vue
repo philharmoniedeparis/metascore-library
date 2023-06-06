@@ -30,85 +30,94 @@
     <element-highlighter
       :rect="refRect"
       :teleport-target="null"
-      :allow-interaction="currentStep.allowInteraction"
+      :allow-interaction="currentStep?.allowInteraction"
       :overlay-opacity="configs.overlayOpacity"
       @click="onHighlighterClick"
     />
-    <div ref="ref" class="intro-tour--ref" :style="refStyle"></div>
 
-    <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
-      <div
-        ref="tooltip-arrow"
-        class="intro-tour--tooltip--arrow"
-        :style="tooltipArrowStyle"
-      ></div>
-      <div class="intro-tour--tooltip--content">
-        <div class="intro-tour--tooltip--header">
-          <h3 class="title">{{ currentStep.title }}</h3>
-          <base-button
-            class="close"
-            :title="$t('close_title')"
-            :aria-label="$t('close_title')"
-            @click="onCloseClick"
-          >
-            <template #icon><close-icon /></template>
-          </base-button>
-        </div>
-        <div class="intro-tour--tooltip--body">
-          <template v-if="error">{{ $t("error") }}</template>
-          <template v-else-if="processing">{{ $t("loading") }}</template>
-          <template v-else>
-            <div
-              v-if="currentStep.text"
-              v-dompurify-html="currentStep.text"
-              class="intro-tour--text"
-            ></div>
+    <template v-if="currentStep">
+      <div ref="ref" class="intro-tour--ref" :style="refStyle"></div>
 
-            <checkbox-control
-              v-if="configs.dontShowAgainUrl"
-              v-model="dontShowAgain"
-              class="intro-tour--dontshowagain"
-              :label="$t('dont_show_again')"
-            />
+      <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
+        <div
+          v-show="tooltipArrowStyle"
+          ref="tooltip-arrow"
+          class="intro-tour--tooltip--arrow"
+          :style="tooltipArrowStyle"
+        ></div>
+        <div class="intro-tour--tooltip--content">
+          <div class="intro-tour--tooltip--header">
+            <h3 class="title">{{ currentStep.title }}</h3>
+            <base-button
+              class="close"
+              :title="$t('close_title')"
+              :aria-label="$t('close_title')"
+              @click="onCloseClick"
+            >
+              <template #icon><close-icon /></template>
+            </base-button>
+          </div>
+          <div class="intro-tour--tooltip--body">
+            <template v-if="error">{{ $t("error") }}</template>
+            <template v-else-if="processing">{{ $t("loading") }}</template>
+            <template v-else>
+              <div
+                v-if="currentStep.text"
+                v-dompurify-html="currentStep.text"
+                class="intro-tour--text"
+              ></div>
 
-            <dot-navigation
-              v-if="configs.bullets"
-              v-model="currentStepIndex"
-              class="intro-tour--bullets"
-              :items-count="stepCount"
-            />
-          </template>
-        </div>
+              <checkbox-control
+                v-if="configs.dontShowAgainUrl"
+                v-model="dontShowAgain"
+                class="intro-tour--dontshowagain"
+                :label="$t('dont_show_again')"
+              />
 
-        <progress
-          v-if="configs.progress"
-          class="intro-tour--progress"
-          :max="stepCount"
-          :value="currentStepIndex + 1"
-        ></progress>
+              <dot-navigation
+                v-if="configs.bullets"
+                v-model="currentStepIndex"
+                class="intro-tour--bullets"
+                :items-count="stepCount"
+              />
+            </template>
+          </div>
 
-        <div class="intro-tour--tooltip--footer">
-          <base-button
-            class="prev"
-            :disabled="isFirstStep"
-            @click="onPrevClick"
-          >
-            {{ $t("buttons.prev") }}
-          </base-button>
-          <base-button
-            v-if="isLastStep"
-            type="button"
-            role="primary"
-            @click="onCloseClick"
-          >
-            {{ $t("buttons.close") }}
-          </base-button>
-          <base-button v-else type="button" role="primary" @click="onNextClick">
-            {{ $t("buttons.next") }}
-          </base-button>
+          <progress
+            v-if="configs.progress"
+            class="intro-tour--progress"
+            :max="stepCount"
+            :value="currentStepIndex + 1"
+          ></progress>
+
+          <div class="intro-tour--tooltip--footer">
+            <base-button
+              class="prev"
+              :disabled="isFirstStep"
+              @click="onPrevClick"
+            >
+              {{ $t("buttons.prev") }}
+            </base-button>
+            <base-button
+              v-if="isLastStep"
+              type="button"
+              role="primary"
+              @click="onCloseClick"
+            >
+              {{ $t("buttons.close") }}
+            </base-button>
+            <base-button
+              v-else
+              type="button"
+              role="primary"
+              @click="onNextClick"
+            >
+              {{ $t("buttons.next") }}
+            </base-button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -157,10 +166,9 @@ export default {
       error: null,
       refRect: null,
       refStyle: null,
-      tooltip: null,
       tooltipStyle: null,
       tooltipArrowStyle: null,
-      currentStepIndex: 0,
+      currentStepIndex: -1,
       dontShowAgain: false,
     };
   },
@@ -207,15 +215,13 @@ export default {
       this.updateRefStyle();
     }, 50 /* Needs to be less than ElementHighlighter's */);
   },
-  mounted() {
-    this.$nextTick(function () {
-      this.tooltip = this.$refs.tooltip;
+  async mounted() {
+    await this.$nextTick();
 
-      window.addEventListener("resize", this.onWindowResize);
-      window.addEventListener("keydown", this.onKeyDown, true);
+    this.currentStepIndex = 0;
 
-      this.updateRefStyle();
-    });
+    window.addEventListener("resize", this.onWindowResize);
+    window.addEventListener("keydown", this.onKeyDown, true);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.onWindowResize);
@@ -284,37 +290,48 @@ export default {
     async processSteps(index, oldIndex) {
       this.processing = true;
 
-      let direction = "forward";
+      let reverse = false;
       if (oldIndex && oldIndex > index) {
-        direction = "backward";
+        reverse = true;
       }
 
       const steps = [];
 
-      if (direction === "backward") {
-        for (let i = oldIndex; i >= index; i--) {
+      if (reverse) {
+        // Add backward steps.
+        for (let i = oldIndex; i > index; i--) {
           const step = this.steps.at(i);
-          steps.push(step);
+          const backwardSteps = step["backward"];
+          if (backwardSteps) {
+            for (let i = 0; i < backwardSteps.length; i++) {
+              steps.push(backwardSteps.at(i));
+            }
+          }
         }
       } else {
-        for (let i = oldIndex; i <= index; i++) {
+        // Add forward steps.
+        for (let i = oldIndex + 1; i <= index; i++) {
           const step = this.steps.at(i);
-          steps.push(step);
+          const forwardSteps = step["forward"];
+          if (forwardSteps) {
+            for (let i = 0; i < forwardSteps.length; i++) {
+              steps.push(forwardSteps.at(i));
+            }
+          }
         }
       }
 
+      // Add current step.
+      steps.push(this.steps.at(index));
+
       for (let i = 0; i < steps.length; i++) {
-        await this.processStep(steps.at(i), direction);
+        await this.processStep(steps.at(i));
       }
 
       this.processing = false;
     },
-    async processStep(step, direction) {
+    async processStep(step) {
       switch (step.type) {
-        case "text":
-          await this.processTextStep(step, direction);
-          break;
-
         case "interactive":
           await this.processInteractiveStep(step);
           break;
@@ -322,14 +339,6 @@ export default {
         case "wait":
           await this.processWaitStep(step);
           break;
-      }
-    },
-    async processTextStep(step, direction) {
-      const beforeSteps = step[direction];
-      if (beforeSteps) {
-        for (let i = 0; i < beforeSteps.length; i++) {
-          await this.processStep(beforeSteps.at(i));
-        }
       }
     },
     processInteractiveStep(step) {
@@ -358,9 +367,11 @@ export default {
       }
     },
     updateRefStyle() {
-      if (!this.$refs.ref || !this.$el) return;
+      if (!this.currentStep) return;
 
-      const stepEl = this.processing ? null : this.getElement(this.currentStep.element);
+      const stepEl = this.processing
+        ? null
+        : this.getElement(this.currentStep.element);
 
       if (stepEl) {
         const rect = stepEl.getBoundingClientRect();
@@ -383,13 +394,11 @@ export default {
       };
     },
     async updateTooltipStyle() {
-      if (!this.$refs.ref || !this.tooltip) return;
+      if (!this.currentStep) return;
 
       if (this.processing || !this.currentStep.element) {
         this.tooltipStyle = null;
-        this.tooltipArrowStyle = {
-          display: "none",
-        };
+        this.tooltipArrowStyle = null;
         return;
       }
 
@@ -409,7 +418,7 @@ export default {
 
       const { x, y, placement, middlewareData } = await computePosition(
         this.$refs.ref,
-        this.tooltip,
+        this.$refs.tooltip,
         options
       );
 
