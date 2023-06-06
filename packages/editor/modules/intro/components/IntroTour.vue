@@ -404,11 +404,21 @@ export default {
 
       const options = {
         strategy: "fixed",
-        middleware: [offset(20), shift({ padding: 10 })],
+        middleware: [],
       };
 
       if (this.currentStep.position) {
-        options.placement = this.currentStep.position;
+        if (this.currentStep.position === "center") {
+          options.middleware.push(
+            offset(
+              ({ rects }) =>
+                -rects.reference.height / 2 - rects.floating.height / 2
+            )
+          );
+        } else {
+          options.middleware.push(offset(20), shift({ padding: 10 }));
+          options.placement = this.currentStep.position;
+        }
       } else {
         options.middleware.push(autoPlacement());
       }
