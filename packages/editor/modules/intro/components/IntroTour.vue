@@ -347,7 +347,12 @@ export default {
 
       switch (event) {
         case "click":
-          if (stepEl) stepEl.click();
+          if (stepEl) {
+            const event = new MouseEvent("click", {
+              ...(step.modifiers ?? {}),
+            });
+            stepEl.dispatchEvent(event);
+          }
           break;
       }
     },
