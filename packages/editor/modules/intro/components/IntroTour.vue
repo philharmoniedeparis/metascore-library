@@ -2,7 +2,6 @@
   {
     "fr": {
       "close_title": "Fermer",
-      "dont_show_again": "Ne plus afficher",
       "loading": "Chargement ...",
       "error": "Une erreur s’est produite. Veuillez réessayer plus tard.",
       "buttons": {
@@ -13,7 +12,6 @@
     },
     "en": {
       "close_title": "Close",
-      "dont_show_again": "Don't show again",
       "loading": "Loading...",
       "error": "An error occurred. Please try again later.",
       "buttons": {
@@ -67,11 +65,10 @@
                 class="intro-tour--text"
               ></div>
 
-              <checkbox-control
+              <dont-show-again
                 v-if="configs.dontShowAgainUrl"
-                v-model="dontShowAgain"
+                :url="configs.dontShowAgainUrl"
                 class="intro-tour--dontshowagain"
-                :label="$t('dont_show_again')"
               />
 
               <dot-navigation
@@ -169,7 +166,6 @@ export default {
       tooltipStyle: null,
       tooltipArrowStyle: null,
       currentStepIndex: -1,
-      dontShowAgain: false,
     };
   },
   computed: {
@@ -276,15 +272,7 @@ export default {
     goto(index) {
       this.currentStepIndex = Math.min(this.stepCount - 1, Math.max(0, index));
     },
-    async close() {
-      if (this.dontShowAgain) {
-        try {
-          await this.store.setDontShowAgain();
-        } catch (e) {
-          // @todo: handle.
-          console.error(e);
-        }
-      }
+    close() {
       this.$emit("close");
     },
     async processSteps(index, oldIndex) {

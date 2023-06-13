@@ -1,6 +1,7 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import Modal from "../modal";
-import BaseButton from "../button";
+import Modal from "@metascore-library/core/modules/modal";
+import BaseButton from "@metascore-library/core/modules/button";
+
 import ConfirmDialog from "./components/ConfirmDialog";
 
 export default class ConfirmModule extends AbstractModule {

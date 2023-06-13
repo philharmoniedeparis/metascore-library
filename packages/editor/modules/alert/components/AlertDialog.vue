@@ -17,6 +17,8 @@
     </div>
 
     <template #footer>
+      <dont-show-again v-if="dontShowAgainUrl" :url="dontShowAgainUrl" />
+
       <base-button type="button" role="primary" @click="$emit('close')">
         {{ buttonLabelWithDefault }}
       </base-button>
@@ -28,6 +30,10 @@
 export default {
   props: {
     text: {
+      type: String,
+      default: null,
+    },
+    dontShowAgainUrl: {
       type: String,
       default: null,
     },

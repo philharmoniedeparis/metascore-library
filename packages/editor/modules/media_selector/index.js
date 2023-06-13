@@ -1,9 +1,9 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 
-import Alert from "@metascore-library/core/modules/alert";
+import Alert from "../alert";
 import AppComponents from "@metascore-library/core/modules/app_components";
 import BaseButton from "@metascore-library/core/modules/button";
-import Confirm from "@metascore-library/core/modules/confirm";
+import Confirm from "../confirm";
 import FormGroup from "../form_group";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import ModalForm from "../modal_form";

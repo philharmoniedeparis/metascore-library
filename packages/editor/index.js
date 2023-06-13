@@ -20,7 +20,7 @@ import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
-import Confirm from "@metascore-library/core/modules/confirm";
+import Confirm from "./modules/confirm";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";

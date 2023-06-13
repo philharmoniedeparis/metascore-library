@@ -1,5 +1,5 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import Confirm from "@metascore-library/core/modules/confirm";
+import Confirm from "../confirm";
 import FormControls from "../form_controls";
 import BaseButton from "@metascore-library/core/modules/button";
 import RevisionSelector from "./components/RevisionSelector";

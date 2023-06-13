@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import * as api from "../api";
 
 export default defineStore("intro", {
   state: () => {
@@ -22,11 +21,6 @@ export default defineStore("intro", {
         ...this.configs,
         ...configs,
       };
-    },
-    async setDontShowAgain() {
-      if (this.configs.dontShowAgainUrl) {
-        return await api.setDontShowAgain(this.configs.dontShowAgainUrl);
-      }
     },
   },
 });

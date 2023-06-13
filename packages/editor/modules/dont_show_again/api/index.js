@@ -1,7 +1,7 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-async function setDontShowAgain(url) {
+async function save(url) {
   return await useModule("ajax").get(url);
 }
 
-export { setDontShowAgain };
+export { save };
