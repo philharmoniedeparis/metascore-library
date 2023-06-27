@@ -147,6 +147,7 @@ export default {
                 property: "workspace.grid-step",
                 label: this.$t("workspace.grid_step.label"),
                 description: this.$t("workspace.grid_step.description"),
+                suffix: "px",
               },
               {
                 property: "workspace.snap-to-grid",
@@ -162,6 +163,7 @@ export default {
                 property: "workspace.snap-range",
                 label: this.$t("workspace.snap_range.label"),
                 description: this.$t("workspace.snap_range.description"),
+                suffix: "px",
               },
             ],
           },

@@ -2,7 +2,9 @@
   <div :class="['form-group', { required, error: errors?.length }]">
     <div class="input-wrapper">
       <template v-if="labelPosition === 'after'">
+        <span v-if="prefix" class="prefix">{{ prefix }}</span>
         <slot />
+        <span v-if="suffix" class="suffix">{{ suffix }}</span>
       </template>
       <template v-if="label">
         <label v-dompurify-html="label" :for="labelFor" />
@@ -13,7 +15,9 @@
         </label>
       </template>
       <template v-if="labelPosition === 'before'">
+        <span v-if="prefix" class="prefix">{{ prefix }}</span>
         <slot />
+        <span v-if="suffix" class="suffix">{{ suffix }}</span>
       </template>
     </div>
 
@@ -62,6 +66,14 @@ export default {
       default: "before",
     },
     description: {
+      type: String,
+      default: null,
+    },
+    prefix: {
+      type: String,
+      default: null,
+    },
+    suffix: {
       type: String,
       default: null,
     },
