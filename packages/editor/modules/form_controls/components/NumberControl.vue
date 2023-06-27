@@ -292,11 +292,9 @@ export default {
         width: 2em;
         flex-direction: row-reverse;
 
-        button .icon {
-          :deep(path) {
-            transform-origin: 50% 50%;
-            transform: rotate(90deg);
-          }
+        :deep(button .icon path) {
+          transform-origin: 50% 50%;
+          transform: rotate(90deg);
         }
       }
     }
