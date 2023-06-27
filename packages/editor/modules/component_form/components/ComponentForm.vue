@@ -62,6 +62,14 @@
         "circular": "Circulaire",
       },
       "direction": "Direction",
+      "direction-options": {
+        "right": "Vers la droite",
+        "left": "Vers la gauche",
+        "bottom": "Vers le bas",
+        "top": "Vers le haut",
+        "cw": "Sens des aiguilles d'une montre",
+        "ccw": "Sens inverse des aiguilles d'une montre",
+      },
       "acceleration": "Accélération",
       "keyframes": {
         "on": "Enregistrer les positions",
@@ -158,6 +166,14 @@
         "circular": "Circular",
       },
       "direction": "Direction",
+      "direction-options": {
+        "right": "To the right",
+        "left": "To the left",
+        "bottom": "To the bottom",
+        "top": "To the top",
+        "cw": "Clockwise",
+        "ccw": "Counterclockwise",
+      },
       "acceleration": "Acceleration",
       "keyframes": {
         "on": "Record positions",
@@ -384,9 +400,9 @@ export default {
       switch (this.commonModel.type) {
         case "Animation":
           ["start-frame", "loop-duration", "reversed"].forEach((property) => {
-            layout.items[0].items.push({
-              ...this.getControlProps(property, this.commonModel.type),
-            });
+            layout.items[0].items.push(
+              this.getControlProps(property, this.commonModel.type)
+            );
           });
           layout.items[0].items.push({
             swatches: this.store.configs.colorSwatches,
@@ -395,18 +411,9 @@ export default {
           break;
 
         case "Block":
-          layout.items[0].items.push({
-            type: "select",
-            options: this.schema.properties["pager-visibility"].enum.map(
-              (v) => {
-                return {
-                  label: this.$t(`Block.pager-visibility-options.${v}`),
-                  value: v,
-                };
-              }
-            ),
-            ...this.getControlProps("pager-visibility", this.commonModel.type),
-          });
+          layout.items[0].items.push(
+            this.getControlProps("pager-visibility", this.commonModel.type)
+          );
           break;
 
         case "BlockToggler":
@@ -434,17 +441,8 @@ export default {
           break;
 
         case "Cursor":
-          layout.items[0].items.push({
-            type: "select",
-            options: this.schema.properties["form"].enum.map((v) => {
-              return {
-                label: this.$t(`Cursor.form-options.${v}`),
-                value: v,
-              };
-            }),
-            ...this.getControlProps("form", this.commonModel.type),
-          });
           [
+            "form",
             "direction",
             "acceleration",
             "cursor-width",
@@ -666,6 +664,17 @@ export default {
         (this.editingTextContent && property !== "text")
       ) {
         props.disabled = true;
+      }
+
+      if (
+        this.$i18n.messages[this.$i18n.locale]?.[model_type]?.[
+          `${property}-options`
+        ]
+      ) {
+        // Translate select options.
+        props.optionLabel = (key) => {
+          return this.$t(`${model_type}.${property}-options.${key}`);
+        };
       }
 
       return props;

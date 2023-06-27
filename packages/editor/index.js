@@ -25,6 +25,7 @@ import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
 import Hotkey from "./modules/hotkey";
+import Intro from "./modules/intro";
 import MediaPlayer from "@metascore-library/core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
@@ -35,7 +36,7 @@ import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
-import Intro from "./modules/intro";
+import UserPreferences from "./modules/user_preferences";
 import Waveform from "./modules/waveform";
 
 export class Editor {
@@ -46,7 +47,10 @@ export class Editor {
 
   static async create({ url, el = null, locale = "fr", ...configs } = {}) {
     const pinia = createPinia();
-    const i18n = createI18n({ locale, fallbackLocale: "fr" });
+    const i18n = createI18n({
+      locale,
+      fallbackLocale: "fr",
+    });
 
     const events = new Emitter();
     const app = createApp(App, { url }).use(pinia).use(i18n);
@@ -78,6 +82,7 @@ export class Editor {
         FormControls,
         History,
         Hotkey,
+        Intro,
         MediaPlayer,
         MediaSelector,
         PlaybackControls,
@@ -88,7 +93,7 @@ export class Editor {
         SharedAssetsLibrary,
         Tabs,
         Timeline,
-        Intro,
+        UserPreferences,
         Waveform,
       ],
       { app, i18n, pinia }
@@ -97,7 +102,7 @@ export class Editor {
     if (configs.modules) {
       Object.entries(configs.modules).forEach(([name, configs]) => {
         const module = useModule(name);
-        if (module) module.configure(configs);
+        if (module && module.configure) module.configure(configs);
       });
     }
 

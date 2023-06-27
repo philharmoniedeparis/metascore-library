@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/user-preferences",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "pinia": "^2.0.11"
+  }
+}

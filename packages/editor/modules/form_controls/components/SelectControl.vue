@@ -100,14 +100,12 @@ export default {
   computed: {
     normalizedOptions() {
       return this.options.map((option) => {
-        return isObject(option)
-          ? {
-              label: this.optionLabel(option),
-              key: this.optionKey(option),
-              value: this.optionValue(option),
-              disabled: this.optionDisabled(option),
-            }
-          : { label: option, key: option, value: option };
+        return {
+          label: this.optionLabel(option),
+          key: this.optionKey(option),
+          value: this.optionValue(option),
+          disabled: this.optionDisabled(option),
+        };
       });
     },
     value: {
