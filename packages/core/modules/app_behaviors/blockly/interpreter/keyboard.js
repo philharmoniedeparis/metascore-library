@@ -16,6 +16,7 @@ export function init(context) {
 
       const wrapper = function (evt) {
         if (key === "any" || evt.key === key) {
+          evt.preventDefault();
           callback();
         }
       };
