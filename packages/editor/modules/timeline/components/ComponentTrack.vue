@@ -1,3 +1,46 @@
+<i18n>
+{
+  "fr": {
+    "contextmenu": {
+      "page_before": "Ajouter une page avant",
+      "page_after": "Ajouter une page après",
+      "select": "Sélectionner",
+      "deselect": "Désélectionner",
+      "copy": "Copier",
+      "cut": "Couper",
+      "paste": "Coller",
+      "delete": "Supprimer",
+      "lock": "Verrouiller",
+      "unlock": "Déverrouiller",
+      "arrange": "Disposition",
+      "to_front": "Mettre en premier plan",
+      "to_back": "Mettre en arrière plan",
+      "forward": "Mettre en avant",
+      "backward": "Mettre en arrière",
+    }
+  },
+  "en": {
+    "contextmenu": {
+      "page_before": "Add a page before",
+      "page_after": "Add a page after",
+      "select": "Select",
+      "deselect": "Deselect",
+      "copy": "Copy",
+      "cut": "Cut",
+      "paste": "Paste",
+      "delete": "Delete",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "arrange": "Arrange",
+      "to_front": "Bring to front",
+      "to_back": "Send to back",
+      "forward": "Bring forward",
+      "backward": "Send backward",
+    }
+  }
+}
+</i18n>
+
 <template>
   <div
     :class="[
@@ -19,7 +62,12 @@
     :title="component.name"
     :style="{ '--depth': depth }"
   >
-    <div ref="handle" class="handle" @click="onClick">
+    <div
+      ref="handle"
+      v-contextmenu="contextmenuItems"
+      class="handle"
+      @click="onClick"
+    >
       <component-icon :component="component" />
 
       <div v-if="hasChildren" class="toggle expander" @click.stop>
@@ -55,8 +103,20 @@
       </div>
     </div>
 
-    <div ref="time-wrapper" class="time-wrapper" @click="onClick">
-      <div ref="time" class="time" tabindex="0" :style="timeStyle">
+    <div
+      ref="time-wrapper"
+      v-contextmenu="contextmenuItems"
+      class="time-wrapper"
+      @click="onClick"
+    >
+      <div
+        ref="time"
+        class="time"
+        tabindex="0"
+        :style="timeStyle"
+        @mousedown="onMousedown"
+        @focus="onFocus"
+      >
         <template v-if="resizable">
           <div class="resize-handle right"></div>
           <div class="resize-handle left"></div>
@@ -132,8 +192,10 @@ export default {
       getComponentChildren,
       updateComponent,
       isComponentTimeable,
+      deleteComponent,
     } = useModule("app_components");
     const {
+      preview,
       isComponentSelected,
       isComponentLocked,
       lockComponent,
@@ -142,6 +204,9 @@ export default {
       selectComponent,
       deselectComponent,
       selectedComponents,
+      copyComponents,
+      cutComponents,
+      arrangeComponent,
     } = useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -156,6 +221,8 @@ export default {
       getComponentChildren,
       updateComponent,
       isComponentTimeable,
+      deleteComponent,
+      preview,
       isComponentSelected,
       isComponentLocked,
       lockComponent,
@@ -164,6 +231,9 @@ export default {
       selectComponent,
       deselectComponent,
       selectedComponents,
+      copyComponents,
+      cutComponents,
+      arrangeComponent,
       startHistoryGroup,
       endHistoryGroup,
     };
@@ -260,6 +330,138 @@ export default {
       set(value) {
         this.store.activeSnapTargets = value;
       },
+    },
+    contextmenuItems() {
+      if (this.preview) return [];
+
+      const items = [
+        {
+          label: this.$t(`contextmenu.${this.selected ? "de" : ""}select`),
+          handler: () => {
+            if (this.selected) {
+              this.deselectComponent(this.component);
+            } else {
+              this.selectComponent(this.component);
+            }
+          },
+        },
+        {
+          label: this.$t(`contextmenu.${this.locked ? "un" : ""}lock`),
+          handler: () => {
+            if (this.locked) {
+              this.unlockComponent(this.component);
+            } else {
+              this.lockComponent(this.component);
+            }
+          },
+        },
+      ];
+
+      switch (this.component.type) {
+        case "Scenario": {
+          const type = this.$t(`app_components.labels.${this.component.type}`);
+          const name = this.getComponentLabel(this.component);
+
+          return [
+            {
+              label: `${type} (<i>${name}</i>)`,
+              items,
+            },
+          ];
+        }
+
+        case "Page":
+          return [
+            {
+              label: this.getComponentLabel(this.component),
+              items: [
+                ...items,
+                {
+                  label: this.$t("contextmenu.delete"),
+                  handler: async () => {
+                    await this.deleteComponent(this.component);
+                  },
+                },
+                {
+                  label: this.$t("contextmenu.page_before"),
+                  handler: async () => {
+                    await this.addSiblingPage(this.component, "before");
+                  },
+                },
+                {
+                  label: this.$t("contextmenu.page_after"),
+                  handler: async () => {
+                    await this.addSiblingPage(this.component, "after");
+                  },
+                },
+              ],
+            },
+          ];
+
+        default: {
+          items.push(
+            {
+              label: this.$t("contextmenu.copy"),
+              handler: () => {
+                this.copyComponents([this.component]);
+              },
+            },
+            {
+              label: this.$t("contextmenu.cut"),
+              handler: async () => {
+                await this.cutComponents([this.component]);
+              },
+            }
+          );
+
+          const type = this.$t(`app_components.labels.${this.component.type}`);
+          const name = this.getComponentLabel(this.component);
+
+          return [
+            {
+              label: `${type} (<i>${name}</i>)`,
+              items: [
+                ...items,
+                {
+                  label: this.$t("contextmenu.delete"),
+                  handler: async () => {
+                    await this.deleteComponent(this.component);
+                  },
+                },
+                {
+                  label: this.$t("contextmenu.arrange"),
+                  items: [
+                    {
+                      label: this.$t("contextmenu.to_front"),
+                      handler: async () => {
+                        await this.arrangeComponent(this.component, "front");
+                      },
+                    },
+                    {
+                      label: this.$t("contextmenu.to_back"),
+                      handler: async () => {
+                        await this.arrangeComponent(this.component, "back");
+                      },
+                    },
+                    {
+                      label: this.$t("contextmenu.forward"),
+                      handler: async () => {
+                        await this.arrangeComponent(this.component, "forward");
+                      },
+                    },
+                    {
+                      label: this.$t("contextmenu.backward"),
+                      handler: async () => {
+                        await this.arrangeComponent(this.component, "backward");
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ];
+        }
+      }
     },
   },
   watch: {
@@ -432,6 +634,22 @@ export default {
           animated: true,
         },
       });
+    },
+    onMousedown() {
+      if (this.preview) return;
+
+      // Skip focus handler.
+      this._skipFocus = true;
+    },
+    onFocus() {
+      if (this._skipFocus) {
+        delete this._skipFocus;
+        return;
+      }
+
+      if (this.preview) return;
+
+      this.selectComponent(this.component);
     },
   },
 };

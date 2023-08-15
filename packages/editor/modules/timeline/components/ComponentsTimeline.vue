@@ -1,5 +1,38 @@
+<i18n>
+{
+  "fr": {
+    "hotkey": {
+      "group": "Timeline",
+      "tab": "Sélectionner le composant suivant",
+      "shift+tab": "Sélectionner le composant précédent",
+      "mod+c": "Copier le(s) composant(s) sélectionné(s)",
+      "mod+v": "Coller le(s) composant(s)",
+      "mod+x": "Couper le(s) composant(s) sélectionné(s)",
+      "mod+d": "Dupliquer le(s) composant(s) sélectionné(s)",
+      "mod+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
+      "delete": "Supprimer le(s) composant(s) sélectionné(s)",
+      "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
+    }
+  },
+  "en": {
+    "hotkey": {
+      "group": "Timeline",
+      "tab": "Select the next component",
+      "shift+tab": "Select the previous component",
+      "mod+c": "Copy selected component(s)",
+      "mod+v": "Paste component(s)",
+      "mod+x": "Cut selected component(s)",
+      "mod+d": "Duplicate selected component(s)",
+      "mod+l": "Lock/unlock selected component(s)",
+      "delete": "Delete selected component(s)",
+      "backspace": "Delete selected component(s)",
+    }
+  }
+}
+</i18n>
+
 <template>
-  <div class="timeline" tabindex="0">
+  <div v-hotkey.local="hotkeys" class="timeline" tabindex="0">
     <div class="tracks-container">
       <template v-for="scenario in scenarios" :key="scenario.id">
         <component-track
@@ -21,6 +54,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
+import { trapTabFocus } from "@metascore-library/core/utils/dom";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import ComponentTrack from "./ComponentTrack.vue";
 import SnapGuides from "./SnapGuides.vue";
@@ -54,9 +88,22 @@ export default {
       getComponent,
       activeScenario,
       updateComponent,
+      deleteComponent,
     } = useModule("app_components");
+    const {
+      isComponentLocked,
+      lockComponents,
+      unlockComponents,
+      selectedComponents,
+      copyComponents,
+      cutComponents,
+      pasteComponents,
+    } = useModule("app_preview");
     const { time: mediaTime, duration: mediaDuration } =
       useModule("media_player");
+    const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
+      useModule("history");
+
     return {
       mediaTime,
       mediaDuration,
@@ -64,6 +111,16 @@ export default {
       getComponent,
       activeScenario,
       updateComponent,
+      deleteComponent,
+      isComponentLocked,
+      lockComponents,
+      unlockComponents,
+      selectedComponents,
+      copyComponents,
+      cutComponents,
+      pasteComponents,
+      startHistoryGroup,
+      endHistoryGroup,
     };
   },
   data() {
@@ -93,6 +150,125 @@ export default {
         marginLeft: `calc(${this.trackTimeOffset} - ${
           this.playheadWidth / 2
         }px)`,
+      };
+    },
+    hotkeys() {
+      if (this.preview) return {};
+
+      return {
+        group: this.$t("hotkey.group"),
+        keys: {
+          tab: {
+            handler: (evt) => {
+              trapTabFocus(this.$el, evt);
+            },
+            description: this.$t("hotkey.tab"),
+          },
+          "shift+tab": {
+            handler: (evt) => {
+              trapTabFocus(this.$el, evt);
+            },
+            description: this.$t("hotkey.shift+tab"),
+          },
+          "mod+c": {
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              if (selected.length > 0) {
+                this.copyComponents(selected);
+              }
+            },
+            description: this.$t("hotkey.mod+c"),
+          },
+          "mod+x": {
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              if (selected.length > 0) {
+                await this.cutComponents(selected);
+              }
+            },
+            description: this.$t("hotkey.mod+x"),
+          },
+          "mod+v": {
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              if (selected.length > 0) {
+                this.pasteComponents(selected[0]);
+              }
+            },
+            description: this.$t("hotkey.mod+v"),
+          },
+          "mod+d": {
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              if (selected.length > 0) {
+                this.copyComponents(selected);
+                this.pasteComponents(selected[0]);
+              }
+            },
+            description: this.$t("hotkey.mod+d"),
+          },
+          "mod+l": {
+            handler: (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              if (selected.length > 0) {
+                const master = selected[0];
+                const locked = this.isComponentLocked(master);
+                this[`${locked ? "un" : ""}lockComponents`](selected);
+              }
+            },
+            description: this.$t("hotkey.mod+l"),
+          },
+          delete: {
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              this.startHistoryGroup();
+              for (const component of selected) {
+                await this.deleteComponent(component);
+              }
+              this.endHistoryGroup();
+            },
+            description: this.$t("hotkey.delete"),
+          },
+          backspace: {
+            handler: async (evt) => {
+              evt.preventDefault();
+
+              if (evt.repeat) return;
+
+              const selected = this.selectedComponents;
+              this.startHistoryGroup();
+              for (const component of selected) {
+                await this.deleteComponent(component);
+              }
+              this.endHistoryGroup();
+            },
+            description: this.$t("hotkey.backspace"),
+          },
+        },
       };
     },
   },
