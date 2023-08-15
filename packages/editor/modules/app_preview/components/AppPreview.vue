@@ -11,7 +11,6 @@
       "shift+up": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
       "down": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le bas",
       "shift+down": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le bas",
-      "mod+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n’est déjà sélectionné",
       "tab": "Sélectionner le composant suivant",
       "shift+tab": "Sélectionner le composant précédent",
       "mod+c": "Copier le(s) composant(s) sélectionné(s)",
@@ -42,7 +41,6 @@
       "shift+up": "Move selected component(s) by 10 pixels upwards",
       "down": "Move selected component(s) by 1 pixel downwards",
       "shift+down": "Move selected component(s) by 10 pixels downwards",
-      "mod+a": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
       "tab": "Select the next component",
       "shift+tab": "Select the previous component",
       "mod+c": "Copy selected component(s)",
@@ -167,8 +165,6 @@ export default {
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
 
-    const { addItems: addContextmenuItems } = useModule("contextmenu");
-
     return {
       store,
       appEl,
@@ -177,7 +173,6 @@ export default {
       deleteComponent,
       startHistoryGroup,
       endHistoryGroup,
-      addContextmenuItems,
     };
   },
   computed: {
@@ -454,56 +449,6 @@ export default {
           },
         },
       };
-    },
-    contextmenuItems() {
-      const items = [];
-      const selected = this.store.getSelectedComponents;
-
-      if (selected.length > 0) {
-        items.push({
-          label: this.$tc("contextmenu.selection", selected.length, {
-            count: selected.length,
-          }),
-          items: [
-            {
-              label: this.$t("contextmenu.deselect"),
-              handler: () => {
-                this.store.deselectAllComponents();
-              },
-            },
-            {
-              label: this.$t("contextmenu.copy"),
-              handler: () => {
-                this.store.copyComponents(selected);
-              },
-            },
-            {
-              label: this.$t("contextmenu.delete"),
-              handler: async () => {
-                this.startHistoryGroup();
-                for (const component of selected) {
-                  await this.deleteComponent(component);
-                }
-                this.endHistoryGroup();
-              },
-            },
-            {
-              label: this.$t("contextmenu.lock"),
-              handler: () => {
-                this.store.lockComponents(selected);
-              },
-            },
-            {
-              label: this.$t("contextmenu.unlock"),
-              handler: () => {
-                this.store.unlockComponents(selected);
-              },
-            },
-          ],
-        });
-      }
-
-      return items;
     },
     cssRulerThikness() {
       return `${this.rulerThikness}px`;
