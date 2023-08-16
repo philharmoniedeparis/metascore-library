@@ -97,12 +97,8 @@ export default {
   setup() {
     const store = useStore();
     const { ready: appRendererReady } = useModule("app_renderer");
-    const {
-      playing: mediaPlaying,
-      play: playMedia,
-      pause: pauseMedia,
-    } = useModule("media_player");
-    return { store, appRendererReady, mediaPlaying, playMedia, pauseMedia };
+    const { playing: mediaPlaying } = useModule("media_player");
+    return { store, appRendererReady, mediaPlaying };
   },
   data() {
     return {
@@ -120,12 +116,6 @@ export default {
       if (!this.keyboard) return;
 
       return {
-        space: ({ repeat }) => {
-          if (repeat) return;
-
-          if (this.mediaPlaying) this.pauseMedia();
-          else this.playMedia();
-        },
         left: () => {
           this.$el
             .querySelector(

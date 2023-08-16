@@ -84,7 +84,12 @@
       :style="appRendererWrapperStyle"
       @transitionend="onAppRendererTransitionend"
     >
-      <app-renderer ref="app-renderer" v-hotkey.local="hotkeys" />
+      <app-renderer
+        ref="app-renderer"
+        v-hotkey.local="hotkeys"
+        @keydown="onAppRendererKeydown"
+        @keyup="onAppRendererKeyup"
+      />
       <preview-grid v-show="!preview" :step="gridStep" :color="gridColor" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
@@ -494,6 +499,16 @@ export default {
   methods: {
     onAppRendererTransitionend() {
       this.updateRects();
+    },
+    onAppRendererKeydown(evt) {
+      // Prevent keydown events from propagting
+      // to the rest of the editor if in preview.
+      if (this.preview) evt.stopPropagation();
+    },
+    onAppRendererKeyup(evt) {
+      // Prevent keyup events from propagting
+      // to the rest of the editor if in preview.
+      if (this.preview) evt.stopPropagation();
     },
     updateRects() {
       this.appPreviewRect = this.$el.getBoundingClientRect();
