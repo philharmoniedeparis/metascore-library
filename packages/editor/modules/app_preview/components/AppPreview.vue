@@ -165,7 +165,7 @@ export default {
       height: appHeight,
     } = useModule("app_renderer");
 
-    const { deleteComponent } = useModule("app_components");
+    const { activeScenario, deleteComponent } = useModule("app_components");
 
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -175,6 +175,7 @@ export default {
       appEl,
       appWidth,
       appHeight,
+      activeScenario,
       deleteComponent,
       startHistoryGroup,
       endHistoryGroup,
@@ -456,6 +457,9 @@ export default {
     },
     appHeight() {
       this.updateRects();
+    },
+    activeScenario() {
+      this.store.deselectAllComponents();
     },
   },
   async mounted() {
