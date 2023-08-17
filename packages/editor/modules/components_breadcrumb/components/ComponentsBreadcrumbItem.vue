@@ -76,6 +76,11 @@ export default {
     text-overflow: ellipsis;
   }
 
+  div {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
   button {
     padding: 0;
     color: inherit;
