@@ -425,30 +425,16 @@ export default {
           delete: {
             handler: async (evt) => {
               evt.preventDefault();
-
               if (evt.repeat) return;
-
-              const selected = this.store.getSelectedComponents;
-              this.startHistoryGroup();
-              for (const component of selected) {
-                await this.deleteComponent(component);
-              }
-              this.endHistoryGroup();
+              await this.deleteSelectedComponents();
             },
             description: this.$t("hotkey.delete"),
           },
           backspace: {
             handler: async (evt) => {
               evt.preventDefault();
-
               if (evt.repeat) return;
-
-              const selected = this.store.getSelectedComponents;
-              this.startHistoryGroup();
-              for (const component of selected) {
-                await this.deleteComponent(component);
-              }
-              this.endHistoryGroup();
+              await this.deleteSelectedComponents();
             },
             description: this.$t("hotkey.backspace"),
           },
@@ -514,6 +500,16 @@ export default {
       this.appPreviewRect = this.$el.getBoundingClientRect();
       this.appRendererWrapperRect =
         this.$refs["app-renderer-wrapper"].getBoundingClientRect();
+    },
+    async deleteSelectedComponents() {
+      const selected = this.store.getSelectedComponents;
+      this.startHistoryGroup();
+      for (const component of selected) {
+        if (component.type !== "Scenario") {
+          await this.deleteComponent(component);
+        }
+      }
+      this.endHistoryGroup();
     },
   },
 };
