@@ -178,6 +178,7 @@
         :snap-range="userPreferences?.['workspace.snap-range']"
         :disable-component-interactions="disableComponentInteractions"
       />
+      <components-breadcrumb />
     </div>
 
     <resizable-pane class="right" :left="{ collapse: true }">
@@ -748,9 +749,15 @@ export default {
   }
 
   > .center {
+    display: flex;
     grid-area: center;
+    flex-direction: column;
     overflow: hidden;
     background: #777;
+
+    .components-breadcrumb {
+      border-top: 1px solid var(--metascore-color-bg-tertiary);
+    }
   }
 
   > .right {

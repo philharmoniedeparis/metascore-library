@@ -165,7 +165,10 @@ export default {
     snapRange: {
       default: 5,
     },
-    disableComponentInteractions: {},
+    disableInteractions: {
+      from: "disableComponentInteractions",
+      default: false,
+    },
     parentControlBoxLastUpdated: {
       from: "controlBoxLastUpdated",
       default: 0,
@@ -272,7 +275,7 @@ export default {
         (this.positionable || this.resizable || this.transformable) &&
         this.selected &&
         !this.locked &&
-        !this.disableComponentInteractions
+        !this.disableInteractions
       );
     },
     siblings() {
@@ -472,69 +475,39 @@ export default {
     },
   },
   watch: {
-    selected: {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    selected() {
+      this.updateControlBox();
     },
-    interactable: {
-      handler(value) {
-        if (value) {
-          this.setupInteractions();
-        } else {
-          this.destroyInteractions();
-        }
-      },
-      flush: "post",
+    interactable(value) {
+      if (value) {
+        this.setupInteractions();
+      } else {
+        this.destroyInteractions();
+      }
     },
-    "component.position": {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    "component.position"() {
+      this.updateControlBox();
     },
-    "component.dimension": {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    "component.dimension"() {
+      this.updateControlBox();
     },
-    "component.scale": {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    "component.scale"() {
+      this.updateControlBox();
     },
-    "component.translate": {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    "component.translate"() {
+      this.updateControlBox();
     },
-    currentScale: {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    currentScale() {
+      this.updateControlBox();
     },
-    currentTranslate: {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    currentTranslate() {
+      this.updateControlBox();
     },
-    currentRotation: {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    currentRotation() {
+      this.updateControlBox();
     },
-    parentControlBoxLastUpdated: {
-      handler() {
-        this.updateControlBox();
-      },
-      flush: "post",
+    parentControlBoxLastUpdated() {
+      this.updateControlBox();
     },
   },
   beforeUnmount() {
@@ -574,8 +547,10 @@ export default {
         evt.stopImmediatePropagation();
       }
     },
-    setupInteractions() {
+    async setupInteractions() {
       if (!this.interactable || this._interactables) return;
+
+      await this.$nextTick();
 
       this._interactables = [];
 
@@ -678,7 +653,7 @@ export default {
       );
       this._intersection_observer.observe(this.$el);
 
-      this.updateControlBox();
+      await this.updateControlBox();
     },
     destroyInteractions() {
       if (this._interactables) {
@@ -691,8 +666,10 @@ export default {
         delete this._intersection_observer;
       }
     },
-    updateControlBox() {
+    async updateControlBox() {
       if (!this.selected) return;
+
+      await this.$nextTick();
 
       // Calculate ref points with offset.
       const offset = this.controlBoxTarget.getBoundingClientRect();
