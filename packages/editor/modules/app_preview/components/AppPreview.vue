@@ -20,14 +20,6 @@
       "mod+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
       "delete": "Supprimer le(s) composant(s) sélectionné(s)",
       "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
-    },
-    "contextmenu": {
-      "selection": "Sélection ({count} composant) | Sélection ({count} composants)",
-      "deselect": "Désélectionner",
-      "copy": "Copier",
-      "delete": "Supprimer",
-      "lock": "Verrouiller",
-      "unlock": "Déverrouiller",
     }
   },
   "en": {
@@ -50,14 +42,6 @@
       "mod+l": "Lock/unlock selected component(s)",
       "delete": "Delete selected component(s)",
       "backspace": "Delete selected component(s)",
-    },
-    "contextmenu": {
-      "selection": "Selection ({count} component) | Selection ({count} components)",
-      "deselect": "Deselect",
-      "copy": "Copy",
-      "delete": "Delete",
-      "lock": "Lock",
-      "unlock": "Unlock",
     }
   }
 }
