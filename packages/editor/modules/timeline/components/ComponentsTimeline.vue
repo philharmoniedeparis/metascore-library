@@ -91,6 +91,7 @@ export default {
       deleteComponent,
     } = useModule("app_components");
     const {
+      preview,
       isComponentLocked,
       lockComponents,
       unlockComponents,
@@ -112,6 +113,7 @@ export default {
       activeScenario,
       updateComponent,
       deleteComponent,
+      preview,
       isComponentLocked,
       lockComponents,
       unlockComponents,

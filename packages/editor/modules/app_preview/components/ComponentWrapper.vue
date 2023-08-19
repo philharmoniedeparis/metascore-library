@@ -10,6 +10,7 @@
       "cut": "Couper",
       "paste": "Coller",
       "delete": "Supprimer",
+      "delete_keyframes": "Supprimer toutes les positions",
       "lock": "Verrouiller",
       "unlock": "Déverrouiller",
       "arrange": "Disposition",
@@ -32,6 +33,7 @@
       "cut": "Cut",
       "paste": "Paste",
       "delete": "Delete",
+      "delete_keyframes": "Delete all positions",
       "lock": "Lock",
       "unlock": "Unlock",
       "arrange": "Arrange",
@@ -397,6 +399,9 @@ export default {
           ];
 
         default: {
+          const type = this.$t(`app_components.labels.${this.component.type}`);
+          const name = this.getComponentLabel(this.component);
+
           items.push(
             {
               label: this.$t("contextmenu.copy"),
@@ -409,65 +414,62 @@ export default {
               handler: async () => {
                 await this.store.cutComponents([this.component]);
               },
+            },
+            {
+              label: this.$t("contextmenu.delete"),
+              handler: async () => {
+                await this.deleteComponent(this.component);
+              },
             }
           );
 
-          const type = this.$t(`app_components.labels.${this.component.type}`);
-          const name = this.getComponentLabel(this.component);
+          if (
+            this.component.type === "Cursor" &&
+            this.component.keyframes &&
+            this.component.keyframes.length > 0
+          ) {
+            items.push({
+              label: this.$t("contextmenu.delete_keyframes"),
+              handler: async () => {
+                await this.updateComponent(this.component, { keyframes: [] });
+              },
+            });
+          }
+
+          items.push({
+            label: this.$t("contextmenu.arrange"),
+            items: [
+              {
+                label: this.$t("contextmenu.to_front"),
+                handler: async () => {
+                  await this.store.arrangeComponent(this.component, "front");
+                },
+              },
+              {
+                label: this.$t("contextmenu.to_back"),
+                handler: async () => {
+                  await this.store.arrangeComponent(this.component, "back");
+                },
+              },
+              {
+                label: this.$t("contextmenu.forward"),
+                handler: async () => {
+                  await this.store.arrangeComponent(this.component, "forward");
+                },
+              },
+              {
+                label: this.$t("contextmenu.backward"),
+                handler: async () => {
+                  await this.store.arrangeComponent(this.component, "backward");
+                },
+              },
+            ],
+          });
 
           return [
             {
               label: `${type} (<i>${name}</i>)`,
-              items: [
-                ...items,
-                {
-                  label: this.$t("contextmenu.delete"),
-                  handler: async () => {
-                    await this.deleteComponent(this.component);
-                  },
-                },
-                {
-                  label: this.$t("contextmenu.arrange"),
-                  items: [
-                    {
-                      label: this.$t("contextmenu.to_front"),
-                      handler: async () => {
-                        await this.store.arrangeComponent(
-                          this.component,
-                          "front"
-                        );
-                      },
-                    },
-                    {
-                      label: this.$t("contextmenu.to_back"),
-                      handler: async () => {
-                        await this.store.arrangeComponent(
-                          this.component,
-                          "back"
-                        );
-                      },
-                    },
-                    {
-                      label: this.$t("contextmenu.forward"),
-                      handler: async () => {
-                        await this.store.arrangeComponent(
-                          this.component,
-                          "forward"
-                        );
-                      },
-                    },
-                    {
-                      label: this.$t("contextmenu.backward"),
-                      handler: async () => {
-                        await this.store.arrangeComponent(
-                          this.component,
-                          "backward"
-                        );
-                      },
-                    },
-                  ],
-                },
-              ],
+              items,
             },
           ];
         }
