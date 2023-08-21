@@ -58,27 +58,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    dateFormatter: {
-      type: Object,
-      default() {
-        return new Intl.DateTimeFormat(void 0, {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: false,
-        });
-      },
-      validator(value) {
-        return "format" in value;
-      },
-    },
   },
   emits: ["update:active", "restore"],
   data() {
     return {
+      dateFormatter: null,
       showConfirm: false,
     };
   },
@@ -114,6 +98,17 @@ export default {
       const revision = this.revisions.find((r) => r.vid === this.active);
       return this.dateFormatter.format(new Date(revision.created * 1000));
     },
+  },
+  mounted() {
+    this.dateFormatter = new Intl.DateTimeFormat(this.$i18n.locale, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: false,
+    });
   },
   methods: {
     onRestoreClick() {
