@@ -69,7 +69,7 @@ export default {
   },
   provide() {
     return {
-      modalsTarget: computed(() => this.modalsTarget),
+      overlaysTarget: computed(() => this.overlaysTarget),
     };
   },
   props: {
@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       version: packageInfo.version,
-      modalsTarget: null,
+      overlaysTarget: null,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
@@ -134,7 +134,7 @@ export default {
     },
   },
   mounted() {
-    this.modalsTarget = this.$el;
+    this.overlaysTarget = this.$el;
     this.store.load(this.url);
   },
   methods: {

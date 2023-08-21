@@ -93,6 +93,12 @@ export default class MediaPlayerModule extends AbstractModule {
     return readonly(buffered);
   }
 
+  get playbackRate() {
+    const store = useStore();
+    const { playbackRate } = storeToRefs(store);
+    return readonly(playbackRate);
+  }
+
   setSource(value) {
     const store = useStore();
     store.setSource(value);
@@ -116,6 +122,11 @@ export default class MediaPlayerModule extends AbstractModule {
   seekTo(value) {
     const store = useStore();
     store.seekTo(value);
+  }
+
+  setPlaybackRate(value) {
+    const store = useStore();
+    store.setPlaybackRate(value);
   }
 
   formatTime(time) {

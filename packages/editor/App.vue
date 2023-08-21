@@ -297,7 +297,7 @@ export default {
   },
   provide() {
     return {
-      modalsTarget: computed(() => this.modalsTarget),
+      overlaysTarget: computed(() => this.overlaysTarget),
     };
   },
   props: {
@@ -383,7 +383,7 @@ export default {
   data() {
     return {
       version: packageInfo.version,
-      modalsTarget: null,
+      overlaysTarget: null,
       appTitleFocused: false,
       activeLibrariesTab: 0,
       librariesExpanded: false,
@@ -509,7 +509,7 @@ export default {
     },
   },
   async mounted() {
-    this.modalsTarget = this.$el;
+    this.overlaysTarget = this.$el;
 
     const hasAutoSaveData = await this.isAutoSaveDataAvailable();
     if (hasAutoSaveData) {
