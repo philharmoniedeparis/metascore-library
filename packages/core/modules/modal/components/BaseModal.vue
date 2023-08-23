@@ -10,40 +10,43 @@
 </i18n>
 
 <template>
-  <teleport :to="teleportTarget" :disabled="!teleport || !teleportTarget">
-    <transition name="fade">
-      <div class="base-modal" v-bind="$attrs">
-        <div class="backdrop" tabindex="-1" role="dialog">
-          <div class="dialog" role="document">
-            <div class="content">
-              <div v-if="header || $slots.title || title" class="header">
-                <h3 v-if="$slots.title || title" class="title">
-                  <slot v-if="$slots.title" name="title" />
-                  <template v-else>{{ title }} </template>
-                </h3>
-                <base-button
-                  class="close no-bg"
-                  :title="$t('close_title')"
-                  :aria-label="$t('close_title')"
-                  @click="$emit('close')"
-                >
-                  <template #icon><close-icon /></template>
-                </base-button>
-              </div>
+  <!-- The wrapper is used as a work-around to pass classes from the parent component to the actual modal -->
+  <div :class="['base-modal-wrapper', { teleport }]">
+    <teleport :to="teleportTarget" :disabled="!teleport || !teleportTarget">
+      <transition name="fade">
+        <div class="base-modal" v-bind="$attrs">
+          <div class="backdrop" tabindex="-1" role="dialog">
+            <div class="dialog" role="document">
+              <div class="content">
+                <div v-if="header || $slots.title || title" class="header">
+                  <h3 v-if="$slots.title || title" class="title">
+                    <slot v-if="$slots.title" name="title" />
+                    <template v-else>{{ title }} </template>
+                  </h3>
+                  <base-button
+                    class="close no-bg"
+                    :title="$t('close_title')"
+                    :aria-label="$t('close_title')"
+                    @click="$emit('close')"
+                  >
+                    <template #icon><close-icon /></template>
+                  </base-button>
+                </div>
 
-              <div class="body">
-                <slot />
+                <div class="body">
+                  <slot />
 
-                <div v-if="$slots.footer" class="footer">
-                  <slot name="footer" />
+                  <div v-if="$slots.footer" class="footer">
+                    <slot name="footer" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </transition>
-  </teleport>
+      </transition>
+    </teleport>
+  </div>
 </template>
 
 <script>
@@ -92,6 +95,12 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.base-modal-wrapper {
+  &.teleport {
+    display: none;
+  }
 }
 
 .base-modal {
