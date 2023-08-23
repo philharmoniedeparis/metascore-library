@@ -958,7 +958,15 @@ export default {
 
           .playback-controller {
             grid-area: 1 / 1 / span 2 / 1;
-            :deep(.rewind) {
+            padding: 0;
+            align-items: stretch;
+
+            > :deep(.center) {
+              flex: 1 0 100%;
+            }
+
+            :deep(.rewind),
+            :deep(.playback-rate) {
               display: none;
             }
 
@@ -967,6 +975,7 @@ export default {
               width: 100%;
               height: 100%;
               margin-right: 0;
+              padding: 0;
               border-radius: 0;
               box-shadow: none;
 
