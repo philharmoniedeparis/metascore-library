@@ -1,5 +1,5 @@
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
-import { EMPTY_OPTION } from "../blocks/components";
+import { EMPTY_OPTION } from "../constants";
 
 JavaScript["components_click"] = function (block) {
   const [type, id] = block.getFieldValue("COMPONENT").split(":");
