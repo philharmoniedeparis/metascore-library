@@ -151,12 +151,25 @@ export default class SVG extends EmbeddableComponent {
   static getEmbeddedData(url) {
     const data = {};
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const obj = document.createElement("object");
+      obj.setAttribute("type", "image/svg+xml");
       obj.style.visibility = "hidden";
       obj.style.pointerEvents = "none";
-      obj.addEventListener("load", (evt) => {
-        const svg = evt.target.contentDocument.querySelector("svg");
+
+      let onLoad = null;
+      let onError = null;
+
+      onLoad = (evt) => {
+        obj.removeEventListener("load", onLoad);
+        obj.removeEventListener("error", onError);
+
+        const svg = evt.target.contentDocument?.querySelector("svg");
+
+        if (!svg) {
+          reject(data);
+          return;
+        }
 
         // Set colors.
         data.colors = [];
@@ -184,15 +197,20 @@ export default class SVG extends EmbeddableComponent {
 
         evt.target.remove();
         resolve(data);
-      });
+      };
 
-      obj.addEventListener("error", (evt) => {
+      onError = (evt) => {
+        obj.removeEventListener("load", onLoad);
+        obj.removeEventListener("error", onError);
+
         evt.target.remove();
-        resolve(data);
-      });
+        reject(data);
+      };
 
-      obj.setAttribute("type", "image/svg+xml");
+      obj.addEventListener("load", onLoad);
+      obj.addEventListener("error", onError);
       obj.setAttribute("data", url);
+
       document.body.appendChild(obj);
     });
   }
@@ -245,8 +263,10 @@ export default class SVG extends EmbeddableComponent {
    */
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      this._embedded_data = await this.constructor.getEmbeddedData(data.src);
-      this.setEmbeddedDefaults(data);
+      try {
+        this._embedded_data = await this.constructor.getEmbeddedData(data.src);
+        this.setEmbeddedDefaults(data);
+      } catch (e) {}
     }
 
     return await super.validate(data);
