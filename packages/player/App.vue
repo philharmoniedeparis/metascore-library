@@ -14,7 +14,7 @@
 <template>
   <div
     v-hotkey.prevent="hotkeys"
-    class="metaScore-player"
+    :class="['metaScore-player', { loading }]"
     @contextmenu="onContextmenu"
   >
     <app-renderer
@@ -69,7 +69,7 @@ export default {
   },
   provide() {
     return {
-      modalsTarget: computed(() => this.modalsTarget),
+      overlaysTarget: computed(() => this.overlaysTarget),
     };
   },
   props: {
@@ -97,17 +97,13 @@ export default {
   setup() {
     const store = useStore();
     const { ready: appRendererReady } = useModule("app_renderer");
-    const {
-      playing: mediaPlaying,
-      play: playMedia,
-      pause: pauseMedia,
-    } = useModule("media_player");
-    return { store, appRendererReady, mediaPlaying, playMedia, pauseMedia };
+    const { playing: mediaPlaying } = useModule("media_player");
+    return { store, appRendererReady, mediaPlaying };
   },
   data() {
     return {
       version: packageInfo.version,
-      modalsTarget: null,
+      overlaysTarget: null,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
     };
@@ -120,12 +116,6 @@ export default {
       if (!this.keyboard) return;
 
       return {
-        space: ({ repeat }) => {
-          if (repeat) return;
-
-          if (this.mediaPlaying) this.pauseMedia();
-          else this.playMedia();
-        },
         left: () => {
           this.$el
             .querySelector(
@@ -144,7 +134,7 @@ export default {
     },
   },
   mounted() {
-    this.modalsTarget = this.$el;
+    this.overlaysTarget = this.$el;
     this.store.load(this.url);
   },
   methods: {

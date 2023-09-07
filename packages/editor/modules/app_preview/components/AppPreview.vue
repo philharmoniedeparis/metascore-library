@@ -11,7 +11,6 @@
       "shift+up": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le haut",
       "down": "Déplacer le(s) composant(s) sélectionné(s) de 1 pixel vers le bas",
       "shift+down": "Déplacer le(s) composant(s) sélectionné(s) de 10 pixel vers le bas",
-      "mod+a": "Sélectionner tous les composants de même niveau que ceux déjà sélectionnés, ou tous les blocs si aucun composant n’est déjà sélectionné",
       "tab": "Sélectionner le composant suivant",
       "shift+tab": "Sélectionner le composant précédent",
       "mod+c": "Copier le(s) composant(s) sélectionné(s)",
@@ -21,14 +20,6 @@
       "mod+l": "Verrouiller/déverrouiller le(s) composant(s) sélectionné(s)",
       "delete": "Supprimer le(s) composant(s) sélectionné(s)",
       "backspace": "Supprimer le(s) composant(s) sélectionné(s)",
-    },
-    "contextmenu": {
-      "selection": "Sélection ({count} composant) | Sélection ({count} composants)",
-      "deselect": "Désélectionner",
-      "copy": "Copier",
-      "delete": "Supprimer",
-      "lock": "Verrouiller",
-      "unlock": "Déverrouiller",
     }
   },
   "en": {
@@ -42,7 +33,6 @@
       "shift+up": "Move selected component(s) by 10 pixels upwards",
       "down": "Move selected component(s) by 1 pixel downwards",
       "shift+down": "Move selected component(s) by 10 pixels downwards",
-      "mod+a": "Select all components of the same level as the already selected ones, or all blocks if no components are already selected",
       "tab": "Select the next component",
       "shift+tab": "Select the previous component",
       "mod+c": "Copy selected component(s)",
@@ -52,14 +42,6 @@
       "mod+l": "Lock/unlock selected component(s)",
       "delete": "Delete selected component(s)",
       "backspace": "Delete selected component(s)",
-    },
-    "contextmenu": {
-      "selection": "Selection ({count} component) | Selection ({count} components)",
-      "deselect": "Deselect",
-      "copy": "Copy",
-      "delete": "Delete",
-      "lock": "Lock",
-      "unlock": "Unlock",
     }
   }
 }
@@ -86,7 +68,12 @@
       :style="appRendererWrapperStyle"
       @transitionend="onAppRendererTransitionend"
     >
-      <app-renderer ref="app-renderer" v-hotkey.local="hotkeys" />
+      <app-renderer
+        ref="app-renderer"
+        v-hotkey.local="hotkeys"
+        @keydown="onAppRendererKeydown"
+        @keyup="onAppRendererKeyup"
+      />
       <preview-grid v-show="!preview" :step="gridStep" :color="gridColor" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
@@ -162,22 +149,20 @@ export default {
       height: appHeight,
     } = useModule("app_renderer");
 
-    const { deleteComponent } = useModule("app_components");
+    const { activeScenario, deleteComponent } = useModule("app_components");
 
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
-
-    const { addItems: addContextmenuItems } = useModule("contextmenu");
 
     return {
       store,
       appEl,
       appWidth,
       appHeight,
+      activeScenario,
       deleteComponent,
       startHistoryGroup,
       endHistoryGroup,
-      addContextmenuItems,
     };
   },
   computed: {
@@ -186,6 +171,9 @@ export default {
     },
     preview() {
       return this.store.preview;
+    },
+    previewPersistant() {
+      return this.store.previewPersistant;
     },
     appPreviewEl: {
       get() {
@@ -425,85 +413,21 @@ export default {
           delete: {
             handler: async (evt) => {
               evt.preventDefault();
-
               if (evt.repeat) return;
-
-              const selected = this.store.getSelectedComponents;
-              this.startHistoryGroup();
-              for (const component of selected) {
-                await this.deleteComponent(component);
-              }
-              this.endHistoryGroup();
+              await this.deleteSelectedComponents();
             },
             description: this.$t("hotkey.delete"),
           },
           backspace: {
             handler: async (evt) => {
               evt.preventDefault();
-
               if (evt.repeat) return;
-
-              const selected = this.store.getSelectedComponents;
-              this.startHistoryGroup();
-              for (const component of selected) {
-                await this.deleteComponent(component);
-              }
-              this.endHistoryGroup();
+              await this.deleteSelectedComponents();
             },
             description: this.$t("hotkey.backspace"),
           },
         },
       };
-    },
-    contextmenuItems() {
-      const items = [];
-      const selected = this.store.getSelectedComponents;
-
-      if (selected.length > 0) {
-        items.push({
-          label: this.$tc("contextmenu.selection", selected.length, {
-            count: selected.length,
-          }),
-          items: [
-            {
-              label: this.$t("contextmenu.deselect"),
-              handler: () => {
-                this.store.deselectAllComponents();
-              },
-            },
-            {
-              label: this.$t("contextmenu.copy"),
-              handler: () => {
-                this.store.copyComponents(selected);
-              },
-            },
-            {
-              label: this.$t("contextmenu.delete"),
-              handler: async () => {
-                this.startHistoryGroup();
-                for (const component of selected) {
-                  await this.deleteComponent(component);
-                }
-                this.endHistoryGroup();
-              },
-            },
-            {
-              label: this.$t("contextmenu.lock"),
-              handler: () => {
-                this.store.lockComponents(selected);
-              },
-            },
-            {
-              label: this.$t("contextmenu.unlock"),
-              handler: () => {
-                this.store.unlockComponents(selected);
-              },
-            },
-          ],
-        });
-      }
-
-      return items;
     },
     cssRulerThikness() {
       return `${this.rulerThikness}px`;
@@ -520,6 +444,9 @@ export default {
     },
     appHeight() {
       this.updateRects();
+    },
+    activeScenario() {
+      this.store.deselectAllComponents();
     },
   },
   async mounted() {
@@ -550,10 +477,30 @@ export default {
     onAppRendererTransitionend() {
       this.updateRects();
     },
+    onAppRendererKeydown(evt) {
+      // Prevent keydown events from propagting
+      // to the rest of the editor if in preview.
+      if (this.previewPersistant) evt.stopPropagation();
+    },
+    onAppRendererKeyup(evt) {
+      // Prevent keyup events from propagting
+      // to the rest of the editor if in preview.
+      if (this.previewPersistant) evt.stopPropagation();
+    },
     updateRects() {
       this.appPreviewRect = this.$el.getBoundingClientRect();
       this.appRendererWrapperRect =
         this.$refs["app-renderer-wrapper"].getBoundingClientRect();
+    },
+    async deleteSelectedComponents() {
+      const selected = this.store.getSelectedComponents;
+      this.startHistoryGroup();
+      for (const component of selected) {
+        if (component.type !== "Scenario") {
+          await this.deleteComponent(component);
+        }
+      }
+      this.endHistoryGroup();
     },
   },
 };

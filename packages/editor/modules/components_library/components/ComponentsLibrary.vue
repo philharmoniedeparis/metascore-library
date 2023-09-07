@@ -27,17 +27,17 @@
   <div class="components-library">
     <template v-for="(item, index) in items" :key="index">
       <div v-if="item === '-'" class="separator"></div>
-      <component-library-item v-else :component="item" :label="item.name" />
+      <components-library-item v-else :component="item" :label="item.name" />
     </template>
   </div>
 </template>
 
 <script>
-import ComponentLibraryItem from "./ComponentLibraryItem.vue";
+import ComponentsLibraryItem from "./ComponentsLibraryItem.vue";
 
 export default {
   components: {
-    ComponentLibraryItem,
+    ComponentsLibraryItem,
   },
   computed: {
     items() {

@@ -3,10 +3,12 @@
   "fr": {
     "on": "Enregistrer les positions",
     "off": "Arrêter l’enregistrement",
+    "badge_label": "{count} position | {count} positions",
   },
   "en": {
     "on": "Record positions",
     "off": "Stop recording",
+    "badge_label": "{count} position | {count} positions",
   },
 }
 </i18n>
@@ -18,6 +20,13 @@
   >
     <base-button type="button" @click="onButtonClick">
       {{ formattedLabel }}
+      <span
+        class="badge"
+        role="status"
+        :aria-label="$tc('badge_label', keyframesCount)"
+      >
+        {{ keyframesCount }}
+      </span>
     </base-button>
 
     <teleport v-if="recording" :to="componentEl">
@@ -104,6 +113,9 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
+    keyframesCount() {
+      return this.value ? this.value.length : 0;
+    },
     componentEl() {
       return this.getComponentElement(this.component);
     },
@@ -169,6 +181,19 @@ export default {
     background: var(--metascore-color-white);
     border-radius: 1.5em;
     opacity: 1;
+
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 0.25em 0.5em;
+      font-size: 0.9em;
+      transform: translate(-25%, -50%);
+      color: var(--metascore-color-white);
+      background: #f00;
+      border-radius: 50%;
+      box-shadow: 0 0px 2px rgba(0, 0, 0, 0.5);
+    }
 
     &::before {
       content: "";

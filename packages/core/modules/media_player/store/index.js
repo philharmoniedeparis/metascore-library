@@ -13,6 +13,7 @@ export default defineStore("media_player", {
       duration: 0,
       playing: false,
       seeking: false,
+      playbackRate: 1,
       type: null,
       width: null,
       height: null,
@@ -62,6 +63,9 @@ export default defineStore("media_player", {
         });
         element.addEventListener("seeking", () => {
           this.seeking = true;
+        });
+        element.addEventListener("ratechange", (evt) => {
+          this.playbackRate = evt.target.playbackRate;
         });
         element.addEventListener("seeked", () => {
           this.seeking = false;
@@ -128,6 +132,9 @@ export default defineStore("media_player", {
       this.seeking = true;
 
       this.element.currentTime = time;
+    },
+    setPlaybackRate(rate) {
+      this.element.playbackRate = rate;
     },
     updateTime(repeat = false) {
       this.time = this.element.currentTime;

@@ -1,10 +1,11 @@
+import { ref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
 import { useModule } from "@metascore-library/core/services/module-manager";
+import { EMPTY_OPTION } from "../constants";
 
-export const EMPTY_OPTION = "%EMPTY_OPTION%";
-
-function getTriggerOptions() {
-  let options = [];
+const triggerOptions = ref([]);
+watchEffect(() => {
+  const options = [];
 
   const { getComponentsByType } = useModule("app_components");
   const components = getComponentsByType("Content");
@@ -22,11 +23,27 @@ function getTriggerOptions() {
   });
 
   if (options.length === 0) {
-    return [[Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]];
+    options.push([Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]);
   }
 
-  return options;
-}
+  triggerOptions.value = options;
+});
+
+Extensions.register("behavior_triggers_options", function () {
+  const block = this;
+  const field = block.getField("TRIGGER");
+  const options = field.getOptions();
+
+  if (options.length === 1 && options[0][1] === EMPTY_OPTION) {
+    field.setEnabled(false);
+    block.setEnabled(false);
+    block.setTooltip(Msg.LINKS_CLICK_EMPTY_TOOLTIP);
+  } else {
+    field.setEnabled(true);
+    block.setEnabled(true);
+    block.setTooltip(Msg.LINKS_CLICK_TOOLTIP);
+  }
+});
 
 defineBlocksWithJsonArray([
   {
@@ -36,7 +53,9 @@ defineBlocksWithJsonArray([
       {
         type: "field_dropdown",
         name: "TRIGGER",
-        options: getTriggerOptions,
+        options: function () {
+          return triggerOptions.value;
+        },
       },
     ],
     message1: "%{BKY_LINKS_CLICK_THEN}",
@@ -67,19 +86,3 @@ defineBlocksWithJsonArray([
     helpUrl: "%{BKY_LINKS_OPEN_URL_HELPURL}",
   },
 ]);
-
-Extensions.register("behavior_triggers_options", function () {
-  const block = this;
-  const field = block.getField("TRIGGER");
-  const options = field.getOptions();
-
-  if (options.length === 1 && options[0][1] === EMPTY_OPTION) {
-    field.setEnabled(false);
-    block.setEnabled(false);
-    block.setTooltip(Msg.LINKS_CLICK_EMPTY_TOOLTIP);
-  } else {
-    field.setEnabled(true);
-    block.setEnabled(true);
-    block.setTooltip(Msg.LINKS_CLICK_TOOLTIP);
-  }
-});

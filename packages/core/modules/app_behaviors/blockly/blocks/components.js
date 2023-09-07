@@ -1,8 +1,8 @@
+import { ref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
-
-export const EMPTY_OPTION = "%EMPTY_OPTION%";
+import { EMPTY_OPTION } from "../constants";
 
 const BREADCRUMB_SEPARATOR = " › ";
 
@@ -19,36 +19,21 @@ const SUPPORTED_PROPERTIES = [
 
 /**
  * Get component dropdown options
- * @param {string?} type The type of components
- * @param {boolean|array} recursive Whether to recurse to child components.
- *  An array of children is passed when recursed from within the function.
+ * @param {array} components The components
+ * @param {boolean} recursive Whether to recurse to child components.
  * @param {number} level_ The current recursion level, used internally.
  * @param {string} breadcrumb_ The current recursion breadcrumb, used internally.
  * @returns {array} An options array
  */
 function getComponentOptions(
-  type = null,
+  components = [],
   recursive = false,
   level_ = 0,
   breadcrumb_ = ""
 ) {
-  const {
-    getComponents,
-    getComponentsByType,
-    getComponentChildren,
-    getComponentLabel,
-    getComponentIconURL,
-  } = useModule("app_components");
-  let components = [];
+  const { getComponentChildren, getComponentLabel, getComponentIconURL } =
+    useModule("app_components");
   let options = [];
-
-  if (recursive) {
-    components = Array.isArray(recursive)
-      ? recursive
-      : getComponentsByType(type || "Scenario");
-  } else {
-    components = type ? getComponentsByType(type) : getComponents();
-  }
 
   if (components.length > 0) {
     components.forEach((c) => {
@@ -99,8 +84,8 @@ function getComponentOptions(
         options = [
           ...options,
           ...getComponentOptions(
-            type,
             children,
+            true,
             level_ + 1,
             level_ > 0 ? `${breadcrumb_}${BREADCRUMB_SEPARATOR}${name}` : name
           ),
@@ -139,49 +124,61 @@ function getPropertyOptions(component_type) {
     });
 }
 
+const scenarioOptions = ref([]);
+watchEffect(() => {
+  const { getComponentsByType } = useModule("app_components");
+  let options = getComponentOptions(getComponentsByType("Scenario"));
+
+  if (options.length === 0) {
+    const block = this.getSourceBlock();
+    if (block) {
+      block.setEnabled(false);
+      block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
+    }
+    this.setEnabled(false);
+    options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+  }
+
+  scenarioOptions.value = options;
+});
 Extensions.register("components_scenario_options", function () {
   const scenario_input = this.getInput("COMPONENT");
   if (!scenario_input) return;
 
-  const scenario_field = new FieldDropdown(function () {
-    let options = getComponentOptions("Scenario");
-    const empty = options.length === 0;
-
-    if (empty) {
-      const block = this.getSourceBlock();
-      if (block) {
-        block.setEnabled(false);
-        block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
-      }
-      this.setEnabled(false);
-      options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-    }
-
-    return options;
-  });
+  const scenario_field = new FieldDropdown(
+    function () {
+      return scenarioOptions.value;
+    },
+    null,
+    { searchable: true }
+  );
   scenario_input.appendField(scenario_field, "COMPONENT");
 });
 
+const blockOptions = ref([]);
+watchEffect(() => {
+  const { getComponentsByType } = useModule("app_components");
+  let options = getComponentOptions(getComponentsByType("Block"));
+
+  if (options.length === 0) {
+    const block = this.getSourceBlock();
+    if (block) {
+      block.setEnabled(false);
+      block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
+    }
+    this.setEnabled(false);
+    options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+  }
+
+  blockOptions.value = options;
+});
 Extensions.register("components_block_options", function () {
   const block_input = this.getInput("COMPONENT");
   if (!block_input) return;
 
   const block_field = new FieldDropdown(
     function () {
-      let options = getComponentOptions("Block");
-      const empty = options.length === 0;
-
-      if (empty) {
-        const block = this.getSourceBlock();
-        if (block) {
-          block.setEnabled(false);
-          block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
-        }
-        this.setEnabled(false);
-        options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-      }
-
-      return options;
+      return blockOptions.value;
     },
     null,
     { searchable: true }
@@ -189,6 +186,13 @@ Extensions.register("components_block_options", function () {
   block_input.appendField(block_field, "COMPONENT");
 });
 
+const componentOptions = ref([]);
+watchEffect(() => {
+  const { getComponentsByType } = useModule("app_components");
+  const options = getComponentOptions(getComponentsByType("Scenario"), true);
+
+  componentOptions.value = options;
+});
 Extensions.register("components_component_options", function () {
   const component_input = this.getInput("COMPONENT");
   if (!component_input) return;
@@ -208,7 +212,7 @@ Extensions.register("components_component_options", function () {
 
       if (mock) return [empty_option];
 
-      return [empty_option, ...getComponentOptions(null, true)];
+      return [empty_option, ...componentOptions.value];
     },
     null,
     { searchable: true }

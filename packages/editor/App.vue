@@ -81,6 +81,7 @@
     :class="[
       'metaScore-editor',
       {
+        loading,
         preview,
         'preview-persistant': previewPersistant,
         'app-title-focused': appTitleFocused,
@@ -178,6 +179,7 @@
         :snap-range="userPreferences?.['workspace.snap-range']"
         :disable-component-interactions="disableComponentInteractions"
       />
+      <components-breadcrumb />
     </div>
 
     <resizable-pane class="right" :left="{ collapse: true }">
@@ -296,7 +298,7 @@ export default {
   },
   provide() {
     return {
-      modalsTarget: computed(() => this.modalsTarget),
+      overlaysTarget: computed(() => this.overlaysTarget),
     };
   },
   props: {
@@ -382,7 +384,7 @@ export default {
   data() {
     return {
       version: packageInfo.version,
-      modalsTarget: null,
+      overlaysTarget: null,
       appTitleFocused: false,
       activeLibrariesTab: 0,
       librariesExpanded: false,
@@ -508,7 +510,7 @@ export default {
     },
   },
   async mounted() {
-    this.modalsTarget = this.$el;
+    this.overlaysTarget = this.$el;
 
     const hasAutoSaveData = await this.isAutoSaveDataAvailable();
     if (hasAutoSaveData) {
@@ -748,9 +750,15 @@ export default {
   }
 
   > .center {
+    display: flex;
     grid-area: center;
+    flex-direction: column;
     overflow: hidden;
     background: #777;
+
+    .components-breadcrumb {
+      border-top: 1px solid var(--metascore-color-bg-tertiary);
+    }
   }
 
   > .right {
@@ -951,7 +959,15 @@ export default {
 
           .playback-controller {
             grid-area: 1 / 1 / span 2 / 1;
-            :deep(.rewind) {
+            padding: 0;
+            align-items: stretch;
+
+            > :deep(.center) {
+              flex: 1 0 100%;
+            }
+
+            :deep(.rewind),
+            :deep(.playback-rate) {
               display: none;
             }
 
@@ -960,6 +976,7 @@ export default {
               width: 100%;
               height: 100%;
               margin-right: 0;
+              padding: 0;
               border-radius: 0;
               box-shadow: none;
 

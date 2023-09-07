@@ -80,9 +80,19 @@ export default class AppPreviewModule extends AbstractModule {
     return store.lockComponent(component);
   }
 
+  lockComponents(components) {
+    const store = useStore();
+    return store.lockComponents(components);
+  }
+
   unlockComponent(component) {
     const store = useStore();
     return store.unlockComponent(component);
+  }
+
+  unlockComponents(components) {
+    const store = useStore();
+    return store.unlockComponents(components);
   }
 
   isComponentFrozen(component) {
@@ -128,5 +138,10 @@ export default class AppPreviewModule extends AbstractModule {
   async pasteComponents(target) {
     const store = useStore();
     return await store.pasteComponents(target);
+  }
+
+  async arrangeComponent(component, action) {
+    const store = useStore();
+    return await store.arrangeComponent(component, action);
   }
 }

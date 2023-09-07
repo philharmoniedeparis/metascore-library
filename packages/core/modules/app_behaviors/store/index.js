@@ -9,26 +9,23 @@ import * as interpreter from "../blockly/interpreter";
 export default defineStore("app-behaviors", {
   state: () => {
     return {
-      locale_loaded: false,
       behaviors: {},
       enabled: false,
     };
   },
   actions: {
     async init(data) {
-      if (!this.locale_loaded) {
-        // Import the locale.
-        const locale = getLocale();
-        const { default: blocklyLocale } = await import(
-          /* webpackMode: "lazy" */
-          /* webpackChunkName: "blockly-locale-[request]" */
-          `../blockly/msg/${locale}`
-        );
+      await import("../blockly/blocks");
 
-        Blockly.setLocale(blocklyLocale);
+      // Import the locale.
+      const locale = getLocale();
+      const { default: blocklyLocale } = await import(
+        /* webpackMode: "lazy" */
+        /* webpackChunkName: "blockly-locale-[request]" */
+        `../blockly/msg/${locale}`
+      );
 
-        this.locale_loaded = true;
-      }
+      Blockly.setLocale(blocklyLocale);
 
       this.behaviors = data || {};
     },

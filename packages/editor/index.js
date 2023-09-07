@@ -20,6 +20,7 @@ import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
+import ComponentsBreadcrumb from "./modules/components_breadcrumb";
 import Confirm from "@metascore-library/core/modules/confirm";
 import ContextMenu from "@metascore-library/core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
@@ -77,6 +78,7 @@ export class Editor {
         BufferIndicator,
         ComponentForm,
         ComponentsLibrary,
+        ComponentsBreadcrumb,
         Confirm,
         ContextMenu,
         FormControls,

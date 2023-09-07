@@ -31,6 +31,7 @@ export default defineStore("app-preview", {
       lockedComponents: {},
       frozenComponents: {},
       activeSnapTargets: [],
+      editingPlaybackRate: null,
     };
   },
   getters: {
@@ -100,6 +101,16 @@ export default defineStore("app-preview", {
     togglePreview(force, persistant = true) {
       this.preview = typeof force !== "undefined" ? force : !this.preview;
       this.previewPersistant = this.preview && persistant;
+
+      // Reset playback rate to 1 in preview.
+      const { playbackRate, setPlaybackRate } = useModule("media_player");
+      if (this.preview) {
+        this.editingPlaybackRate = unref(playbackRate);
+        setPlaybackRate(1);
+      } else if (this.editingPlaybackRate) {
+        setPlaybackRate(this.editingPlaybackRate);
+        this.editingPlaybackRate = null;
+      }
     },
     selectComponent(component, append = false) {
       if (!append) {

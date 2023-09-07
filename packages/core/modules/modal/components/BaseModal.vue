@@ -57,8 +57,8 @@ export default {
     CloseIcon,
   },
   inject: {
-    modalsTarget: {
-      default: "body",
+    overlaysTarget: {
+      default: null,
     },
   },
   props: {
@@ -81,7 +81,7 @@ export default {
       return this.target !== false;
     },
     teleportTarget() {
-      return this.target ?? this.modalsTarget;
+      return this.target ?? this.overlaysTarget;
     },
   },
 };

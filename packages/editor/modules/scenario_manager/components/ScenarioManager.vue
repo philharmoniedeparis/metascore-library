@@ -43,18 +43,18 @@
       <template #icon><arrow-icon /></template>
     </base-button>
 
-    <ul ref="list" class="list" @scroll="onListScroll">
+    <ol ref="list" class="list" @scroll="onListScroll">
       <li
         v-for="scenario in scenarios"
         :key="scenario.id"
         :class="['item', { active: activeId === scenario.id }]"
         @contextmenu="onContextmenu(scenario)"
       >
-        <a href="#" @click.prevent="onItemClick(scenario)">
+        <button type="button" @click.prevent="onItemClick(scenario)">
           {{ scenario.name }}
-        </a>
+        </button>
       </li>
-    </ul>
+    </ol>
 
     <base-button
       type="button"
@@ -329,15 +329,17 @@ export default {
       border-left: 1px solid var(--metascore-color-bg-tertiary);
       white-space: nowrap;
 
-      a {
-        color: var(--metascore-color-white);
+      button {
+        color: var(--metascore-color-text-primary);
+        background: none;
+        border: none;
         border-bottom: 1px solid transparent;
         opacity: 0.5;
       }
 
       &.active {
-        a {
-          border-bottom-color: var(--metascore-color-white);
+        button {
+          border-bottom-color: var(--metascore-color-text-primary);
           opacity: 1;
           cursor: default;
         }
