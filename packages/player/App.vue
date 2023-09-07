@@ -14,7 +14,7 @@
 <template>
   <div
     v-hotkey.prevent="hotkeys"
-    class="metaScore-player"
+    :class="['metaScore-player', { loading }]"
     @contextmenu="onContextmenu"
   >
     <app-renderer

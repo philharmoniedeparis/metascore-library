@@ -81,6 +81,7 @@
     :class="[
       'metaScore-editor',
       {
+        loading,
         preview,
         'preview-persistant': previewPersistant,
         'app-title-focused': appTitleFocused,
