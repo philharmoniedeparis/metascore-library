@@ -172,6 +172,9 @@ export default {
     preview() {
       return this.store.preview;
     },
+    previewPersistant() {
+      return this.store.previewPersistant;
+    },
     appPreviewEl: {
       get() {
         return this.store.appPreviewEl;
@@ -477,12 +480,12 @@ export default {
     onAppRendererKeydown(evt) {
       // Prevent keydown events from propagting
       // to the rest of the editor if in preview.
-      if (this.preview) evt.stopPropagation();
+      if (this.previewPersistant) evt.stopPropagation();
     },
     onAppRendererKeyup(evt) {
       // Prevent keyup events from propagting
       // to the rest of the editor if in preview.
-      if (this.preview) evt.stopPropagation();
+      if (this.previewPersistant) evt.stopPropagation();
     },
     updateRects() {
       this.appPreviewRect = this.$el.getBoundingClientRect();
