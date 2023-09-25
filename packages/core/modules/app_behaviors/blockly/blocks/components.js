@@ -127,19 +127,7 @@ function getPropertyOptions(component_type) {
 const scenarioOptions = ref([]);
 watchEffect(() => {
   const { getComponentsByType } = useModule("app_components");
-  let options = getComponentOptions(getComponentsByType("Scenario"));
-
-  if (options.length === 0) {
-    const block = this.getSourceBlock();
-    if (block) {
-      block.setEnabled(false);
-      block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
-    }
-    this.setEnabled(false);
-    options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-  }
-
-  scenarioOptions.value = options;
+  scenarioOptions.value = getComponentOptions(getComponentsByType("Scenario"));
 });
 Extensions.register("components_scenario_options", function () {
   const scenario_input = this.getInput("COMPONENT");
@@ -147,7 +135,19 @@ Extensions.register("components_scenario_options", function () {
 
   const scenario_field = new FieldDropdown(
     function () {
-      return scenarioOptions.value;
+      const options = scenarioOptions.value;
+
+      if (options.length === 0) {
+        const block = this.getSourceBlock();
+        if (block) {
+          block.setEnabled(false);
+          block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
+        }
+        this.setEnabled(false);
+        return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+      }
+
+      return options;
     },
     null,
     { searchable: true }
@@ -158,19 +158,7 @@ Extensions.register("components_scenario_options", function () {
 const blockOptions = ref([]);
 watchEffect(() => {
   const { getComponentsByType } = useModule("app_components");
-  let options = getComponentOptions(getComponentsByType("Block"));
-
-  if (options.length === 0) {
-    const block = this.getSourceBlock();
-    if (block) {
-      block.setEnabled(false);
-      block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
-    }
-    this.setEnabled(false);
-    options = [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-  }
-
-  blockOptions.value = options;
+  blockOptions.value = getComponentOptions(getComponentsByType("Block"));
 });
 Extensions.register("components_block_options", function () {
   const block_input = this.getInput("COMPONENT");
@@ -178,7 +166,19 @@ Extensions.register("components_block_options", function () {
 
   const block_field = new FieldDropdown(
     function () {
-      return blockOptions.value;
+      const options = blockOptions.value;
+
+      if (options.length === 0) {
+        const block = this.getSourceBlock();
+        if (block) {
+          block.setEnabled(false);
+          block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
+        }
+        this.setEnabled(false);
+        return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+      }
+
+      return options;
     },
     null,
     { searchable: true }
@@ -189,9 +189,10 @@ Extensions.register("components_block_options", function () {
 const componentOptions = ref([]);
 watchEffect(() => {
   const { getComponentsByType } = useModule("app_components");
-  const options = getComponentOptions(getComponentsByType("Scenario"), true);
-
-  componentOptions.value = options;
+  componentOptions.value = getComponentOptions(
+    getComponentsByType("Scenario"),
+    true
+  );
 });
 Extensions.register("components_component_options", function () {
   const component_input = this.getInput("COMPONENT");
