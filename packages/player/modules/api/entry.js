@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const handler = (evt) => {
-        const link = evt.target;
+        const link = evt.target.closest("a");
         const actions = link.hash.replace(/^#/, "").split("&");
 
         for (let i = 0, length = actions.length; i < length; i++) {
