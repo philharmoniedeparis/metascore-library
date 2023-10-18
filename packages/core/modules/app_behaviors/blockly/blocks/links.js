@@ -5,7 +5,7 @@ import { EMPTY_OPTION } from "../constants";
 
 const triggerOptions = ref([]);
 watchEffect(() => {
-  const options = [];
+  const ids = [];
 
   const { getComponentsByType } = useModule("app_components");
   const components = getComponentsByType("Content");
@@ -17,16 +17,18 @@ watchEffect(() => {
       const doc = parser.parseFromString(text, "text/html");
       doc.querySelectorAll("a[data-behavior-trigger]").forEach((el) => {
         const id = el.dataset.behaviorTrigger;
-        options.push([id, id]);
+        if (!ids.includes(id)) {
+          ids.push(id);
+        }
       });
     }
   });
 
-  if (options.length === 0) {
-    options.push([Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]);
+  if (ids.length === 0) {
+    triggerOptions.value = [[Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]];
+  } else {
+    triggerOptions.value = ids.sort().map((id) => [id, id]);
   }
-
-  triggerOptions.value = options;
 });
 
 Extensions.register("behavior_triggers_options", function () {
