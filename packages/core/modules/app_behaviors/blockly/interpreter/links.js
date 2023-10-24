@@ -1,87 +1,158 @@
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
-import { unref } from "vue";
+import { unref, watch, nextTick } from "vue";
 
+let unwatchActiveScenario = null;
 const listeners = [];
-const cuepoints = [];
-
-/**
- * Get a link element by id.
- * @param {string} id The links's id.
- * @returns {HTMLElement?} The link
- */
-function getLink(id) {
-  let { el: root } = useModule("app_renderer");
-  root = unref(root);
-
-  return root.querySelector(
-    `.metaScore-component.content .contents a[data-behavior-trigger="${id}"]`
-  );
-}
+const autoHighlights = [];
 
 export function init(context) {
   // Ensure 'Links' name does not conflict with variable names.
   JavaScript.addReservedWords("Links");
 
+  const { activeScenario } = useModule("app_components");
+  unwatchActiveScenario = watch(activeScenario, onScenarioChange);
+
   // Add 'Links' object to context.
   context.Links = {
-    addEventListener: (id, type, callback) => {
-      /** @type HTMLElement */
-      const el = getLink(id);
-
-      if (!el) return;
-
-      // Add the event listener.
-      el.addEventListener(type, callback);
-
-      // Add to list of listeners.
-      listeners.push({
-        el,
-        type,
-        callback,
-      });
-    },
+    addEventListener: setupListener,
     openUrl: (url) => {
       window.open(url, "_blank");
     },
-    autoHighlight: (id, from, to) => {
-      /** @type HTMLElement */
-      const el = getLink(id);
-
-      if (!el) return;
-
-      let { linksAutoHighlightClass } = useModule("app_components");
-      const { addCuepoint } = useModule("media_cuepoints");
-
-      const cuepoint = addCuepoint({
-        startTime: from,
-        endTime: to,
-        onStart: () => {
-          el.classList.add(linksAutoHighlightClass);
-        },
-        onStop: () => {
-          el.classList.remove(linksAutoHighlightClass);
-        },
-        onDestroy: () => {
-          el.classList.remove(linksAutoHighlightClass);
-        },
-      });
-      cuepoints.push(cuepoint);
-    },
+    autoHighlight: setupAutoHighlight,
   };
 }
 
 export function reset() {
-  // Remove all listeners.
-  while (listeners.length > 0) {
-    const { el, type, callback } = listeners.pop();
-    el.removeEventListener(type, callback);
+  // Remove watcher.
+  if (unwatchActiveScenario) {
+    unwatchActiveScenario();
+    unwatchActiveScenario = null;
   }
 
-  // Remove all cuepoints.
+  // Remove all listeners.
+  removeListeners();
+
+  // Remove all autohighlight cuepoints.
+  removeAutoHighlights();
+}
+
+/**
+ * Get link elements by trigger id.
+ * @param {string} id The trigger id.
+ * @returns {[HTMLElement]} The links
+ */
+function getLinks(id) {
+  let { el: root } = useModule("app_renderer");
+  root = unref(root);
+
+  return root.querySelectorAll(
+    `.metaScore-component.content .contents a[data-behavior-trigger="${id}"]`
+  );
+}
+
+/**
+ * Setup a listener on links with a given behavior-trigger id.
+ * @param {string} id The behavior-trigger id
+ * @param {string} type The event type to add the listener on.
+ * @param {function} callback The callback that will be invoked when an event is dispatched.
+ */
+function setupListener(id, type, callback) {
+  /** @type [HTMLElement] */
+  const links = getLinks(id);
+  if (links.length === 0) return;
+
+  // Add the event listener.
+  links.forEach((link) => {
+    link.addEventListener(type, callback);
+  });
+
+  // Add to list of listeners.
+  listeners.push({ id, type, callback });
+}
+
+/**
+ * Remove all listeners.
+ */
+function removeListeners() {
+  while (listeners.length > 0) {
+    const { id, type, callback } = listeners.pop();
+
+    /** @type [HTMLElement] */
+    const links = getLinks(id);
+    links.forEach((link) => {
+      link.removeEventListener(type, callback);
+    });
+  }
+}
+
+/**
+ * Setup auto-highlighting on links with a given behavior-trigger id.
+ * @param {string} id The behavior-trigger id
+ * @param {number} from The start-time in seconds at which the link should be highlighted.
+ * @param {number} to The end-time in seconds at which the link should be highlighted.
+ */
+function setupAutoHighlight(id, from, to) {
+  /** @type [HTMLElement] */
+  const links = getLinks(id);
+
+  if (links.length === 0) return;
+
+  let { linksAutoHighlightClass } = useModule("app_components");
+  const { addCuepoint } = useModule("media_cuepoints");
+
+  const cuepoint = addCuepoint({
+    startTime: from,
+    endTime: to,
+    onStart: () => {
+      links.forEach((link) => {
+        link.classList.add(linksAutoHighlightClass);
+      });
+    },
+    onStop: () => {
+      links.forEach((link) => {
+        link.classList.remove(linksAutoHighlightClass);
+      });
+    },
+    onDestroy: () => {
+      links.forEach((link) => {
+        link.classList.remove(linksAutoHighlightClass);
+      });
+    },
+  });
+  autoHighlights.push({ id, from, to, cuepoint });
+}
+
+/**
+ * Remove all auto-highlighting.
+ */
+function removeAutoHighlights() {
   const { removeCuepoint } = useModule("media_cuepoints");
-  while (cuepoints.length > 0) {
-    const cuepoint = cuepoints.pop();
+  while (autoHighlights.length > 0) {
+    const { cuepoint } = autoHighlights.pop();
     removeCuepoint(cuepoint);
   }
+}
+
+/**
+ * Watcher handler invoked when the scenario changes.
+ */
+async function onScenarioChange() {
+  await nextTick();
+
+  // Update all listeners.
+  const oldListeners = [...listeners];
+  removeListeners();
+  oldListeners.forEach((listener) => {
+    const { id, type, callback } = listener;
+    setupListener(id, type, callback);
+  });
+
+  // Update all auto-highlight cuepoints.
+  const oldAutoHighlights = [...autoHighlights];
+  removeAutoHighlights();
+  oldAutoHighlights.forEach((autohighlight) => {
+    const { id, from, to } = autohighlight;
+    setupAutoHighlight(id, from, to);
+  });
 }

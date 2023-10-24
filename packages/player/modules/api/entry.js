@@ -376,19 +376,17 @@ export class API {
  * Automatically process API links in the current HTML document
  */
 document.addEventListener("DOMContentLoaded", () => {
-  const ids = [];
+  const ids = new Set();
 
   document
     .querySelectorAll(
       'a[rel="metascore"][data-guide]:not(.metascore-api-processed)'
     )
     .forEach((link) => {
+      ids.add(link.dataset.guide);
+
       // Prevent the link from being processed multiple times.
       link.classList.add("metascore-api-processed");
-
-      if (!ids.includes(link.dataset.guide)) {
-        ids.push(link.dataset.guide);
-      }
     });
 
   if (ids.length > 0) {
@@ -422,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     document
-      .querySelectorAll(`iframe#${ids.join(",iframe#")}`)
+      .querySelectorAll(`iframe#${Array.from(ids).join(",iframe#")}`)
       .forEach((iframe) => {
         new API(iframe, callback);
       });
