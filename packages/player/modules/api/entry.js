@@ -389,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
       link.classList.add("metascore-api-processed");
     });
 
-  if (ids.length > 0) {
+  if (ids.size > 0) {
     const callback = (api) => {
       const cleanArg = (arg) => {
         return decodeURIComponent(arg);
