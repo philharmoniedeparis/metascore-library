@@ -129,14 +129,14 @@ export default {
         if (oldValue) {
           await this.stopEditing(oldValue);
 
-          this.getComponentElement(oldValue).removeEventListener(
+          this.getComponentElement(oldValue)?.removeEventListener(
             "dblclick",
             this.onComponentDblclick
           );
         }
 
         if (value) {
-          this.getComponentElement(value).addEventListener(
+          this.getComponentElement(value)?.addEventListener(
             "dblclick",
             this.onComponentDblclick
           );
@@ -167,7 +167,7 @@ export default {
   },
   async beforeUnmount() {
     if (this.component) {
-      this.getComponentElement(this.component).removeEventListener(
+      this.getComponentElement(this.component)?.removeEventListener(
         "dblclick",
         this.onComponentDblclick
       );
