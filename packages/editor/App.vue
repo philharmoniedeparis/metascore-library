@@ -808,6 +808,7 @@ export default {
         flex-direction: column;
         grid-area: 2 / 2;
         box-sizing: border-box;
+        overflow-y: scroll;
       }
     }
 
