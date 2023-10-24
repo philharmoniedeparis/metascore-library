@@ -5,11 +5,11 @@ import { EMPTY_OPTION } from "../constants";
 
 const triggerOptions = ref([]);
 watchEffect(() => {
-  const ids = [];
-
   const { getComponentsByType } = useModule("app_components");
   const components = getComponentsByType("Content");
   const parser = new DOMParser();
+  const ids = new Set();
+
   components.forEach((component) => {
     const text = component.text;
 
@@ -17,17 +17,17 @@ watchEffect(() => {
       const doc = parser.parseFromString(text, "text/html");
       doc.querySelectorAll("a[data-behavior-trigger]").forEach((el) => {
         const id = el.dataset.behaviorTrigger;
-        if (!ids.includes(id)) {
-          ids.push(id);
-        }
+        ids.add(id);
       });
     }
   });
 
-  if (ids.length === 0) {
+  if (ids.size === 0) {
     triggerOptions.value = [[Msg.LINKS_EMPTY_OPTION, EMPTY_OPTION]];
   } else {
-    triggerOptions.value = ids.sort().map((id) => [id, id]);
+    triggerOptions.value = Array.from(ids)
+      .sort()
+      .map((id) => [id, id]);
   }
 });
 
