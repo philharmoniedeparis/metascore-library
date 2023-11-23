@@ -32,7 +32,7 @@
     "@floating-ui/dom": "^1.0.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.11",
-    "timecode-input": "github:philharmoniedeparis/timecode-input#v1.0.1",
+    "timecode-input": "github:philharmoniedeparis/timecode-input#v1.0.2",
     "uuid": "^9.0.0"
   }
 }
