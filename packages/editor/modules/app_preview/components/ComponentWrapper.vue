@@ -1119,6 +1119,13 @@ export default {
       }
     }
 
+    &.media {
+      :deep(video),
+      :deep(audio) {
+        pointer-events: none;
+      }
+    }
+
     &.drag-over {
       box-shadow: inset 0px 0px 1em 0.25em var(--metascore-color-accent);
     }
