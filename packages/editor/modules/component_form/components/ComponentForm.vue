@@ -47,8 +47,8 @@
     "Content": {
       "title": "Attributs du texte | Attributs de {count} textes",
       "text": {
-        "on": "Éditer le contenu",
-        "off": "Arrêter l’édition du contenu",
+        "on": "Éditer le texte",
+        "off": "Arrêter l’édition du texte",
       },
     },
     "Controller": {
@@ -151,8 +151,8 @@
     "Content": {
       "title": "Attributes of text | Attributes of {count} texts",
       "text": {
-        "on": "Edit the content",
-        "off": "Stop content editing",
+        "on": "Edit the text",
+        "off": "Stop text editing",
       },
     },
     "Controller": {
