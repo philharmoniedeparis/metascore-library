@@ -31,8 +31,7 @@
       @focusout="onInputBlur"
     >
       <!-- eslint-disable vue/no-deprecated-html-element-is -->
-      <input
-        is="timecode-input"
+      <timecode-input
         :id="inputId"
         v-model="value"
         v-autofocus="autofocus"
@@ -42,7 +41,7 @@
         :min="min"
         :max="max"
         @change="onInputChange"
-      />
+      ></timecode-input>
       <!-- eslint-enable vue/no-deprecated-html-element-is -->
       <div
         v-if="!disabled && (inButton || outButton || clearButton)"
@@ -217,7 +216,7 @@ export default {
     position: relative;
   }
 
-  input {
+  timecode-input::part(input) {
     width: 6em;
     text-align: center;
   }
@@ -247,7 +246,7 @@ export default {
   }
 
   &.disabled {
-    input {
+    timecode-input::part(input) {
       opacity: 0.5;
     }
   }

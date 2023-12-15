@@ -758,7 +758,7 @@ export default {
     &.time {
       border-top: 2px solid var(--metascore-color-bg-secondary);
 
-      input {
+      timecode-input::part(input) {
         width: 6em;
       }
     }
@@ -819,7 +819,8 @@ export default {
       flex: 0 0 auto;
     }
 
-    input {
+    input,
+    timecode-input {
       min-width: 0;
       flex: 1;
     }

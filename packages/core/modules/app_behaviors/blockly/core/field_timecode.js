@@ -419,7 +419,7 @@ export default class FieldTimecode extends Field {
 
     utils.dom.addClass(this.getClickTarget_(), "editing");
 
-    this.htmlInput_ = document.createElement("input", { is: "timecode-input" });
+    this.htmlInput_ = document.createElement("timecode-input");
     this.htmlInput_.className = "blocklyHtmlInput";
     const scale = this.workspace_.getScale();
     const fontSize = this.getConstants().FIELD_TEXT_FONTSIZE * scale + "pt";
@@ -711,10 +711,21 @@ FieldTimecode.prototype.DEFAULT_VALUE = null;
 FieldTimecode.BORDERRADIUS = 4;
 
 /**
- * CSS for timecode buttons.
+ * Custom CSS.
  */
 Css.register(
   `
+  timecode-input.blocklyHtmlInput {
+    overflow: hidden;
+  }
+  timecode-input.blocklyHtmlInput::part(input) {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    border: none;
+    box-sizing: border-box;
+  }
+
   .blocklyTimecodeButtonsWrapper {
     position: absolute;
     left: 0;

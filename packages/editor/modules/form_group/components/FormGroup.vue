@@ -118,7 +118,8 @@ export default {
     }
 
     :deep(input),
-    :deep(select) {
+    :deep(select),
+    :deep(timecode-input)::part(input) {
       width: 100%;
       padding: 0.3125em;
       color: var(--metascore-color-white);
@@ -135,6 +136,10 @@ export default {
         outline: 1px solid var(--metascore-color-bg-primary);
         border-color: var(--metascore-color-bg-primary);
       }
+    }
+
+    :deep(timecode-input) {
+      display: block;
     }
   }
 

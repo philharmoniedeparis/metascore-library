@@ -29,16 +29,24 @@ export default {
 
   :deep(.input-wrapper) {
     height: 100%;
-  }
 
-  :deep(input) {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    font-size: 1.15em;
+    .input-container {
+      height: 100%;
+    }
 
-    &:focus {
-      box-shadow: none;
+    timecode-input {
+      height: 100%;
+
+      &::part(input) {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        font-size: 1.15em;
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
     }
   }
 }
