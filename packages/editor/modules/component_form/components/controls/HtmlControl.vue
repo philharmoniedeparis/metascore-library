@@ -33,6 +33,7 @@ import { markRaw } from "vue";
 import { isObject } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { getLocale } from "@metascore-library/core/services/i18n";
+import { getRectWithoutTransforms } from "@metascore-library/core/utils/dom";
 import useStore from "../../store";
 
 export default {
@@ -221,9 +222,9 @@ export default {
           inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
         }
 
-        this.highlighterRect = this.getComponentElement(
-          this.component
-        ).getBoundingClientRect();
+        this.highlighterRect = getRectWithoutTransforms(
+          this.getComponentElement(this.component)
+        );
       } catch (e) {
         // @todo: handle errors.
         console.error(e);
