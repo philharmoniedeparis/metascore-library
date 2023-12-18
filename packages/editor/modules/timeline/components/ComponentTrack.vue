@@ -534,7 +534,10 @@ export default {
         modifiers: [
           interact.modifiers.snap({
             targets: [this.getInteractableSnapTarget],
-            relativePoints: [{ x: 0 }, { x: 1 }],
+            relativePoints: [
+              { x: 0, y: 0 },
+              { x: 1, y: 0 },
+            ],
           }),
         ],
         listeners: {
@@ -549,7 +552,10 @@ export default {
         modifiers: [
           interact.modifiers.snap({
             targets: [this.getInteractableSnapTarget],
-            relativePoints: [{ x: 0 }, { x: 1 }],
+            relativePoints: [
+              { x: 0, y: 0 },
+              { x: 1, y: 0 },
+            ],
           }),
         ],
         listeners: {
