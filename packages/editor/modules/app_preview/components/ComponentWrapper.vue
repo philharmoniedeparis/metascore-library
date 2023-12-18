@@ -477,15 +477,21 @@ export default {
     },
   },
   watch: {
-    selected() {
-      this.updateControlBox();
+    selected: {
+      handler() {
+        this.updateControlBox();
+      },
+      immediate: true,
     },
-    interactable(value) {
-      if (value) {
-        this.setupInteractions();
-      } else {
-        this.destroyInteractions();
-      }
+    interactable: {
+      handler(value) {
+        if (value) {
+          this.setupInteractions();
+        } else {
+          this.destroyInteractions();
+        }
+      },
+      immediate: true,
     },
     "component.position"() {
       this.updateControlBox();
