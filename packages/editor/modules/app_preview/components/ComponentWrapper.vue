@@ -870,8 +870,8 @@ export default {
           position[1] + evt.deltaRect.top / this.zoom,
         ],
         dimension: [
-          dimension[0] + evt.deltaRect.width / this.zoom,
-          dimension[1] + evt.deltaRect.height / this.zoom,
+          Math.max(1, dimension[0] + evt.deltaRect.width / this.zoom),
+          Math.max(1, dimension[1] + evt.deltaRect.height / this.zoom),
         ],
       });
     },
