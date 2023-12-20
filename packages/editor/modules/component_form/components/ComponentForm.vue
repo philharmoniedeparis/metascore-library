@@ -67,8 +67,8 @@
         "left": "Vers la gauche",
         "bottom": "Vers le bas",
         "top": "Vers le haut",
-        "cw": "Sens des aiguilles d'une montre",
-        "ccw": "Sens inverse des aiguilles d'une montre",
+        "cw": "Sens des aiguilles d’une montre",
+        "ccw": "Sens inverse des aiguilles d’une montre",
       },
       "acceleration": "Accélération",
       "keyframes": {
