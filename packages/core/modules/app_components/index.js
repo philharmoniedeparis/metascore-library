@@ -16,6 +16,7 @@ import ComponentWrapper from "./components/ComponentWrapper";
 import ContentComponent from "./components/ContentComponent";
 import ControllerComponent from "./components/ControllerComponent";
 import CursorComponent from "./components/CursorComponent";
+import ImageComponent from "./components/ImageComponent";
 import MediaComponent from "./components/MediaComponent";
 import PageComponent from "./components/PageComponent";
 import ScenarioComponent from "./components/ScenarioComponent";
@@ -40,6 +41,7 @@ export default class AppComponentsModule extends AbstractModule {
     app.component("ContentComponent", ContentComponent);
     app.component("ControllerComponent", ControllerComponent);
     app.component("CursorComponent", CursorComponent);
+    app.component("ImageComponent", ImageComponent);
     app.component("MediaComponent", MediaComponent);
     app.component("PageComponent", PageComponent);
     app.component("ScenarioComponent", ScenarioComponent);
@@ -57,10 +59,11 @@ export default class AppComponentsModule extends AbstractModule {
             Content: "Texte {name}",
             Controller: "Contrôleur {name}",
             Cursor: "Curseur {name}",
+            Image: "Image {name}",
             Media: "Média {name}",
             Page: "Page {index}/{count}",
             Scenario: "Scénario {name}",
-            SVG: "SVG {name}",
+            SVG: "Image vectorielle {name}",
             VideoRenderer: "Rendu vidéo {name}",
           },
         },
@@ -75,10 +78,11 @@ export default class AppComponentsModule extends AbstractModule {
             Content: "Text {name}",
             Controller: "Controller {name}",
             Cursor: "Cursor {name}",
+            Image: "Image {name}",
             Media: "Media {name}",
             Page: "Page {index}/{count}",
             Scenario: "Scenario {name}",
-            SVG: "SVG {name}",
+            SVG: "Vector image {name}",
             VideoRenderer: "Video renderer {name}",
           },
         },

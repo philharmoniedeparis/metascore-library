@@ -9,6 +9,7 @@ export { default as BlockToggler } from "./BlockToggler";
 export { default as Content } from "./Content";
 export { default as Controller } from "./Controller";
 export { default as Cursor } from "./Cursor";
+export { default as Image } from "./Image";
 export { default as Media } from "./Media";
 export { default as Page } from "./Page";
 export { default as Scenario } from "./Scenario";

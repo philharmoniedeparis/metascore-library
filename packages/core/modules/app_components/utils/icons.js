@@ -5,6 +5,7 @@ import BlockToggler from "../assets/icons/BlockToggler.svg";
 import Content from "../assets/icons/Content.svg";
 import Controller from "../assets/icons/Controller.svg";
 import Cursor from "../assets/icons/Cursor.svg";
+import Image from "../assets/icons/Image.svg";
 import MediaAudio from "../assets/icons/Media.audio.svg";
 import MediaVideo from "../assets/icons/Media.video.svg";
 import Page from "../assets/icons/Page.svg";
@@ -19,6 +20,7 @@ const ICONS = {
   Content,
   Controller,
   Cursor,
+  Image,
   MediaAudio,
   MediaVideo,
   Page,

@@ -80,6 +80,9 @@
       "cursor-width": "Largeur du curseur",
       "cursor-color": "Couleur du curseur",
     },
+    "Image": {
+      "title": "Attributs de l’image | Attributs des {count} images",
+    },
     "Media": {
       "title": "Attributs du média | Attributs de {count} média",
     },
@@ -90,7 +93,7 @@
       "title": "Attributs du scénario | Attributs de {count} scénarios",
     },
     "SVG": {
-      "title": "Attributs du SVG | Attributs de {count} SVGs",
+      "title": "Attributs de l’image vectorielle | Attributs des {count} images vectorielles",
       "colors": "Couleurs",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
@@ -184,6 +187,9 @@
       "cursor-width": "Cursor width",
       "cursor-color": "Cursor color",
     },
+    "Image": {
+      "title": "Attributes of image | Attributes of {count} images",
+    },
     "Media": {
       "title": "Attributes of media | Attributes of {count} media",
     },
@@ -194,7 +200,7 @@
       "title": "Attributes of scenario | Attributes of {count} scenarios",
     },
     "SVG": {
-      "title": "Attributes of SVG | Attributes of {count} SVGs",
+      "title": "Attributes of vector image | Attributes of {count} vector images",
       "stroke": "Stroke color",
       "stroke-width": "Stroke width",
       "stroke-dasharray": "Stroke style",
