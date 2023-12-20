@@ -107,8 +107,8 @@ export default {
         case "image": {
           const data = {
             name: this.label,
-            type: "Content",
-            "background-image": this.file.url,
+            type: "Image",
+            src: this.file.url,
           };
           if (this.file.width && this.file.height) {
             data.dimension = [this.file.width, this.file.height];

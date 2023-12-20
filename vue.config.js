@@ -75,6 +75,18 @@ module.exports = defineConfig({
       ]);
     }
 
+    // Declare custom elements.
+    // See https://vuejs.org/guide/extras/web-components.html#example-vue-cli-config
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap((options) => ({
+        ...options,
+        compilerOptions: {
+          isCustomElement: (tag) => tag === "timecode-input",
+        },
+      }));
+
     // See https://vue-i18n.intlify.dev/guide/advanced/optimization.html#reduce-bundle-size-with-feature-build-flags
     config.plugin("define").tap((definitions) => {
       definitions[0] = {

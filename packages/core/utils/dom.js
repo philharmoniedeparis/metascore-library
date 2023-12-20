@@ -66,3 +66,23 @@ export function trapTabFocus(element, evt) {
     }
   }
 }
+
+/**
+ * Get an element's rect without CSS transforms.
+ *
+ * @param {HTMLElement} element The element
+ * @returns {DOMRect} The element's rect
+ */
+export function getRectWithoutTransforms(el) {
+  const { offsetWidth, offsetHeight } = el;
+  let offsetLeft = 0;
+  let offsetTop = 0;
+
+  while (el) {
+    offsetLeft += el.offsetLeft - el.scrollLeft;
+    offsetTop += el.offsetTop - el.scrollTop;
+    el = el.offsetParent;
+  }
+
+  return new DOMRect(offsetLeft, offsetTop, offsetWidth, offsetHeight);
+}

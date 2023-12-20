@@ -10,6 +10,7 @@ export default defineStore("app-components", {
   state: () => {
     return {
       components: {},
+      deleted: {},
       activeScenario: null,
       blocksActivePage: {},
       overrides: new Map(),
@@ -20,7 +21,7 @@ export default defineStore("app-components", {
     get() {
       return (type, id) => {
         const component = this.components?.[type]?.[id];
-        return component && !component.$deleted ? readonly(component) : null;
+        return component ? readonly(component) : null;
       };
     },
     all() {
@@ -254,8 +255,10 @@ export default defineStore("app-components", {
     async delete(component) {
       const { type, id } = component;
 
+      if (!this.components[type]?.[id]) return;
+
       if (isReadonly(component)) {
-        component = this.components?.[type]?.[id];
+        component = this.components[type][id];
       }
 
       if (type === "Page") {
@@ -290,16 +293,24 @@ export default defineStore("app-components", {
         }
       }
 
-      component.$deleted = true;
+      if (!this.deleted[type]) this.deleted[type] = {};
+      this.deleted[type][id] = component;
+
+      delete this.components[type][id];
     },
     async restore(component) {
       const { type, id } = component;
 
+      if (!this.deleted[type]?.[id]) return;
+
       if (isReadonly(component)) {
-        component = this.components?.[type]?.[id];
+        component = this.deleted[type][id];
       }
 
-      delete component.$deleted;
+      if (!this.components[type]) this.components[type] = {};
+      this.components[type][id] = component;
+
+      delete this.deleted[type][id];
 
       if (type === "Page") {
         const block = this.getParent(component);

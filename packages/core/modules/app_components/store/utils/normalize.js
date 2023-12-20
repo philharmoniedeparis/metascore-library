@@ -66,7 +66,7 @@ export async function normalize(data) {
 }
 
 function denormalizeItem(item, all) {
-  if (!all?.[item.type]?.[item.id] || all[item.type][item.id].$deleted) {
+  if (!all?.[item.type]?.[item.id]) {
     return null;
   }
 

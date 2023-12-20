@@ -50,6 +50,7 @@
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { isObject } from "lodash";
+import { getRectWithoutTransforms } from "@metascore-library/core/utils/dom";
 import useStore from "../../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 
@@ -138,7 +139,7 @@ export default {
   watch: {
     recording(value) {
       if (value) {
-        this.highlighterRect = this.componentEl.getBoundingClientRect();
+        this.highlighterRect = getRectWithoutTransforms(this.componentEl);
         this.componentEl.setAttribute(this.scopeAttribute, "");
       } else {
         this.highlighterRect = null;

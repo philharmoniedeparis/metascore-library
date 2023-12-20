@@ -15,6 +15,7 @@ export default defineStore("assets-library", {
         audiowaveformUrl: null,
       },
       items: {},
+      deleted: {},
       uploading: false,
       uploadProgress: null,
       generatingSpectrogram: false,
@@ -44,7 +45,7 @@ export default defineStore("assets-library", {
     get() {
       return (id) => {
         const item = this.items[id];
-        return item && !item.$deleted ? readonly(item) : null;
+        return item ? readonly(item) : null;
       };
     },
     all() {
@@ -102,10 +103,10 @@ export default defineStore("assets-library", {
       this.items[item.id] = item;
     },
     delete(id) {
-      const item = this.items[id];
-      if (item) {
-        item.$deleted = true;
-      }
+      if (!this.items[id]) return;
+
+      this.deleted[id] = this.items[id];
+      delete this.items[id];
     },
     async upload(files) {
       this.uploading = true;

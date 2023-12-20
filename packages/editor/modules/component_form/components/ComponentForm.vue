@@ -47,8 +47,8 @@
     "Content": {
       "title": "Attributs du texte | Attributs de {count} textes",
       "text": {
-        "on": "Éditer le contenu",
-        "off": "Arrêter l’édition du contenu",
+        "on": "Éditer le texte",
+        "off": "Arrêter l’édition du texte",
       },
     },
     "Controller": {
@@ -67,8 +67,8 @@
         "left": "Vers la gauche",
         "bottom": "Vers le bas",
         "top": "Vers le haut",
-        "cw": "Sens des aiguilles d'une montre",
-        "ccw": "Sens inverse des aiguilles d'une montre",
+        "cw": "Sens des aiguilles d’une montre",
+        "ccw": "Sens inverse des aiguilles d’une montre",
       },
       "acceleration": "Accélération",
       "keyframes": {
@@ -80,6 +80,9 @@
       "cursor-width": "Largeur du curseur",
       "cursor-color": "Couleur du curseur",
     },
+    "Image": {
+      "title": "Attributs de l’image | Attributs des {count} images",
+    },
     "Media": {
       "title": "Attributs du média | Attributs de {count} média",
     },
@@ -90,7 +93,7 @@
       "title": "Attributs du scénario | Attributs de {count} scénarios",
     },
     "SVG": {
-      "title": "Attributs du SVG | Attributs de {count} SVGs",
+      "title": "Attributs de l’image vectorielle | Attributs des {count} images vectorielles",
       "colors": "Couleurs",
       "stroke": "Couleur du trait",
       "stroke-width": "Largeur du trait",
@@ -151,8 +154,8 @@
     "Content": {
       "title": "Attributes of text | Attributes of {count} texts",
       "text": {
-        "on": "Edit the content",
-        "off": "Stop content editing",
+        "on": "Edit the text",
+        "off": "Stop text editing",
       },
     },
     "Controller": {
@@ -184,6 +187,9 @@
       "cursor-width": "Cursor width",
       "cursor-color": "Cursor color",
     },
+    "Image": {
+      "title": "Attributes of image | Attributes of {count} images",
+    },
     "Media": {
       "title": "Attributes of media | Attributes of {count} media",
     },
@@ -194,7 +200,7 @@
       "title": "Attributes of scenario | Attributes of {count} scenarios",
     },
     "SVG": {
-      "title": "Attributes of SVG | Attributes of {count} SVGs",
+      "title": "Attributes of vector image | Attributes of {count} vector images",
       "stroke": "Stroke color",
       "stroke-width": "Stroke width",
       "stroke-dasharray": "Stroke style",
@@ -758,7 +764,7 @@ export default {
     &.time {
       border-top: 2px solid var(--metascore-color-bg-secondary);
 
-      input {
+      timecode-input::part(input) {
         width: 6em;
       }
     }
@@ -819,7 +825,8 @@ export default {
       flex: 0 0 auto;
     }
 
-    input {
+    input,
+    timecode-input {
       min-width: 0;
       flex: 1;
     }

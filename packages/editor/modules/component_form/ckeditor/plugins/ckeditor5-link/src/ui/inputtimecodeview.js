@@ -39,8 +39,8 @@ export default class InputTimecodeView extends InputView {
     this.inputMode = null;
 
     this.extendTemplate({
+      tag: "timecode-input",
       attributes: {
-        is: "timecode-input",
         class: ["ck-input-timecode"],
         min: bind.to("min"),
         max: bind.to("max"),

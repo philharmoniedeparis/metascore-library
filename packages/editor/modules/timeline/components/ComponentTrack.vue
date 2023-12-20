@@ -54,7 +54,6 @@
         expanded,
         selected,
         locked,
-        resizing,
       },
     ]"
     :data-type="component.type"
@@ -111,7 +110,7 @@
     >
       <div
         ref="time"
-        class="time"
+        :class="['time', { resizing, dragging }]"
         tabindex="0"
         :style="timeStyle"
         @mousedown="onMousedown"
@@ -121,7 +120,7 @@
           <div class="resize-handle right"></div>
           <div class="resize-handle left"></div>
         </template>
-        <div class="background"></div>
+        <div :class="['background', { 'drag-handle': draggable }]"></div>
       </div>
     </div>
 
@@ -242,6 +241,7 @@ export default {
     return {
       expanded: false,
       resizing: false,
+      dragging: false,
     };
   },
   computed: {
@@ -322,6 +322,11 @@ export default {
     },
     resizable() {
       return this.timeable && this.selected && !this.locked;
+    },
+    draggable() {
+      return (
+        this.hasStartTime && this.hasEndTime && this.selected && !this.locked
+      );
     },
     activeSnapTargets: {
       get() {
@@ -528,10 +533,10 @@ export default {
         },
         modifiers: [
           interact.modifiers.snap({
-            targets: [this.getResizableSnapTarget],
+            targets: [this.getInteractableSnapTarget],
             relativePoints: [
               { x: 0, y: 0 },
-              { x: 1, y: 1 },
+              { x: 1, y: 0 },
             ],
           }),
         ],
@@ -541,6 +546,24 @@ export default {
           end: this.onResizableEnd,
         },
       });
+
+      this._interactables.draggable({
+        allowFrom: ".drag-handle",
+        modifiers: [
+          interact.modifiers.snap({
+            targets: [this.getInteractableSnapTarget],
+            relativePoints: [
+              { x: 0, y: 0 },
+              { x: 1, y: 0 },
+            ],
+          }),
+        ],
+        listeners: {
+          start: this.onDraggableStart,
+          move: this.onDraggableMove,
+          end: this.onDraggableEnd,
+        },
+      });
     },
     destroyInteractions() {
       if (this._interactables) {
@@ -548,13 +571,13 @@ export default {
         delete this._interactables;
       }
     },
-    getResizableSnapTarget(x) {
+    getInteractableSnapTarget(x, y, interaction, offset) {
       let min_distance = this.snapRange;
       let target = null;
 
-      this.activeSnapTargets = [];
+      if (offset.index === 0) this.activeSnapTargets = [];
 
-      //Check if playhead is in range.
+      // Check if playhead is in range.
       const { left, width } =
         this.$refs["time-wrapper"].getBoundingClientRect();
       const playhead_x = (this.mediaTime / this.mediaDuration) * width + left;
@@ -568,7 +591,7 @@ export default {
       this.$el
         .closest(".component-track[data-type='Scenario']")
         .querySelectorAll(
-          ".component-track:not(.resizing) > .time-wrapper .time"
+          ".component-track .time-wrapper .time:not(.resizing, .dragging)"
         )
         .forEach((track_time) => {
           if (track_time.offsetParent === null) {
@@ -587,9 +610,7 @@ export default {
           });
         });
 
-      if (target) {
-        this.activeSnapTargets.push(target.x);
-      }
+      if (target) this.activeSnapTargets.push(target.x);
 
       return target;
     },
@@ -603,15 +624,14 @@ export default {
       const prop = evt.edges.right ? "end-time" : "start-time";
       const data = {};
 
-      let previous_value = this.component[prop];
-      if (previous_value === null) {
-        previous_value = prop === "end-time" ? this.mediaDuration : 0;
-      }
+      let newValue =
+        this.component[prop] ?? (prop === "end-time" ? this.mediaDuration : 0);
+      newValue += evt.delta.x * (this.mediaDuration / wrapper_width);
 
-      data[prop] = round(
-        previous_value + evt.delta.x * (this.mediaDuration / wrapper_width),
-        2
-      );
+      // Don't go below 0 or above duration.
+      if (newValue < 0 || newValue > this.mediaDuration) return;
+
+      data[prop] = round(newValue, 2);
 
       await this.updateComponent(this.component, data);
     },
@@ -626,6 +646,35 @@ export default {
         (evt) => evt.stopImmediatePropagation(),
         { capture: true, once: true }
       );
+    },
+    onDraggableStart() {
+      this.dragging = true;
+      this.startHistoryGroup({ coalesce: true });
+    },
+    async onDraggableMove(evt) {
+      const time_wrapper = this.$refs["time-wrapper"];
+      const { width: wrapper_width } = time_wrapper.getBoundingClientRect();
+      const props = ["start-time", "end-time"];
+      const data = {};
+
+      const doUpdate = props.every((prop) => {
+        let newValue =
+          this.component[prop] +
+          evt.delta.x * (this.mediaDuration / wrapper_width);
+
+        // Don't go below 0 or above duration.
+        if (newValue < 0 || newValue > this.mediaDuration) return false;
+
+        data[prop] = round(newValue, 2);
+        return true;
+      });
+
+      if (doUpdate) await this.updateComponent(this.component, data);
+    },
+    onDraggableEnd() {
+      this.endHistoryGroup();
+      this.activeSnapTargets = [];
+      this.dragging = false;
     },
     async onAnimatedPropertyUpdate(property, value) {
       await this.updateComponent(this.component, {

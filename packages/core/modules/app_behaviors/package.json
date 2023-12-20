@@ -7,6 +7,6 @@
     "@nx-js/compiler-util": "^2.0.0",
     "blockly": "^9.0.0",
     "pinia": "^2.0.11",
-    "timecode-input": "github:philharmoniedeparis/timecode-input#v1.0.1"
+    "timecode-input": "github:philharmoniedeparis/timecode-input#v2.0.1"
   }
 }

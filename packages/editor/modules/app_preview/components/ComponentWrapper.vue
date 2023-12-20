@@ -477,15 +477,21 @@ export default {
     },
   },
   watch: {
-    selected() {
-      this.updateControlBox();
+    selected: {
+      handler() {
+        this.updateControlBox();
+      },
+      immediate: true,
     },
-    interactable(value) {
-      if (value) {
-        this.setupInteractions();
-      } else {
-        this.destroyInteractions();
-      }
+    interactable: {
+      handler(value) {
+        if (value) {
+          this.setupInteractions();
+        } else {
+          this.destroyInteractions();
+        }
+      },
+      immediate: true,
     },
     "component.position"() {
       this.updateControlBox();
@@ -870,8 +876,8 @@ export default {
           position[1] + evt.deltaRect.top / this.zoom,
         ],
         dimension: [
-          dimension[0] + evt.deltaRect.width / this.zoom,
-          dimension[1] + evt.deltaRect.height / this.zoom,
+          Math.max(1, dimension[0] + evt.deltaRect.width / this.zoom),
+          Math.max(1, dimension[1] + evt.deltaRect.height / this.zoom),
         ],
       });
     },
@@ -1116,6 +1122,13 @@ export default {
           overflow: auto;
           z-index: 1;
         }
+      }
+    }
+
+    &.media {
+      :deep(video),
+      :deep(audio) {
+        pointer-events: none;
       }
     }
 
