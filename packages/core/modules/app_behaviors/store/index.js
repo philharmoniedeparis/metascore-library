@@ -15,8 +15,6 @@ export default defineStore("app-behaviors", {
   },
   actions: {
     async init(data) {
-      await import("../blockly/blocks");
-
       // Import the locale.
       const locale = getLocale();
       const { default: blocklyLocale } = await import(
@@ -26,6 +24,8 @@ export default defineStore("app-behaviors", {
       );
 
       Blockly.setLocale(blocklyLocale);
+
+      await import("../blockly/blocks");
 
       this.behaviors = data || {};
     },
