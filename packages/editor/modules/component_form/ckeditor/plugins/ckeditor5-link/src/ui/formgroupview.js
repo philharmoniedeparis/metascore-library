@@ -1,4 +1,4 @@
-import { View } from "@ckeditor/ckeditor5-ui/src/";
+import { View } from "@ckeditor/ckeditor5-ui";
 
 import "../../theme/formgroup.scss";
 

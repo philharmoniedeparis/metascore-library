@@ -1,9 +1,9 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
+import { javascriptGenerator as Generator, Order } from "blockly/javascript";
 import { Variables, Names } from "blockly/core";
 
-const init = JavaScript.init;
+const init = Generator.init;
 
-JavaScript.init = function (workspace) {
+Generator.init = function (workspace) {
   init.call(this, workspace);
 
   // Override the variable definitions.
@@ -28,21 +28,21 @@ JavaScript.init = function (workspace) {
   }
 };
 
-JavaScript["variables_get"] = function (block) {
+Generator.forBlock["variables_get"] = function (block) {
   // Variable getter.
-  const varName = JavaScript.nameDB_.getName(
+  const varName = Generator.nameDB_.getName(
     block.getFieldValue("VAR"),
     Names.NameType.VARIABLE
   );
   const code = `Reactivity.unref(${varName})\n`;
-  return [code, JavaScript.ORDER_ATOMIC];
+  return [code, Order.ATOMIC];
 };
 
-JavaScript["variables_set"] = function (block) {
+Generator.forBlock["variables_set"] = function (block) {
   // Variable setter.
   const argument0 =
-    JavaScript.valueToCode(block, "VALUE", JavaScript.ORDER_ASSIGNMENT) || "0";
-  const varName = JavaScript.nameDB_.getName(
+    Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "0";
+  const varName = Generator.nameDB_.getName(
     block.getFieldValue("VAR"),
     Names.NameType.VARIABLE
   );
@@ -54,17 +54,16 @@ JavaScript["variables_set"] = function (block) {
   return code;
 };
 
-JavaScript["reactivity_when"] = function (block) {
+Generator.forBlock["reactivity_when"] = function (block) {
   const conditionCode =
-    JavaScript.valueToCode(block, "CONDITION", JavaScript.ORDER_NONE) ||
-    "false";
-  const statement = JavaScript.statementToCode(block, "STATEMENT");
+    Generator.valueToCode(block, "CONDITION", Order.NONE) || "false";
+  const statement = Generator.statementToCode(block, "STATEMENT");
 
   let code = "";
 
-  if (JavaScript.STATEMENT_PREFIX) {
+  if (Generator.STATEMENT_PREFIX) {
     // Automatic prefix insertion is switched off for this block.  Add manually.
-    code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
+    code += Generator.injectId(Generator.STATEMENT_PREFIX, block);
   }
 
   code += "Reactivity.watchEffect(function () {\n";
@@ -73,11 +72,11 @@ JavaScript["reactivity_when"] = function (block) {
   code += "}\n";
   code += "});\n";
 
-  if (JavaScript.STATEMENT_SUFFIX) {
+  if (Generator.STATEMENT_SUFFIX) {
     code =
-      JavaScript.prefixLines(
-        JavaScript.injectId(JavaScript.STATEMENT_SUFFIX, block),
-        JavaScript.INDENT
+      Generator.prefixLines(
+        Generator.injectId(Generator.STATEMENT_SUFFIX, block),
+        Generator.INDENT
       ) + code;
   }
 

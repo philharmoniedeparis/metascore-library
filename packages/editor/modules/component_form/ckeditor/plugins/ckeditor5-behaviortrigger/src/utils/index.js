@@ -1,5 +1,7 @@
 import { upperFirst } from "lodash-es";
 
+export { default as AutomaticDecorators } from "./automaticdecorators";
+
 /**
  * A keystroke used by the {@link module:link/linkui~LinkUI link UI feature}.
  */

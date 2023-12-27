@@ -1,11 +1,11 @@
-import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
-import MouseObserver from "@ckeditor/ckeditor5-engine/src/view/observer/mouseobserver";
-import Input from "@ckeditor/ckeditor5-typing/src/input";
-import TwoStepCaretMovement from "@ckeditor/ckeditor5-typing/src/twostepcaretmovement";
-import inlineHighlight from "@ckeditor/ckeditor5-typing/src/utils/inlinehighlight";
-import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
-import ClipboardPipeline from "@ckeditor/ckeditor5-clipboard/src/clipboardpipeline";
-import { keyCodes } from "@ckeditor/ckeditor5-utils/src/keyboard";
+import { Plugin } from "@ckeditor/ckeditor5-core";
+import { MouseObserver } from "@ckeditor/ckeditor5-engine";
+import { Input } from "@ckeditor/ckeditor5-typing";
+import { TwoStepCaretMovement } from "@ckeditor/ckeditor5-typing";
+import { inlineHighlight } from "@ckeditor/ckeditor5-typing";
+import { findAttributeRange } from "@ckeditor/ckeditor5-typing";
+import { ClipboardPipeline } from "@ckeditor/ckeditor5-clipboard";
+import { keyCodes } from "@ckeditor/ckeditor5-utils";
 
 import AddBehaviorTriggerCommand from "./addbehaviortriggercommand";
 import RemoveBehaviorTriggerCommand from "./removebehaviortriggercommand";

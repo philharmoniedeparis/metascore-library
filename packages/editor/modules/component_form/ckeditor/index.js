@@ -1,38 +1,45 @@
-import Alignment from "@ckeditor/ckeditor5-alignment/src/alignment";
-import BlockQuote from "@ckeditor/ckeditor5-block-quote/src/blockquote";
-import Bold from "@ckeditor/ckeditor5-basic-styles/src/bold";
-import Essentials from "@ckeditor/ckeditor5-essentials/src/essentials";
-import Font from "@ckeditor/ckeditor5-font/src/font";
-import GeneralHtmlSupport from "@ckeditor/ckeditor5-html-support/src/generalhtmlsupport";
-import Heading from "@ckeditor/ckeditor5-heading/src/heading";
-import Image from "@ckeditor/ckeditor5-image/src/image";
-import ImageResize from "@ckeditor/ckeditor5-image/src/imageresize";
-import ImageStyle from "@ckeditor/ckeditor5-image/src/imagestyle";
-import ImageTextAlternative from "@ckeditor/ckeditor5-image/src/imagetextalternative";
-import ImageToolbar from "@ckeditor/ckeditor5-image/src/imagetoolbar";
-import ImageUpload from "@ckeditor/ckeditor5-image/src/imageupload";
-import Indent from "@ckeditor/ckeditor5-indent/src/indent";
-import IndentBlock from "@ckeditor/ckeditor5-indent/src/indentblock";
-import Italic from "@ckeditor/ckeditor5-basic-styles/src/italic";
-import List from "@ckeditor/ckeditor5-list/src/list";
-import Paragraph from "@ckeditor/ckeditor5-paragraph/src/paragraph";
-import RemoveFormat from "@ckeditor/ckeditor5-remove-format/src/removeformat";
-import SpecialCharacters from "@ckeditor/ckeditor5-special-characters/src/specialcharacters";
-import SpecialCharactersEssentials from "@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials";
-import Strikethrough from "@ckeditor/ckeditor5-basic-styles/src/strikethrough";
-import Subscript from "@ckeditor/ckeditor5-basic-styles/src/subscript";
-import Superscript from "@ckeditor/ckeditor5-basic-styles/src/superscript";
-import Table from "@ckeditor/ckeditor5-table/src/table";
-import TableToolbar from "@ckeditor/ckeditor5-table/src/tabletoolbar";
-import Underline from "@ckeditor/ckeditor5-basic-styles/src/underline";
+import { Alignment } from "@ckeditor/ckeditor5-alignment";
+import { BlockQuote } from "@ckeditor/ckeditor5-block-quote";
+import { Bold } from "@ckeditor/ckeditor5-basic-styles";
+import { Essentials } from "@ckeditor/ckeditor5-essentials";
+import { Font } from "@ckeditor/ckeditor5-font";
+import { GeneralHtmlSupport } from "@ckeditor/ckeditor5-html-support";
+import { Heading } from "@ckeditor/ckeditor5-heading";
+import { Image } from "@ckeditor/ckeditor5-image";
+import { ImageResize } from "@ckeditor/ckeditor5-image";
+import { ImageStyle } from "@ckeditor/ckeditor5-image";
+import { ImageTextAlternative } from "@ckeditor/ckeditor5-image";
+import { ImageToolbar } from "@ckeditor/ckeditor5-image";
+import { ImageUpload } from "@ckeditor/ckeditor5-image";
+import { Indent } from "@ckeditor/ckeditor5-indent";
+import { IndentBlock } from "@ckeditor/ckeditor5-indent";
+import { Italic } from "@ckeditor/ckeditor5-basic-styles";
+import { Link } from "@ckeditor/ckeditor5-link";
+import { LinkUI } from "@ckeditor/ckeditor5-link";
+import { AutoLink } from "@ckeditor/ckeditor5-link";
+import { LinkEditing } from "@ckeditor/ckeditor5-link";
+import { LinkImage } from "@ckeditor/ckeditor5-link";
+import { LinkImageEditing } from "@ckeditor/ckeditor5-link";
+import { List } from "@ckeditor/ckeditor5-list";
+import { Paragraph } from "@ckeditor/ckeditor5-paragraph";
+import { RemoveFormat } from "@ckeditor/ckeditor5-remove-format";
+import { SourceEditing } from "@ckeditor/ckeditor5-source-editing";
+import { SpecialCharacters } from "@ckeditor/ckeditor5-special-characters";
+import { SpecialCharactersEssentials } from "@ckeditor/ckeditor5-special-characters";
+import { Strikethrough } from "@ckeditor/ckeditor5-basic-styles";
+import { Subscript } from "@ckeditor/ckeditor5-basic-styles";
+import { Superscript } from "@ckeditor/ckeditor5-basic-styles";
+import { Table } from "@ckeditor/ckeditor5-table";
+import { TableToolbar } from "@ckeditor/ckeditor5-table";
+import { Underline } from "@ckeditor/ckeditor5-basic-styles";
 
 import BehaviorTrigger from "./plugins/ckeditor5-behaviortrigger/src/behaviortrigger";
-import Link from "./plugins/ckeditor5-link/src/link";
-import LinkImage from "./plugins/ckeditor5-link/src/linkimage";
-import SourceEditing from "./plugins/ckeditor5-sourceediting/src/sourceediting";
+import CustomLink from "./plugins/ckeditor5-link/src/link";
+import CustomLinkImage from "./plugins/ckeditor5-link/src/linkimage";
+import CustomSourceEditing from "./plugins/ckeditor5-sourceediting/src/sourceediting";
 import UploadAdapter from "./plugins/ckeditor5-uploadadapter/src/uploadadapter";
 
-import DecoupledEditor from "@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor";
+import { DecoupledEditor } from "@ckeditor/ckeditor5-editor-decoupled";
 
 import "./styles.scss";
 
@@ -42,6 +49,15 @@ export default function createEditor(
 ) {
   return DecoupledEditor.create(el, {
     language,
+    removePlugins: [
+      Link,
+      AutoLink,
+      LinkEditing,
+      LinkUI,
+      LinkImage,
+      LinkImageEditing,
+      SourceEditing,
+    ],
     plugins: [
       Alignment,
       BehaviorTrigger,
@@ -60,12 +76,12 @@ export default function createEditor(
       Indent,
       IndentBlock,
       Italic,
-      Link,
-      LinkImage,
+      CustomLink,
+      CustomLinkImage,
       List,
       Paragraph,
       RemoveFormat,
-      SourceEditing,
+      CustomSourceEditing,
       SpecialCharacters,
       SpecialCharactersEssentials,
       Strikethrough,

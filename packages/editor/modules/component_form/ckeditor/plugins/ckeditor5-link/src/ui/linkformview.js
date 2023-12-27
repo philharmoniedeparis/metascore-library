@@ -1,4 +1,4 @@
-import LinkFormViewBase from "@ckeditor/ckeditor5-link/src/ui/linkformview";
+import LinkFormView from "@ckeditor/ckeditor5-link/src/ui/linkformview";
 import {
   LabeledFieldView,
   createLabeledDropdown,
@@ -6,7 +6,7 @@ import {
   addListToDropdown,
   SwitchButtonView,
   ButtonView,
-} from "@ckeditor/ckeditor5-ui/src/index";
+} from "@ckeditor/ckeditor5-ui";
 import {
   getTypeLabels,
   getComponentLabels,
@@ -21,7 +21,7 @@ import tipIcon from "../../theme/icons/tip.svg";
 
 import "../../theme/linkform.scss";
 
-export default class LinkFormView extends LinkFormViewBase {
+export default class CustomLinkFormView extends LinkFormView {
   /**
    * @inheritDoc
    */

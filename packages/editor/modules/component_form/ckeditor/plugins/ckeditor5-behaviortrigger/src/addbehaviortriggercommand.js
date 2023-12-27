@@ -1,11 +1,8 @@
-import Command from "@ckeditor/ckeditor5-core/src/command";
-import findAttributeRange from "@ckeditor/ckeditor5-typing/src/utils/findattributerange";
-import Collection from "@ckeditor/ckeditor5-utils/src/collection";
-import first from "@ckeditor/ckeditor5-utils/src/first";
-import toMap from "@ckeditor/ckeditor5-utils/src/tomap";
+import { Command } from "@ckeditor/ckeditor5-core";
+import { findAttributeRange } from "@ckeditor/ckeditor5-typing";
+import { Collection, first, toMap } from "@ckeditor/ckeditor5-utils";
 
-import AutomaticDecorators from "./utils/automaticdecorators";
-import { isTriggerableElement } from "./utils";
+import { AutomaticDecorators, isTriggerableElement } from "./utils";
 
 /**
  * The link command. It is used by the {@link module:link/link~Link link feature}.

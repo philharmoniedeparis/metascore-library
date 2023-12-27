@@ -1,5 +1,5 @@
 <template>
-  <base-modal class="modal-form" @close="$emit('close')">
+  <base-modal :show="show" class="modal-form" @close="$emit('close')">
     <template v-if="$slots.title" #title>
       <slot name="title" />
     </template>
@@ -28,6 +28,10 @@ import { v4 as uuid } from "uuid";
 
 export default {
   props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
     description: {
       type: String,
       default: null,

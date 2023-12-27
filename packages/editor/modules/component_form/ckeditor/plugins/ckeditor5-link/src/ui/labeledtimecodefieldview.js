@@ -1,6 +1,8 @@
-import { LabeledFieldView } from "@ckeditor/ckeditor5-ui/src";
-import { ButtonView } from "@ckeditor/ckeditor5-ui/src";
-import { ToolbarView } from "@ckeditor/ckeditor5-ui/src";
+import {
+  LabeledFieldView,
+  ButtonView,
+  ToolbarView,
+} from "@ckeditor/ckeditor5-ui";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { unref } from "vue";
 import { createLabeledInputTimecode } from "./utils";
@@ -33,7 +35,9 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
     const t = locale.t;
     const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
 
-    this._buttons = [];
+    this.toolbarView = null;
+
+    const buttons = [];
 
     if (in_button) {
       this.inButton = new ButtonView(locale);
@@ -45,8 +49,9 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
         this.fieldView.value = unref(mediaTime);
         this.fieldView.fire("input");
       });
-      this._buttons.push(this.inButton);
+      buttons.push(this.inButton);
     }
+
     if (out_button) {
       this.outButton = new ButtonView(locale);
       this.outButton.set({
@@ -56,8 +61,9 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
       this.outButton.on("execute", () => {
         seekMediaTo(this.fieldView.value);
       });
-      this._buttons.push(this.outButton);
+      buttons.push(this.outButton);
     }
+
     if (clear_button) {
       this.clearButton = new ButtonView(locale);
       this.clearButton.set({
@@ -68,7 +74,13 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
         this.fieldView.value = null;
         this.fieldView.fire("input");
       });
-      this._buttons.push(this.clearButton);
+      buttons.push(this.clearButton);
+    }
+
+    if (buttons.length > 0) {
+      this.toolbarView = new ToolbarView(locale);
+      this.toolbarView.items.addMany(buttons);
+      this.fieldWrapperChildren.add(this.toolbarView);
     }
 
     this.extendTemplate({
@@ -78,17 +90,14 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
     });
   }
 
+  /**
+   * @inheritdoc
+   */
   render() {
     super.render();
 
-    if (this._buttons.length > 0) {
-      const locale = this.locale;
-
-      const toolbar = new ToolbarView(locale);
-      toolbar.items.addMany(this._buttons);
-      toolbar.render();
-
-      this.element.appendChild(toolbar.element);
+    if (this.toolbarView) {
+      this.fieldView.focusTracker.add(this.toolbarView.element);
     }
   }
 }

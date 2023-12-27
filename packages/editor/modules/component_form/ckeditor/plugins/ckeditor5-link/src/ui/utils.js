@@ -1,5 +1,5 @@
-import { Collection } from "@ckeditor/ckeditor5-utils/src";
-import { Model } from "@ckeditor/ckeditor5-ui/src";
+import { Collection } from "@ckeditor/ckeditor5-utils";
+import { Model } from "@ckeditor/ckeditor5-ui";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import InputTimecodeView from "./inputtimecodeview";
 

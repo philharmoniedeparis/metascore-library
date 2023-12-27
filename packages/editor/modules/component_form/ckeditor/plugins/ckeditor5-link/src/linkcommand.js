@@ -1,8 +1,8 @@
-import LinkCommandBase from "@ckeditor/ckeditor5-link/src/linkcommand";
+import { LinkCommand } from "@ckeditor/ckeditor5-link";
 import { omit } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-export default class LinkCommand extends LinkCommandBase {
+export default class CustomLinkCommand extends LinkCommand {
   /**
    * @inheritDoc
    */

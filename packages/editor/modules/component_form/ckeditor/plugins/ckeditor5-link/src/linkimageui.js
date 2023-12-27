@@ -1,12 +1,17 @@
-import LinkImageUIBase from "@ckeditor/ckeditor5-link/src/linkimageui";
-import LinkEditing from "./linkediting";
-import LinkUI from "./linkui";
+import { LinkImageUI } from "@ckeditor/ckeditor5-link";
 
-export default class LinkImageUI extends LinkImageUIBase {
+import CustomLinkEditing from "./linkediting";
+import CustomLinkUI from "./linkui";
+
+export default class CustomLinkImageUI extends LinkImageUI {
   /**
    * @inheritDoc
    */
   static get requires() {
-    return [LinkEditing, LinkUI, "ImageBlockEditing"];
+    return [CustomLinkEditing, CustomLinkUI, "ImageBlockEditing"];
+  }
+
+  static get pluginName() {
+    return "CustomLinkImageUI";
   }
 }

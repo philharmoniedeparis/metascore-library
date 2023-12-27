@@ -220,7 +220,11 @@ export default {
 .block {
   > :deep(.metaScore-component--inner) {
     color: rgb(66, 66, 66);
-    font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
+    font:
+      normal 11px / normal Verdana,
+      Arial,
+      Helvetica,
+      sans-serif;
     overflow: hidden;
   }
 
