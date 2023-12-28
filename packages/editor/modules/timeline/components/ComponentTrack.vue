@@ -133,13 +133,15 @@
       />
     </div>
 
-    <div class="aniamted-properties" @click.capture="onClick">
+    <div class="aniamted-properties">
       <animated-property-track
         v-for="(value, property) in animatedProperties"
+        ref="animated-property-tracks"
         :key="property"
         :model-value="value"
         :property="property"
         @update:model-value="onAnimatedPropertyUpdate(property, $event)"
+        @keyframeselect="onAnimatedPropertyKeyframeSelect"
       />
     </div>
   </div>
@@ -481,6 +483,13 @@ export default {
         this.$nextTick(function () {
           this.$refs.handle.scrollIntoView();
         });
+      } else {
+        // Unselect animated property keyframes.
+        if (this.$refs["animated-property-tracks"]) {
+          this.$refs["animated-property-tracks"].forEach((track) => {
+            track.removeSelection();
+          });
+        }
       }
     },
     resizable(value) {
@@ -683,6 +692,11 @@ export default {
           animated: true,
         },
       });
+    },
+    onAnimatedPropertyKeyframeSelect(index) {
+      if (index != null) {
+        this.selectComponent(this.component);
+      }
     },
     onMousedown() {
       if (this.preview) return;

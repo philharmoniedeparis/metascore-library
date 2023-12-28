@@ -54,7 +54,7 @@
         :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
         :class="['keyframe', { selected: selected === index }]"
         tabindex="0"
-        @click.stop="onKeyframeClick(index)"
+        @click.stop="(evt) => selectKeyframe(evt.shiftKey ? null : index)"
         @contextmenu="onKeyframeContextmenu(index)"
       ></div>
     </div>
@@ -85,7 +85,7 @@ export default {
       required: true,
     },
   },
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "keyframeselect"],
   setup() {
     const {
       duration: mediaDuration,
@@ -145,6 +145,11 @@ export default {
       };
     },
   },
+  watch: {
+    selected(value) {
+      this.$emit("keyframeselect", value);
+    },
+  },
   mounted() {
     this._interactable = interact(".keyframe.selected", {
       context: this.$el,
@@ -165,6 +170,18 @@ export default {
     }
   },
   methods: {
+    selectKeyframe(index) {
+      if (index != null) {
+        this.selected = index;
+        const keyframe = this.value.at(index);
+        this.seekMediaTo(keyframe[0]);
+      } else {
+        this.removeSelection();
+      }
+    },
+    removeSelection() {
+      this.selected = null;
+    },
     deleteSelectedKeyframe() {
       if (this.selected !== null) {
         this.value = this.value.toSpliced(this.selected, 1);
@@ -182,11 +199,6 @@ export default {
       this.value = this.value.concat([keyframe]);
 
       this.seekMediaTo(time);
-    },
-    onKeyframeClick(index) {
-      const keyframe = this.value.at(index);
-      this.selected = index;
-      this.seekMediaTo(keyframe[0]);
     },
     onKeyframeContextmenu(index) {
       this.addContextmenuItem({
