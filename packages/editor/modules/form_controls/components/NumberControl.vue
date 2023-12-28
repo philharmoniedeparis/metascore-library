@@ -152,7 +152,7 @@ export default {
     },
     value: {
       get() {
-        return this.modelValue;
+        return round(this.modelValue, this.decimals);
       },
       set(value) {
         if (!this.lazy) {
