@@ -138,7 +138,6 @@ import interact from "@interactjs/interact";
 import { round, kebabCase } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import {
   default as useStore,
   ValidationError,
@@ -205,6 +204,7 @@ export default {
       deleteComponent,
       getBlockActivePage,
       setBlockActivePage,
+      getAnimatedValueAtTime,
     } = useModule("app_components");
     const { getComponentElement } = useModule("app_renderer");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
@@ -227,6 +227,7 @@ export default {
       deleteComponent,
       getBlockActivePage,
       setBlockActivePage,
+      getAnimatedValueAtTime,
       getComponentElement,
       startHistoryGroup,
       endHistoryGroup,
@@ -296,7 +297,7 @@ export default {
     },
     currentScale() {
       if (this.component.scale?.animated) {
-        return getAnimatedValueAtTime(
+        return this.getAnimatedValueAtTime(
           this.component.scale.value,
           this.mediaTime
         );
@@ -305,7 +306,7 @@ export default {
     },
     currentTranslate() {
       if (this.component.translate?.animated) {
-        return getAnimatedValueAtTime(
+        return this.getAnimatedValueAtTime(
           this.component.translate.value,
           this.mediaTime
         );
@@ -314,7 +315,7 @@ export default {
     },
     currentRotation() {
       if (this.component.rotate?.animated) {
-        return getAnimatedValueAtTime(
+        return this.getAnimatedValueAtTime(
           this.component.rotate.value,
           this.mediaTime
         );
@@ -915,7 +916,7 @@ export default {
           ];
         } else {
           const new_value = round(
-            getAnimatedValueAtTime(value, this.mediaTime) + diff
+            this.getAnimatedValueAtTime(value, this.mediaTime) + diff
           );
           value = value.concat([[time, new_value]]).sort((a, b) => a[0] - b[0]);
         }

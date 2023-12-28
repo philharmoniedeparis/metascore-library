@@ -31,7 +31,6 @@
 <script>
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { round } from "lodash";
-import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import CheckIcon from "../../assets/icons/animated-check.svg?inline";
 
 export default {
@@ -86,7 +85,8 @@ export default {
   emits: ["update:modelValue"],
   setup() {
     const { time: mediaTime } = useModule("media_player");
-    return { mediaTime };
+    const { getAnimatedValueAtTime } = useModule("app_components");
+    return { mediaTime, getAnimatedValueAtTime };
   },
   computed: {
     value: {
@@ -111,7 +111,7 @@ export default {
     valueAtTime() {
       return !this.value.animated
         ? this.value.value
-        : getAnimatedValueAtTime(this.value.value, this.mediaTime);
+        : this.getAnimatedValueAtTime(this.value.value, this.mediaTime);
     },
   },
   methods: {

@@ -8,6 +8,8 @@ import * as IconManager from "./utils/icons";
 import MediaPlayer from "../media_player";
 import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
 
+import { getAnimatedValueAtTime } from "./utils/animation";
+
 import AnimationComponent from "./components/AnimationComponent";
 import BlockComponent from "./components/BlockComponent";
 import BlockTogglerComponent from "./components/BlockTogglerComponent";
@@ -313,6 +315,10 @@ export default class AppComponentsModule extends AbstractModule {
   clearOverrides(component, key) {
     const store = useStore();
     store.clearOverrides(component, key);
+  }
+
+  getAnimatedValueAtTime(values, time) {
+    return getAnimatedValueAtTime(values, time);
   }
 
   onStoreAction(callback) {

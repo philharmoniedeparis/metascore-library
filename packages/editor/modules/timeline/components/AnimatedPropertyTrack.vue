@@ -38,7 +38,7 @@
 <template>
   <div
     v-hotkey.local.prevent="hotkeys"
-    class="animated-property-track"
+    :class="['animated-property-track', { dragging }]"
     :data-property="property"
   >
     <div ref="handle" class="handle">
@@ -48,23 +48,14 @@
 
     <div ref="wrapper" class="keyframes-wrapper" @click="onWrapperClick">
       <div
-        v-for="(keyframe, index) in modelValue"
+        v-for="(keyframe, index) in value"
         :key="index"
-        :style="{
-          left: `${(keyframe[0] / mediaDuration) * 100}%`,
-        }"
+        :style="{ left: `${(keyframe[0] / mediaDuration) * 100}%` }"
         :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
-        :class="[
-          'keyframe',
-          {
-            selected:
-              selectedKeyframe?.[0] === keyframe[0] &&
-              selectedKeyframe?.[1] === keyframe[1],
-          },
-        ]"
+        :class="['keyframe', { selected: selected === index }]"
         tabindex="0"
-        @click.stop="onKeyframeClick(keyframe)"
-        @contextmenu="onKeyframeContextmenu(keyframe)"
+        @click.stop="onKeyframeClick(index)"
+        @contextmenu="onKeyframeContextmenu(index)"
       ></div>
     </div>
   </div>
@@ -78,7 +69,6 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
 import AnimatedIcon from "../assets/icons/animated.svg?inline";
 
 export default {
@@ -97,17 +87,25 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const { addItem: addContextmenuItem } = useModule("contextmenu");
     const {
       duration: mediaDuration,
       seekTo: seekMediaTo,
       formatTime,
     } = useModule("media_player");
-    return { mediaDuration, seekMediaTo, formatTime, addContextmenuItem };
+    const { getAnimatedValueAtTime } = useModule("app_components");
+    const { addItem: addContextmenuItem } = useModule("contextmenu");
+    return {
+      mediaDuration,
+      seekMediaTo,
+      formatTime,
+      getAnimatedValueAtTime,
+      addContextmenuItem,
+    };
   },
   data() {
     return {
-      selectedKeyframe: null,
+      selected: null,
+      dragging: false,
     };
   },
   computed: {
@@ -154,7 +152,9 @@ export default {
       startAxis: "x",
       lockAxis: "x",
       listeners: {
+        start: this.onKeyframeDraggableStart,
         move: this.onKeyframeDraggableMove,
+        end: this.onKeyframeDraggableEnd,
       },
     });
   },
@@ -165,75 +165,64 @@ export default {
     }
   },
   methods: {
+    deleteSelectedKeyframe() {
+      if (this.selected !== null) {
+        this.value = this.value.toSpliced(this.selected, 1);
+        this.selected = null;
+      }
+    },
     onWrapperClick(evt) {
       const { width, left } = evt.target.getBoundingClientRect();
       const x = evt.pageX - left;
       const time = round((x / width) * this.mediaDuration, 2);
-      const value = getAnimatedValueAtTime(this.value, time);
+      const value = round(this.getAnimatedValueAtTime(this.value, time), 2);
       const keyframe = [time, value];
 
-      this.value = this.value.concat([keyframe]).sort((a, b) => {
-        return a[0] - b[0];
-      });
-
-      this.selectedKeyframe = keyframe;
+      this.selected = this.value.length;
+      this.value = this.value.concat([keyframe]);
 
       this.seekMediaTo(time);
     },
-    onKeyframeClick(keyframe) {
-      this.selectedKeyframe = keyframe;
+    onKeyframeClick(index) {
+      const keyframe = this.value.at(index);
+      this.selected = index;
       this.seekMediaTo(keyframe[0]);
     },
-    onKeyframeContextmenu(keyframe) {
+    onKeyframeContextmenu(index) {
       this.addContextmenuItem({
         label: this.$t("contextmenu.keyframe.delete"),
         handler: () => {
-          this.deleteKeyframe(keyframe);
+          this.value = this.value.toSpliced(index, 1);
+
+          if (this.selected === index) {
+            this.selected = null;
+          }
         },
       });
+    },
+    onKeyframeDraggableStart() {
+      this.dragging = true;
     },
     onKeyframeDraggableMove(evt) {
       const { width } = this.$refs.wrapper.getBoundingClientRect();
       const delta_x = evt.delta.x;
       const delta_time = (delta_x / width) * this.mediaDuration;
-      const keyframe = [
-        round(this.selectedKeyframe[0] + delta_time, 2),
-        this.selectedKeyframe[1],
-      ];
 
-      this.value = this.value
-        .map((k) => {
-          if (
-            k[0] === this.selectedKeyframe[0] &&
-            k[1] === this.selectedKeyframe[1]
-          ) {
-            return keyframe;
-          }
-          return k;
-        })
-        .sort((a, b) => {
-          return a[0] - b[0];
-        });
+      let [time, value] = this.value.at(this.selected);
+      time = round(time + delta_time, 2);
 
-      this.selectedKeyframe = keyframe;
+      this.value = this.value.toSpliced(this.selected, 1, [time, value]);
+      this.seekMediaTo(time);
     },
-    deleteKeyframe(keyframe) {
-      this.value = this.value.filter(
-        (k) => !(k[0] === keyframe[0] && k[1] === keyframe[1])
+    onKeyframeDraggableEnd(evt) {
+      this.dragging = false;
+
+      // Prevent the next click event
+      evt.target.addEventListener(
+        "click",
+        (evt) => evt.stopImmediatePropagation(),
+        { capture: true, once: true }
       );
-
-      if (
-        this.selectedKeyframe &&
-        keyframe[0] === this.selectedKeyframe[0] &&
-        keyframe[1] === this.selectedKeyframe[1]
-      ) {
-        this.selectedKeyframe = null;
-      }
-    },
-    deleteSelectedKeyframe() {
-      if (this.selectedKeyframe !== null) {
-        this.deleteKeyframe(this.selectedKeyframe);
-      }
     },
   },
 };
@@ -285,6 +274,7 @@ export default {
 
     &.selected {
       opacity: 1;
+      z-index: 1;
 
       &::after {
         background: #ffd800;

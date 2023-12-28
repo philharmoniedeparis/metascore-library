@@ -1,12 +1,16 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
+import { getAnimatedValueAtTime, getSortedKeyframes } from "../utils/animation";
 
 export default function (component, model) {
   const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isTransformable) {
+    const sortedTransformValue = getSortedKeyframes(component, "translate");
+    const sortedScaleValue = getSortedKeyframes(component, "scale");
+    const sortedRotateValue = getSortedKeyframes(component, "rotate");
+
     const transform = computed(() => {
       const { translate, scale, rotate } = unref(component);
       const ret = {};
@@ -17,8 +21,10 @@ export default function (component, model) {
         if (!translate.animated) {
           value = translate.value;
         } else {
-          const time = unref(mediaTime);
-          value = getAnimatedValueAtTime(translate.value, time);
+          value = getAnimatedValueAtTime(
+            unref(sortedTransformValue),
+            unref(mediaTime)
+          );
         }
 
         if (!isUndefined(value) && !isNull(value)) {
@@ -37,8 +43,10 @@ export default function (component, model) {
         if (!scale.animated) {
           value = scale.value;
         } else {
-          const time = unref(mediaTime);
-          value = getAnimatedValueAtTime(scale.value, time);
+          value = getAnimatedValueAtTime(
+            unref(sortedScaleValue),
+            unref(mediaTime)
+          );
         }
 
         if (!isUndefined(value) && !isNull(value)) {
@@ -57,8 +65,10 @@ export default function (component, model) {
         if (!rotate.animated) {
           value = rotate.value;
         } else {
-          const time = unref(mediaTime);
-          value = getAnimatedValueAtTime(rotate.value, time);
+          value = getAnimatedValueAtTime(
+            unref(sortedRotateValue),
+            unref(mediaTime)
+          );
         }
 
         if (!isUndefined(value) && !isNull(value)) {

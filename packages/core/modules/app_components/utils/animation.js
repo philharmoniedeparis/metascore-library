@@ -1,6 +1,13 @@
+import { computed, unref } from "vue";
 import { isArray } from "lodash";
-import { map } from "./math";
+import { map } from "@metascore-library/core/utils/math";
 
+/**
+ * Get an animated value at the specified media time
+ * @param {mixed[]} values The list of values
+ * @param {number} time The media time
+ * @returns {mixed} The correspondiung value
+ */
 export function getAnimatedValueAtTime(values, time) {
   // Only one value available, return it.
   if (values.length === 1) {
@@ -42,4 +49,18 @@ export function getAnimatedValueAtTime(values, time) {
   }
 
   return map(time, start[0], end[0], start[1], end[1]);
+}
+
+/**
+ * Get a ref of a property's sorted keyframes.
+ * @param {*} component The component
+ * @param {*} prop The keyframes' property
+ * @returns {ComputedRef} The sorted keyframes
+ */
+export function getSortedKeyframes(component, prop) {
+  return computed(() => {
+    return unref(component)[prop].value.toSorted((a, b) => {
+      return a[0] - b[0];
+    });
+  });
 }
