@@ -19,7 +19,7 @@ export default defineStore("shared-assets-library", {
       configs: {
         url: null,
       },
-      items: {},
+      items: new Map(),
       loaded: false,
       loading: false,
       filters: {
@@ -31,11 +31,11 @@ export default defineStore("shared-assets-library", {
   getters: {
     get() {
       return (id) => {
-        return this.items[id];
+        return this.items.get(id);
       };
     },
     all() {
-      return Object.values(this.items);
+      return Array.from(this.items.values());
     },
     filtered() {
       let items = this.all;
