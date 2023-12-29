@@ -192,7 +192,7 @@ export default {
       const { width, left } = evt.target.getBoundingClientRect();
       const x = evt.pageX - left;
       const time = round((x / width) * this.mediaDuration, 2);
-      const value = round(this.getAnimatedValueAtTime(this.value, time), 2);
+      const value = this.getAnimatedValueAtTime(this.value, time);
       const keyframe = [time, value];
 
       this.selected = this.value.length;
