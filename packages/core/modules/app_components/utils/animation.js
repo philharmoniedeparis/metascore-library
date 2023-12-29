@@ -14,9 +14,17 @@ export function getAnimatedValueAtTime(values, time) {
     return values[0][1];
   }
 
+  // Find the index of a matching time.
+  let index = values.findIndex((value) => {
+    return value[0] === time;
+  });
+  // Desired time matches a value's time,
+  // return that value.
+  if (index > -1) return values[index][1];
+
   // Find the index of the value with the smallest time
   // greater than the desired time.
-  const index = values.findIndex((value) => {
+  index = values.findIndex((value) => {
     return value[0] >= time;
   });
 
@@ -29,12 +37,6 @@ export function getAnimatedValueAtTime(values, time) {
   if (index === 0) {
     // No value found before desired time,
     // return first value.
-    return values[index][1];
-  }
-
-  if (time === values[index][0]) {
-    // Desired time matches a value's time,
-    // return that value.
     return values[index][1];
   }
 

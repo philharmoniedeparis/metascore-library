@@ -195,8 +195,12 @@ export default {
       const value = this.getAnimatedValueAtTime(this.value, time);
       const keyframe = [time, value];
 
-      this.selected = this.value.length;
-      this.value = this.value.concat([keyframe]);
+      const newValue = this.value
+        .concat([keyframe])
+        .sort((a, b) => a[0] - b[0]);
+
+      this.value = newValue;
+      this.selected = newValue.findIndex((value) => value === keyframe);
 
       this.seekMediaTo(time);
     },
@@ -206,8 +210,12 @@ export default {
         handler: () => {
           this.value = this.value.toSpliced(index, 1);
 
-          if (this.selected === index) {
-            this.selected = null;
+          if (this.selected != null) {
+            if (this.selected === index) {
+              this.selected = null;
+            } else if (this.selected > index) {
+              this.selected--;
+            }
           }
         },
       });
@@ -224,10 +232,21 @@ export default {
       time = round(time + delta_time, 2);
 
       this.value = this.value.toSpliced(this.selected, 1, [time, value]);
+
       this.seekMediaTo(time);
     },
     onKeyframeDraggableEnd(evt) {
       this.dragging = false;
+
+      let [time, value] = this.value.at(this.selected);
+
+      // Re-sort keyframes.
+      const newValue = this.value.toSorted((a, b) => a[0] - b[0]);
+
+      this.value = newValue;
+      this.selected = newValue.findIndex(
+        (v) => v[0] === time && v[1] === value
+      );
 
       // Prevent the next click event
       evt.target.addEventListener(

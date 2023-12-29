@@ -1,14 +1,12 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { getAnimatedValueAtTime, getSortedKeyframes } from "../utils/animation";
+import { getAnimatedValueAtTime } from "../utils/animation";
 
 export default function (component, model) {
   const { time: mediaTime } = useModule("media_player");
 
   if (unref(model).$isOpacitable) {
-    const sortedValue = getSortedKeyframes(component, "opacity");
-
     const opacity = computed(() => {
       const { opacity } = unref(component);
       let value = null;
@@ -17,7 +15,8 @@ export default function (component, model) {
         if (!opacity.animated) {
           value = opacity.value;
         } else {
-          value = getAnimatedValueAtTime(unref(sortedValue), unref(mediaTime));
+          const time = unref(mediaTime);
+          value = getAnimatedValueAtTime(opacity.value, time);
         }
 
         if (!isUndefined(value) && !isNull(value)) {
