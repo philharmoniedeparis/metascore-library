@@ -160,9 +160,7 @@ export default {
   },
   methods: {
     async setupSwipe() {
-      if (deviceHasTouch()) {
-        return;
-      }
+      if (!deviceHasTouch()) return;
 
       const { default: Hammer } = await import("hammerjs");
 
