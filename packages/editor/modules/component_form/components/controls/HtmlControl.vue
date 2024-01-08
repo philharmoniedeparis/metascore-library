@@ -190,11 +190,11 @@ export default {
     onComponentDblclick() {
       if (!this.disabled) this.startEditing();
     },
-    onComponentInnerElKeyEvent(evt) {
-      if (!this.disabled) evt.stopPropagation();
-    },
     onButtonClick() {
       this.editing ? this.stopEditing() : this.startEditing();
+    },
+    stopEvent(evt) {
+      if (!this.disabled) evt.stopPropagation();
     },
     async startEditing() {
       if (this.editing) return;
@@ -215,11 +215,14 @@ export default {
         this.editor = markRaw(editor);
         this.setupEditor();
 
-        // Prevent key events from propagating.
         const inner_el = this.getInnerElement();
         if (inner_el) {
-          inner_el.addEventListener("keydown", this.onComponentInnerElKeyEvent);
-          inner_el.addEventListener("keyup", this.onComponentInnerElKeyEvent);
+          // Prevent pointerdown events from propagating,
+          // to prevent the swipe action in blocks.
+          inner_el.addEventListener("pointerdown", this.stopEvent);
+          // Prevent key events from propagating.
+          inner_el.addEventListener("keydown", this.stopEvent);
+          inner_el.addEventListener("keyup", this.stopEvent);
         }
 
         this.highlighterRect = getRectWithoutTransforms(
@@ -320,11 +323,9 @@ export default {
 
       const inner_el = this.getInnerElement(component);
       if (inner_el) {
-        inner_el.removeEventListener(
-          "keydown",
-          this.onComponentInnerElKeyEvent
-        );
-        inner_el.removeEventListener("keyup", this.onComponentInnerElKeyEvent);
+        inner_el.removeEventListener("pointerdown", this.stopEvent);
+        inner_el.removeEventListener("keydown", this.stopEvent);
+        inner_el.removeEventListener("keyup", this.stopEvent);
       }
 
       this.unfreezeComponent(component);
