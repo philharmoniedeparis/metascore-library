@@ -3,6 +3,7 @@ import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { EMPTY_OPTION } from "../constants";
+import { watchDrowpdownFieldOptions } from "../utils";
 
 const BREADCRUMB_SEPARATOR = " › ";
 
@@ -153,6 +154,9 @@ Extensions.register("components_scenario_options", function () {
     { searchable: true }
   );
   scenario_input.appendField(scenario_field, "COMPONENT");
+
+  // Update the field's dropdown list and value when new options are available.
+  watchDrowpdownFieldOptions(scenario_field, scenarioOptions);
 });
 
 const blockOptions = ref([]);
@@ -184,6 +188,9 @@ Extensions.register("components_block_options", function () {
     { searchable: true }
   );
   block_input.appendField(block_field, "COMPONENT");
+
+  // Update the field's dropdown list and value when new options are available.
+  watchDrowpdownFieldOptions(block_field, blockOptions);
 });
 
 const componentOptions = ref([]);
@@ -219,6 +226,9 @@ Extensions.register("components_component_options", function () {
     { searchable: true }
   );
   component_input.appendField(component_field, "COMPONENT");
+
+  // Update the field's dropdown list and value when new options are available.
+  watchDrowpdownFieldOptions(component_field, componentOptions);
 
   if (mock) {
     component_field.setEnabled(false);
