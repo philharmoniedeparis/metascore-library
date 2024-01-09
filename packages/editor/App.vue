@@ -659,19 +659,24 @@ export default {
 
   &,
   :deep(*) {
+    scrollbar-width: thin;
     scrollbar-color: var(--metascore-scrollbar-thumb-color)
       var(--metascore-scrollbar-track-color);
-    scrollbar-width: thin;
 
     ::-webkit-scrollbar {
       appearance: none;
-      background-color: var(--metascore-scrollbar-track-color);
       width: var(--metascore-scrollbar-width);
-      height: var(--metascore-scrollbar-thumb-min-height);
+      height: var(--metascore-scrollbar-width);
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: var(--metascore-scrollbar-track-color);
     }
 
     ::-webkit-scrollbar-thumb {
       border-radius: 0;
+      min-width: var(--metascore-scrollbar-thumb-min-height);
+      min-height: var(--metascore-scrollbar-thumb-min-height);
       background-color: var(--metascore-scrollbar-thumb-color);
     }
   }
