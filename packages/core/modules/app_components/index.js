@@ -147,6 +147,11 @@ export default class AppComponentsModule extends AbstractModule {
     return store.getParent(component);
   }
 
+  getComponentIndex(component) {
+    const store = useStore();
+    return store.getIndex(component);
+  }
+
   getComponentChildrenProperty(component) {
     const store = useStore();
     return store.getChildrenProperty(component);
