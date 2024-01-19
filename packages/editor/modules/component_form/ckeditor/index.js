@@ -33,11 +33,10 @@ import { Table } from "@ckeditor/ckeditor5-table";
 import { TableToolbar } from "@ckeditor/ckeditor5-table";
 import { Underline } from "@ckeditor/ckeditor5-basic-styles";
 
-import BehaviorTrigger from "./plugins/ckeditor5-behaviortrigger/src/behaviortrigger";
-import CustomLink from "./plugins/ckeditor5-link/src/link";
-import CustomLinkImage from "./plugins/ckeditor5-link/src/linkimage";
-import CustomSourceEditing from "./plugins/ckeditor5-sourceediting/src/sourceediting";
-import UploadAdapter from "./plugins/ckeditor5-uploadadapter/src/uploadadapter";
+import { BehaviorTrigger } from "./plugins/ckeditor5-behaviortrigger/src";
+import { CustomLink, CustomLinkImage } from "./plugins/ckeditor5-link/src";
+import { CustomSourceEditing } from "./plugins/ckeditor5-sourceediting/src";
+import { UploadAdapter } from "./plugins/ckeditor5-uploadadapter/src";
 
 import { DecoupledEditor } from "@ckeditor/ckeditor5-editor-decoupled";
 

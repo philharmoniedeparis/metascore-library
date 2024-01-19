@@ -21,6 +21,9 @@ export default class CustomLinkUI extends LinkUI {
     const editor = this.editor;
     const linkCommand = editor.commands.get("link");
     const defaultProtocol = editor.config.get("link.defaultProtocol");
+    const allowCreatingEmptyLinks = editor.config.get(
+      "link.allowCreatingEmptyLinks"
+    );
 
     const formView = new (CssTransitionDisablerMixin(CustomLinkFormView))(
       editor.locale,
@@ -30,10 +33,20 @@ export default class CustomLinkUI extends LinkUI {
     formView.urlInputView.fieldView.bind("value").to(linkCommand, "value");
 
     // Form elements should be read-only when corresponding commands are disabled.
-    formView.urlInputView
-      .bind("isReadOnly")
-      .to(linkCommand, "isEnabled", (value) => !value);
-    formView.saveButtonView.bind("isEnabled").to(linkCommand);
+    formView.typeInputView.bind("isEnabled").to(linkCommand, "isEnabled");
+    formView.urlInputView.bind("isEnabled").to(linkCommand, "isEnabled");
+
+    // Disable the "save" button if the command is disabled or the input is empty despite being required.
+    formView.saveButtonView
+      .bind("isEnabled")
+      .to(
+        linkCommand,
+        "isEnabled",
+        formView.urlInputView,
+        "isEmpty",
+        (isCommandEnabled, isInputEmpty) =>
+          isCommandEnabled && (allowCreatingEmptyLinks || !isInputEmpty)
+      );
 
     // Execute link command after clicking the "Save" button.
     this.listenTo(formView, "submit", () => {
