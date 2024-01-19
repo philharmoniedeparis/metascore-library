@@ -1,11 +1,16 @@
-import LinkImageEditingBase from "@ckeditor/ckeditor5-link/src/linkimageediting";
-import LinkEditing from "./linkediting";
+import { LinkImageEditing } from "@ckeditor/ckeditor5-link";
 
-export default class LinkImageEditing extends LinkImageEditingBase {
+import CustomLinkEditing from "./linkediting";
+
+export default class CustomLinkImageEditing extends LinkImageEditing {
   /**
    * @inheritDoc
    */
   static get requires() {
-    return ["ImageEditing", "ImageUtils", LinkEditing];
+    return ["ImageEditing", "ImageUtils", CustomLinkEditing];
+  }
+
+  static get pluginName() {
+    return "CustomLinkImageEditing";
   }
 }

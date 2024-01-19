@@ -1,5 +1,5 @@
 <template>
-  <base-modal class="progress-indicator">
+  <base-modal :show="show" class="progress-indicator">
     <label>
       <div v-if="text || $slots.text" class="text">
         <template v-if="text">{{ text }}</template>
@@ -20,6 +20,10 @@
 <script>
 export default {
   props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
     text: {
       type: String,
       default: null,

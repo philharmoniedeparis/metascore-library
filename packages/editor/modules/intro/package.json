@@ -6,6 +6,6 @@
     "@floating-ui/dom": "^1.0.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.11",
-    "vue-dompurify-html": "^4.0.0"
+    "vue-dompurify-html": "^5.0.0"
   }
 }

@@ -160,9 +160,7 @@ export default {
   },
   methods: {
     async setupSwipe() {
-      if (deviceHasTouch()) {
-        return;
-      }
+      if (!deviceHasTouch()) return;
 
       const { default: Hammer } = await import("hammerjs");
 
@@ -220,7 +218,11 @@ export default {
 .block {
   > :deep(.metaScore-component--inner) {
     color: rgb(66, 66, 66);
-    font: normal 11px / normal Verdana, Arial, Helvetica, sans-serif;
+    font:
+      normal 11px / normal Verdana,
+      Arial,
+      Helvetica,
+      sans-serif;
     overflow: hidden;
   }
 

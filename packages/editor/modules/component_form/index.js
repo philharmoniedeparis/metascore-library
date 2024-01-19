@@ -3,6 +3,7 @@ import { readonly } from "vue";
 
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import AppComponents from "@metascore-library/core/modules/app_components";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
 import ElementHighlighter from "../element_highlighter";
@@ -23,6 +24,7 @@ export default class ComponentFormModule extends AbstractModule {
   static id = "component_form";
 
   static dependencies = [
+    AppComponents,
     AppPreview,
     AssetsLibrary,
     ElementHighlighter,

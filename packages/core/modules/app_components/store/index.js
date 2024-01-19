@@ -116,6 +116,17 @@ export default defineStore("app-components", {
         return null;
       };
     },
+    getIndex() {
+      return (component) => {
+        const parent = this.getParent(component);
+        if (parent) {
+          return this.getChildren(parent).findIndex((c) => {
+            return c.type === component.type && c.id === component.id;
+          });
+        }
+        return null;
+      };
+    },
     getSiblings() {
       return (component) => {
         const parent = this.getParent(component);

@@ -36,7 +36,12 @@
 </i18n>
 
 <template>
-  <base-modal class="hotkey-list" :title="$t('title')" @close="$emit('close')">
+  <base-modal
+    :show="show"
+    :title="$t('title')"
+    class="hotkey-list"
+    @close="$emit('close')"
+  >
     <div class="sections">
       <section
         v-for="(combinations, title) in hotkeys"
@@ -83,6 +88,12 @@ import { isApplePlatform } from "@metascore-library/core/utils/device";
 import useStore from "../store";
 
 export default {
+  props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
+  },
   emits: ["close"],
   setup() {
     const store = useStore();

@@ -14,7 +14,7 @@
   <div :class="['base-modal-wrapper', { teleport }]">
     <teleport :to="teleportTarget" :disabled="!teleport || !teleportTarget">
       <transition name="fade">
-        <div class="base-modal" v-bind="$attrs">
+        <div v-if="show" class="base-modal" v-bind="$attrs">
           <div class="backdrop" tabindex="-1" role="dialog">
             <div class="dialog" role="document">
               <div class="content">
@@ -65,6 +65,10 @@ export default {
     target: {
       type: [String, HTMLElement, Boolean],
       default: null,
+    },
+    show: {
+      type: Boolean,
+      default: true,
     },
     header: {
       type: Boolean,

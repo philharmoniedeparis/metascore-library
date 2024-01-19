@@ -1,7 +1,7 @@
 import { computed, unref, readonly } from "vue";
 import { isNull, isUndefined } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import { getAnimatedValueAtTime } from "@metascore-library/core/utils/animation";
+import { getAnimatedValueAtTime } from "../utils/animation";
 
 export default function (component, model) {
   const { time: mediaTime } = useModule("media_player");

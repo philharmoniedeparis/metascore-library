@@ -2,6 +2,7 @@ import { ref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg } from "blockly/core";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import { EMPTY_OPTION } from "../constants";
+import { watchDrowpdownFieldOptions } from "../utils";
 
 const triggerOptions = ref([]);
 watchEffect(() => {
@@ -45,6 +46,9 @@ Extensions.register("behavior_triggers_options", function () {
     block.setEnabled(true);
     block.setTooltip(Msg.LINKS_CLICK_TOOLTIP);
   }
+
+  // Update the field's dropdown list and value when new options are available.
+  watchDrowpdownFieldOptions(field, triggerOptions);
 });
 
 defineBlocksWithJsonArray([
@@ -55,9 +59,7 @@ defineBlocksWithJsonArray([
       {
         type: "field_dropdown",
         name: "TRIGGER",
-        options: function () {
-          return triggerOptions.value;
-        },
+        options: () => triggerOptions.value,
       },
     ],
     message1: "%{BKY_LINKS_CLICK_THEN}",

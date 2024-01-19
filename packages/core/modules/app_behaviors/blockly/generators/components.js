@@ -1,39 +1,39 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
+import { javascriptGenerator as Generator, Order } from "blockly/javascript";
 import { EMPTY_OPTION } from "../constants";
 
-JavaScript["components_click"] = function (block) {
+Generator.forBlock["components_click"] = function (block) {
   const [type, id] = block.getFieldValue("COMPONENT").split(":");
-  const statement = JavaScript.statementToCode(block, "STATEMENT");
+  const statement = Generator.statementToCode(block, "STATEMENT");
 
   let code = "";
 
-  if (JavaScript.STATEMENT_PREFIX) {
+  if (Generator.STATEMENT_PREFIX) {
     // Automatic prefix insertion is switched off for this block.  Add manually.
-    code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
+    code += Generator.injectId(Generator.STATEMENT_PREFIX, block);
   }
 
   code += `Components.addEventListener("${type}", "${id}", "click", function () {\n`;
   code += statement;
   code += "});\n";
 
-  if (JavaScript.STATEMENT_SUFFIX) {
+  if (Generator.STATEMENT_SUFFIX) {
     code =
-      JavaScript.prefixLines(
-        JavaScript.injectId(JavaScript.STATEMENT_SUFFIX, block),
-        JavaScript.INDENT
+      Generator.prefixLines(
+        Generator.injectId(Generator.STATEMENT_SUFFIX, block),
+        Generator.INDENT
       ) + code;
   }
 
   return code;
 };
 
-JavaScript["components_set_scenario"] = function (block) {
+Generator.forBlock["components_set_scenario"] = function (block) {
   const [, id] = block.getFieldValue("COMPONENT").split(":");
   const code = `Components.setScenario("${id}");`;
   return code;
 };
 
-JavaScript["components_get_property"] = function (block) {
+Generator.forBlock["components_get_property"] = function (block) {
   const component = block.getFieldValue("COMPONENT");
   if (component === EMPTY_OPTION) {
     return "";
@@ -44,10 +44,10 @@ JavaScript["components_get_property"] = function (block) {
 
   const code = `Components.getProperty("${type}", "${id}", "${property}")`;
 
-  return [code, JavaScript.ORDER_FUNCTION_CALL];
+  return [code, Order.FUNCTION_CALL];
 };
 
-JavaScript["components_set_property"] = function (block) {
+Generator.forBlock["components_set_property"] = function (block) {
   const component = block.getFieldValue("COMPONENT");
   if (component === EMPTY_OPTION) {
     return "";
@@ -55,26 +55,24 @@ JavaScript["components_set_property"] = function (block) {
 
   const [type, id] = component.split(":");
   const property = block.getFieldValue("PROPERTY");
-  const value =
-    JavaScript.valueToCode(block, "VALUE", JavaScript.ORDER_ASSIGNMENT) || "0";
+  const value = Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "0";
 
   const code = `Components.setProperty("${type}", "${id}", "${property}", ${value});`;
 
   return code;
 };
 
-JavaScript["components_get_block_page"] = function (block) {
+Generator.forBlock["components_get_block_page"] = function (block) {
   const [, id] = block.getFieldValue("COMPONENT").split(":");
 
   const code = `Components.getBlockPage("${id}") + 1`;
 
-  return [code, JavaScript.ORDER_ADDITION];
+  return [code, Order.ADDITION];
 };
 
-JavaScript["components_set_block_page"] = function (block) {
+Generator.forBlock["components_set_block_page"] = function (block) {
   const [, id] = block.getFieldValue("COMPONENT").split(":");
-  const index =
-    JavaScript.valueToCode(block, "INDEX", JavaScript.ORDER_ASSIGNMENT) || "0";
+  const index = Generator.valueToCode(block, "INDEX", Order.ASSIGNMENT) || "0";
 
   const code = `Components.setBlockPage("${id}", ${index} - 1);`;
 

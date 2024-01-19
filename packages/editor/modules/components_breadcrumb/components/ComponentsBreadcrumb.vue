@@ -19,7 +19,6 @@
       <components-breadcrumb-item
         v-for="(item, index) in items"
         :key="index"
-        :type="item.type"
         :value="item.value"
         :tail="index === items.length - 1"
       />
@@ -68,7 +67,7 @@ export default {
 
       if (selection_anscestors.length === 1) {
         return selection_anscestors[0].map((anscestor) => {
-          return { type: "component", value: anscestor };
+          return { value: anscestor };
         });
       }
 
@@ -78,14 +77,13 @@ export default {
       if (master.length > 1) {
         master.every((anscestor, index) => {
           const match = selection_anscestors.every((anscestors) => {
-            console.log(anscestors, index);
             return (
               anscestors[index].type === anscestor.type &&
               anscestors[index].id === anscestor.id
             );
           });
           if (match) {
-            items.push({ type: "component", value: anscestor });
+            items.push({ value: anscestor });
             return true;
           }
 
@@ -99,12 +97,11 @@ export default {
           });
 
         if (ellipsis) {
-          items.push({ type: "text", value: "..." });
+          items.push({ value: "..." });
         }
       }
 
       items.push({
-        type: "text",
         value: this.$t("multi_selection_tail", {
           count: selected_components.length,
         }),

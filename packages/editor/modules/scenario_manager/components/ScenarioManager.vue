@@ -296,7 +296,7 @@ export default {
   flex-direction: row;
   align-items: center;
   padding: 0 0.25em;
-  font-size: 0.75em;
+  font-size: 0.8em;
   overflow: hidden;
   user-select: none;
 

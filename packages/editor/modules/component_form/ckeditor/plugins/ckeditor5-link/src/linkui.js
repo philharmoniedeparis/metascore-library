@@ -1,14 +1,19 @@
-import LinkUIBase from "@ckeditor/ckeditor5-link/src/linkui";
-import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
+import { LinkUI } from "@ckeditor/ckeditor5-link";
+import { ButtonView } from "@ckeditor/ckeditor5-ui";
 import {
   addLinkProtocolIfApplicable,
   LINK_KEYSTROKE,
 } from "@ckeditor/ckeditor5-link/src/utils";
-import LinkFormView from "./ui/linkformview";
+import { CssTransitionDisablerMixin } from "@ckeditor/ckeditor5-ui";
+import CustomLinkFormView from "./ui/linkformview";
 
 import linkIcon from "../theme/icons/link.svg";
 
-export default class LinkUI extends LinkUIBase {
+export default class CustomLinkUI extends LinkUI {
+  static get pluginName() {
+    return "CustomLinkUI";
+  }
+
   /**
    * @inheritDoc
    */
@@ -17,7 +22,10 @@ export default class LinkUI extends LinkUIBase {
     const linkCommand = editor.commands.get("link");
     const defaultProtocol = editor.config.get("link.defaultProtocol");
 
-    const formView = new LinkFormView(editor.locale, linkCommand);
+    const formView = new (CssTransitionDisablerMixin(CustomLinkFormView))(
+      editor.locale,
+      linkCommand
+    );
 
     formView.urlInputView.fieldView.bind("value").to(linkCommand, "value");
 

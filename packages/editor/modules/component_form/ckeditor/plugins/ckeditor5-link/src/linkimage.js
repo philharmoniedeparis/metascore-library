@@ -1,12 +1,17 @@
-import LinkImageBase from "@ckeditor/ckeditor5-link/src/linkimage";
-import LinkImageEditing from "./linkimageediting";
-import LinkImageUI from "./linkimageui";
+import { LinkImage } from "@ckeditor/ckeditor5-link";
 
-export default class LinkImage extends LinkImageBase {
+import CustomLinkImageEditing from "./linkimageediting";
+import CustomLinkImageUI from "./linkimageui";
+
+export default class CustomLinkImage extends LinkImage {
+  static get pluginName() {
+    return "CustomLinkImage";
+  }
+
   /**
    * @inheritDoc
    */
   static get requires() {
-    return [LinkImageEditing, LinkImageUI];
+    return [CustomLinkImageEditing, CustomLinkImageUI];
   }
 }

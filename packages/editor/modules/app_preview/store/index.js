@@ -203,8 +203,11 @@ export default defineStore("app-preview", {
     },
     copyComponents(components) {
       const { setData: setClipboardData } = useModule("clipboard");
-      const { getComponentChildrenProperty, getComponentChildren } =
-        useModule("app_components");
+      const {
+        getComponentChildrenProperty,
+        getComponentChildren,
+        getComponentIndex,
+      } = useModule("app_components");
 
       const recursiveCopy = (component) => {
         const copy = structuredClone(component.data);
@@ -218,7 +221,14 @@ export default defineStore("app-preview", {
         return copy;
       };
 
-      setClipboardData("metascore/component", components.map(recursiveCopy));
+      setClipboardData(
+        "metascore/component",
+        components
+          .toSorted((a, b) => {
+            return getComponentIndex(a) - getComponentIndex(b);
+          })
+          .map(recursiveCopy)
+      );
     },
     async cutComponents(components) {
       const { deleteComponent } = useModule("app_components");

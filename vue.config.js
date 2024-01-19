@@ -1,7 +1,9 @@
 const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
+const {
+  CKEditorTranslationsPlugin,
+} = require("@ckeditor/ckeditor5-dev-translations");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { NormalModuleReplacementPlugin } = require("webpack");
 const { styles } = require("@ckeditor/ckeditor5-dev-utils");
@@ -146,13 +148,12 @@ module.exports = defineConfig({
 
     // Setup CKEditor.
     // See https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/frameworks/vuejs-v3.html#using-ckeditor-from-source
-    config.plugin("ckeditor").use(CKEditorWebpackPlugin, [
+    config.plugin("ckeditor").use(CKEditorTranslationsPlugin, [
       {
         language: "fr",
         additionalLanguages: ["en"],
         buildAllTranslationsToSeparateFiles: true,
         outputDirectory: "translations/ckeditor",
-        chunks: ["metaScore.Editor"],
         verbose: true,
       },
     ]);

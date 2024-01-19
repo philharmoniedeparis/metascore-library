@@ -1,10 +1,14 @@
-import Plugin from "@ckeditor/ckeditor5-core/src/plugin";
-import ClickObserver from "@ckeditor/ckeditor5-engine/src/view/observer/clickobserver";
-import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
-import ContextualBalloon from "@ckeditor/ckeditor5-ui/src/panel/balloon/contextualballoon";
-import clickOutsideHandler from "@ckeditor/ckeditor5-ui/src/bindings/clickoutsidehandler";
-import { isWidget } from "@ckeditor/ckeditor5-widget/src/utils";
+import { Plugin } from "@ckeditor/ckeditor5-core";
+import { ClickObserver } from "@ckeditor/ckeditor5-engine";
+import {
+  ButtonView,
+  ContextualBalloon,
+  clickOutsideHandler,
+  CssTransitionDisablerMixin,
+} from "@ckeditor/ckeditor5-ui";
+import { isWidget } from "@ckeditor/ckeditor5-widget";
 import viewToPlainText from "@ckeditor/ckeditor5-clipboard/src/utils/viewtoplaintext";
+
 import BehaviorTriggerFormView from "./ui/behaviortriggerformview";
 import BehaviorTriggerActionsView from "./ui/behaviortriggeractionsview";
 import { isLinkElement, TRIGGER_KEYSTROKE } from "./utils";
@@ -159,7 +163,7 @@ export default class BehaviorTriggerUI extends Plugin {
     const editor = this.editor;
     const addBehaviorTriggerCommand = editor.commands.get("addBehaviorTrigger");
 
-    const formView = new BehaviorTriggerFormView(
+    const formView = new (CssTransitionDisablerMixin(BehaviorTriggerFormView))(
       editor.locale,
       addBehaviorTriggerCommand
     );

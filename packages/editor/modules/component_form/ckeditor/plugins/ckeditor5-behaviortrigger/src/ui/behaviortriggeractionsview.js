@@ -1,10 +1,11 @@
-import ButtonView from "@ckeditor/ckeditor5-ui/src/button/buttonview";
-import LabelView from "@ckeditor/ckeditor5-ui/src/label/labelview";
-import View from "@ckeditor/ckeditor5-ui/src/view";
-import ViewCollection from "@ckeditor/ckeditor5-ui/src/viewcollection";
-import FocusCycler from "@ckeditor/ckeditor5-ui/src/focuscycler";
-import FocusTracker from "@ckeditor/ckeditor5-utils/src/focustracker";
-import KeystrokeHandler from "@ckeditor/ckeditor5-utils/src/keystrokehandler";
+import {
+  ButtonView,
+  LabelView,
+  View,
+  ViewCollection,
+  FocusCycler,
+} from "@ckeditor/ckeditor5-ui";
+import { FocusTracker, KeystrokeHandler } from "@ckeditor/ckeditor5-utils";
 import { icons } from "@ckeditor/ckeditor5-core";
 
 import "@ckeditor/ckeditor5-ui/theme/components/responsive-form/responsiveform.css";

@@ -12,7 +12,7 @@
 </i18n>
 
 <template>
-  <base-modal class="confirm-dialog" @close="$emit('cancel')">
+  <base-modal :show="show" class="confirm-dialog" @close="$emit('cancel')">
     <div class="text">
       <slot v-if="$slots.default" />
       <template v-else>{{ text }}</template>
@@ -33,6 +33,10 @@
 <script>
 export default {
   props: {
+    show: {
+      type: Boolean,
+      default: true,
+    },
     text: {
       type: String,
       default: null,

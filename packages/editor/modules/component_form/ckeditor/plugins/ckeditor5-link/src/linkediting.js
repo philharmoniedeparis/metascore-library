@@ -1,7 +1,12 @@
-import LinkEditingBase from "@ckeditor/ckeditor5-link/src/linkediting";
-import LinkCommand from "./linkcommand";
+import { LinkEditing } from "@ckeditor/ckeditor5-link";
 
-export default class LinkEditing extends LinkEditingBase {
+import CustomLinkCommand from "./linkcommand";
+
+export default class CustomLinkEditing extends LinkEditing {
+  static get pluginName() {
+    return "CustomLinkEditing";
+  }
+
   /**
    * @inheritDoc
    */
@@ -9,6 +14,6 @@ export default class LinkEditing extends LinkEditingBase {
     super.init();
 
     const editor = this.editor;
-    editor.commands.add("link", new LinkCommand(editor));
+    editor.commands.add("link", new CustomLinkCommand(editor));
   }
 }

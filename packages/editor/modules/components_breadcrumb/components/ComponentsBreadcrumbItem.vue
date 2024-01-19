@@ -1,14 +1,14 @@
 <template>
   <li :class="['components-breadcrumb--item', { tail }]">
     <button
-      v-if="type === 'component'"
+      v-if="typeof value === 'object'"
       type="button"
       :disabled="tail"
       @click="onComponentClick(value)"
     >
       {{ getComponentLabel(value) }}
     </button>
-    <div v-else-if="type === 'text'">
+    <div v-else>
       {{ value }}
     </div>
   </li>
@@ -19,15 +19,8 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {
-    type: {
-      type: String,
-      required: true,
-      validator(value) {
-        return ["component", "text"].includes(value);
-      },
-    },
     value: {
-      type: Object,
+      type: [Object, String],
       required: true,
     },
     tail: {

@@ -1,25 +1,25 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
+import { javascriptGenerator as Generator, Order } from "blockly/javascript";
 
-JavaScript["links_click"] = function (block) {
+Generator.forBlock["links_click"] = function (block) {
   const id = block.getFieldValue("TRIGGER");
-  const statement = JavaScript.statementToCode(block, "STATEMENT");
+  const statement = Generator.statementToCode(block, "STATEMENT");
 
   let code = "";
 
-  if (JavaScript.STATEMENT_PREFIX) {
+  if (Generator.STATEMENT_PREFIX) {
     // Automatic prefix insertion is switched off for this block.  Add manually.
-    code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
+    code += Generator.injectId(Generator.STATEMENT_PREFIX, block);
   }
 
   code += `Links.addEventListener("${id}", "click", function () {\n`;
   code += statement;
   code += "});\n";
 
-  if (JavaScript.STATEMENT_SUFFIX) {
+  if (Generator.STATEMENT_SUFFIX) {
     code =
-      JavaScript.prefixLines(
-        JavaScript.injectId(JavaScript.STATEMENT_SUFFIX, block),
-        JavaScript.INDENT
+      Generator.prefixLines(
+        Generator.injectId(Generator.STATEMENT_SUFFIX, block),
+        Generator.INDENT
       ) + code;
   }
 
@@ -30,16 +30,8 @@ JavaScript["links_click"] = function (block) {
     .forEach((child) => {
       const highlight_link = child.getFieldValue("HIGHLIGHT_LINK") || "FALSE";
       if (highlight_link === "TRUE") {
-        const from = JavaScript.valueToCode(
-          child,
-          "FROM",
-          JavaScript.ORDER_ASSIGNMENT
-        );
-        const to = JavaScript.valueToCode(
-          child,
-          "TO",
-          JavaScript.ORDER_ASSIGNMENT
-        );
+        const from = Generator.valueToCode(child, "FROM", Order.ASSIGNMENT);
+        const to = Generator.valueToCode(child, "TO", Order.ASSIGNMENT);
         code += `Links.autoHighlight("${id}", ${from}, ${to});\n`;
       }
     });
@@ -47,9 +39,8 @@ JavaScript["links_click"] = function (block) {
   return code;
 };
 
-JavaScript["links_open_url"] = function (block) {
-  const url =
-    JavaScript.valueToCode(block, "URL", JavaScript.ORDER_ASSIGNMENT) || "";
+Generator.forBlock["links_open_url"] = function (block) {
+  const url = Generator.valueToCode(block, "URL", Order.ASSIGNMENT) || "";
   const code = `Links.openUrl(${url});`;
   return code;
 };

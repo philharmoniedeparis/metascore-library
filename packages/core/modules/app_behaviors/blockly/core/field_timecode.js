@@ -23,18 +23,18 @@ import OutIcon from "../../assets/icons/timecode-out.svg?raw";
  */
 export default class FieldTimecode extends Field {
   /**
-   * @param {(string|!Sentinel)=} opt_value The initial value of the
+   * @param {(string|!Sentinel)=} value The initial value of the
    *     field. Should cast to a string. Defaults to an empty string if null or
    *     undefined.
    *     Also accepts Field.SKIP_SETUP if you wish to skip setup (only used by
    *     subclasses that want to handle configuration and setting the field
    *     value after their own constructors have run).
-   * @param {?Function=} opt_validator A function that is called to validate
+   * @param {?Function=} validator A function that is called to validate
    *     changes to the field's value. Takes in a string & returns a validated
    *     string, or null to abort the change.
-   * @param {Object=} opt_config A map of options used to configure the field.
+   * @param {Object=} config A map of options used to configure the field.
    */
-  constructor(opt_value, opt_validator, opt_config) {
+  constructor(value, validator, config) {
     super(Field.SKIP_SETUP);
 
     /**
@@ -127,10 +127,10 @@ export default class FieldTimecode extends Field {
      */
     this.CURSOR = "text";
 
-    if (opt_value === Field.SKIP_SETUP) return;
-    if (opt_config) this.configure_(opt_config);
-    this.setValue(opt_value);
-    if (opt_validator) this.setValidator(opt_validator);
+    if (value === Field.SKIP_SETUP) return;
+    if (config) this.configure_(config);
+    this.setValue(value);
+    if (validator) this.setValidator(validator);
   }
 
   /**
@@ -144,41 +144,6 @@ export default class FieldTimecode extends Field {
     if (typeof config["max"] === "number" || config["max"] === null) {
       this.max_ = config["max"];
     }
-  }
-
-  /**
-   * @override
-   */
-  initView() {
-    if (this.getConstants().FULL_BLOCK_FIELDS) {
-      // Step one: figure out if this is the only field on this block.
-      // Rendering is quite different in that case.
-      let nFields = 0;
-      let nConnections = 0;
-
-      // Count the number of fields, excluding text fields
-      for (let i = 0, input; (input = this.sourceBlock_.inputList[i]); i++) {
-        for (let j = 0; input.fieldRow[j]; j++) {
-          nFields++;
-        }
-        if (input.connection) {
-          nConnections++;
-        }
-      }
-      // The special case is when this is the only non-label field on the block
-      // and it has an output but no inputs.
-      this.fullBlockClickTarget_ =
-        nFields <= 1 && this.sourceBlock_.outputConnection && !nConnections;
-    } else {
-      this.fullBlockClickTarget_ = false;
-    }
-
-    if (this.fullBlockClickTarget_) {
-      this.clickTarget_ = this.sourceBlock_.getSvgRoot();
-    } else {
-      this.createBorderRect_();
-    }
-    this.createTextElement_();
   }
 
   /**

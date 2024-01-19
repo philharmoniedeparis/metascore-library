@@ -1,5 +1,7 @@
-import { InputView } from "@ckeditor/ckeditor5-ui/src";
+import { InputView } from "@ckeditor/ckeditor5-ui";
 import "timecode-input";
+
+import "../../theme/inputtimecodeview.scss";
 
 /**
  * The timecode input view class.
@@ -38,8 +40,10 @@ export default class InputTimecodeView extends InputView {
 
     this.inputMode = null;
 
+    // extendTemplate doesn't allow changing the tag.
+    this.template.tag = "timecode-input";
+
     this.extendTemplate({
-      tag: "timecode-input",
       attributes: {
         class: ["ck-input-timecode"],
         min: bind.to("min"),

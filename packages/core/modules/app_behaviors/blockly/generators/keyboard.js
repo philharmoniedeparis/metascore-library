@@ -1,25 +1,25 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
+import { javascriptGenerator as Generator } from "blockly/javascript";
 
-JavaScript["keyboard_keypressed"] = function (block) {
+Generator.forBlock["keyboard_keypressed"] = function (block) {
   const key = block.getFieldValue("KEY");
-  const statement = JavaScript.statementToCode(block, "STATEMENT");
+  const statement = Generator.statementToCode(block, "STATEMENT");
 
   let code = "";
 
-  if (JavaScript.STATEMENT_PREFIX) {
+  if (Generator.STATEMENT_PREFIX) {
     // Automatic prefix insertion is switched off for this block.  Add manually.
-    code += JavaScript.injectId(JavaScript.STATEMENT_PREFIX, block);
+    code += Generator.injectId(Generator.STATEMENT_PREFIX, block);
   }
 
   code += `Keyboard.addEventListener("${key}", "keydown", function () {\n`;
   code += statement;
   code += "});\n";
 
-  if (JavaScript.STATEMENT_SUFFIX) {
+  if (Generator.STATEMENT_SUFFIX) {
     code =
-      JavaScript.prefixLines(
-        JavaScript.injectId(JavaScript.STATEMENT_SUFFIX, block),
-        JavaScript.INDENT
+      Generator.prefixLines(
+        Generator.injectId(Generator.STATEMENT_SUFFIX, block),
+        Generator.INDENT
       ) + code;
   }
 

@@ -5,6 +5,7 @@ import {
   Menu,
   MenuItem,
   utils,
+  UnattachedFieldError,
 } from "blockly/core";
 import SearchableMenu from "./searchable_menu";
 import SearchableMenuItem from "./searchable_menuitem";
@@ -19,11 +20,11 @@ export default class FieldDropdown extends FieldDropdownBase {
   /**
    * @inheritdocs
    */
-  constructor(menuGenerator, opt_validator, opt_config) {
+  constructor(menuGenerator, validator, config) {
     super(Field.SKIP_SETUP);
 
     // If we pass SKIP_SETUP, don't do *anything* with the menu generator.
-    if (!isMenuGenerator(menuGenerator)) return;
+    if (menuGenerator === Field.SKIP_SETUP) return;
 
     if (Array.isArray(menuGenerator)) {
       validateOptions(menuGenerator);
@@ -40,22 +41,22 @@ export default class FieldDropdown extends FieldDropdownBase {
      * @type {boolean}
      * @private
      */
-    this.searchable_ = false;
+    this.searchable = false;
 
     /**
      * The currently selected option. The field is initialized with the
      * first option selected.
      */
-    this.selectedOption_ = this.getOptions(false).find((o) => {
+    this.selectedOption = this.getOptions(false).find((o) => {
       return typeof o[0] === "string" || o[0].default || !o[0].disabled;
     });
 
-    if (opt_config) {
-      this.configure_(opt_config);
+    if (config) {
+      this.configure_(config);
     }
-    this.setValue(this.selectedOption_[1]);
-    if (opt_validator) {
-      this.setValidator(opt_validator);
+    this.setValue(this.selectedOption[1]);
+    if (validator) {
+      this.setValidator(validator);
     }
   }
 
@@ -65,24 +66,23 @@ export default class FieldDropdown extends FieldDropdownBase {
   configure_(config) {
     super.configure_(config);
 
-    if (config.searchable) this.searchable_ = config.searchable;
+    if (config.searchable) this.searchable = config.searchable;
   }
 
   /**
    * @inheritdoc
    */
-  dropdownCreate_() {
+  dropdownCreate() {
     const block = this.getSourceBlock();
     if (!block) {
-      throw new Error();
+      throw new UnattachedFieldError();
     }
-
-    const menu = this.searchable_ ? new SearchableMenu() : new Menu();
+    const menu = this.searchable ? new SearchableMenu() : new Menu();
     menu.setRole(aria.Role.LISTBOX);
     this.menu_ = menu;
 
     const options = this.getOptions(false);
-    this.selectedMenuItem_ = null;
+    this.selectedMenuItem = null;
     for (let i = 0; i < options.length; i++) {
       const [label, value] = options[i];
       let enabled = true;
@@ -115,7 +115,7 @@ export default class FieldDropdown extends FieldDropdownBase {
       if (content === null) continue;
 
       let menuItem = null;
-      if (this.searchable_) {
+      if (this.searchable) {
         menuItem = new SearchableMenuItem(content, value);
         if (searchable_text) {
           menuItem.setSearchableText(searchable_text);
@@ -131,9 +131,9 @@ export default class FieldDropdown extends FieldDropdownBase {
         menuItem.setCheckable(true);
         menuItem.setChecked(value === this.value_);
         if (value === this.value_) {
-          this.selectedMenuItem_ = menuItem;
+          this.selectedMenuItem = menuItem;
         }
-        menuItem.onAction(this.handleMenuActionEvent_, this);
+        menuItem.onAction(this.handleMenuActionEvent, this);
       } else {
         menuItem.setEnabled(false);
       }
@@ -143,7 +143,7 @@ export default class FieldDropdown extends FieldDropdownBase {
   /**
    * @inheritdoc
    */
-  getOptions(opt_useCache) {
+  getOptions(useCache) {
     if (!this.menuGenerator_) {
       // A subclass improperly skipped setup without defining the menu
       // generator.
@@ -151,11 +151,11 @@ export default class FieldDropdown extends FieldDropdownBase {
     }
 
     if (Array.isArray(this.menuGenerator_)) return this.menuGenerator_;
-    if (opt_useCache && this.generatedOptions_) return this.generatedOptions_;
+    if (useCache && this.generatedOptions) return this.generatedOptions;
 
-    this.generatedOptions_ = this.menuGenerator_();
-    validateOptions(this.generatedOptions_);
-    return this.generatedOptions_;
+    this.generatedOptions = this.menuGenerator_();
+    validateOptions(this.generatedOptions);
+    return this.generatedOptions;
   }
 
   /**
@@ -164,14 +164,14 @@ export default class FieldDropdown extends FieldDropdownBase {
   render_() {
     // Hide both elements.
     this.getTextContent().nodeValue = "";
-    this.imageElement_.style.display = "none";
+    this.imageElement.style.display = "none";
 
     // Show correct element.
-    const option = this.selectedOption_ && this.selectedOption_[0];
+    const option = this.selectedOption && this.selectedOption[0];
     if (option && typeof option === "object" && "alt" in option) {
-      this.renderSelectedImage_(option);
+      this.renderSelectedImage(option);
     } else {
-      this.renderSelectedText_();
+      this.renderSelectedText();
     }
 
     this.positionBorderRect_();
@@ -181,10 +181,10 @@ export default class FieldDropdown extends FieldDropdownBase {
    * @inheritdoc
    */
   getText_() {
-    if (!this.selectedOption_) {
+    if (!this.selectedOption) {
       return null;
     }
-    const option = this.selectedOption_[0];
+    const option = this.selectedOption[0];
     if (typeof option === "object") {
       if ("alt" in option) {
         return option.alt;
@@ -198,13 +198,6 @@ export default class FieldDropdown extends FieldDropdownBase {
     }
     return option;
   }
-}
-
-/**
- * Copied as is from blockly.
- */
-function isMenuGenerator(menuGenerator) {
-  return menuGenerator !== Field.SKIP_SETUP;
 }
 
 /**
