@@ -1,5 +1,5 @@
 import { Collection } from "@ckeditor/ckeditor5-utils";
-import { Model } from "@ckeditor/ckeditor5-ui";
+import { ViewModel } from "@ckeditor/ckeditor5-ui";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import InputTimecodeView from "./inputtimecodeview";
 
@@ -79,7 +79,7 @@ export function getDropdownDefinitions(labels) {
   Object.entries(labels).forEach(([key, label]) => {
     const definition = {
       type: "button",
-      model: new Model({
+      model: new ViewModel({
         _value: key,
         label: label,
         withText: true,
