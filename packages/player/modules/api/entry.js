@@ -141,6 +141,7 @@ export class API {
         callback(params);
       }
     } catch (e) {
+      // eslint-disable-next-line
       console.error(e);
     }
   }

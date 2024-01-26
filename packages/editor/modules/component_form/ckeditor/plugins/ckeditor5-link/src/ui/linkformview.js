@@ -91,15 +91,17 @@ export default class CustomLinkFormView extends LinkFormView {
 
     const extraChildViews = [
       this.typeInputView,
-      ...this._playInputsGroup.children,
-      ...this._seekInputsGroup.children,
-      ...this._pageInputsGroup.children,
+      this._playInputsGroup,
+      this._seekInputsGroup,
+      this._pageInputsGroup,
+      this._blockToggleInputsGroup,
+      this._scenarioInputsGroup,
+      this._fullscreenInputsGroup,
     ];
 
-    extraChildViews.forEach((v) => {
-      // Register the view as focusable.
-      this._focusables.add(v);
+    this._focusables.addMany(extraChildViews, 0);
 
+    extraChildViews.forEach((v) => {
       // Register the view in the focus tracker.
       this.focusTracker.add(v.element);
     });
@@ -152,7 +154,9 @@ export default class CustomLinkFormView extends LinkFormView {
     const bind = this.bindTemplate;
     labeledInput.extendTemplate({
       attributes: {
-        class: bind.if("type", "ck-hidden", (value) => value !== "url"),
+        // ck-hidden seems to cause focus/selection issues.
+        // see https://github.com/philharmoniedeparis/metascore-library/issues/704
+        class: bind.if("type", "ck-fake-hidden", (value) => value !== "url"),
       },
     });
 
@@ -693,7 +697,7 @@ export default class CustomLinkFormView extends LinkFormView {
 
     let value = "";
 
-    switch (this.type) {
+    switch (type) {
       case "play":
         value = `#${type}`;
         if (params?.excerpt) {
@@ -728,7 +732,7 @@ export default class CustomLinkFormView extends LinkFormView {
         break;
 
       default:
-        value = `#${type}`;
+        value = type ? `#${type}` : "";
     }
 
     this.urlInputView.fieldView.value = value;

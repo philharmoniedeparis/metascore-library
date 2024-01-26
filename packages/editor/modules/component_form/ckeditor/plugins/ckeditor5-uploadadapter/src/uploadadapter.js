@@ -1,5 +1,5 @@
 import { Plugin } from "@ckeditor/ckeditor5-core";
-import Adapter from "./Adapter";
+import Adapter from "./adapter";
 
 export default class UploadAdapter extends Plugin {
   /**
