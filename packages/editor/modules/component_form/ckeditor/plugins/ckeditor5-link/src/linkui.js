@@ -118,5 +118,10 @@ export default class CustomLinkUI extends LinkUI {
     this.formView.unbind("type", "params");
     this.formView.bind("type", "params").to(linkCommand);
     this.formView.updateValue();
+
+    // Select input when form view is currently visible.
+    if (this._balloon.visibleView === this.formView) {
+      this.formView.focus();
+    }
   }
 }

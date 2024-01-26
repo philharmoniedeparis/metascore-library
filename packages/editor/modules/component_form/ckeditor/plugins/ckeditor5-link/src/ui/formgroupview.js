@@ -68,6 +68,7 @@ export default class FormGroupView extends View {
           bind.if("isVisible", "ck-hidden", (value) => !value),
         ],
         role: bind.to("_role"),
+        "z-index": "-1",
       },
       children: this.children,
     });
