@@ -1,7 +1,15 @@
 {
   "name": "metascore-library",
   "version": "3.4.3",
-  "private": true,
+  "description": "",
+  "homepage": "http://metascore.philharmoniedeparis.fr",
+  "author": "La Cité de la musique - Philharmonie de Paris (https://philharmoniedeparis.fr)",
+  "license": "CECILL-2.1",
+  "bugs": "https://github.com/philharmoniedeparis/metascore-library/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philharmoniedeparis/metascore-library.git"
+  },
   "scripts": {
     "serve": "vue-cli-service serve --target lib --inline-vue",
     "build": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue",
