@@ -12,8 +12,8 @@ async function save(url, data) {
   return await useModule("ajax").put(url, { data });
 }
 
-async function _delete(url) {
+async function del(url) {
   return await useModule("ajax").delete(url, { keepalive: true });
 }
 
-export { head, load, save, _delete as delete };
+export { head, load, save, del as delete };

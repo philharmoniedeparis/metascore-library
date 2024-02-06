@@ -22,8 +22,8 @@ const source_origin_regex =
   /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/;
 
 /**
- * The player API class <br/>
- * <b>A signleton is made available in the global context under metaScoreAPI</b> <br/>
+ * The player API class.
+ *
  * HTML links that follow the following format are automatically parsed:
  *
  *         <a href="#{action(s)}" rel="metascore" data-guide="{player's iframe id}">{link text}</a>
