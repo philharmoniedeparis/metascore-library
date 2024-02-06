@@ -16,7 +16,11 @@
     "build": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue",
     "develop": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue --watch",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "release": "commit-and-tag-version",
+    "release:patch": "commit-and-tag-version --release-as patch",
+    "release:minor": "commit-and-tag-version --release-as minor",
+    "release:major": "commit-and-tag-version --release-as major"
   },
   "workspaces": [
     "packages/*",
@@ -49,6 +53,7 @@
     "autoprefixer": "^10.4.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^9.0.0",
+    "commit-and-tag-version": "^11.2.0",
     "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^9.0.0",
