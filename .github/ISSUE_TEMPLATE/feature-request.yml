@@ -1,0 +1,21 @@
+name: Feature Request
+description: Request a new feature
+labels:
+  - type:feature-request
+  - flag:needs-triage
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Suggestion
+      description: Describe the feature you would like to see added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional information
+      description: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false

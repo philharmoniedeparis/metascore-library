@@ -1,0 +1,82 @@
+name: Bug Report
+description: Report a new bug
+labels:
+  - type:bug
+  - flag:needs-triage
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem
+      description: Please enter an explicit description of your issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Please describe the behavior you were expecting
+    validations:
+      required: true
+
+  - type: textarea
+    id: reprod-steps
+    attributes:
+      label: Reproduction steps
+      description: Please enter an explicit description of your issue
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. See error
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem.
+      value: |
+        ![DESCRIPTION](LINK.png)
+      render: bash
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors/Logs
+      description: Please copy and paste any relevant console output.
+      render: bash
+    validations:
+      required: false
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: Browsers
+      description: What browsers are you seeing the problem on ?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+        - Opera
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      description: What is the impacted environment ?
+      multiple: true
+      options:
+        - Windows
+        - Linux
+        - Mac
+    validations:
+      required: false

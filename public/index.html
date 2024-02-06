@@ -30,21 +30,19 @@
 
     <!-- built files will be auto injected -->
     <script>
-      const url_params = new URLSearchParams(window.location.search);
-
       document.addEventListener("DOMContentLoaded", function(event) {
         if (metaScore.Player) {
           metaScore.Player.create({
             el: document.querySelector('#app'),
-            url: url_params.get('url'),
-            api: url_params.has('api'),
-            responsive: url_params.has('responsive'),
-            allowUpscaling: url_params.has('allowUpscaling'),
+            url: "/api/app",
+            api: true,
+            responsive: true,
+            allowUpscaling: true,
           });
         } else {
           metaScore.Editor.create({
             el: document.querySelector('#app'),
-            url: url_params.get('url'),
+            url: "/api/app",
             modules: {
               ajax: {
                 credentials: "include",
@@ -53,31 +51,24 @@
                 },
               },
               assets_library: {
-                uploadUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/asset",
+                uploadUrl: "/api/asset",
                 uploadAccept: ".png,.gif,.jpg,.jpeg,.mp3,.m4a,.mp4",
                 uploadMaxSize: 0,
-                audiowaveformUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiowaveform",
-                spectrogramUrl: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/audiospectrum",
+                audiowaveformUrl: "/api/audiowaveform",
+                spectrogramUrl: "/api/audiospectrum",
               },
               shared_assets_library: {
-                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/shared-assets",
+                url: "/api/shared-assets",
               },
               auto_save: {
-                url: "http://metascore.philharmoniedeparis.fr.local/fr/api/guide/lY5g/autosave?latest_revision=1",
+                url: "/api/autosave",
                 interval: 30,
               },
               component_form: {
                 colorSwatches: [
-                  "#ffffff", "#ffc1c1", "#cccccc", "#aeaeae", "#a19b8f", "#a1884f", "#b4a74e",
-                  "#cce24f", "#dcc88c", "#ffcc99", "#ffeb98", "#ffff66", "#f5ed58", "#ffef4b",
-                  "#ffc947", "#ffab33", "#dd883d", "#dd693d", "#f75757", "#ebd900", "#000000",
-                  "#34312c", "#655027", "#8d6f22", "#985e51", "#732727", "#597d03", "#216633",
-                  "#337c66", "#40bc87", "#619f75", "#62a075", "#95c9a5", "#99deb7", "#84ccbe",
-                  "#9de2de", "#99e2ff", "#9fbfcc", "#a0bfcc", "#9fc0f6", "#8ab8e3", "#87c1d8",
-                  "#79c4dc", "#6ee2eb", "#c9d8d8", "#eaf0f9", "#ccaadc", "#948fb5", "#767a84",
-                  "#919799", "#5ea0aa", "#4eb4ed", "#4090bc", "#48798d", "#337a8b", "#288098",
-                  "#2969a5", "#39537e", "#173659", "#003399", "#1c99de", "#4f004c", "#543052",
-                  "#873379", "#cc3343", "#cc7f84",
+                  "#ffffff",
+                  "#cccccc",
+                  "#000000",
                 ],
               },
             },

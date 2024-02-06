@@ -1,13 +1,26 @@
 {
   "name": "metascore-library",
   "version": "3.4.3",
-  "private": true,
+  "description": "",
+  "homepage": "http://metascore.philharmoniedeparis.fr",
+  "author": "La Cité de la musique - Philharmonie de Paris (https://philharmoniedeparis.fr)",
+  "license": "CECILL-2.1",
+  "bugs": "https://github.com/philharmoniedeparis/metascore-library/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philharmoniedeparis/metascore-library.git"
+  },
   "scripts": {
+    "prepare": "husky install",
     "serve": "vue-cli-service serve --target lib --inline-vue",
     "build": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue",
     "develop": "vue-cli-service build --target lib --formats=umd,umd-min --inline-vue --watch",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "release": "commit-and-tag-version",
+    "release:patch": "commit-and-tag-version --release-as patch",
+    "release:minor": "commit-and-tag-version --release-as minor",
+    "release:major": "commit-and-tag-version --release-as major"
   },
   "workspaces": [
     "packages/*",
@@ -24,6 +37,8 @@
     "@babel/preset-env": "^7.17.5",
     "@ckeditor/ckeditor5-dev-translations": "^39.5.0",
     "@ckeditor/ckeditor5-dev-utils": "^39.5.0",
+    "@commitlint/cli": "^17.4.3",
+    "@commitlint/config-conventional": "^17.4.3",
     "@interactjs/dev-tools": "^1.10.17",
     "@intlify/vue-i18n-loader": "^4.1.0",
     "@pinia/testing": "^0.1.0",
@@ -38,12 +53,14 @@
     "autoprefixer": "^10.4.2",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^9.0.0",
+    "commit-and-tag-version": "^11.2.0",
     "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-vue": "^9.5.0",
     "file-loader": "^6.2.0",
+    "husky": "^8.0.0",
     "postcss": "^8.4.6",
     "postcss-loader": "^8.0.0",
     "prettier": "^3.0.0",
