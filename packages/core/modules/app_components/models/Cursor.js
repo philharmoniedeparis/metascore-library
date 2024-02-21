@@ -37,7 +37,6 @@ export default class Cursor extends EmbeddableComponent {
         acceleration: createNumberField({
           title: "Acceleration",
           minimum: 0.01,
-          maximum: 2,
           default: 1,
         }),
         "cursor-width": createNumberField({
