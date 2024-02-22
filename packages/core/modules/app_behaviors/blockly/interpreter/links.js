@@ -3,8 +3,8 @@ import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { unref, watch, nextTick } from "vue";
 
 let unwatchActiveScenario = null;
-const listeners = [];
-const autoHighlights = [];
+const listeners = new Set();
+const autoHighlights = new Set();
 
 export function init(context) {
   // Ensure 'Links' name does not conflict with variable names.
@@ -15,7 +15,10 @@ export function init(context) {
 
   // Add 'Links' object to context.
   context.Links = {
-    addEventListener: setupListener,
+    addEventListener: (id, type, callback) => {
+      listeners.add({ id, type, callback });
+      setupListener(id, type, callback);
+    },
     openUrl: (url) => {
       window.open(url, "_blank");
     },
@@ -33,8 +36,14 @@ export function reset() {
   // Remove all listeners.
   removeListeners();
 
+  // Clear the list of listeners.
+  listeners.clear();
+
   // Remove all autohighlight cuepoints.
   removeAutoHighlights();
+
+  // Clear the list of auto highlights.
+  autoHighlights.clear();
 }
 
 /**
@@ -66,24 +75,19 @@ function setupListener(id, type, callback) {
   links.forEach((link) => {
     link.addEventListener(type, callback);
   });
-
-  // Add to list of listeners.
-  listeners.push({ id, type, callback });
 }
 
 /**
  * Remove all listeners.
  */
 function removeListeners() {
-  while (listeners.length > 0) {
-    const { id, type, callback } = listeners.pop();
-
+  listeners.forEach(({ id, type, callback }) => {
     /** @type [HTMLElement] */
     const links = getLinks(id);
     links.forEach((link) => {
       link.removeEventListener(type, callback);
     });
-  }
+  });
 }
 
 /**
@@ -120,7 +124,7 @@ function setupAutoHighlight(id, from, to) {
       });
     },
   });
-  autoHighlights.push({ id, from, to, cuepoint });
+  autoHighlights.add({ id, from, to, cuepoint });
 }
 
 /**
@@ -128,10 +132,9 @@ function setupAutoHighlight(id, from, to) {
  */
 function removeAutoHighlights() {
   const { removeCuepoint } = useModule("media_cuepoints");
-  while (autoHighlights.length > 0) {
-    const { cuepoint } = autoHighlights.pop();
+  autoHighlights.forEach(({ cuepoint }) => {
     removeCuepoint(cuepoint);
-  }
+  });
 }
 
 /**
@@ -141,18 +144,14 @@ async function onScenarioChange() {
   await nextTick();
 
   // Update all listeners.
-  const oldListeners = [...listeners];
   removeListeners();
-  oldListeners.forEach((listener) => {
-    const { id, type, callback } = listener;
+  listeners.forEach(({ id, type, callback }) => {
     setupListener(id, type, callback);
   });
 
   // Update all auto-highlight cuepoints.
-  const oldAutoHighlights = [...autoHighlights];
   removeAutoHighlights();
-  oldAutoHighlights.forEach((autohighlight) => {
-    const { id, from, to } = autohighlight;
+  autoHighlights.forEach(({ id, from, to }) => {
     setupAutoHighlight(id, from, to);
   });
 }
