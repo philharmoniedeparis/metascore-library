@@ -194,6 +194,7 @@ export default {
       updateComponent,
       isComponentTimeable,
       deleteComponent,
+      arrangeComponent,
     } = useModule("app_components");
     const {
       preview,
@@ -207,7 +208,6 @@ export default {
       selectedComponents,
       copyComponents,
       cutComponents,
-      arrangeComponent,
     } = useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");

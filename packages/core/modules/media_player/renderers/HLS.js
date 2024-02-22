@@ -13,7 +13,11 @@ const SUPPORTED_TYPES = [
   "video/hls",
 ];
 
-export class UnsupportedError extends Error {}
+export class UnsupportedError extends Error {
+  constructor() {
+    super("HLS playback is not supported.");
+  }
+}
 
 export default class HLS extends NativeRenderer {
   /**
@@ -30,7 +34,7 @@ export default class HLS extends NativeRenderer {
     const { default: Hls } = await import("hls.js");
 
     if (!Hls.isSupported()) {
-      throw new UnsupportedError("HLS playback is not supported.");
+      throw new UnsupportedError();
     }
 
     this._hls = new Hls();

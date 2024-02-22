@@ -142,7 +142,7 @@ export default defineStore("editor", {
       await initComponents(components);
       enableComponentsOverrides();
       onComponentsStoreAction(({ name }) => {
-        if (["add", "update", "delete"].includes(name)) {
+        if (["setScenarioIndex", "add", "update", "delete"].includes(name)) {
           this.setDirty("components");
         }
       });

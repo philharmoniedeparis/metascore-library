@@ -3,6 +3,7 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "sortablejs": "^1.15.2",
     "vue-dompurify-html": "^5.0.0"
   }
 }

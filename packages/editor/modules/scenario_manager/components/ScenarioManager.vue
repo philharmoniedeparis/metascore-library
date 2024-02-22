@@ -6,6 +6,8 @@
     "delete_button_title": "Supprimer le scénario actif",
     "delete_text": "Êtes-vous sûr de vouloir supprimer le scénario <em>{name}</em>\xa0?",
     "contextmenu": {
+      "move_right": "Déplacer vers la droite",
+      "move_left": "Déplacer vers la gauche",
       "clone": "Dupliquer",
       "delete": "Supprimer",
     },
@@ -16,6 +18,8 @@
     "delete_button_title": "Delete the active scenario",
     "delete_text": "Are you sure you want to delete the scenario <em>{name}</em>?",
     "contextmenu": {
+      "move_right": "Move right",
+      "move_left": "Move left",
       "clone": "Clone",
       "delete": "Delete",
     },
@@ -45,10 +49,11 @@
 
     <ol ref="list" class="list" @scroll="onListScroll">
       <li
-        v-for="scenario in scenarios"
+        v-for="(scenario, index) in scenarios"
         :key="scenario.id"
-        :class="['item', { active: activeId === scenario.id }]"
-        @contextmenu="onContextmenu(scenario)"
+        :data-id="scenario.id"
+        :class="['item', { active: activeScenarioId === scenario.id }]"
+        @contextmenu="onContextmenu(scenario, index)"
       >
         <button type="button" @click.prevent="onItemClick(scenario)">
           {{ scenario.name }}
@@ -107,6 +112,7 @@
 <script>
 import { debounce } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
+import Sortable from "sortablejs";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import ArrowIcon from "../assets/icons/arrow.svg?inline";
 import AddIcon from "../assets/icons/add.svg?inline";
@@ -127,20 +133,27 @@ export default {
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
-  props: {
-    scenarios: {
-      type: Array,
-      required: true,
-    },
-    activeId: {
-      type: String,
-      default: null,
-    },
-  },
-  emits: ["update:activeId", "add", "clone", "delete"],
   setup() {
+    const {
+      getSortedScenarios,
+      activeScenario,
+      setActiveScenario,
+      createComponent,
+      addComponent,
+      setScenarioIndex,
+      deleteComponent,
+      cloneComponent,
+    } = useModule("app_components");
     const { addItems: addContextmenuItems } = useModule("contextmenu");
     return {
+      getSortedScenarios,
+      activeScenarioId: activeScenario,
+      setActiveScenario,
+      createComponent,
+      addComponent,
+      setScenarioIndex,
+      deleteComponent,
+      cloneComponent,
       addContextmenuItems,
     };
   },
@@ -162,14 +175,17 @@ export default {
     canScrollRight() {
       return this.listScrollLeft < this.listScrollWidth - this.listWidth;
     },
+    scenarios() {
+      return this.getSortedScenarios();
+    },
     scenariosCount() {
       return this.scenarios.length;
     },
-    active() {
-      return this.getScenarioById(this.contextmenuId || this.activeId);
+    activeScenario() {
+      return this.getScenarioById(this.contextmenuId || this.activeScenarioId);
     },
     activeName() {
-      return this.active?.name;
+      return this.activeScenario?.name;
     },
   },
   watch: {
@@ -188,6 +204,11 @@ export default {
     },
   },
   mounted() {
+    this._sortable = new Sortable(this.$refs.list, {
+      handle: ".active button",
+      onEnd: this.onSortableEnd,
+    });
+
     this.$nextTick(function () {
       this._resize_observer = new ResizeObserver(
         debounce(() => {
@@ -200,6 +221,10 @@ export default {
     });
   },
   beforeUnmount() {
+    if (this._sortable) {
+      this._sortable.destroy();
+    }
+
     if (this._resize_observer) {
       this._resize_observer.disconnect();
     }
@@ -244,35 +269,67 @@ export default {
       list.scrollLeft = list.scrollWidth - list.clientWidth;
     },
     onItemClick(scenario) {
-      this.$emit("update:activeId", scenario.id);
+      this.setActiveScenario(scenario.id);
     },
-    onAddSubmit(data) {
+    onSortableEnd(evt) {
+      const { item, oldIndex, newIndex } = evt;
+      if (oldIndex === newIndex) return;
+
+      const scenario = this.getScenarioById(item.dataset.id);
+      this.setScenarioIndex(scenario, newIndex);
+    },
+    async onAddSubmit(data) {
       this.showAddForm = false;
-      this.$emit("add", data);
+
+      const scenario = await this.createComponent({
+        ...data,
+        type: "Scenario",
+      });
+      await this.addComponent(scenario);
+      this.setActiveScenario(scenario.id);
     },
-    onCloneSubmit(data) {
+    async onCloneSubmit(data) {
       this.showCloneForm = false;
-      this.$emit("clone", {
-        scenario: this.active,
-        data,
-      });
+
+      const clone = await this.cloneComponent(this.activeScenario, data);
+      this.setActiveScenario(clone.id);
     },
-    onDeleteSubmit() {
+    async onDeleteSubmit() {
       this.showDeleteConfirm = false;
-      this.$emit("delete", {
-        scenario: this.active,
-      });
+
+      await this.deleteComponent(this.activeScenario);
+      this.setActiveScenario(this.scenarios[0].id);
     },
-    onContextmenu(scenario) {
-      const items = [
-        {
-          label: this.$t("contextmenu.clone"),
-          handler: () => {
-            this.contextmenuId = scenario.id;
-            this.showCloneForm = true;
-          },
+    onContextmenu(scenario, index) {
+      const items = [];
+
+      if (this.scenariosCount > 1) {
+        if (index < this.scenariosCount - 1) {
+          items.push({
+            label: this.$t("contextmenu.move_right"),
+            handler: () => {
+              this.setScenarioIndex(scenario, index + 1);
+            },
+          });
+        }
+
+        if (index > 0) {
+          items.push({
+            label: this.$t("contextmenu.move_left"),
+            handler: () => {
+              this.setScenarioIndex(scenario, index - 1);
+            },
+          });
+        }
+      }
+
+      items.push({
+        label: this.$t("contextmenu.clone"),
+        handler: () => {
+          this.contextmenuId = scenario.id;
+          this.showCloneForm = true;
         },
-      ];
+      });
 
       if (this.scenariosCount > 1) {
         items.push({
@@ -341,7 +398,7 @@ export default {
         button {
           border-bottom-color: var(--metascore-color-text-primary);
           opacity: 1;
-          cursor: default;
+          cursor: move;
         }
       }
     }

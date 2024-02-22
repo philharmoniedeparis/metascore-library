@@ -138,11 +138,7 @@ import interact from "@interactjs/interact";
 import { round, kebabCase } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@metascore-library/core/services/module-manager";
-import {
-  default as useStore,
-  ValidationError,
-  ADD_SIBLING_PAGE_TIME_ERROR,
-} from "../store";
+import { default as useStore, AddSiblingPageTimeError } from "../store";
 
 export default {
   directives: {
@@ -201,6 +197,7 @@ export default {
       createComponent,
       addComponent,
       updateComponent,
+      arrangeComponent,
       deleteComponent,
       getBlockActivePage,
       setBlockActivePage,
@@ -224,6 +221,7 @@ export default {
       createComponent,
       addComponent,
       updateComponent,
+      arrangeComponent,
       deleteComponent,
       getBlockActivePage,
       setBlockActivePage,
@@ -443,25 +441,25 @@ export default {
               {
                 label: this.$t("contextmenu.to_front"),
                 handler: async () => {
-                  await this.store.arrangeComponent(this.component, "front");
+                  await this.arrangeComponent(this.component, "front");
                 },
               },
               {
                 label: this.$t("contextmenu.to_back"),
                 handler: async () => {
-                  await this.store.arrangeComponent(this.component, "back");
+                  await this.arrangeComponent(this.component, "back");
                 },
               },
               {
                 label: this.$t("contextmenu.forward"),
                 handler: async () => {
-                  await this.store.arrangeComponent(this.component, "forward");
+                  await this.arrangeComponent(this.component, "forward");
                 },
               },
               {
                 label: this.$t("contextmenu.backward"),
                 handler: async () => {
-                  await this.store.arrangeComponent(this.component, "backward");
+                  await this.arrangeComponent(this.component, "backward");
                 },
               },
             ],
@@ -1072,14 +1070,8 @@ export default {
       try {
         return await this.store.addSiblingPage(page, position, data);
       } catch (e) {
-        if (e instanceof ValidationError) {
-          switch (e.code) {
-            case ADD_SIBLING_PAGE_TIME_ERROR:
-              this.error = this.$t("errors.add_sibling_page_time");
-              break;
-            default:
-              console.error(e);
-          }
+        if (e instanceof AddSiblingPageTimeError) {
+          this.error = this.$t("errors.add_sibling_page_time");
         } else {
           console.error(e);
         }
