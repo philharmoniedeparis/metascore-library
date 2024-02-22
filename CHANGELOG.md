@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.4](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.3...v3.4.4) (2024-02-22)
+
+
+### Bug Fixes
+
+* correctly add behavior listeners on scenario change ([aa176bd](https://github.com/philharmoniedeparis/metascore-library/commit/aa176bdf20d3e618447888978431d40ad37e0776)), closes [#622](https://github.com/philharmoniedeparis/metascore-library/issues/622)
+* remove Cusror acceleration maximum value constraint ([f4b31a7](https://github.com/philharmoniedeparis/metascore-library/commit/f4b31a717f2906649c22dbacf38bedb2f48e2b79))
+
 ## [3.4.3](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.2...v3.4.3) (2024-01-26)
 
 
