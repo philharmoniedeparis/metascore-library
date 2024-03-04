@@ -211,14 +211,7 @@
         <components-timeline :scale="timelineScale" :offset="timelineOffset" />
       </div>
       <div class="bottom">
-        <scenario-manager
-          :scenarios="scenarios"
-          :active-id="activeScenario"
-          @update:active-id="setActiveScenario"
-          @add="onScenarioManagerAdd"
-          @clone="onScenarioManagerClone"
-          @delete="onScenarioManagerDelete"
-        />
+        <scenario-manager />
         <waveform-zoom-controller />
       </div>
     </resizable-pane>
@@ -563,22 +556,6 @@ export default {
     onSharedAssetsImportClick(asset) {
       this.activeLibrariesTab = 1;
       this.addAsset(asset);
-    },
-    async onScenarioManagerAdd(data) {
-      const scenario = await this.createComponent({
-        ...data,
-        type: "Scenario",
-      });
-      await this.addComponent(scenario);
-      this.setActiveScenario(scenario.id);
-    },
-    async onScenarioManagerClone({ scenario, data }) {
-      const clone = await this.cloneComponent(scenario, data);
-      this.setActiveScenario(clone.id);
-    },
-    async onScenarioManagerDelete({ scenario }) {
-      await this.deleteComponent(scenario);
-      this.setActiveScenario(this.scenarios[0].id);
     },
     onRevertSubmit() {
       this.revert(false);

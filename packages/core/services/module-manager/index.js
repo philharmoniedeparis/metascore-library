@@ -1,9 +1,9 @@
 const modules = new Map();
 
 export class ModuleNotFoundError extends Error {
-  constructor(module, ...params) {
-    super(...params);
-    this.module = module;
+  constructor(id) {
+    super(`Module "${id}" not found`);
+    this.module = id;
   }
 }
 
@@ -40,7 +40,7 @@ export function useModule(id) {
   const module = modules.get(id);
 
   if (!module) {
-    throw new ModuleNotFoundError(id, `Module "${id}" not found`);
+    throw new ModuleNotFoundError(id);
   }
 
   return module;

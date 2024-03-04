@@ -92,6 +92,12 @@ export default class AppComponentsModule extends AbstractModule {
     });
   }
 
+  get sortedScenarios() {
+    const store = useStore();
+    const { sortedScenarios } = storeToRefs(store);
+    return readonly(sortedScenarios);
+  }
+
   get activeScenario() {
     const store = useStore();
     const { activeScenario } = storeToRefs(store);
@@ -110,6 +116,11 @@ export default class AppComponentsModule extends AbstractModule {
   async init(data) {
     const store = useStore();
     await store.init(data);
+  }
+
+  setScenarioIndex(scenario, index) {
+    const store = useStore();
+    return store.setScenarioIndex(scenario, index);
   }
 
   getModelByType(type) {
@@ -140,6 +151,11 @@ export default class AppComponentsModule extends AbstractModule {
   findComponent(filter) {
     const store = useStore();
     return store.find(filter);
+  }
+
+  getSortedScenarios() {
+    const store = useStore();
+    return store.getSortedScenarios();
   }
 
   getComponentParent(component) {
@@ -185,6 +201,11 @@ export default class AppComponentsModule extends AbstractModule {
   async updateComponent(component, data) {
     const store = useStore();
     return await store.update(component, data);
+  }
+
+  async arrangeComponent(component, action) {
+    const store = useStore();
+    return await store.arrange(component, action);
   }
 
   async deleteComponent(component) {
