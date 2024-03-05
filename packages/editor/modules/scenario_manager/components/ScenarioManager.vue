@@ -113,6 +113,7 @@
 import { debounce } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import Sortable from "sortablejs";
+import autoAnimate from "@formkit/auto-animate";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import ArrowIcon from "../assets/icons/arrow.svg?inline";
 import AddIcon from "../assets/icons/add.svg?inline";
@@ -206,8 +207,11 @@ export default {
   mounted() {
     this._sortable = new Sortable(this.$refs.list, {
       handle: ".active button",
+      onStart: this.onSortableStart,
       onEnd: this.onSortableEnd,
     });
+
+    this._autoAnimate = autoAnimate(this.$refs.list);
 
     this.$nextTick(function () {
       this._resize_observer = new ResizeObserver(
@@ -271,12 +275,21 @@ export default {
     onItemClick(scenario) {
       this.setActiveScenario(scenario.id);
     },
+    onSortableStart() {
+      if (this._autoAnimate) {
+        this._autoAnimate.disable();
+      }
+    },
     onSortableEnd(evt) {
       const { item, oldIndex, newIndex } = evt;
-      if (oldIndex === newIndex) return;
+      if (oldIndex !== newIndex) {
+        const scenario = this.getScenarioById(item.dataset.id);
+        this.setScenarioIndex(scenario, newIndex);
+      }
 
-      const scenario = this.getScenarioById(item.dataset.id);
-      this.setScenarioIndex(scenario, newIndex);
+      if (this._autoAnimate) {
+        this._autoAnimate.enable();
+      }
     },
     async onAddSubmit(data) {
       this.showAddForm = false;
