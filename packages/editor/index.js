@@ -48,13 +48,12 @@ export class Editor {
 
   static async create({ url, el = null, locale = "fr", ...configs } = {}) {
     const pinia = createPinia();
-    const i18n = createI18n({
-      locale,
-      fallbackLocale: "fr",
-    });
-
+    const i18n = createI18n({ locale, fallbackLocale: "fr" });
     const events = new Emitter();
-    const app = createApp(App, { url }).use(pinia).use(i18n);
+    const app = createApp(App, { url });
+
+    app.use(pinia);
+    app.use(i18n);
 
     // Add webpack's public path as a global property.
     // eslint-disable-next-line no-undef
