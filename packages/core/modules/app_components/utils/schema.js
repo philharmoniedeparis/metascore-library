@@ -1,5 +1,4 @@
 import { v4 as uuid } from "uuid";
-import urlRegex from "url-regex";
 import {
   createStringField,
   createArrayField,
@@ -42,7 +41,7 @@ export function createHtmlField({
   default: default_value = null,
   nullable = true,
 } = {}) {
-  ajv.addFormat("html", urlRegex);
+  ajv.addFormat("html", { validate: () => true });
   return {
     ...createStringField({
       title,
