@@ -261,10 +261,9 @@ export default {
     },
   },
   mounted() {
-    this._interactable = interact(
-      ".component-track:not([data-type='Scenario'], [data-type='Page']) > .handle",
-      { context: this.$el }
-    )
+    this._interactable = interact(".component-track.sortable > .handle", {
+      context: this.$el,
+    })
       .draggable({
         startAxis: "y",
         lockAxis: "y",
