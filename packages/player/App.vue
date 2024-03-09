@@ -169,11 +169,18 @@ export default {
   height: 100%;
   margin: 0;
   padding: 0;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   font-size: 14px;
   font-family: "Source Sans 3 VF", "Source Sans Variable", "Source Sans Pro",
     sans-serif;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+  }
 
   &,
   :deep(*) {
