@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.4.5](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.4...v3.4.5) (2024-03-09)
+
+
+### Bug Fixes
+
+* prevent player app from overflowing upwards ([c0a8c7e](https://github.com/philharmoniedeparis/metascore-library/commit/c0a8c7eb174e816b289baae4e407cf11d87bcd6d))
+
 ## [3.4.4](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.3...v3.4.4) (2024-02-22)
 
 
