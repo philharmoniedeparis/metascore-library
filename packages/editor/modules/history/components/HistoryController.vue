@@ -24,20 +24,20 @@
 <template>
   <div v-hotkey.prevent="hotkeys" class="history-controller">
     <base-button
-      v-hotkeyhelp="'mod+z'"
+      v-tooltip
       type="button"
       :disabled="!canUndo || disabled"
-      :title="$t('undo')"
+      :title="`${$t('undo')} [${formatHotkey('mod+z')}]`"
       @click="onUndoClick"
     >
       <template #icon><undo-icon /></template>
     </base-button>
 
     <base-button
-      v-hotkeyhelp="'mod+y'"
+      v-tooltip
       type="button"
       :disabled="!canRedo || disabled"
-      :title="$t('redo')"
+      :title="`${$t('redo')} [${formatHotkey('mod+y')}]`"
       @click="onRedoClick"
     >
       <template #icon><redo-icon /></template>
@@ -47,6 +47,7 @@
 
 <script>
 import useStore from "../store";
+import { useModule } from "@metascore-library/core/services/module-manager";
 import UndoIcon from "../assets/icons/undo.svg?inline";
 import RedoIcon from "../assets/icons/redo.svg?inline";
 
@@ -63,7 +64,10 @@ export default {
   },
   setup() {
     const store = useStore();
-    return { store };
+
+    const { format: formatHotkey } = useModule("hotkey");
+
+    return { store, formatHotkey };
   },
   computed: {
     canUndo() {

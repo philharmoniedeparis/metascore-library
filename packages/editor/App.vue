@@ -3,6 +3,7 @@
   "fr": {
     "save": "Enregistrer",
     "revert": "Revenir à la version précédente",
+    "app_title": "Titre de l'application",
     "preferences": "Préférences",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
@@ -39,6 +40,7 @@
   "en": {
     "save": "Save",
     "revert": "Revert",
+    "app_title": "Application's title",
     "preferences": "Preferences",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
@@ -96,19 +98,19 @@
       <nav class="main-menu">
         <div class="left">
           <base-button
-            v-hotkeyhelp="'mod+s'"
+            v-tooltip
             :disabled="preview || !dirty || !isLatestRevision"
             class="save"
-            :title="$t('save')"
+            :title="`${$t('save')} [${formatHotkey('mod+s')}]`"
             @click="save"
           >
             <template #icon><save-icon /></template>
           </base-button>
           <base-button
-            v-hotkeyhelp="'mod+r'"
+            v-tooltip
             :disabled="preview || !dirty || !isLatestRevision"
             class="revert"
-            :title="$t('revert')"
+            :title="`${$t('revert')} [${formatHotkey('mod+r')}]`"
             @click="revert"
           >
             <template #icon><revert-icon /></template>
@@ -116,7 +118,9 @@
           <history-controller :disabled="preview || !isLatestRevision" />
           <text-control
             v-model="appTitle"
+            v-tooltip
             :lazy="true"
+            :title="$t('app_title')"
             :disabled="preview || !isLatestRevision"
             class="app-title"
             @focusin="onAppTitleFocusin"
@@ -138,10 +142,10 @@
             @restore="onRevisionSelectorRestore"
           />
           <base-button
-            v-hotkeyhelp="'mod+p'"
+            v-tooltip
             :disabled="preview || !isLatestRevision"
             class="user-preferences"
-            :title="$t('preferences')"
+            :title="`${$t('preferences')} [${formatHotkey('mod+p')}]`"
             @click="showPreferencesForm = true"
           >
             <template #icon><user-preferences-icon /></template>
@@ -344,6 +348,10 @@ export default {
 
     const { isDataAvailable: isAutoSaveDataAvailable } = useModule("auto_save");
 
+    const { format: formatHotkey } = useModule("hotkey");
+
+    const { install: installTooltip } = useModule("tooltip");
+
     return {
       store,
       getComponentsByType,
@@ -372,6 +380,8 @@ export default {
       disableComponentInteractions,
       userPreferences,
       isAutoSaveDataAvailable,
+      formatHotkey,
+      installTooltip,
     };
   },
   data() {
@@ -504,6 +514,8 @@ export default {
   },
   async mounted() {
     this.overlaysTarget = this.$el;
+
+    this.installTooltip(this.$el);
 
     const hasAutoSaveData = await this.isAutoSaveDataAvailable();
     if (hasAutoSaveData) {

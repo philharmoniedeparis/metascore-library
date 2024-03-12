@@ -1,6 +1,7 @@
 <template>
   <div class="waveform--zoom-controller">
     <base-button
+      v-tooltip
       type="button"
       title="Zoom out"
       class="zoom-out"
@@ -15,6 +16,7 @@
     </div>
 
     <base-button
+      v-tooltip
       type="button"
       title="Zoom in"
       class="zoom-in"

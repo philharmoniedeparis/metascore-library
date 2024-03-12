@@ -59,12 +59,13 @@
     ]"
     :data-type="component.type"
     :data-id="component.id"
-    :title="component.name"
     :style="{ '--depth': depth }"
   >
     <div
       ref="handle"
       v-contextmenu="contextmenuItems"
+      v-tooltip
+      :title="component.name"
       class="handle"
       @click="onClick"
     >
@@ -77,6 +78,7 @@
           type="checkbox"
         />
         <label
+          v-tooltip
           :for="`handle--expand--${component.id}`"
           title="Verrouiller/Déverrouiller"
         >
@@ -94,6 +96,7 @@
             type="checkbox"
           />
           <label
+            v-tooltip
             :for="`handle--lock--${component.id}`"
             title="Verrouiller/Déverrouiller"
           >
@@ -106,6 +109,8 @@
     <div
       ref="time-wrapper"
       v-contextmenu="contextmenuItems"
+      v-tooltip
+      :title="component.name"
       class="time-wrapper"
       @click="onClick"
     >

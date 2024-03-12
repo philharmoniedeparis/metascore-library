@@ -27,7 +27,12 @@
 
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <base-button type="button" :title="$t('title')" @click="showForm = true">
+    <base-button
+      v-tooltip
+      type="button"
+      :title="$t('title')"
+      @click="showForm = true"
+    >
       {{ mediaSource.name }}
     </base-button>
 

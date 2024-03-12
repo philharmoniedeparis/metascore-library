@@ -62,6 +62,7 @@
     </ol>
 
     <base-button
+      v-tooltip
       type="button"
       class="add"
       :title="$t('add_button_title')"
@@ -76,6 +77,7 @@
     />
 
     <base-button
+      v-tooltip
       type="button"
       class="clone"
       :title="$t('clone_button_title')"
@@ -91,6 +93,7 @@
     />
 
     <base-button
+      v-tooltip
       type="button"
       class="delete"
       :title="$t('delete_button_title')"

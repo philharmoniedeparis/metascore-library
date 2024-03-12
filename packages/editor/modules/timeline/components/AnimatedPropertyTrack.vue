@@ -50,6 +50,7 @@
       <div
         v-for="(keyframe, index) in value"
         :key="index"
+        v-tooltip
         :style="{ left: `${(keyframe[0] / mediaDuration) * 100}%` }"
         :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
         :class="['keyframe', { selected: selected === index }]"

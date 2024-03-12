@@ -49,6 +49,7 @@
       >
         <base-button
           v-if="inButton && !readonly"
+          v-tooltip
           type="button"
           class="in"
           :title="$t('buttons.in')"
@@ -58,6 +59,7 @@
         </base-button>
         <base-button
           v-if="outButton"
+          v-tooltip
           type="button"
           class="out"
           :title="$t('buttons.out')"
@@ -67,6 +69,7 @@
         </base-button>
         <base-button
           v-if="clearButton && !readonly"
+          v-tooltip
           type="button"
           class="clear"
           :title="$t('buttons.clear')"

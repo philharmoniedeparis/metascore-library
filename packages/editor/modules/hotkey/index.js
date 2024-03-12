@@ -1,7 +1,7 @@
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import Modal from "@metascore-library/core/modules/modal";
-import hotkey_directive from "./directives/hotkey";
-import hotkeyhelp_directive from "./directives/hotkeyhelp";
+import directive from "./directives/hotkey";
+import { format } from "./utils";
 import HotkeyList from "./components/HotkeyList";
 
 export default class HotkeyModule extends AbstractModule {
@@ -12,9 +12,12 @@ export default class HotkeyModule extends AbstractModule {
   constructor({ app }) {
     super(arguments);
 
-    app.directive("hotkey", hotkey_directive);
-    app.directive("hotkeyhelp", hotkeyhelp_directive);
+    app.directive("hotkey", directive);
 
     app.component("HotkeyList", HotkeyList);
+  }
+
+  format(combination) {
+    return format(combination);
   }
 }
