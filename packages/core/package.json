@@ -6,6 +6,6 @@
     "lodash": "^4.17.21",
     "url-regex": "^5.0.0",
     "uuid": "^9.0.0",
-    "validate-color": "^2.2.4"
+    "validate-color": "2.2.1"
   }
 }
