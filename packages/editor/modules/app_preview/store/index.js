@@ -3,16 +3,14 @@ import { unref } from "vue";
 import { round } from "lodash";
 import { useModule } from "@metascore-library/core/services/module-manager";
 
-export const ARRANGE_COMPONENT_NO_PARENT_ERROR = 100;
-export const ADD_SIBLING_PAGE_TIME_ERROR = 200;
-
 const FROZEN_OVERRIDES_KEY = "app_preview:frozen";
 const FROZEN_OVERRIDES_PRIORITY = 1000;
 
-export class ValidationError extends Error {
-  constructor(code, ...params) {
-    super(...params);
-    this.code = code;
+export class AddSiblingPageTimeError extends Error {
+  constructor() {
+    super(
+      "A new page cannot be added at the start or end time of an existing page"
+    );
   }
 }
 
@@ -326,55 +324,6 @@ export default defineStore("app-preview", {
 
       return components;
     },
-    async arrangeComponent(component, action) {
-      const {
-        getComponentParent,
-        getComponentChildrenProperty,
-        getComponentChildren,
-        updateComponent,
-      } = useModule("app_components");
-
-      const parent = getComponentParent(component);
-      if (!parent) {
-        throw new ValidationError(
-          ARRANGE_COMPONENT_NO_PARENT_ERROR,
-          `compontent ${component.type}:${component.id} can't be rearranged as it doesn't have a parent`
-        );
-      }
-
-      const children = getComponentChildren(parent);
-      const count = children.length;
-      const old_index = children.findIndex((child) => {
-        return child.type === component.type && child.id === component.id;
-      });
-
-      let new_index = null;
-      switch (action) {
-        case "front":
-          new_index = count - 1;
-          break;
-        case "back":
-          new_index = 0;
-          break;
-        case "forward":
-          new_index = Math.min(old_index + 1, count - 1);
-          break;
-        case "backward":
-          new_index = Math.max(old_index - 1, 0);
-          break;
-      }
-
-      if (new_index !== null && new_index !== old_index) {
-        children.splice(new_index, 0, children.splice(old_index, 1)[0]);
-      }
-
-      const property = getComponentChildrenProperty(parent);
-      await updateComponent(parent, {
-        [property]: children.map((child) => {
-          return { type: child.type, id: child.id };
-        }),
-      });
-    },
     async moveComponents(components, { left, top }) {
       const { getModelByType, updateComponent } = useModule("app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
@@ -426,10 +375,7 @@ export default defineStore("app-preview", {
           page["end-time"] === mediaTime
         ) {
           // Prevent adding the page at start or end of current page.
-          throw new ValidationError(
-            ADD_SIBLING_PAGE_TIME_ERROR,
-            "A new page cannot be added at the start or end time of an existing page"
-          );
+          throw new AddSiblingPageTimeError();
         }
       }
 

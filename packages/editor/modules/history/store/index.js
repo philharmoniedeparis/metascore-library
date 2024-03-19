@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import HistoryItem from "./HistoryItem";
 import HistoryGroup from "./HistoryGroup";
 
-const COALESCE_THRESHOLD = 2000;
+const COALESCE_THRESHOLD = 750;
 
 export default defineStore("history", {
   state: () => {
@@ -13,7 +13,7 @@ export default defineStore("history", {
       groups: [],
       index: 0,
       processing: false,
-      previousCoalesceTime: null,
+      lastPushTime: null,
     };
   },
   getters: {
@@ -37,32 +37,33 @@ export default defineStore("history", {
       }
 
       if (this.groups.length > 0) {
-        // Add to open group.
+        // This push is part of an open group.
+        // Push it to the group, which will then be pushed here once closed.
         this.groups.at(-1).push(item);
         return;
       }
 
+      const now = Date.now();
+      const previousPushTime = this.lastPushTime;
       const previous = this.stack.at(-1);
-      if (
+      const coalesce =
         previous &&
         item.coalesceId &&
-        item.coalesceId === previous.coalesceId
-      ) {
-        const now = Date.now();
-        const previousCoalesceTime = this.previousCoalesceTime || now;
-        this.previousCoalesceTime = now;
-        if (previousCoalesceTime + COALESCE_THRESHOLD > now) {
-          // Coalesce with previous.
-          previous.redo = item.redo;
-          return;
-        }
-      }
+        item.coalesceId === previous.coalesceId &&
+        previousPushTime &&
+        previousPushTime + COALESCE_THRESHOLD > now;
 
-      // Add to stack.
-      this.previousCoalesceTime = null;
-      if (previous) previous.coalesceId = null;
-      this.stack.push(item);
-      this.index++;
+      this.lastPushTime = now;
+
+      if (coalesce) {
+        // Coalesce with previous.
+        previous.redo = item.redo;
+      } else {
+        // Add to stack.
+        if (previous) previous.coalesceId = null;
+        this.stack.push(item);
+        this.index++;
+      }
     },
     startGroup({ coalesce = false, coalesceId } = {}) {
       if (!this.active || this.processing) {

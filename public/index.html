@@ -36,8 +36,12 @@
             el: document.querySelector('#app'),
             url: "/api/app",
             api: true,
-            responsive: true,
-            allowUpscaling: true,
+            modules: {
+              app_renderer: {
+                adaptSize: true,
+                allowUpscaling: false,
+              }
+            }
           });
         } else {
           metaScore.Editor.create({

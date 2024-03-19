@@ -3,12 +3,9 @@ import { markRaw } from "vue";
 import WaveformData from "waveform-data";
 import * as api from "../api";
 
-export const MISSING_URL_OR_AUDIOWAVEFORM_ERROR = 100;
-
-export class ValidationError extends Error {
-  constructor(code, ...params) {
-    super(...params);
-    this.code = code;
+export class MissingUrlOrAudiowaveformError extends Error {
+  constructor() {
+    super("Source doen't have a url or audiowaveform key");
   }
 }
 
@@ -51,10 +48,7 @@ export default defineStore("waveform", {
 
       try {
         if (!audiowaveform && !url) {
-          throw new ValidationError(
-            MISSING_URL_OR_AUDIOWAVEFORM_ERROR,
-            "Source doen't have a url or audiowaveform key"
-          );
+          throw new MissingUrlOrAudiowaveformError();
         }
 
         const data = await api.get(audiowaveform ?? url);

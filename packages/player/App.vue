@@ -17,11 +17,7 @@
     :class="['metaScore-player', { loading }]"
     @contextmenu="onContextmenu"
   >
-    <app-renderer
-      :url="url"
-      :responsive="responsive"
-      :allow-upscaling="allowUpscaling"
-    />
+    <app-renderer :url="url" />
 
     <progress-indicator v-if="loading" class="loading-indicator">
       <template #text>
@@ -77,22 +73,6 @@ export default {
       type: String,
       required: true,
     },
-    keyboard: {
-      type: Boolean,
-      default: true,
-    },
-    responsive: {
-      type: Boolean,
-      default: false,
-    },
-    allowUpscaling: {
-      type: Boolean,
-      default: false,
-    },
-    api: {
-      type: Boolean,
-      default: false,
-    },
   },
   setup() {
     const store = useStore();
@@ -113,8 +93,6 @@ export default {
       return this.store.loading || !this.appRendererReady;
     },
     hotkeys() {
-      if (!this.keyboard) return;
-
       return {
         left: () => {
           this.$el

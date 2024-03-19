@@ -3,6 +3,8 @@
   "private": true,
   "description": "",
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
+    "sortablejs": "^1.15.2",
     "vue-dompurify-html": "^5.0.0"
   }
 }

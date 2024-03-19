@@ -307,6 +307,19 @@ export class API {
   }
 
   /**
+   * Sends a 'responsiveness' message to the player
+   * Used to set whether the app can adapt its size to fit its container
+   *
+   * @param {Boolean} adaptSize Whether to make the renderer responsive
+   * @param {Boolean} allowUpscaling Whether to allow or disallow upscaling
+   * @returns {this}
+   */
+  responsive(adaptSize, allowUpscaling) {
+    this.postMessage("responsiveness", { adaptSize, allowUpscaling });
+    return this;
+  }
+
+  /**
    * Enter fullscreen mode
    *
    * @return {this}

@@ -51,6 +51,7 @@
         'has-start-time': hasStartTime,
         'has-end-time': hasEndTime,
         'has-selected-descendents': hasSelectedDescendents,
+        sortable,
         expanded,
         selected,
         locked,
@@ -194,6 +195,7 @@ export default {
       updateComponent,
       isComponentTimeable,
       deleteComponent,
+      arrangeComponent,
     } = useModule("app_components");
     const {
       preview,
@@ -207,7 +209,6 @@ export default {
       selectedComponents,
       copyComponents,
       cutComponents,
-      arrangeComponent,
     } = useModule("app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
       useModule("history");
@@ -321,6 +322,11 @@ export default {
           (acc, [prop]) => ({ ...acc, [prop]: this.component[prop].value }),
           {}
         );
+    },
+    sortable() {
+      return (
+        this.component.type !== "Scenario" && this.component.type !== "Page"
+      );
     },
     resizable() {
       return this.timeable && this.selected && !this.locked;

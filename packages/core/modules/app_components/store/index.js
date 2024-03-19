@@ -11,6 +11,7 @@ export default defineStore("app-components", {
     return {
       components: {},
       deleted: {},
+      sortedScenarios: [],
       activeScenario: null,
       blocksActivePage: {},
       overrides: new Map(),
@@ -55,6 +56,16 @@ export default defineStore("app-components", {
         };
 
         return findMatch(this.getByType("Scenario"));
+      };
+    },
+    getSortedScenarios() {
+      return () => {
+        const scenarios = this.getByType("Scenario");
+        return this.sortedScenarios.reduce((acc, sortedScenario) => {
+          const scenario = scenarios.find((s) => s.id === sortedScenario);
+          if (scenario) acc.push(scenario);
+          return acc;
+        }, []);
       };
     },
     getModelByType() {
@@ -140,7 +151,7 @@ export default defineStore("app-components", {
     },
     toJson() {
       return () => {
-        const input = this.getByType("Scenario").map((scenario) => {
+        const input = this.getSortedScenarios().map((scenario) => {
           return { id: scenario.id, type: "Scenario" };
         });
         return denormalize(input, this.components);
@@ -151,7 +162,22 @@ export default defineStore("app-components", {
     async init(data) {
       const normalized = await normalize(data);
       this.components = normalized.entities;
-      this.activeScenario = normalized.result[0].id;
+      this.sortedScenarios = normalized.result.map(({ id }) => id);
+      this.activeScenario = this.sortedScenarios[0];
+    },
+    setScenarioIndex(scenario, index) {
+      const old_index = this.sortedScenarios.findIndex(
+        (id) => id === scenario.id
+      );
+
+      if (old_index === -1) {
+        throw new Error(
+          `scenario ${scenario.id} can't be moved as it doesn't exist`
+        );
+      }
+
+      const value = this.sortedScenarios.splice(old_index, 1).at(0);
+      this.sortedScenarios.splice(index, 0, value);
     },
     async create(data, validate = true) {
       if (data.type in Models) {
@@ -203,6 +229,10 @@ export default defineStore("app-components", {
         await this.update(parent, {
           [children_prop]: children,
         });
+      }
+
+      if (component.type === "Scenario") {
+        this.sortedScenarios.push(component.id);
       }
 
       // @todo: run same checks as in update
@@ -262,6 +292,47 @@ export default defineStore("app-components", {
         // @todo: handle errors.
         console.error(e);
       }
+    },
+    async arrange(component, action) {
+      const parent = this.getParent(component);
+      if (!parent) {
+        throw new Error(
+          `compontent ${component.type}:${component.id} can't be rearranged as it doesn't have a parent`
+        );
+      }
+
+      const children = this.getChildren(parent);
+      const count = children.length;
+      const old_index = children.findIndex((child) => {
+        return child.type === component.type && child.id === component.id;
+      });
+
+      let new_index = null;
+      switch (action) {
+        case "front":
+          new_index = count - 1;
+          break;
+        case "back":
+          new_index = 0;
+          break;
+        case "forward":
+          new_index = Math.min(old_index + 1, count - 1);
+          break;
+        case "backward":
+          new_index = Math.max(old_index - 1, 0);
+          break;
+      }
+
+      if (new_index !== null && new_index !== old_index) {
+        children.splice(new_index, 0, children.splice(old_index, 1)[0]);
+      }
+
+      const property = this.getChildrenProperty(parent);
+      await this.update(parent, {
+        [property]: children.map((child) => {
+          return { type: child.type, id: child.id };
+        }),
+      });
     },
     async delete(component) {
       const { type, id } = component;
@@ -488,6 +559,26 @@ export default defineStore("app-components", {
     } = context;
 
     switch (name) {
+      case "setScenarioIndex":
+        {
+          const [scenario, index] = args;
+          const old_index = this.sortedScenarios.findIndex(
+            (id) => id === scenario.id
+          );
+
+          after(() => {
+            push({
+              undo: () => {
+                this.setScenarioIndex(scenario, old_index);
+              },
+              redo: () => {
+                this.setScenarioIndex(scenario, index);
+              },
+            });
+          });
+        }
+        break;
+
       case "add":
         after((component) => {
           push({
@@ -504,7 +595,7 @@ export default defineStore("app-components", {
       case "update":
         {
           const [component, data] = args;
-          const oldValue = structuredClone(
+          const old_value = structuredClone(
             Object.keys(data).reduce(
               (acc, key) => ({ ...acc, [key]: unref(component[key]) }),
               {}
@@ -514,7 +605,7 @@ export default defineStore("app-components", {
           after(() => {
             push({
               undo: async () => {
-                await this.update(component, oldValue);
+                await this.update(component, old_value);
               },
               redo: async () => {
                 await this.update(component, data);

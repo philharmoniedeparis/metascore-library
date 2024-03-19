@@ -139,10 +139,18 @@ export function processMessage(evt) {
       break;
 
     case "scenario":
-      if ("id" in params) {
+      if ("value" in params) {
         const { getComponent, setActiveScenario } = useModule("app_components");
         const scenario = getComponent("Scenario", params.value);
         if (scenario) setActiveScenario(scenario.id);
+      }
+      break;
+
+    case "responsiveness":
+      {
+        const { adaptSize, allowUpscaling } = params;
+        const { setResponsiveness } = useModule("app_renderer");
+        setResponsiveness(adaptSize, allowUpscaling);
       }
       break;
 

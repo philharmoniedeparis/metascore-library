@@ -139,9 +139,4 @@ export default class AppPreviewModule extends AbstractModule {
     const store = useStore();
     return await store.pasteComponents(target);
   }
-
-  async arrangeComponent(component, action) {
-    const store = useStore();
-    return await store.arrangeComponent(component, action);
-  }
 }

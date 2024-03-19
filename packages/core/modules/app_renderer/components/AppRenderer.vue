@@ -27,16 +27,6 @@ const BLOCK_TOGGLE_LINKS_OVERRIDES_KEY = "app_renderer:block_toggle_links";
 const BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY = 100;
 
 export default {
-  props: {
-    responsive: {
-      type: Boolean,
-      default: false,
-    },
-    allowUpscaling: {
-      type: Boolean,
-      default: false,
-    },
-  },
   setup() {
     const store = useStore();
     const {
@@ -79,6 +69,12 @@ export default {
     };
   },
   computed: {
+    adaptSize() {
+      return this.store.configs.adaptSize;
+    },
+    allowUpscaling() {
+      return this.store.configs.allowUpscaling;
+    },
     width() {
       return this.store.width;
     },
@@ -100,7 +96,7 @@ export default {
       return this.getComponentsByType("Scenario");
     },
     style() {
-      if (this.responsive) {
+      if (this.adaptSize) {
         let scale = Math.min(
           this.containerWidth / this.width,
           this.containerHeight / this.height
@@ -142,7 +138,7 @@ export default {
       this._sheet.setAttribute("type", "text/css");
       this._sheet.setAttribute("href", value);
     },
-    responsive(value) {
+    adaptSize(value) {
       if (value) {
         this.setupResizeObserver();
       } else {
@@ -151,7 +147,7 @@ export default {
     },
   },
   mounted() {
-    if (this.responsive) {
+    if (this.adaptSize) {
       this.setupResizeObserver();
 
       const win = this.$el.ownerDocument.defaultView;
@@ -163,7 +159,7 @@ export default {
     });
   },
   beforeUnmount() {
-    if (this.responsive) {
+    if (this.adaptSize) {
       this.destroyResizeObserver();
 
       const win = this.$el.ownerDocument.defaultView;
@@ -196,6 +192,7 @@ export default {
     destroyResizeObserver() {
       if (this._resize_observer) {
         this._resize_observer.disconnect();
+        delete this._resize_observer;
       }
     },
     onWindowOrientationChange() {
