@@ -18,6 +18,11 @@ export default class AppRendererModule extends AbstractModule {
     app.component("AppRenderer", AppRenderer);
   }
 
+  configure(configs) {
+    const store = useStore();
+    store.configure(configs);
+  }
+
   init(data) {
     const store = useStore();
     store.init(data);
@@ -45,6 +50,14 @@ export default class AppRendererModule extends AbstractModule {
     const store = useStore();
     const { height } = storeToRefs(store);
     return readonly(height);
+  }
+
+  setResponsiveness(adaptSize, allowUpscaling) {
+    const store = useStore();
+    store.configs.adaptSize = adaptSize;
+    if (typeof allowUpscaling !== "undefined") {
+      store.configs.allowUpscaling = allowUpscaling;
+    }
   }
 
   setWidth(value) {

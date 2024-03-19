@@ -5,7 +5,10 @@ import hotkey from "v-hotkey";
 import App from "./App.vue";
 
 import { init as createI18n } from "@metascore-library/core/services/i18n";
-import { registerModules } from "@metascore-library/core/services/module-manager";
+import {
+  registerModules,
+  useModule,
+} from "@metascore-library/core/services/module-manager";
 import Ajax from "@metascore-library/core/modules/ajax";
 import API from "./modules/api";
 import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
@@ -20,17 +23,10 @@ export class Player {
    */
   static version = packageInfo.version;
 
-  static async create({
-    url,
-    el,
-    api = false,
-    responsive = false,
-    allowUpscaling = false,
-    locale = "fr",
-  } = {}) {
+  static async create({ url, el, locale = "fr", ...configs } = {}) {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
-    const app = createApp(App, { url, api, responsive, allowUpscaling });
+    const app = createApp(App, { url });
 
     app.use(pinia);
     app.use(i18n);
@@ -55,6 +51,13 @@ export class Player {
         pinia,
       }
     );
+
+    if (configs.modules) {
+      Object.entries(configs.modules).forEach(([name, configs]) => {
+        const module = useModule(name);
+        if (module && module.configure) module.configure(configs);
+      });
+    }
 
     return new Player(app, el);
   }

@@ -4,6 +4,10 @@ import { kebabCase } from "lodash";
 export default defineStore("app-renderer", {
   state: () => {
     return {
+      configs: {
+        adaptSize: false,
+        allowUpscaling: false,
+      },
       ready: false,
       el: null,
       width: null,
@@ -22,6 +26,12 @@ export default defineStore("app-renderer", {
     },
   },
   actions: {
+    configure(configs) {
+      this.configs = {
+        ...this.configs,
+        ...configs,
+      };
+    },
     init({ width, height, css }) {
       this.width = width;
       this.height = height;
