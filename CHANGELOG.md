@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.5...v3.5.0) (2024-03-19)
+
+
+### Features
+
+* add transition animations to scenario manager ([352624c](https://github.com/philharmoniedeparis/metascore-library/commit/352624ca17859b3ea609927d6a22eaa99d574e2c))
+* allow modifying responsiveness via an API method ([ccb42cc](https://github.com/philharmoniedeparis/metascore-library/commit/ccb42ccea5b460afea17fbd38210fcabbba5c2ea))
+* allow reordering of scenarios ([c6a52ea](https://github.com/philharmoniedeparis/metascore-library/commit/c6a52ea3f3023538ae705d4ff02645336e271e47)), closes [#697](https://github.com/philharmoniedeparis/metascore-library/issues/697)
+
+
+### Bug Fixes
+
+* fix history item coalescence ([56bf8b9](https://github.com/philharmoniedeparis/metascore-library/commit/56bf8b9ab55cf42c3858b51bde7e258ff68cc4fc))
+* improve component track handle selector in timeline ([b4936a2](https://github.com/philharmoniedeparis/metascore-library/commit/b4936a29ac8ad6d7776e98868dabe738dc37fb9f))
+* remove url-regex validator on 'html' schema format ([472d239](https://github.com/philharmoniedeparis/metascore-library/commit/472d239cbed93372551de7ca0f8a52c454eaf6ab))
+* revert validate-color dependency to 2.2.1 ([bfb65c2](https://github.com/philharmoniedeparis/metascore-library/commit/bfb65c2b2779ed10922ce3f5a67520f429a6f9d2))
+
 ## [3.4.5](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.4...v3.4.5) (2024-03-09)
 
 
