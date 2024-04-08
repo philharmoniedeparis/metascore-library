@@ -168,7 +168,7 @@ export default {
         const color = chroma(value);
         const [h, s, v] = color.hsv();
         this.hsv = [isNaN(h) ? 0 : h, s, v];
-        this.alpha = color.alpha();
+        this.alpha = round(color.alpha(), 2);
       }
     },
     setupInteractions() {
