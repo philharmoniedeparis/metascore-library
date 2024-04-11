@@ -11,7 +11,7 @@ La librairie _metaScore-library_ fait fonctionner la partie front-end de la plat
 
 La librairie fournit:
 * un __Player__ pour consulter et interagir avec les applications
-* un __Editor__ pour créer et modifier les applications
+* un __Editeur__ pour créer et modifier les applications
 * et une __API__ pour interagir via du code avec les players embarqués 
 
 ![A screenshot presenting the metaScore editor interface](./screenshot.jpg)
