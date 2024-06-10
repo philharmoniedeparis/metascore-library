@@ -14,8 +14,8 @@ export default defineStore("assets-library", {
         spectrogramUrl: null,
         audiowaveformUrl: null,
       },
-      items: {},
-      deleted: {},
+      items: new Map(),
+      deleted: new Map(),
       uploading: false,
       uploadProgress: null,
       generatingSpectrogram: false,
@@ -44,21 +44,11 @@ export default defineStore("assets-library", {
     },
     get() {
       return (id) => {
-        const item = this.items[id];
-        return item ? readonly(item) : null;
+        return this.items.has(id) ? readonly(this.items.get(id)) : null;
       };
     },
     all() {
-      return Object.keys(this.items)
-        .map(this.get)
-        .filter((a) => a);
-    },
-    getByType() {
-      return (type) => {
-        return this.all.filter((a) => {
-          return this.getType(a) === type;
-        });
-      };
+      return Array.from(this.items.values());
     },
     getUsage() {
       return (asset) => {
@@ -94,19 +84,21 @@ export default defineStore("assets-library", {
     },
     init(data) {
       this.items = normalize(data);
+      this.items.forEach((item) => {
+        item.type = this.getType(item);
+      });
     },
     add(item) {
-      if (item.id in this.items) {
-        return;
-      }
+      if (this.items.has(item.id)) return;
 
-      this.items[item.id] = item;
+      item.type = this.getType(item);
+      this.items.set(item.id, item);
     },
     delete(id) {
-      if (!this.items[id]) return;
+      if (!this.items.has(id)) return;
 
-      this.deleted[id] = this.items[id];
-      delete this.items[id];
+      this.deleted.set(id, this.items.get(id));
+      this.items.delete(id);
     },
     async upload(files) {
       this.uploading = true;

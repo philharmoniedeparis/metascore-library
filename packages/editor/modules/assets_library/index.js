@@ -1,4 +1,6 @@
+import { storeToRefs } from "pinia";
 import { readonly } from "vue";
+
 import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@metascore-library/core/modules/ajax";
@@ -45,12 +47,8 @@ export default class AssetsLibraryModule extends AbstractModule {
 
   get assets() {
     const store = useStore();
-    return store.all.map(readonly);
-  }
-
-  getAssetsByType(type) {
-    const store = useStore();
-    return store.getByType(type).map(readonly);
+    const { all } = storeToRefs(store);
+    return readonly(all);
   }
 
   addAsset(data) {

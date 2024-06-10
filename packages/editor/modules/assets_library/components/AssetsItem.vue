@@ -105,7 +105,7 @@ export default {
       return this.store.getFile(this.asset);
     },
     type() {
-      return this.store.getType(this.asset);
+      return this.asset.type;
     },
     component() {
       switch (this.type) {
@@ -136,13 +136,6 @@ export default {
           };
 
         case "audio":
-          return {
-            name: this.label,
-            type: "Media",
-            tag: this.type,
-            src: this.file.url,
-          };
-
         case "video": {
           const data = {
             name: this.label,
@@ -150,7 +143,7 @@ export default {
             tag: this.type,
             src: this.file.url,
           };
-          if (this.file.width && this.file.height) {
+          if (this.type === "video" && this.file.width && this.file.height) {
             data.dimension = [this.file.width, this.file.height];
           }
           return data;

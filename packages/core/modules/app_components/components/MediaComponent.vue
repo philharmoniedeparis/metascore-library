@@ -1,6 +1,12 @@
 <template>
   <component-wrapper :component="component">
-    <component :is="tag" :src="src" controls playsinline></component>
+    <component
+      :is="tag"
+      ref="media"
+      :src="src"
+      controls
+      playsinline
+    ></component>
   </component-wrapper>
 </template>
 
@@ -21,6 +27,11 @@ export default {
     },
     src() {
       return this.component.src;
+    },
+  },
+  watch: {
+    src(newValue) {
+      if (newValue) this.$refs.media.load();
     },
   },
 };
