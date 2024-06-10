@@ -1,3 +1,4 @@
+import { readonly } from "vue";
 import { defineStore } from "pinia";
 import Fuse from "fuse.js";
 import { markRaw } from "vue";
@@ -31,7 +32,7 @@ export default defineStore("shared-assets-library", {
   getters: {
     get() {
       return (id) => {
-        return this.items.get(id);
+        return this.items.has(id) ? readonly(this.items.get(id)) : null;
       };
     },
     all() {
@@ -42,7 +43,7 @@ export default defineStore("shared-assets-library", {
 
       items = items.filter((item) => {
         const tags = this.filters.tags;
-        const type = this.getType(item);
+        const type = item.type;
         if (tags.includes("animated") && type === "lottie_animation") {
           return true;
         }
@@ -91,6 +92,9 @@ export default defineStore("shared-assets-library", {
 
       const data = await api.load(this.configs.url);
       this.items = normalize(data.assets);
+      this.items.forEach((item) => {
+        item.type = this.getType(item);
+      });
 
       this.loaded = true;
       this.loading = false;

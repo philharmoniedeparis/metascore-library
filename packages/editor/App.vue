@@ -190,7 +190,7 @@
       <tabs-container v-model:activeTab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
-            :images="imageAssets"
+            :assets="assets"
             :first-level-components="firstLevelComponents"
           ></component-form>
         </tabs-item>
@@ -322,7 +322,7 @@ export default {
     const { enable: enableBehaviors, disable: disableBehaviors } =
       useModule("app_behaviors");
 
-    const { getAssetsByType, addAsset } = useModule("assets_library");
+    const { assets, addAsset } = useModule("assets_library");
 
     const { preview, previewPersistant } = useModule("app_preview");
 
@@ -366,7 +366,7 @@ export default {
       clearComponentsOverrides,
       enableBehaviors,
       disableBehaviors,
-      getAssetsByType,
+      assets,
       addAsset,
       preview,
       previewPersistant,
@@ -425,9 +425,6 @@ export default {
     },
     timelineOffset() {
       return this.waveformOffset.start / this.mediaDuration;
-    },
-    imageAssets() {
-      return this.getAssetsByType("image");
     },
     scenarios() {
       return this.getComponentsByType("Scenario");

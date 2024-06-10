@@ -7,6 +7,8 @@
     "background-color": "Couleur de fond",
     "background-image": "Image de fond",
     "background-image.empty": "-- aucune --",
+    "src": "Source",
+    "src.empty": "-- aucune --",
     "border": "Bordure",
     "border-radius": "Rayon",
     "position": "Position",
@@ -114,6 +116,8 @@
     "background-color": "Background color",
     "background-image": "Background image",
     "background-image.empty": "-- none --",
+    "src": "Source",
+    "src.empty": "-- none --",
     "border": "Border",
     "border-radius": "Radius",
     "position": "Position",
@@ -240,7 +244,7 @@ import { useModule } from "@metascore-library/core/services/module-manager";
 
 export default {
   props: {
-    images: {
+    assets: {
       type: Array,
       default() {
         return [];
@@ -286,6 +290,20 @@ export default {
     };
   },
   computed: {
+    animationAssets() {
+      return this.assets.filter((item) => item.type === "lottie_animation");
+    },
+    imageAssets() {
+      return this.assets.filter((item) => ["image", "svg"].includes(item.type));
+    },
+    mediaAssets() {
+      return this.assets.filter((item) =>
+        ["audio", "video"].includes(item.type)
+      );
+    },
+    svgAssets() {
+      return this.assets.filter((item) => item.type === "svg");
+    },
     selectedComponentsCount() {
       return this.selectedComponents.length;
     },
@@ -355,12 +373,12 @@ export default {
         layout.items[0].items.push({
           type: "select",
           options: [
-            { name: this.$t("background-image.empty"), id: -1, url: null },
-            ...this.images,
+            { name: this.$t("background-image.empty") },
+            ...this.imageAssets,
           ],
           optionLabel: (o) => o?.name,
           optionKey: (o) => o?.id,
-          optionValue: (o) => o.url,
+          optionValue: (o) => o?.file?.url,
           ...this.getControlProps("background-image"),
         });
       }
@@ -405,6 +423,14 @@ export default {
 
       switch (this.commonModel.type) {
         case "Animation":
+          layout.items[0].items.push({
+            type: "select",
+            options: [{ name: this.$t("src.empty") }, ...this.animationAssets],
+            optionLabel: (o) => o?.name,
+            optionKey: (o) => o?.id,
+            optionValue: (o) => o?.file?.url ?? o?.url,
+            ...this.getControlProps("src"),
+          });
           ["start-frame", "loop-duration", "reversed"].forEach((property) => {
             layout.items[0].items.push(
               this.getControlProps(property, this.commonModel.type)
@@ -469,7 +495,38 @@ export default {
           }
           break;
 
+        case "Image":
+          layout.items[0].items.push({
+            type: "select",
+            options: [{ name: this.$t("src.empty") }, ...this.imageAssets],
+            optionLabel: (o) => o?.name,
+            optionKey: (o) => o?.id,
+            optionValue: (o) => o?.file?.url ?? o?.url,
+            ...this.getControlProps("src"),
+          });
+          break;
+
+        case "Media":
+          layout.items[0].items.push({
+            type: "select",
+            options: [{ name: this.$t("src.empty") }, ...this.mediaAssets],
+            optionLabel: (o) => o?.name,
+            optionKey: (o) => o?.id,
+            optionValue: (o) => o?.file?.url ?? o?.url,
+            ...this.getControlProps("src"),
+          });
+          break;
+
         case "SVG":
+          layout.items[0].items.push({
+            type: "select",
+            options: [{ name: this.$t("src.empty") }, ...this.svgAssets],
+            optionLabel: (o) => o?.name,
+            optionKey: (o) => o?.id,
+            optionValue: (o) => o?.file?.url ?? o?.url,
+            ...this.getControlProps("src"),
+          });
+
           if (
             this.masterComponent.colors &&
             this.masterComponent.colors.length > 0
@@ -704,6 +761,7 @@ export default {
   display: flex;
   height: 100%;
   flex-direction: column;
+  align-items: stretch;
   background: var(--metascore-color-bg-secondary);
   overflow-x: hidden;
   overflow-y: auto;

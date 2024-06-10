@@ -67,7 +67,7 @@ export default defineStore("editor", {
           data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
-          const { assets } = useModule("assets_library");
+          const assets = unref(useModule("assets_library").assets);
           if (assets.length > 0) {
             assets.forEach((asset) => {
               data.append("assets[]", JSON.stringify(asset));
