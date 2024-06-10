@@ -32,7 +32,12 @@
       <figcaption>{{ label }}</figcaption>
     </figure>
 
-    <base-button type="button" title="Supprimer" @click="onDeleteClick">
+    <base-button
+      v-tooltip
+      type="button"
+      title="Supprimer"
+      @click="onDeleteClick"
+    >
       <template #icon><delete-icon /></template>
     </base-button>
     <confirm-dialog

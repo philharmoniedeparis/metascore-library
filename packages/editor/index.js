@@ -37,6 +37,7 @@ import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
+import Tooltip from "./modules/tooltip";
 import UserPreferences from "./modules/user_preferences";
 import Waveform from "./modules/waveform";
 
@@ -91,6 +92,7 @@ export class Editor {
         SharedAssetsLibrary,
         Tabs,
         Timeline,
+        Tooltip,
         UserPreferences,
         Waveform,
       ],

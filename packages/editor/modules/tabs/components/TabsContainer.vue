@@ -8,9 +8,16 @@
         <li
           v-for="(tab, index) in tabs"
           :key="index"
-          :class="{ active: index === internalValue }"
+          :class="{ active: isActieveTab(index) }"
         >
-          <a role="tab" @click="internalValue = index">{{ tab.title }}</a>
+          <a
+            v-tooltip
+            :title="!isActieveTab(index) ? tab.title : null"
+            role="tab"
+            @click="internalValue = index"
+          >
+            {{ tab.title }}
+          </a>
         </li>
       </ul>
       <div v-if="$slots['tabs-end']" class="tabs-end">
@@ -58,6 +65,11 @@ export default {
   },
   mounted() {
     this.internalValue = this.activeTab;
+  },
+  methods: {
+    isActieveTab(index) {
+      return index === this.internalValue;
+    },
   },
 };
 </script>

@@ -1,7 +1,20 @@
+<i18n>
+  {
+    "fr": {
+      "title": "Zoom",
+    },
+    "en": {
+      "title": "Zoom",
+    }
+  }
+</i18n>
+
 <template>
   <select-control
     v-model="zoom"
+    v-tooltip
     :options="options"
+    :title="$t('title')"
     class="app-zoom-controller"
   />
 </template>

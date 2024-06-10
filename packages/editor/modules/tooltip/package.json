@@ -1,0 +1,8 @@
+{
+  "name": "@metascore-library/tooltip",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@floating-ui/dom": "^1.6.3"
+  }
+}

@@ -49,6 +49,7 @@
           <div class="intro-tour--tooltip--header">
             <h3 class="title">{{ currentStep.title }}</h3>
             <base-button
+              v-tooltip
               class="close"
               :title="$t('close_title')"
               :aria-label="$t('close_title')"
