@@ -32,7 +32,7 @@
 </i18n>
 
 <template>
-  <div v-hotkey.local="hotkeys" class="timeline" tabindex="0">
+  <div v-hotkey.local.stop="hotkeys" class="timeline" tabindex="0">
     <div class="tracks-container">
       <template v-for="scenario in scenarios" :key="scenario.id">
         <component-track

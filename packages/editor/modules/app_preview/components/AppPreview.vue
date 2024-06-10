@@ -70,7 +70,7 @@
     >
       <app-renderer
         ref="app-renderer"
-        v-hotkey.local="hotkeys"
+        v-hotkey.local.stop="hotkeys"
         @keydown="onAppRendererKeydown"
         @keyup="onAppRendererKeyup"
       />

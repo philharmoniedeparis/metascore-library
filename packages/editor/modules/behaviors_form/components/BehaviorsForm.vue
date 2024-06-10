@@ -190,13 +190,16 @@ export default {
       this.Blockly.svgResize(this.workspace);
     },
     onDocumentMousedown(evt) {
-      // Close tooltips, context menus and dropdowns if clicked outside.
+      // If clicked outside.
       if (
         !evt.target.closest(
           ".behaviors-form, [class^='blockly'], [class*=' blockly']"
         )
       ) {
+        // Close tooltips, context menus and dropdowns.
         this.workspace.hideChaff();
+        // Prevent handleding of keyboard shortcuts by the workspace.
+        this.Blockly.common.setMainWorkspace(null);
       }
     },
     onContextmenu(evt) {
