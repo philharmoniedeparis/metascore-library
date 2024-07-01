@@ -32,6 +32,7 @@ import { debounce } from "lodash";
 import { clamp } from "@metascore-library/core/utils/math";
 import { useModule } from "@metascore-library/core/services/module-manager";
 import useStore from "../store";
+import { getScaleForWidth } from "../utils";
 
 export default {
   props: {
@@ -249,7 +250,7 @@ export default {
         }
 
         this.resampledData = this.waveformData.resample({
-          width: this.width,
+          scale: getScaleForWidth(this.waveformData, this.width),
         });
         this.waveformMaxScale = this.resampledData.scale;
       } else {
@@ -273,10 +274,13 @@ export default {
           const margin = this.waveMargin;
           const height = this.height - margin * 2;
           const startX = this.offsetX;
-          const endX = Math.min(startX + this.width, this.resampledData.length);
+          const endX = Math.min(
+            startX + this.width,
+            this.resampledData.length - 1
+          );
 
           // Loop forwards, drawing the upper half of the waveform
-          for (let x = endX - 1; x >= startX; x--) {
+          for (let x = endX; x >= startX; x--) {
             const val = channel.max_sample(x);
             context.lineTo(
               x - startX + 0.5,
@@ -398,7 +402,7 @@ export default {
 
     setOffsetX(value) {
       this.offsetX = this.resampledData
-        ? clamp(value, 0, this.resampledData.length - this.width)
+        ? Math.max(0, clamp(value, 0, this.resampledData.length - this.width))
         : 0;
     },
 
