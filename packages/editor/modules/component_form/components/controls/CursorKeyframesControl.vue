@@ -48,9 +48,9 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { isObject } from "lodash";
-import { getRectWithoutTransforms } from "@metascore-library/core/utils/dom";
+import { getRectWithoutTransforms } from "@core/utils/dom";
 import useStore from "../../store";
 import CursorKeyframesEditor from "./CursorKeyframesEditor.vue";
 

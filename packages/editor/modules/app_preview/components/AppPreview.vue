@@ -84,8 +84,8 @@
 <script>
 import { computed } from "vue";
 import { debounce } from "lodash";
-import { trapTabFocus } from "@metascore-library/core/utils/dom";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { trapTabFocus } from "@core/utils/dom";
+import { useModule } from "@core/services/module-manager";
 import "../polyfills/GeomertyUtils";
 import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";

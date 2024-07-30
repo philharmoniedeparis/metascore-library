@@ -1,6 +1,6 @@
 import { readonly } from "vue";
 import { defineStore } from "pinia";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { normalize } from "./utils/normalize";
 import * as api from "../api";
 

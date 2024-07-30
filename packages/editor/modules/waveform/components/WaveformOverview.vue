@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { debounce } from "lodash";
 import useStore from "../store";
 import { getScaleForWidth } from "../utils";

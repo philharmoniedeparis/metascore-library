@@ -4,18 +4,15 @@ import { createPinia } from "pinia";
 import hotkey from "v-hotkey";
 import App from "./App.vue";
 
-import { init as createI18n } from "@metascore-library/core/services/i18n";
-import {
-  registerModules,
-  useModule,
-} from "@metascore-library/core/services/module-manager";
-import Ajax from "@metascore-library/core/modules/ajax";
+import { init as createI18n } from "@core/services/i18n";
+import { registerModules, useModule } from "@core/services/module-manager";
+import Ajax from "@core/modules/ajax";
 import API from "./modules/api";
-import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
-import AppRenderer from "@metascore-library/core/modules/app_renderer";
-import ContextMenu from "@metascore-library/core/modules/contextmenu";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
-import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
+import AppBehaviors from "@core/modules/app_behaviors";
+import AppRenderer from "@core/modules/app_renderer";
+import ContextMenu from "@core/modules/contextmenu";
+import MediaPlayer from "@core/modules/media_player";
+import ProgressIndicator from "@core/modules/progress_indicator";
 
 export class Player {
   /**

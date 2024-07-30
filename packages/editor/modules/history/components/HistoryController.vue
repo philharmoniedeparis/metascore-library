@@ -47,7 +47,7 @@
 
 <script>
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import UndoIcon from "../assets/icons/undo.svg?inline";
 import RedoIcon from "../assets/icons/redo.svg?inline";
 

@@ -29,8 +29,8 @@
 
 <script>
 import { debounce } from "lodash";
-import { clamp } from "@metascore-library/core/utils/math";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { clamp } from "@core/utils/math";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import { getScaleForWidth } from "../utils";
 

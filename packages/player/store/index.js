@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import * as api from "../api";
 
 export default defineStore("player", {

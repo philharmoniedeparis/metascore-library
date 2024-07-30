@@ -1,5 +1,5 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import AppComponents from "@metascore-library/core/modules/app_components";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AppComponents from "@core/modules/app_components";
 import AppPreview from "../app_preview";
 import ComponentsBreadcrumb from "./components/ComponentsBreadcrumb";
 

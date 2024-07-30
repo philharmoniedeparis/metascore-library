@@ -1,13 +1,13 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 
-import Alert from "@metascore-library/core/modules/alert";
-import AppComponents from "@metascore-library/core/modules/app_components";
-import BaseButton from "@metascore-library/core/modules/button";
-import Confirm from "@metascore-library/core/modules/confirm";
+import Alert from "@core/modules/alert";
+import AppComponents from "@core/modules/app_components";
+import BaseButton from "@core/modules/button";
+import Confirm from "@core/modules/confirm";
 import FormGroup from "../form_group";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaPlayer from "@core/modules/media_player";
 import ModalForm from "../modal_form";
-import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
+import ProgressIndicator from "@core/modules/progress_indicator";
 
 import MediaSelector from "./components/MediaSelector";
 

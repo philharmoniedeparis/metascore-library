@@ -1,16 +1,16 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import Button from "@metascore-library/core/modules/button";
-import AppComponents from "@metascore-library/core/modules/app_components";
-import AppRenderer from "@metascore-library/core/modules/app_renderer";
-import ContextMenu from "@metascore-library/core/modules/contextmenu";
+import Button from "@core/modules/button";
+import AppComponents from "@core/modules/app_components";
+import AppRenderer from "@core/modules/app_renderer";
+import ContextMenu from "@core/modules/contextmenu";
 import Clipboard from "../clipboard";
 import FormControls from "../form_controls";
 import History from "../history";
 import Hotkey from "../hotkey";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaPlayer from "@core/modules/media_player";
 
 import AppPreview from "./components/AppPreview";
 import AppZoomController from "./components/AppZoomController";

@@ -34,7 +34,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
-import { map, clamp } from "@metascore-library/core/utils/math";
+import { map, clamp } from "@core/utils/math";
 import useStore from "../store";
 import ZoomIcon from "../assets/icons/zoom.svg?inline";
 

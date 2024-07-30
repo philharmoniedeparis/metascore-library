@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { isApplePlatform } from "@metascore-library/core/utils/device";
+import { isApplePlatform } from "@core/utils/device";
 import useStore from "../store";
 
 export default {

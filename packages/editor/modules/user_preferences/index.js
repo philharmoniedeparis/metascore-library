@@ -1,9 +1,9 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import UserPreferencesForm from "./components/UserPreferencesForm";
 import useStore from "./store";
-import Ajax from "@metascore-library/core/modules/ajax";
+import Ajax from "@core/modules/ajax";
 
 export default class UserPreferencesModule extends AbstractModule {
   static id = "user_preferences";

@@ -61,7 +61,7 @@
 <script>
 import { round } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import MediaSourceForm from "./MediaSourceForm";
 
 export default {

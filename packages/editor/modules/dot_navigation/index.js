@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import DotNavigation from "./components/DotNavigation";
 
 export default class DotNavigationModule extends AbstractModule {

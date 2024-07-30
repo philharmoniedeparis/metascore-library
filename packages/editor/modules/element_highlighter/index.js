@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import ElementHighlighter from "./components/ElementHighlighter";
 
 export default class ElementHighlighterModule extends AbstractModule {

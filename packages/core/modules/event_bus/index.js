@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import Emitter from "tiny-emitter";
 
 export default class EventBusModule extends AbstractModule {

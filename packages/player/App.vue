@@ -50,7 +50,7 @@
 import { computed } from "vue";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "./store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import packageInfo from "../../package.json";
 import Logo from "./assets/logo.svg?inline";
 import LogoMini from "./assets/logo-mini.svg?inline";

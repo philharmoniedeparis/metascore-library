@@ -1,16 +1,16 @@
 import { storeToRefs } from "pinia";
 import { readonly } from "vue";
 
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import AppComponents from "@metascore-library/core/modules/app_components";
+import AppComponents from "@core/modules/app_components";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
 import ElementHighlighter from "../element_highlighter";
 import FormGroup from "../form_group";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaPlayer from "@core/modules/media_player";
 import SchemaForm from "../schema_form";
-import BaseButton from "@metascore-library/core/modules/button";
+import BaseButton from "@core/modules/button";
 import Tabs from "../tabs";
 
 import AnimatedControl from "./components/controls/AnimatedControl";

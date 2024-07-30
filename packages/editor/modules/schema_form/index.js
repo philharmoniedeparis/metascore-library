@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import FormControls from "../form_controls";
 import ArrayControl from "./components/ArrayControl";
 import ControlDispatcher from "./components/ControlDispatcher";

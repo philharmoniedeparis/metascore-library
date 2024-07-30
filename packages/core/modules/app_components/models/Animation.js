@@ -7,7 +7,7 @@ import {
   createBooleanField,
   createArrayField,
   createColorField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export default class Animation extends EmbeddableComponent {
   /**

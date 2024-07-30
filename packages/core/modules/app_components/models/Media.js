@@ -1,9 +1,6 @@
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
-import {
-  createEnumField,
-  createUrlField,
-} from "@metascore-library/core/utils/schema";
+import { createEnumField, createUrlField } from "@core/utils/schema";
 
 export default class Media extends EmbeddableComponent {
   /**

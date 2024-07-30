@@ -1,5 +1,5 @@
 import { reactive, toRefs, readonly } from "vue";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 
 export default class MediaPlayerModule extends AbstractModule {
   static id = "media_player";

@@ -1,6 +1,6 @@
 import { Collection } from "@ckeditor/ckeditor5-utils";
 import { ViewModel } from "@ckeditor/ckeditor5-ui";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import InputTimecodeView from "./inputtimecodeview";
 
 export function createLabeledInputTimecode(

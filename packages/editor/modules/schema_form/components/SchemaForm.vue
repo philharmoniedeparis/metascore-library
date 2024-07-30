@@ -32,7 +32,7 @@ import { markRaw } from "vue";
 import Ajv from "ajv";
 import localize_fr from "ajv-i18n/localize/fr";
 import localize_en from "ajv-i18n/localize/en";
-import { getLocale } from "@metascore-library/core/services/i18n";
+import { getLocale } from "@core/services/i18n";
 import { flatten } from "../utils/schema";
 
 const localize = {

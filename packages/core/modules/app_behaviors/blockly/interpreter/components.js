@@ -1,4 +1,4 @@
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { watch, nextTick } from "vue";
 

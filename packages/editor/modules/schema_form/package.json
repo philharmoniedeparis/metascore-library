@@ -1,9 +1,0 @@
-{
-  "name": "@metascore-library/schema-form",
-  "private": true,
-  "description": "",
-  "dependencies": {
-    "ajv": "^8.10.0",
-    "ajv-i18n": "^4.2.0"
-  }
-}

@@ -1,9 +1,9 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import storePlugin from "./store/plugin";
-import BaseButton from "@metascore-library/core/modules/button";
+import BaseButton from "@core/modules/button";
 import Hotkey from "../hotkey";
 import HistoryController from "./components/HistoryController";
 

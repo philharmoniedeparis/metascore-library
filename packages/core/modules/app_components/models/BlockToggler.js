@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
-import { createArrayField } from "@metascore-library/core/utils/schema";
+import { createArrayField } from "@core/utils/schema";
 
 export default class BlockToggler extends EmbeddableComponent {
   /**

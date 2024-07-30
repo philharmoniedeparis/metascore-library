@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import useEditorStore from "@metascore-library/editor/store";
+import useEditorStore from "@editor/store";
 import * as api from "../api";
 
 export default defineStore("auto-save", {

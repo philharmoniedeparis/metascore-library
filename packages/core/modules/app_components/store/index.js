@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import { readonly, unref, isReadonly } from "vue";
 import { omit } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
-import { useModule } from "@metascore-library/core/services/module-manager";
-import { t as $t } from "@metascore-library/core/services/i18n";
+import { useModule } from "@core/services/module-manager";
+import { t as $t } from "@core/services/i18n";
 import * as Models from "../models";
 
 export default defineStore("app-components", {

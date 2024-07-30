@@ -1,7 +1,7 @@
 import { storeToRefs } from "pinia";
 import { readonly } from "vue";
 
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import * as utils from "./utils/media";
 import MediaPlayer from "./components/MediaPlayer";

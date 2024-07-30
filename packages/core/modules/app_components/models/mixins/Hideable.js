@@ -1,6 +1,6 @@
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
-import { createBooleanField } from "@metascore-library/core/utils/schema";
+import { createBooleanField } from "@core/utils/schema";
 
 export default Mixin(
   (superclass) =>

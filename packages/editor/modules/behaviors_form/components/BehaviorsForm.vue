@@ -43,7 +43,7 @@ import { DisableTopBlocks } from "@blockly/disable-top-blocks";
 import "@blockly/block-plus-minus";
 import useStore from "../store";
 import getConfig from "../blockly";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default {
   props: {},

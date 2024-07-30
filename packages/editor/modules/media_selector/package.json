@@ -1,8 +1,0 @@
-{
-  "name": "@metascore-library/media-selector",
-  "private": true,
-  "description": "",
-  "dependencies": {
-    "vue-dompurify-html": "^5.0.0"
-  }
-}

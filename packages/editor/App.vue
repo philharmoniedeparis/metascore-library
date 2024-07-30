@@ -281,7 +281,7 @@
 <script>
 import { computed, unref } from "vue";
 import useStore from "./store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?inline";
 import RevertIcon from "./assets/icons/revert.svg?inline";

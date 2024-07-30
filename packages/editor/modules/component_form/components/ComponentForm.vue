@@ -240,7 +240,7 @@
 <script>
 import { intersection, kebabCase } from "lodash";
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default {
   props: {
@@ -755,7 +755,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@metascore-library/editor/scss/variables";
+@import "@editor/scss/variables";
 
 .component-form {
   display: flex;

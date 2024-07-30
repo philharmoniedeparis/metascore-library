@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import directive from "./directives/autofocus";
 
 export default class AutoFocusModule extends AbstractModule {

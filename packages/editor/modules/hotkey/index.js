@@ -1,5 +1,5 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import Modal from "@metascore-library/core/modules/modal";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import Modal from "@core/modules/modal";
 import directive from "./directives/hotkey";
 import { format } from "./utils";
 import HotkeyList from "./components/HotkeyList";

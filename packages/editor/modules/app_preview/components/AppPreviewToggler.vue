@@ -44,7 +44,7 @@
 
 <script>
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import ToggleIcon from "../assets/icons/preview-toggle.svg?inline";
 
 export default {

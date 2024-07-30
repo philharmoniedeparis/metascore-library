@@ -1,6 +1,6 @@
 import { splitCombination } from "v-hotkey/src/helpers";
-import { isApplePlatform } from "@metascore-library/core/utils/device";
-import { capitalizeFirstLetter } from "@metascore-library/core/utils/string";
+import { isApplePlatform } from "@core/utils/device";
+import { capitalizeFirstLetter } from "@core/utils/string";
 
 /**
  * Format a hotkey combination for display perposes.

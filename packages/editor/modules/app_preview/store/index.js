@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
 import { round } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 const FROZEN_OVERRIDES_KEY = "app_preview:frozen";
 const FROZEN_OVERRIDES_PRIORITY = 1000;

@@ -1,7 +1,7 @@
 import { ref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { EMPTY_OPTION } from "../constants";
 import { watchDrowpdownFieldOptions } from "../utils";
 

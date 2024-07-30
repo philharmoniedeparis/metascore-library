@@ -69,7 +69,7 @@ import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import AnimatedIcon from "../assets/icons/animated.svg?inline";
 
 export default {

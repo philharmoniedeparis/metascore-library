@@ -159,7 +159,7 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, kebabCase } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
@@ -730,7 +730,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@metascore-library/editor/scss/variables";
+@import "@editor/scss/variables";
 
 .component-track {
   display: contents;

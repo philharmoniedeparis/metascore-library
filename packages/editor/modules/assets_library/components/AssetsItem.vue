@@ -59,7 +59,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";

@@ -29,7 +29,7 @@ module.exports = defineConfig({
     loaderOptions: {
       scss: {
         additionalData: `
-          @import "@metascore-library/core/scss/_mixins.scss";
+          @import "@core/scss/_mixins.scss";
         `,
       },
     },
@@ -41,6 +41,12 @@ module.exports = defineConfig({
     },
   },
   chainWebpack: (config) => {
+    // Setup resolve aliases.
+    config.resolve.alias
+      .set("@core", path.resolve(__dirname, "packages/core"))
+      .set("@editor", path.resolve(__dirname, "packages/editor"))
+      .set("@player", path.resolve(__dirname, "packages/player"));
+
     // Override entry points.
     config.entryPoints.clear();
     config.entry("metaScore.Player").add("./packages/player/index.js").end();

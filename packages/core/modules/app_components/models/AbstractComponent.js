@@ -1,11 +1,8 @@
 import { merge, kebabCase } from "lodash";
 import { computed, unref } from "vue";
 import { v4 as uuid } from "uuid";
-import AbstractModel from "@metascore-library/core/models/AbstractModel";
-import {
-  createStringField,
-  createBooleanField,
-} from "@metascore-library/core/utils/schema";
+import AbstractModel from "@core/models/AbstractModel";
+import { createStringField, createBooleanField } from "@core/utils/schema";
 import useStore from "../store";
 
 export default class AbstractComponent extends AbstractModel {

@@ -7,7 +7,7 @@ import {
   createStringField,
   createArrayField,
   createColorField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export const SVG_PROPERTIES = [
   "stroke",

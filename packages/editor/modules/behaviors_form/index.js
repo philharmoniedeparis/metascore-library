@@ -1,8 +1,8 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 
-import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
-import AppComponents from "@metascore-library/core/modules/app_components";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import AppBehaviors from "@core/modules/app_behaviors";
+import AppComponents from "@core/modules/app_components";
+import MediaPlayer from "@core/modules/media_player";
 import BehaviorsForm from "./components/BehaviorsForm";
 
 export default class BehaviorsFormModule extends AbstractModule {

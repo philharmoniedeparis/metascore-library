@@ -1,6 +1,6 @@
 import { computed, unref } from "vue";
 import { isArray } from "lodash";
-import { map } from "@metascore-library/core/utils/math";
+import { map } from "@core/utils/math";
 
 /**
  * Get an animated value at the specified media time

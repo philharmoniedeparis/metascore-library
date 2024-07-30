@@ -1,10 +1,10 @@
 import { merge } from "lodash";
-import AbstractModel from "@metascore-library/core/models/AbstractModel";
+import AbstractModel from "@core/models/AbstractModel";
 import {
   createIntegerField,
   createColorField,
   createBooleanField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export default class UserPreferences extends AbstractModel {
   /**

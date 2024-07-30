@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import FormGroup from "./components/FormGroup";
 
 export default class FormGroupModule extends AbstractModule {

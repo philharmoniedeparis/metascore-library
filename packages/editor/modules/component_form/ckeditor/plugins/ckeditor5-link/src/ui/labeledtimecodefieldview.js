@@ -3,7 +3,7 @@ import {
   ButtonView,
   ToolbarView,
 } from "@ckeditor/ckeditor5-ui";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { unref } from "vue";
 import { createLabeledInputTimecode } from "./utils";
 

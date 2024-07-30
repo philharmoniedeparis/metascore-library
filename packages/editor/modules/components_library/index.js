@@ -1,5 +1,5 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import AppComponents from "@metascore-library/core/modules/app_components";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AppComponents from "@core/modules/app_components";
 import ComponentsLibrary from "./components/ComponentsLibrary";
 
 export default class ComponentsLibraryModule extends AbstractModule {
