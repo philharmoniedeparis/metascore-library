@@ -543,7 +543,7 @@ export default class BehaviorTriggerUI extends Plugin {
    *
    * @readonly
    * @protected
-   * @type {Boolean}
+   * @type {boolean}
    */
   get _isFormInPanel() {
     return this._balloon.hasView(this.formView);
@@ -554,7 +554,7 @@ export default class BehaviorTriggerUI extends Plugin {
    *
    * @readonly
    * @protected
-   * @type {Boolean}
+   * @type {boolean}
    */
   get _areActionsInPanel() {
     return this._balloon.hasView(this.actionsView);
@@ -566,7 +566,7 @@ export default class BehaviorTriggerUI extends Plugin {
    *
    * @readonly
    * @protected
-   * @type {Boolean}
+   * @type {boolean}
    */
   get _areActionsVisible() {
     return this._balloon.visibleView === this.actionsView;
@@ -577,7 +577,7 @@ export default class BehaviorTriggerUI extends Plugin {
    *
    * @readonly
    * @protected
-   * @type {Boolean}
+   * @type {boolean}
    */
   get _isUIInPanel() {
     return this._isFormInPanel || this._areActionsInPanel;
@@ -589,7 +589,7 @@ export default class BehaviorTriggerUI extends Plugin {
    *
    * @readonly
    * @protected
-   * @type {Boolean}
+   * @type {boolean}
    */
   get _isUIVisible() {
     const visibleView = this._balloon.visibleView;
