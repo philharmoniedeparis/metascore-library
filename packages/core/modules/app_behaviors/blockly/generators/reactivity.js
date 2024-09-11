@@ -69,7 +69,15 @@ Generator.forBlock["reactivity_when"] = function (block) {
   code += "Reactivity.watchEffect(function () {\n";
   code += `if (${conditionCode}) {\n`;
   code += statement;
-  code += "}\n";
+  code += "\n}\n";
+
+  if (block.getInput("ELSE")) {
+    const statement = Generator.statementToCode(block, "ELSE");
+    code += `else {\n`;
+    code += statement;
+    code += "\n}\n";
+  }
+
   code += "});\n";
 
   if (Generator.STATEMENT_SUFFIX) {

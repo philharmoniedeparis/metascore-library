@@ -130,9 +130,13 @@ Msg.MEDIA_STOP = "arrêter la lecture";
 Msg.MEDIA_STOP_TOOLTIP = "";
 Msg.MEDIA_STOP_HELPURL = "";
 
-Msg.REACTIVITY_WHEN = "lorsque %1";
+Msg.REACTIVITY_WHEN = " %1 lorsque %2";
 Msg.REACTIVITY_WHEN_THEN = "faire %1";
 Msg.REACTIVITY_WHEN_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_HELPURL = "";
+
+Msg.REACTIVITY_WHEN_ELSE = "sinon";
+Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
+Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
 
 export default Msg;
