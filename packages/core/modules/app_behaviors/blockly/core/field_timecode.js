@@ -275,17 +275,10 @@ export default class FieldTimecode extends Field {
    */
   applyColour() {
     if (this.sourceBlock_ && this.getConstants().FULL_BLOCK_FIELDS) {
-      if (this.borderRect_) {
-        this.borderRect_.setAttribute(
-          "stroke",
-          this.sourceBlock_.style.colourTertiary
-        );
-      } else {
-        this.sourceBlock_.pathObject.svgPath.setAttribute(
-          "fill",
-          this.getConstants().FIELD_BORDER_RECT_COLOUR
-        );
-      }
+      this.sourceBlock_.pathObject.svgPath.setAttribute(
+        "fill",
+        this.getConstants().FIELD_BORDER_RECT_COLOUR
+      );
     }
   }
 
