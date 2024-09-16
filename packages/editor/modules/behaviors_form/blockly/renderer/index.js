@@ -104,10 +104,18 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       ${selector}.blocklyWidgetDiv .blocklyMenuItem,
       ${selector}.blocklyDropDownDiv .blocklyMenuItem {
         font-family: ${this.FIELD_TEXT_FONTFAMILY};
-        padding-left: 15px;
+        padding: 0;
+      }
+      ${selector}.blocklyWidgetDiv .blocklyMenuItemContent,
+      ${selector}.blocklyDropDownDiv .blocklyMenuItemContent {
+        padding: 6px 15px;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemHighlight,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemHighlight {
+        background-color: inherit;
+      }
+      ${selector}.blocklyWidgetDiv .blocklyMenuItemHighlight > .blocklyMenuItemContent,
+      ${selector}.blocklyDropDownDiv .blocklyMenuItemHighlight > .blocklyMenuItemContent {
         background-color: #606060;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemDisabled,
@@ -120,6 +128,10 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemSelected,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemSelected {
+        background-color: inherit;
+      }
+      ${selector}.blocklyWidgetDiv .blocklyMenuItemSelected > .blocklyMenuItemContent,
+      ${selector}.blocklyDropDownDiv .blocklyMenuItemSelected > .blocklyMenuItemContent {
         background: #606060;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemCheckbox,

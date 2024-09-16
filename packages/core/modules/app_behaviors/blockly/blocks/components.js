@@ -22,14 +22,12 @@ const SUPPORTED_PROPERTIES = [
  * Get component dropdown options
  * @param {array} components The components
  * @param {boolean} recursive Whether to recurse to child components.
- * @param {number} level_ The current recursion level, used internally.
  * @param {string} breadcrumb_ The current recursion breadcrumb, used internally.
  * @returns {array} An options array
  */
 function getComponentOptions(
   components = [],
   recursive = false,
-  level_ = 0,
   breadcrumb_ = ""
 ) {
   const { getComponentChildren, getComponentLabel, getComponentIconURL } =
@@ -45,9 +43,6 @@ function getComponentOptions(
       if (icon_url) {
         label = document.createElement("div");
         label.classList.add("blocklyMenuItemLabel");
-        if (level_) {
-          label.style.setProperty("--level", level_);
-        }
 
         const icon = document.createElement("img");
         icon.src = icon_url;
@@ -73,25 +68,16 @@ function getComponentOptions(
       }
 
       const option = [{ label, text: name }, `${c.type}:${c.id}`];
-
-      options.push(option);
-
       if (recursive) {
         const children = getComponentChildren(c);
         if (["Scenario", "Page"].includes(c.type)) {
           children.reverse();
         }
 
-        options = [
-          ...options,
-          ...getComponentOptions(
-            children,
-            true,
-            level_ + 1,
-            level_ > 0 ? `${breadcrumb_}${BREADCRUMB_SEPARATOR}${name}` : name
-          ),
-        ];
+        option.children = getComponentOptions(children, true, breadcrumb_);
       }
+
+      options.push(option);
     });
   }
 
