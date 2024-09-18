@@ -204,47 +204,57 @@ watchEffect(() => {
     true
   );
 });
-Extensions.register("components_component_options", function () {
-  const component_input = this.getInput("COMPONENT");
-  if (!component_input) return;
+function componentOptionsExtension(multiple = false) {
+  return function () {
+    const component_input = this.getInput("COMPONENT");
+    if (!component_input) return;
 
-  const mock = this.type.endsWith("_mock");
+    const mock = this.type.endsWith("_mock");
 
-  const component_field = new FieldDropdown(
-    function () {
-      const empty_option = [
-        {
-          label: Msg.COMPONENTS_EMPTY_OPTION,
-          default: true,
-          hidden: true,
-        },
-        EMPTY_OPTION,
-      ];
+    const component_field = new FieldDropdown(
+      function () {
+        const empty_option = [
+          {
+            label: Msg.COMPONENTS_EMPTY_OPTION,
+            default: true,
+            hidden: true,
+          },
+          EMPTY_OPTION,
+        ];
 
-      if (mock) return [empty_option];
+        if (mock) return [empty_option];
 
-      return [empty_option, ...componentOptions.value];
-    },
-    null,
-    { searchable: true }
-  );
-  component_input.appendField(component_field, "COMPONENT");
+        return [empty_option, ...componentOptions.value];
+      },
+      null,
+      { searchable: true, multiple }
+    );
+    component_input.appendField(component_field, "COMPONENT");
 
-  // Update the field's dropdown list and value when new options are available.
-  watchDrowpdownFieldOptions(component_field, componentOptions);
+    // Update the field's dropdown list and value when new options are available.
+    watchDrowpdownFieldOptions(component_field, componentOptions);
 
-  if (mock) {
-    component_field.setEnabled(false);
+    if (mock) {
+      component_field.setEnabled(false);
 
-    this.setEnabled(false);
-    this.setTooltip(() => {
-      return Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP.replace(
-        "%2",
-        Msg.COMPONENTS_PROPERTY[this.property_]
-      );
-    });
-  }
-});
+      this.setEnabled(false);
+      this.setTooltip(() => {
+        return Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP.replace(
+          "%2",
+          Msg.COMPONENTS_PROPERTY[this.property_]
+        );
+      });
+    }
+  };
+}
+Extensions.register(
+  "components_component_options",
+  componentOptionsExtension()
+);
+Extensions.register(
+  "components_component_options_multiple",
+  componentOptionsExtension(true)
+);
 
 Extensions.register("components_property_options", function () {
   const property_input = this.getInput("PROPERTY");
@@ -443,7 +453,7 @@ defineBlocksWithJsonArray([
         name: "STATEMENT",
       },
     ],
-    extensions: ["components_component_options"],
+    extensions: ["components_component_options_multiple"],
     inputsInline: true,
     style: "trigger_blocks",
     tooltip: "%{BKY_COMPONENTS_CLICK_TOOLTIP}",

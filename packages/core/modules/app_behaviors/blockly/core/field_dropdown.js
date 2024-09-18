@@ -4,11 +4,13 @@ import {
   fieldRegistry,
   utils,
   UnattachedFieldError,
+  DropDownDiv,
 } from "blockly/core";
 import Menu from "./menu";
 import MenuItem from "./menuitem";
+import { times } from "lodash";
 
-const { aria, string: utilsString, parsing } = utils;
+const { aria, string: utilsString, parsing, style } = utils;
 
 /**
  * Class for an editable dropdown field
@@ -35,24 +37,44 @@ export default class FieldDropdown extends FieldDropdownBase {
     }
 
     /**
+     * Whether multiple options can be selected.
+     * @type {boolean}
+     * @private
+     */
+    this.multiple_ = false;
+
+    /**
      * Whether the menu should be searchable.
      * @type {boolean}
      * @private
      */
-    this.searchable = false;
+    this.searchable_ = false;
+
+    this.selectedMenuItems = [];
+
+    if (config) {
+      this.configure_(config);
+    }
+
+    if (this.multiple_) {
+      this.value_ = [];
+    }
 
     /**
      * The currently selected option. The field is initialized with the
      * first option selected.
      */
-    this.selectedOption = this.getOptions(false).find((o) => {
+    this.selectedOption = this.getOptions(false)[
+      this.multiple_ ? "filter" : "find"
+    ]((o) => {
       return typeof o[0] === "string" || o[0].default || !o[0].disabled;
     });
 
-    if (config) {
-      this.configure_(config);
-    }
-    this.setValue(this.selectedOption[1]);
+    this.setValue(
+      this.multiple_
+        ? this.selectedOption.map(([value]) => value)
+        : this.selectedOption[1]
+    );
     if (validator) {
       this.setValidator(validator);
     }
@@ -64,7 +86,25 @@ export default class FieldDropdown extends FieldDropdownBase {
   configure_(config) {
     super.configure_(config);
 
-    if (config.searchable) this.searchable = config.searchable;
+    if (config.multiple) this.multiple_ = config.multiple;
+    if (config.searchable) this.searchable_ = config.searchable;
+  }
+
+  showEditor_(e) {
+    super.showEditor_(e);
+
+    if (this.multiple_) {
+      if (this.selectedMenuItems.length > 0) {
+        this.selectedMenuItems.forEach((menuItem) => {
+          this.menu_.setHighlighted(menuItem);
+        });
+        style.scrollIntoContainerView(
+          this.selectedMenuItems.at(0).getElement(),
+          DropDownDiv.getContentDiv(),
+          true
+        );
+      }
+    }
   }
 
   /**
@@ -75,12 +115,13 @@ export default class FieldDropdown extends FieldDropdownBase {
     if (!block) {
       throw new UnattachedFieldError();
     }
-    const menu = new Menu(this.searchable);
+    const menu = new Menu(this.searchable_);
     menu.setRole(aria.Role.LISTBOX);
     this.menu_ = menu;
 
     const options = this.getOptions(false, false);
     this.selectedMenuItem = null;
+    this.selectedMenuItems = [];
     for (let i = 0; i < options.length; i++) {
       const menuItem = this.dropdownCreateItem(options[i], block);
       if (menuItem) menu.addChild(menuItem);
@@ -122,7 +163,7 @@ export default class FieldDropdown extends FieldDropdownBase {
 
     if (content === null) return null;
 
-    const menuItem = new MenuItem(content, value, this.searchable);
+    const menuItem = new MenuItem(content, value, this.searchable_);
     menuItem.setRole(aria.Role.OPTION);
     menuItem.setRightToLeft(block.RTL);
 
@@ -130,7 +171,8 @@ export default class FieldDropdown extends FieldDropdownBase {
       menuItem.setCheckable(true);
       menuItem.setChecked(value === this.value_);
       if (value === this.value_) {
-        this.selectedMenuItem = menuItem;
+        if (this.multiple_) this.selectedMenuItems.push(menuItem);
+        else this.selectedMenuItem = menuItem;
       }
       menuItem.onAction(this.handleMenuActionEvent, this);
     } else {
@@ -155,6 +197,30 @@ export default class FieldDropdown extends FieldDropdownBase {
     return menuItem;
   }
 
+  dropdownDispose_() {
+    super.dropdownDispose_();
+
+    this.selectedMenuItems = [];
+  }
+
+  onItemSelected_(menu, menuItem) {
+    if (!this.multiple_) {
+      return super.onItemSelected_(menu, menuItem);
+    }
+
+    const values = this.getValue();
+    const value = menuItem.getValue();
+    if (values.includes(value)) {
+      this.setValue(values.filter((v) => v !== value));
+    } else {
+      this.setValue([...values, value]);
+    }
+  }
+
+  /**
+   * A direct copy if the original getOptions method.
+   * This is required to use the local validateOptions method (see below).
+   */
   getOptions_(useCache) {
     if (!this.menuGenerator_) {
       // A subclass improperly skipped setup without defining the menu
@@ -200,13 +266,61 @@ export default class FieldDropdown extends FieldDropdownBase {
   /**
    * @inheritdoc
    */
+  doClassValidation_(newValue) {
+    if (!this.multiple_) {
+      return super.doClassValidation_(newValue);
+    }
+
+    const options = this.getOptions(true).map(([, value]) => value);
+    const isValueValid = !newValue.some((value) => !options.includes(value));
+
+    if (!isValueValid) {
+      if (this.sourceBlock_) {
+        console.warn(
+          "Cannot set the dropdown's value to an unavailable option." +
+            " Block type: " +
+            this.sourceBlock_.type +
+            ", Field name: " +
+            this.name +
+            ", Value: " +
+            newValue
+        );
+      }
+      return null;
+    }
+    return newValue;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  doValueUpdate_(newValue) {
+    if (!this.multiple_) {
+      return super.doValueUpdate_(newValue);
+    }
+
+    Field.prototype.doValueUpdate_.call(this, newValue);
+    const options = this.getOptions(true);
+    for (let i = 0, option; (option = options[i]); i++) {
+      if (option[1] === this.value_) {
+        this.selectedOption.push(option);
+      }
+    }
+  }
+
+  /**
+   * @inheritdoc
+   */
   render_() {
     // Hide both elements.
     this.getTextContent().nodeValue = "";
     this.imageElement.style.display = "none";
 
     // Show correct element.
-    const option = this.selectedOption && this.selectedOption[0];
+    const option = this.multiple_
+      ? this.selectedOption?.[0]?.[0]
+      : this.selectedOption?.[0];
+    // @todo: handle multiple selected options.
     if (option && typeof option === "object" && "alt" in option) {
       this.renderSelectedImage(option);
     } else {
@@ -223,7 +337,10 @@ export default class FieldDropdown extends FieldDropdownBase {
     if (!this.selectedOption) {
       return null;
     }
-    const option = this.selectedOption[0];
+    const option = this.multiple_
+      ? this.selectedOption?.[0]?.[0]
+      : this.selectedOption[0];
+    // @todo: handle multiple selected options.
     if (typeof option === "object") {
       if ("alt" in option) {
         return option.alt;
