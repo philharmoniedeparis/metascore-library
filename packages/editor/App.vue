@@ -155,7 +155,7 @@
     </div>
 
     <resizable-pane class="left" :right="{ collapse: true }">
-      <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
+      <tabs-container ref="libraries" v-model:active-tab="activeLibrariesTab">
         <tabs-item :title="$t('components_library_title')" :keep-alive="true">
           <components-library />
         </tabs-item>

@@ -1,17 +1,17 @@
-import { Menu, Css, browserEvents, utils } from "blockly/core";
-import SearchableMenuItem from "./searchable_menuitem";
-
+import { Menu as MenuBase, Css, browserEvents, utils } from "blockly/core";
 const { dom, Svg } = utils;
 
 /**
  * Class for a searchable menu.
  */
-export default class SearchableMenu extends Menu {
+export default class Menu extends MenuBase {
   /**
    * @inheritdoc
    */
-  constructor() {
+  constructor(opt_searchable = false) {
     super();
+
+    this.searchable = opt_searchable;
 
     /**
      * Search input event data.
@@ -27,7 +27,9 @@ export default class SearchableMenu extends Menu {
   render(container) {
     const element = super.render(container);
 
-    this.createSearchInput_();
+    if (this.searchable) {
+      this.createSearchInput_();
+    }
 
     return element;
   }
@@ -47,8 +49,6 @@ export default class SearchableMenu extends Menu {
    * Create the search input.
    */
   createSearchInput_() {
-    this.element.classList.add("blocklySearchableMenu");
-
     this.searchBox_ = document.createElement("div");
     this.searchBox_.classList.add("blocklyMenuSearch");
 
@@ -110,6 +110,42 @@ export default class SearchableMenu extends Menu {
   }
 
   /**
+   * @inheritdoc
+   */
+  getMenuItem(elem) {
+    const menuElem = this.getElement();
+    let currentElement = elem;
+    while (currentElement && currentElement !== menuElem) {
+      if (currentElement.classList.contains("blocklyMenuItem")) {
+        return currentElement.menuItem;
+      }
+      currentElement = currentElement.parentElement;
+    }
+    return null;
+  }
+
+  handleMouseOver(e) {
+    if (
+      e.target.matches(".blocklyMenuItemExpander, .blocklyMenuItemChildren")
+    ) {
+      this.setHighlighted(null);
+      return;
+    }
+
+    super.handleMouseOver(e);
+  }
+
+  handleClick(e) {
+    if (
+      e.target.matches(".blocklyMenuItemExpander, .blocklyMenuItemChildren")
+    ) {
+      return;
+    }
+
+    super.handleClick(e);
+  }
+
+  /**
    * Handle keydown event on the search input.
    *
    * @param e Keyboard event.
@@ -126,19 +162,17 @@ export default class SearchableMenu extends Menu {
   handleSearchInputEvent(e) {
     const term = e.target.value.trim();
 
-    this.menuItems.forEach((menuItem) => {
-      if (!(menuItem instanceof SearchableMenuItem)) {
-        return;
-      }
+    this.element.classList.toggle("blocklyMenuSearching", term);
 
-      if (menuItem.matchesTerm(term)) {
-        menuItem.element.classList.remove("blocklyMenuItemMismatch");
-      } else {
-        menuItem.element.classList.add("blocklyMenuItemMismatch");
-      }
-    });
-
-    this.element.classList.toggle("blocklySearchableMenuSearching", term);
+    this.element
+      .querySelectorAll(".blocklyMenuItem")
+      .forEach(({ menuItem }) => {
+        if (menuItem.matchesTerm(term)) {
+          menuItem.element.classList.add("blocklyMenuItemMatch");
+        } else {
+          menuItem.element.classList.remove("blocklyMenuItemMatch");
+        }
+      });
   }
 
   /**
@@ -160,17 +194,14 @@ export default class SearchableMenu extends Menu {
 
 Css.register(
   `
-  .blocklySearchableMenu {
-    max-width: 250px;
-  }
-  .blocklySearchableMenu .blocklyMenuSearch {
+  .blocklyMenu .blocklyMenuSearch {
     position: sticky;
     top: 0;
     padding: 1em;
     background: inherit;
     z-index: 1;
   }
-  .blocklySearchableMenu .blocklyMenuSearch input {
+  .blocklyMenu .blocklyMenuSearch input {
     width: 100%;
     padding: 0.25em 0.5em;
     padding-right: 1.5em;
@@ -178,7 +209,7 @@ Css.register(
     border-radius: 1em;
     box-sizing: border-box;
   }
-  .blocklySearchableMenu .blocklyMenuSearchIcon {
+  .blocklyMenu .blocklyMenuSearchIcon {
     position: absolute;
     top: 50%;
     right: 1.5em;
@@ -186,8 +217,15 @@ Css.register(
     opacity: 0.75;
     pointer-events: none;
   }
-  .blocklySearchableMenu .blocklyMenuItemMismatch {
-    display: none;
+  .blocklyMenuSearching .blocklyMenuItem:not(.blocklyMenuItemMatch) > .blocklyMenuItemContent,
+  .blocklyMenuSearching .blocklyMenuItemExpander {
+    display: none !important;
+  }
+  .blocklyMenuSearching .blocklyMenuItemChildren {
+    padding-left: 0 !important;
+  }
+  .blocklyMenuSearching .blocklyMenuItemChildren:has(.blocklyMenuItemMatch) {
+    display: block !important;
   }
   `
 );

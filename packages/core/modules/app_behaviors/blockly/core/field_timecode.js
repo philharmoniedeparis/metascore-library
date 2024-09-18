@@ -87,11 +87,11 @@ export default class FieldTimecode extends Field {
     this.onKeyDownWrapper_ = null;
 
     /**
-     * Key input event data.
+     * Input event data.
      * @type {?browserEvents.Data}
      * @private
      */
-    this.onKeyInputWrapper_ = null;
+    this.onInputWrapper_ = null;
 
     /**
      * Buttons click event data.
@@ -138,11 +138,11 @@ export default class FieldTimecode extends Field {
    */
   configure_(config) {
     super.configure_(config);
-    if (typeof config["min"] === "number" || config["min"] === null) {
-      this.min_ = config["min"];
+    if (typeof config.min === "number" || config.min === null) {
+      this.min_ = config.min;
     }
-    if (typeof config["max"] === "number" || config["max"] === null) {
-      this.max_ = config["max"];
+    if (typeof config.max === "number" || config.max === null) {
+      this.max_ = config.max;
     }
   }
 
@@ -477,7 +477,7 @@ export default class FieldTimecode extends Field {
       this.onHtmlInputKeyDown_
     );
     // Resize after every input change.
-    this.onKeyInputWrapper_ = browserEvents.bind(
+    this.onInputWrapper_ = browserEvents.bind(
       this.htmlInput_,
       "input",
       this,
@@ -494,9 +494,9 @@ export default class FieldTimecode extends Field {
       browserEvents.unbind(this.onKeyDownWrapper_);
       this.onKeyDownWrapper_ = null;
     }
-    if (this.onKeyInputWrapper_) {
-      browserEvents.unbind(this.onKeyInputWrapper_);
-      this.onKeyInputWrapper_ = null;
+    if (this.onInputWrapper_) {
+      browserEvents.unbind(this.onInputWrapper_);
+      this.onInputWrapper_ = null;
     }
   }
 
