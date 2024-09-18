@@ -89,16 +89,16 @@ export default class FieldDropdown extends FieldDropdownBase {
 
   dropdownCreateItem(option, block) {
     const [label, value] = option;
+    let content = null;
     let enabled = true;
-    let searchable_text = null;
+    let children = null;
+    let expanded = null;
+    let text = null;
 
-    const content = (() => {
-      if (typeof label === "object") {
-        if ("hidden" in label && label.hidden) {
-          // Don't add a menu item.
-          return null;
-        }
-
+    if (typeof label === "object") {
+      if ("hidden" in label && label.hidden) {
+        // Skip; don't add a menu item.
+      } else {
         if ("disabled" in label && label.disabled) {
           enabled = false;
         }
@@ -108,21 +108,21 @@ export default class FieldDropdown extends FieldDropdownBase {
           const image = new Image(label["width"], label["height"]);
           image.src = label["src"];
           image.alt = label["alt"] || "";
-          return image;
+          content = image;
         } else {
-          searchable_text = label.text;
-          return label.label;
+          content = label.label;
+          text = label.text ?? label.label;
+          children = label.children;
+          expanded = label.expanded;
         }
       }
-      return label;
-    })();
+    } else {
+      content = label;
+    }
 
     if (content === null) return null;
 
-    let menuItem = null;
-
-    menuItem = new MenuItem(content, value, this.searchable);
-    menuItem.setSearchableText(searchable_text);
+    const menuItem = new MenuItem(content, value, this.searchable);
     menuItem.setRole(aria.Role.OPTION);
     menuItem.setRightToLeft(block.RTL);
 
@@ -137,11 +137,19 @@ export default class FieldDropdown extends FieldDropdownBase {
       menuItem.setEnabled(false);
     }
 
-    if (Array.isArray(option.children)) {
-      option.children.forEach((child_option) => {
+    if (text) {
+      menuItem.setSearchableText(text);
+    }
+
+    if (Array.isArray(children)) {
+      children.forEach((child_option) => {
         const subItem = this.dropdownCreateItem(child_option, block);
         menuItem.addChild(subItem);
       });
+
+      if (expanded) {
+        menuItem.setExpanded(true);
+      }
     }
 
     return menuItem;
@@ -178,9 +186,10 @@ export default class FieldDropdown extends FieldDropdownBase {
   }
 
   flattenOption_(option) {
+    const [label] = option;
     const flattened = [option];
-    if (Array.isArray(option.children)) {
-      option.children.reduce((acc, child) => {
+    if (typeof label === "object" && Array.isArray(label.children)) {
+      label.children.reduce((acc, child) => {
         acc.push(...this.flattenOption_(child));
         return acc;
       }, flattened);

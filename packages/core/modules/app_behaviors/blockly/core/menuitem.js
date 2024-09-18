@@ -1,4 +1,4 @@
-import { MenuItem as MenuItemBase, browserEvents, Css } from "blockly/core";
+import { MenuItem as MenuItemBase, Css } from "blockly/core";
 
 /**
  * Class for a searchable menu item.
@@ -12,8 +12,8 @@ export default class MenuItem extends MenuItemBase {
 
     this.searchable = opt_searchable;
 
-    this.expanderClickHandler_ = null;
     this.children = [];
+    this.expanded = false;
 
     if (this.searchable) {
       this.searchableText_ = "";
@@ -39,27 +39,33 @@ export default class MenuItem extends MenuItemBase {
     if (this.children.length) {
       const expander = document.createElement("input");
       expander.type = "checkbox";
+      expander.checked = this.expanded;
       expander.className = "blocklyMenuItemExpander";
       element.appendChild(expander);
 
-      this.expanderClickHandler_ = browserEvents.conditionalBind(
-        expander,
-        "pointerup",
-        this,
-        this.handleExpanderClick,
-        true
-      );
+      console.log(this.expanded);
 
       const children = document.createElement("div");
       children.className = "blocklyMenuItemChildren";
       element.appendChild(children);
 
       this.children.forEach((child) => {
-        children.appendChild(child.createDom());
+        const childElement = child.createDom();
+        children.appendChild(childElement);
+
+        if (!expander.checked) {
+          // Expand if a child is either checked or expanded.
+          if (
+            child.checked ||
+            childElement.querySelector(".blocklyMenuItemExpander:checked")
+          ) {
+            expander.checked = true;
+          }
+        }
       });
     }
 
-    element.menuItem_ = this;
+    element.menuItem = this;
 
     return element;
   }
@@ -68,23 +74,18 @@ export default class MenuItem extends MenuItemBase {
    * @inheritdoc
    */
   dispose() {
-    if (this.expanderClickHandler_) {
-      browserEvents.unbind(this.expanderClickHandler_);
-      this.expanderClickHandler_ = null;
-    }
-
     this.children = [];
 
     super.dispose();
   }
 
   /**
-   * Handles expander click events.
+   * Set whether the item is initially by default.
    *
-   * @param e Click event.
+   * @param {string} value Whether expanded or not.
    */
-  handleExpanderClick(e) {
-    e.stopPropagation();
+  setExpanded(value) {
+    this.expanded = value;
   }
 
   /**
@@ -111,19 +112,49 @@ export default class MenuItem extends MenuItemBase {
 
 Css.register(
   `
+  .blocklyMenuItem {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0px 0px;
+    grid-template-areas:
+      "expander content"
+      "children children";
+  }
   .blocklyMenuItem .blocklyMenuItemContent {
+    grid-area: content;
+  }
+  .blocklyMenuItem .blocklyMenuItemExpander {
+    grid-area: expander;
+    appearance: none;
     display: flex;
-    gap: 10px;
+    height: 100%;
+    padding: 0 10px;
+    align-content: center;
+    align-items: center;
+    cursor: pointer;
   }
-  .blocklyMenu .blocklyMenuItemExpander {
-    order: -1;
-    flex: 0 0 auto;
+  .blocklyMenuItem .blocklyMenuItemExpander::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-color: transparent transparent transparent #adadad;
+    transition: transform 0.25s ease;
   }
-  .blocklyMenu .blocklyMenuItemChildren {
-    margin-left: 10px;
+  .blocklyMenuItem .blocklyMenuItemExpander:checked::after {
+    transform: rotate(90deg);
   }
-  .blocklyMenu .blocklyMenuItemExpander:not(:checked) + .blocklyMenuItemChildren {
+  .blocklyMenuItem .blocklyMenuItemExpander + .blocklyMenuItemChildren {
+    display: block;
+    grid-area: children;
+    padding-left: 10px;
+  }
+  .blocklyMenuItem .blocklyMenuItemExpander:not(:checked) + .blocklyMenuItemChildren {
     display: none;
   }
+}
   `
 );

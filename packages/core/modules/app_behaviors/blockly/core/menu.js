@@ -117,11 +117,32 @@ export default class Menu extends MenuBase {
     let currentElement = elem;
     while (currentElement && currentElement !== menuElem) {
       if (currentElement.classList.contains("blocklyMenuItem")) {
-        return currentElement.menuItem_;
+        return currentElement.menuItem;
       }
       currentElement = currentElement.parentElement;
     }
     return null;
+  }
+
+  handleMouseOver(e) {
+    if (
+      e.target.matches(".blocklyMenuItemExpander, .blocklyMenuItemChildren")
+    ) {
+      this.setHighlighted(null);
+      return;
+    }
+
+    super.handleMouseOver(e);
+  }
+
+  handleClick(e) {
+    if (
+      e.target.matches(".blocklyMenuItemExpander, .blocklyMenuItemChildren")
+    ) {
+      return;
+    }
+
+    super.handleClick(e);
   }
 
   /**
@@ -141,15 +162,17 @@ export default class Menu extends MenuBase {
   handleSearchInputEvent(e) {
     const term = e.target.value.trim();
 
-    this.menuItems.forEach((menuItem) => {
-      if (menuItem.matchesTerm(term)) {
-        menuItem.element.classList.remove("blocklyMenuItemMismatch");
-      } else {
-        menuItem.element.classList.add("blocklyMenuItemMismatch");
-      }
-    });
+    this.element.classList.toggle("blocklyMenuSearching", term);
 
-    this.element.classList.toggle("blocklySearchableMenuSearching", term);
+    this.element
+      .querySelectorAll(".blocklyMenuItem")
+      .forEach(({ menuItem }) => {
+        if (menuItem.matchesTerm(term)) {
+          menuItem.element.classList.add("blocklyMenuItemMatch");
+        } else {
+          menuItem.element.classList.remove("blocklyMenuItemMatch");
+        }
+      });
   }
 
   /**
@@ -194,8 +217,15 @@ Css.register(
     opacity: 0.75;
     pointer-events: none;
   }
-  .blocklyMenu .blocklyMenuItemMismatch {
-    display: none;
+  .blocklyMenuSearching .blocklyMenuItem:not(.blocklyMenuItemMatch) > .blocklyMenuItemContent,
+  .blocklyMenuSearching .blocklyMenuItemExpander {
+    display: none !important;
+  }
+  .blocklyMenuSearching .blocklyMenuItemChildren {
+    padding-left: 0 !important;
+  }
+  .blocklyMenuSearching .blocklyMenuItemChildren:has(.blocklyMenuItemMatch) {
+    display: block !important;
   }
   `
 );

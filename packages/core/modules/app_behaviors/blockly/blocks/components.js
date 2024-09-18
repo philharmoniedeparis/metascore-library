@@ -1,4 +1,4 @@
-import { ref, watchEffect } from "vue";
+import { ref, unref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@core/services/module-manager";
@@ -30,8 +30,12 @@ function getComponentOptions(
   recursive = false,
   breadcrumb_ = ""
 ) {
-  const { getComponentChildren, getComponentLabel, getComponentIconURL } =
-    useModule("app_components");
+  const {
+    activeScenario,
+    getComponentChildren,
+    getComponentLabel,
+    getComponentIconURL,
+  } = useModule("app_components");
   let options = [];
 
   if (components.length > 0) {
@@ -55,27 +59,40 @@ function getComponentOptions(
         label.appendChild(text);
 
         if (breadcrumb_) {
+          const breadcrumb_text = `${breadcrumb_}${name}`;
           const breadcrumb = document.createElement("div");
           breadcrumb.classList.add("blocklyMenuItemLabelBreadcrumb");
-          breadcrumb.appendChild(document.createTextNode(breadcrumb_));
+          breadcrumb.appendChild(document.createTextNode(breadcrumb_text));
           label.appendChild(breadcrumb);
+          label.setAttribute("title", breadcrumb_text);
+        } else {
+          label.setAttribute("title", name);
+        }
+      }
+
+      let children = null;
+      if (recursive) {
+        const sub_components = getComponentChildren(c);
+        if (["Scenario", "Page"].includes(c.type)) {
+          sub_components.reverse();
         }
 
-        label.setAttribute(
-          "title",
-          breadcrumb_ ? `${breadcrumb_}${BREADCRUMB_SEPARATOR}${name}` : name
+        children = getComponentOptions(
+          sub_components,
+          true,
+          `${breadcrumb_}${name}${BREADCRUMB_SEPARATOR}`
         );
       }
 
-      const option = [{ label, text: name }, `${c.type}:${c.id}`];
-      if (recursive) {
-        const children = getComponentChildren(c);
-        if (["Scenario", "Page"].includes(c.type)) {
-          children.reverse();
-        }
-
-        option.children = getComponentOptions(children, true, breadcrumb_);
-      }
+      const option = [
+        {
+          label,
+          text: name,
+          children,
+          expanded: c.type === "Scenario" && c.id === unref(activeScenario),
+        },
+        `${c.type}:${c.id}`,
+      ];
 
       options.push(option);
     });
@@ -612,7 +629,7 @@ Css.register(
     text-overflow: ellipsis;
   }
   .blocklyDropDownDiv .blocklyMenuItemLabelBreadcrumb {
-    display: none;
+    display: block;
     grid-area: breadcrumb;
     font-size: 0.75em;
     opacity: 0.5;
@@ -621,11 +638,8 @@ Css.register(
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .blocklyDropDownDiv .blocklySearchableMenuSearching .blocklyMenuItemLabel {
-    padding-left: 0;
-  }
-  .blocklyDropDownDiv .blocklySearchableMenuSearching .blocklyMenuItemLabelBreadcrumb {
-    display: block;
+  .blocklyDropDownDiv .blocklyMenu:not(.blocklyMenuSearching) .blocklyMenuItemLabelBreadcrumb {
+    display: none;
   }
   `
 );

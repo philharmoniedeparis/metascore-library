@@ -1,6 +1,5 @@
 export default function getBlocks() {
   return [
-    { kind: "block", type: "multiselect_test" },
     { kind: "block", type: "app_startup" },
     { kind: "block", type: "keyboard_keypressed" },
     { kind: "block", type: "components_click" },
