@@ -187,7 +187,7 @@
     </div>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <tabs-container v-model:activeTab="activeFormsTab">
+      <tabs-container v-model:active-tab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
             :assets="assets"
@@ -311,7 +311,6 @@ export default {
       getComponent,
       getComponentChildren,
       activeScenario,
-      setActiveScenario,
       createComponent,
       addComponent,
       deleteComponent,
@@ -358,7 +357,6 @@ export default {
       getComponent,
       getComponentChildren,
       activeScenario,
-      setActiveScenario,
       createComponent,
       addComponent,
       deleteComponent,
