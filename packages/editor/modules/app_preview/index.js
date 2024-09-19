@@ -38,6 +38,7 @@ export default class AppPreviewModule extends AbstractModule {
 
     // Override the app_components' component-wrapper.
     const DefaultComponentWrapper = app.component("ComponentWrapper");
+    delete app._context.components.ComponentWrapper;
     app.component("ComponentWrapper", ComponentWrapper);
     app.component("DefaultComponentWrapper", DefaultComponentWrapper);
 
