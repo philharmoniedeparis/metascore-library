@@ -13,7 +13,7 @@ export default defineStore("app-components", {
       deleted: {},
       sortedScenarios: [],
       activeScenario: null,
-      blocksActivePage: {},
+      blocksActivePage: new Map(),
       overrides: new Map(),
       overridesEnabled: false,
     };
@@ -443,8 +443,11 @@ export default defineStore("app-components", {
         const page = pages[index];
         seekMediaTo(page["start-time"] ?? 0);
       } else {
-        this.blocksActivePage[block.id] = index;
+        this.blocksActivePage.set(block.id, index);
       }
+    },
+    resetBlocksActivePage() {
+      this.blocksActivePage.clear();
     },
     enableOverrides() {
       this.overridesEnabled = true;

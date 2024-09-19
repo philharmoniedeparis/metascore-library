@@ -20,7 +20,7 @@ Generator.forBlock["media_get_time"] = function () {
 
 Generator.forBlock["media_set_time"] = function (block) {
   const value = Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "0";
-  const code = `Media.setTime(${value});`;
+  const code = `Media.setTime(${value});\n`;
   return code;
 };
 
@@ -30,7 +30,7 @@ Generator.forBlock["media_playing"] = function () {
 };
 
 Generator.forBlock["media_play"] = function () {
-  const code = "Media.play();";
+  const code = "Media.play();\n";
   return code;
 };
 
@@ -53,11 +53,11 @@ Generator.forBlock["media_play_excerpt"] = function (block) {
 };
 
 Generator.forBlock["media_pause"] = function () {
-  const code = "Media.pause();";
+  const code = "Media.pause();\n";
   return code;
 };
 
 Generator.forBlock["media_stop"] = function () {
-  const code = "Media.stop();";
+  const code = "Media.stop();\n";
   return code;
 };

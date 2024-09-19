@@ -85,6 +85,11 @@ export default class AppRendererModule extends AbstractModule {
     return store.toggleFullscreen(force);
   }
 
+  reset() {
+    const store = useStore();
+    store.reset();
+  }
+
   onStoreAction(callback) {
     const store = useStore();
     return store.$onAction(callback);

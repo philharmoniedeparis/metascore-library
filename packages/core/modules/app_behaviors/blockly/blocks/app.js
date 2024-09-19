@@ -42,4 +42,13 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_TOGGLE_FULLSCREEN_TOOLTIP}",
     helpUrl: "%{BKY_APP_TOGGLE_FULLSCREEN_HELPURL}",
   },
+  {
+    type: "app_reset",
+    message0: "%{BKY_APP_RESET}",
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_APP_RESET_TOOLTIP}",
+    helpUrl: "%{BKY_APP_RESET_HELPURL}",
+  },
 ]);

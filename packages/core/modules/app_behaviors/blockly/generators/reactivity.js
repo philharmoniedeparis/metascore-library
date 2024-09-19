@@ -34,7 +34,7 @@ Generator.forBlock["variables_get"] = function (block) {
     block.getFieldValue("VAR"),
     Names.NameType.VARIABLE
   );
-  const code = `Reactivity.unref(${varName})\n`;
+  const code = `Reactivity.unref(${varName})`;
   return [code, Order.ATOMIC];
 };
 
@@ -69,13 +69,13 @@ Generator.forBlock["reactivity_when"] = function (block) {
   code += "Reactivity.watchEffect(function () {\n";
   code += `if (${conditionCode}) {\n`;
   code += statement;
-  code += "\n}\n";
+  code += "}\n";
 
   if (block.getInput("ELSE")) {
     const statement = Generator.statementToCode(block, "ELSE");
     code += `else {\n`;
     code += statement;
-    code += "\n}\n";
+    code += "}\n";
   }
 
   code += "});\n";

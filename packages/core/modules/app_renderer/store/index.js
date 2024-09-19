@@ -80,6 +80,20 @@ export default defineStore("app-renderer", {
         }
       }
     },
+    reset() {
+      const { stop: stopMedia } = useModule("media_player");
+      const {
+        clearOverrides: clearComponentsOverrides,
+        resetBlocksActivePage,
+        getSortedScenarios,
+        setActiveScenario,
+      } = useModule("app_components");
+
+      stopMedia();
+      clearComponentsOverrides();
+      resetBlocksActivePage();
+      setActiveScenario(getSortedScenarios()[0].id);
+    },
   },
   history(context) {
     const {

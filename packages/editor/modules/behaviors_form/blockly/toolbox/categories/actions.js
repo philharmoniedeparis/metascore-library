@@ -117,5 +117,9 @@ export default function getBlocks() {
       kind: "block",
       type: "app_toggle_fullscreen",
     },
+    {
+      kind: "block",
+      type: "app_reset",
+    },
   ];
 }

@@ -17,6 +17,10 @@ Msg.APP_TOGGLE_FULLSCREEN = "toggle fullscreen mode";
 Msg.APP_TOGGLE_FULLSCREEN_TOOLTIP = "";
 Msg.APP_TOGGLE_FULLSCREEN_HELPURL = "";
 
+Msg.APP_RESET = "reset application";
+Msg.APP_RESET_TOOLTIP = "";
+Msg.APP_RESET_HELPURL = "";
+
 Msg.COMPONENTS_CLICK = "when component %1 is clicked";
 Msg.COMPONENTS_CLICK_THEN = "do %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";

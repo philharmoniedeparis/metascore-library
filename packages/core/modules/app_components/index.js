@@ -254,6 +254,11 @@ export default class AppComponentsModule extends AbstractModule {
     store.setBlockActivePage(block, index);
   }
 
+  resetBlocksActivePage() {
+    const store = useStore();
+    store.resetBlocksActivePage();
+  }
+
   isComponentBackgroundable(component) {
     const store = useStore();
     const model = store.getModelByType(component.type);

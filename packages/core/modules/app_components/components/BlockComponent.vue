@@ -124,8 +124,8 @@ export default {
     activePageIndex: {
       get() {
         const id = this.component.id;
-        return id in this.store.blocksActivePage
-          ? this.store.blocksActivePage[id]
+        return this.store.blocksActivePage.has(id)
+          ? this.store.blocksActivePage.get(id)
           : 0;
       },
       set(value) {
@@ -192,9 +192,12 @@ export default {
 
     onTimedPageActivated(component) {
       const id = this.component.id;
-      this.store.blocksActivePage[id] = this.pages.findIndex((v) => {
-        return v.id === component.id;
-      });
+      this.store.blocksActivePage.set(
+        id,
+        this.pages.findIndex((v) => {
+          return v.id === component.id;
+        })
+      );
     },
 
     reset() {

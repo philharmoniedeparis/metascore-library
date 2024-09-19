@@ -41,6 +41,6 @@ Generator.forBlock["links_click"] = function (block) {
 
 Generator.forBlock["links_open_url"] = function (block) {
   const url = Generator.valueToCode(block, "URL", Order.ASSIGNMENT) || "";
-  const code = `Links.openUrl(${url});`;
+  const code = `Links.openUrl(${url});\n`;
   return code;
 };
