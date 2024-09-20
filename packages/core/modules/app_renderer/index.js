@@ -52,6 +52,22 @@ export default class AppRendererModule extends AbstractModule {
     return readonly(height);
   }
 
+  get idleTime() {
+    const store = useStore();
+    const { idleTime } = storeToRefs(store);
+    return readonly(idleTime);
+  }
+
+  startIdleTimeTracking() {
+    const store = useStore();
+    store.startIdleTimeTracking();
+  }
+
+  stopIdleTimeTracking() {
+    const store = useStore();
+    store.stopIdleTimeTracking();
+  }
+
   setResponsiveness(adaptSize, allowUpscaling) {
     const store = useStore();
     store.configs.adaptSize = adaptSize;

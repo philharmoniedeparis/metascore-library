@@ -7,6 +7,7 @@ const category_colors = {
   math: "#263238",
   text: "#263238",
   color: "#263238",
+  app: "#263238",
   media: "#263238",
   components: "#263238",
   variables: "#263238",
@@ -51,6 +52,9 @@ export default Theme.defineTheme("metaScore", {
     actions_category: {
       colour: category_colors.actions,
     },
+    app_category: {
+      colour: category_colors.app,
+    },
     media_category: {
       colour: category_colors.media,
     },
@@ -83,6 +87,9 @@ export default Theme.defineTheme("metaScore", {
     },
     color_blocks: {
       colourPrimary: category_colors.color,
+    },
+    app_blocks: {
+      colourPrimary: category_colors.app,
     },
     media_blocks: {
       colourPrimary: category_colors.media,

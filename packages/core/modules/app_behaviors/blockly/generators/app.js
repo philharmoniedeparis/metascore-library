@@ -1,4 +1,4 @@
-import { javascriptGenerator as Generator } from "blockly/javascript";
+import { javascriptGenerator as Generator, Order } from "blockly/javascript";
 
 Generator.forBlock["app_startup"] = function (block) {
   const statement = Generator.statementToCode(block, "STATEMENT");
@@ -40,6 +40,11 @@ Generator.forBlock["app_exit_fullscreen"] = function () {
 Generator.forBlock["app_toggle_fullscreen"] = function () {
   const code = `App.toggleFullscreen();\n`;
   return code;
+};
+
+Generator.forBlock["app_get_idle_time"] = function () {
+  const code = "App.getIdleTime()";
+  return [code, Order.FUNCTION_CALL];
 };
 
 Generator.forBlock["app_reset"] = function () {

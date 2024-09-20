@@ -147,6 +147,8 @@ export default {
       el: appEl,
       width: appWidth,
       height: appHeight,
+      startIdleTimeTracking,
+      stopIdleTimeTracking,
     } = useModule("app_renderer");
 
     const { activeScenario, deleteComponent } = useModule("app_components");
@@ -159,6 +161,8 @@ export default {
       appEl,
       appWidth,
       appHeight,
+      startIdleTimeTracking,
+      stopIdleTimeTracking,
       activeScenario,
       deleteComponent,
       startHistoryGroup,
@@ -434,10 +438,19 @@ export default {
     },
   },
   watch: {
-    preview(value) {
-      if (value && this.appEl) {
-        this.appEl.focus();
-      }
+    preview: {
+      handler(value) {
+        if (value) {
+          this.startIdleTimeTracking();
+
+          if (this.appEl) {
+            this.appEl.focus();
+          }
+        } else {
+          this.stopIdleTimeTracking();
+        }
+      },
+      immediate: true,
     },
     appWidth() {
       this.updateRects();

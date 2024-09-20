@@ -17,6 +17,11 @@ Msg.APP_TOGGLE_FULLSCREEN = "basculer le mode plein écran";
 Msg.APP_TOGGLE_FULLSCREEN_TOOLTIP = "";
 Msg.APP_TOGGLE_FULLSCREEN_HELPURL = "";
 
+Msg.APP_GET_IDLE_TIME = "durée d'inactivité";
+Msg.APP_GET_IDLE_TIME_TOOLTIP =
+  "Secondes écoulées depuis la dernière interaction de l'utilisateur";
+Msg.APP_GET_IDLE_TIME_HELPURL = "";
+
 Msg.APP_RESET = "réinitialiser l’application";
 Msg.APP_RESET_TOOLTIP = "";
 Msg.APP_RESET_HELPURL = "";

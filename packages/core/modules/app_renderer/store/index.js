@@ -1,5 +1,18 @@
-import { defineStore } from "pinia";
+import { watch } from "vue";
+import { defineStore, storeToRefs } from "pinia";
 import { kebabCase } from "lodash";
+import { useModule } from "@core/services/module-manager";
+
+const IDLE_TRACKIG_EVENTS = [
+  "mousemove",
+  "mousedown",
+  "touchstart",
+  "touchmove",
+  "keydown",
+  "scroll",
+  "wheel",
+];
+const IDLE_TIME_UPDATE_DELAY = 1000;
 
 export default defineStore("app-renderer", {
   state: () => {
@@ -14,6 +27,9 @@ export default defineStore("app-renderer", {
       height: null,
       css: null,
       fullscreenElement: null,
+      idleTime: 0,
+      idleTimeTrackStart: null,
+      idleTimeTimeoutId: null,
     };
   },
   getters: {
@@ -36,6 +52,13 @@ export default defineStore("app-renderer", {
       this.width = width;
       this.height = height;
       this.css = css;
+
+      watch(storeToRefs(this).el, (value, oldValue) => {
+        if (this.idleTimeTrackStart !== false) {
+          this.stopIdleTimeTracking(oldValue);
+          this.startIdleTimeTracking();
+        }
+      });
     },
     setWidth(value) {
       this.width = value;
@@ -79,6 +102,42 @@ export default defineStore("app-renderer", {
           console.warn(e);
         }
       }
+    },
+    startIdleTimeTracking() {
+      this.idleTimeTrackStart = Date.now();
+
+      if (this.el) {
+        IDLE_TRACKIG_EVENTS.forEach((event) => {
+          this.el.addEventListener(event, this.resetIdleTime, true);
+        });
+
+        this.updateIdleTime();
+      }
+    },
+    stopIdleTimeTracking(el = this.el) {
+      this.idleTimeTrackStart = false;
+      this.idleTime = 0;
+
+      if (this.idleTimeTimeoutId) {
+        clearTimeout(this.idleTimeTimeoutId);
+        this.idleTimeTimeoutId = null;
+      }
+
+      if (el) {
+        IDLE_TRACKIG_EVENTS.forEach((event) => {
+          el.removeEventListener(event, this.resetIdleTime, true);
+        });
+      }
+    },
+    updateIdleTime() {
+      this.idleTimeTimeoutId = setTimeout(() => {
+        this.updateIdleTime();
+        this.idleTime = (Date.now() - this.idleTimeTrackStart) / 1000;
+      }, IDLE_TIME_UPDATE_DELAY);
+    },
+    resetIdleTime() {
+      this.idleTime = 0;
+      this.idleTimeTrackStart = Date.now();
     },
     reset() {
       const { stop: stopMedia } = useModule("media_player");

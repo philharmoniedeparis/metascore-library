@@ -1,4 +1,5 @@
 import { useModule } from "@core/services/module-manager";
+import { unref } from "vue";
 import AbstractInterpreter from "./AbstractInterpreter";
 
 export default class App extends AbstractInterpreter {
@@ -17,6 +18,10 @@ export default class App extends AbstractInterpreter {
       toggleFullscreen: (force) => {
         const { toggleFullscreen } = useModule("app_renderer");
         toggleFullscreen(force);
+      },
+      getIdleTime: () => {
+        const { idleTime } = useModule("app_renderer");
+        return unref(idleTime);
       },
       reset: () => {
         if (this._resetting) return;

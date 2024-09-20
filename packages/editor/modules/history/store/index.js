@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import HistoryItem from "./HistoryItem";
 import HistoryGroup from "./HistoryGroup";
 
@@ -108,10 +108,13 @@ export default defineStore("history", {
     clear() {
       if (this.processing) {
         // Wait until the current process is done.
-        const unwatch = watch(this.processing, () => {
-          unwatch();
-          this.clear();
-        });
+        watch(
+          storeToRefs(this).processing,
+          () => {
+            this.clear();
+          },
+          { once: true }
+        );
         return;
       }
 
