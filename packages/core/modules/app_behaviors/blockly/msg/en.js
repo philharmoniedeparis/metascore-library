@@ -25,6 +25,10 @@ Msg.APP_RESET = "reset application";
 Msg.APP_RESET_TOOLTIP = "";
 Msg.APP_RESET_HELPURL = "";
 
+Msg.COMPONENTS_COMPONENT = "component %1";
+Msg.COMPONENTS_COMPONENT_TOOLTIP = "";
+Msg.COMPONENTS_COMPONENT_HELPURL = "";
+
 Msg.COMPONENTS_CLICK = "when component %1 is clicked";
 Msg.COMPONENTS_CLICK_THEN = "do %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -34,19 +38,18 @@ Msg.COMPONENTS_SET_SCENARIO = "go to the %1 scenario";
 Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
 Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
 
-Msg.COMPONENTS_PROPERTY = {};
-Msg.COMPONENTS_PROPERTY["background-color"] = "background color";
-Msg.COMPONENTS_PROPERTY["background-image"] = "background image";
-Msg.COMPONENTS_PROPERTY["border-color"] = "border color";
-Msg.COMPONENTS_PROPERTY["border-width"] = "border width";
-Msg.COMPONENTS_PROPERTY["hidden"] = "hidden";
-Msg.COMPONENTS_PROPERTY["loop-duration"] = "loop duration";
-Msg.COMPONENTS_PROPERTY["reversed"] = "reversed";
-Msg.COMPONENTS_PROPERTY["text"] = "text";
-Msg.COMPONENTS_PROPERTY["cursor-width"] = "cursor width";
-Msg.COMPONENTS_PROPERTY["cursor-color"] = "cursor color";
+Msg.COMPONENTS_PROPERTIES = {};
+Msg.COMPONENTS_PROPERTIES["background-color"] = "background color";
+Msg.COMPONENTS_PROPERTIES["background-image"] = "background image";
+Msg.COMPONENTS_PROPERTIES["border-color"] = "border color";
+Msg.COMPONENTS_PROPERTIES["border-width"] = "border width";
+Msg.COMPONENTS_PROPERTIES["hidden"] = "hidden";
+Msg.COMPONENTS_PROPERTIES["loop-duration"] = "loop duration";
+Msg.COMPONENTS_PROPERTIES["reversed"] = "reversed";
+Msg.COMPONENTS_PROPERTIES["text"] = "text";
+Msg.COMPONENTS_PROPERTIES["cursor-width"] = "cursor width";
+Msg.COMPONENTS_PROPERTIES["cursor-color"] = "cursor color";
 
-Msg.COMPONENTS_EMPTY_OPTION = " -- ";
 Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP =
   'there are currently no component in the workspace that supports the "%2" attribute';
 Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
@@ -54,11 +57,11 @@ Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
 Msg.COMPONENTS_NO_BLOCK_TOOLTIP =
   "there are currently no block in the workspace";
 
-Msg.COMPONENTS_GET_PROPERTY = "%2 of %1";
+Msg.COMPONENTS_GET_PROPERTY = "%1 of %2";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
 
-Msg.COMPONENTS_SET_PROPERTY = "set %2 of %1 to %3";
+Msg.COMPONENTS_SET_PROPERTY = "set %1 of %2 to %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
 
@@ -66,9 +69,13 @@ Msg.COMPONENTS_GET_BLOCK_PAGE = "active page of %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_GET_BLOCK_PAGE_HELPURL = "";
 
-Msg.COMPONENTS_SET_BLOCK_PAGE = "go to page %2 of %1";
+Msg.COMPONENTS_SET_BLOCK_PAGE = "go to page %1 of %2";
 Msg.COMPONENTS_SET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_SET_BLOCK_PAGE_HELPURL = "";
+
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER = "triggering element %1";
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER_TOOLTIP = "";
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER_HELPURL = "";
 
 Msg.KEYBOARD_KEYPRESSED = "when key %1 is pressed";
 Msg.KEYBOARD_KEYPRESSED_THEN = "do %1";
@@ -81,9 +88,7 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.LINKS_EMPTY_OPTION = " -- ";
-
-Msg.LINKS_CLICK = "when the triggering element %1 is clicked";
+Msg.LINKS_CLICK = "when the %1 is clicked";
 Msg.LINKS_CLICK_THEN = "do %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
@@ -145,5 +150,7 @@ Msg.REACTIVITY_WHEN_HELPURL = "";
 Msg.REACTIVITY_WHEN_ELSE = "else";
 Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
+
+Msg.LISTS_ISEMPTY_TITLE = "the list %1 is empty";
 
 export default Msg;

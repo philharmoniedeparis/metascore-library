@@ -1,7 +1,7 @@
 import { javascriptGenerator as Generator, Order } from "blockly/javascript";
 
 Generator.forBlock["links_click"] = function (block) {
-  const id = block.getFieldValue("TRIGGER");
+  const trigger = Generator.valueToCode(block, "TRIGGER", Order.ATOMIC);
   const statement = Generator.statementToCode(block, "STATEMENT");
 
   let code = "";
@@ -11,7 +11,7 @@ Generator.forBlock["links_click"] = function (block) {
     code += Generator.injectId(Generator.STATEMENT_PREFIX, block);
   }
 
-  code += `Links.addEventListener("${id}", "click", function () {\n`;
+  code += `Links.addEventListener(${trigger}, "click", function () {\n`;
   code += statement;
   code += "});\n";
 
@@ -32,7 +32,7 @@ Generator.forBlock["links_click"] = function (block) {
       if (highlight_link === "TRUE") {
         const from = Generator.valueToCode(child, "FROM", Order.ASSIGNMENT);
         const to = Generator.valueToCode(child, "TO", Order.ASSIGNMENT);
-        code += `Links.autoHighlight("${id}", ${from}, ${to});\n`;
+        code += `Links.autoHighlight(${trigger}, ${from}, ${to});\n`;
       }
     });
 
