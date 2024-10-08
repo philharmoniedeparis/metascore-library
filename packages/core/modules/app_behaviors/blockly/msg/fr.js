@@ -17,14 +17,18 @@ Msg.APP_TOGGLE_FULLSCREEN = "basculer le mode plein écran";
 Msg.APP_TOGGLE_FULLSCREEN_TOOLTIP = "";
 Msg.APP_TOGGLE_FULLSCREEN_HELPURL = "";
 
-Msg.APP_GET_IDLE_TIME = "durée d'inactivité";
+Msg.APP_GET_IDLE_TIME = "durée d’inactivité";
 Msg.APP_GET_IDLE_TIME_TOOLTIP =
-  "Secondes écoulées depuis la dernière interaction de l'utilisateur";
+  "Secondes écoulées depuis la dernière interaction de l’utilisateur";
 Msg.APP_GET_IDLE_TIME_HELPURL = "";
 
 Msg.APP_RESET = "réinitialiser l’application";
 Msg.APP_RESET_TOOLTIP = "";
 Msg.APP_RESET_HELPURL = "";
+
+Msg.COMPONENTS_COMPONENT = "composant %1";
+Msg.COMPONENTS_COMPONENT_TOOLTIP = "";
+Msg.COMPONENTS_COMPONENT_HELPURL = "";
 
 Msg.COMPONENTS_CLICK = "au clic sur le composant %1";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
@@ -35,19 +39,18 @@ Msg.COMPONENTS_SET_SCENARIO = "aller au scénario %1";
 Msg.COMPONENTS_SET_SCENARIO_TOOLTIP = "";
 Msg.COMPONENTS_SET_SCENARIO_HELPURL = "";
 
-Msg.COMPONENTS_PROPERTY = {};
-Msg.COMPONENTS_PROPERTY["background-color"] = "couleur de fond";
-Msg.COMPONENTS_PROPERTY["background-image"] = "image de fond";
-Msg.COMPONENTS_PROPERTY["border-color"] = "couleur de bordure";
-Msg.COMPONENTS_PROPERTY["border-width"] = "largeur de bordure";
-Msg.COMPONENTS_PROPERTY["hidden"] = "caché";
-Msg.COMPONENTS_PROPERTY["loop-duration"] = "durée d’une boucle";
-Msg.COMPONENTS_PROPERTY["reversed"] = "inversé";
-Msg.COMPONENTS_PROPERTY["text"] = "texte";
-Msg.COMPONENTS_PROPERTY["cursor-width"] = "largeur du curseur";
-Msg.COMPONENTS_PROPERTY["cursor-color"] = "couleur du curseur";
+Msg.COMPONENTS_PROPERTIES = {};
+Msg.COMPONENTS_PROPERTIES["background-color"] = "couleur de fond";
+Msg.COMPONENTS_PROPERTIES["background-image"] = "image de fond";
+Msg.COMPONENTS_PROPERTIES["border-color"] = "couleur de bordure";
+Msg.COMPONENTS_PROPERTIES["border-width"] = "largeur de bordure";
+Msg.COMPONENTS_PROPERTIES["hidden"] = "caché";
+Msg.COMPONENTS_PROPERTIES["loop-duration"] = "durée d’une boucle";
+Msg.COMPONENTS_PROPERTIES["reversed"] = "inversé";
+Msg.COMPONENTS_PROPERTIES["text"] = "texte";
+Msg.COMPONENTS_PROPERTIES["cursor-width"] = "largeur du curseur";
+Msg.COMPONENTS_PROPERTIES["cursor-color"] = "couleur du curseur";
 
-Msg.COMPONENTS_EMPTY_OPTION = " -- ";
 Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP =
   "il n’y a actuellement aucun composant dans l’espace de travail qui supporte l’attribut « %2 ».";
 Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
@@ -55,11 +58,11 @@ Msg.COMPONENTS_NO_SCENARIO_TOOLTIP =
 Msg.COMPONENTS_NO_BLOCK_TOOLTIP =
   "il n’y a actuellement aucun bloc dans l’espace de travail";
 
-Msg.COMPONENTS_GET_PROPERTY = "%2 de %1";
+Msg.COMPONENTS_GET_PROPERTY = "%1 de %2";
 Msg.COMPONENTS_GET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_GET_PROPERTY_HELPURL = "";
 
-Msg.COMPONENTS_SET_PROPERTY = "définir %2 de %1 à %3";
+Msg.COMPONENTS_SET_PROPERTY = "définir %1 de %2 à %3";
 Msg.COMPONENTS_SET_PROPERTY_TOOLTIP = "";
 Msg.COMPONENTS_SET_PROPERTY_HELPURL = "";
 
@@ -67,9 +70,13 @@ Msg.COMPONENTS_GET_BLOCK_PAGE = "page active de %1";
 Msg.COMPONENTS_GET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_GET_BLOCK_PAGE_HELPURL = "";
 
-Msg.COMPONENTS_SET_BLOCK_PAGE = "aller à la page %2 de %1";
+Msg.COMPONENTS_SET_BLOCK_PAGE = "aller à la page %1 de %2";
 Msg.COMPONENTS_SET_BLOCK_PAGE_TOOLTIP = "";
 Msg.COMPONENTS_SET_BLOCK_PAGE_HELPURL = "";
+
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER = "élément déclencheur %1";
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER_TOOLTIP = "";
+Msg.COMPONENTS_BEHAVIOUR_TRIGGER_HELPURL = "";
 
 Msg.KEYBOARD_KEYPRESSED = "lorsque la touche %1 est appuyée";
 Msg.KEYBOARD_KEYPRESSED_THEN = "faire %1";
@@ -82,9 +89,7 @@ Msg.KEYBOARD_KEYPRESSED_DOWN = "▼";
 Msg.KEYBOARD_KEYPRESSED_RIGHT = "▶";
 Msg.KEYBOARD_KEYPRESSED_LEFT = "◀";
 
-Msg.LINKS_EMPTY_OPTION = "    ";
-
-Msg.LINKS_CLICK = "au clic sur l’élément déclencheur %1";
+Msg.LINKS_CLICK = "au clic sur %1";
 Msg.LINKS_CLICK_THEN = "faire %1";
 Msg.LINKS_CLICK_TOOLTIP = "";
 Msg.LINKS_CLICK_EMPTY_TOOLTIP = "";
@@ -147,5 +152,7 @@ Msg.REACTIVITY_WHEN_HELPURL = "";
 Msg.REACTIVITY_WHEN_ELSE = "sinon";
 Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
+
+Msg.LISTS_ISEMPTY_TITLE = "la liste %1 est vide";
 
 export default Msg;

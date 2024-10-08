@@ -2,7 +2,6 @@ import { ref, unref, watchEffect } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@core/services/module-manager";
-import { EMPTY_OPTION } from "../constants";
 
 const BREADCRUMB_SEPARATOR = " › ";
 
@@ -106,13 +105,13 @@ function getComponentOptions(
  * @returns {array} The options.
  */
 function getPropertyOptions(component_type) {
-  if (component_type === EMPTY_OPTION) {
+  if (!component_type) {
     return [
-      [Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION],
+      ["--", ""],
       // Add all supported properties
       // to prevent validation issues.
       ...SUPPORTED_PROPERTIES.map((property) => {
-        return [Msg.COMPONENTS_PROPERTY[property], property];
+        return [Msg.COMPONENTS_PROPERTIES[property], property];
       }),
     ];
   }
@@ -123,71 +122,9 @@ function getPropertyOptions(component_type) {
       return SUPPORTED_PROPERTIES.includes(property);
     })
     .map((property) => {
-      return [Msg.COMPONENTS_PROPERTY[property], property];
+      return [Msg.COMPONENTS_PROPERTIES[property], property];
     });
 }
-
-const scenarioOptions = ref([]);
-watchEffect(() => {
-  const { getComponentsByType } = useModule("app_components");
-  scenarioOptions.value = getComponentOptions(getComponentsByType("Scenario"));
-});
-Extensions.register("components_scenario_options", function () {
-  const scenario_input = this.getInput("COMPONENT");
-  if (!scenario_input) return;
-
-  const scenario_field = new FieldDropdown(
-    function () {
-      const options = scenarioOptions.value;
-
-      if (options.length === 0) {
-        const block = this.getSourceBlock();
-        if (block) {
-          block.setEnabled(false);
-          block.setTooltip(Msg.COMPONENTS_NO_SCENARIO_TOOLTIP);
-        }
-        this.setEnabled(false);
-        return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-      }
-
-      return options;
-    },
-    null,
-    { searchable: true }
-  );
-  scenario_input.appendField(scenario_field, "COMPONENT");
-});
-
-const blockOptions = ref([]);
-watchEffect(() => {
-  const { getComponentsByType } = useModule("app_components");
-  blockOptions.value = getComponentOptions(getComponentsByType("Block"));
-});
-Extensions.register("components_block_options", function () {
-  const block_input = this.getInput("COMPONENT");
-  if (!block_input) return;
-
-  const block_field = new FieldDropdown(
-    function () {
-      const options = blockOptions.value;
-
-      if (options.length === 0) {
-        const block = this.getSourceBlock();
-        if (block) {
-          block.setEnabled(false);
-          block.setTooltip(Msg.COMPONENTS_NO_BLOCK_TOOLTIP);
-        }
-        this.setEnabled(false);
-        return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
-      }
-
-      return options;
-    },
-    null,
-    { searchable: true }
-  );
-  block_input.appendField(block_field, "COMPONENT");
-});
 
 const componentOptions = ref([]);
 watchEffect(() => {
@@ -197,71 +134,75 @@ watchEffect(() => {
     true
   );
 });
-Extensions.register("components_component_options", function () {
+const COMPONENTS_COMPONENT_MUTATOR_MIXIN = {
+  /**
+   * Returns the state of this block as a JSON serializable object.
+   * @return null
+   *     The state of this block.
+   */
+  saveExtraState: function () {
+    return null;
+  },
+
+  /**
+   * Applies the given state to this block.
+   */
+  loadExtraState: function () {},
+
+  /**
+   * Modify this block to have the correct output type.
+   * @this {Block}
+   * @private
+   */
+  updateShape_: function (component) {
+    const check = ["Component"];
+    if (component) {
+      const [type] = component.split(":");
+      check.push(`${type}Component`);
+    }
+    this.setOutput(true, check);
+  },
+};
+const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
   const component_input = this.getInput("COMPONENT");
   if (!component_input) return;
 
   const mock = this.type.endsWith("_mock");
+  const empty = mock || componentOptions.value.length === 0;
 
   const component_field = new FieldDropdown(
     function () {
-      const empty_option = [
-        {
-          label: Msg.COMPONENTS_EMPTY_OPTION,
-          default: true,
-          hidden: true,
-        },
-        EMPTY_OPTION,
-      ];
-
-      if (mock) return [empty_option];
-
-      return [empty_option, ...componentOptions.value];
+      if (empty) return [["--", ""]];
+      return [...componentOptions.value];
     },
-    null,
+    function (value) {
+      this.getSourceBlock().updateShape_(value);
+      return;
+    },
     { searchable: true }
   );
   component_input.appendField(component_field, "COMPONENT");
 
-  if (mock) {
+  if (empty) {
     component_field.setEnabled(false);
 
     this.setEnabled(false);
-    this.setTooltip(() => {
-      return Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP.replace(
-        "%2",
-        Msg.COMPONENTS_PROPERTY[this.property_]
-      );
-    });
-  }
-});
 
-Extensions.register("components_property_options", function () {
-  const property_input = this.getInput("PROPERTY");
-  if (!property_input) return;
-
-  const mock = this.type.endsWith("_mock");
-
-  const property_field = new FieldDropdown(function () {
-    const block = this.getSourceBlock();
-
-    if (!block || mock) {
-      if (block && block.property_) {
-        return [[Msg.COMPONENTS_PROPERTY[block.property_], block.property_]];
-      }
-      return [[Msg.COMPONENTS_EMPTY_OPTION, EMPTY_OPTION]];
+    if (mock) {
+      this.setTooltip(() => {
+        return Msg.COMPONENTS_PROPERTY_MOCK_TOOLTIP.replace(
+          "%2",
+          Msg.COMPONENTS_PROPERTIES[this.property_]
+        );
+      });
     }
-
-    const component_value = block.getFieldValue("COMPONENT");
-    const component_type = block.getComponentType_(component_value);
-    return getPropertyOptions(component_type);
-  });
-  property_input.appendField(property_field, "PROPERTY");
-
-  if (mock) {
-    property_field.setEnabled(false);
   }
-});
+};
+Extensions.registerMutator(
+  "components_component_options",
+  COMPONENTS_COMPONENT_MUTATOR_MIXIN,
+  COMPONENTS_COMPONENT_MUTATOR_HELPER
+);
 
 const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
   /**
@@ -343,7 +284,7 @@ const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
    * @returns {string|array<string>|null} The type check.
    */
   getPropertyValueTypeCheck_: function (component_type, property_name) {
-    if (component_type === EMPTY_OPTION) return null;
+    if (!component_type) return null;
 
     const { getModelByType } = useModule("app_components");
     const property = getModelByType(component_type).properties?.[property_name];
@@ -410,34 +351,114 @@ const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
   },
 };
 
+const PROPERTY_OPTIONS_MUTATOR_HELPER = function () {
+  const property_input = this.getInput("PROPERTY");
+  if (!property_input) return;
+
+  const mock = this.type.endsWith("_mock");
+
+  const property_field = new FieldDropdown(function () {
+    const block = this.getSourceBlock();
+
+    if (!block || mock) {
+      if (block && block.property_) {
+        return [[Msg.COMPONENTS_PROPERTIES[block.property_], block.property_]];
+      }
+      return [["--", ""]];
+    }
+
+    const component_value = block.getFieldValue("COMPONENT");
+    const component_type = block.getComponentType_(component_value);
+    return getPropertyOptions(component_type);
+  });
+  property_input.appendField(property_field, "PROPERTY");
+
+  if (mock) {
+    property_field.setEnabled(false);
+  }
+};
+
 Extensions.registerMutator(
-  "components_property_options_mutator",
-  PROPERTY_OPTIONS_MUTATOR_MIXIN
+  "components_property_options",
+  PROPERTY_OPTIONS_MUTATOR_MIXIN,
+  PROPERTY_OPTIONS_MUTATOR_HELPER
 );
 
+const triggerOptions = ref([]);
+watchEffect(() => {
+  const { getComponentsByType } = useModule("app_components");
+  const components = getComponentsByType("Content");
+  const parser = new DOMParser();
+  const ids = new Set();
+
+  components.forEach((component) => {
+    const text = component.text;
+
+    if (text && text.includes("data-behavior-trigger")) {
+      const doc = parser.parseFromString(text, "text/html");
+      doc.querySelectorAll("a[data-behavior-trigger]").forEach((el) => {
+        const id = el.dataset.behaviorTrigger;
+        ids.add(id);
+      });
+    }
+  });
+
+  triggerOptions.value = Array.from(ids)
+    .sort()
+    .map((id) => [id, id]);
+});
+
+Extensions.register("behavior_triggers_options", function () {
+  const trigger_input = this.getInput("TRIGGER");
+  if (!trigger_input) return;
+
+  const empty = triggerOptions.value.length === 0;
+
+  const trigger_field = new FieldDropdown(function () {
+    if (empty) return [["--", ""]];
+    return [...triggerOptions.value];
+  });
+  trigger_input.appendField(trigger_field, "TRIGGER");
+
+  if (empty) {
+    trigger_field.setEnabled(false);
+    this.setEnabled(false);
+  }
+});
+
 defineBlocksWithJsonArray([
-  // Click.
+  // Component.
   {
-    type: "components_click",
-    message0: "%{BKY_COMPONENTS_CLICK}",
+    type: "components_component",
+    message0: "%{BKY_COMPONENTS_COMPONENT}",
     args0: [
       {
         type: "input_dummy",
         name: "COMPONENT",
       },
     ],
-    message1: "%{BKY_COMPONENTS_CLICK_THEN}",
-    args1: [
+    output: null,
+    extensions: ["parent_tooltip_when_inline"],
+    mutator: "components_component_options",
+    style: "component_blocks",
+    tooltip: "%{BKY_COMPONENTS_COMPONENT_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_COMPONENT_HELPURL}",
+  },
+  // Behaviour trigger.
+  {
+    type: "components_behaviour_trigger",
+    message0: "%{BKY_COMPONENTS_BEHAVIOUR_TRIGGER}",
+    args0: [
       {
-        type: "input_statement",
-        name: "STATEMENT",
+        type: "input_dummy",
+        name: "TRIGGER",
       },
     ],
-    extensions: ["components_component_options"],
-    inputsInline: true,
-    style: "trigger_blocks",
-    tooltip: "%{BKY_COMPONENTS_CLICK_TOOLTIP}",
-    helpUrl: "%{BKY_COMPONENTS_CLICK_HELPURL}",
+    output: "BehaviorTrigger",
+    extensions: ["parent_tooltip_when_inline", "behavior_triggers_options"],
+    style: "component_blocks",
+    tooltip: "%{BKY_COMPONENTS_BEHAVIOUR_TRIGGER_TOOLTIP}",
+    helpUrl: "%{BKY_COMPONENTS_BEHAVIOUR_TRIGGER_HELPURL}",
   },
   // Set scenario.
   {
@@ -445,11 +466,11 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_SET_SCENARIO}",
     args0: [
       {
-        type: "input_dummy",
+        type: "input_value",
         name: "COMPONENT",
+        check: "ScenarioComponent",
       },
     ],
-    extensions: ["components_scenario_options"],
     previousStatement: null,
     nextStatement: null,
     style: "actions_blocks",
@@ -463,15 +484,15 @@ defineBlocksWithJsonArray([
     args0: [
       {
         type: "input_dummy",
-        name: "COMPONENT",
-      },
-      {
-        type: "input_dummy",
         name: "PROPERTY",
       },
+      {
+        type: "input_value",
+        name: "COMPONENT",
+        check: "Component",
+      },
     ],
-    extensions: ["components_component_options", "components_property_options"],
-    mutator: "components_property_options_mutator",
+    mutator: "components_property_options",
     inputsInline: true,
     output: null,
     style: "component_blocks",
@@ -485,15 +506,15 @@ defineBlocksWithJsonArray([
     args0: [
       {
         type: "input_dummy",
-        name: "COMPONENT",
-      },
-      {
-        type: "input_dummy",
         name: "PROPERTY",
       },
+      {
+        type: "input_value",
+        name: "COMPONENT",
+        check: "Component",
+      },
     ],
-    extensions: ["components_component_options", "components_property_options"],
-    mutator: "components_property_options_mutator",
+    mutator: "components_property_options",
     inputsInline: true,
     output: null,
     style: "component_blocks",
@@ -507,19 +528,19 @@ defineBlocksWithJsonArray([
     args0: [
       {
         type: "input_dummy",
-        name: "COMPONENT",
+        name: "PROPERTY",
       },
       {
-        type: "input_dummy",
-        name: "PROPERTY",
+        type: "input_value",
+        name: "COMPONENT",
+        check: ["Component", "Array"],
       },
       {
         type: "input_value",
         name: "VALUE",
       },
     ],
-    extensions: ["components_component_options", "components_property_options"],
-    mutator: "components_property_options_mutator",
+    mutator: "components_property_options",
     inputsInline: true,
     previousStatement: null,
     nextStatement: null,
@@ -534,19 +555,19 @@ defineBlocksWithJsonArray([
     args0: [
       {
         type: "input_dummy",
-        name: "COMPONENT",
+        name: "PROPERTY",
       },
       {
-        type: "input_dummy",
-        name: "PROPERTY",
+        type: "input_value",
+        name: "COMPONENT",
+        check: ["Component", "Array"],
       },
       {
         type: "input_value",
         name: "VALUE",
       },
     ],
-    extensions: ["components_component_options", "components_property_options"],
-    mutator: "components_property_options_mutator",
+    mutator: "components_property_options",
     inputsInline: true,
     previousStatement: null,
     nextStatement: null,
@@ -560,11 +581,11 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_GET_BLOCK_PAGE}",
     args0: [
       {
-        type: "input_dummy",
+        type: "input_value",
         name: "COMPONENT",
+        check: "BlockComponent",
       },
     ],
-    extensions: ["components_block_options"],
     output: "Number",
     style: "component_blocks",
     tooltip: "%{BKY_COMPONENTS_GET_BLOCK_PAGE_TOOLTIP}",
@@ -576,16 +597,16 @@ defineBlocksWithJsonArray([
     message0: "%{BKY_COMPONENTS_SET_BLOCK_PAGE}",
     args0: [
       {
-        type: "input_dummy",
-        name: "COMPONENT",
-      },
-      {
         type: "input_value",
         name: "INDEX",
         check: "Number",
       },
+      {
+        type: "input_value",
+        name: "COMPONENT",
+        check: "BlockComponent",
+      },
     ],
-    extensions: ["components_block_options"],
     inputsInline: true,
     previousStatement: null,
     nextStatement: null,

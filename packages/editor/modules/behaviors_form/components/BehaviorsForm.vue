@@ -10,7 +10,8 @@
       "actions": "Actions",
       "app": "Application",
       "media": "Media",
-      "components": "Attributs de composants",
+      "components": "Composants",
+      "lists": "Listes",
       "variables": "Variables",
       "presets": "Prédéfinis",
     }
@@ -25,7 +26,8 @@
       "actions": "Actions",
       "app": "Application",
       "media": "Média",
-      "components": "Component attributes",
+      "components": "Components",
+      "lists": "Lists",
       "variables": "Variables",
       "presets": "Presets",
     }

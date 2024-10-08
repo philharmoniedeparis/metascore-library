@@ -1,6 +1,7 @@
 import { defineBlocksWithJsonArray } from "blockly/core";
 
 defineBlocksWithJsonArray([
+  // Startup.
   {
     type: "app_startup",
     message0: "%{BKY_APP_STARTUP}",
@@ -15,6 +16,7 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_STARTUP_TOOLTIP}",
     helpUrl: "%{BKY_APP_STARTUP_HELPURL}",
   },
+  // Enter fullscreen.
   {
     type: "app_enter_fullscreen",
     message0: "%{BKY_APP_ENTER_FULLSCREEN}",
@@ -24,6 +26,7 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_ENTER_FULLSCREEN_TOOLTIP}",
     helpUrl: "%{BKY_APP_ENTER_FULLSCREEN_HELPURL}",
   },
+  // Exit fullscreen.
   {
     type: "app_exit_fullscreen",
     message0: "%{BKY_APP_EXIT_FULLSCREEN}",
@@ -33,6 +36,7 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_EXIT_FULLSCREEN_TOOLTIP}",
     helpUrl: "%{BKY_APP_EXIT_FULLSCREEN_HELPURL}",
   },
+  // Toggle fullscreen.
   {
     type: "app_toggle_fullscreen",
     message0: "%{BKY_APP_TOGGLE_FULLSCREEN}",
@@ -42,6 +46,7 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_TOGGLE_FULLSCREEN_TOOLTIP}",
     helpUrl: "%{BKY_APP_TOGGLE_FULLSCREEN_HELPURL}",
   },
+  // Idle time.
   {
     type: "app_get_idle_time",
     message0: "%{BKY_APP_GET_IDLE_TIME}",
@@ -50,6 +55,7 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_APP_GET_IDLE_TIME_TOOLTIP}",
     helpUrl: "%{BKY_APP_GET_IDLE_TIME_HELPURL}",
   },
+  // Reset.
   {
     type: "app_reset",
     message0: "%{BKY_APP_RESET}",
