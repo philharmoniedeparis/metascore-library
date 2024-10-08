@@ -19,8 +19,15 @@ export default function getBlocks() {
     hidden_block,
     hideable_component
       ? {
-          fields: {
-            COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+          inputs: {
+            COMPONENT: {
+              block: {
+                type: "components_component",
+                fields: {
+                  COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+                },
+              },
+            },
           },
         }
       : { type: "components_get_property_mock" }
@@ -41,17 +48,26 @@ export default function getBlocks() {
     background_color_block,
     backgroundable_component
       ? {
-          fields: {
-            COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+          inputs: {
+            COMPONENT: {
+              block: {
+                type: "components_component",
+                fields: {
+                  COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+                },
+              },
+            },
           },
         }
       : { type: "components_get_property_mock" }
   );
 
   return [
+    { kind: "block", type: "components_component" },
     hidden_block,
     background_color_block,
     { kind: "block", type: "components_get_property" },
     { kind: "block", type: "components_get_block_page" },
+    { kind: "block", type: "components_behaviour_trigger" },
   ];
 }

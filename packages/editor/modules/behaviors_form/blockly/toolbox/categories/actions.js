@@ -24,8 +24,15 @@ export default function getBlocks() {
     hide_block,
     hideable_component
       ? {
-          fields: {
-            COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+          inputs: {
+            COMPONENT: {
+              block: {
+                type: "components_component",
+                fields: {
+                  COMPONENT: `${hideable_component.type}:${hideable_component.id}`,
+                },
+              },
+            },
           },
         }
       : { type: "components_set_property_mock" }
@@ -60,12 +67,24 @@ export default function getBlocks() {
     background_color_block,
     backgroundable_component
       ? {
-          fields: {
-            COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+          inputs: {
+            COMPONENT: {
+              block: {
+                type: "components_component",
+                fields: {
+                  COMPONENT: `${backgroundable_component.type}:${backgroundable_component.id}`,
+                },
+              },
+            },
           },
         }
       : { type: "components_set_property_mock" }
   );
+
+  // Scenario
+  const scenario_component = findComponent((c) => {
+    return c.type === "Scenario";
+  });
 
   return [
     { kind: "block", type: "media_play" },
@@ -83,10 +102,23 @@ export default function getBlocks() {
       kind: "block",
       type: "media_set_time",
       inputs: {
-        VALUE: { block: { type: "math_number" } },
+        VALUE: { block: { type: "media_timecode" } },
       },
     },
-    { kind: "block", type: "components_set_scenario" },
+    {
+      kind: "block",
+      type: "components_set_scenario",
+      inputs: {
+        COMPONENT: {
+          block: {
+            type: "components_component",
+            fields: {
+              COMPONENT: `Scenario:${scenario_component.id}`,
+            },
+          },
+        },
+      },
+    },
     hide_block,
     show_block,
     background_color_block,
