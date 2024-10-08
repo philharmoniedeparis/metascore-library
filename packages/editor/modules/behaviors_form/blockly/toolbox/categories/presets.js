@@ -4,6 +4,7 @@ export default function getBlocks() {
       kind: "block",
       type: "links_click",
       inputs: {
+        TRIGGER: { block: { type: "components_behaviour_trigger" } },
         STATEMENT: {
           block: {
             next: {
