@@ -11,7 +11,7 @@ export default class Links extends AbstractInterpreter {
     JavaScript.addReservedWords("Links");
 
     this._unwatchActiveScenario = null;
-    this._listeners = new Set();
+    this._listenerStates = new Map();
     this._autoHighlights = new Set();
   }
 
@@ -24,9 +24,12 @@ export default class Links extends AbstractInterpreter {
 
     return {
       Links: {
-        addEventListener: (id, type, callback) => {
-          this._listeners.add({ id, type, callback });
-          this._setupListener(id, type, callback);
+        addEventListener: (trigger, event, callback) => {
+          (Array.isArray(trigger) ? trigger : [trigger])
+            .filter((trigger) => !!trigger)
+            .forEach((trigger) => {
+              this._addEventListener(trigger, event, callback);
+            });
         },
         openUrl: (url) => {
           window.open(url, "_blank");
@@ -48,8 +51,8 @@ export default class Links extends AbstractInterpreter {
     // Remove all this._listeners.
     this._removeListeners();
 
-    // Clear the list of this._listeners.
-    this._listeners.clear();
+    // Clear addEventListener states.
+    this._listenerStates.clear();
 
     // Remove all autohighlight cuepoints.
     this._removeAutoHighlights();
@@ -72,32 +75,98 @@ export default class Links extends AbstractInterpreter {
     );
   }
 
-  /**
-   * Setup a listener on links with a given behavior-trigger id.
-   * @param {string} id The behavior-trigger id
-   * @param {string} type The event type to add the listener on.
-   * @param {function} callback The callback that will be invoked when an event is dispatched.
-   */
-  _setupListener(id, type, callback) {
-    /** @type [HTMLElement] */
-    const links = this._getLinks(id);
-    if (links.length === 0) return;
+  _addEventListener(trigger, event, callback) {
+    const [type, id] = trigger.split(":");
 
-    // Add the event listener.
-    links.forEach((link) => {
-      link.addEventListener(type, callback);
-    });
+    if (!this._listenerStates.has(type)) {
+      this._listenerStates.set(type, new Map());
+    }
+    if (!this._listenerStates.get(type).has(id)) {
+      this._listenerStates.get(type).set(id, { listeners: [], cursor: null });
+    }
+
+    // Add to list of listeners.
+    const state = this._listenerStates.get(type).get(id);
+    state.listeners.push({ type: event, callback });
+
+    this._setupListener(type, id, event, callback);
   }
 
   /**
-   * Remove all this._listeners.
+   * Setup a listener on a trigger.
+   * @param {string} type The trigger's type
+   * @param {string} id The trigger's id
+   * @param {string} event The event type to add the listener on.
+   * @param {function} callback The callback that will be invoked when an event is dispatched.
    */
-  _removeListeners() {
-    this._listeners.forEach(({ id, type, callback }) => {
+  _setupListener(type, id, event, callback) {
+    if (type === "BehaviorTrigger") {
       /** @type [HTMLElement] */
       const links = this._getLinks(id);
+      if (links.length === 0) return;
+
+      // Add the event listener.
       links.forEach((link) => {
-        link.removeEventListener(type, callback);
+        link.addEventListener(event, callback);
+      });
+    } else {
+      const { getComponent } = useModule("app_components");
+      const { getComponentElement } = useModule("app_renderer");
+
+      const component = getComponent(type, id);
+      if (!component) return;
+
+      /** @type HTMLElement */
+      const el = getComponentElement(component);
+      if (!el) return;
+
+      // Add the event listener.
+      el.addEventListener(event, callback);
+
+      if (event === "click") {
+        const state = this._listenerStates.get(type).get(id);
+        state.cursor = state.cursor || el.style.cursor;
+        el.style.cursor = "pointer";
+      }
+    }
+  }
+
+  /**
+   * Remove all listeners.
+   */
+  _removeListeners() {
+    const { getComponent } = useModule("app_components");
+    const { getComponentElement } = useModule("app_renderer");
+
+    this._listenerStates.forEach((ids, type) => {
+      ids.forEach((state, id) => {
+        if (!state.listeners) return;
+
+        if (type === "BehaviorTrigger") {
+          /** @type [HTMLElement] */
+          const links = this._getLinks(id);
+          links.forEach((link) => {
+            state.listeners.forEach(({ type, callback }) => {
+              link.removeEventListener(type, callback);
+            });
+          });
+        } else {
+          const component = getComponent(type, id);
+          if (!component) return;
+
+          /** @type HTMLElement */
+          const el = getComponentElement(component);
+          if (!el) return;
+
+          state.listeners.forEach(({ type, callback }) => {
+            el.removeEventListener(type, callback);
+
+            // Reset cursor.
+            if (typeof state.cursor !== "undefined") {
+              el.style.cursor = state.cursor;
+            }
+          });
+        }
       });
     });
   }
@@ -108,7 +177,9 @@ export default class Links extends AbstractInterpreter {
    * @param {number} from The start-time in seconds at which the link should be highlighted.
    * @param {number} to The end-time in seconds at which the link should be highlighted.
    */
-  _setupAutoHighlight(id, from, to) {
+  _setupAutoHighlight(trigger, from, to) {
+    const [, id] = trigger.split(":");
+
     /** @type [HTMLElement] */
     const links = this._getLinks(id);
 
@@ -155,10 +226,16 @@ export default class Links extends AbstractInterpreter {
   async _onScenarioChange() {
     await nextTick();
 
-    // Update all this._listeners.
+    // Update all listeners.
     this._removeListeners();
-    this._listeners.forEach(({ id, type, callback }) => {
-      this._setupListener(id, type, callback);
+    this._listenerStates.forEach((ids, type) => {
+      ids.forEach((state, id) => {
+        if (state.listeners) {
+          state.listeners.forEach(({ type: event, callback }) => {
+            this._setupListener(type, id, event, callback);
+          });
+        }
+      });
     });
 
     // Update all auto-highlight cuepoints.

@@ -10,6 +10,7 @@ const category_colors = {
   app: "#263238",
   media: "#263238",
   components: "#263238",
+  lists: "#745ba5",
   variables: "#263238",
   presets: "#263238",
 };
@@ -60,6 +61,9 @@ export default Theme.defineTheme("metaScore", {
     },
     components_category: {
       colour: category_colors.components,
+    },
+    lists_category: {
+      colour: category_colors.lists,
     },
     variables_category: {
       colour: category_colors.variables,

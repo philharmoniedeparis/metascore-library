@@ -17,6 +17,7 @@ import { default as getColorBlocks } from "./toolbox/categories/color";
 import { default as getAppBlocks } from "./toolbox/categories/app";
 import { default as getMediaBlocks } from "./toolbox/categories/media";
 import { default as getComponentBlocks } from "./toolbox/categories/components";
+import { default as getListBlocks } from "./toolbox/categories/lists";
 import { default as getPresetBlocks } from "./toolbox/categories/presets";
 
 export function getConfig(publicPath = "") {
@@ -108,6 +109,12 @@ export function getConfig(publicPath = "") {
           name: Msg.CATEGORIES_COMPONENTS,
           categorystyle: "components_category",
           contents: getComponentBlocks(),
+        },
+        {
+          kind: "category",
+          name: Msg.CATEGORIES_LISTS,
+          categorystyle: "lists_category",
+          contents: getListBlocks(),
         },
         {
           kind: "category",
