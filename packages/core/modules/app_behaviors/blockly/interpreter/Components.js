@@ -111,7 +111,7 @@ export default class Components extends AbstractInterpreter {
    * @param {string} event The event type.
    * @param {function} callback The callback that will be invoked when an event is dispatched.
    */
-  #setupListener(type, id, event, callback) {
+  _setupListener(type, id, event, callback) {
     const { getComponent } = useModule("app_components");
     const { getComponentElement } = useModule("app_renderer");
 
