@@ -1,3 +1,4 @@
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { useModule } from "@core/services/module-manager";
 import { watch, nextTick } from "vue";
 import AbstractInterpreter from "./AbstractInterpreter";
@@ -9,80 +10,85 @@ export default class Components extends AbstractInterpreter {
   constructor() {
     super();
 
+    // Ensure context name does not conflict with variable names.
+    JavaScript.addReservedWords("Components");
+
     this._unwatchActiveScenario = null;
     this._addEventListenerStates = new Map();
   }
 
-  getContext() {
+  get context() {
     const { activeScenario } = useModule("app_components");
     this._unwatchActiveScenario = watch(activeScenario, this._onScenarioChange);
 
     return {
-      addEventListener: (type, id, event, callback) => {
-        if (!this._addEventListenerStates.has(type)) {
-          this._addEventListenerStates.set(type, new Map());
-        }
-        if (!this._addEventListenerStates.get(type).has(id)) {
-          this._addEventListenerStates.get(type).set(id, {
-            listeners: [],
-            cursor: null,
+      Components: {
+        addEventListener: (type, id, event, callback) => {
+          if (!this._addEventListenerStates.has(type)) {
+            this._addEventListenerStates.set(type, new Map());
+          }
+          if (!this._addEventListenerStates.get(type).has(id)) {
+            this._addEventListenerStates.get(type).set(id, {
+              listeners: [],
+              cursor: null,
+            });
+          }
+
+          const state = this._addEventListenerStates.get(type).get(id);
+
+          // Add to list of listeners.
+          state.listeners.push({
+            type: event,
+            callback,
           });
-        }
 
-        const state = this._addEventListenerStates.get(type).get(id);
+          this._setupListener(type, id, event, callback);
+        },
+        setScenario: (id) => {
+          const { setActiveScenario } = useModule("app_components");
+          setActiveScenario(id);
+        },
+        getProperty: (type, id, name) => {
+          const { getComponent } = useModule("app_components");
 
-        // Add to list of listeners.
-        state.listeners.push({
-          type: event,
-          callback,
-        });
+          const component = getComponent(type, id);
+          if (!component) return;
 
-        this._setupListener(type, id, event, callback);
-      },
-      setScenario: (id) => {
-        const { setActiveScenario } = useModule("app_components");
-        setActiveScenario(id);
-      },
-      getProperty: (type, id, name) => {
-        const { getComponent } = useModule("app_components");
+          return component[name];
+        },
+        setProperty: (type, id, name, value) => {
+          const { getComponent, setOverrides } = useModule("app_components");
 
-        const component = getComponent(type, id);
-        if (!component) return;
+          const component = getComponent(type, id);
+          if (!component) return;
 
-        return component[name];
-      },
-      setProperty: (type, id, name, value) => {
-        const { getComponent, setOverrides } = useModule("app_components");
+          setOverrides(
+            component,
+            SET_PROPERTY_OVERRIDES_KEY,
+            {
+              [name]: value,
+            },
+            SET_PROPERTY_OVERRIDES_PRIORITY
+          );
+        },
+        getBlockPage: (id) => {
+          const { getComponent, getBlockActivePage } =
+            useModule("app_components");
 
-        const component = getComponent(type, id);
-        if (!component) return;
+          const block = getComponent("Block", id);
+          if (block) {
+            return getBlockActivePage(block);
+          }
+        },
+        setBlockPage: (id, index) => {
+          const { getComponent, setBlockActivePage } =
+            useModule("app_components");
 
-        setOverrides(
-          component,
-          SET_PROPERTY_OVERRIDES_KEY,
-          {
-            [name]: value,
-          },
-          SET_PROPERTY_OVERRIDES_PRIORITY
-        );
-      },
-      getBlockPage: (id) => {
-        const { getComponent, getBlockActivePage } =
-          useModule("app_components");
-
-        const block = getComponent("Block", id);
-        if (block) {
-          return getBlockActivePage(block);
-        }
-      },
-      setBlockPage: (id, index) => {
-        const { getComponent, setBlockActivePage } =
-          useModule("app_components");
-
-        const block = getComponent("Block", id);
-        if (block) {
-          setBlockActivePage(block, index);
-        }
+          const block = getComponent("Block", id);
+          if (block) {
+            setBlockActivePage(block, index);
+          }
+        },
       },
     };
   }

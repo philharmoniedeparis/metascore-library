@@ -1,3 +1,4 @@
+import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { useModule } from "@core/services/module-manager";
 import { unref, watch, nextTick } from "vue";
 import AbstractInterpreter from "./AbstractInterpreter";
@@ -6,12 +7,15 @@ export default class Links extends AbstractInterpreter {
   constructor() {
     super();
 
+    // Ensure context name does not conflict with variable names.
+    JavaScript.addReservedWords("Links");
+
     this._unwatchActiveScenario = null;
     this._listeners = new Set();
     this._autoHighlights = new Set();
   }
 
-  getContext() {
+  get context() {
     const { activeScenario } = useModule("app_components");
     this._unwatchActiveScenario = watch(
       activeScenario,
@@ -19,15 +23,17 @@ export default class Links extends AbstractInterpreter {
     );
 
     return {
-      addEventListener: (id, type, callback) => {
-        this._listeners.add({ id, type, callback });
-        this._setupListener(id, type, callback);
-      },
-      openUrl: (url) => {
-        window.open(url, "_blank");
-      },
-      autoHighlight: (...args) => {
-        this._setupAutoHighlight(...args);
+      Links: {
+        addEventListener: (id, type, callback) => {
+          this._listeners.add({ id, type, callback });
+          this._setupListener(id, type, callback);
+        },
+        openUrl: (url) => {
+          window.open(url, "_blank");
+        },
+        autoHighlight: (...args) => {
+          this._setupAutoHighlight(...args);
+        },
       },
     };
   }

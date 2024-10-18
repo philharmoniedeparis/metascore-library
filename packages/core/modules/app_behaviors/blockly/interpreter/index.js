@@ -19,12 +19,15 @@ const interpreters = new Set([
 export function exec(code) {
   reset();
 
-  const context = {};
-  interpreters.forEach((interpreter) => {
-    interpreter.addToContext(context);
-  });
-
   if (isEmpty(code)) return;
+
+  let context = {};
+  interpreters.forEach((interpreter) => {
+    context = {
+      ...context,
+      ...interpreter.context,
+    };
+  });
 
   try {
     const compiled = compileCode(code);
