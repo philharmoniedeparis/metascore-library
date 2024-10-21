@@ -1,5 +1,5 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import Ajax from "@metascore-library/core/modules/ajax";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import Ajax from "@core/modules/ajax";
 import useStore from "./store";
 import AutoSaveIndicator from "./components/AutoSaveIndicator";
 

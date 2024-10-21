@@ -49,6 +49,7 @@
       >
         <base-button
           v-if="inButton && !readonly"
+          v-tooltip
           type="button"
           class="in"
           :title="$t('buttons.in')"
@@ -58,6 +59,7 @@
         </base-button>
         <base-button
           v-if="outButton"
+          v-tooltip
           type="button"
           class="out"
           :title="$t('buttons.out')"
@@ -67,6 +69,7 @@
         </base-button>
         <base-button
           v-if="clearButton && !readonly"
+          v-tooltip
           type="button"
           class="clear"
           :title="$t('buttons.clear')"
@@ -87,7 +90,7 @@
 import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import "timecode-input";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import ClearIcon from "../assets/icons/time-clear.svg?inline";
 import InIcon from "../assets/icons/time-in.svg?inline";
 import OutIcon from "../assets/icons/time-out.svg?inline";

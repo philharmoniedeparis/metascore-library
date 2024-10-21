@@ -1,15 +1,17 @@
+import { storeToRefs } from "pinia";
 import { readonly } from "vue";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import Ajax from "@metascore-library/core/modules/ajax";
-import Alert from "@metascore-library/core/modules/alert";
-import AppComponents from "@metascore-library/core/modules/app_components";
-import AppPreview from "@metascore-library/editor/modules/app_preview";
-import Confirm from "@metascore-library/core/modules/confirm";
+import Ajax from "@core/modules/ajax";
+import Alert from "@core/modules/alert";
+import AppComponents from "@core/modules/app_components";
+import AppPreview from "@editor/modules/app_preview";
+import Confirm from "@core/modules/confirm";
 import FormControls from "../form_controls";
-import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
+import ProgressIndicator from "@core/modules/progress_indicator";
 import SchemaForm from "../schema_form";
-import BaseButton from "@metascore-library/core/modules/button";
+import BaseButton from "@core/modules/button";
 import AssetsLibrary from "./components/AssetsLibrary";
 
 export default class AssetsLibraryModule extends AbstractModule {
@@ -45,12 +47,8 @@ export default class AssetsLibraryModule extends AbstractModule {
 
   get assets() {
     const store = useStore();
-    return store.all.map(readonly);
-  }
-
-  getAssetsByType(type) {
-    const store = useStore();
-    return store.getByType(type).map(readonly);
+    const { all } = storeToRefs(store);
+    return readonly(all);
   }
 
   addAsset(data) {

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getLocale } from "@metascore-library/core/services/i18n";
+import { getLocale } from "@core/services/i18n";
 import Blockly from "../blockly";
 import "../blockly/generators";
 import { javascriptGenerator as JavaScript } from "blockly/javascript";

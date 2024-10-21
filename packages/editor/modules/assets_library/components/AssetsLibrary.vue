@@ -114,7 +114,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import AssetsItem from "./AssetsItem.vue";
 import UploadIcon from "../assets/icons/upload.svg?inline";

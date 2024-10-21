@@ -63,7 +63,7 @@
 <script>
 import { v4 as uuid } from "uuid";
 import { round } from "lodash";
-import { countDecimals } from "@metascore-library/core/utils/number";
+import { countDecimals } from "@core/utils/number";
 import SpinUpIcon from "../assets/icons/number-up.svg?inline";
 import SpinDownIcon from "../assets/icons/number-down.svg?inline";
 

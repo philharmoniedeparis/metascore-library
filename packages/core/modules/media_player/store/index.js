@@ -130,8 +130,9 @@ export default defineStore("media_player", {
       // Set the "seeking" flag to true,
       // as the "seeking" event is sometimes triggered too late.
       this.seeking = true;
-
       this.element.currentTime = time;
+      // Force a time update in case media not playing.
+      this.updateTime();
     },
     setPlaybackRate(rate) {
       this.element.playbackRate = rate;

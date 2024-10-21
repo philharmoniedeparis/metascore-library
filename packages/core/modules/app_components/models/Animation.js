@@ -7,7 +7,7 @@ import {
   createBooleanField,
   createArrayField,
   createColorField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export default class Animation extends EmbeddableComponent {
   /**
@@ -164,17 +164,9 @@ export default class Animation extends EmbeddableComponent {
     }
 
     // Set colors.
-    if (colors.length > 0) {
-      if (!("colors" in data) || data.colors === null) {
-        data.colors = colors;
-      } else {
-        colors.forEach((color, index) => {
-          if (!data.colors[index]) {
-            data.colors[index] = color;
-          }
-        });
-      }
-    }
+    data.colors = colors.map((color, index) => {
+      return data.colors?.at(index) ?? color;
+    });
   }
 
   /**

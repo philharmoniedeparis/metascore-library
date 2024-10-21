@@ -1,6 +1,6 @@
 import { mix } from "mixwith";
 import { merge } from "lodash";
-import { createStringField } from "@metascore-library/core/utils/schema";
+import { createStringField } from "@core/utils/schema";
 import { createCollectionField } from "../utils/schema";
 import {
   AbstractComponent,

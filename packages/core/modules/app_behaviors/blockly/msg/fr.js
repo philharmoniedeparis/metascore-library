@@ -17,6 +17,15 @@ Msg.APP_TOGGLE_FULLSCREEN = "basculer le mode plein écran";
 Msg.APP_TOGGLE_FULLSCREEN_TOOLTIP = "";
 Msg.APP_TOGGLE_FULLSCREEN_HELPURL = "";
 
+Msg.APP_GET_IDLE_TIME = "durée d'inactivité";
+Msg.APP_GET_IDLE_TIME_TOOLTIP =
+  "Secondes écoulées depuis la dernière interaction de l'utilisateur";
+Msg.APP_GET_IDLE_TIME_HELPURL = "";
+
+Msg.APP_RESET = "réinitialiser l’application";
+Msg.APP_RESET_TOOLTIP = "";
+Msg.APP_RESET_HELPURL = "";
+
 Msg.COMPONENTS_CLICK = "au clic sur le composant %1";
 Msg.COMPONENTS_CLICK_THEN = "faire %1";
 Msg.COMPONENTS_CLICK_TOOLTIP = "";
@@ -130,9 +139,13 @@ Msg.MEDIA_STOP = "arrêter la lecture";
 Msg.MEDIA_STOP_TOOLTIP = "";
 Msg.MEDIA_STOP_HELPURL = "";
 
-Msg.REACTIVITY_WHEN = "lorsque %1";
+Msg.REACTIVITY_WHEN = " %1 lorsque %2";
 Msg.REACTIVITY_WHEN_THEN = "faire %1";
 Msg.REACTIVITY_WHEN_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_HELPURL = "";
+
+Msg.REACTIVITY_WHEN_ELSE = "sinon";
+Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
+Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
 
 export default Msg;

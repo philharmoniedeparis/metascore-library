@@ -12,6 +12,7 @@ import { default as getLogicBlocks } from "./toolbox/categories/logic";
 import { default as getMathBlocks } from "./toolbox/categories/math";
 import { default as getTextBlocks } from "./toolbox/categories/text";
 import { default as getColorBlocks } from "./toolbox/categories/color";
+import { default as getAppBlocks } from "./toolbox/categories/app";
 import { default as getMediaBlocks } from "./toolbox/categories/media";
 import { default as getComponentBlocks } from "./toolbox/categories/components";
 import { default as getPresetBlocks } from "./toolbox/categories/presets";
@@ -87,6 +88,12 @@ export default function getConfig({ $t, publicPath = "" } = {}) {
           name: $t("categories.color"),
           categorystyle: "color_category",
           contents: getColorBlocks(),
+        },
+        {
+          kind: "category",
+          name: $t("categories.app"),
+          categorystyle: "app_category",
+          contents: getAppBlocks(),
         },
         {
           kind: "category",

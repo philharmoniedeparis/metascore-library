@@ -1,12 +1,12 @@
 import { merge } from "lodash";
-import AbstractModel from "@metascore-library/core/models/AbstractModel";
+import AbstractModel from "@core/models/AbstractModel";
 import {
   createIntegerField,
   createEnumField,
   createBooleanField,
   createTimeField,
   createNumberField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export default class Spectrogram extends AbstractModel {
   /**

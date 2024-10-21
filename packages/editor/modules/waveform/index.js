@@ -1,10 +1,10 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
-import Ajax from "@metascore-library/core/modules/ajax";
-import BaseButton from "@metascore-library/core/modules/button";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import Ajax from "@core/modules/ajax";
+import BaseButton from "@core/modules/button";
+import MediaPlayer from "@core/modules/media_player";
 import WaveformOverview from "./components/WaveformOverview";
 import WaveformZoom from "./components/WaveformZoom";
 import WaveformZoomController from "./components/WaveformZoomController";

@@ -37,7 +37,7 @@ import "@interactjs/actions/drag";
 import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import ClearIcon from "../../assets/icons/clear.svg?inline";
 
 export default {

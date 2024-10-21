@@ -1,12 +1,12 @@
 import { readonly } from "vue";
 import { storeToRefs } from "pinia";
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import { addMessages } from "@metascore-library/core/services/i18n";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import { addMessages } from "@core/services/i18n";
 import useStore from "./store";
 import * as IconManager from "./utils/icons";
 
 import MediaPlayer from "../media_player";
-import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
+import MediaCuepoints from "@core/modules/media_cuepoints";
 
 import { getAnimatedValueAtTime } from "./utils/animation";
 
@@ -252,6 +252,11 @@ export default class AppComponentsModule extends AbstractModule {
   setBlockActivePage(block, index) {
     const store = useStore();
     store.setBlockActivePage(block, index);
+  }
+
+  resetBlocksActivePage() {
+    const store = useStore();
+    store.resetBlocksActivePage();
   }
 
   isComponentBackgroundable(component) {

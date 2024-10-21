@@ -50,6 +50,7 @@
       <div
         v-for="(keyframe, index) in value"
         :key="index"
+        v-tooltip
         :style="{ left: `${(keyframe[0] / mediaDuration) * 100}%` }"
         :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
         :class="['keyframe', { selected: selected === index }]"
@@ -68,7 +69,7 @@ import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import AnimatedIcon from "../assets/icons/animated.svg?inline";
 
 export default {

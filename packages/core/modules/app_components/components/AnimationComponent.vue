@@ -7,7 +7,7 @@
 <script>
 import { toRef } from "vue";
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
 
 export default {

@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import { readonly, unref, isReadonly } from "vue";
 import { omit } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
-import { useModule } from "@metascore-library/core/services/module-manager";
-import { t as $t } from "@metascore-library/core/services/i18n";
+import { useModule } from "@core/services/module-manager";
+import { t as $t } from "@core/services/i18n";
 import * as Models from "../models";
 
 export default defineStore("app-components", {
@@ -13,7 +13,7 @@ export default defineStore("app-components", {
       deleted: {},
       sortedScenarios: [],
       activeScenario: null,
-      blocksActivePage: {},
+      blocksActivePage: new Map(),
       overrides: new Map(),
       overridesEnabled: false,
     };
@@ -443,8 +443,11 @@ export default defineStore("app-components", {
         const page = pages[index];
         seekMediaTo(page["start-time"] ?? 0);
       } else {
-        this.blocksActivePage[block.id] = index;
+        this.blocksActivePage.set(block.id, index);
       }
+    },
+    resetBlocksActivePage() {
+      this.blocksActivePage.clear();
     },
     enableOverrides() {
       this.overridesEnabled = true;

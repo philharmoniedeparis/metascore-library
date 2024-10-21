@@ -30,8 +30,8 @@
 <template>
   <base-button
     v-hotkey.prevent="hotkeys"
-    v-hotkeyhelp="'mod+shift+e'"
-    :title="$t('title')"
+    v-tooltip
+    :title="`${$t('title')} [${formatHotkey('mod+shift+e')}]`"
     type="button"
     :class="['app-preview-toggler', { toggled: preview }]"
     :disabled="disabled"
@@ -44,6 +44,7 @@
 
 <script>
 import useStore from "../store";
+import { useModule } from "@core/services/module-manager";
 import ToggleIcon from "../assets/icons/preview-toggle.svg?inline";
 
 export default {
@@ -58,7 +59,10 @@ export default {
   },
   setup() {
     const store = useStore();
-    return { store };
+
+    const { format: formatHotkey } = useModule("hotkey");
+
+    return { store, formatHotkey };
   },
   computed: {
     preview() {

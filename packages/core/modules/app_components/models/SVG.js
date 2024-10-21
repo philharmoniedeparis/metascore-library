@@ -7,7 +7,7 @@ import {
   createStringField,
   createArrayField,
   createColorField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export const SVG_PROPERTIES = [
   "stroke",
@@ -241,17 +241,18 @@ export default class SVG extends EmbeddableComponent {
   setEmbeddedDefaults(data) {
     const { colors = [] } = this._embedded_data;
 
+    // Set colors.
+    data.colors = colors.map((color, index) => {
+      return data.colors?.at(index) ?? color;
+    });
+
     if (colors.length > 0) {
-      if (!("colors" in data) || data.colors === null) {
-        data.colors = colors;
-      } else {
-        colors.forEach((color, index) => {
-          if (!data.colors[index]) {
-            data.colors[index] = color;
-          }
-        });
-      }
+      // Remove other properties.
+      SVG_PROPERTIES.forEach((property) => {
+        delete data[property];
+      });
     } else {
+      // Set other properties.
       SVG_PROPERTIES.forEach((property) => {
         data[property] = data[property] ?? null;
       });

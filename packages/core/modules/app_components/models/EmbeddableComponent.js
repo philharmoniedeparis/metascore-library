@@ -1,6 +1,6 @@
 import { mix } from "mixwith";
 import { merge } from "lodash";
-import { createStringField } from "@metascore-library/core/utils/schema";
+import { createStringField } from "@core/utils/schema";
 import { AbstractComponent } from ".";
 import Backgroundable from "./mixins/Backgroundable";
 import Borderable from "./mixins/Borderable";

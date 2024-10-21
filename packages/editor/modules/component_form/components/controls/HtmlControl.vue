@@ -31,9 +31,9 @@
 <script>
 import { markRaw } from "vue";
 import { isObject } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
-import { getLocale } from "@metascore-library/core/services/i18n";
-import { getRectWithoutTransforms } from "@metascore-library/core/utils/dom";
+import { useModule } from "@core/services/module-manager";
+import { getLocale } from "@core/services/i18n";
+import { getRectWithoutTransforms } from "@core/utils/dom";
 import useStore from "../../store";
 
 export default {

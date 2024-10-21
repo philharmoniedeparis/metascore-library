@@ -1,6 +1,6 @@
 import { Mixin } from "mixwith";
 import { merge, round } from "lodash";
-import { createTimeField } from "@metascore-library/core/utils/schema";
+import { createTimeField } from "@core/utils/schema";
 
 export default Mixin(
   (superclass) =>

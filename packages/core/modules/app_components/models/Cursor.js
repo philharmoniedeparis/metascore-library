@@ -7,7 +7,7 @@ import {
   createIntegerField,
   createTimeField,
   createColorField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 import { createAngleField } from "../utils/schema";
 
 export default class Cursor extends EmbeddableComponent {

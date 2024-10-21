@@ -1,4 +1,4 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
 import BaseButton from "./components/BaseButton";
 
 export default class BaseButtonModule extends AbstractModule {

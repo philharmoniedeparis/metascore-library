@@ -1,7 +1,22 @@
+<i18n>
+  {
+    "fr": {
+      "width": "Largeur",
+      "height": "Hauteur",
+    },
+    "en": {
+      "width": "Width",
+      "height": "Height",
+    }
+  }
+</i18n>
+
 <template>
   <div :class="['app-dimensions-controller', { disabled }]">
     <number-control
       v-model="width"
+      v-tooltip
+      :title="$t('width')"
       class="width"
       :disabled="disabled"
       :min="1"
@@ -12,6 +27,8 @@
     <span class="separator">x</span>
     <number-control
       v-model="height"
+      v-tooltip
+      :title="$t('height')"
       class="height"
       :disabled="disabled"
       :min="1"
@@ -23,7 +40,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default {
   props: {

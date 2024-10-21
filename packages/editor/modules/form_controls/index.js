@@ -1,8 +1,8 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import AutoFocus from "@metascore-library/core/modules/auto_focus";
-import BaseButton from "@metascore-library/core/modules/button";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AutoFocus from "@core/modules/auto_focus";
+import BaseButton from "@core/modules/button";
 import FormGroup from "../form_group";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaPlayer from "@core/modules/media_player";
 
 import CheckboxControl from "./components/CheckboxControl";
 import ColorControl from "./components/ColorControl";

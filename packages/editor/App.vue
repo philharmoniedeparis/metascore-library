@@ -3,6 +3,7 @@
   "fr": {
     "save": "Enregistrer",
     "revert": "Revenir à la version précédente",
+    "app_title": "Titre de l'application",
     "preferences": "Préférences",
     "scenario_default_title": "Scénario 1",
     "components_library_title": "Composants",
@@ -39,6 +40,7 @@
   "en": {
     "save": "Save",
     "revert": "Revert",
+    "app_title": "Application's title",
     "preferences": "Preferences",
     "scenario_default_title": "Scenario 1",
     "components_library_title": "Components",
@@ -96,19 +98,19 @@
       <nav class="main-menu">
         <div class="left">
           <base-button
-            v-hotkeyhelp="'mod+s'"
+            v-tooltip
             :disabled="preview || !dirty || !isLatestRevision"
             class="save"
-            :title="$t('save')"
+            :title="`${$t('save')} [${formatHotkey('mod+s')}]`"
             @click="save"
           >
             <template #icon><save-icon /></template>
           </base-button>
           <base-button
-            v-hotkeyhelp="'mod+r'"
+            v-tooltip
             :disabled="preview || !dirty || !isLatestRevision"
             class="revert"
-            :title="$t('revert')"
+            :title="`${$t('revert')} [${formatHotkey('mod+r')}]`"
             @click="revert"
           >
             <template #icon><revert-icon /></template>
@@ -116,7 +118,9 @@
           <history-controller :disabled="preview || !isLatestRevision" />
           <text-control
             v-model="appTitle"
+            v-tooltip
             :lazy="true"
+            :title="$t('app_title')"
             :disabled="preview || !isLatestRevision"
             class="app-title"
             @focusin="onAppTitleFocusin"
@@ -138,10 +142,10 @@
             @restore="onRevisionSelectorRestore"
           />
           <base-button
-            v-hotkeyhelp="'mod+p'"
+            v-tooltip
             :disabled="preview || !isLatestRevision"
             class="user-preferences"
-            :title="$t('preferences')"
+            :title="`${$t('preferences')} [${formatHotkey('mod+p')}]`"
             @click="showPreferencesForm = true"
           >
             <template #icon><user-preferences-icon /></template>
@@ -151,7 +155,7 @@
     </div>
 
     <resizable-pane class="left" :right="{ collapse: true }">
-      <tabs-container ref="libraries" v-model:activeTab="activeLibrariesTab">
+      <tabs-container ref="libraries" v-model:active-tab="activeLibrariesTab">
         <tabs-item :title="$t('components_library_title')" :keep-alive="true">
           <components-library />
         </tabs-item>
@@ -183,10 +187,10 @@
     </div>
 
     <resizable-pane class="right" :left="{ collapse: true }">
-      <tabs-container v-model:activeTab="activeFormsTab">
+      <tabs-container v-model:active-tab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
           <component-form
-            :images="imageAssets"
+            :assets="assets"
             :first-level-components="firstLevelComponents"
           ></component-form>
         </tabs-item>
@@ -277,7 +281,7 @@
 <script>
 import { computed, unref } from "vue";
 import useStore from "./store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?inline";
 import RevertIcon from "./assets/icons/revert.svg?inline";
@@ -307,7 +311,6 @@ export default {
       getComponent,
       getComponentChildren,
       activeScenario,
-      setActiveScenario,
       createComponent,
       addComponent,
       deleteComponent,
@@ -318,7 +321,7 @@ export default {
     const { enable: enableBehaviors, disable: disableBehaviors } =
       useModule("app_behaviors");
 
-    const { getAssetsByType, addAsset } = useModule("assets_library");
+    const { assets, addAsset } = useModule("assets_library");
 
     const { preview, previewPersistant } = useModule("app_preview");
 
@@ -344,13 +347,16 @@ export default {
 
     const { isDataAvailable: isAutoSaveDataAvailable } = useModule("auto_save");
 
+    const { format: formatHotkey } = useModule("hotkey");
+
+    const { install: installTooltip } = useModule("tooltip");
+
     return {
       store,
       getComponentsByType,
       getComponent,
       getComponentChildren,
       activeScenario,
-      setActiveScenario,
       createComponent,
       addComponent,
       deleteComponent,
@@ -358,7 +364,7 @@ export default {
       clearComponentsOverrides,
       enableBehaviors,
       disableBehaviors,
-      getAssetsByType,
+      assets,
       addAsset,
       preview,
       previewPersistant,
@@ -372,6 +378,8 @@ export default {
       disableComponentInteractions,
       userPreferences,
       isAutoSaveDataAvailable,
+      formatHotkey,
+      installTooltip,
     };
   },
   data() {
@@ -415,9 +423,6 @@ export default {
     },
     timelineOffset() {
       return this.waveformOffset.start / this.mediaDuration;
-    },
-    imageAssets() {
-      return this.getAssetsByType("image");
     },
     scenarios() {
       return this.getComponentsByType("Scenario");
@@ -504,6 +509,8 @@ export default {
   },
   async mounted() {
     this.overlaysTarget = this.$el;
+
+    this.installTooltip(this.$el);
 
     const hasAutoSaveData = await this.isAutoSaveDataAvailable();
     if (hasAutoSaveData) {

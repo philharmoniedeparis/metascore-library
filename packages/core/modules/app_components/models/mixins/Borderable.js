@@ -1,9 +1,6 @@
 import { Mixin } from "mixwith";
 import { merge } from "lodash";
-import {
-  createIntegerField,
-  createColorField,
-} from "@metascore-library/core/utils/schema";
+import { createIntegerField, createColorField } from "@core/utils/schema";
 import { createBorderRadiusField } from "../../utils/schema";
 
 export default Mixin(

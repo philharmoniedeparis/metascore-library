@@ -20,7 +20,7 @@
 
 <script>
 import { debounce } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 
 const BLOCK_TOGGLE_LINKS_OVERRIDES_KEY = "app_renderer:block_toggle_links";

@@ -62,6 +62,7 @@
     </ol>
 
     <base-button
+      v-tooltip
       type="button"
       class="add"
       :title="$t('add_button_title')"
@@ -76,6 +77,7 @@
     />
 
     <base-button
+      v-tooltip
       type="button"
       class="clone"
       :title="$t('clone_button_title')"
@@ -91,6 +93,7 @@
     />
 
     <base-button
+      v-tooltip
       type="button"
       class="delete"
       :title="$t('delete_button_title')"
@@ -114,7 +117,7 @@ import { debounce } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import Sortable from "sortablejs";
 import autoAnimate from "@formkit/auto-animate";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import ArrowIcon from "../assets/icons/arrow.svg?inline";
 import AddIcon from "../assets/icons/add.svg?inline";
 import AddForm from "./AddForm.vue";

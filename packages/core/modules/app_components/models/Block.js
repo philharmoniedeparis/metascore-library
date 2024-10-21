@@ -1,9 +1,6 @@
 import { merge } from "lodash";
 import { EmbeddableComponent, Page } from ".";
-import {
-  createBooleanField,
-  createEnumField,
-} from "@metascore-library/core/utils/schema";
+import { createBooleanField, createEnumField } from "@core/utils/schema";
 import { createCollectionField } from "../utils/schema";
 
 export default class Block extends EmbeddableComponent {

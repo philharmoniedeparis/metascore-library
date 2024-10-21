@@ -32,7 +32,7 @@
 </i18n>
 
 <template>
-  <div v-hotkey.local="hotkeys" class="timeline" tabindex="0">
+  <div v-hotkey.local.stop="hotkeys" class="timeline" tabindex="0">
     <div class="tracks-container">
       <template v-for="scenario in scenarios" :key="scenario.id">
         <component-track
@@ -54,8 +54,8 @@ import "@interactjs/actions/drag";
 import "@interactjs/actions/drop";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
-import { trapTabFocus } from "@metascore-library/core/utils/dom";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { trapTabFocus } from "@core/utils/dom";
+import { useModule } from "@core/services/module-manager";
 import ComponentTrack from "./ComponentTrack.vue";
 import SnapGuides from "./SnapGuides.vue";
 

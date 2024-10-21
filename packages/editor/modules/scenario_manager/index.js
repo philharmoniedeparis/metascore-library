@@ -1,8 +1,8 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import AppComponents from "@metascore-library/core/modules/app_components";
-import Confirm from "@metascore-library/core/modules/confirm";
-import ContextMenu from "@metascore-library/core/modules/contextmenu";
-import BaseButton from "@metascore-library/core/modules/button";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AppComponents from "@core/modules/app_components";
+import Confirm from "@core/modules/confirm";
+import ContextMenu from "@core/modules/contextmenu";
+import BaseButton from "@core/modules/button";
 import ScenarioManager from "./components/ScenarioManager";
 
 export default class ScenarioManagerModule extends AbstractModule {

@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import PlayIcon from "../assets/icons/play.svg?inline";
 import PauseIcon from "../assets/icons/pause.svg?inline";
 import RewindIcon from "../assets/icons/rewind.svg?inline";

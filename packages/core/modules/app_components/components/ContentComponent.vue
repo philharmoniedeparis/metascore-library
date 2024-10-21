@@ -7,7 +7,7 @@
 <script>
 import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from "../utils/links";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default {
   directives: {

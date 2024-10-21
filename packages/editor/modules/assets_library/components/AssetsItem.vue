@@ -32,7 +32,12 @@
       <figcaption>{{ label }}</figcaption>
     </figure>
 
-    <base-button type="button" title="Supprimer" @click="onDeleteClick">
+    <base-button
+      v-tooltip
+      type="button"
+      title="Supprimer"
+      @click="onDeleteClick"
+    >
       <template #icon><delete-icon /></template>
     </base-button>
     <confirm-dialog
@@ -54,7 +59,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
@@ -100,7 +105,7 @@ export default {
       return this.store.getFile(this.asset);
     },
     type() {
-      return this.store.getType(this.asset);
+      return this.asset.type;
     },
     component() {
       switch (this.type) {
@@ -131,13 +136,6 @@ export default {
           };
 
         case "audio":
-          return {
-            name: this.label,
-            type: "Media",
-            tag: this.type,
-            src: this.file.url,
-          };
-
         case "video": {
           const data = {
             name: this.label,
@@ -145,7 +143,7 @@ export default {
             tag: this.type,
             src: this.file.url,
           };
-          if (this.file.width && this.file.height) {
+          if (this.type === "video" && this.file.width && this.file.height) {
             data.dimension = [this.file.width, this.file.height];
           }
           return data;

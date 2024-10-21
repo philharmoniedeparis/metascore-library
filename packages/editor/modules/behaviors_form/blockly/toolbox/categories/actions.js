@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default function getBlocks() {
   const { findComponent, getModelByType } = useModule("app_components");
@@ -116,6 +116,10 @@ export default function getBlocks() {
     {
       kind: "block",
       type: "app_toggle_fullscreen",
+    },
+    {
+      kind: "block",
+      type: "app_reset",
     },
   ];
 }

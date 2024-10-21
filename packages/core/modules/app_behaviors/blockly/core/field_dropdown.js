@@ -2,13 +2,11 @@ import {
   FieldDropdown as FieldDropdownBase,
   Field,
   fieldRegistry,
-  Menu,
-  MenuItem,
   utils,
   UnattachedFieldError,
 } from "blockly/core";
-import SearchableMenu from "./searchable_menu";
-import SearchableMenuItem from "./searchable_menuitem";
+import Menu from "./menu";
+import MenuItem from "./menuitem";
 
 const { aria, string: utilsString, parsing } = utils;
 
@@ -77,73 +75,87 @@ export default class FieldDropdown extends FieldDropdownBase {
     if (!block) {
       throw new UnattachedFieldError();
     }
-    const menu = this.searchable ? new SearchableMenu() : new Menu();
+    const menu = new Menu(this.searchable);
     menu.setRole(aria.Role.LISTBOX);
     this.menu_ = menu;
 
-    const options = this.getOptions(false);
+    const options = this.getOptions(false, false);
     this.selectedMenuItem = null;
     for (let i = 0; i < options.length; i++) {
-      const [label, value] = options[i];
-      let enabled = true;
-      let searchable_text = null;
-      const content = (() => {
-        if (typeof label === "object") {
-          if ("hidden" in label && label.hidden) {
-            // Don't add a menu item.
-            return null;
-          }
-
-          if ("disabled" in label && label.disabled) {
-            enabled = false;
-          }
-
-          if ("src" in label) {
-            // Convert ImageProperties to an HTMLImageElement.
-            const image = new Image(label["width"], label["height"]);
-            image.src = label["src"];
-            image.alt = label["alt"] || "";
-            return image;
-          } else {
-            searchable_text = label.text;
-            return label.label;
-          }
-        }
-        return label;
-      })();
-
-      if (content === null) continue;
-
-      let menuItem = null;
-      if (this.searchable) {
-        menuItem = new SearchableMenuItem(content, value);
-        if (searchable_text) {
-          menuItem.setSearchableText(searchable_text);
-        }
-      } else {
-        menuItem = new MenuItem(content, value);
-      }
-      menuItem.setRole(aria.Role.OPTION);
-      menuItem.setRightToLeft(block.RTL);
-      menu.addChild(menuItem);
-
-      if (enabled) {
-        menuItem.setCheckable(true);
-        menuItem.setChecked(value === this.value_);
-        if (value === this.value_) {
-          this.selectedMenuItem = menuItem;
-        }
-        menuItem.onAction(this.handleMenuActionEvent, this);
-      } else {
-        menuItem.setEnabled(false);
-      }
+      const menuItem = this.dropdownCreateItem(options[i], block);
+      if (menuItem) menu.addChild(menuItem);
     }
   }
 
-  /**
-   * @inheritdoc
-   */
-  getOptions(useCache) {
+  dropdownCreateItem(option, block) {
+    const [label, value] = option;
+    let content = null;
+    let enabled = true;
+    let children = null;
+    let expanded = null;
+    let text = null;
+
+    if (typeof label === "object") {
+      if ("hidden" in label && label.hidden) {
+        // Skip; don't add a menu item.
+      } else {
+        if ("disabled" in label && label.disabled) {
+          enabled = false;
+        }
+
+        if ("src" in label) {
+          // Convert ImageProperties to an HTMLImageElement.
+          const image = new Image(label["width"], label["height"]);
+          image.src = label["src"];
+          image.alt = label["alt"] || "";
+          content = image;
+        } else {
+          content = label.label;
+          text = label.text ?? label.label;
+          children = label.children;
+          expanded = label.expanded;
+        }
+      }
+    } else {
+      content = label;
+    }
+
+    if (content === null) return null;
+
+    const menuItem = new MenuItem(content, value, this.searchable);
+    menuItem.setRole(aria.Role.OPTION);
+    menuItem.setRightToLeft(block.RTL);
+
+    if (enabled) {
+      menuItem.setCheckable(true);
+      menuItem.setChecked(value === this.value_);
+      if (value === this.value_) {
+        this.selectedMenuItem = menuItem;
+      }
+      menuItem.onAction(this.handleMenuActionEvent, this);
+    } else {
+      menuItem.setEnabled(false);
+    }
+
+    if (text) {
+      menuItem.setSearchableText(text);
+    }
+
+    if (Array.isArray(children)) {
+      children.forEach((child_option) => {
+        const subItem = this.dropdownCreateItem(child_option, block);
+        menuItem.addChild(subItem);
+      });
+
+      if (expanded) {
+        menuItem.setExpanded(true);
+      }
+    }
+
+    return menuItem;
+  }
+
+  getOptions_(useCache) {
     if (!this.menuGenerator_) {
       // A subclass improperly skipped setup without defining the menu
       // generator.
@@ -156,6 +168,33 @@ export default class FieldDropdown extends FieldDropdownBase {
     this.generatedOptions = this.menuGenerator_();
     validateOptions(this.generatedOptions);
     return this.generatedOptions;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getOptions(useCache, flattened = true) {
+    const options = this.getOptions_(useCache);
+
+    if (!flattened) return options;
+
+    const flat = options.reduce((acc, option) => {
+      acc.push(...this.flattenOption_(option));
+      return acc;
+    }, []);
+    return flat;
+  }
+
+  flattenOption_(option) {
+    const [label] = option;
+    const flattened = [option];
+    if (typeof label === "object" && Array.isArray(label.children)) {
+      label.children.reduce((acc, child) => {
+        acc.push(...this.flattenOption_(child));
+        return acc;
+      }, flattened);
+    }
+    return flattened;
   }
 
   /**

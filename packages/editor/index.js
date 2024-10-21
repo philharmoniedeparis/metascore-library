@@ -4,39 +4,37 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 
-import { init as createI18n } from "@metascore-library/core/services/i18n";
-import {
-  registerModules,
-  useModule,
-} from "@metascore-library/core/services/module-manager";
-import Ajax from "@metascore-library/core/modules/ajax";
-import AppBehaviors from "@metascore-library/core/modules/app_behaviors";
+import { init as createI18n } from "@core/services/i18n";
+import { registerModules, useModule } from "@core/services/module-manager";
+import Ajax from "@core/modules/ajax";
+import AppBehaviors from "@core/modules/app_behaviors";
 import AppPreview from "./modules/app_preview";
-import AppRenderer from "@metascore-library/core/modules/app_renderer";
+import AppRenderer from "@core/modules/app_renderer";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
-import BaseButton from "@metascore-library/core/modules/button";
+import BaseButton from "@core/modules/button";
 import BehaviorsForm from "./modules/behaviors_form";
 import BufferIndicator from "./modules/buffer_indicator";
 import ComponentForm from "./modules/component_form";
 import ComponentsLibrary from "./modules/components_library";
 import ComponentsBreadcrumb from "./modules/components_breadcrumb";
-import Confirm from "@metascore-library/core/modules/confirm";
-import ContextMenu from "@metascore-library/core/modules/contextmenu";
+import Confirm from "@core/modules/confirm";
+import ContextMenu from "@core/modules/contextmenu";
 import FormControls from "./modules/form_controls";
 import History from "./modules/history";
 import Hotkey from "./modules/hotkey";
 import Intro from "./modules/intro";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import MediaPlayer from "@core/modules/media_player";
 import MediaSelector from "./modules/media_selector";
 import PlaybackControls from "./modules/playback_controls";
-import ProgressIndicator from "@metascore-library/core/modules/progress_indicator";
+import ProgressIndicator from "@core/modules/progress_indicator";
 import ResizablePane from "./modules/resizable_pane";
 import RevisionSelector from "./modules/revision_selector";
 import ScenarioManager from "./modules/scenario_manager";
 import SharedAssetsLibrary from "./modules/shared_assets_library";
 import Tabs from "./modules/tabs";
 import Timeline from "./modules/timeline";
+import Tooltip from "./modules/tooltip";
 import UserPreferences from "./modules/user_preferences";
 import Waveform from "./modules/waveform";
 
@@ -91,6 +89,7 @@ export class Editor {
         SharedAssetsLibrary,
         Tabs,
         Timeline,
+        Tooltip,
         UserPreferences,
         Waveform,
       ],

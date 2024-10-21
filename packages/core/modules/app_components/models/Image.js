@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 import { EmbeddableComponent } from ".";
-import { createUrlField } from "@metascore-library/core/utils/schema";
+import { createUrlField } from "@core/utils/schema";
 
 export default class Image extends EmbeddableComponent {
   /**

@@ -11,10 +11,10 @@
 <script>
 import { toRef } from "vue";
 import useStore from "../store";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
 import "../../../polyfills/GeomertyUtils";
-import { map, radians } from "@metascore-library/core/utils/math";
+import { map, radians } from "@core/utils/math";
 
 export default {
   props: {

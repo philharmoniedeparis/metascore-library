@@ -1,5 +1,5 @@
-import AbstractModule from "@metascore-library/core/services/module-manager/AbstractModule";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
+import AbstractModule from "@core/services/module-manager/AbstractModule";
+import MediaPlayer from "@core/modules/media_player";
 import BufferIndicator from "./components/BufferIndicator";
 
 export default class BufferIndicatorModule extends AbstractModule {

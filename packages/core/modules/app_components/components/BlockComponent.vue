@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { hasTouch as deviceHasTouch } from "@metascore-library/core/utils/device";
+import { hasTouch as deviceHasTouch } from "@core/utils/device";
 import useStore from "../store";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
@@ -124,8 +124,8 @@ export default {
     activePageIndex: {
       get() {
         const id = this.component.id;
-        return id in this.store.blocksActivePage
-          ? this.store.blocksActivePage[id]
+        return this.store.blocksActivePage.has(id)
+          ? this.store.blocksActivePage.get(id)
           : 0;
       },
       set(value) {
@@ -192,9 +192,12 @@ export default {
 
     onTimedPageActivated(component) {
       const id = this.component.id;
-      this.store.blocksActivePage[id] = this.pages.findIndex((v) => {
-        return v.id === component.id;
-      });
+      this.store.blocksActivePage.set(
+        id,
+        this.pages.findIndex((v) => {
+          return v.id === component.id;
+        })
+      );
     },
 
     reset() {

@@ -1,4 +1,4 @@
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 async function get(url) {
   return await useModule("ajax").get(url, {

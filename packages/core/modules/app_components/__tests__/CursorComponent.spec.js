@@ -1,16 +1,13 @@
 import { mount } from "@vue/test-utils";
 import { createTestingPinia } from "@pinia/testing";
-import {
-  registerModules,
-  useModule,
-} from "@metascore-library/core/services/module-manager";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
-import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
+import { registerModules, useModule } from "@core/services/module-manager";
+import MediaPlayer from "@core/modules/media_player";
+import MediaCuepoints from "@core/modules/media_cuepoints";
 import Cursor from "../models/Cursor";
 import ComponentWrapper from "../components/ComponentWrapper.vue";
 import Component from "../components/CursorComponent.vue";
 
-jest.mock("@metascore-library/core/modules/media_player");
+jest.mock("@core/modules/media_player");
 
 describe("CursorComponent.vue", () => {
   it("renders line", async () => {

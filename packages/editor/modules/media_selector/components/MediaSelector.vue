@@ -27,7 +27,12 @@
 
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <base-button type="button" :title="$t('title')" @click="showForm = true">
+    <base-button
+      v-tooltip
+      type="button"
+      :title="$t('title')"
+      @click="showForm = true"
+    >
       {{ mediaSource.name }}
     </base-button>
 
@@ -56,7 +61,7 @@
 <script>
 import { round } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import MediaSourceForm from "./MediaSourceForm";
 
 export default {

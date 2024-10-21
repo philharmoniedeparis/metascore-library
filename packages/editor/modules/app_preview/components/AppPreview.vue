@@ -70,7 +70,7 @@
     >
       <app-renderer
         ref="app-renderer"
-        v-hotkey.local="hotkeys"
+        v-hotkey.local.stop="hotkeys"
         @keydown="onAppRendererKeydown"
         @keyup="onAppRendererKeyup"
       />
@@ -84,8 +84,8 @@
 <script>
 import { computed } from "vue";
 import { debounce } from "lodash";
-import { trapTabFocus } from "@metascore-library/core/utils/dom";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { trapTabFocus } from "@core/utils/dom";
+import { useModule } from "@core/services/module-manager";
 import "../polyfills/GeomertyUtils";
 import useStore from "../store";
 import PreviewRuler from "./PreviewRuler.vue";
@@ -147,6 +147,8 @@ export default {
       el: appEl,
       width: appWidth,
       height: appHeight,
+      startIdleTimeTracking,
+      stopIdleTimeTracking,
     } = useModule("app_renderer");
 
     const { activeScenario, deleteComponent } = useModule("app_components");
@@ -159,6 +161,8 @@ export default {
       appEl,
       appWidth,
       appHeight,
+      startIdleTimeTracking,
+      stopIdleTimeTracking,
       activeScenario,
       deleteComponent,
       startHistoryGroup,
@@ -434,10 +438,19 @@ export default {
     },
   },
   watch: {
-    preview(value) {
-      if (value && this.appEl) {
-        this.appEl.focus();
-      }
+    preview: {
+      handler(value) {
+        if (value) {
+          this.startIdleTimeTracking();
+
+          if (this.appEl) {
+            this.appEl.focus();
+          }
+        } else {
+          this.stopIdleTimeTracking();
+        }
+      },
+      immediate: true,
     },
     appWidth() {
       this.updateRects();

@@ -8,6 +8,7 @@
       "text": "Texte",
       "color": "Couleur",
       "actions": "Actions",
+      "app": "Application",
       "media": "Media",
       "components": "Attributs de composants",
       "variables": "Variables",
@@ -22,6 +23,7 @@
       "text": "Text",
       "color": "Color",
       "actions": "Actions",
+      "app": "Application",
       "media": "Média",
       "components": "Component attributes",
       "variables": "Variables",
@@ -43,7 +45,7 @@ import { DisableTopBlocks } from "@blockly/disable-top-blocks";
 import "@blockly/block-plus-minus";
 import useStore from "../store";
 import getConfig from "../blockly";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 export default {
   props: {},
@@ -190,13 +192,16 @@ export default {
       this.Blockly.svgResize(this.workspace);
     },
     onDocumentMousedown(evt) {
-      // Close tooltips, context menus and dropdowns if clicked outside.
+      // If clicked outside.
       if (
         !evt.target.closest(
           ".behaviors-form, [class^='blockly'], [class*=' blockly']"
         )
       ) {
+        // Close tooltips, context menus and dropdowns.
         this.workspace.hideChaff();
+        // Prevent handleding of keyboard shortcuts by the workspace.
+        this.Blockly.common.setMainWorkspace(null);
       }
     },
     onContextmenu(evt) {

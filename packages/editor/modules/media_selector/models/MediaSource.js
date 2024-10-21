@@ -1,9 +1,6 @@
 import { merge } from "lodash";
-import AbstractModel from "@metascore-library/core/models/AbstractModel";
-import {
-  createFileField,
-  createUrlField,
-} from "@metascore-library/core/utils/schema";
+import AbstractModel from "@core/models/AbstractModel";
+import { createFileField, createUrlField } from "@core/utils/schema";
 
 export default class MediaSource extends AbstractModel {
   /**

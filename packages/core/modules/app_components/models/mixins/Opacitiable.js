@@ -1,6 +1,6 @@
 import { Mixin } from "mixwith";
 import { merge, round } from "lodash";
-import { createNumberField } from "@metascore-library/core/utils/schema";
+import { createNumberField } from "@core/utils/schema";
 import { createAnimatedField } from "../../utils/schema";
 
 export default Mixin(

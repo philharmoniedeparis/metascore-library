@@ -54,7 +54,7 @@ export default {
       return this.store.getFile(this.asset);
     },
     type() {
-      return this.store.getType(this.asset);
+      return this.asset.type;
     },
   },
   methods: {

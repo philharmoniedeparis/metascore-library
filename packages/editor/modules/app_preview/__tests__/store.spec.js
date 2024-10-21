@@ -1,11 +1,11 @@
 import { createApp } from "vue";
 import { setActivePinia, createPinia } from "pinia";
-import { init as createI18n } from "@metascore-library/core/services/i18n";
+import { init as createI18n } from "@core/services/i18n";
 import {
   registerModules,
   useModule,
-} from "@metascore-library/core/services/module-manager";
-import AppComponents from "@metascore-library/core/modules/app_components";
+} from "@core/services/module-manager";
+import AppComponents from "@core/modules/app_components";
 import useStore from "../store";
 
 describe("AppPreview store", () => {

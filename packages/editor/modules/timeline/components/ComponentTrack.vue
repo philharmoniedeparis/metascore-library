@@ -59,12 +59,13 @@
     ]"
     :data-type="component.type"
     :data-id="component.id"
-    :title="component.name"
     :style="{ '--depth': depth }"
   >
     <div
       ref="handle"
       v-contextmenu="contextmenuItems"
+      v-tooltip
+      :title="component.name"
       class="handle"
       @click="onClick"
     >
@@ -77,6 +78,7 @@
           type="checkbox"
         />
         <label
+          v-tooltip
           :for="`handle--expand--${component.id}`"
           title="Verrouiller/Déverrouiller"
         >
@@ -94,6 +96,7 @@
             type="checkbox"
           />
           <label
+            v-tooltip
             :for="`handle--lock--${component.id}`"
             title="Verrouiller/Déverrouiller"
           >
@@ -106,6 +109,8 @@
     <div
       ref="time-wrapper"
       v-contextmenu="contextmenuItems"
+      v-tooltip
+      :title="component.name"
       class="time-wrapper"
       @click="onClick"
     >
@@ -154,7 +159,7 @@ import "@interactjs/actions/resize";
 import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round, kebabCase } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import ExpanderIcon from "../assets/icons/expander.svg?inline";
 import LockIcon from "../assets/icons/locked.svg?inline";
@@ -725,7 +730,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@metascore-library/editor/scss/variables";
+@import "@editor/scss/variables";
 
 .component-track {
   display: contents;

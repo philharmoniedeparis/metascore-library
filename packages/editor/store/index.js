@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { unref } from "vue";
 import { omit } from "lodash";
-import { useModule } from "@metascore-library/core/services/module-manager";
-import { t } from "@metascore-library/core/services/i18n";
+import { useModule } from "@core/services/module-manager";
+import { t } from "@core/services/i18n";
 import * as api from "../api";
 
 export default defineStore("editor", {
@@ -67,7 +67,7 @@ export default defineStore("editor", {
           data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
-          const { assets } = useModule("assets_library");
+          const assets = unref(useModule("assets_library").assets);
           if (assets.length > 0) {
             assets.forEach((asset) => {
               data.append("assets[]", JSON.stringify(asset));

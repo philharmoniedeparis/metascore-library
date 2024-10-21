@@ -5,7 +5,7 @@ import {
   createIntegerField,
   createBooleanField,
   createTimeField,
-} from "@metascore-library/core/utils/schema";
+} from "@core/utils/schema";
 
 export function createCollectionField({
   ajv,

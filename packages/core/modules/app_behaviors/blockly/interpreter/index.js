@@ -1,26 +1,33 @@
 import { compileCode } from "@nx-js/compiler-util";
 import { isEmpty } from "lodash";
-import * as App from "./app";
-import * as Components from "./components";
-import * as Keyboard from "./keyboard";
-import * as Links from "./links";
-import * as Medai from "./media";
-import * as Reactivity from "./reactivity";
+import App from "./App";
+import Components from "./Components";
+import Keyboard from "./Keyboard";
+import Links from "./Links";
+import Media from "./Media";
+import Reactivity from "./Reactivity";
+
+const interpreters = new Set([
+  new App(),
+  new Components(),
+  new Keyboard(),
+  new Links(),
+  new Media(),
+  new Reactivity(),
+]);
 
 export function exec(code) {
   reset();
 
-  if (isEmpty(code)) {
-    return;
-  }
+  if (isEmpty(code)) return;
 
-  const context = {};
-  App.init(context);
-  Components.init(context);
-  Keyboard.init(context);
-  Links.init(context);
-  Medai.init(context);
-  Reactivity.init(context);
+  let context = {};
+  interpreters.forEach((interpreter) => {
+    context = {
+      ...context,
+      ...interpreter.context,
+    };
+  });
 
   try {
     const compiled = compileCode(code);
@@ -31,9 +38,7 @@ export function exec(code) {
 }
 
 export function reset() {
-  Components.reset();
-  Keyboard.reset();
-  Links.reset();
-  Medai.reset();
-  Reactivity.reset();
+  interpreters.forEach((interpreter) => {
+    interpreter.reset();
+  });
 }

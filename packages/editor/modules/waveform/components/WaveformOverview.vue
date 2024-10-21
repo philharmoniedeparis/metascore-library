@@ -9,9 +9,10 @@
 </template>
 
 <script>
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 import { debounce } from "lodash";
 import useStore from "../store";
+import { getScaleForWidth } from "../utils";
 
 export default {
   props: {
@@ -59,8 +60,9 @@ export default {
     },
     resampledData() {
       if (this.waveformData && this.width > 0) {
-        const width = Math.min(this.width, this.waveformData.length);
-        return this.waveformData.resample({ width });
+        return this.waveformData.resample({
+          scale: getScaleForWidth(this.waveformData, this.width),
+        });
       }
 
       return null;

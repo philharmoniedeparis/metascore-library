@@ -1,14 +1,14 @@
 import { mount } from "@vue/test-utils";
 import { createTestingPinia } from "@pinia/testing";
 import VueDOMPurifyHTML from "vue-dompurify-html";
-import { registerModules } from "@metascore-library/core/services/module-manager";
-import MediaPlayer from "@metascore-library/core/modules/media_player";
-import MediaCuepoints from "@metascore-library/core/modules/media_cuepoints";
+import { registerModules } from "@core/services/module-manager";
+import MediaPlayer from "@core/modules/media_player";
+import MediaCuepoints from "@core/modules/media_cuepoints";
 import Content from "../models/Content";
 import ComponentWrapper from "../components/ComponentWrapper.vue";
 import Component from "../components/ContentComponent.vue";
 
-jest.mock("@metascore-library/core/modules/media_player");
+jest.mock("@core/modules/media_player");
 
 describe("ContentComponent.vue", () => {
   it("renders text", async () => {

@@ -29,7 +29,7 @@ Generator.forBlock["components_click"] = function (block) {
 
 Generator.forBlock["components_set_scenario"] = function (block) {
   const [, id] = block.getFieldValue("COMPONENT").split(":");
-  const code = `Components.setScenario("${id}");`;
+  const code = `Components.setScenario("${id}");\n`;
   return code;
 };
 
@@ -57,7 +57,7 @@ Generator.forBlock["components_set_property"] = function (block) {
   const property = block.getFieldValue("PROPERTY");
   const value = Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "0";
 
-  const code = `Components.setProperty("${type}", "${id}", "${property}", ${value});`;
+  const code = `Components.setProperty("${type}", "${id}", "${property}", ${value});\n`;
 
   return code;
 };
@@ -74,7 +74,7 @@ Generator.forBlock["components_set_block_page"] = function (block) {
   const [, id] = block.getFieldValue("COMPONENT").split(":");
   const index = Generator.valueToCode(block, "INDEX", Order.ASSIGNMENT) || "0";
 
-  const code = `Components.setBlockPage("${id}", ${index} - 1);`;
+  const code = `Components.setBlockPage("${id}", ${index} - 1);\n`;
 
   return code;
 };

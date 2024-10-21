@@ -1,5 +1,5 @@
 import { watch, unref } from "vue";
-import { useModule } from "@metascore-library/core/services/module-manager";
+import { useModule } from "@core/services/module-manager";
 
 let cuepoints = [];
 let seeking = false;

@@ -1,9 +1,0 @@
-{
-  "name": "@metascore-library/player-api",
-  "private": true,
-  "dependencies": {
-    "lodash": "^4.17.21",
-    "pinia": "^2.0.11",
-    "uuid": "^9.0.0"
-  }
-}
