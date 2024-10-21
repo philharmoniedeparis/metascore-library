@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.6.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.5.0...v3.6.0) (2024-10-21)
+
+
+### Features
+
+* add "else" statement to reactivity_when behavior block ([85007d6](https://github.com/philharmoniedeparis/metascore-library/commit/85007d60cf7feb4e49265e11d3040f201f846461)), closes [#686](https://github.com/philharmoniedeparis/metascore-library/issues/686)
+* add app_get_idle_time behavior block ([eb95f75](https://github.com/philharmoniedeparis/metascore-library/commit/eb95f75a87b2319d905ad351676be5e8478619c4)), closes [#718](https://github.com/philharmoniedeparis/metascore-library/issues/718)
+* add app_reset behavior block ([1048249](https://github.com/philharmoniedeparis/metascore-library/commit/1048249f3ed026c02a2bb61146459aa702163da3))
+* add tootips ([64cdc58](https://github.com/philharmoniedeparis/metascore-library/commit/64cdc58b97af723fd5fa78376e12decea3c63404)), closes [#702](https://github.com/philharmoniedeparis/metascore-library/issues/702)
+* allow changing the asset's source for media, svg, ... components ([4174058](https://github.com/philharmoniedeparis/metascore-library/commit/41740581e12639913fa7278e6c58511a9526822b)), closes [#694](https://github.com/philharmoniedeparis/metascore-library/issues/694)
+* enhance component lists in behavior blocks ([ae010d6](https://github.com/philharmoniedeparis/metascore-library/commit/ae010d6ee619bc15faf5d527e83dfb4e595e2cc9)), closes [#685](https://github.com/philharmoniedeparis/metascore-library/issues/685)
+* remove background for timecode behavior fields ([d997eca](https://github.com/philharmoniedeparis/metascore-library/commit/d997ecaefe71845c8b2f092e70f12a294034c6fa))
+* remove BlockToggler dimension minimum value constraint ([4aa242e](https://github.com/philharmoniedeparis/metascore-library/commit/4aa242eab6abe98fa1a7480c6fb3ef4c92b8770c))
+
+
+### Bug Fixes
+
+* fix blockly interpreters' context in production builds ([c9f9c73](https://github.com/philharmoniedeparis/metascore-library/commit/c9f9c73b62bf3f8504c0e9d45f264e6a8700c226))
+* fix typo in blockly Components interpreter ([5e3b595](https://github.com/philharmoniedeparis/metascore-library/commit/5e3b59513e4d904f8f24476873b845caa0e874dd))
+* insure resampled waveform's scale doesn't go below allowed value ([271a5cc](https://github.com/philharmoniedeparis/metascore-library/commit/271a5cc1041905f2aacbcb01def29eeff9ecf7d9)), closes [#715](https://github.com/philharmoniedeparis/metascore-library/issues/715)
+* prevent Blockly keyboard shortcuts from firing when not in focus ([9c5f05c](https://github.com/philharmoniedeparis/metascore-library/commit/9c5f05c094e5efca157e4492aa9b886f98382f6c)), closes [#714](https://github.com/philharmoniedeparis/metascore-library/issues/714)
+* remove blockly dropdown watcher updates ([02021c1](https://github.com/philharmoniedeparis/metascore-library/commit/02021c10ad63bd13b81cca2182fd5a04316c74a2))
+* round alpha values in ColorPicker ([53ad177](https://github.com/philharmoniedeparis/metascore-library/commit/53ad177403c2040715050fc8e1fce3fc8819b4f0))
+
 ## [3.5.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.4.5...v3.5.0) (2024-03-19)
 
 
