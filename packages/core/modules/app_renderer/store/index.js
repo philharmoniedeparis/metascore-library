@@ -28,8 +28,10 @@ export default defineStore("app-renderer", {
       css: null,
       fullscreenElement: null,
       idleTime: 0,
+      idleTimeTracking: false,
       idleTimeTrackStart: null,
       idleTimeTimeoutId: null,
+      idleTimeWatchers: new Map(),
     };
   },
   getters: {
@@ -52,13 +54,6 @@ export default defineStore("app-renderer", {
       this.width = width;
       this.height = height;
       this.css = css;
-
-      watch(storeToRefs(this).el, (value, oldValue) => {
-        if (this.idleTimeTrackStart !== false) {
-          this.stopIdleTimeTracking(oldValue);
-          this.startIdleTimeTracking();
-        }
-      });
     },
     setWidth(value) {
       this.width = value;
@@ -104,19 +99,21 @@ export default defineStore("app-renderer", {
       }
     },
     startIdleTimeTracking() {
-      this.idleTimeTrackStart = Date.now();
+      this.idleTimeTracking = true;
 
-      if (this.el) {
-        IDLE_TRACKIG_EVENTS.forEach((event) => {
-          this.el.addEventListener(event, this.resetIdleTime, true);
-        });
-
-        this.updateIdleTime();
-      }
+      const { playing } = useModule("media_player");
+      const unwatch = watch(
+        playing,
+        (value) => {
+          if (value) this.suspendIdleTimeTracking();
+          else this.resumeIdleTimeTracking();
+        },
+        { immediate: true }
+      );
+      this.idleTimeWatchers.set("playing", unwatch);
     },
-    stopIdleTimeTracking(el = this.el) {
-      this.idleTimeTrackStart = false;
-      this.idleTime = 0;
+    suspendIdleTimeTracking(el = this.el) {
+      this.resetIdleTime();
 
       if (this.idleTimeTimeoutId) {
         clearTimeout(this.idleTimeTimeoutId);
@@ -128,6 +125,39 @@ export default defineStore("app-renderer", {
           el.removeEventListener(event, this.resetIdleTime, true);
         });
       }
+
+      if (this.idleTimeWatchers.has("el")) {
+        const unwatch = this.idleTimeWatchers.get("el");
+        unwatch();
+        this.idleTimeWatchers.delete("el");
+      }
+    },
+    resumeIdleTimeTracking() {
+      this.resetIdleTime();
+
+      if (this.el) {
+        IDLE_TRACKIG_EVENTS.forEach((event) => {
+          this.el.addEventListener(event, this.resetIdleTime, true);
+        });
+        this.updateIdleTime();
+      }
+
+      const unwatch = watch(storeToRefs(this).el, (value, oldValue) => {
+        this.suspendIdleTimeTracking(oldValue);
+        this.resumeIdleTimeTracking();
+      });
+      this.idleTimeWatchers.set("el", unwatch);
+    },
+    stopIdleTimeTracking(el = this.el) {
+      this.idleTimeTracking = false;
+      this.resetIdleTime();
+
+      this.suspendIdleTimeTracking(el);
+
+      this.idleTimeWatchers.forEach((unwatch) => {
+        unwatch();
+      });
+      this.idleTimeWatchers.clear();
     },
     updateIdleTime() {
       this.idleTimeTimeoutId = setTimeout(() => {
