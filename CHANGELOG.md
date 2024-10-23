@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.6.1](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.0...v3.6.1) (2024-10-23)
+
+
+### Bug Fixes
+
+* don't track idle time when media is playing ([bdbdbd9](https://github.com/philharmoniedeparis/metascore-library/commit/bdbdbd9423f811523de4e66f6ef8c288cfea32a0)), closes [#718](https://github.com/philharmoniedeparis/metascore-library/issues/718)
+
 ## [3.6.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.5.0...v3.6.0) (2024-10-21)
 
 
