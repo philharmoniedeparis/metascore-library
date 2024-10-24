@@ -102,8 +102,5 @@ export default class Components extends AbstractInterpreter {
       this._unwatchActiveScenario();
       this._unwatchActiveScenario = null;
     }
-
-    const { clearOverrides } = useModule("app_components");
-    clearOverrides(null, SET_PROPERTY_OVERRIDES_KEY);
   }
 }

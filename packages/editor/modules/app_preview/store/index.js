@@ -30,6 +30,7 @@ export default defineStore("app-preview", {
       frozenComponents: {},
       activeSnapTargets: [],
       editingPlaybackRate: null,
+      preservedOverrides: false,
     };
   },
   getters: {
@@ -100,14 +101,33 @@ export default defineStore("app-preview", {
       this.preview = typeof force !== "undefined" ? force : !this.preview;
       this.previewPersistant = this.preview && persistant;
 
-      // Reset playback rate to 1 in preview.
-      const { playbackRate, setPlaybackRate } = useModule("media_player");
       if (this.preview) {
+        // Reset playback rate to 1 in preview.
+        const { playbackRate, setPlaybackRate } = useModule("media_player");
         this.editingPlaybackRate = unref(playbackRate);
         setPlaybackRate(1);
-      } else if (this.editingPlaybackRate) {
-        setPlaybackRate(this.editingPlaybackRate);
-        this.editingPlaybackRate = null;
+
+        useModule("app_behaviors").enable();
+      } else {
+        if (this.editingPlaybackRate) {
+          const { setPlaybackRate } = useModule("media_player");
+          setPlaybackRate(this.editingPlaybackRate);
+          this.editingPlaybackRate = null;
+        }
+
+        if (!this.preservedOverrides) {
+          // Reset component overrides and behaviors
+          // when exiting preview mode.
+          useModule("app_components").clearOverrides();
+        }
+
+        useModule("app_behaviors").disable();
+      }
+    },
+    setPreservedOverrides(value = true) {
+      this.preservedOverrides = value;
+      if (!this.preview && !value) {
+        useModule("app_components").clearOverrides();
       }
     },
     selectComponent(component, append = false) {

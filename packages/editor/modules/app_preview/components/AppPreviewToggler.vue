@@ -2,8 +2,10 @@
 {
   "fr": {
     "label": {
-      "on": "Prévisualiser",
-      "off": "Quitter la prévisualisation",
+      "enter": "Prévisualiser",
+      "exit": "Quitter la prévisualisation",
+      "exit-keeping-state": "Quitter la prévisualisation en conservant les changements d’état",
+      "reset-state": "Rétablir les changements d’état effectués en mode prévisualisation",
     },
     "title": "Basculer le mode de prévisualisation",
     "hotkey": {
@@ -14,8 +16,10 @@
   },
   "en": {
     "label": {
-      "on": "Preview",
-      "off": "Quit preview",
+      "enter": "Preview",
+      "exit": "Quit preview",
+      "exit-keeping-state": "Quit preview preserving state changes",
+      "reset-state": "Reset state changes made in preview mode",
     },
     "title": "Toggle preview mode",
     "hotkey": {
@@ -28,18 +32,38 @@
 </i18n>
 
 <template>
-  <base-button
-    v-hotkey.prevent="hotkeys"
-    v-tooltip
-    :title="`${$t('title')} [${formatHotkey('mod+shift+e')}]`"
-    type="button"
-    :class="['app-preview-toggler', { toggled: preview }]"
-    :disabled="disabled"
-    @click="onTogglerClick"
-  >
-    <template #icon><toggle-icon /></template>
-    {{ preview ? $t("label.off") : $t("label.on") }}
-  </base-button>
+  <split-button class="app-preview-toggler">
+    <base-button
+      v-hotkey.prevent="hotkeys"
+      v-tooltip
+      :title="`${$t('title')} [${formatHotkey('mod+shift+e')}]`"
+      type="button"
+      :class="{ toggled: preview }"
+      :disabled="disabled"
+      @click="onTogglerClick"
+    >
+      <template #icon><toggle-icon /></template>
+      {{ preview ? $t("label.exit") : $t("label.enter") }}
+    </base-button>
+    <template v-if="showPreserveOverrides" #secondary-actions>
+      <base-button
+        type="button"
+        :disabled="disabled"
+        @click="onExitKeepingStateClick"
+      >
+        {{ $t("label.exit-keeping-state") }}
+      </base-button>
+    </template>
+    <template v-else-if="showClearOverrides" #secondary-actions>
+      <base-button
+        type="button"
+        :disabled="disabled"
+        @click="onClearStateClick"
+      >
+        {{ $t("label.reset-state") }}
+      </base-button>
+    </template>
+  </split-button>
 </template>
 
 <script>
@@ -59,10 +83,10 @@ export default {
   },
   setup() {
     const store = useStore();
-
     const { format: formatHotkey } = useModule("hotkey");
-
-    return { store, formatHotkey };
+    const { hasOverrides: componentsHaveOverrides } =
+      useModule("app_components");
+    return { store, formatHotkey, componentsHaveOverrides };
   },
   computed: {
     preview() {
@@ -70,6 +94,15 @@ export default {
     },
     previewPersistant() {
       return this.store.previewPersistant;
+    },
+    preserveOverrides() {
+      return this.store.preserveOverrides;
+    },
+    showPreserveOverrides() {
+      return !this.disabled && this.preview && this.componentsHaveOverrides();
+    },
+    showClearOverrides() {
+      return !this.disabled && !this.preview && this.componentsHaveOverrides();
     },
     hotkeys() {
       return {
@@ -101,6 +134,13 @@ export default {
     onTogglerClick() {
       this.store.togglePreview();
     },
+    onExitKeepingStateClick() {
+      this.store.setPreservedOverrides(true);
+      this.store.togglePreview();
+    },
+    onClearStateClick() {
+      this.store.setPreservedOverrides(false);
+    },
     onTemporaryHotkeyDown(evt) {
       if (evt.repeat) return;
       this.store.togglePreview(true, false);
@@ -123,12 +163,32 @@ export default {
 
 <style lang="scss" scoped>
 .app-preview-toggler {
-  &.base-button {
-    padding: 0 1em;
+  :deep(.base-button) {
     color: var(--metascore-color-bg-tertiary);
     background: var(--metascore-color-white);
     border: 1px solid var(--metascore-color-white);
     border-radius: 1.5em;
+  }
+
+  &.has-secondary-actions {
+    > :deep(.base-button):not(.split-button--toggle) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    :deep(.split-button--toggle) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    :deep(.split-button--secondary-actions) {
+      border-radius: 1.5em;
+
+      .base-button {
+        color: var(--metascore-color-text-tertiary);
+        background: var(--metascore-color-bg-tertiary);
+        line-height: 2em;
+        border: none;
+      }
+    }
   }
 }
 </style>

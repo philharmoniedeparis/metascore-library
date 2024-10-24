@@ -315,11 +315,7 @@ export default {
       addComponent,
       deleteComponent,
       cloneComponent,
-      clearOverrides: clearComponentsOverrides,
     } = useModule("app_components");
-
-    const { enable: enableBehaviors, disable: disableBehaviors } =
-      useModule("app_behaviors");
 
     const { assets, addAsset } = useModule("assets_library");
 
@@ -361,9 +357,6 @@ export default {
       addComponent,
       deleteComponent,
       cloneComponent,
-      clearComponentsOverrides,
-      enableBehaviors,
-      disableBehaviors,
       assets,
       addAsset,
       preview,
@@ -496,15 +489,6 @@ export default {
     },
     activeFormsTab(index) {
       this.behaviorsOpen = index === 1;
-    },
-    preview(value) {
-      if (value) this.enableBehaviors();
-      else {
-        // Reset component overrides and behaviors
-        // when exiting preview mode.
-        this.clearComponentsOverrides();
-        this.disableBehaviors();
-      }
     },
   },
   async mounted() {
