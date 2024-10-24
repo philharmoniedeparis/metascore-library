@@ -4,6 +4,7 @@ import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Button from "@core/modules/button";
 import AppComponents from "@core/modules/app_components";
+import AppBehaviors from "@core/modules/app_behaviors";
 import AppRenderer from "@core/modules/app_renderer";
 import ContextMenu from "@core/modules/contextmenu";
 import Clipboard from "../clipboard";
@@ -24,6 +25,7 @@ export default class AppPreviewModule extends AbstractModule {
   static dependencies = [
     Button,
     AppComponents,
+    AppBehaviors,
     AppRenderer,
     ContextMenu,
     Clipboard,
