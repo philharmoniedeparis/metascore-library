@@ -76,8 +76,8 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-
     cursor: pointer;
+
     .icon {
       width: 0.75em;
       height: 0.75em;
