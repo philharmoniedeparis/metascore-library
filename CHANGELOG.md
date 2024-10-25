@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.6.2](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.0...v3.6.2) (2024-10-25)
+
+
+### Bug Fixes
+
+* don't track idle time when media is playing ([bdbdbd9](https://github.com/philharmoniedeparis/metascore-library/commit/bdbdbd9423f811523de4e66f6ef8c288cfea32a0)), closes [#718](https://github.com/philharmoniedeparis/metascore-library/issues/718)
+* fix api's "ready" watcher ([e7c39a2](https://github.com/philharmoniedeparis/metascore-library/commit/e7c39a246a2114a5162756d4e48dca8c0c808785))
+
 ## [3.6.1](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.0...v3.6.1) (2024-10-23)
 
 
