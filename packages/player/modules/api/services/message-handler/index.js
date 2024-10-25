@@ -187,10 +187,15 @@ export function processMessage(evt) {
             const store = useStore();
             const { ready } = storeToRefs(store);
 
-            watch(
+            let unwatch = watch(
               ready,
               (value) => {
                 if (!value) return;
+
+                if (unwatch) {
+                  unwatch();
+                  unwatch = null;
+                }
 
                 source.postMessage(
                   JSON.stringify({
@@ -199,7 +204,7 @@ export function processMessage(evt) {
                   origin
                 );
               },
-              { immediate: true, once: true }
+              { immediate: true }
             );
           }
           break;
