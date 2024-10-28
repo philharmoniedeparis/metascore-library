@@ -1,12 +1,12 @@
 <i18n>
 {
   "fr": {
-    "delete_text": "Êtes-vous sûr de vouloir supprimer <em>{label}</em>\xa0?",
-    "usage_text": "<em>{label}</em> ne peut pas être supprimé car elle est utilisée dans les composants suivants&nbsp: <em>{components}</em>.",
+    "delete_text": "Êtes-vous sûr de vouloir supprimer « <em>{label}</em> »\xa0?",
+    "usage_text": "L’item « <em>{label}</em> » ne peut pas être supprimé car il est utilisé dans les composants suivants&nbsp: <em>{components}</em>.",
   },
   "en": {
-    "delete_text": "Are you sure you want to delete <em>{label}</em>?",
-    "usage_text": "<em>{label}</em> cannot be deleted as it is being used in the following components: <em>{components}</em>."
+    "delete_text": "Are you sure you want to delete \"<em>{label}</em>\"?",
+    "usage_text": "The asset \"<em>{label}</em>\" cannot be deleted as it is being used in the following components: <em>{components}</em>."
   },
 }
 </i18n>
