@@ -10,6 +10,7 @@ import Ajax from "@core/modules/ajax";
 import AppBehaviors from "@core/modules/app_behaviors";
 import AppPreview from "./modules/app_preview";
 import AppRenderer from "@core/modules/app_renderer";
+import AssetsManager from "@core/modules/assets_manager";
 import AssetsLibrary from "./modules/assets_library";
 import AutoSave from "./modules/auto_save";
 import BaseButton from "@core/modules/button";
@@ -65,6 +66,7 @@ export class Editor {
         AppBehaviors,
         AppPreview,
         AppRenderer,
+        AssetsManager,
         AssetsLibrary,
         AutoSave,
         BaseButton,

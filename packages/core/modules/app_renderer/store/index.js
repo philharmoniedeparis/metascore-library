@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { watch, unref } from "vue";
 import { defineStore, storeToRefs } from "pinia";
 import { kebabCase } from "lodash";
 import { useModule } from "@core/services/module-manager";
@@ -26,6 +26,7 @@ export default defineStore("app-renderer", {
       width: null,
       height: null,
       css: null,
+      fonts: [],
       fullscreenElement: null,
       idleTime: 0,
       idleTimeTracking: false,
@@ -42,6 +43,10 @@ export default defineStore("app-renderer", {
         );
       };
     },
+    fontAssets() {
+      const { assets, getType } = useModule("assets_manager");
+      return unref(assets).filter((asset) => getType(asset) === "font");
+    },
   },
   actions: {
     configure(configs) {
@@ -50,10 +55,57 @@ export default defineStore("app-renderer", {
         ...configs,
       };
     },
+    async loadFonts() {
+      if (!this.el) return;
+
+      // Remove previously loaded fonts.
+      this.unloadFonts(this.el);
+
+      const document = this.el.ownerDocument;
+      const { getName } = useModule("assets_manager");
+      for (const asset of this.fontAssets) {
+        const { url } = asset;
+        const name = `"${getName(asset).split(".").slice(0, -1).join(".").trim()}"`;
+        try {
+          const font = new FontFace(name, `url(${url})`);
+          await font.load();
+          document.fonts.add(font);
+          this.fonts.push(font);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
+    unloadFonts(el) {
+      const document = el?.ownerDocument;
+      if (!document) return;
+
+      while (this.fonts.length > 0) {
+        try {
+          const font = this.fonts.pop();
+          document.fonts.delete(font);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
     init({ width, height, css }) {
       this.width = width;
       this.height = height;
       this.css = css;
+
+      const { fontAssets, el } = storeToRefs(this);
+      watch(fontAssets, this.loadFonts, { immediate: true });
+      watch(
+        el,
+        (newValue, oldValue) => {
+          if (oldValue) this.unloadFonts(oldValue);
+          this.loadFonts();
+        },
+        {
+          immediate: true,
+        }
+      );
     },
     setWidth(value) {
       this.width = value;
@@ -142,7 +194,8 @@ export default defineStore("app-renderer", {
         this.updateIdleTime();
       }
 
-      const unwatch = watch(storeToRefs(this).el, (value, oldValue) => {
+      const { el } = storeToRefs(this);
+      const unwatch = watch(el, (value, oldValue) => {
         this.suspendIdleTimeTracking(oldValue);
         this.resumeIdleTimeTracking();
       });

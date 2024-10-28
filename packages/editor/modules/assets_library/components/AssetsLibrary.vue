@@ -38,7 +38,7 @@
     </div>
 
     <div class="assets-library--imports">
-      <template v-if="store.configs.uploadUrl">
+      <template v-if="store.canUpload">
         <file-control
           :accept="store.configs.uploadAccept"
           :max-size="store.configs.uploadMaxSize"
@@ -137,8 +137,9 @@ export default {
   },
   setup() {
     const store = useStore();
+    const { assets } = useModule("assets_manager");
     const { selectedComponents } = useModule("app_preview");
-    return { store, selectedComponents };
+    return { store, assets, selectedComponents };
   },
   data() {
     return {
@@ -149,9 +150,6 @@ export default {
     };
   },
   computed: {
-    assets() {
-      return this.store.all;
-    },
     uploading() {
       return this.store.uploading;
     },
@@ -226,9 +224,7 @@ export default {
      * @param {Event} evt The event object.
      */
     onDragover(evt) {
-      if (!this.store.configs.uploadUrl) {
-        return;
-      }
+      if (!this.store.canUpload) return;
 
       const files = this.getDraggedFiles(evt.dataTransfer);
       if (files.length > 0) {
