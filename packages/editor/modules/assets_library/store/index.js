@@ -52,20 +52,11 @@ export default defineStore("assets-library", {
     },
     getUsage() {
       return (asset) => {
-        const { url } = asset;
+        const url = asset.url ?? asset.file?.url;
         const { getComponents } = useModule("app_components");
-        const usage = [];
-
-        getComponents().forEach((c) => {
-          if (
-            ("background-image" in c && c["background-image"] === url) ||
-            ("src" in c && c.src === url)
-          ) {
-            usage.push(c);
-          }
+        return getComponents().filter((c) => {
+          return c.src === url || c["background-image"] === url;
         });
-
-        return usage;
       };
     },
     canGenerateSpectrogram() {
