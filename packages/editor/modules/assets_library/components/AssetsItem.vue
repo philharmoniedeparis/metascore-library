@@ -14,7 +14,7 @@
 <template>
   <div
     :class="['assets-library--asset-item', { dragging }]"
-    draggable="true"
+    :draggable="draggable"
     @dragstart="onDragstart"
     @dragend="onDragend"
     @mouseover="onMouseover"
@@ -64,6 +64,7 @@ import useStore from "../store";
 import ImageIcon from "../assets/icons/image.svg?inline";
 import AudioIcon from "../assets/icons/audio.svg?inline";
 import VideoIcon from "../assets/icons/video.svg?inline";
+import FontIcon from "../assets/icons/font.svg?inline";
 import AnimationIcon from "./AnimationIcon.vue";
 import DeleteIcon from "../assets/icons/delete.svg?inline";
 
@@ -73,6 +74,7 @@ export default {
     AudioIcon,
     VideoIcon,
     AnimationIcon,
+    FontIcon,
     DeleteIcon,
   },
   directives: {
@@ -86,8 +88,10 @@ export default {
   },
   setup() {
     const store = useStore();
+    const { getName, getFile, getType, deleteAsset } =
+      useModule("assets_manager");
     const { getModelByType } = useModule("app_components");
-    return { store, getModelByType };
+    return { store, getName, getFile, getType, deleteAsset, getModelByType };
   },
   data() {
     return {
@@ -99,13 +103,16 @@ export default {
   },
   computed: {
     label() {
-      return this.store.getName(this.asset);
+      return this.getName(this.asset);
     },
     file() {
-      return this.store.getFile(this.asset);
+      return this.getFile(this.asset);
     },
     type() {
-      return this.asset.type;
+      return this.getType(this.asset);
+    },
+    draggable() {
+      return this.store.isDraggable(this.asset);
     },
     component() {
       switch (this.type) {
@@ -148,6 +155,13 @@ export default {
           }
           return data;
         }
+
+        case "font":
+          return {
+            name: this.label,
+            type: "Font",
+            src: this.file.url,
+          };
 
         default:
           return null;
@@ -212,7 +226,7 @@ export default {
       }
     },
     onDeleteSubmit() {
-      this.store.delete(this.asset.id);
+      this.deleteAsset(this.asset.id);
       this.showDeleteConfirm = false;
     },
     onDeleteCancel() {
@@ -287,9 +301,11 @@ export default {
     height: 100%;
     flex: 0 0 auto;
     margin-right: 0.5em;
-    background: url(../assets/icons/drag-handle.svg) 50% 50% no-repeat;
     vertical-align: middle;
     opacity: 0.5;
+  }
+  &[draggable="true"]::before {
+    background: url(../assets/icons/drag-handle.svg) 50% 50% no-repeat;
   }
 
   &:hover,

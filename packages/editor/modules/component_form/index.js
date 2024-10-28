@@ -4,6 +4,7 @@ import { readonly } from "vue";
 import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import AppComponents from "@core/modules/app_components";
+import AppRenderer from "@core/modules/app_renderer";
 import AppPreview from "../app_preview";
 import AssetsLibrary from "../assets_library";
 import ElementHighlighter from "../element_highlighter";
@@ -25,6 +26,7 @@ export default class ComponentFormModule extends AbstractModule {
 
   static dependencies = [
     AppComponents,
+    AppRenderer,
     AppPreview,
     AssetsLibrary,
     ElementHighlighter,
