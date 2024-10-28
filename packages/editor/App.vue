@@ -317,7 +317,7 @@ export default {
       cloneComponent,
     } = useModule("app_components");
 
-    const { assets, addAsset } = useModule("assets_library");
+    const { assets, addAsset } = useModule("assets_manager");
 
     const { preview, previewPersistant } = useModule("app_preview");
 

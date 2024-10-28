@@ -367,7 +367,7 @@ export default {
 
       if (this.commonModel.$isBackgroundable) {
         layout.items[0].items.push({
-          swatches: this.store.configs.colorSwatches,
+          swatches: this.store.colorSwatches,
           ...this.getControlProps("background-color"),
         });
         layout.items[0].items.push({
@@ -389,7 +389,7 @@ export default {
           class: "form-container horizontal",
           items: [
             {
-              swatches: this.store.configs.colorSwatches,
+              swatches: this.store.colorSwatches,
               ...this.getControlProps("border-color"),
             },
             ...["border-width", "border-radius"].map((property) =>
@@ -437,7 +437,7 @@ export default {
             );
           });
           layout.items[0].items.push({
-            swatches: this.store.configs.colorSwatches,
+            swatches: this.store.colorSwatches,
             ...this.getControlProps("colors", this.commonModel.type),
           });
           break;
@@ -466,7 +466,7 @@ export default {
             layout.items[0].items.push({
               type: "html",
               component: this.masterComponent,
-              "extra-fonts": this.store.configs.extraFonts,
+              "extra-fonts": this.store.extraFonts,
               ...this.getControlProps("text", this.commonModel.type),
             });
           }
@@ -533,7 +533,7 @@ export default {
           ) {
             layout.items[0].items.push({
               itemProps: {
-                swatches: this.store.configs.colorSwatches,
+                swatches: this.store.colorSwatches,
               },
               ...this.getControlProps("colors", this.commonModel.type),
             });

@@ -67,7 +67,7 @@ export default defineStore("editor", {
           data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
-          const assets = unref(useModule("assets_library").assets);
+          const assets = unref(useModule("assets_manager").assets);
           if (assets.length > 0) {
             assets.forEach((asset) => {
               data.append("assets[]", JSON.stringify(asset));
@@ -157,7 +157,7 @@ export default defineStore("editor", {
       });
 
       const { init: initAssets, onStoreAction: onAssetsStoreAction } =
-        useModule("assets_library");
+        useModule("assets_manager");
       initAssets(data.assets);
       onAssetsStoreAction(({ name }) => {
         if (["add", "delete"].includes(name)) {

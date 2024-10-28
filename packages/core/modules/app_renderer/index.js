@@ -2,6 +2,7 @@ import { readonly } from "vue";
 import { storeToRefs } from "pinia";
 import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
+import AssetsManager from "../assets_manager";
 import MediaPlayer from "../media_player";
 import AppComponents from "../app_components";
 import MediaCuepoints from "../media_cuepoints";
@@ -10,7 +11,12 @@ import AppRenderer from "./components/AppRenderer.vue";
 export default class AppRendererModule extends AbstractModule {
   static id = "app_renderer";
 
-  static dependencies = [MediaPlayer, MediaCuepoints, AppComponents];
+  static dependencies = [
+    AssetsManager,
+    MediaPlayer,
+    MediaCuepoints,
+    AppComponents,
+  ];
 
   constructor({ app }) {
     super(arguments);
@@ -50,6 +56,12 @@ export default class AppRendererModule extends AbstractModule {
     const store = useStore();
     const { height } = storeToRefs(store);
     return readonly(height);
+  }
+
+  get fonts() {
+    const store = useStore();
+    const { fonts } = storeToRefs(store);
+    return readonly(fonts);
   }
 
   get idleTime() {

@@ -1,10 +1,8 @@
-import { storeToRefs } from "pinia";
-import { readonly } from "vue";
-
 import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 import Ajax from "@core/modules/ajax";
 import Alert from "@core/modules/alert";
+import AssetsManager from "@core/modules/assets_manager";
 import AppComponents from "@core/modules/app_components";
 import AppPreview from "@editor/modules/app_preview";
 import Confirm from "@core/modules/confirm";
@@ -20,6 +18,7 @@ export default class AssetsLibraryModule extends AbstractModule {
   static dependencies = [
     Ajax,
     Alert,
+    AssetsManager,
     AppComponents,
     AppPreview,
     Confirm,
@@ -40,29 +39,8 @@ export default class AssetsLibraryModule extends AbstractModule {
     store.configure(configs);
   }
 
-  init(data) {
-    const store = useStore();
-    store.init(data);
-  }
-
-  get assets() {
-    const store = useStore();
-    const { all } = storeToRefs(store);
-    return readonly(all);
-  }
-
-  addAsset(data) {
-    const store = useStore();
-    return store.add(data);
-  }
-
   async uploadFiles(files) {
     const store = useStore();
     return await store.upload(files);
-  }
-
-  onStoreAction(callback) {
-    const store = useStore();
-    return store.$onAction(callback);
   }
 }

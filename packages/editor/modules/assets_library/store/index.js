@@ -1,7 +1,5 @@
-import { readonly } from "vue";
 import { defineStore } from "pinia";
 import { useModule } from "@core/services/module-manager";
-import { normalize } from "./utils/normalize";
 import * as api from "../api";
 
 export default defineStore("assets-library", {
@@ -14,8 +12,6 @@ export default defineStore("assets-library", {
         spectrogramUrl: null,
         audiowaveformUrl: null,
       },
-      items: new Map(),
-      deleted: new Map(),
       uploading: false,
       uploadProgress: null,
       generatingSpectrogram: false,
@@ -23,32 +19,10 @@ export default defineStore("assets-library", {
     };
   },
   getters: {
-    getName() {
+    isDraggable() {
       return (item) => {
-        return item.name;
+        return item.type !== "font";
       };
-    },
-    getFile() {
-      return (item) => {
-        return item.shared ? item.file : item;
-      };
-    },
-    getType() {
-      return (item) => {
-        if (item.type) return item.type;
-
-        const file = item.shared ? item.file : item;
-        const matches = /^(image|audio|video)\/.*/.exec(file.mimetype);
-        return matches ? matches[1] : null;
-      };
-    },
-    get() {
-      return (id) => {
-        return this.items.has(id) ? readonly(this.items.get(id)) : null;
-      };
-    },
-    all() {
-      return Array.from(this.items.values());
     },
     getUsage() {
       return (asset) => {
@@ -58,6 +32,9 @@ export default defineStore("assets-library", {
           return c.src === url || c["background-image"] === url;
         });
       };
+    },
+    canUpload() {
+      return this.configs.uploadUrl !== null;
     },
     canGenerateSpectrogram() {
       return this.configs.spectrogramUrl !== null;
@@ -72,24 +49,6 @@ export default defineStore("assets-library", {
         ...this.configs,
         ...configs,
       };
-    },
-    init(data) {
-      this.items = normalize(data);
-      this.items.forEach((item) => {
-        item.type = this.getType(item);
-      });
-    },
-    add(item) {
-      if (this.items.has(item.id)) return;
-
-      item.type = this.getType(item);
-      this.items.set(item.id, item);
-    },
-    delete(id) {
-      if (!this.items.has(id)) return;
-
-      this.deleted.set(id, this.items.get(id));
-      this.items.delete(id);
     },
     async upload(files) {
       this.uploading = true;
@@ -106,7 +65,7 @@ export default defineStore("assets-library", {
         this.uploadProgress = null;
       }
 
-      items.map(this.add);
+      items.map(useModule("assets_manager").addAsset);
 
       return items;
     },
@@ -116,7 +75,7 @@ export default defineStore("assets-library", {
       return api
         .generateAsset(this.configs.spectrogramUrl, data)
         .then((item) => {
-          this.add(item);
+          useModule("assets_manager").addAsset(item);
           return item;
         })
         .finally(() => {
@@ -129,7 +88,7 @@ export default defineStore("assets-library", {
       return api
         .generateAsset(this.configs.audiowaveformUrl, data)
         .then((item) => {
-          this.add(item);
+          useModule("assets_manager").addAsset(item);
           return item;
         })
         .finally(() => {
