@@ -15,6 +15,11 @@ export default defineStore("assets-manager", {
         return item.name;
       };
     },
+    getFontName() {
+      return (item) => {
+        return this.getName(item).split(".").slice(0, -1).join(".").trim();
+      };
+    },
     getFile() {
       return (item) => {
         return item.shared ? item.file : item;

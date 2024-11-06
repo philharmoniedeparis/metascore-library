@@ -26,11 +26,30 @@ export default defineStore("assets-library", {
     },
     getUsage() {
       return (asset) => {
+        const { getType, getFontName } = useModule("assets_manager");
         const url = asset.url ?? asset.file?.url;
-        const { getComponents } = useModule("app_components");
-        return getComponents().filter((c) => {
-          return c.src === url || c["background-image"] === url;
-        });
+        const { getComponents, getComponentsByType } =
+          useModule("app_components");
+
+        switch (getType(asset)) {
+          case "font": {
+            const name = getFontName(asset).replace(
+              /[/\-\\^$*+?.()|[\]{}]/g,
+              "\\$&"
+            );
+            const regex = new RegExp(
+              `style=["'][^"']*font-family: *${name}[ ;"']`
+            );
+            return getComponentsByType("Content").filter((c) => {
+              return c.text && regex.test(c.text);
+            });
+          }
+
+          default:
+            return getComponents().filter((c) => {
+              return c.src === url || c["background-image"] === url;
+            });
+        }
       };
     },
     canUpload() {
