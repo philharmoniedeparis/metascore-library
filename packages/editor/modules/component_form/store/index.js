@@ -20,7 +20,6 @@ export default defineStore("component-form", {
     },
     extraFonts() {
       const { fonts } = useModule("app_renderer");
-
       return [
         ...this.configs.extraFonts,
         ...unref(fonts).map((font) => font.family),
