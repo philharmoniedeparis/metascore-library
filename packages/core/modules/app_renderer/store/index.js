@@ -58,31 +58,33 @@ export default defineStore("app-renderer", {
     async loadFonts() {
       if (!this.el) return;
 
-      // Remove previously loaded fonts.
-      this.unloadFonts(this.el);
-
       const document = this.el.ownerDocument;
-      const { getName } = useModule("assets_manager");
+
+      this.unloadFonts();
+
+      const { getFontName } = useModule("assets_manager");
+      const fonts = [];
       for (const asset of this.fontAssets) {
         const { url } = asset;
-        const name = `"${getName(asset).split(".").slice(0, -1).join(".").trim()}"`;
+        const name = getFontName(asset);
         try {
-          const font = new FontFace(name, `url(${url})`);
+          const font = new FontFace(`"${name}"`, `url(${url})`);
           await font.load();
           document.fonts.add(font);
-          this.fonts.push(font);
+          fonts.push(font);
         } catch (e) {
           console.error(e);
         }
       }
+      this.fonts = fonts;
     },
     unloadFonts(el) {
       const document = el?.ownerDocument;
       if (!document) return;
 
-      while (this.fonts.length > 0) {
+      while (this.fonts.length) {
+        const font = this.fonts.pop();
         try {
-          const font = this.fonts.pop();
           document.fonts.delete(font);
         } catch (e) {
           console.error(e);

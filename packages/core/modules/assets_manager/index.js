@@ -23,6 +23,11 @@ export default class AssetsManagerModule extends AbstractModule {
     return store.getName(asset);
   }
 
+  getFontName(asset) {
+    const store = useStore();
+    return store.getFontName(asset);
+  }
+
   getFile(asset) {
     const store = useStore();
     return store.getFile(asset);
