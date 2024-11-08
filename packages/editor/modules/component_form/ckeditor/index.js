@@ -198,7 +198,7 @@ export default function createEditor(
     htmlSupport: {
       allow: [
         {
-          name: /^(div|a|p|i|em|b|strong|h[1-6]|span|big|small|q|cite|ins|del|var|samp|kbd|code|tt)$/,
+          name: /^(div|a|p|i|em|b|strong|h[1-6]|span|big|small|q|cite|ins|del|var|samp|kbd|code|tt|img)$/,
           classes: true,
           styles: true,
           attributes: {
