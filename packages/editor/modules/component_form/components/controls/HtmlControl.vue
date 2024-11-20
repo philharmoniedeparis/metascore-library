@@ -258,6 +258,8 @@ export default {
       );
 
       // Listener to drag and drop events.
+      this.editor.editing.view.document.on("dragenter", this.onEditorDragenter);
+      this.editor.editing.view.document.on("dragleave", this.onEditorDragenter);
       this.editor.editing.view.document.on("dragover", this.onEditorDragover, {
         priority: "high",
       });
@@ -292,6 +294,12 @@ export default {
       });
 
       return !is_metascore_data || types.includes("text/html");
+    },
+    onEditorDragenter(evt, data) {
+      data.domEvent.stopPropagation();
+    },
+    onEditorDragleave(evt, data) {
+      data.domEvent.stopPropagation();
     },
     onEditorDragover(evt, data) {
       const { domEvent } = data;
