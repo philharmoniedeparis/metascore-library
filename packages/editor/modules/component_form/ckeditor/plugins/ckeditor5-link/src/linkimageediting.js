@@ -9,8 +9,4 @@ export default class CustomLinkImageEditing extends LinkImageEditing {
   static get requires() {
     return ["ImageEditing", "ImageUtils", CustomLinkEditing];
   }
-
-  static get pluginName() {
-    return "CustomLinkImageEditing";
-  }
 }
