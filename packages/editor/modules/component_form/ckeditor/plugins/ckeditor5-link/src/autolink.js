@@ -9,8 +9,4 @@ export default class CustomAutoLink extends AutoLink {
   static get requires() {
     return ["Delete", CustomLinkEditing];
   }
-
-  static get pluginName() {
-    return "CustomAutoLink";
-  }
 }
