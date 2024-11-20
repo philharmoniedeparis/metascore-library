@@ -986,8 +986,9 @@ export default {
       }
     },
     onDragleave() {
-      if (--this.dragEnterCounter === 0) {
+      if (--this.dragEnterCounter <= 0) {
         this.dragOver = false;
+        this.dragEnterCounter = 0;
       }
     },
     onDrop(evt) {
