@@ -10,8 +10,4 @@ export default class CustomLinkImageUI extends LinkImageUI {
   static get requires() {
     return [CustomLinkEditing, CustomLinkUI, "ImageBlockEditing"];
   }
-
-  static get pluginName() {
-    return "CustomLinkImageUI";
-  }
 }

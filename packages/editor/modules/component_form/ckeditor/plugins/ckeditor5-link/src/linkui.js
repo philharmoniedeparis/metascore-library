@@ -10,9 +10,6 @@ import CustomLinkFormView from "./ui/linkformview";
 import linkIcon from "../theme/icons/link.svg";
 
 export default class CustomLinkUI extends LinkUI {
-  static get pluginName() {
-    return "CustomLinkUI";
-  }
 
   /**
    * @inheritDoc

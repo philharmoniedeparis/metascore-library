@@ -11,8 +11,4 @@ export default class CustomLink extends Link {
   static get requires() {
     return [CustomLinkEditing, CustomLinkUI, CustomAutoLink];
   }
-
-  static get pluginName() {
-    return "CustomLink";
-  }
 }
