@@ -87,7 +87,7 @@ Puis soit:
     ```html
     <a href="#{action(s)}" rel="metascore" data-guide="{player's iframe id}">{link text}</a>
     ```
-    where `{action(s)}` is a list of actions to perform separated by `&`. For examples, refer to packages/player/modules/api/entry.js
+    where `{action(s)}` is a list of actions to perform separated by `&`. For examples, refer to src/player/modules/api/entry.js
 
 2. Créer une instance de `metaScore.API` et appeler ses méthodes. Par exemple:
     ```js
