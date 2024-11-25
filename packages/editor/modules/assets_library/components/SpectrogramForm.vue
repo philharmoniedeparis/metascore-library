@@ -208,6 +208,8 @@ export default {
       this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
+      this.errors = null;
+
       try {
         let data = await this.model.validate(this.model.data);
         data = { ...toRaw(data) };
