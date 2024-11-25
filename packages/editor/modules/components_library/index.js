@@ -1,15 +1,15 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import AppComponents from "@core/modules/app_components";
-import ComponentsLibrary from "./components/ComponentsLibrary";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import AppComponents from '@core/modules/app_components'
+import ComponentsLibrary from './components/ComponentsLibrary.vue'
 
 export default class ComponentsLibraryModule extends AbstractModule {
-  static id = "components_library";
+  static id = 'components_library'
 
-  static dependencies = [AppComponents];
+  static dependencies = [AppComponents]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("ComponentsLibrary", ComponentsLibrary);
+    app.component('ComponentsLibrary', ComponentsLibrary)
   }
 }

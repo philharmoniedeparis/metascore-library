@@ -1,20 +1,8 @@
 <template>
-  <form-group
-    :class="['control', 'checkbox', { disabled }]"
-    :label="label"
-    :label-for="inputId"
-    label-position="after"
-    :description="description"
-    :required="required"
-  >
+  <form-group :class="['control', 'checkbox', { disabled }]" :label="label" :label-for="inputId" label-position="after"
+    :description="description" :required="required">
     <div class="input-container">
-      <input
-        :id="inputId"
-        v-model="value"
-        v-autofocus="autofocus"
-        :disabled="disabled"
-        type="checkbox"
-      />
+      <input :id="inputId" v-model="value" v-autofocus="autofocus" :disabled="disabled" type="checkbox" />
       <label :for="inputId">
         <slot>
           <check-icon class="icon" />
@@ -100,7 +88,7 @@ export default {
     z-index: -1;
   }
 
-  input + label {
+  input+label {
     position: relative;
     display: block;
     width: 1em;
@@ -118,14 +106,14 @@ export default {
     }
   }
 
-  input:not(:checked) + label {
+  input:not(:checked)+label {
     .icon {
       display: none;
     }
   }
 
   &.disabled {
-    input + label {
+    input+label {
       opacity: 0.5;
       cursor: default;
     }

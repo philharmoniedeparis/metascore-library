@@ -26,12 +26,7 @@
         <span class="sr-only">{{ $t("buttons.rewind") }}</span>
       </button>
 
-      <button
-        v-if="mediaPlaying"
-        type="button"
-        data-action="pause"
-        @click="onPauseClick"
-      >
+      <button v-if="mediaPlaying" type="button" data-action="pause" @click="onPauseClick">
         <span aria-hidden="true"><pause-icon class="icon" /></span>
         <span class="sr-only">{{ $t("buttons.pause") }}</span>
       </button>

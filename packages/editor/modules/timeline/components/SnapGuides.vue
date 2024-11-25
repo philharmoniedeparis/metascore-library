@@ -1,11 +1,6 @@
 <template>
   <div class="snap-guides">
-    <div
-      v-for="(guide, index) in guides"
-      :key="index"
-      class="guide"
-      :style="guide"
-    />
+    <div v-for="(guide, index) in guides" :key="index" class="guide" :style="guide" />
   </div>
 </template>
 

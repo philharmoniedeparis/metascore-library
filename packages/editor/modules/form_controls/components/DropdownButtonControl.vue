@@ -1,19 +1,7 @@
 <template>
-  <form-group
-    :class="['control', 'dropdown-button', { disabled }]"
-    :description="description"
-    :required="required"
-  >
-    <base-button
-      ref="button"
-      type="button"
-      :aria-expanded="expanded"
-      aria-haspopup="true"
-      :aria-controls="dropdownId"
-      :disabled="disabled"
-      @click="onButtonClick"
-      @mousedown.stop
-    >
+  <form-group :class="['control', 'dropdown-button', { disabled }]" :description="description" :required="required">
+    <base-button ref="button" type="button" :aria-expanded="expanded" aria-haspopup="true" :aria-controls="dropdownId"
+      :disabled="disabled" @click="onButtonClick" @mousedown.stop>
       <template v-if="label">
         {{ label }}
       </template>
@@ -23,28 +11,14 @@
     </base-button>
 
     <teleport :to="overlaysTarget" :disabled="disabled || !overlaysTarget">
-      <nav
-        :id="dropdownId"
-        ref="dropdown"
-        :class="['dropdown-button--menu', { expanded }]"
-        :style="dropdownStyle"
-      >
+      <nav :id="dropdownId" ref="dropdown" :class="['dropdown-button--menu', { expanded }]" :style="dropdownStyle">
         <slot name="dropdownHeading" />
 
         <ul role="menu">
-          <li
-            v-for="(option, index) in options"
-            :key="index"
-            :disabled="option.disabled"
-            :aria-current="option.value === value ? 'true' : 'false'"
-            :class="{ selected: option.value === value }"
-            role="presentation"
-          >
-            <button
-              role="menuitem"
-              type="button"
-              @click="onOptionClick(option)"
-            >
+          <li v-for="(option, index) in options" :key="index" :disabled="option.disabled"
+            :aria-current="option.value === value ? 'true' : 'false'" :class="{ selected: option.value === value }"
+            role="presentation">
+            <button role="menuitem" type="button" @click="onOptionClick(option)">
               {{ option.label }}
             </button>
           </li>
@@ -186,7 +160,7 @@ export default {
   position: relative;
 
   &.disabled {
-    > button {
+    >button {
       opacity: 0.5;
     }
   }

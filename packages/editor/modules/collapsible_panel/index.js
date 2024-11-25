@@ -1,13 +1,13 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
 
-import CollapsiblePanel from "./components/CollapsiblePanel";
+import CollapsiblePanel from './components/CollapsiblePane.vue'
 
 export default class CollapsiblePanelModule extends AbstractModule {
-  static id = "collapsible_panel";
+  static id = 'collapsible_panel'
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("CollapsiblePanel", CollapsiblePanel);
+    app.component('CollapsiblePanel', CollapsiblePanel)
   }
 }

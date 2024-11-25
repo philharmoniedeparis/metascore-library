@@ -7,12 +7,11 @@ import {
   ViewCollection,
   createLabeledInputText,
   submitHandler,
-} from "@ckeditor/ckeditor5-ui";
-import { FocusTracker, KeystrokeHandler } from "@ckeditor/ckeditor5-utils";
-import { icons } from "@ckeditor/ckeditor5-core";
+} from 'ckeditor5'
+import { FocusTracker, KeystrokeHandler } from 'ckeditor5'
+import { icons } from 'ckeditor5'
 
-import "@ckeditor/ckeditor5-ui/theme/components/responsive-form/responsiveform.css";
-import "../../theme/behaviortriggerform.scss";
+import '../../theme/behaviortriggerform.scss'
 
 /**
  * The link form view controller class.
@@ -32,9 +31,9 @@ export default class BehaviorTriggerFormView extends View {
    * @param {String} [protocol] A value of a protocol to be displayed in the input's placeholder.
    */
   constructor(locale, addBehaviorTriggerCommand) {
-    super(locale);
+    super(locale)
 
-    const t = locale.t;
+    const t = locale.t
 
     /**
      * Tracks information about DOM focus in the form.
@@ -42,7 +41,7 @@ export default class BehaviorTriggerFormView extends View {
      * @readonly
      * @member {module:utils/focustracker~FocusTracker}
      */
-    this.focusTracker = new FocusTracker();
+    this.focusTracker = new FocusTracker()
 
     /**
      * An instance of the {@link module:utils/keystrokehandler~KeystrokeHandler}.
@@ -50,26 +49,22 @@ export default class BehaviorTriggerFormView extends View {
      * @readonly
      * @member {module:utils/keystrokehandler~KeystrokeHandler}
      */
-    this.keystrokes = new KeystrokeHandler();
+    this.keystrokes = new KeystrokeHandler()
 
     /**
      * The id input view.
      *
      * @member {module:ui/labeledfield/labeledfieldview~LabeledFieldView}
      */
-    this.idInputView = this._createIdInput();
+    this.idInputView = this._createIdInput()
 
     /**
      * The Save button view.
      *
      * @member {module:ui/button/buttonview~ButtonView}
      */
-    this.saveButtonView = this._createButton(
-      t("Save"),
-      icons.check,
-      "ck-button-save"
-    );
-    this.saveButtonView.type = "submit";
+    this.saveButtonView = this._createButton(t('Save'), icons.check, 'ck-button-save')
+    this.saveButtonView.type = 'submit'
 
     /**
      * The Cancel button view.
@@ -77,11 +72,11 @@ export default class BehaviorTriggerFormView extends View {
      * @member {module:ui/button/buttonview~ButtonView}
      */
     this.cancelButtonView = this._createButton(
-      t("Cancel"),
+      t('Cancel'),
       icons.cancel,
-      "ck-button-cancel",
-      "cancel"
-    );
+      'ck-button-cancel',
+      'cancel',
+    )
 
     /**
      * A collection of {@link module:ui/button/switchbuttonview~SwitchButtonView},
@@ -92,9 +87,7 @@ export default class BehaviorTriggerFormView extends View {
      * @readonly
      * @type {module:ui/viewcollection~ViewCollection}
      */
-    this._manualDecoratorSwitches = this._createManualDecoratorSwitches(
-      addBehaviorTriggerCommand
-    );
+    this._manualDecoratorSwitches = this._createManualDecoratorSwitches(addBehaviorTriggerCommand)
 
     /**
      * A collection of child views in the form.
@@ -102,9 +95,7 @@ export default class BehaviorTriggerFormView extends View {
      * @readonly
      * @type {module:ui/viewcollection~ViewCollection}
      */
-    this.children = this._createFormChildren(
-      addBehaviorTriggerCommand.manualDecorators
-    );
+    this.children = this._createFormChildren(addBehaviorTriggerCommand.manualDecorators)
 
     /**
      * A collection of views that can be focused in the form.
@@ -113,7 +104,7 @@ export default class BehaviorTriggerFormView extends View {
      * @protected
      * @member {module:ui/viewcollection~ViewCollection}
      */
-    this._focusables = new ViewCollection();
+    this._focusables = new ViewCollection()
 
     /**
      * Helps cycling over {@link #_focusables} in the form.
@@ -128,34 +119,31 @@ export default class BehaviorTriggerFormView extends View {
       keystrokeHandler: this.keystrokes,
       actions: {
         // Navigate form fields backwards using the Shift + Tab keystroke.
-        focusPrevious: "shift + tab",
+        focusPrevious: 'shift + tab',
 
         // Navigate form fields forwards using the Tab key.
-        focusNext: "tab",
+        focusNext: 'tab',
       },
-    });
+    })
 
-    const classList = ["ck", "ck-behaviortrigger-form", "ck-responsive-form"];
+    const classList = ['ck', 'ck-behaviortrigger-form', 'ck-responsive-form']
 
     if (addBehaviorTriggerCommand.manualDecorators.length) {
-      classList.push(
-        "ck-behaviortrigger-form_layout-vertical",
-        "ck-vertical-form"
-      );
+      classList.push('ck-behaviortrigger-form_layout-vertical', 'ck-vertical-form')
     }
 
     this.setTemplate({
-      tag: "form",
+      tag: 'form',
 
       attributes: {
         class: classList,
 
         // https://github.com/ckeditor/ckeditor5-link/issues/90
-        tabindex: "-1",
+        tabindex: '-1',
       },
 
       children: this.children,
-    });
+    })
   }
 
   /**
@@ -167,59 +155,56 @@ export default class BehaviorTriggerFormView extends View {
    * its state.
    */
   getDecoratorSwitchesState() {
-    return Array.from(this._manualDecoratorSwitches).reduce(
-      (accumulator, switchButton) => {
-        accumulator[switchButton.name] = switchButton.isOn;
-        return accumulator;
-      },
-      {}
-    );
+    return Array.from(this._manualDecoratorSwitches).reduce((accumulator, switchButton) => {
+      accumulator[switchButton.name] = switchButton.isOn
+      return accumulator
+    }, {})
   }
 
   /**
    * @inheritDoc
    */
   render() {
-    super.render();
+    super.render()
 
     submitHandler({
       view: this,
-    });
+    })
 
     const childViews = [
       this.idInputView,
       ...this._manualDecoratorSwitches,
       this.saveButtonView,
       this.cancelButtonView,
-    ];
+    ]
 
     childViews.forEach((v) => {
       // Register the view as focusable.
-      this._focusables.add(v);
+      this._focusables.add(v)
 
       // Register the view in the focus tracker.
-      this.focusTracker.add(v.element);
-    });
+      this.focusTracker.add(v.element)
+    })
 
     // Start listening for the keystrokes coming from #element.
-    this.keystrokes.listenTo(this.element);
+    this.keystrokes.listenTo(this.element)
   }
 
   /**
    * @inheritDoc
    */
   destroy() {
-    super.destroy();
+    super.destroy()
 
-    this.focusTracker.destroy();
-    this.keystrokes.destroy();
+    this.focusTracker.destroy()
+    this.keystrokes.destroy()
   }
 
   /**
    * Focuses the fist {@link #_focusables} in the form.
    */
   focus() {
-    this._focusCycler.focusFirst();
+    this._focusCycler.focusFirst()
   }
 
   /**
@@ -229,15 +214,12 @@ export default class BehaviorTriggerFormView extends View {
    * @returns {module:ui/labeledfield/labeledfieldview~LabeledFieldView} Labeled field view instance.
    */
   _createIdInput() {
-    const t = this.locale.t;
-    const labeledInput = new LabeledFieldView(
-      this.locale,
-      createLabeledInputText
-    );
+    const t = this.locale.t
+    const labeledInput = new LabeledFieldView(this.locale, createLabeledInputText)
 
-    labeledInput.label = t("Trigger ID");
+    labeledInput.label = t('Trigger ID')
 
-    return labeledInput;
+    return labeledInput
   }
 
   /**
@@ -251,25 +233,25 @@ export default class BehaviorTriggerFormView extends View {
    * @returns {module:ui/button/buttonview~ButtonView} The button view instance.
    */
   _createButton(label, icon, className, eventName) {
-    const button = new ButtonView(this.locale);
+    const button = new ButtonView(this.locale)
 
     button.set({
       label,
       icon,
       tooltip: true,
-    });
+    })
 
     button.extendTemplate({
       attributes: {
         class: className,
       },
-    });
+    })
 
     if (eventName) {
-      button.delegate("execute").to(this, eventName);
+      button.delegate('execute').to(this, eventName)
     }
 
-    return button;
+    return button
   }
 
   /**
@@ -281,37 +263,37 @@ export default class BehaviorTriggerFormView extends View {
    * @returns {module:ui/viewcollection~ViewCollection} of switch buttons.
    */
   _createManualDecoratorSwitches(addBehaviorTriggerCommand) {
-    const switches = this.createCollection();
+    const switches = this.createCollection()
 
     for (const manualDecorator of addBehaviorTriggerCommand.manualDecorators) {
-      const switchButton = new SwitchButtonView(this.locale);
+      const switchButton = new SwitchButtonView(this.locale)
 
       switchButton.set({
         name: manualDecorator.id,
         label: manualDecorator.label,
         withText: true,
-      });
+      })
 
       switchButton
-        .bind("isOn")
+        .bind('isOn')
         .toMany(
           [manualDecorator, addBehaviorTriggerCommand],
-          "value",
+          'value',
           (decoratorValue, commandValue) => {
             return commandValue === undefined && decoratorValue === undefined
               ? manualDecorator.defaultValue
-              : decoratorValue;
-          }
-        );
+              : decoratorValue
+          },
+        )
 
-      switchButton.on("execute", () => {
-        manualDecorator.set("value", !switchButton.isOn);
-      });
+      switchButton.on('execute', () => {
+        manualDecorator.set('value', !switchButton.isOn)
+      })
 
-      switches.add(switchButton);
+      switches.add(switchButton)
     }
 
-    return switches;
+    return switches
   }
 
   /**
@@ -327,32 +309,32 @@ export default class BehaviorTriggerFormView extends View {
    * @returns {module:ui/viewcollection~ViewCollection} The children of link form view.
    */
   _createFormChildren(manualDecorators) {
-    const children = this.createCollection();
+    const children = this.createCollection()
 
-    children.add(this.idInputView);
+    children.add(this.idInputView)
 
     if (manualDecorators.length) {
-      const additionalButtonsView = new View();
+      const additionalButtonsView = new View()
 
       additionalButtonsView.setTemplate({
-        tag: "ul",
+        tag: 'ul',
         children: this._manualDecoratorSwitches.map((switchButton) => ({
-          tag: "li",
+          tag: 'li',
           children: [switchButton],
           attributes: {
-            class: ["ck", "ck-list__item"],
+            class: ['ck', 'ck-list__item'],
           },
         })),
         attributes: {
-          class: ["ck", "ck-reset", "ck-list"],
+          class: ['ck', 'ck-reset', 'ck-list'],
         },
-      });
-      children.add(additionalButtonsView);
+      })
+      children.add(additionalButtonsView)
     }
 
-    children.add(this.saveButtonView);
-    children.add(this.cancelButtonView);
+    children.add(this.saveButtonView)
+    children.add(this.cancelButtonView)
 
-    return children;
+    return children
   }
 }

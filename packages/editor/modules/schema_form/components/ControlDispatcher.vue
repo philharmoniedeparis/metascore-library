@@ -1,13 +1,6 @@
 <template>
-  <component
-    :is="`${control}-control`"
-    v-model="value"
-    :label="displayLabel ? schema.title : null"
-    :required="required"
-    :readonly="readonly"
-    :disabled="disabled"
-    v-bind="extraProps"
-  />
+  <component :is="`${control}-control`" v-model="value" :label="displayLabel ? schema.title : null" :required="required"
+    :readonly="readonly" :disabled="disabled" v-bind="extraProps" />
 </template>
 
 <script>

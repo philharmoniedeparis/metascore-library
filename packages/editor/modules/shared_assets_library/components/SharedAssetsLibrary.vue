@@ -15,11 +15,7 @@
       <shared-assets-item :asset="asset" @click:import="onItemImportClick" />
     </template>
 
-    <progress-indicator
-      v-if="loading"
-      :text="$t('loading_indicator_label')"
-      :target="false"
-    />
+    <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" :target="false" />
   </div>
 </template>
 

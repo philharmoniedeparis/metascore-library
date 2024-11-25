@@ -1,20 +1,8 @@
 <template>
-  <form-group
-    :class="['control', 'file', { disabled }]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <input
-      :id="inputId"
-      v-autofocus="autofocus"
-      type="file"
-      :accept="accept"
-      :multiple="multiple"
-      :disabled="disabled"
-      @change="onChange"
-    />
+  <form-group :class="['control', 'file', { disabled }]" :label="label" :label-for="inputId" :description="description"
+    :required="required">
+    <input :id="inputId" v-autofocus="autofocus" type="file" :accept="accept" :multiple="multiple" :disabled="disabled"
+      @change="onChange" />
 
     <template v-if="$slots.label" #label>
       <slot name="label" />

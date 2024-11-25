@@ -1,23 +1,23 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import Modal from "@core/modules/modal";
-import directive from "./directives/hotkey";
-import { format } from "./utils";
-import HotkeyList from "./components/HotkeyList";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import Modal from '@core/modules/modal'
+import directive from './directives/hotkey'
+import { format } from './utils'
+import HotkeyList from './components/HotkeyList.vue'
 
 export default class HotkeyModule extends AbstractModule {
-  static id = "hotkey";
+  static id = 'hotkey'
 
-  static dependencies = [Modal];
+  static dependencies = [Modal]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.directive("hotkey", directive);
+    app.directive('hotkey', directive)
 
-    app.component("HotkeyList", HotkeyList);
+    app.component('HotkeyList', HotkeyList)
   }
 
   format(combination) {
-    return format(combination);
+    return format(combination)
   }
 }

@@ -2,93 +2,47 @@
   <div class="preview-ruler" :data-axis="axis">
     <svg xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern
-          :id="patternId"
-          :x="vertical ? 0 : offset"
-          :y="vertical ? offset : 0"
+        <pattern :id="patternId" :x="vertical ? 0 : offset" :y="vertical ? offset : 0"
           :width="vertical ? majorTickLength : adjustedMajorTickStep * zoom"
-          :height="vertical ? adjustedMajorTickStep * zoom : majorTickLength"
-          patternUnits="userSpaceOnUse"
-        >
-          <rect
-            x="0"
-            y="0"
-            :width="vertical ? majorTickLength : tickWidth"
-            :height="vertical ? tickWidth : majorTickLength"
-            fill="currentColor"
-          />
-          <rect
-            v-for="n in adjustedMajorTickStep / adjustedMinorTickStep"
-            :key="n"
-            :x="
-              vertical
-                ? majorTickLength - minorTickLength
-                : n * (adjustedMinorTickStep * zoom)
-            "
-            :y="
-              vertical
-                ? n * (adjustedMinorTickStep * zoom)
-                : majorTickLength - minorTickLength
-            "
-            :width="vertical ? minorTickLength : tickWidth"
-            :height="vertical ? tickWidth : minorTickLength"
-            fill="currentColor"
-          />
+          :height="vertical ? adjustedMajorTickStep * zoom : majorTickLength" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" :width="vertical ? majorTickLength : tickWidth"
+            :height="vertical ? tickWidth : majorTickLength" fill="currentColor" />
+          <rect v-for="n in adjustedMajorTickStep / adjustedMinorTickStep" :key="n" :x="vertical
+            ? majorTickLength - minorTickLength
+            : n * (adjustedMinorTickStep * zoom)
+            " :y="vertical
+              ? n * (adjustedMinorTickStep * zoom)
+              : majorTickLength - minorTickLength
+              " :width="vertical ? minorTickLength : tickWidth" :height="vertical ? tickWidth : minorTickLength"
+            fill="currentColor" />
         </pattern>
       </defs>
       <g>
-        <rect
-          :fill="`url(#${patternId})`"
-          :width="vertical ? majorTickLength : '100%'"
-          :height="vertical ? '100%' : majorTickLength"
-        />
+        <rect :fill="`url(#${patternId})`" :width="vertical ? majorTickLength : '100%'"
+          :height="vertical ? '100%' : majorTickLength" />
         <template v-if="negativeLabelsCount > 0">
-          <text
-            v-for="n in negativeLabelsCount"
-            :key="n"
-            :x="
-              (vertical ? -1 : 1) *
-              (offset -
-                ((negativeLabelsCount + 1 - n) * adjustedMajorTickStep -
-                  adjustedMinorTickStep) *
-                  zoom)
-            "
-            :y="(majorTickLength - minorTickLength) / 2"
-            :text-anchor="vertical ? 'end' : 'start'"
-            :transform="vertical ? 'rotate(270)' : null"
-            fill="currentColor"
-            dominant-baseline="middle"
-          >
+          <text v-for="n in negativeLabelsCount" :key="n" :x="(vertical ? -1 : 1) *
+            (offset -
+              ((negativeLabelsCount + 1 - n) * adjustedMajorTickStep -
+                adjustedMinorTickStep) *
+              zoom)
+            " :y="(majorTickLength - minorTickLength) / 2" :text-anchor="vertical ? 'end' : 'start'"
+            :transform="vertical ? 'rotate(270)' : null" fill="currentColor" dominant-baseline="middle">
             {{ (n - negativeLabelsCount - 1) * adjustedMajorTickStep }}
           </text>
         </template>
         <template v-if="positiveLabelsCount > 0">
-          <text
-            v-for="n in positiveLabelsCount"
-            :key="n"
-            :x="
-              (vertical ? -1 : 1) *
-              (((n - 1) * adjustedMajorTickStep + adjustedMinorTickStep) *
-                zoom +
-                offset)
-            "
-            :y="(majorTickLength - minorTickLength) / 2"
-            :text-anchor="vertical ? 'end' : 'start'"
-            :transform="vertical ? 'rotate(270)' : null"
-            fill="currentColor"
-            dominant-baseline="middle"
-          >
+          <text v-for="n in positiveLabelsCount" :key="n" :x="(vertical ? -1 : 1) *
+            (((n - 1) * adjustedMajorTickStep + adjustedMinorTickStep) *
+              zoom +
+              offset)
+            " :y="(majorTickLength - minorTickLength) / 2" :text-anchor="vertical ? 'end' : 'start'"
+            :transform="vertical ? 'rotate(270)' : null" fill="currentColor" dominant-baseline="middle">
             {{ (n - 1) * adjustedMajorTickStep }}
           </text>
         </template>
-        <rect
-          v-show="tracking"
-          class="tracker"
-          :x="vertical ? 0 : trackerPosition"
-          :y="vertical ? trackerPosition : 0"
-          :width="vertical ? majorTickLength : trackerWidth"
-          :height="vertical ? trackerWidth : majorTickLength"
-        />
+        <rect v-show="tracking" class="tracker" :x="vertical ? 0 : trackerPosition" :y="vertical ? trackerPosition : 0"
+          :width="vertical ? majorTickLength : trackerWidth" :height="vertical ? trackerWidth : majorTickLength" />
       </g>
     </svg>
   </div>

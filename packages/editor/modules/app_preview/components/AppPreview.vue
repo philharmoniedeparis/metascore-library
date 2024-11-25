@@ -49,31 +49,14 @@
 
 <template>
   <div class="app-preview">
-    <preview-ruler
-      v-show="!preview"
-      :track-target="appRendererWrapperEl"
-      :major-tick-length="rulerThikness"
-    />
-    <preview-ruler
-      v-show="!preview"
-      axis="y"
-      :track-target="appRendererWrapperEl"
-      :major-tick-length="rulerThikness"
-    />
+    <preview-ruler v-show="!preview" :track-target="appRendererWrapperEl" :major-tick-length="rulerThikness" />
+    <preview-ruler v-show="!preview" axis="y" :track-target="appRendererWrapperEl" :major-tick-length="rulerThikness" />
     <div v-show="!preview" class="rulers-corner" />
 
-    <div
-      ref="app-renderer-wrapper"
-      class="app-renderer-wrapper"
-      :style="appRendererWrapperStyle"
-      @transitionend="onAppRendererTransitionend"
-    >
-      <app-renderer
-        ref="app-renderer"
-        v-hotkey.local.stop="hotkeys"
-        @keydown="onAppRendererKeydown"
-        @keyup="onAppRendererKeyup"
-      />
+    <div ref="app-renderer-wrapper" class="app-renderer-wrapper" :style="appRendererWrapperStyle"
+      @transitionend="onAppRendererTransitionend">
+      <app-renderer ref="app-renderer" v-hotkey.local.stop="hotkeys" @keydown="onAppRendererKeydown"
+        @keyup="onAppRendererKeyup" />
       <preview-grid v-show="!preview" :step="gridStep" :color="gridColor" />
       <div ref="controlbox-container" class="controlbox-container"></div>
       <snap-guides v-show="!preview" />
@@ -526,13 +509,9 @@ export default {
   width: 100%;
   height: 100%;
   grid-template-columns:
-    v-bind(cssRulerThikness)
-    1fr min-content 1fr
-    v-bind(cssRulerThikness);
+    v-bind(cssRulerThikness) 1fr min-content 1fr v-bind(cssRulerThikness);
   grid-template-rows:
-    v-bind(cssRulerThikness)
-    1fr min-content 1fr
-    v-bind(cssRulerThikness);
+    v-bind(cssRulerThikness) 1fr min-content 1fr v-bind(cssRulerThikness);
   box-sizing: border-box;
   overflow: auto;
 }

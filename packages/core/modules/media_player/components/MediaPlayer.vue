@@ -1,12 +1,5 @@
 <template>
-  <component
-    :is="type"
-    ref="media"
-    :autoplay="autoplay"
-    :loop="loop"
-    :controls="controls"
-    class="media-player"
-  />
+  <component :is="type" ref="media" :autoplay="autoplay" :loop="loop" :controls="controls" class="media-player" />
 </template>
 
 <script>

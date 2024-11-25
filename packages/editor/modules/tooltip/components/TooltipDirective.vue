@@ -78,7 +78,7 @@ export default {
         // Hide if the mouse moved a distance greater than the threashhold.
         const distance = Math.sqrt(
           (clientX - this.targetX) * (clientX - this.targetX) +
-            (clientY - this.targetY) * (clientY - this.targetY)
+          (clientY - this.targetY) * (clientY - this.targetY)
         );
         if (distance > this.movementThreashhold) this.hide();
       }

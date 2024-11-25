@@ -2,14 +2,7 @@
   <div class="preview-grid">
     <svg xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern
-          :id="patternId"
-          x="0"
-          y="0"
-          :width="step"
-          :height="step"
-          patternUnits="userSpaceOnUse"
-        >
+        <pattern :id="patternId" x="0" y="0" :width="step" :height="step" patternUnits="userSpaceOnUse">
           <rect :x="step - 1" y="0" width="1" :height="step" :fill="color" />
           <rect x="0" :y="step - 1" :width="step" height="1" :fill="color" />
         </pattern>

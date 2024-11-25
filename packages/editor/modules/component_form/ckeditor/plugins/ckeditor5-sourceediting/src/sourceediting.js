@@ -1,7 +1,7 @@
-import { SourceEditing } from "@ckeditor/ckeditor5-source-editing";
+import { SourceEditing } from 'ckeditor5'
 
 export default class CustomSourceEditing extends SourceEditing {
   _isAllowedToHandleSourceEditingMode() {
-    return true;
+    return true
   }
 }

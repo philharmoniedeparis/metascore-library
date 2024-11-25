@@ -21,28 +21,15 @@
       <span v-dompurify-html="$t('title', { name })"></span>
     </template>
 
-    <schema-form
-      v-if="model"
-      class="scenario-manager--clone-form"
-      :schema="schema"
-      :layout="layout"
-      :values="model.data"
-      :validator="validator"
-      :errors="errors"
-      @update:model-value="onUpdate($event)"
-    />
+    <schema-form v-if="model" class="scenario-manager--clone-form" :schema="schema" :layout="layout"
+      :values="model.data" :validator="validator" :errors="errors" @update:model-value="onUpdate($event)" />
 
     <template #actions="props">
       <base-button :form="props.form" role="primary">
         {{ $t("apply_button") }}
       </base-button>
 
-      <base-button
-        type="button"
-        :form="props.form"
-        role="secondary"
-        @click="onCancel"
-      >
+      <base-button type="button" :form="props.form" role="secondary" @click="onCancel">
         {{ $t("cancel_button") }}
       </base-button>
     </template>

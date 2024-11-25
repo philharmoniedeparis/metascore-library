@@ -1,18 +1,18 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
 
-import Alert from "@core/modules/alert";
-import AppComponents from "@core/modules/app_components";
-import BaseButton from "@core/modules/button";
-import Confirm from "@core/modules/confirm";
-import FormGroup from "../form_group";
-import MediaPlayer from "@core/modules/media_player";
-import ModalForm from "../modal_form";
-import ProgressIndicator from "@core/modules/progress_indicator";
+import Alert from '@core/modules/alert'
+import AppComponents from '@core/modules/app_components'
+import BaseButton from '@core/modules/button'
+import Confirm from '@core/modules/confirm'
+import FormGroup from '../form_group'
+import MediaPlayer from '@core/modules/media_player'
+import ModalForm from '../modal_form'
+import ProgressIndicator from '@core/modules/progress_indicator'
 
-import MediaSelector from "./components/MediaSelector";
+import MediaSelector from './components/MediaSelector.vue'
 
 export default class MediaSelectorModule extends AbstractModule {
-  static id = "media_selector";
+  static id = 'media_selector'
 
   static dependencies = [
     Alert,
@@ -23,11 +23,11 @@ export default class MediaSelectorModule extends AbstractModule {
     MediaPlayer,
     ModalForm,
     ProgressIndicator,
-  ];
+  ]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("MediaSelector", MediaSelector);
+    app.component('MediaSelector', MediaSelector)
   }
 }

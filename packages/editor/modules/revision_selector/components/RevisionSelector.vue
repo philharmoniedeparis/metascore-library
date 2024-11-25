@@ -15,25 +15,13 @@
 
 <template>
   <div :class="['revision-selector', { disabled }]">
-    <select-control
-      v-model="internalValue"
-      :options="options"
-      :disabled="disabled"
-    />
+    <select-control v-model="internalValue" :options="options" :disabled="disabled" />
 
-    <base-button
-      type="button"
-      :disabled="disabled || !canRestore"
-      @click="onRestoreClick"
-    >
+    <base-button type="button" :disabled="disabled || !canRestore" @click="onRestoreClick">
       {{ $t("restore_button") }}
     </base-button>
 
-    <confirm-dialog
-      v-if="showConfirm"
-      @submit="onConfirmSubmit"
-      @cancel="onConfirmCancel"
-    >
+    <confirm-dialog v-if="showConfirm" @submit="onConfirmSubmit" @cancel="onConfirmCancel">
       <p>{{ $t("confirm_text", { id: active, date: activeDate }) }}</p>
     </confirm-dialog>
   </div>

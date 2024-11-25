@@ -1,12 +1,12 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import DotNavigation from "./components/DotNavigation";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import DotNavigation from './components/DotNavigation.vue'
 
 export default class DotNavigationModule extends AbstractModule {
-  static id = "dot_navigation";
+  static id = 'dot_navigation'
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("DotNavigation", DotNavigation);
+    app.component('DotNavigation', DotNavigation)
   }
 }

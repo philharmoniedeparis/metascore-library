@@ -6,13 +6,7 @@
         <slot v-else name="text" />
       </div>
 
-      <progress
-        role="progressbar"
-        aria-describedby="loading-zone"
-        tabindex="-1"
-        :max="max"
-        :value="value"
-      ></progress>
+      <progress role="progressbar" aria-describedby="loading-zone" tabindex="-1" :max="max" :value="value"></progress>
     </label>
   </base-modal>
 </template>
@@ -71,21 +65,21 @@ export default {
     &::-webkit-progress-value {
       background-color: var(--metascore-color-bg-tertiary, #3f3f3f);
     }
+
     &::-webkit-progress-bar {
       background-color: var(--metascore-color-bg-secondary, #606060);
     }
 
     &:indeterminate {
+
       &::-moz-progress-bar,
       &::-webkit-progress-bar,
       &::after {
-        background: linear-gradient(
-          to right,
-          var(--metascore-color-bg-secondary, #606060) 45%,
-          var(--metascore-color-bg-tertiary, #3f3f3f) 0%,
-          var(--metascore-color-bg-tertiary, #3f3f3f) 55%,
-          var(--metascore-color-bg-secondary, #606060) 0%
-        );
+        background: linear-gradient(to right,
+            var(--metascore-color-bg-secondary, #606060) 45%,
+            var(--metascore-color-bg-tertiary, #3f3f3f) 0%,
+            var(--metascore-color-bg-tertiary, #3f3f3f) 55%,
+            var(--metascore-color-bg-secondary, #606060) 0%);
         background-size: 225% 100%;
         background-position: right;
         animation: indeterminate-progress 1.5s infinite ease;

@@ -1,27 +1,10 @@
 <template>
-  <form-group
-    :class="['control', 'select', { multiple, disabled }]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <select
-      :id="inputId"
-      ref="input"
-      v-model="value"
-      v-autofocus="autofocus"
-      :required="required"
-      :disabled="disabled"
-      :multiple="multiple"
-    >
-      <option
-        v-for="option in normalizedOptions"
-        :key="option.key"
-        :value="option.key"
-        :disabled="option.disabled"
-        @mousedown="onOptionMousedown"
-      >
+  <form-group :class="['control', 'select', { multiple, disabled }]" :label="label" :label-for="inputId"
+    :description="description" :required="required">
+    <select :id="inputId" ref="input" v-model="value" v-autofocus="autofocus" :required="required" :disabled="disabled"
+      :multiple="multiple">
+      <option v-for="option in normalizedOptions" :key="option.key" :value="option.key" :disabled="option.disabled"
+        @mousedown="onOptionMousedown">
         {{ option.label }}
       </option>
     </select>

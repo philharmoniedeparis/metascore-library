@@ -1,15 +1,15 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import BaseButton from "../button";
-import BaseModal from "./components/BaseModal";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import BaseButton from '../button'
+import BaseModal from './components/BaseModal.vue'
 
 export default class ModalModule extends AbstractModule {
-  static id = "modal";
+  static id = 'modal'
 
-  static dependencies = [BaseButton];
+  static dependencies = [BaseButton]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("BaseModal", BaseModal);
+    app.component('BaseModal', BaseModal)
   }
 }

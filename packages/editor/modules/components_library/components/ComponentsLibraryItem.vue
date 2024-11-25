@@ -1,10 +1,6 @@
 <template>
-  <div
-    :class="['components-library--item', { dragging }]"
-    draggable="true"
-    @dragstart="onDragstart"
-    @dragend="onDragend"
-  >
+  <div :class="['components-library--item', { dragging }]" draggable="true" @dragstart="onDragstart"
+    @dragend="onDragend">
     <component-icon :component="component" :label="label" />
     <div class="label">{{ label }}</div>
   </div>

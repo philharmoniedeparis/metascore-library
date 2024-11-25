@@ -10,18 +10,10 @@
 </i18n>
 
 <template>
-  <nav
-    v-show="items.length > 0"
-    aria-label="breadcrumb"
-    class="components-breadcrumb"
-  >
+  <nav v-show="items.length > 0" aria-label="breadcrumb" class="components-breadcrumb">
     <ol>
-      <components-breadcrumb-item
-        v-for="(item, index) in items"
-        :key="index"
-        :value="item.value"
-        :tail="index === items.length - 1"
-      />
+      <components-breadcrumb-item v-for="(item, index) in items" :key="index" :value="item.value"
+        :tail="index === items.length - 1" />
     </ol>
   </nav>
 </template>

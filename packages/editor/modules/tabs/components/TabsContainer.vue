@@ -5,17 +5,8 @@
         <slot name="tabs-start" />
       </div>
       <ul class="tabs-nav" role="tablist">
-        <li
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :class="{ active: isActieveTab(index) }"
-        >
-          <a
-            v-tooltip
-            :title="!isActieveTab(index) ? tab.title : null"
-            role="tab"
-            @click="internalValue = index"
-          >
+        <li v-for="(tab, index) in tabs" :key="index" :class="{ active: isActieveTab(index) }">
+          <a v-tooltip :title="!isActieveTab(index) ? tab.title : null" role="tab" @click="internalValue = index">
             {{ tab.title }}
           </a>
         </li>
@@ -96,7 +87,7 @@ export default {
     list-style: none;
     border-bottom: 2px solid var(--metascore-color-bg-secondary);
 
-    > li {
+    >li {
       flex: 1 1 auto;
       overflow: hidden;
 

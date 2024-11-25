@@ -1,12 +1,13 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import ResizablePane from "./components/ResizablePane";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+
+import ResizablePane from './components/ResizablePane.vue'
 
 export default class ResizablePaneModule extends AbstractModule {
-  static id = "resizable_pane";
+  static id = 'resizable_pane'
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("ResizablePane", ResizablePane);
+    app.component('ResizablePane', ResizablePane)
   }
 }

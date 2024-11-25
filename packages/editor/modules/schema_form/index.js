@@ -1,19 +1,19 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import FormControls from "../form_controls";
-import ArrayControl from "./components/ArrayControl";
-import ControlDispatcher from "./components/ControlDispatcher";
-import SchemaForm from "./components/SchemaForm";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import FormControls from '../form_controls'
+import ArrayControl from './components/ArrayControl.vue'
+import ControlDispatcher from './components/ControlDispatcher.vue'
+import SchemaForm from './components/SchemaForm.vue'
 
 export default class SchemaFormModule extends AbstractModule {
-  static id = "schema_form";
+  static id = 'schema_form'
 
-  static dependencies = [FormControls];
+  static dependencies = [FormControls]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("ArrayControl", ArrayControl);
-    app.component("ControlDispatcher", ControlDispatcher);
-    app.component("SchemaForm", SchemaForm);
+    app.component('ArrayControl', ArrayControl)
+    app.component('ControlDispatcher', ControlDispatcher)
+    app.component('SchemaForm', SchemaForm)
   }
 }

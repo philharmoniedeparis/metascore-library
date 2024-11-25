@@ -18,63 +18,24 @@
 </i18n>
 
 <template>
-  <form-group
-    :class="['control', 'time', { readonly, disabled }]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <div
-      class="input-container"
-      @focusin="onInputFocus"
-      @focusout="onInputBlur"
-    >
+  <form-group :class="['control', 'time', { readonly, disabled }]" :label="label" :label-for="inputId"
+    :description="description" :required="required">
+    <div class="input-container" @focusin="onInputFocus" @focusout="onInputBlur">
       <!-- eslint-disable vue/no-deprecated-html-element-is -->
-      <timecode-input
-        :id="inputId"
-        v-model="value"
-        v-autofocus="autofocus"
-        :required="required"
-        :readonly="readonly"
-        :disabled="disabled"
-        :min="min"
-        :max="max"
-        @change="onInputChange"
-      ></timecode-input>
+      <timecode-input :id="inputId" v-model="value" v-autofocus="autofocus" :required="required" :readonly="readonly"
+        :disabled="disabled" :min="min" :max="max" @change="onInputChange"></timecode-input>
       <!-- eslint-enable vue/no-deprecated-html-element-is -->
-      <div
-        v-if="!disabled && (inButton || outButton || clearButton)"
-        class="buttons"
-      >
-        <base-button
-          v-if="inButton && !readonly"
-          v-tooltip
-          type="button"
-          class="in"
-          :title="$t('buttons.in')"
-          @click="onInClick"
-        >
+      <div v-if="!disabled && (inButton || outButton || clearButton)" class="buttons">
+        <base-button v-if="inButton && !readonly" v-tooltip type="button" class="in" :title="$t('buttons.in')"
+          @click="onInClick">
           <template #icon><in-icon /></template>
         </base-button>
-        <base-button
-          v-if="outButton"
-          v-tooltip
-          type="button"
-          class="out"
-          :title="$t('buttons.out')"
-          @click="onOutClick"
-        >
+        <base-button v-if="outButton" v-tooltip type="button" class="out" :title="$t('buttons.out')"
+          @click="onOutClick">
           <template #icon><out-icon /></template>
         </base-button>
-        <base-button
-          v-if="clearButton && !readonly"
-          v-tooltip
-          type="button"
-          class="clear"
-          :title="$t('buttons.clear')"
-          @click="onClearClick"
-        >
+        <base-button v-if="clearButton && !readonly" v-tooltip type="button" class="clear" :title="$t('buttons.clear')"
+          @click="onClearClick">
           <template #icon><clear-icon /></template>
         </base-button>
       </div>

@@ -1,21 +1,9 @@
 <template>
-  <form-group
-    :class="['control', 'array', { readonly, disabled }]"
-    :data-property="property"
-    :label="label"
-    :description="description"
-    :required="required"
-  >
+  <form-group :class="['control', 'array', { readonly, disabled }]" :data-property="property" :label="label"
+    :description="description" :required="required">
     <template v-for="(item, index) in items" :key="index">
-      <control-dispatcher
-        :property="`${index}`"
-        :schema="item"
-        :model-value="value[index]"
-        :readonly="readonly"
-        :disabled="disabled"
-        v-bind="getItemProps(index)"
-        @update:model-value="update(index, $event)"
-      />
+      <control-dispatcher :property="`${index}`" :schema="item" :model-value="value[index]" :readonly="readonly"
+        :disabled="disabled" v-bind="getItemProps(index)" @update:model-value="update(index, $event)" />
     </template>
   </form-group>
 </template>

@@ -1,6 +1,6 @@
-import { View } from "@ckeditor/ckeditor5-ui";
+import { View } from 'ckeditor5'
 
-import "../../theme/formgroup.scss";
+import '../../theme/formgroup.scss'
 
 export default class FormGroupView extends View {
   /**
@@ -13,9 +13,9 @@ export default class FormGroupView extends View {
    * DOM attributes and gets described by the label.
    */
   constructor(locale, options = {}) {
-    super(locale);
+    super(locale)
 
-    const bind = this.bindTemplate;
+    const bind = this.bindTemplate
 
     /**
      * Controls whether the groupis visible. Visible by default, groups are hidden
@@ -25,7 +25,7 @@ export default class FormGroupView extends View {
      * @default true
      * @member {Boolean} #isVisible
      */
-    this.set("isVisible", true);
+    this.set('isVisible', true)
 
     /**
      * An additional CSS class added to the {@link #element}.
@@ -33,7 +33,7 @@ export default class FormGroupView extends View {
      * @observable
      * @member {String} #class
      */
-    this.set("class", options.class || null);
+    this.set('class', options.class || null)
 
     /**
      * A collection of row items (buttons, dropdowns, etc.).
@@ -41,10 +41,10 @@ export default class FormGroupView extends View {
      * @readonly
      * @member {module:ui/viewcollection~ViewCollection}
      */
-    this.children = this.createCollection();
+    this.children = this.createCollection()
 
     if (options.children) {
-      options.children.forEach((child) => this.children.add(child));
+      options.children.forEach((child) => this.children.add(child))
     }
 
     /**
@@ -56,21 +56,21 @@ export default class FormGroupView extends View {
      * @observable
      * @member {String} #role
      */
-    this.set("_role", null);
+    this.set('_role', null)
 
     this.setTemplate({
-      tag: "div",
+      tag: 'div',
       attributes: {
         class: [
-          "ck",
-          "ck-form__group",
-          bind.to("class"),
-          bind.if("isVisible", "ck-hidden", (value) => !value),
+          'ck',
+          'ck-form__group',
+          bind.to('class'),
+          bind.if('isVisible', 'ck-hidden', (value) => !value),
         ],
-        role: bind.to("_role"),
-        "z-index": "-1",
+        role: bind.to('_role'),
+        'z-index': '-1',
       },
       children: this.children,
-    });
+    })
   }
 }

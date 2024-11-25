@@ -1,11 +1,8 @@
 <template>
-  <div
-    :class="[
-      'split-button',
-      { expanded, 'has-secondary-actions': $slots['secondary-actions'] },
-    ]"
-    @click="onClick"
-  >
+  <div :class="[
+    'split-button',
+    { expanded, 'has-secondary-actions': $slots['secondary-actions'] },
+  ]" @click="onClick">
     <slot></slot>
     <base-button class="split-button--toggle" @click.stop="toggle">
       <template #icon><expander-icon /></template>

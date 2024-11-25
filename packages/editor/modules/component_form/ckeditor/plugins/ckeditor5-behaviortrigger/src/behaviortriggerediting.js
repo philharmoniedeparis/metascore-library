@@ -1,19 +1,19 @@
-import { Plugin } from "@ckeditor/ckeditor5-core";
-import { MouseObserver } from "@ckeditor/ckeditor5-engine";
-import { Input } from "@ckeditor/ckeditor5-typing";
-import { TwoStepCaretMovement } from "@ckeditor/ckeditor5-typing";
-import { inlineHighlight } from "@ckeditor/ckeditor5-typing";
-import { findAttributeRange } from "@ckeditor/ckeditor5-typing";
-import { ClipboardPipeline } from "@ckeditor/ckeditor5-clipboard";
-import { keyCodes } from "@ckeditor/ckeditor5-utils";
+import { Plugin } from 'ckeditor5'
+import { MouseObserver } from 'ckeditor5'
+import { Input } from 'ckeditor5'
+import { TwoStepCaretMovement } from 'ckeditor5'
+import { inlineHighlight } from 'ckeditor5'
+import { findAttributeRange } from 'ckeditor5'
+import { ClipboardPipeline } from 'ckeditor5'
+import { keyCodes } from 'ckeditor5'
 
-import AddBehaviorTriggerCommand from "./addbehaviortriggercommand";
-import RemoveBehaviorTriggerCommand from "./removebehaviortriggercommand";
-import { createBehaviorTriggerElement } from "./utils";
+import AddBehaviorTriggerCommand from './addbehaviortriggercommand'
+import RemoveBehaviorTriggerCommand from './removebehaviortriggercommand'
+import { createBehaviorTriggerElement } from './utils'
 
-import "../theme/behaviortrigger.scss";
+import '../theme/behaviortrigger.scss'
 
-const HIGHLIGHT_CLASS = "ck-behaviortrigger_selected";
+const HIGHLIGHT_CLASS = 'ck-behaviortrigger_selected'
 
 /**
  * The behavior trigger engine feature.
@@ -28,7 +28,7 @@ export default class BehaviorTriggerEditing extends Plugin {
    * @inheritDoc
    */
   static get pluginName() {
-    return "BehaviorTriggerEditing";
+    return 'BehaviorTriggerEditing'
   }
 
   /**
@@ -36,72 +36,65 @@ export default class BehaviorTriggerEditing extends Plugin {
    */
   static get requires() {
     // Clipboard is required for handling cut and paste events while typing over the link.
-    return [TwoStepCaretMovement, Input, ClipboardPipeline];
+    return [TwoStepCaretMovement, Input, ClipboardPipeline]
   }
 
   /**
    * @inheritDoc
    */
   init() {
-    const editor = this.editor;
+    const editor = this.editor
 
     // Allow link attribute on all inline nodes.
-    editor.model.schema.extend("$text", { allowAttributes: "behaviorTrigger" });
+    editor.model.schema.extend('$text', { allowAttributes: 'behaviorTrigger' })
 
-    editor.conversion.for("dataDowncast").attributeToElement({
-      model: "behaviorTrigger",
+    editor.conversion.for('dataDowncast').attributeToElement({
+      model: 'behaviorTrigger',
       view: createBehaviorTriggerElement,
-    });
+    })
 
-    editor.conversion.for("editingDowncast").attributeToElement({
-      model: "behaviorTrigger",
+    editor.conversion.for('editingDowncast').attributeToElement({
+      model: 'behaviorTrigger',
       view: (id, conversionApi) => {
-        return createBehaviorTriggerElement(id, conversionApi);
+        return createBehaviorTriggerElement(id, conversionApi)
       },
-    });
+    })
 
-    editor.conversion.for("upcast").elementToAttribute({
+    editor.conversion.for('upcast').elementToAttribute({
       view: {
-        name: "a",
+        name: 'a',
         attributes: {
-          "data-behavior-trigger": true,
+          'data-behavior-trigger': true,
         },
       },
       model: {
-        key: "behaviorTrigger",
-        value: (viewElement) =>
-          viewElement.getAttribute("data-behavior-trigger"),
+        key: 'behaviorTrigger',
+        value: (viewElement) => viewElement.getAttribute('data-behavior-trigger'),
       },
-    });
+    })
 
     // Create commands.
-    editor.commands.add(
-      "addBehaviorTrigger",
-      new AddBehaviorTriggerCommand(editor)
-    );
-    editor.commands.add(
-      "removeBehaviorTrigger",
-      new RemoveBehaviorTriggerCommand(editor)
-    );
+    editor.commands.add('addBehaviorTrigger', new AddBehaviorTriggerCommand(editor))
+    editor.commands.add('removeBehaviorTrigger', new RemoveBehaviorTriggerCommand(editor))
 
     // Enable two-step caret movement for `behaviorTrigger` attribute.
-    const twoStepCaretMovementPlugin = editor.plugins.get(TwoStepCaretMovement);
-    twoStepCaretMovementPlugin.registerAttribute("behaviorTrigger");
+    const twoStepCaretMovementPlugin = editor.plugins.get(TwoStepCaretMovement)
+    twoStepCaretMovementPlugin.registerAttribute('behaviorTrigger')
 
     // Setup highlight over selected link.
-    inlineHighlight(editor, "behaviorTrigger", "a", HIGHLIGHT_CLASS);
+    inlineHighlight(editor, 'behaviorTrigger', 'a', HIGHLIGHT_CLASS)
 
     // Change the attributes of the selection in certain situations after the trigger was inserted into the document.
-    this._enableInsertContentSelectionAttributesFixer();
+    this._enableInsertContentSelectionAttributesFixer()
 
     // Handle a click at the beginning/end of a trigger element.
-    this._enableClickingAfterLink();
+    this._enableClickingAfterLink()
 
     // Handle typing over the trigger.
-    this._enableTypingOverLink();
+    this._enableTypingOverLink()
 
     // Handle removing the content after the trigger element.
-    this._handleDeleteContentAfterLink();
+    this._handleDeleteContentAfterLink()
   }
 
   /**
@@ -116,16 +109,16 @@ export default class BehaviorTriggerEditing extends Plugin {
    * @private
    */
   _enableInsertContentSelectionAttributesFixer() {
-    const editor = this.editor;
-    const model = editor.model;
-    const selection = model.document.selection;
+    const editor = this.editor
+    const model = editor.model
+    const selection = model.document.selection
 
     this.listenTo(
       model,
-      "insertContent",
+      'insertContent',
       () => {
-        const nodeBefore = selection.anchor.nodeBefore;
-        const nodeAfter = selection.anchor.nodeAfter;
+        const nodeBefore = selection.anchor.nodeBefore
+        const nodeAfter = selection.anchor.nodeAfter
 
         // NOTE: ↰ and ↱ represent the gravity of the selection.
 
@@ -136,8 +129,8 @@ export default class BehaviorTriggerEditing extends Plugin {
         //
         // If the selection is not "trapped" by the `behaviorTrigger` attribute after inserting, there's nothing
         // to fix there.
-        if (!selection.hasAttribute("behaviorTrigger")) {
-          return;
+        if (!selection.hasAttribute('behaviorTrigger')) {
+          return
         }
 
         // Filter out the following case where a trigger with the same id (e.g. <a data-behavior-trigger="foo">INSERTED</a>) is inserted
@@ -152,7 +145,7 @@ export default class BehaviorTriggerEditing extends Plugin {
         //		<$text behaviorTrigger="foo">lINSERTED[]ink</$text>
         //
         if (!nodeBefore) {
-          return;
+          return
         }
 
         // Filter out the following case where the selection has the "behaviorTrigger" attribute because the
@@ -168,8 +161,8 @@ export default class BehaviorTriggerEditing extends Plugin {
         //		                                                          ↱
         //		<$text bold="true">INSERTED</$text><$text behaviorTrigger="foo">[]link</$text>
         //
-        if (!nodeBefore.hasAttribute("behaviorTrigger")) {
-          return;
+        if (!nodeBefore.hasAttribute('behaviorTrigger')) {
+          return
         }
 
         // Filter out the following case where a link is a inserted in the middle (or before) another link
@@ -186,19 +179,16 @@ export default class BehaviorTriggerEditing extends Plugin {
         //		                                                             ↰
         //		<$text behaviorTrigger="foo">l</$text><$text behaviorTrigger="bar">INSERTED[]</$text><$text behaviorTrigger="foo">ink</$text>
         //
-        if (nodeAfter && nodeAfter.hasAttribute("behaviorTrigger")) {
-          return;
+        if (nodeAfter && nodeAfter.hasAttribute('behaviorTrigger')) {
+          return
         }
 
         model.change((writer) => {
-          removeLinkAttributesFromSelection(
-            writer,
-            getLinkAttributesAllowedOnText(model.schema)
-          );
-        });
+          removeLinkAttributesFromSelection(writer, getLinkAttributesAllowedOnText(model.schema))
+        })
       },
-      { priority: "low" }
-    );
+      { priority: 'low' },
+    )
   }
 
   /**
@@ -213,61 +203,55 @@ export default class BehaviorTriggerEditing extends Plugin {
    * @private
    */
   _enableClickingAfterLink() {
-    const editor = this.editor;
-    const model = editor.model;
+    const editor = this.editor
+    const model = editor.model
 
-    editor.editing.view.addObserver(MouseObserver);
+    editor.editing.view.addObserver(MouseObserver)
 
-    let clicked = false;
+    let clicked = false
 
     // Detect the click.
-    this.listenTo(editor.editing.view.document, "mousedown", () => {
-      clicked = true;
-    });
+    this.listenTo(editor.editing.view.document, 'mousedown', () => {
+      clicked = true
+    })
 
     // When the selection has changed...
-    this.listenTo(editor.editing.view.document, "selectionChange", () => {
+    this.listenTo(editor.editing.view.document, 'selectionChange', () => {
       if (!clicked) {
-        return;
+        return
       }
 
       // ...and it was caused by the click...
-      clicked = false;
+      clicked = false
 
-      const selection = model.document.selection;
+      const selection = model.document.selection
 
       // ...and no text is selected...
       if (!selection.isCollapsed) {
-        return;
+        return
       }
 
       // ...and clicked text is the link...
-      if (!selection.hasAttribute("behaviorTrigger")) {
-        return;
+      if (!selection.hasAttribute('behaviorTrigger')) {
+        return
       }
 
-      const position = selection.getFirstPosition();
+      const position = selection.getFirstPosition()
       const linkRange = findAttributeRange(
         position,
-        "behaviorTrigger",
-        selection.getAttribute("behaviorTrigger"),
-        model
-      );
+        'behaviorTrigger',
+        selection.getAttribute('behaviorTrigger'),
+        model,
+      )
 
       // ...check whether clicked start/end boundary of the link.
       // If so, remove the `behaviorTrigger` attribute.
-      if (
-        position.isTouching(linkRange.start) ||
-        position.isTouching(linkRange.end)
-      ) {
+      if (position.isTouching(linkRange.start) || position.isTouching(linkRange.end)) {
         model.change((writer) => {
-          removeLinkAttributesFromSelection(
-            writer,
-            getLinkAttributesAllowedOnText(model.schema)
-          );
-        });
+          removeLinkAttributesFromSelection(writer, getLinkAttributesAllowedOnText(model.schema))
+        })
       }
-    });
+    })
   }
 
   /**
@@ -281,84 +265,84 @@ export default class BehaviorTriggerEditing extends Plugin {
    * @private
    */
   _enableTypingOverLink() {
-    const editor = this.editor;
-    const view = editor.editing.view;
+    const editor = this.editor
+    const view = editor.editing.view
 
     // Selection attributes when started typing over the link.
-    let selectionAttributes;
+    let selectionAttributes
 
     // Whether pressed `Backspace` or `Delete`. If so, attributes should not be preserved.
-    let deletedContent;
+    let deletedContent
 
     // Detect pressing `Backspace` / `Delete`.
     this.listenTo(
       view.document,
-      "delete",
+      'delete',
       () => {
-        deletedContent = true;
+        deletedContent = true
       },
-      { priority: "high" }
-    );
+      { priority: 'high' },
+    )
 
     // Listening to `model#deleteContent` allows detecting whether selected content was a link.
     // If so, before removing the element, we will copy its attributes.
     this.listenTo(
       editor.model,
-      "deleteContent",
+      'deleteContent',
       () => {
-        const selection = editor.model.document.selection;
+        const selection = editor.model.document.selection
 
         // Copy attributes only if anything is selected.
         if (selection.isCollapsed) {
-          return;
+          return
         }
 
         // When the content was deleted, do not preserve attributes.
         if (deletedContent) {
-          deletedContent = false;
+          deletedContent = false
 
-          return;
+          return
         }
 
         // Enabled only when typing.
         if (!isTyping(editor)) {
-          return;
+          return
         }
 
         if (shouldCopyAttributes(editor.model)) {
-          selectionAttributes = selection.getAttributes();
+          selectionAttributes = selection.getAttributes()
         }
       },
-      { priority: "high" }
-    );
+      { priority: 'high' },
+    )
 
     // Listening to `model#insertContent` allows detecting the content insertion.
     // We want to apply attributes that were removed while typing over the link.
     this.listenTo(
       editor.model,
-      "insertContent",
+      'insertContent',
       (evt, [element]) => {
-        deletedContent = false;
+        deletedContent = false
 
         // Enabled only when typing.
         if (!isTyping(editor)) {
-          return;
+          return
         }
 
         if (!selectionAttributes) {
-          return;
+          return
         }
 
         editor.model.change((writer) => {
           for (const [attribute, value] of selectionAttributes) {
-            writer.setAttribute(attribute, value, element);
+            writer.setAttribute(attribute, value, element)
           }
-        });
+        })
 
-        selectionAttributes = null;
+        selectionAttributes = null
       },
-      { priority: "high" }
-    );
+      { priority: 'high' },
+    )
   }
 
   /**
@@ -376,86 +360,77 @@ export default class BehaviorTriggerEditing extends Plugin {
    * @private
    */
   _handleDeleteContentAfterLink() {
-    const editor = this.editor;
-    const model = editor.model;
-    const selection = model.document.selection;
-    const view = editor.editing.view;
+    const editor = this.editor
+    const model = editor.model
+    const selection = model.document.selection
+    const view = editor.editing.view
 
     // A flag whether attributes `behaviorTrigger` attribute should be preserved.
-    let shouldPreserveAttributes = false;
+    let shouldPreserveAttributes = false
 
     // A flag whether the `Backspace` key was pressed.
-    let hasBackspacePressed = false;
+    let hasBackspacePressed = false
 
     // Detect pressing `Backspace`.
     this.listenTo(
       view.document,
-      "delete",
+      'delete',
       (evt, data) => {
-        hasBackspacePressed = data.domEvent.keyCode === keyCodes.backspace;
+        hasBackspacePressed = data.domEvent.keyCode === keyCodes.backspace
       },
-      { priority: "high" }
-    );
+      { priority: 'high' },
+    )
 
     // Before removing the content, check whether the selection is inside a link or at the end of link but with 2-SCM enabled.
     // If so, we want to preserve link attributes.
     this.listenTo(
       model,
-      "deleteContent",
+      'deleteContent',
       () => {
         // Reset the state.
-        shouldPreserveAttributes = false;
+        shouldPreserveAttributes = false
 
-        const position = selection.getFirstPosition();
-        const behaviorTrigger = selection.getAttribute("behaviorTrigger");
+        const position = selection.getFirstPosition()
+        const behaviorTrigger = selection.getAttribute('behaviorTrigger')
 
         if (!behaviorTrigger) {
-          return;
+          return
         }
 
-        const linkRange = findAttributeRange(
-          position,
-          "behaviorTrigger",
-          behaviorTrigger,
-          model
-        );
+        const linkRange = findAttributeRange(position, 'behaviorTrigger', behaviorTrigger, model)
 
         // Preserve `behaviorTrigger` attribute if the selection is in the middle of the link or
         // the selection is at the end of the link and 2-SCM is activated.
         shouldPreserveAttributes =
-          linkRange.containsPosition(position) ||
-          linkRange.end.isEqual(position);
+          linkRange.containsPosition(position) || linkRange.end.isEqual(position)
       },
-      { priority: "high" }
-    );
+      { priority: 'high' },
+    )
 
     // After removing the content, check whether the current selection should preserve the `behaviorTrigger` attribute.
     this.listenTo(
       model,
-      "deleteContent",
+      'deleteContent',
       () => {
         // If didn't press `Backspace`.
         if (!hasBackspacePressed) {
-          return;
+          return
         }
 
-        hasBackspacePressed = false;
+        hasBackspacePressed = false
 
         // Disable the mechanism if inside a link (`<$text url="foo">F[]oo</$text>` or <$text url="foo">Foo[]</$text>`).
         if (shouldPreserveAttributes) {
-          return;
+          return
         }
 
         // Use `model.enqueueChange()` in order to execute the callback at the end of the changes process.
         editor.model.enqueueChange((writer) => {
-          removeLinkAttributesFromSelection(
-            writer,
-            getLinkAttributesAllowedOnText(model.schema)
-          );
-        });
+          removeLinkAttributesFromSelection(writer, getLinkAttributesAllowedOnText(model.schema))
+        })
       },
-      { priority: "low" }
-    );
+      { priority: 'low' },
+    )
   }
 }
 
@@ -466,10 +441,10 @@ export default class BehaviorTriggerEditing extends Plugin {
 // @param {module:engine/model/writer~Writer} writer
 // @param {Array.<String>} linkAttributes
 function removeLinkAttributesFromSelection(writer, linkAttributes) {
-  writer.removeSelectionAttribute("behaviorTrigger");
+  writer.removeSelectionAttribute('behaviorTrigger')
 
   for (const attribute of linkAttributes) {
-    writer.removeSelectionAttribute(attribute);
+    writer.removeSelectionAttribute(attribute)
   }
 }
 
@@ -478,49 +453,46 @@ function removeLinkAttributesFromSelection(writer, linkAttributes) {
 // @param {module:engine/model/model~Model} model
 // @returns {Boolean}
 function shouldCopyAttributes(model) {
-  const selection = model.document.selection;
-  const firstPosition = selection.getFirstPosition();
-  const lastPosition = selection.getLastPosition();
-  const nodeAtFirstPosition = firstPosition.nodeAfter;
+  const selection = model.document.selection
+  const firstPosition = selection.getFirstPosition()
+  const lastPosition = selection.getLastPosition()
+  const nodeAtFirstPosition = firstPosition.nodeAfter
 
   // The text link node does not exist...
   if (!nodeAtFirstPosition) {
-    return false;
+    return false
   }
 
   // ...or it isn't the text node...
-  if (!nodeAtFirstPosition.is("$text")) {
-    return false;
+  if (!nodeAtFirstPosition.is('$text')) {
+    return false
   }
 
   // ...or isn't the link.
-  if (!nodeAtFirstPosition.hasAttribute("behaviorTrigger")) {
-    return false;
+  if (!nodeAtFirstPosition.hasAttribute('behaviorTrigger')) {
+    return false
   }
 
   // `textNode` = the position is inside the link element.
   // `nodeBefore` = the position is at the end of the link element.
-  const nodeAtLastPosition = lastPosition.textNode || lastPosition.nodeBefore;
+  const nodeAtLastPosition = lastPosition.textNode || lastPosition.nodeBefore
 
   // If both references the same node selection contains a single text node.
   if (nodeAtFirstPosition === nodeAtLastPosition) {
-    return true;
+    return true
   }
 
   // If nodes are not equal, maybe the link nodes has defined additional attributes inside.
   // First, we need to find the entire link range.
   const linkRange = findAttributeRange(
     firstPosition,
-    "behaviorTrigger",
-    nodeAtFirstPosition.getAttribute("behaviorTrigger"),
-    model
-  );
+    'behaviorTrigger',
+    nodeAtFirstPosition.getAttribute('behaviorTrigger'),
+    model,
+  )
 
   // Then we can check whether selected range is inside the found link range. If so, attributes should be preserved.
-  return linkRange.containsRange(
-    model.createRange(firstPosition, lastPosition),
-    true
-  );
+  return linkRange.containsRange(model.createRange(firstPosition, lastPosition), true)
 }
 
 // Checks whether provided changes were caused by typing.
@@ -528,9 +500,9 @@ function shouldCopyAttributes(model) {
 // @params {module:core/editor/editor~Editor} editor
 // @returns {Boolean}
 function isTyping(editor) {
-  const currentBatch = editor.model.change((writer) => writer.batch);
+  const currentBatch = editor.model.change((writer) => writer.batch)
 
-  return currentBatch.isTyping;
+  return currentBatch.isTyping
 }
 
 // Returns an array containing names of the attributes allowed on `$text` that describes the link item.
@@ -538,9 +510,7 @@ function isTyping(editor) {
 // @param {module:engine/model/schema~Schema} schema
 // @returns {Array.<String>}
 function getLinkAttributesAllowedOnText(schema) {
-  const textAttributes = schema.getDefinition("$text").allowAttributes;
+  const textAttributes = schema.getDefinition('$text').allowAttributes
 
-  return textAttributes.filter((attribute) =>
-    attribute.startsWith("behaviorTrigger")
-  );
+  return textAttributes.filter((attribute) => attribute.startsWith('behaviorTrigger'))
 }

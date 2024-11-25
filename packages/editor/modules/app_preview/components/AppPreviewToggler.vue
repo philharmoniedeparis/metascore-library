@@ -33,33 +33,18 @@
 
 <template>
   <split-button class="app-preview-toggler">
-    <base-button
-      v-hotkey.prevent="hotkeys"
-      v-tooltip
-      :title="`${$t('title')} [${formatHotkey('mod+shift+e')}]`"
-      type="button"
-      :class="{ toggled: preview }"
-      :disabled="disabled"
-      @click="onTogglerClick"
-    >
+    <base-button v-hotkey.prevent="hotkeys" v-tooltip :title="`${$t('title')} [${formatHotkey('mod+shift+e')}]`"
+      type="button" :class="{ toggled: preview }" :disabled="disabled" @click="onTogglerClick">
       <template #icon><toggle-icon /></template>
       {{ preview ? $t("label.exit") : $t("label.enter") }}
     </base-button>
     <template v-if="showPreserveOverrides" #secondary-actions>
-      <base-button
-        type="button"
-        :disabled="disabled"
-        @click="onExitKeepingStateClick"
-      >
+      <base-button type="button" :disabled="disabled" @click="onExitKeepingStateClick">
         {{ $t("label.exit-keeping-state") }}
       </base-button>
     </template>
     <template v-else-if="showClearOverrides" #secondary-actions>
-      <base-button
-        type="button"
-        :disabled="disabled"
-        @click="onClearStateClick"
-      >
+      <base-button type="button" :disabled="disabled" @click="onClearStateClick">
         {{ $t("label.reset-state") }}
       </base-button>
     </template>
@@ -175,10 +160,12 @@ export default {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
     }
+
     :deep(.split-button--toggle) {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
+
     :deep(.split-button--secondary-actions) {
       border-radius: 1.5em;
 

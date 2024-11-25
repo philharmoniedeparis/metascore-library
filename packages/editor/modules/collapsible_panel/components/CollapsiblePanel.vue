@@ -11,13 +11,8 @@
       </h4>
     </header>
 
-    <transition
-      name="expand"
-      @before-enter="onTransitionBeforeEnter"
-      @enter="onTransitionEnter"
-      @before-leave="onTransitionBeforeLeave"
-      @leave="onTransitionLeave"
-    >
+    <transition name="expand" @before-enter="onTransitionBeforeEnter" @enter="onTransitionEnter"
+      @before-leave="onTransitionBeforeLeave" @leave="onTransitionLeave">
       <div v-if="isExpanded" class="body">
         <slot />
       </div>

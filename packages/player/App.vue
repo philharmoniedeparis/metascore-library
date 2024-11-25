@@ -12,11 +12,7 @@
 </i18n>
 
 <template>
-  <div
-    v-hotkey.prevent="hotkeys"
-    :class="['metaScore-player', { loading }]"
-    @contextmenu="onContextmenu"
-  >
+  <div v-hotkey.prevent="hotkeys" :class="['metaScore-player', { loading }]" @contextmenu="onContextmenu">
     <app-renderer :url="url" />
 
     <progress-indicator v-if="loading" class="loading-indicator">
@@ -26,18 +22,11 @@
       </template>
     </progress-indicator>
 
-    <context-menu
-      v-model:show="showContextmenu"
-      :position="contextmenuPosition"
-    >
+    <context-menu v-model:show="showContextmenu" :position="contextmenuPosition">
       <template #footer>
         <span class="prefix">{{ $t("contextmenu_footer_prefix") }}</span>
         <div @mousedown.prevent>
-          <a
-            href="https://metascore.philharmoniedeparis.fr/"
-            target="_blank"
-            :title="`metaScore ${version}`"
-          >
+          <a href="https://metascore.philharmoniedeparis.fr/" target="_blank" :title="`metaScore ${version}`">
             <logo />
           </a>
         </div>
@@ -135,9 +124,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "normalize.css";
-@import "source-sans/source-sans-3VF.css";
-@import "./scss/theme.scss";
+@use "./scss/theme.scss";
 </style>
 
 <style lang="scss" scoped>
@@ -162,8 +149,7 @@ export default {
 
   &,
   :deep(*) {
-    scrollbar-color: var(--metascore-scrollbar-thumb-color)
-      var(--metascore-scrollbar-track-color);
+    scrollbar-color: var(--metascore-scrollbar-thumb-color) var(--metascore-scrollbar-track-color);
     scrollbar-width: thin;
 
     ::-webkit-scrollbar {
@@ -223,7 +209,7 @@ export default {
   }
 
   :deep(.context-menu) {
-    > ul {
+    >ul {
       padding: 0;
       background: var(--metascore-color-bg-primary);
     }

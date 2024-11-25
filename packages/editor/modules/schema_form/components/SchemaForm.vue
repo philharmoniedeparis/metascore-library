@@ -1,29 +1,14 @@
 <template>
-  <component
-    :is="layout.tag || 'div'"
-    v-if="layout.type === 'markup'"
-    v-bind="props"
-  >
+  <component :is="layout.tag || 'div'" v-if="layout.type === 'markup'" v-bind="props">
     <template v-if="layout.items">
-      <schema-form
-        v-for="(subLayout, index) in layout.items"
-        :key="index"
-        :flatten-schema="false"
-        :schema="flattenSchema ? flattenedSchema : schema"
-        :layout="subLayout"
-        :values="values"
-        :errors="errors"
-        :path="subLayout.property ? `${path}/${subLayout.property}` : path"
-        @update:model-value="onSubFormUpdate"
-      />
+      <schema-form v-for="(subLayout, index) in layout.items" :key="index" :flatten-schema="false"
+        :schema="flattenSchema ? flattenedSchema : schema" :layout="subLayout" :values="values" :errors="errors"
+        :path="subLayout.property ? `${path}/${subLayout.property}` : path" @update:model-value="onSubFormUpdate" />
     </template>
     <template v-else-if="layout.content">{{ layout.content }}</template>
   </component>
-  <control-dispatcher
-    v-else-if="layout.property in flattenedSchema.properties"
-    v-bind="props"
-    @update:model-value="onControlUpdate(layout.property, $event)"
-  />
+  <control-dispatcher v-else-if="layout.property in flattenedSchema.properties" v-bind="props"
+    @update:model-value="onControlUpdate(layout.property, $event)" />
 </template>
 
 <script>
