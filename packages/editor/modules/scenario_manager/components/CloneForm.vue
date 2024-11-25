@@ -94,6 +94,8 @@ export default {
       this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
+      this.errors = null;
+
       try {
         const data = await this.model.validate(this.model.data);
         this.$emit("submit", data);

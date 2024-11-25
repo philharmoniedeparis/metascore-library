@@ -167,6 +167,7 @@ export default {
                 property: "waveform-color",
                 label: this.$t("waveform_color_label"),
                 format: "hex",
+                required: true,
               },
               {
                 property: "axis-label-color",
@@ -192,6 +193,8 @@ export default {
       this.model.update({ [property]: value }, false);
     },
     async onSubmit() {
+      this.errors = null;
+
       try {
         let data = await this.model.validate(this.model.data);
         data = { ...toRaw(data) };
@@ -211,7 +214,7 @@ export default {
           "axis-label-color",
           "border-color",
         ].forEach((key) => {
-          data[key] = data[key].replace("#", "");
+          data[key] = data[key]?.replace("#", "") ?? "00000000";
         });
 
         this.$emit("submit", data);
