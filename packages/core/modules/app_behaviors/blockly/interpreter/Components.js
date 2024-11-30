@@ -19,7 +19,10 @@ export default class Components extends AbstractInterpreter {
 
   get context() {
     const { activeScenario } = useModule("app_components");
-    this._unwatchActiveScenario = watch(activeScenario, this._onScenarioChange);
+    this._unwatchActiveScenario = watch(
+      activeScenario,
+      this._onScenarioChange.bind(this)
+    );
 
     return {
       Components: {
