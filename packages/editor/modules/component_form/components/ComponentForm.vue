@@ -378,7 +378,7 @@ export default {
           ],
           optionLabel: (o) => o?.name,
           optionKey: (o) => o?.id,
-          optionValue: (o) => o?.file?.url,
+          optionValue: (o) => o?.file?.url ?? o?.url,
           ...this.getControlProps("background-image"),
         });
       }
