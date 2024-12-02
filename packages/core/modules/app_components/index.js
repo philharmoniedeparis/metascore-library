@@ -246,7 +246,7 @@ export default class AppComponentsModule extends AbstractModule {
   getBlockActivePage(block) {
     const store = useStore();
     const { id } = block;
-    return id in store.blocksActivePage ? store.blocksActivePage[id] : 0;
+    return store.blocksActivePage.has(id) ? store.blocksActivePage.get(id) : 0;
   }
 
   setBlockActivePage(block, index) {
