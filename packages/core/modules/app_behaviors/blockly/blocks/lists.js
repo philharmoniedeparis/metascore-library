@@ -100,6 +100,27 @@ const listCreateMutator = {
   plus: function () {
     this.addPart_();
     this.updateMinus_();
+
+    // Add and connect new child block of the same type as the previous one.
+    if (this.itemCount_ > 1) {
+      try {
+        const previousInput = this.getInput("ADD" + (this.itemCount_ - 2));
+        const newInput = this.getInput("ADD" + (this.itemCount_ - 1));
+        if (previousInput && newInput) {
+          const targetBlock = previousInput?.connection.targetBlock();
+          if (targetBlock) {
+            const newTargetBlock = targetBlock.workspace.newBlock(
+              targetBlock.type
+            );
+            newTargetBlock.initSvg();
+            newTargetBlock.render();
+            newInput.connection.connect(newTargetBlock.outputConnection);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   },
 
   /**
