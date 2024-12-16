@@ -11,11 +11,12 @@
   </li>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 
-export default {
+export default defineComponent ({
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
@@ -73,7 +74,7 @@ export default {
       this.$emit("click");
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

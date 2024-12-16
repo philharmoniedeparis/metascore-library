@@ -32,6 +32,13 @@ export default [
     rules: {
       'require-await': 'error',
       'vue/block-lang': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+        },
+      ],
     },
   },
 ]

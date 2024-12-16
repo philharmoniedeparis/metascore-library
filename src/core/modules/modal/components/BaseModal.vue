@@ -45,10 +45,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import CloseIcon from "../assets/icons/close.svg?component";
 
-export default {
+export default defineComponent ({
   components: {
     CloseIcon,
   },
@@ -84,7 +85,7 @@ export default {
       return this.target ?? this.overlaysTarget;
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

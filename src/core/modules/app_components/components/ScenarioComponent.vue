@@ -6,10 +6,11 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import useStore from "../store";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -29,7 +30,7 @@ export default {
       return this.store.getChildren(this.component);
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

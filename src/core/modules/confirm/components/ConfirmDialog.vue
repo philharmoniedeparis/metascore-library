@@ -30,8 +30,10 @@
   </base-modal>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent ({
   props: {
     show: {
       type: Boolean,
@@ -59,7 +61,7 @@ export default {
       return this.cancelLabel ?? this.$t("cancel_button");
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

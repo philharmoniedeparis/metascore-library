@@ -13,6 +13,5 @@ export default class AbstractModule {
 
   static dependencies: (typeof AbstractModule)[] = [];
 
-  // eslint-disable-next-line no-unused-vars
-  constructor(context: Context) {}
+  constructor(_context: Context) {}
 }

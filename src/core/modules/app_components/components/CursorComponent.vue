@@ -4,15 +4,16 @@
   </component-wrapper>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { defineComponent, toRef } from "vue";
 import useStore from "../store";
 import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
 import "../../../polyfills/GeomertyUtils";
 import { map, radians } from "@core/utils/math";
+import type MediaPlayerModule from "../../media_player";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -32,7 +33,7 @@ export default {
       time: mediaTime,
       duration: mediaDuration,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
+    } = useModule("media_player") as MediaPlayerModule;
     return {
       mediaReady,
       mediaTime,
@@ -424,7 +425,7 @@ export default {
       return map(pos, startPosition, endPosition, startTime, endTime);
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

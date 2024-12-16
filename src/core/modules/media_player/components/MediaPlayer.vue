@@ -2,12 +2,12 @@
   <component :is="type" ref="media" :autoplay="autoplay" :loop="loop" :controls="controls" class="media-player" />
 </template>
 
-<script>
-import { markRaw } from "vue";
+<script lang="ts">
+import { defineComponent, markRaw } from "vue";
 import { getRendererForMime } from "../utils/media";
 import useStore from "../store";
 
-export default {
+export default defineComponent ({
   name: "MediaPlayer",
   props: {
     /**
@@ -106,5 +106,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

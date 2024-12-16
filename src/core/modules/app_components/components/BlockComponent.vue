@@ -58,14 +58,15 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { hasTouch as deviceHasTouch } from "@core/utils/device";
 import useStore from "../store";
 import PagerFirstIcon from "../assets/icons/block/pager-first.svg?component";
 import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?component";
 import PagerNextIcon from "../assets/icons/block/pager-next.svg?component";
 
-export default {
+export default defineComponent ({
   components: {
     PagerFirstIcon,
     PagerPreviousIcon,
@@ -187,7 +188,7 @@ export default {
       this.activePageIndex = index;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

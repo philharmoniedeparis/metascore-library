@@ -4,12 +4,13 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from "../utils/links";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@core/services/module-manager";
 
-export default {
+export default defineComponent ({
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective({
       hooks: {
@@ -114,7 +115,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
