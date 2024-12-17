@@ -54,6 +54,7 @@ export default defineStore("app-renderer", {
       this.width = width;
       this.height = height;
       this.css = css;
+      this.startIdleTimeTracking();
     },
     setWidth(value) {
       this.width = value;
