@@ -153,6 +153,22 @@ Msg.REACTIVITY_WHEN_ELSE = "sinon";
 Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
 
+Msg.VARIABLES_DEFAULT_NAME = "--";
+Msg.RENAME_LIST = "Renommer la liste...";
+Msg.NEW_LIST = "Créer une liste...";
+Msg.NEW_LIST_TITLE = "Nom de la nouvelle liste:";
+Msg.RENAME_LIST = "Renommer la liste......";
+Msg.RENAME_LIST_TITLE = "Renommer toutes les listes « %1 » en :";
+Msg.LISTS_GET = "liste %1";
+Msg.LISTS_GET_TOOLTIP = "Renvoie la valeur de cette liste.";
+Msg.LISTS_GET_CREATE_SET = "Créer « définir la list %1 à ... »";
+Msg.LISTS_SET = "%1 définir la liste %2 à";
+Msg.LISTS_SET_TOOLTIP = "Définit cette liste comme étant égale aux entrées.";
+Msg.LISTS_SET_CREATE_GET = "Créer « (obtenir) list %1 »";
+Msg.LISTS_ADD = "ajouter %1 à la liste %2";
+Msg.LISTS_ADD_TOOLTIP = "Ajouter l’item à la liste.";
+Msg.LISTS_EMPTY = "vider %1";
+Msg.LISTS_EMPTY_TOOLTIP = "Retirer tous les éléments de cette liste";
 Msg.LISTS_ISEMPTY_TITLE = "la liste %1 est vide";
 
 export default Msg;

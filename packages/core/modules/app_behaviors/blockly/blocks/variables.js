@@ -1,38 +1,148 @@
 import {
   Blocks,
   defineBlocksWithJsonArray,
-  Msg,
-  Extensions,
   utils,
+  Extensions,
 } from "blockly/core";
 import { createMinusField } from "@blockly/block-plus-minus/src/field_minus";
 import { createPlusField } from "@blockly/block-plus-minus/src/field_plus";
 
 /**
- * Overrides the lists_create_with from https://github.com/google/blockly-samples/blob/master/plugins/block-plus-minus/src/list_create.js
+ * Overrides the default variables_get and variables_set blocks from https://github.com/google/blockly/blob/2c29c01b14fd9cec9f7fde82f6c80b6f4f7b7c30/blocks/variables.ts
  */
 
-delete Blocks["lists_create_with"];
+delete Blocks["variables_get"];
+delete Blocks["variables_set"];
 
 defineBlocksWithJsonArray([
+  // Overrider block for variable getter.
   {
-    type: "lists_create_with",
-    message0: "%{BKY_LISTS_CREATE_EMPTY_TITLE} %1",
+    type: "variables_get",
+    message0: "%1",
     args0: [
       {
-        type: "input_dummy",
-        name: "EMPTY",
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: [""],
+        defaultType: "",
+      },
+    ],
+    output: null,
+    style: "variable_blocks",
+    helpUrl: "%{BKY_VARIABLES_GET_HELPURL}",
+    tooltip: "%{BKY_VARIABLES_GET_TOOLTIP}",
+    extensions: ["contextMenu_variableSetterGetter"],
+  },
+  // Overrider block for variable setter.
+  {
+    type: "variables_set",
+    message0: "%{BKY_VARIABLES_SET}",
+    args0: [
+      {
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: [""],
+        defaultType: "",
+      },
+      {
+        type: "input_value",
+        name: "VALUE",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "variable_blocks",
+    tooltip: "%{BKY_VARIABLES_SET_TOOLTIP}",
+    helpUrl: "%{BKY_VARIABLES_SET_HELPURL}",
+    extensions: ["contextMenu_variableSetterGetter"],
+  },
+  {
+    type: "lists_get",
+    message0: "%{BKY_LISTS_GET}",
+    args0: [
+      {
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: ["Array"],
+        defaultType: "Array",
       },
     ],
     output: "Array",
-    style: "list_blocks",
-    helpUrl: "%{BKY_LISTS_CREATE_WITH_HELPURL}",
-    tooltip: "%{BKY_LISTS_CREATE_WITH_TOOLTIP}",
-    mutator: "new_list_create_with_mutator",
+    style: "variable_blocks",
+    tooltip: "%{BKY_LISTS_GET_TOOLTIP}",
+    extensions: ["contextMenu_variableSetterGetter"],
+  },
+  // Overrider block for variable setter.
+  {
+    type: "lists_set",
+    message0: "%{BKY_LISTS_SET}",
+    args0: [
+      {
+        type: "input_dummy",
+        name: "PLUS_MINUS",
+      },
+      {
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: ["Array"],
+        defaultType: "Array",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    inputsInline: true,
+    style: "variable_blocks",
+    tooltip: "%{BKY_LISTS_SET_TOOLTIP}",
+    extensions: ["contextMenu_variableSetterGetter"],
+    mutator: "lists_set_mutator",
+  },
+  {
+    type: "lists_add",
+    message0: "%{BKY_LISTS_ADD}",
+    args0: [
+      {
+        type: "input_value",
+        name: "ITEM",
+      },
+      {
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: ["Array"],
+        defaultType: "Array",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    inputsInline: true,
+    style: "variable_blocks",
+    tooltip: "%{BKY_LISTS_ADD_TOOLTIP}",
+  },
+  {
+    type: "lists_empty",
+    message0: "%{BKY_LISTS_EMPTY}",
+    args0: [
+      {
+        type: "field_variable",
+        name: "VAR",
+        variable: "%{BKY_VARIABLES_DEFAULT_NAME}",
+        variableTypes: ["Array"],
+        defaultType: "Array",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    inputsInline: true,
+    style: "variable_blocks",
+    tooltip: "%{BKY_LISTS_EMPTY_TOOLTIP}",
   },
 ]);
 
-const listCreateMutator = {
+const listSetMutator = {
   /**
    * Number of item inputs the block has.
    * @type {number}
@@ -128,7 +238,7 @@ const listCreateMutator = {
    * and updates the state of the minus.
    */
   minus: function () {
-    if (this.itemCount_ == 0) {
+    if (this.itemCount_ < 2) {
       return;
     }
     this.removePart_();
@@ -146,15 +256,8 @@ const listCreateMutator = {
    * @private
    */
   addPart_: function () {
-    if (this.itemCount_ == 0) {
-      this.removeInput("EMPTY");
-      this.topInput_ = this.appendEndRowInput("END_OF_ROW")
-        .appendField(createPlusField(), "PLUS")
-        .appendField(Msg["LISTS_CREATE_WITH_INPUT_WITH"]);
-    }
-
-    this.appendValueInput("ADD" + this.itemCount_);
     this.appendEndRowInput("END_OF_ROW" + this.itemCount_);
+    this.appendValueInput("ADD" + this.itemCount_);
 
     this.itemCount_++;
   },
@@ -168,15 +271,8 @@ const listCreateMutator = {
   removePart_: function () {
     this.itemCount_--;
 
-    this.removeInput("ADD" + this.itemCount_);
     this.removeInput("END_OF_ROW" + this.itemCount_);
-
-    if (this.itemCount_ == 0) {
-      this.removeInput("END_OF_ROW");
-      this.topInput_ = this.appendDummyInput("EMPTY")
-        .appendField(createPlusField(), "PLUS")
-        .appendField(Msg["LISTS_CREATE_EMPTY_TITLE"]);
-    }
+    this.removeInput("ADD" + this.itemCount_);
   },
 
   /**
@@ -185,10 +281,10 @@ const listCreateMutator = {
    */
   updateMinus_: function () {
     const minusField = this.getField("MINUS");
-    if (!minusField && this.itemCount_ > 0) {
-      this.topInput_.insertFieldAt(1, createMinusField(), "MINUS");
-    } else if (minusField && this.itemCount_ < 1) {
-      this.topInput_.removeField("MINUS");
+    if (!minusField && this.itemCount_ > 1) {
+      this.getInput("PLUS_MINUS").insertFieldAt(1, createMinusField(), "MINUS");
+    } else if (minusField && this.itemCount_ < 2) {
+      this.getInput("PLUS_MINUS").removeField("MINUS");
     }
   },
 };
@@ -197,16 +293,9 @@ const listCreateMutator = {
  * Updates the shape of the block to have 3 inputs if no mutation is provided.
  * @this {Blockly.Block}
  */
-const listCreateHelper = function () {
-  this.getInput("EMPTY").insertFieldAt(0, createPlusField(), "PLUS");
+const listSetHelper = function () {
+  this.getInput("PLUS_MINUS").appendField(createPlusField(), "PLUS");
   this.updateShape_(3);
 };
 
-if (Extensions.isRegistered("new_list_create_with_mutator")) {
-  Extensions.unregister("new_list_create_with_mutator");
-}
-Extensions.registerMutator(
-  "new_list_create_with_mutator",
-  listCreateMutator,
-  listCreateHelper
-);
+Extensions.registerMutator("lists_set_mutator", listSetMutator, listSetHelper);

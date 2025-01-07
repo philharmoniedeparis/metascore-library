@@ -1,3 +1,8 @@
-export default function getBlocks() {
-  return [{ kind: "block", type: "colour_picker" }];
+export function getBlocks() {
+  return [
+    {
+      kind: "block",
+      type: "colour_picker",
+    },
+  ];
 }

@@ -1,4 +1,5 @@
 import Theme from "../blockly/theme";
+import { Variables } from "blockly/core";
 import "../blockly/renderer";
 import Flyout from "../blockly/plugins/flyout";
 import {
@@ -6,17 +7,24 @@ import {
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
 
-import { default as getTriggerBlocks } from "./toolbox/categories/triggers";
-import { default as getActionBlocks } from "./toolbox/categories/actions";
-import { default as getLogicBlocks } from "./toolbox/categories/logic";
-import { default as getMathBlocks } from "./toolbox/categories/math";
-import { default as getTextBlocks } from "./toolbox/categories/text";
-import { default as getColorBlocks } from "./toolbox/categories/color";
-import { default as getAppBlocks } from "./toolbox/categories/app";
-import { default as getMediaBlocks } from "./toolbox/categories/media";
-import { default as getComponentBlocks } from "./toolbox/categories/components";
-import { default as getListBlocks } from "./toolbox/categories/lists";
-import { default as getPresetBlocks } from "./toolbox/categories/presets";
+import { getBlocks as getTriggerBlocks } from "./toolbox/categories/triggers";
+import { getBlocks as getActionBlocks } from "./toolbox/categories/actions";
+import { getBlocks as getLogicBlocks } from "./toolbox/categories/logic";
+import { getBlocks as getMathBlocks } from "./toolbox/categories/math";
+import { getBlocks as getTextBlocks } from "./toolbox/categories/text";
+import { getBlocks as getColorBlocks } from "./toolbox/categories/color";
+import { getBlocks as getAppBlocks } from "./toolbox/categories/app";
+import { getBlocks as getMediaBlocks } from "./toolbox/categories/media";
+import { getBlocks as getComponentBlocks } from "./toolbox/categories/components";
+import { registerCallbacks as registerVariableCallbacks } from "./toolbox/categories/variables";
+import { getBlocks as getPresetBlocks } from "./toolbox/categories/presets";
+
+class Toolbox extends ContinuousToolbox {
+  constructor(workspace) {
+    registerVariableCallbacks(workspace);
+    super(workspace);
+  }
+}
 
 export default function getConfig({ $t, publicPath = "" } = {}) {
   return {
@@ -47,11 +55,13 @@ export default function getConfig({ $t, publicPath = "" } = {}) {
       scaleSpeed: 1.2,
     },
     plugins: {
-      toolbox: ContinuousToolbox,
+      toolbox: Toolbox,
       flyoutsVerticalToolbox: Flyout,
       metricsManager: ContinuousMetrics,
     },
     toolbox: {
+      // Defer the creation of the toolbox
+      // to allow registering custom categories.
       kind: "categoryToolbox",
       contents: [
         {
@@ -110,15 +120,9 @@ export default function getConfig({ $t, publicPath = "" } = {}) {
         },
         {
           kind: "category",
-          name: $t("categories.lists"),
-          categorystyle: "lists_category",
-          contents: getListBlocks(),
-        },
-        {
-          kind: "category",
           name: $t("categories.variables"),
           categorystyle: "variables_category",
-          custom: "VARIABLE",
+          custom: Variables.CATEGORY_NAME,
         },
         {
           kind: "category",

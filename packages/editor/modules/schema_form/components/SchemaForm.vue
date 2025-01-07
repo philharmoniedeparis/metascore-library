@@ -108,7 +108,9 @@ export default {
     controlErrors() {
       if (this.errors) {
         const locale = getLocale();
-        const errors = (Array.isArray(this.errors) ? this.errors : [this.errors]).filter((e) => {
+        const errors = (
+          Array.isArray(this.errors) ? this.errors : [this.errors]
+        ).filter((e) => {
           return (
             (!e.instancePath && e.schema.includes(this.layout.property)) ||
             e.instancePath === this.path
