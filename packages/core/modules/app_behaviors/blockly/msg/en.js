@@ -164,6 +164,22 @@ Msg.REACTIVITY_WHEN_ELSE = "else";
 Msg.REACTIVITY_WHEN_ELSE_TOOLTIP = "";
 Msg.REACTIVITY_WHEN_ELSE_HELPURL = "";
 
+Msg.VARIABLES_DEFAULT_NAME = "--";
+Msg.RENAME_LIST = "Rename list...";
+Msg.NEW_LIST = "Create list...";
+Msg.NEW_LIST_TITLE = "New list name:";
+Msg.RENAME_LIST = "Rename list...";
+Msg.RENAME_LIST_TITLE = "Rename all '%1' lists to:";
+Msg.LISTS_GET = "list %1";
+Msg.LISTS_GET_TOOLTIP = "Returns the value of this list.";
+Msg.LISTS_GET_CREATE_SET = "Create 'set the list %1 to ...'";
+Msg.LISTS_SET = "%1 set list %2 to";
+Msg.LISTS_SET_TOOLTIP = "Sets this list to be equal to the inputs.";
+Msg.LISTS_SET_CREATE_GET = "Create '(get) list %1'";
+Msg.LISTS_ADD = "add %1 to list %2";
+Msg.LISTS_ADD_TOOLTIP = "Add the item to the list.";
+Msg.LISTS_EMPTY = "empty %1";
+Msg.LISTS_EMPTY_TOOLTIP = "Remove all elements from this list";
 Msg.LISTS_ISEMPTY_TITLE = "the list %1 is empty";
 
 export default Msg;

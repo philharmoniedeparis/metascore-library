@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 import { useModule } from "@core/services/module-manager";
 
-export default function getBlocks() {
+export function getBlocks() {
   const { findComponent, getModelByType } = useModule("app_components");
 
   // Hide
@@ -87,7 +87,11 @@ export default function getBlocks() {
   });
 
   return [
-    { kind: "block", type: "media_play" },
+    {
+      kind: "block",
+      type: "media_play",
+      gap: 5,
+    },
     {
       kind: "block",
       type: "media_play_excerpt",
@@ -95,15 +99,25 @@ export default function getBlocks() {
         FROM: { block: { type: "media_timecode" } },
         TO: { block: { type: "media_timecode" } },
       },
+      gap: 5,
     },
-    { kind: "block", type: "media_pause" },
-    { kind: "block", type: "media_stop" },
+    {
+      kind: "block",
+      type: "media_pause",
+      gap: 5,
+    },
+    {
+      kind: "block",
+      type: "media_stop",
+      gap: 5,
+    },
     {
       kind: "block",
       type: "media_set_time",
       inputs: {
         VALUE: { block: { type: "media_timecode" } },
       },
+      gap: 5,
     },
     {
       kind: "block",
@@ -118,17 +132,28 @@ export default function getBlocks() {
           },
         },
       },
+      gap: 5,
     },
-    hide_block,
-    show_block,
-    background_color_block,
-    { kind: "block", type: "components_set_property" },
+    {
+      ...hide_block,
+      gap: 5,
+    },
+    {
+      ...show_block,
+      gap: 5,
+    },
+    {
+      ...background_color_block,
+      gap: 5,
+    },
+    { kind: "block", type: "components_set_property", gap: 5 },
     {
       kind: "block",
       type: "components_set_block_page",
       inputs: {
         INDEX: { block: { type: "math_number" } },
       },
+      gap: 5,
     },
     {
       kind: "block",
@@ -136,18 +161,22 @@ export default function getBlocks() {
       inputs: {
         URL: { block: { type: "text" } },
       },
+      gap: 5,
     },
     {
       kind: "block",
       type: "app_enter_fullscreen",
+      gap: 5,
     },
     {
       kind: "block",
       type: "app_exit_fullscreen",
+      gap: 5,
     },
     {
       kind: "block",
       type: "app_toggle_fullscreen",
+      gap: 5,
     },
     {
       kind: "block",

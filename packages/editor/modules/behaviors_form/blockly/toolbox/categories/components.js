@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 import { useModule } from "@core/services/module-manager";
 
-export default function getBlocks() {
+export function getBlocks() {
   const { findComponent, getModelByType } = useModule("app_components");
 
   // Hidden
@@ -63,11 +63,23 @@ export default function getBlocks() {
   );
 
   return [
-    { kind: "block", type: "components_component" },
+    {
+      kind: "block",
+      type: "components_component",
+    },
     hidden_block,
     background_color_block,
-    { kind: "block", type: "components_get_property" },
-    { kind: "block", type: "components_get_block_page" },
-    { kind: "block", type: "components_behaviour_trigger" },
+    {
+      kind: "block",
+      type: "components_get_property",
+    },
+    {
+      kind: "block",
+      type: "components_get_block_page",
+    },
+    {
+      kind: "block",
+      type: "components_behaviour_trigger",
+    },
   ];
 }

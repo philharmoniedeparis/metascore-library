@@ -1,7 +1,13 @@
-export default function getBlocks() {
+export function getBlocks() {
   return [
-    { kind: "block", type: "app_startup" },
-    { kind: "block", type: "keyboard_keypressed" },
+    {
+      kind: "block",
+      type: "app_startup",
+    },
+    {
+      kind: "block",
+      type: "keyboard_keypressed",
+    },
     {
       kind: "block",
       type: "links_click",
@@ -18,6 +24,9 @@ export default function getBlocks() {
         STATEMENT: {},
       },
     },
-    { kind: "block", type: "reactivity_when" },
+    {
+      kind: "block",
+      type: "reactivity_when",
+    },
   ];
 }

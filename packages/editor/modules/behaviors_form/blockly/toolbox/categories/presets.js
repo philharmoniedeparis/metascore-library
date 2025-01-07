@@ -1,4 +1,4 @@
-export default function getBlocks() {
+export function getBlocks() {
   return [
     {
       kind: "block",
