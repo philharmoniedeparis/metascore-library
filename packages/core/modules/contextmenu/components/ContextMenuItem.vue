@@ -1,26 +1,12 @@
 <template>
-  <li
-    :class="[
-      'context-menu-item',
-      { 'has-handler': item.handler, 'has-subitems': item.items?.length },
-    ]"
-    @mouseover="onMouseover"
-    @mouseleave="onMouseleave"
-    @mousedown.prevent
-  >
-    <base-button
-      v-dompurify-html="item.label"
-      type="button"
-      @click="onClick"
-    ></base-button>
+  <li :class="[
+    'context-menu-item',
+    { 'has-handler': item.handler, 'has-subitems': item.items?.length },
+  ]" @mouseover="onMouseover" @mouseleave="onMouseleave" @mousedown.prevent>
+    <base-button v-dompurify-html="item.label" type="button" @click="onClick"></base-button>
 
     <ul v-if="hover" ref="submenu" :style="submenuStyle">
-      <context-menu-item
-        v-for="(subitem, index) in item.items"
-        :key="index"
-        :item="subitem"
-        @click="onSubitemClick"
-      />
+      <context-menu-item v-for="(subitem, index) in item.items" :key="index" :item="subitem" @click="onSubitemClick" />
     </ul>
   </li>
 </template>

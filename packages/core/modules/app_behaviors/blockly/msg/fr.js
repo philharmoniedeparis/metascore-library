@@ -1,4 +1,6 @@
-import Msg from "blockly/msg/fr";
+import * as DeafultMsg from "blockly/msg/fr";
+
+const Msg = { ...DeafultMsg };
 
 Msg.APP_STARTUP = "au chargement de l’application";
 Msg.APP_STARTUP_THEN = "faire %1";

@@ -1,37 +1,19 @@
 <template>
-  <form-group
-    :class="['control', 'animated', { readonly, disabled }]"
-    :data-property="property"
-    :label="label"
-    :description="description"
-    :required="required"
-  >
-    <checkbox-control
-      :model-value="value.animated"
-      :readonly="readonly"
-      :disabled="disabled"
-      data-property="animated"
-      v-bind="itemProps.animated || {}"
-      @update:model-value="updateAnimated($event)"
-    >
+  <form-group :class="['control', 'animated', { readonly, disabled }]" :data-property="property" :label="label"
+    :description="description" :required="required">
+    <checkbox-control :model-value="value.animated" :readonly="readonly" :disabled="disabled" data-property="animated"
+      v-bind="itemProps.animated || {}" @update:model-value="updateAnimated($event)">
       <check-icon class="icon" />
     </checkbox-control>
-    <control-dispatcher
-      :model-value="valueAtTime"
-      :schema="valueSchema"
-      :readonly="readonly"
-      :disabled="disabled"
-      property="value"
-      v-bind="itemProps.value || {}"
-      @update:model-value="updateValue($event)"
-    />
+    <control-dispatcher :model-value="valueAtTime" :schema="valueSchema" :readonly="readonly" :disabled="disabled"
+      property="value" v-bind="itemProps.value || {}" @update:model-value="updateValue($event)" />
   </form-group>
 </template>
 
 <script>
 import { useModule } from "@core/services/module-manager";
 import { round } from "lodash";
-import CheckIcon from "../../assets/icons/animated-check.svg?inline";
+import CheckIcon from "../../assets/icons/animated-check.svg?component";
 
 export default {
   components: {
@@ -160,11 +142,11 @@ export default {
   align-content: flex-start;
 
   :deep(.control[data-property="animated"]) {
-    input + label {
+    input+label {
       background: none;
     }
 
-    input:not(:checked) + label {
+    input:not(:checked)+label {
       opacity: 0.25;
     }
 

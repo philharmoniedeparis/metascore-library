@@ -24,11 +24,7 @@
     <div v-if="$slots.description" class="description">
       <slot v-if="$slots.description" name="description" />
     </div>
-    <div
-      v-else-if="description"
-      v-dompurify-html="description"
-      class="description"
-    />
+    <div v-else-if="description" v-dompurify-html="description" class="description" />
 
     <div v-if="errors?.length" class="errors">
       <error-icon class="icon" />
@@ -43,7 +39,7 @@
 
 <script>
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
-import ErrorIcon from "../assets/icons/error.svg?inline";
+import ErrorIcon from "../assets/icons/error.svg?component";
 
 export default {
   directives: {
@@ -106,7 +102,7 @@ export default {
     justify-content: flex-start;
     gap: 0.75em;
 
-    > label {
+    >label {
       color: var(--metascore-color-white);
       font-weight: normal;
       white-space: nowrap;
@@ -189,6 +185,7 @@ export default {
   }
 
   &.error {
+
     :deep(input),
     :deep(select) {
       outline: 2px solid var(--metascore-color-danger);

@@ -14,12 +14,7 @@
 <template>
   <div class="waveform--zoom">
     <div v-if="message" class="message">{{ message }}</div>
-    <div
-      class="layers"
-      @mousedown="onMousedown"
-      @wheel.prevent="onWheel"
-      @click="onClick"
-    >
+    <div class="layers" @mousedown="onMousedown" @wheel.prevent="onWheel" @click="onClick">
       <canvas ref="wave" class="wave" :width="width" :height="height" />
       <canvas ref="axis" class="axis" :width="width" :height="height" />
       <div class="playhead" :style="playheadStyle"></div>
@@ -364,7 +359,7 @@ export default {
       let base = 1;
       let step = base;
 
-      for (;;) {
+      for (; ;) {
         step = base * steps[index];
         const pixels = this.timeToPixels(step);
 

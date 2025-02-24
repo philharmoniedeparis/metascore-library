@@ -1,15 +1,15 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import MediaPlayer from "@core/modules/media_player";
-import BufferIndicator from "./components/BufferIndicator";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import MediaPlayer from '@core/modules/media_player'
+import BufferIndicator from './components/BufferIndicator.vue'
 
 export default class BufferIndicatorModule extends AbstractModule {
-  static id = "buffer_indicator";
+  static id = 'buffer_indicator'
 
-  static dependencies = [MediaPlayer];
+  static dependencies = [MediaPlayer]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("BufferIndicator", BufferIndicator);
+    app.component('BufferIndicator', BufferIndicator)
   }
 }

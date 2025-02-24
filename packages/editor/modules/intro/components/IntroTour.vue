@@ -27,34 +27,20 @@
 
 <template>
   <div class="intro-tour">
-    <element-highlighter
-      :rect="refRect"
-      :teleport-target="null"
-      :allow-interaction="currentStep?.allowInteraction"
-      :overlay-opacity="configs.overlayOpacity"
-      @click="onHighlighterClick"
-    />
+    <element-highlighter :rect="refRect" :teleport-target="null" :allow-interaction="currentStep?.allowInteraction"
+      :overlay-opacity="configs.overlayOpacity" @click="onHighlighterClick" />
 
     <template v-if="currentStep">
       <div ref="ref" class="intro-tour--ref" :style="refStyle"></div>
 
       <div ref="tooltip" class="intro-tour--tooltip" :style="tooltipStyle">
-        <div
-          v-show="tooltipArrowStyle"
-          ref="tooltip-arrow"
-          class="intro-tour--tooltip--arrow"
-          :style="tooltipArrowStyle"
-        ></div>
+        <div v-show="tooltipArrowStyle" ref="tooltip-arrow" class="intro-tour--tooltip--arrow"
+          :style="tooltipArrowStyle"></div>
         <div class="intro-tour--tooltip--content">
           <div class="intro-tour--tooltip--header">
             <h3 class="title">{{ currentStep.title }}</h3>
-            <base-button
-              v-tooltip
-              class="close"
-              :title="$t('close_title')"
-              :aria-label="$t('close_title')"
-              @click="onCloseClick"
-            >
+            <base-button v-tooltip class="close" :title="$t('close_title')" :aria-label="$t('close_title')"
+              @click="onCloseClick">
               <template #icon><close-icon /></template>
             </base-button>
           </div>
@@ -62,57 +48,27 @@
             <template v-if="error">{{ $t("error") }}</template>
             <template v-else-if="processing">{{ $t("loading") }}</template>
             <template v-else>
-              <div
-                v-if="currentStep.text"
-                v-dompurify-html="currentStep.text"
-                class="intro-tour--text"
-              ></div>
+              <div v-if="currentStep.text" v-dompurify-html="currentStep.text" class="intro-tour--text"></div>
 
-              <checkbox-control
-                v-if="configs.dontShowAgainUrl"
-                v-model="dontShowAgain"
-                class="intro-tour--dontshowagain"
-                :label="$t('dont_show_again')"
-              />
+              <checkbox-control v-if="configs.dontShowAgainUrl" v-model="dontShowAgain"
+                class="intro-tour--dontshowagain" :label="$t('dont_show_again')" />
 
-              <dot-navigation
-                v-if="configs.bullets"
-                v-model="currentStepIndex"
-                class="intro-tour--bullets"
-                :items-count="stepCount"
-              />
+              <dot-navigation v-if="configs.bullets" v-model="currentStepIndex" class="intro-tour--bullets"
+                :items-count="stepCount" />
             </template>
           </div>
 
-          <progress
-            v-if="configs.progress"
-            class="intro-tour--progress"
-            :max="stepCount"
-            :value="currentStepIndex + 1"
-          ></progress>
+          <progress v-if="configs.progress" class="intro-tour--progress" :max="stepCount"
+            :value="currentStepIndex + 1"></progress>
 
           <div class="intro-tour--tooltip--footer">
-            <base-button
-              class="prev"
-              :disabled="isFirstStep"
-              @click="onPrevClick"
-            >
+            <base-button class="prev" :disabled="isFirstStep" @click="onPrevClick">
               {{ $t("buttons.prev") }}
             </base-button>
-            <base-button
-              v-if="isLastStep"
-              type="button"
-              role="primary"
-              @click="onCloseClick"
-            >
+            <base-button v-if="isLastStep" type="button" role="primary" @click="onCloseClick">
               {{ $t("buttons.close") }}
             </base-button>
-            <base-button
-              v-else
-              type="button"
-              role="primary"
-              @click="onNextClick"
-            >
+            <base-button v-else type="button" role="primary" @click="onNextClick">
               {{ $t("buttons.next") }}
             </base-button>
           </div>
@@ -133,7 +89,7 @@ import {
 import { debounce } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "../store";
-import CloseIcon from "../assets/icons/close.svg?inline";
+import CloseIcon from "../assets/icons/close.svg?component";
 
 export default {
   components: {
@@ -569,6 +525,7 @@ export default {
   &::-webkit-progress-value {
     background-color: var(--metascore-color-white);
   }
+
   &::-moz-progress-bar {
     background-color: var(--metascore-color-white);
   }

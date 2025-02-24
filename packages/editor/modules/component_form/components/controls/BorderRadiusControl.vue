@@ -14,115 +14,46 @@
 </i18n>
 
 <template>
-  <form-group
-    :class="[
-      'control',
-      'border-radius',
-      { readonly, disabled, empty: !modelValue },
-    ]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <text-control
-      ref="opener"
-      v-model="value"
-      class="opener"
-      :autofocus="autofocus"
-      :readonly="readonly"
-      :disabled="disabled"
-      @click="onOpenerClick"
-    />
+  <form-group :class="[
+    'control',
+    'border-radius',
+    { readonly, disabled, empty: !modelValue },
+  ]" :label="label" :label-for="inputId" :description="description" :required="required">
+    <text-control ref="opener" v-model="value" class="opener" :autofocus="autofocus" :readonly="readonly"
+      :disabled="disabled" @click="onOpenerClick" />
 
     <template v-if="$slots.label" #label>
       <slot name="label" />
     </template>
 
-    <div
-      v-if="showOverlay"
-      ref="overlay"
-      class="overlay"
-      tabindex="-1"
-      :style="overlayStyle"
-    >
+    <div v-if="showOverlay" ref="overlay" class="overlay" tabindex="-1" :style="overlayStyle">
       <div class="shape">
         <template v-for="(subvalue, key) in internalValue" :key="key">
-          <number-control
-            v-model="subvalue.x"
-            class="prop-control"
-            :min="0"
-            :data-prop="key"
-            data-axis="x"
-          />
-          <number-control
-            v-model="subvalue.y"
-            class="prop-control"
-            :min="0"
-            :data-prop="key"
-            data-axis="y"
-          />
+          <number-control v-model="subvalue.x" class="prop-control" :min="0" :data-prop="key" data-axis="x" />
+          <number-control v-model="subvalue.y" class="prop-control" :min="0" :data-prop="key" data-axis="y" />
         </template>
 
         <div ref="preview" class="preview" :style="previewStyle">
-          <div
-            class="resize-handle"
-            data-prop="top-left"
-            data-axis="x"
-            :style="{ left: `${internalValue['top-left'].x}px`, top: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-left"
-            data-axis="y"
-            :style="{ left: 0, top: `${internalValue['top-left'].y}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-right"
-            data-axis="x"
-            data-reversed
-            :style="{ right: `${internalValue['top-right'].x}px`, top: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="top-right"
-            data-axis="y"
-            :style="{ right: 0, top: `${internalValue['top-right'].y}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-left"
-            data-axis="x"
-            :style="{ left: `${internalValue['bottom-left'].x}px`, bottom: 0 }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-left"
-            data-axis="y"
-            data-reversed
-            :style="{ left: 0, bottom: `${internalValue['bottom-left'].y}px` }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-right"
-            data-axis="x"
-            data-reversed
-            :style="{
-              right: `${internalValue['bottom-right'].x}px`,
-              bottom: 0,
-            }"
-          ></div>
-          <div
-            class="resize-handle"
-            data-prop="bottom-right"
-            data-axis="y"
-            data-reversed
-            :style="{
-              right: 0,
-              bottom: `${internalValue['bottom-right'].y}px`,
-            }"
-          ></div>
+          <div class="resize-handle" data-prop="top-left" data-axis="x"
+            :style="{ left: `${internalValue['top-left'].x}px`, top: 0 }"></div>
+          <div class="resize-handle" data-prop="top-left" data-axis="y"
+            :style="{ left: 0, top: `${internalValue['top-left'].y}px` }"></div>
+          <div class="resize-handle" data-prop="top-right" data-axis="x" data-reversed
+            :style="{ right: `${internalValue['top-right'].x}px`, top: 0 }"></div>
+          <div class="resize-handle" data-prop="top-right" data-axis="y"
+            :style="{ right: 0, top: `${internalValue['top-right'].y}px` }"></div>
+          <div class="resize-handle" data-prop="bottom-left" data-axis="x"
+            :style="{ left: `${internalValue['bottom-left'].x}px`, bottom: 0 }"></div>
+          <div class="resize-handle" data-prop="bottom-left" data-axis="y" data-reversed
+            :style="{ left: 0, bottom: `${internalValue['bottom-left'].y}px` }"></div>
+          <div class="resize-handle" data-prop="bottom-right" data-axis="x" data-reversed :style="{
+            right: `${internalValue['bottom-right'].x}px`,
+            bottom: 0,
+          }"></div>
+          <div class="resize-handle" data-prop="bottom-right" data-axis="y" data-reversed :style="{
+            right: 0,
+            bottom: `${internalValue['bottom-right'].y}px`,
+          }"></div>
         </div>
       </div>
 
@@ -130,12 +61,7 @@
         <base-button class="apply" role="primary" @click="onApplyClick">
           {{ $t("apply_button") }}
         </base-button>
-        <base-button
-          v-if="!required"
-          class="clear"
-          role="secondary"
-          @click="onClearClick"
-        >
+        <base-button v-if="!required" class="clear" role="secondary" @click="onClearClick">
           {{ $t("clear_button") }}
         </base-button>
         <base-button class="cancel" role="secondary" @click="onCancelClick">
@@ -389,30 +315,37 @@ export default {
         grid-area: top-left-x;
         align-self: flex-start;
       }
+
       &[data-prop="top-left"][data-axis="y"] {
         grid-area: top-left-y;
         align-self: flex-start;
       }
+
       &[data-prop="top-right"][data-axis="x"] {
         grid-area: top-right-x;
         align-self: flex-start;
       }
+
       &[data-prop="top-right"][data-axis="y"] {
         grid-area: top-right-y;
         align-self: flex-start;
       }
+
       &[data-prop="bottom-left"][data-axis="x"] {
         grid-area: bottom-left-x;
         align-self: flex-end;
       }
+
       &[data-prop="bottom-left"][data-axis="y"] {
         grid-area: bottom-left-y;
         align-self: flex-end;
       }
+
       &[data-prop="bottom-right"][data-axis="x"] {
         grid-area: bottom-right-x;
         align-self: flex-end;
       }
+
       &[data-prop="bottom-right"][data-axis="y"] {
         grid-area: bottom-right-y;
         align-self: flex-end;
@@ -440,12 +373,15 @@ export default {
         &.top {
           top: 0;
         }
+
         &.right {
           left: 100%;
         }
+
         &.bottom {
           top: 100%;
         }
+
         &.left {
           left: 0;
         }

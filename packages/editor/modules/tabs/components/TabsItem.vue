@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="active || (keepAlive && initialized)"
-    v-show="active"
-    class="tab-item"
-  >
+  <div v-if="active || (keepAlive && initialized)" v-show="active" class="tab-item">
     <slot />
   </div>
 </template>

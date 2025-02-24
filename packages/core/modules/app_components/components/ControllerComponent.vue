@@ -26,12 +26,7 @@
         <span class="sr-only">{{ $t("buttons.rewind") }}</span>
       </button>
 
-      <button
-        v-if="mediaPlaying"
-        type="button"
-        data-action="pause"
-        @click="onPauseClick"
-      >
+      <button v-if="mediaPlaying" type="button" data-action="pause" @click="onPauseClick">
         <span aria-hidden="true"><pause-icon class="icon" /></span>
         <span class="sr-only">{{ $t("buttons.pause") }}</span>
       </button>
@@ -46,10 +41,10 @@
 
 <script>
 import { useModule } from "@core/services/module-manager";
-import RewindIcon from "../assets/icons/controller/rewind.svg?inline";
-import PlayIcon from "../assets/icons/controller/play.svg?inline";
-import PauseIcon from "../assets/icons/controller/pause.svg?inline";
-import LogoIcon from "../assets/icons/logo-metascore.svg?inline";
+import RewindIcon from "../assets/icons/controller/rewind.svg?component";
+import PlayIcon from "../assets/icons/controller/play.svg?component";
+import PauseIcon from "../assets/icons/controller/pause.svg?component";
+import LogoIcon from "../assets/icons/logo-metascore.svg?component";
 
 export default {
   components: {

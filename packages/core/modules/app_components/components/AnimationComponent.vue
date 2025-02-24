@@ -184,6 +184,7 @@ export default {
     :deep(.color1 path) {
       fill: var(--color1);
     }
+
     :deep(.color2 path) {
       fill: var(--color2);
     }

@@ -1,54 +1,22 @@
 <template>
-  <form-group
-    :class="[
-      'control',
-      'number',
-      { readonly, disabled },
-      spinners ? 'has-spinners' : null,
-      spinners ? `${spinnersDirection}-spinners` : null,
-      spinners && flipSpinners ? 'flip-spinners' : null,
-    ]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <div
-      class="input-container"
-      @focusin="onInputFocus"
-      @focusout="onInputBlur"
-    >
-      <input
-        :id="inputId"
-        ref="input"
-        v-model="value"
-        v-autofocus="autofocus"
-        type="number"
-        :step="step"
-        :min="min"
-        :max="max"
-        :placeholder="placeholder"
-        :readonly="readonly"
-        :disabled="disabled"
-        @change="onInputChange"
-      />
+  <form-group :class="[
+    'control',
+    'number',
+    { readonly, disabled },
+    spinners ? 'has-spinners' : null,
+    spinners ? `${spinnersDirection}-spinners` : null,
+    spinners && flipSpinners ? 'flip-spinners' : null,
+  ]" :label="label" :label-for="inputId" :description="description" :required="required">
+    <div class="input-container" @focusin="onInputFocus" @focusout="onInputBlur">
+      <input :id="inputId" ref="input" v-model="value" v-autofocus="autofocus" type="number" :step="step" :min="min"
+        :max="max" :placeholder="placeholder" :readonly="readonly" :disabled="disabled" @change="onInputChange" />
       <div v-if="spinners && !readonly && !disabled" class="spinners">
-        <base-button
-          type="button"
-          tabindex="-1"
-          @mousedown="onSpinUpMousedown"
-          @mouseup="onSpinUpMouseup"
-          @mouseout="onSpinUpMouseout"
-        >
+        <base-button type="button" tabindex="-1" @mousedown="onSpinUpMousedown" @mouseup="onSpinUpMouseup"
+          @mouseout="onSpinUpMouseout">
           <template #icon><spin-up-icon /></template>
         </base-button>
-        <base-button
-          type="button"
-          tabindex="-1"
-          @mousedown="onSpinDownMousedown"
-          @mouseup="onSpinDownMouseup"
-          @mouseout="onSpinDownMouseout"
-        >
+        <base-button type="button" tabindex="-1" @mousedown="onSpinDownMousedown" @mouseup="onSpinDownMouseup"
+          @mouseout="onSpinDownMouseout">
           <template #icon><spin-down-icon /></template>
         </base-button>
       </div>
@@ -64,8 +32,8 @@
 import { v4 as uuid } from "uuid";
 import { round } from "lodash";
 import { countDecimals } from "@core/utils/number";
-import SpinUpIcon from "../assets/icons/number-up.svg?inline";
-import SpinDownIcon from "../assets/icons/number-down.svg?inline";
+import SpinUpIcon from "../assets/icons/number-up.svg?component";
+import SpinDownIcon from "../assets/icons/number-down.svg?component";
 
 export default {
   components: {
@@ -252,6 +220,7 @@ export default {
     appearance: none;
     margin: 0;
   }
+
   /* Firefox */
   input {
     appearance: textfield;
@@ -277,12 +246,14 @@ export default {
   }
 
   &.has-spinners {
+
     // #\9 is used here to increase specificity.
     input:not(#\9) {
       padding-right: 1.3125em;
     }
 
     &.horizontal-spinners {
+
       // #\9 is used here to increase specificity.
       input:not(#\9) {
         padding-right: 2.3125em;

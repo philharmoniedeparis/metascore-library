@@ -14,17 +14,10 @@
 </i18n>
 
 <template>
-  <form-group
-    :class="['control', 'cursor-keyframes', { disabled, recording }]"
-    :description="description"
-  >
+  <form-group :class="['control', 'cursor-keyframes', { disabled, recording }]" :description="description">
     <base-button type="button" @click="onButtonClick">
       {{ formattedLabel }}
-      <span
-        class="badge"
-        role="status"
-        :aria-label="$tc('badge_label', keyframesCount)"
-      >
+      <span class="badge" role="status" :aria-label="$tc('badge_label', keyframesCount)">
         {{ keyframesCount }}
       </span>
     </base-button>
@@ -33,17 +26,9 @@
       <cursor-keyframes-editor v-model="value" />
     </teleport>
 
-    <element-highlighter
-      v-if="recording"
-      :[scopeAttribute]="''"
-      class="cursor-keyframes-control-highlighter"
-      :border-width="0"
-      :rect="highlighterRect"
-      :teleport-target="appRendererEl"
-      :overlay-opacity="0.5"
-      :allow-interaction="true"
-      @click="onHighlighterClick"
-    />
+    <element-highlighter v-if="recording" :[scopeAttribute]="''" class="cursor-keyframes-control-highlighter"
+      :border-width="0" :rect="highlighterRect" :teleport-target="appRendererEl" :overlay-opacity="0.5"
+      :allow-interaction="true" @click="onHighlighterClick" />
   </form-group>
 </template>
 
@@ -167,10 +152,12 @@ export default {
 <style lang="scss" scoped>
 .control {
   @keyframes pulse {
+
     0%,
     100% {
       opacity: 1;
     }
+
     50% {
       opacity: 0.3;
     }

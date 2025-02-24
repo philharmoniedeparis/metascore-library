@@ -13,43 +13,23 @@
 
 <template>
   <div class="color-picker">
-    <div
-      ref="palette"
-      class="palette"
-      :style="`background: ${paletteBackground};`"
-    >
-      <div
-        class="thumb"
-        :style="`background-color: ${paletteThumbColor}; left: ${paletteThumbLeft}; top: ${paletteThumbTop}; `"
-      ></div>
+    <div ref="palette" class="palette" :style="`background: ${paletteBackground};`">
+      <div class="thumb"
+        :style="`background-color: ${paletteThumbColor}; left: ${paletteThumbLeft}; top: ${paletteThumbTop}; `"></div>
     </div>
     <div class="preview" :style="`color: ${previewColor};`"></div>
     <div ref="hue" class="hue">
-      <div
-        class="thumb"
-        :style="`background-color: ${hueThumbColor}; left: ${hueThumbLeft};`"
-      ></div>
+      <div class="thumb" :style="`background-color: ${hueThumbColor}; left: ${hueThumbLeft};`"></div>
     </div>
     <div ref="opacity" class="opacity">
-      <div
-        class="thumb"
-        :style="`background-color: ${opacityThumbColor}; left: ${opacityThumbLeft};`"
-      ></div>
+      <div class="thumb" :style="`background-color: ${opacityThumbColor}; left: ${opacityThumbLeft};`"></div>
     </div>
     <div class="format">
       <text-control ref="text" v-model="text" :lazy="true" />
-      <base-button
-        :class="['hexa', { selected: format == 'hexa' }]"
-        type="button"
-        @click="format = 'hexa'"
-      >
+      <base-button :class="['hexa', { selected: format == 'hexa' }]" type="button" @click="format = 'hexa'">
         {{ $t("hexa_button") }}
       </base-button>
-      <base-button
-        :class="['rgba', { selected: format == 'rgba' }]"
-        type="button"
-        @click="format = 'rgba'"
-      >
+      <base-button :class="['rgba', { selected: format == 'rgba' }]" type="button" @click="format = 'rgba'">
         {{ $t("rgba_button") }}
       </base-button>
     </div>
@@ -311,7 +291,7 @@ export default {
     }
 
     &::before {
-      @include transparency-grid;
+      @include mixins.transparency-grid;
       background-size: 1em;
     }
 
@@ -332,21 +312,19 @@ export default {
 
   .hue {
     grid-area: hue;
-    background: linear-gradient(
-      90deg,
-      #f00,
-      #ff0,
-      #0f0,
-      #0ff,
-      #00f,
-      #f0f,
-      #f00
-    );
+    background: linear-gradient(90deg,
+        #f00,
+        #ff0,
+        #0f0,
+        #0ff,
+        #00f,
+        #f0f,
+        #f00);
   }
 
   .opacity {
     grid-area: opacity;
-    @include transparency-grid;
+    @include mixins.transparency-grid;
     background-size: 0.5em;
 
     &::before {
@@ -356,11 +334,9 @@ export default {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--metascore-color-black)
-      );
+      background: linear-gradient(90deg,
+          transparent,
+          var(--metascore-color-black));
       border-radius: 0.5em;
     }
   }

@@ -14,23 +14,10 @@
 </i18n>
 
 <template>
-  <form-group
-    :class="['control', 'color', { readonly, disabled, empty }]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <base-button
-      :id="inputId"
-      ref="opener"
-      v-autofocus="autofocus"
-      type="button"
-      class="opener"
-      :style="openerStyle"
-      :disabled="disabled"
-      @click="onOpenerClick"
-    >
+  <form-group :class="['control', 'color', { readonly, disabled, empty }]" :label="label" :label-for="inputId"
+    :description="description" :required="required">
+    <base-button :id="inputId" ref="opener" v-autofocus="autofocus" type="button" class="opener" :style="openerStyle"
+      :disabled="disabled" @click="onOpenerClick">
       <span v-if="!modelValue" aria-hidden="true">
         <clear-icon class="icon" />
       </span>
@@ -40,34 +27,20 @@
       <slot name="label" />
     </template>
 
-    <div
-      v-if="showOverlay"
-      ref="overlay"
-      class="overlay"
-      tabindex="-1"
-      :style="overlayStyle"
-    >
+    <div v-if="showOverlay" ref="overlay" class="overlay" tabindex="-1" :style="overlayStyle">
       <tabs-container>
         <tabs-item v-if="picker" title="Picker" :keep-alive="true">
           <color-picker v-model="internalValue" />
         </tabs-item>
         <tabs-item v-if="swatches" title="Swatches" :keep-alive="true">
-          <color-swatches
-            v-model="internalValue"
-            v-bind="isArray(swatches) ? { swatches } : null"
-          />
+          <color-swatches v-model="internalValue" v-bind="isArray(swatches) ? { swatches } : null" />
         </tabs-item>
       </tabs-container>
       <div class="buttons">
         <base-button class="apply" role="primary" @click="onApplyClick">
           {{ $t("apply_button") }}
         </base-button>
-        <base-button
-          v-if="!required"
-          class="clear"
-          role="secondary"
-          @click="onClearClick"
-        >
+        <base-button v-if="!required" class="clear" role="secondary" @click="onClearClick">
           {{ $t("clear_button") }}
         </base-button>
         <base-button class="cancel" role="secondary" @click="onCancelClick">
@@ -91,7 +64,7 @@ import { v4 as uuid } from "uuid";
 import { isArray } from "lodash";
 import ColorPicker from "./color/ColorPicker.vue";
 import ColorSwatches from "./color/ColorSwatches.vue";
-import ClearIcon from "../assets/icons/color-clear.svg?inline";
+import ClearIcon from "../assets/icons/color-clear.svg?component";
 
 export default {
   components: {
@@ -262,7 +235,7 @@ export default {
     height: 1.5em;
     padding: 0;
     vertical-align: middle;
-    @include transparency-grid;
+    @include mixins.transparency-grid;
     background-size: 0.75em;
     color: transparent;
     border-radius: 0.25em;

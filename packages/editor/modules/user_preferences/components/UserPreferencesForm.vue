@@ -60,34 +60,16 @@
 </i18n>
 
 <template>
-  <modal-form
-    :title="$t('title')"
-    :validate="false"
-    @submit="onSubmit"
-    @close="onCancel"
-  >
-    <schema-form
-      v-if="model"
-      class="user-preferences-form"
-      :schema="schema"
-      :layout="layout"
-      :values="model.data"
-      :validator="validator"
-      :errors="errors"
-      @update:model-value="onUpdate($event)"
-    />
+  <modal-form :title="$t('title')" :validate="false" @submit="onSubmit" @close="onCancel">
+    <schema-form v-if="model" class="user-preferences-form" :schema="schema" :layout="layout" :values="model.data"
+      :validator="validator" :errors="errors" @update:model-value="onUpdate($event)" />
 
     <template #actions="props">
       <base-button :form="props.form" role="primary">
         {{ $t("apply_button") }}
       </base-button>
 
-      <base-button
-        type="button"
-        :form="props.form"
-        role="secondary"
-        @click="onCancel"
-      >
+      <base-button type="button" :form="props.form" role="secondary" @click="onCancel">
         {{ $t("cancel_button") }}
       </base-button>
     </template>
@@ -206,7 +188,7 @@ export default {
     gap: 0.5em;
     border: 1px solid var(--metascore-color-bg-tertiary);
 
-    > legend {
+    >legend {
       display: inline-block;
       width: auto;
       padding: 0.25em 0.5em;

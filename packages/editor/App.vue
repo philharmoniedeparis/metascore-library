@@ -78,54 +78,33 @@
 </i18n>
 
 <template>
-  <div
-    v-hotkey.prevent="hotkeys"
-    :class="[
-      'metaScore-editor',
-      {
-        loading,
-        preview,
-        'preview-persistant': previewPersistant,
-        'app-title-focused': appTitleFocused,
-        'libraries-expanded': librariesExpanded,
-        'behaviors-open': behaviorsOpen,
-        'latest-revision': isLatestRevision,
-      },
-    ]"
-    @contextmenu="onContextmenu"
-  >
+  <div v-hotkey.prevent="hotkeys" :class="[
+    'metaScore-editor',
+    {
+      loading,
+      preview,
+      'preview-persistant': previewPersistant,
+      'app-title-focused': appTitleFocused,
+      'libraries-expanded': librariesExpanded,
+      'behaviors-open': behaviorsOpen,
+      'latest-revision': isLatestRevision,
+    },
+  ]" @contextmenu="onContextmenu">
     <div class="top">
       <nav class="main-menu">
         <div class="left">
-          <base-button
-            v-tooltip
-            :disabled="preview || !dirty || !isLatestRevision"
-            class="save"
-            :title="`${$t('save')} [${formatHotkey('mod+s')}]`"
-            @click="save"
-          >
+          <base-button v-tooltip :disabled="preview || !dirty || !isLatestRevision" class="save"
+            :title="`${$t('save')} [${formatHotkey('mod+s')}]`" @click="save">
             <template #icon><save-icon /></template>
           </base-button>
-          <base-button
-            v-tooltip
-            :disabled="preview || !dirty || !isLatestRevision"
-            class="revert"
-            :title="`${$t('revert')} [${formatHotkey('mod+r')}]`"
-            @click="revert"
-          >
+          <base-button v-tooltip :disabled="preview || !dirty || !isLatestRevision" class="revert"
+            :title="`${$t('revert')} [${formatHotkey('mod+r')}]`" @click="revert">
             <template #icon><revert-icon /></template>
           </base-button>
           <history-controller :disabled="preview || !isLatestRevision" />
-          <text-control
-            v-model="appTitle"
-            v-tooltip
-            :lazy="true"
-            :title="$t('app_title')"
-            :disabled="preview || !isLatestRevision"
-            class="app-title"
-            @focusin="onAppTitleFocusin"
-            @focusout="onAppTitleFocusout"
-          />
+          <text-control v-model="appTitle" v-tooltip :lazy="true" :title="$t('app_title')"
+            :disabled="preview || !isLatestRevision" class="app-title" @focusin="onAppTitleFocusin"
+            @focusout="onAppTitleFocusout" />
         </div>
         <div class="center">
           <app-zoom-controller :disabled="preview && !previewPersistant" />
@@ -133,21 +112,10 @@
           <app-dimensions-controller :disabled="preview" />
         </div>
         <div class="right">
-          <revision-selector
-            :active="activeRevision"
-            :revisions="revisions"
-            :latest="latestRevision"
-            :disabled="preview"
-            @update:active="loadRevision"
-            @restore="onRevisionSelectorRestore"
-          />
-          <base-button
-            v-tooltip
-            :disabled="preview || !isLatestRevision"
-            class="user-preferences"
-            :title="`${$t('preferences')} [${formatHotkey('mod+p')}]`"
-            @click="showPreferencesForm = true"
-          >
+          <revision-selector :active="activeRevision" :revisions="revisions" :latest="latestRevision"
+            :disabled="preview" @update:active="loadRevision" @restore="onRevisionSelectorRestore" />
+          <base-button v-tooltip :disabled="preview || !isLatestRevision" class="user-preferences"
+            :title="`${$t('preferences')} [${formatHotkey('mod+p')}]`" @click="showPreferencesForm = true">
             <template #icon><user-preferences-icon /></template>
           </base-button>
         </div>
@@ -162,10 +130,7 @@
         <tabs-item :title="$t('assets_library_title')" :keep-alive="true">
           <assets-library />
         </tabs-item>
-        <tabs-item
-          :title="$t('shared_assets_library_title')"
-          :keep-alive="true"
-        >
+        <tabs-item :title="$t('shared_assets_library_title')" :keep-alive="true">
           <shared-assets-library @click:import="onSharedAssetsImportClick" />
         </tabs-item>
         <template v-if="activeLibrariesTab === 2" #tabs-end>
@@ -175,24 +140,19 @@
     </resizable-pane>
 
     <div class="center">
-      <app-preview
-        :grid-color="userPreferences?.['workspace.grid-color']"
+      <app-preview :grid-color="userPreferences?.['workspace.grid-color']"
         :grid-step="userPreferences?.['workspace.grid-step']"
         :snap-to-grid="userPreferences?.['workspace.snap-to-grid']"
         :snap-to-siblings="userPreferences?.['workspace.snap-to-siblings']"
         :snap-range="userPreferences?.['workspace.snap-range']"
-        :disable-component-interactions="disableComponentInteractions"
-      />
+        :disable-component-interactions="disableComponentInteractions" />
       <components-breadcrumb />
     </div>
 
     <resizable-pane class="right" :left="{ collapse: true }">
       <tabs-container v-model:active-tab="activeFormsTab">
         <tabs-item :title="$t('component_form_title')">
-          <component-form
-            :assets="assets"
-            :first-level-components="firstLevelComponents"
-          ></component-form>
+          <component-form :assets="assets" :first-level-components="firstLevelComponents"></component-form>
         </tabs-item>
         <tabs-item :title="$t('behaviors_form_title')">
           <behaviors-form></behaviors-form>
@@ -221,54 +181,31 @@
     </resizable-pane>
 
     <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
-    <progress-indicator
-      v-else-if="saving"
-      :text="$t('saving_indicator_label')"
-    />
+    <progress-indicator v-else-if="saving" :text="$t('saving_indicator_label')" />
 
-    <confirm-dialog
-      v-if="showRevertConfirm"
-      :submit-label="$t('revert_confirm.submit_button')"
-      :cancel-label="$t('revert_confirm.cancel_button')"
-      @submit="onRevertSubmit"
-      @cancel="onRevertCancel"
-    >
+    <confirm-dialog v-if="showRevertConfirm" :submit-label="$t('revert_confirm.submit_button')"
+      :cancel-label="$t('revert_confirm.cancel_button')" @submit="onRevertSubmit" @cancel="onRevertCancel">
       <p>{{ $t("revert_confirm.confirm_text") }}</p>
     </confirm-dialog>
 
-    <confirm-dialog
-      v-if="showLoadRevisionConfirm"
-      :submit-label="$t('load_revision_confirm.submit_button')"
-      :cancel-label="$t('load_revision_confirm.cancel_button')"
-      @submit="onLoadRevisionSubmit"
-      @cancel="onLoadRevisionCancel"
-    >
+    <confirm-dialog v-if="showLoadRevisionConfirm" :submit-label="$t('load_revision_confirm.submit_button')"
+      :cancel-label="$t('load_revision_confirm.cancel_button')" @submit="onLoadRevisionSubmit"
+      @cancel="onLoadRevisionCancel">
       <p>{{ $t("revert_confirm.confirm_text") }}</p>
     </confirm-dialog>
 
-    <confirm-dialog
-      v-if="showAutoSaveRestoreConfirm"
-      :submit-label="$t('autosave_confirm.submit_button')"
-      :cancel-label="$t('autosave_confirm.cancel_button')"
-      @submit="onAutoSaveRestoreSubmit"
-      @cancel="onAutoSaveRestoreCancel"
-    >
+    <confirm-dialog v-if="showAutoSaveRestoreConfirm" :submit-label="$t('autosave_confirm.submit_button')"
+      :cancel-label="$t('autosave_confirm.cancel_button')" @submit="onAutoSaveRestoreSubmit"
+      @cancel="onAutoSaveRestoreCancel">
       <p>{{ $t("autosave_confirm.confirm_text") }}</p>
     </confirm-dialog>
     <auto-save-indicator v-else :enabled="isLatestRevision" />
 
-    <user-preferences-form
-      v-if="showPreferencesForm"
-      @submit="onPreferencesSubmit"
-      @close="onPreferencesClose"
-    />
+    <user-preferences-form v-if="showPreferencesForm" @submit="onPreferencesSubmit" @close="onPreferencesClose" />
 
     <hotkey-list v-if="showHotkeyList" @close="showHotkeyList = false" />
 
-    <context-menu
-      v-model:show="showContextmenu"
-      :position="contextmenuPosition"
-    >
+    <context-menu v-model:show="showContextmenu" :position="contextmenuPosition">
       <template #footer>
         {{ `metaScore Editor ${version}` }}
       </template>
@@ -282,10 +219,10 @@
 import { computed, unref } from "vue";
 import useStore from "./store";
 import { useModule } from "@core/services/module-manager";
-import packageInfo from "../../package.json";
-import SaveIcon from "./assets/icons/save.svg?inline";
-import RevertIcon from "./assets/icons/revert.svg?inline";
-import UserPreferencesIcon from "./assets/icons/user-preferences.svg?inline";
+import { version } from "../../package.json";
+import SaveIcon from "./assets/icons/save.svg?component";
+import RevertIcon from "./assets/icons/revert.svg?component";
+import UserPreferencesIcon from "./assets/icons/user-preferences.svg?component";
 
 export default {
   components: {
@@ -377,7 +314,7 @@ export default {
   },
   data() {
     return {
-      version: packageInfo.version,
+      version,
       overlaysTarget: null,
       appTitleFocused: false,
       activeLibrariesTab: 0,
@@ -601,9 +538,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import "normalize.css";
-@import "source-sans/source-sans-3VF.css";
-@import "./scss/theme.scss";
+@use "./scss/theme.scss";
+
+@import 'normalize.css';
+@import 'source-sans/source-sans-3VF.css';
 </style>
 
 <style lang="scss" scoped>
@@ -628,8 +566,7 @@ export default {
   &,
   :deep(*) {
     scrollbar-width: thin;
-    scrollbar-color: var(--metascore-scrollbar-thumb-color)
-      var(--metascore-scrollbar-track-color);
+    scrollbar-color: var(--metascore-scrollbar-thumb-color) var(--metascore-scrollbar-track-color);
 
     ::-webkit-scrollbar {
       appearance: none;
@@ -650,10 +587,10 @@ export default {
   }
 
   :deep(.sr-only) {
-    @include sr-only;
+    @include mixins.sr-only;
   }
 
-  > .top {
+  >.top {
     grid-area: top;
     background: var(--metascore-color-bg-tertiary);
 
@@ -682,9 +619,9 @@ export default {
         }
       }
 
-      > .left,
-      > .center,
-      > .right {
+      >.left,
+      >.center,
+      >.right {
         display: flex;
         flex-direction: row;
         flex: 1;
@@ -693,11 +630,11 @@ export default {
         gap: 1em;
       }
 
-      > .center {
+      >.center {
         justify-content: center;
       }
 
-      > .right {
+      >.right {
         justify-content: flex-end;
       }
 
@@ -715,14 +652,14 @@ export default {
     }
   }
 
-  > .left {
+  >.left {
     grid-area: left;
     width: 20em;
     min-width: 15em;
     max-width: 25vw;
   }
 
-  > .center {
+  >.center {
     display: flex;
     grid-area: center;
     flex-direction: column;
@@ -734,14 +671,14 @@ export default {
     }
   }
 
-  > .right {
+  >.right {
     grid-area: right;
     width: 20em;
     min-width: 20em;
     max-width: 50vw;
   }
 
-  > .bottom {
+  >.bottom {
     grid-area: bottom;
     display: flex;
     flex-direction: column;
@@ -751,7 +688,7 @@ export default {
     max-height: 75vh;
     overflow-y: hidden;
 
-    > .top {
+    >.top {
       display: grid;
       grid-template-columns: var(--metascore-controller-left-width) 1fr;
       grid-template-rows: 15% 1fr;
@@ -785,7 +722,7 @@ export default {
       }
     }
 
-    > .middle {
+    >.middle {
       flex: 1 1 auto;
       overflow: hidden;
       position: relative;
@@ -793,7 +730,7 @@ export default {
       scroll-behavior: smooth;
       scroll-padding-top: var(--metascore-controller-bottom-sticky-top-height);
 
-      > .sticky-top {
+      >.sticky-top {
         position: sticky;
         top: 0;
         left: 0;
@@ -825,7 +762,7 @@ export default {
       }
     }
 
-    > .bottom {
+    >.bottom {
       display: flex;
       flex-direction: row;
       flex: 0 0 var(--metascore-controller-bottom-sticky-bottom-height);
@@ -846,16 +783,17 @@ export default {
 
   &.app-title-focused {
     .main-menu {
-      > .left > :not(.app-title),
-      > .center,
-      > .right {
+
+      >.left> :not(.app-title),
+      >.center,
+      >.right {
         display: none;
       }
     }
   }
 
   &.behaviors-open {
-    > .right {
+    >.right {
       min-width: 60em;
       max-width: 80vw;
     }
@@ -866,7 +804,7 @@ export default {
     grid-template-rows: min-content auto;
     grid-template-areas: "top" "left";
 
-    > .left {
+    >.left {
       width: auto !important;
       max-width: none;
       padding: 0;
@@ -876,19 +814,20 @@ export default {
       }
     }
 
-    > .center,
-    > .right,
-    > .bottom {
+    >.center,
+    >.right,
+    >.bottom {
       display: none;
     }
   }
 
   &.preview:not(.preview-persistant) {
-    > .left,
-    > .right,
-    > .bottom .media-selector :deep(button),
-    > .bottom .timeline,
-    > .bottom > .bottom {
+
+    >.left,
+    >.right,
+    >.bottom .media-selector :deep(button),
+    >.bottom .timeline,
+    >.bottom>.bottom {
       pointer-events: none;
       opacity: 0.25;
     }
@@ -898,12 +837,12 @@ export default {
   &:not(.latest-revision) {
     grid-template-columns: auto 1fr auto;
 
-    > .left,
-    > .right {
+    >.left,
+    >.right {
       display: none;
     }
 
-    > .bottom {
+    >.bottom {
       display: grid;
       height: auto !important;
       min-height: 0;
@@ -911,21 +850,23 @@ export default {
       grid-template-rows: 15% 1fr;
       z-index: 1;
 
-      > .top {
+      >.top {
         display: contents;
 
         .playback-time {
           grid-area: 1 / 2 / span 2 / 2;
         }
+
         .buffer-indicator {
           grid-area: 1 / 3;
         }
+
         .waveform-overview {
           grid-area: 2 / 3;
         }
       }
 
-      > .middle {
+      >.middle {
         display: contents;
 
         .sticky-top {
@@ -968,7 +909,7 @@ export default {
 
       .timeline,
       .waveform--zoom,
-      > .bottom {
+      >.bottom {
         display: none;
       }
     }

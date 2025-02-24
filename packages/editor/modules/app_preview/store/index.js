@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { unref } from "vue";
+import { unref, toRaw } from "vue";
 import { round } from "lodash";
 import { useModule } from "@core/services/module-manager";
 
@@ -210,7 +210,7 @@ export default defineStore("app-preview", {
         setOverrides(
           component,
           FROZEN_OVERRIDES_KEY,
-          structuredClone(component.data),
+          structuredClone(toRaw(component.data)),
           FROZEN_OVERRIDES_PRIORITY
         );
       }
@@ -228,7 +228,7 @@ export default defineStore("app-preview", {
       } = useModule("app_components");
 
       const recursiveCopy = (component) => {
-        const copy = structuredClone(component.data);
+        const copy = structuredClone(toRaw(component.data));
         delete copy.id;
 
         const property = getComponentChildrenProperty(component);

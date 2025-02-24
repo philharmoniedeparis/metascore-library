@@ -1,13 +1,7 @@
 <template>
   <div class="waveform--zoom-controller">
-    <base-button
-      v-tooltip
-      type="button"
-      title="Zoom out"
-      class="zoom-out"
-      @mousedown="onZoomOutMousedown"
-      @mouseup="onButtonMouseup"
-    >
+    <base-button v-tooltip type="button" title="Zoom out" class="zoom-out" @mousedown="onZoomOutMousedown"
+      @mouseup="onButtonMouseup">
       <template #icon><zoom-icon /></template>
     </base-button>
 
@@ -15,14 +9,8 @@
       <div class="thumb" :style="`left: ${sliderThumbLeft}%;`"></div>
     </div>
 
-    <base-button
-      v-tooltip
-      type="button"
-      title="Zoom in"
-      class="zoom-in"
-      @mousedown="onZoomInMousedown"
-      @mouseup="onButtonMouseup"
-    >
+    <base-button v-tooltip type="button" title="Zoom in" class="zoom-in" @mousedown="onZoomInMousedown"
+      @mouseup="onButtonMouseup">
       <template #icon><zoom-icon /></template>
     </base-button>
   </div>
@@ -36,7 +24,7 @@ import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { map, clamp } from "@core/utils/math";
 import useStore from "../store";
-import ZoomIcon from "../assets/icons/zoom.svg?inline";
+import ZoomIcon from "../assets/icons/zoom.svg?component";
 
 export default {
   components: {
@@ -170,6 +158,7 @@ export default {
       font-size: 0.75em;
       padding-top: 0.25em;
     }
+
     &.zoom-in {
       font-size: 1.25em;
     }

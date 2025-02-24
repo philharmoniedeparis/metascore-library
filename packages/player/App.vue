@@ -12,11 +12,7 @@
 </i18n>
 
 <template>
-  <div
-    v-hotkey.prevent="hotkeys"
-    :class="['metaScore-player', { loading }]"
-    @contextmenu="onContextmenu"
-  >
+  <div v-hotkey.prevent="hotkeys" :class="['metaScore-player', { loading }]" @contextmenu="onContextmenu">
     <app-renderer :url="url" />
 
     <progress-indicator v-if="loading" class="loading-indicator">
@@ -26,18 +22,11 @@
       </template>
     </progress-indicator>
 
-    <context-menu
-      v-model:show="showContextmenu"
-      :position="contextmenuPosition"
-    >
+    <context-menu v-model:show="showContextmenu" :position="contextmenuPosition">
       <template #footer>
         <span class="prefix">{{ $t("contextmenu_footer_prefix") }}</span>
         <div @mousedown.prevent>
-          <a
-            href="https://metascore.philharmoniedeparis.fr/"
-            target="_blank"
-            :title="`metaScore ${version}`"
-          >
+          <a href="https://metascore.philharmoniedeparis.fr/" target="_blank" :title="`metaScore ${version}`">
             <logo />
           </a>
         </div>
@@ -51,9 +40,9 @@ import { computed } from "vue";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import useStore from "./store";
 import { useModule } from "@core/services/module-manager";
-import packageInfo from "../../package.json";
-import Logo from "./assets/logo.svg?inline";
-import LogoMini from "./assets/logo-mini.svg?inline";
+import { version } from "../../package.json";
+import Logo from "./assets/logo.svg?component";
+import LogoMini from "./assets/logo-mini.svg?component";
 
 export default {
   components: {
@@ -82,7 +71,7 @@ export default {
   },
   data() {
     return {
-      version: packageInfo.version,
+      version,
       overlaysTarget: null,
       showContextmenu: false,
       contextmenuPosition: { x: 0, y: 0 },
@@ -135,9 +124,10 @@ export default {
 </script>
 
 <style lang="scss">
-@import "normalize.css";
-@import "source-sans/source-sans-3VF.css";
-@import "./scss/theme.scss";
+@use "./scss/theme.scss";
+
+@import 'normalize.css';
+@import 'source-sans/source-sans-3VF.css';
 </style>
 
 <style lang="scss" scoped>
@@ -162,8 +152,7 @@ export default {
 
   &,
   :deep(*) {
-    scrollbar-color: var(--metascore-scrollbar-thumb-color)
-      var(--metascore-scrollbar-track-color);
+    scrollbar-color: var(--metascore-scrollbar-thumb-color) var(--metascore-scrollbar-track-color);
     scrollbar-width: thin;
 
     ::-webkit-scrollbar {
@@ -223,7 +212,7 @@ export default {
   }
 
   :deep(.context-menu) {
-    > ul {
+    >ul {
       padding: 0;
       background: var(--metascore-color-bg-primary);
     }

@@ -1,24 +1,12 @@
 <template>
-  <div
-    v-show="show"
-    class="context-menu"
-    tabindex="-1"
-    :style="style"
-    @contextmenu.stop.prevent
-    @blur="onBlur"
-    @keyup="onKeyup"
-  >
+  <div v-show="show" class="context-menu" tabindex="-1" :style="style" @contextmenu.stop.prevent @blur="onBlur"
+    @keyup="onKeyup">
     <ul>
       <li v-if="$slots.header" class="header">
         <slot name="header" />
       </li>
 
-      <context-menu-item
-        v-for="(item, index) in items"
-        :key="index"
-        :item="item"
-        @click="onItemClick"
-      />
+      <context-menu-item v-for="(item, index) in items" :key="index" :item="item" @click="onItemClick" />
 
       <li v-if="$slots.footer" class="footer">
         <slot name="footer" />
@@ -143,11 +131,13 @@ export default {
     color: var(--metascore-color-text-tertiary, white);
     opacity: 0.5;
   }
+
   .header {
     &:not(:last-child) {
       border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     }
   }
+
   .footer {
     &:not(:first-child) {
       border-top: 1px solid rgba(255, 255, 255, 0.5);

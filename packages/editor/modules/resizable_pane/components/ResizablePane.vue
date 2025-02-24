@@ -1,37 +1,13 @@
 <template>
   <div :class="['resizable-pane', { collapsed }]" :style="style">
-    <div
-      v-if="top"
-      ref="top-handle"
-      class="resize-handle"
-      data-direction="top"
-      :style="{ height: `${handleHeight}px` }"
-      @dblclick="onHandleDblClick('top')"
-    ></div>
-    <div
-      v-if="right"
-      ref="right-handle"
-      class="resize-handle"
-      data-direction="right"
-      :style="{ width: `${handleHeight}px` }"
-      @dblclick="onHandleDblClick('right')"
-    ></div>
-    <div
-      v-if="bottom"
-      ref="bottom-handle"
-      class="resize-handle"
-      data-direction="bottom"
-      :style="{ height: `${handleHeight}px` }"
-      @dblclick="onHandleDblClick('bottom')"
-    ></div>
-    <div
-      v-if="left"
-      ref="left-handle"
-      class="resize-handle"
-      data-direction="left"
-      :style="{ width: `${handleHeight}px` }"
-      @dblclick="onHandleDblClick('left')"
-    ></div>
+    <div v-if="top" ref="top-handle" class="resize-handle" data-direction="top" :style="{ height: `${handleHeight}px` }"
+      @dblclick="onHandleDblClick('top')"></div>
+    <div v-if="right" ref="right-handle" class="resize-handle" data-direction="right"
+      :style="{ width: `${handleHeight}px` }" @dblclick="onHandleDblClick('right')"></div>
+    <div v-if="bottom" ref="bottom-handle" class="resize-handle" data-direction="bottom"
+      :style="{ height: `${handleHeight}px` }" @dblclick="onHandleDblClick('bottom')"></div>
+    <div v-if="left" ref="left-handle" class="resize-handle" data-direction="left"
+      :style="{ width: `${handleHeight}px` }" @dblclick="onHandleDblClick('left')"></div>
 
     <slot />
   </div>
@@ -179,16 +155,19 @@ export default {
       left: 0;
       width: 100%;
     }
+
     &[data-direction="right"] {
       top: 0;
       right: 0;
       height: 100%;
     }
+
     &[data-direction="bottom"] {
       bottom: 0;
       left: 0;
       width: 100%;
     }
+
     &[data-direction="left"] {
       top: 0;
       left: 0;

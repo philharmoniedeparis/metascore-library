@@ -1,13 +1,9 @@
 <template>
-  <button
-    :type="type"
-    :disabled="disabled"
-    :class="[
-      'base-button',
-      role,
-      { 'has-icon': $slots.icon, 'has-content': $slots.default, loading },
-    ]"
-  >
+  <button :type="type" :disabled="disabled" :class="[
+    'base-button',
+    role,
+    { 'has-icon': $slots.icon, 'has-content': $slots.default, loading },
+  ]">
     <i v-if="$slots.icon" class="icon">
       <slot name="icon" />
     </i>
@@ -97,6 +93,7 @@ export default {
   &.danger {
     color: #fff;
     background-color: #cd2453;
+
     &:hover,
     &:active {
       background-color: #b9204a;
@@ -134,6 +131,7 @@ export default {
       justify-content: center;
       padding: 0.5em;
     }
+
     &.has-content {
       .icon {
         margin-right: 0.5em;

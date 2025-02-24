@@ -1,5 +1,5 @@
-import { round } from "lodash";
-import { v4 as uuid } from "uuid";
+import { round } from 'lodash'
+import { v4 as uuid } from 'uuid'
 
 /**
  * The value of the targetOrigin parameter sent with each postMessage
@@ -9,7 +9,7 @@ import { v4 as uuid } from "uuid";
  * @private
  * @type String
  */
-const target_origin = "*";
+const target_origin = '*'
 
 /**
  * A regular expression used to test incoming messages origin
@@ -18,8 +18,7 @@ const target_origin = "*";
  * @private
  * @type RegExp
  */
-const source_origin_regex =
-  /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/;
+const source_origin_regex = /^http[s]?:\/\/(.*[.-])?metascore.philharmoniedeparis.fr/
 
 /**
  * The player API class.
@@ -61,22 +60,17 @@ export class API {
      * The target player
      * @type {String|Element}
      */
-    this.target =
-      typeof target === "string" ? document.getElementById(target) : target;
+    this.target = typeof target === 'string' ? document.getElementById(target) : target
 
     /**
      * The list of added callbacks
      * @type {Object}
      */
-    this.callbacks = {};
+    this.callbacks = {}
 
-    this.target.addEventListener(
-      "load",
-      this.onLoad.bind(this, callback),
-      false
-    );
+    this.target.addEventListener('load', this.onLoad.bind(this, callback), false)
 
-    window.addEventListener("message", this.onMessage.bind(this), false);
+    window.addEventListener('message', this.onMessage.bind(this), false)
   }
 
   /**
@@ -88,17 +82,17 @@ export class API {
    */
   postMessage(method, params) {
     if (!this.target.contentWindow.postMessage) {
-      return false;
+      return false
     }
 
     const data = JSON.stringify({
       method: method,
       params: params,
-    });
+    })
 
-    this.target.contentWindow.postMessage(data, target_origin);
+    this.target.contentWindow.postMessage(data, target_origin)
 
-    return this;
+    return this
   }
 
   /**
@@ -109,14 +103,11 @@ export class API {
    * @param {API} callback.api The API instance
    */
   onLoad(callback) {
-    this.on("ready", () => {
-      this.target.addEventListener(
-        "fullscreenchange",
-        this.onFullscreenChange.bind(this)
-      );
+    this.on('ready', () => {
+      this.target.addEventListener('fullscreenchange', this.onFullscreenChange.bind(this))
 
-      callback(this);
-    });
+      callback(this)
+    })
   }
 
   /**
@@ -128,21 +119,20 @@ export class API {
    */
   onMessage(evt) {
     if (!source_origin_regex.test(evt.origin)) {
-      return;
+      return
     }
 
     try {
-      const data = JSON.parse(evt.data);
+      const data = JSON.parse(evt.data)
 
-      if ("callback" in data && data.callback in this.callbacks) {
-        const callback = this.callbacks[data.callback];
-        const params = "params" in data ? data.params : null;
+      if ('callback' in data && data.callback in this.callbacks) {
+        const callback = this.callbacks[data.callback]
+        const params = 'params' in data ? data.params : null
 
-        callback(params);
+        callback(params)
       }
     } catch (e) {
-      // eslint-disable-next-line
-      console.error(e);
+      console.error(e)
     }
   }
 
@@ -152,9 +142,9 @@ export class API {
    * @private
    */
   onFullscreenChange() {
-    this.postMessage("fullscreenchange", {
+    this.postMessage('fullscreenchange', {
       value: document.fullscreenElement === this.target,
-    });
+    })
   }
 
   /**
@@ -165,10 +155,10 @@ export class API {
    * @return {this}
    */
   on(type, callback) {
-    const callback_id = uuid();
-    this.callbacks[callback_id] = callback;
-    this.postMessage("addEventListener", { type: type, callback: callback_id });
-    return this;
+    const callback_id = uuid()
+    this.callbacks[callback_id] = callback
+    this.postMessage('addEventListener', { type: type, callback: callback_id })
+    return this
   }
 
   /**
@@ -183,21 +173,21 @@ export class API {
   play(inTime, outTime, scenario) {
     if (!isNaN(scenario)) {
       // This is likely a v1 call, alter the parameters for backward compatibility.
-      this.postMessage("play", {
+      this.postMessage('play', {
         inTime: round(inTime / 100, 2),
         outTime: round(outTime / 100, 2),
         scenario: `scenario-${scenario}`,
-      });
-      return this;
+      })
+      return this
     }
 
-    this.postMessage("play", {
+    this.postMessage('play', {
       inTime: inTime,
       outTime: outTime,
       scenario: scenario,
-    });
+    })
 
-    return this;
+    return this
   }
 
   /**
@@ -207,8 +197,8 @@ export class API {
    * @return {this}
    */
   pause() {
-    this.postMessage("pause");
-    return this;
+    this.postMessage('pause')
+    return this
   }
 
   /**
@@ -218,8 +208,8 @@ export class API {
    * @return {this}
    */
   stop() {
-    this.postMessage("stop");
-    return this;
+    this.postMessage('stop')
+    return this
   }
 
   /**
@@ -230,8 +220,8 @@ export class API {
    * @return {this}
    */
   seek(seconds) {
-    this.postMessage("seek", { seconds: parseFloat(seconds) });
-    return this;
+    this.postMessage('seek', { seconds: parseFloat(seconds) })
+    return this
   }
 
   /**
@@ -243,8 +233,8 @@ export class API {
    * @return {this}
    */
   page(block, index) {
-    this.postMessage("page", { block: block, index: parseInt(index, 10) - 1 });
-    return this;
+    this.postMessage('page', { block: block, index: parseInt(index, 10) - 1 })
+    return this
   }
 
   /**
@@ -255,8 +245,8 @@ export class API {
    * @return {this}
    */
   hideBlock(name) {
-    this.postMessage("toggleBlock", { name: name, value: false });
-    return this;
+    this.postMessage('toggleBlock', { name: name, value: false })
+    return this
   }
 
   /**
@@ -267,8 +257,8 @@ export class API {
    * @return {this}
    */
   showBlock(name) {
-    this.postMessage("toggleBlock", { name: name, value: true });
-    return this;
+    this.postMessage('toggleBlock', { name: name, value: true })
+    return this
   }
 
   /**
@@ -279,8 +269,8 @@ export class API {
    * @return {this}
    */
   toggleBlock(name) {
-    this.postMessage("toggleBlock", { name: name });
-    return this;
+    this.postMessage('toggleBlock', { name: name })
+    return this
   }
 
   /**
@@ -291,8 +281,8 @@ export class API {
    * @return {this}
    */
   scenario(value) {
-    this.postMessage("scenario", { value: value });
-    return this;
+    this.postMessage('scenario', { value: value })
+    return this
   }
 
   /**
@@ -302,8 +292,8 @@ export class API {
    * @return {this}
    */
   rindex(index) {
-    this.postMessage("scenario", { value: `scenario-${index}` });
-    return this;
+    this.postMessage('scenario', { value: `scenario-${index}` })
+    return this
   }
 
   /**
@@ -315,8 +305,8 @@ export class API {
    * @returns {this}
    */
   responsive(adaptSize, allowUpscaling) {
-    this.postMessage("responsiveness", { adaptSize, allowUpscaling });
-    return this;
+    this.postMessage('responsiveness', { adaptSize, allowUpscaling })
+    return this
   }
 
   /**
@@ -325,7 +315,7 @@ export class API {
    * @return {this}
    */
   enterFullscreen() {
-    return this.toggleFullscreen(true);
+    return this.toggleFullscreen(true)
   }
 
   /**
@@ -334,7 +324,7 @@ export class API {
    * @return {this}
    */
   exitFullscreen() {
-    return this.toggleFullscreen(false);
+    return this.toggleFullscreen(false)
   }
 
   /**
@@ -344,15 +334,14 @@ export class API {
    * @return {this}
    */
   toggleFullscreen(value) {
-    const enter_fullscreen =
-      typeof value !== "undefined" ? value : !document.fullscreenElement;
+    const enter_fullscreen = typeof value !== 'undefined' ? value : !document.fullscreenElement
     if (enter_fullscreen) {
-      this.target.requestFullscreen();
+      this.target.requestFullscreen()
     } else {
-      this.target.exitFullscreen();
+      this.target.exitFullscreen()
     }
 
-    return this;
+    return this
   }
 
   /**
@@ -364,10 +353,10 @@ export class API {
    * @return {this}
    */
   playing(callback) {
-    const callback_id = uuid();
-    this.callbacks[callback_id] = callback;
-    this.postMessage("playing", { callback: callback_id });
-    return this;
+    const callback_id = uuid()
+    this.callbacks[callback_id] = callback
+    this.postMessage('playing', { callback: callback_id })
+    return this
   }
 
   /**
@@ -379,64 +368,59 @@ export class API {
    * @return {this}
    */
   time(callback) {
-    const callback_id = uuid();
-    this.callbacks[callback_id] = callback;
-    this.postMessage("time", { callback: callback_id });
-    return this;
+    const callback_id = uuid()
+    this.callbacks[callback_id] = callback
+    this.postMessage('time', { callback: callback_id })
+    return this
   }
 }
 
 /**
  * Automatically process API links in the current HTML document
  */
-document.addEventListener("DOMContentLoaded", () => {
-  const ids = new Set();
+document.addEventListener('DOMContentLoaded', () => {
+  const ids = new Set()
 
   document
-    .querySelectorAll(
-      'a[rel="metascore"][data-guide]:not(.metascore-api-processed)'
-    )
+    .querySelectorAll('a[rel="metascore"][data-guide]:not(.metascore-api-processed)')
     .forEach((link) => {
-      ids.add(link.dataset.guide);
+      ids.add(link.dataset.guide)
 
       // Prevent the link from being processed multiple times.
-      link.classList.add("metascore-api-processed");
-    });
+      link.classList.add('metascore-api-processed')
+    })
 
   if (ids.size > 0) {
     const callback = (api) => {
       const cleanArg = (arg) => {
-        return decodeURIComponent(arg);
-      };
+        return decodeURIComponent(arg)
+      }
 
       const handler = (evt) => {
-        const link = evt.target.closest("a");
-        const actions = link.hash.replace(/^#/, "").split("&");
+        const link = evt.target.closest('a')
+        const actions = link.hash.replace(/^#/, '').split('&')
 
         for (let i = 0, length = actions.length; i < length; i++) {
-          const action = actions[i].split("=");
-          const fn = action[0];
+          const action = actions[i].split('=')
+          const fn = action[0]
 
           if (fn in api) {
-            const args =
-              action.length > 1 ? action[1].split(",").map(cleanArg) : [];
-            api[fn](...args);
-            evt.preventDefault();
+            const args = action.length > 1 ? action[1].split(',').map(cleanArg) : []
+            api[fn](...args)
+            evt.preventDefault()
           }
         }
-      };
+      }
 
       document
         .querySelectorAll(`a[rel="metascore"][data-guide="${api.target.id}"]`)
         .forEach((link) => {
-          link.addEventListener("click", handler);
-        });
-    };
+          link.addEventListener('click', handler)
+        })
+    }
 
-    document
-      .querySelectorAll(`iframe#${Array.from(ids).join(",iframe#")}`)
-      .forEach((iframe) => {
-        new API(iframe, callback);
-      });
+    document.querySelectorAll(`iframe#${Array.from(ids).join(',iframe#')}`).forEach((iframe) => {
+      new API(iframe, callback)
+    })
   }
-});
+})

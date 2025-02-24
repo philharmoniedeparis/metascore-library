@@ -1,9 +1,5 @@
 <template>
-  <component-wrapper
-    :component="component"
-    :hide-when-inactive="false"
-    @click="onClick"
-  >
+  <component-wrapper :component="component" :hide-when-inactive="false" @click="onClick">
     <canvas ref="canvas" />
   </component-wrapper>
 </template>

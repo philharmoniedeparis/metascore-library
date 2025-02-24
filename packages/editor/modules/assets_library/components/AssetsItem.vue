@@ -12,47 +12,25 @@
 </i18n>
 
 <template>
-  <div
-    :class="['assets-library--asset-item', { dragging }]"
-    :draggable="draggable"
-    @dragstart="onDragstart"
-    @dragend="onDragend"
-    @mouseover="onMouseover"
-    @mouseout="onMouseout"
-  >
+  <div :class="['assets-library--asset-item', { dragging }]" :draggable="draggable" @dragstart="onDragstart"
+    @dragend="onDragend" @mouseover="onMouseover" @mouseout="onMouseout">
     <figure>
       <img v-if="['image', 'svg'].includes(type)" :src="file.url" />
-      <animation-icon
-        v-else-if="type === 'lottie_animation'"
-        :src="file.url"
-        :play="play"
-      />
+      <animation-icon v-else-if="type === 'lottie_animation'" :src="file.url" :play="play" />
       <component :is="`${type}-icon`" v-else class="icon" />
 
       <figcaption>{{ label }}</figcaption>
     </figure>
 
-    <base-button
-      v-tooltip
-      type="button"
-      title="Supprimer"
-      @click="onDeleteClick"
-    >
+    <base-button v-tooltip type="button" title="Supprimer" @click="onDeleteClick">
       <template #icon><delete-icon /></template>
     </base-button>
-    <confirm-dialog
-      v-if="showDeleteConfirm"
-      @submit="onDeleteSubmit"
-      @cancel="onDeleteCancel"
-    >
+    <confirm-dialog v-if="showDeleteConfirm" @submit="onDeleteSubmit" @cancel="onDeleteCancel">
       <p v-dompurify-html="$t('delete_text', { label })"></p>
     </confirm-dialog>
     <alert-dialog v-if="showUsageAlert" @close="onUsageClose">
-      <p
-        v-dompurify-html="
-          $t('usage_text', { label, components: usageNames.join(', ') })
-        "
-      ></p>
+      <p v-dompurify-html="$t('usage_text', { label, components: usageNames.join(', ') })
+        "></p>
     </alert-dialog>
   </div>
 </template>
@@ -61,12 +39,12 @@
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
-import ImageIcon from "../assets/icons/image.svg?inline";
-import AudioIcon from "../assets/icons/audio.svg?inline";
-import VideoIcon from "../assets/icons/video.svg?inline";
-import FontIcon from "../assets/icons/font.svg?inline";
+import ImageIcon from "../assets/icons/image.svg?component";
+import AudioIcon from "../assets/icons/audio.svg?component";
+import VideoIcon from "../assets/icons/video.svg?component";
+import FontIcon from "../assets/icons/font.svg?component";
 import AnimationIcon from "./AnimationIcon.vue";
-import DeleteIcon from "../assets/icons/delete.svg?inline";
+import DeleteIcon from "../assets/icons/delete.svg?component";
 
 export default {
   components: {
@@ -304,6 +282,7 @@ export default {
     vertical-align: middle;
     opacity: 0.5;
   }
+
   &[draggable="true"]::before {
     background: url(../assets/icons/drag-handle.svg) 50% 50% no-repeat;
   }

@@ -18,46 +18,27 @@
 </i18n>
 
 <template>
-  <component-wrapper
-    :component="component"
-    @mouseenter="onMouseenter"
-    @mouseleave="onMouseleave"
-  >
+  <component-wrapper :component="component" @mouseenter="onMouseenter" @mouseleave="onMouseleave">
     <nav v-show="pagerVisibe" class="pager">
       <div class="count">page {{ activePageIndex + 1 }}/{{ pageCount }}</div>
       <ul class="links">
         <li>
-          <a
-            href="#"
-            data-action="first"
-            aria-label="First"
-            :class="{ disabled: activePageIndex === 0 }"
-            @click.stop.prevent="reset"
-          >
+          <a href="#" data-action="first" aria-label="First" :class="{ disabled: activePageIndex === 0 }"
+            @click.stop.prevent="reset">
             <span aria-hidden="true"><pager-first-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.first") }}</span>
           </a>
         </li>
         <li>
-          <a
-            href="#"
-            data-action="previous"
-            aria-label="Previous"
-            :class="{ disabled: activePageIndex === 0 }"
-            @click.stop.prevent="turnPageBackward"
-          >
+          <a href="#" data-action="previous" aria-label="Previous" :class="{ disabled: activePageIndex === 0 }"
+            @click.stop.prevent="turnPageBackward">
             <span aria-hidden="true"><pager-previous-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.previous") }}</span>
           </a>
         </li>
         <li>
-          <a
-            href="#"
-            data-action="next"
-            aria-label="Next"
-            :class="{ disabled: activePageIndex === pageCount - 1 }"
-            @click.stop.prevent="turnPageForward"
-          >
+          <a href="#" data-action="next" aria-label="Next" :class="{ disabled: activePageIndex === pageCount - 1 }"
+            @click.stop.prevent="turnPageForward">
             <span aria-hidden="true"><pager-next-icon class="icon" /></span>
             <span class="sr-only">{{ $t("pager.next") }}</span>
           </a>
@@ -67,18 +48,10 @@
     <div ref="pages" class="pages">
       <template v-for="(page, index) in pages" :key="page.id">
         <template v-if="synched">
-          <page-component
-            :component="page"
-            @activated="onTimedPageActivated"
-            @action="$emit('action', $event)"
-          />
+          <page-component :component="page" @activated="onTimedPageActivated" @action="$emit('action', $event)" />
         </template>
         <template v-else>
-          <page-component
-            v-show="activePageIndex === index"
-            :component="page"
-            @action="$emit('action', $event)"
-          />
+          <page-component v-show="activePageIndex === index" :component="page" @action="$emit('action', $event)" />
         </template>
       </template>
     </div>
@@ -88,9 +61,9 @@
 <script>
 import { hasTouch as deviceHasTouch } from "@core/utils/device";
 import useStore from "../store";
-import PagerFirstIcon from "../assets/icons/block/pager-first.svg?inline";
-import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?inline";
-import PagerNextIcon from "../assets/icons/block/pager-next.svg?inline";
+import PagerFirstIcon from "../assets/icons/block/pager-first.svg?component";
+import PagerPreviousIcon from "../assets/icons/block/pager-previous.svg?component";
+import PagerNextIcon from "../assets/icons/block/pager-next.svg?component";
 
 export default {
   components: {
@@ -274,7 +247,7 @@ export default {
         border-radius: 50%;
         box-sizing: border-box;
 
-        > span {
+        >span {
           flex: 1 0 auto;
         }
 

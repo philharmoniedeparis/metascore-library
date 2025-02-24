@@ -1,24 +1,9 @@
 <template>
-  <form-group
-    :class="['control', 'url', { readonly, disabled }]"
-    :label="label"
-    :label-for="inputId"
-    :description="description"
-    :required="required"
-  >
-    <input
-      :id="inputId"
-      v-model="value"
-      v-autofocus="autofocus"
-      type="url"
-      :placeholder="placeholder"
-      :required="required"
-      :readonly="readonly"
-      :disabled="disabled"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-      @change="onInputChange"
-    />
+  <form-group :class="['control', 'url', { readonly, disabled }]" :label="label" :label-for="inputId"
+    :description="description" :required="required">
+    <input :id="inputId" v-model="value" v-autofocus="autofocus" type="url" :placeholder="placeholder"
+      :required="required" :readonly="readonly" :disabled="disabled" @focus="onInputFocus" @blur="onInputBlur"
+      @change="onInputChange" />
 
     <template v-if="$slots.label" #label>
       <slot name="label" />

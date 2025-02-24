@@ -1,18 +1,9 @@
 <template>
   <Transition name="fade">
     <div v-show="ready" class="metaScore-app" tabindex="-1" :style="style">
-      <media-player
-        v-show="false"
-        v-if="mediaSource"
-        :source="mediaSource"
-        type="video"
-      />
+      <media-player v-show="false" v-if="mediaSource" :source="mediaSource" type="video" />
       <template v-for="scenario in scenarios" :key="scenario.id">
-        <scenario-component
-          v-if="scenario.id === activeScenario"
-          :component="scenario"
-          @action="onComponentAction"
-        />
+        <scenario-component v-if="scenario.id === activeScenario" :component="scenario" @action="onComponentAction" />
       </template>
     </div>
   </Transition>
@@ -363,7 +354,7 @@ body {
   background: var(--metascore-color-white, white);
 
   :deep(.sr-only) {
-    @include sr-only;
+    @include mixins.sr-only;
   }
 
   :deep(button) {

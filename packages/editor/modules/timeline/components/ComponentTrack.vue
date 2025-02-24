@@ -42,46 +42,27 @@
 </i18n>
 
 <template>
-  <div
-    :class="[
-      'component-track',
-      kebabCase(component.type),
-      {
-        'has-children': hasChildren,
-        'has-start-time': hasStartTime,
-        'has-end-time': hasEndTime,
-        'has-selected-descendents': hasSelectedDescendents,
-        sortable,
-        expanded,
-        selected,
-        locked,
-      },
-    ]"
-    :data-type="component.type"
-    :data-id="component.id"
-    :style="{ '--depth': depth }"
-  >
-    <div
-      ref="handle"
-      v-contextmenu="contextmenuItems"
-      v-tooltip
-      :title="component.name"
-      class="handle"
-      @click="onClick"
-    >
+  <div :class="[
+    'component-track',
+    kebabCase(component.type),
+    {
+      'has-children': hasChildren,
+      'has-start-time': hasStartTime,
+      'has-end-time': hasEndTime,
+      'has-selected-descendents': hasSelectedDescendents,
+      sortable,
+      expanded,
+      selected,
+      locked,
+    },
+  ]" :data-type="component.type" :data-id="component.id" :style="{ '--depth': depth }">
+    <div ref="handle" v-contextmenu="contextmenuItems" v-tooltip :title="component.name" class="handle"
+      @click="onClick">
       <component-icon :component="component" />
 
       <div v-if="hasChildren" class="toggle expander" @click.stop>
-        <input
-          :id="`handle--expand--${component.id}`"
-          v-model="expanded"
-          type="checkbox"
-        />
-        <label
-          v-tooltip
-          :for="`handle--expand--${component.id}`"
-          title="Verrouiller/Déverrouiller"
-        >
+        <input :id="`handle--expand--${component.id}`" v-model="expanded" type="checkbox" />
+        <label v-tooltip :for="`handle--expand--${component.id}`" title="Verrouiller/Déverrouiller">
           <expander-icon class="icon" />
         </label>
       </div>
@@ -90,38 +71,18 @@
 
       <div class="togglers" @click.stop>
         <div class="toggle lock">
-          <input
-            :id="`handle--lock--${component.id}`"
-            v-model="locked"
-            type="checkbox"
-          />
-          <label
-            v-tooltip
-            :for="`handle--lock--${component.id}`"
-            title="Verrouiller/Déverrouiller"
-          >
+          <input :id="`handle--lock--${component.id}`" v-model="locked" type="checkbox" />
+          <label v-tooltip :for="`handle--lock--${component.id}`" title="Verrouiller/Déverrouiller">
             <lock-icon class="icon" />
           </label>
         </div>
       </div>
     </div>
 
-    <div
-      ref="time-wrapper"
-      v-contextmenu="contextmenuItems"
-      v-tooltip
-      :title="component.name"
-      class="time-wrapper"
-      @click="onClick"
-    >
-      <div
-        ref="time"
-        :class="['time', { resizing, dragging }]"
-        tabindex="0"
-        :style="timeStyle"
-        @mousedown="onMousedown"
-        @focus="onFocus"
-      >
+    <div ref="time-wrapper" v-contextmenu="contextmenuItems" v-tooltip :title="component.name" class="time-wrapper"
+      @click="onClick">
+      <div ref="time" :class="['time', { resizing, dragging }]" tabindex="0" :style="timeStyle" @mousedown="onMousedown"
+        @focus="onFocus">
         <template v-if="resizable">
           <div class="resize-handle right"></div>
           <div class="resize-handle left"></div>
@@ -131,24 +92,14 @@
     </div>
 
     <div v-if="hasChildren" class="children">
-      <component-track
-        v-for="child in children"
-        :key="child.id"
-        :component="child"
-        :depth="depth + 1"
-      />
+      <component-track v-for="child in children" :key="child.id" :component="child" :depth="depth + 1" />
     </div>
 
     <div class="aniamted-properties">
-      <animated-property-track
-        v-for="(value, property) in animatedProperties"
-        ref="animated-property-tracks"
-        :key="property"
-        :model-value="value"
-        :property="property"
+      <animated-property-track v-for="(value, property) in animatedProperties" ref="animated-property-tracks"
+        :key="property" :model-value="value" :property="property"
         @update:model-value="onAnimatedPropertyUpdate(property, $event)"
-        @keyframeselect="onAnimatedPropertyKeyframeSelect"
-      />
+        @keyframeselect="onAnimatedPropertyKeyframeSelect" />
     </div>
   </div>
 </template>
@@ -161,8 +112,8 @@ import interact from "@interactjs/interact";
 import { round, kebabCase } from "lodash";
 import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
-import ExpanderIcon from "../assets/icons/expander.svg?inline";
-import LockIcon from "../assets/icons/locked.svg?inline";
+import ExpanderIcon from "../assets/icons/expander.svg?component";
+import LockIcon from "../assets/icons/locked.svg?component";
 import AnimatedPropertyTrack from "./AnimatedPropertyTrack.vue";
 
 export default {
@@ -301,15 +252,13 @@ export default {
       const style = {};
 
       if (this.hasStartTime) {
-        style.left = `${
-          (this.component["start-time"] / this.mediaDuration) * 100
-        }%`;
+        style.left = `${(this.component["start-time"] / this.mediaDuration) * 100
+          }%`;
       }
 
       if (this.hasEndTime) {
-        style.right = `${
-          100 - (this.component["end-time"] / this.mediaDuration) * 100
-        }%`;
+        style.right = `${100 - (this.component["end-time"] / this.mediaDuration) * 100
+          }%`;
       }
 
       return style;
@@ -730,7 +679,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@editor/scss/variables";
+@use "@editor/scss/variables" as variables;
 
 .component-track {
   display: contents;
@@ -776,7 +725,7 @@ export default {
       pointer-events: none;
     }
 
-    > .icon {
+    >.icon {
       width: 1.5em;
       flex: 0 0 auto;
       color: white;
@@ -842,7 +791,7 @@ export default {
           display: block;
         }
 
-        input:checked + label {
+        input:checked+label {
           .icon {
             opacity: 1;
           }
@@ -854,7 +803,7 @@ export default {
   .aniamted-properties :deep(.handle) {
     padding-left: calc(var(--depth) * 0.5em + 1em);
 
-    > .icon {
+    >.icon {
       height: 1em;
       opacity: 0.5;
     }
@@ -885,6 +834,7 @@ export default {
         &.left {
           left: 0;
         }
+
         &.right {
           right: 0;
         }
@@ -924,7 +874,7 @@ export default {
 
   &.expanded,
   &.has-selected-descendents {
-    > .handle {
+    >.handle {
       .expander {
         label {
           .icon {
@@ -934,19 +884,21 @@ export default {
       }
     }
 
-    > .children {
+    >.children {
       display: contents;
     }
   }
 
-  @each $component, $color in $component-colors {
-    @if $component == default {
-      > .time-wrapper .time .background {
+  @each $component, $color in variables.$component-colors {
+    @if $component ==default {
+      >.time-wrapper .time .background {
         background-color: var(--metascore-color-component-#{$component});
       }
-    } @else {
+    }
+
+    @else {
       &.#{$component} {
-        > .time-wrapper .time .background {
+        >.time-wrapper .time .background {
           background-color: var(--metascore-color-component-#{$component});
         }
       }
@@ -960,54 +912,50 @@ export default {
   }
 
   &:not(.has-start-time) {
-    > .time-wrapper .background {
-      clip-path: polygon(
-        0 0,
-        4px 25%,
-        0 50%,
-        4px 75%,
-        0 100%,
-        100% 100%,
-        100% 0
-      );
+    >.time-wrapper .background {
+      clip-path: polygon(0 0,
+          4px 25%,
+          0 50%,
+          4px 75%,
+          0 100%,
+          100% 100%,
+          100% 0);
     }
   }
 
   &:not(.has-end-time) {
-    > .time-wrapper .background {
-      clip-path: polygon(
-        0 0,
-        0 100%,
-        100% 100%,
-        calc(100% - 4px) 75%,
-        100% 50%,
-        calc(100% - 4px) 25%,
-        100% 0
-      );
+    >.time-wrapper .background {
+      clip-path: polygon(0 0,
+          0 100%,
+          100% 100%,
+          calc(100% - 4px) 75%,
+          100% 50%,
+          calc(100% - 4px) 25%,
+          100% 0);
     }
   }
 
   &:not(.has-start-time):not(.has-end-time) {
-    > .time-wrapper .background {
-      clip-path: polygon(
-        0 0,
-        4px 25%,
-        0 50%,
-        4px 75%,
-        0 100%,
-        100% 100%,
-        calc(100% - 4px) 75%,
-        100% 50%,
-        calc(100% - 4px) 25%,
-        100% 0
-      );
+    >.time-wrapper .background {
+      clip-path: polygon(0 0,
+          4px 25%,
+          0 50%,
+          4px 75%,
+          0 100%,
+          100% 100%,
+          calc(100% - 4px) 75%,
+          100% 50%,
+          calc(100% - 4px) 25%,
+          100% 0);
     }
   }
 
   &.selected {
-    > .handle,
-    > .time-wrapper {
+
+    >.handle,
+    >.time-wrapper {
       background: var(--metascore-color-bg-primary);
+
       .time {
         .background {
           opacity: 1;
@@ -1017,8 +965,9 @@ export default {
   }
 
   &.scenario {
-    > .handle {
+    >.handle {
       padding-left: 0.5em;
+
       .expander {
         display: none;
       }
@@ -1026,8 +975,9 @@ export default {
   }
 
   &.page {
-    &:first-child > .time-wrapper .resize-handle.left,
-    &:last-child > .time-wrapper .resize-handle.right {
+
+    &:first-child>.time-wrapper .resize-handle.left,
+    &:last-child>.time-wrapper .resize-handle.right {
       display: none;
     }
   }

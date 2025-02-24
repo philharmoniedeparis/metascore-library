@@ -29,84 +29,38 @@
 
 <template>
   <div class="scenario-manager">
-    <base-button
-      type="button"
-      class="scroll-left"
-      :disabled="!canScrollLeft"
-      @click="onScrollLeftClick"
-    >
+    <base-button type="button" class="scroll-left" :disabled="!canScrollLeft" @click="onScrollLeftClick">
       <template #icon><arrow-icon /></template>
     </base-button>
 
-    <base-button
-      type="button"
-      class="scroll-right"
-      :disabled="!canScrollRight"
-      @click="onScrollRightClick"
-    >
+    <base-button type="button" class="scroll-right" :disabled="!canScrollRight" @click="onScrollRightClick">
       <template #icon><arrow-icon /></template>
     </base-button>
 
     <ol ref="list" class="list" @scroll="onListScroll">
-      <li
-        v-for="(scenario, index) in scenarios"
-        :key="scenario.id"
-        :data-id="scenario.id"
-        :class="['item', { active: activeScenarioId === scenario.id }]"
-        @contextmenu="onContextmenu(scenario, index)"
-      >
+      <li v-for="(scenario, index) in scenarios" :key="scenario.id" :data-id="scenario.id"
+        :class="['item', { active: activeScenarioId === scenario.id }]" @contextmenu="onContextmenu(scenario, index)">
         <button type="button" @click.prevent="onItemClick(scenario)">
           {{ scenario.name }}
         </button>
       </li>
     </ol>
 
-    <base-button
-      v-tooltip
-      type="button"
-      class="add"
-      :title="$t('add_button_title')"
-      @click="showAddForm = true"
-    >
+    <base-button v-tooltip type="button" class="add" :title="$t('add_button_title')" @click="showAddForm = true">
       <template #icon><add-icon /></template>
     </base-button>
-    <add-form
-      v-if="showAddForm"
-      @submit="onAddSubmit"
-      @close="showAddForm = false"
-    />
+    <add-form v-if="showAddForm" @submit="onAddSubmit" @close="showAddForm = false" />
 
-    <base-button
-      v-tooltip
-      type="button"
-      class="clone"
-      :title="$t('clone_button_title')"
-      @click="showCloneForm = true"
-    >
+    <base-button v-tooltip type="button" class="clone" :title="$t('clone_button_title')" @click="showCloneForm = true">
       <template #icon><clone-icon /></template>
     </base-button>
-    <clone-form
-      v-if="showCloneForm"
-      :name="activeName"
-      @submit="onCloneSubmit"
-      @close="showCloneForm = false"
-    />
+    <clone-form v-if="showCloneForm" :name="activeName" @submit="onCloneSubmit" @close="showCloneForm = false" />
 
-    <base-button
-      v-tooltip
-      type="button"
-      class="delete"
-      :title="$t('delete_button_title')"
-      :disabled="scenariosCount <= 1"
-      @click="showDeleteConfirm = true"
-    >
+    <base-button v-tooltip type="button" class="delete" :title="$t('delete_button_title')"
+      :disabled="scenariosCount <= 1" @click="showDeleteConfirm = true">
       <template #icon><delete-icon /></template>
     </base-button>
-    <confirm-dialog
-      v-if="showDeleteConfirm"
-      @submit="onDeleteSubmit"
-      @cancel="showDeleteConfirm = false"
-    >
+    <confirm-dialog v-if="showDeleteConfirm" @submit="onDeleteSubmit" @cancel="showDeleteConfirm = false">
       <p v-dompurify-html="$t('delete_text', { name: activeName })"></p>
     </confirm-dialog>
   </div>
@@ -118,12 +72,12 @@ import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import Sortable from "sortablejs";
 import autoAnimate from "@formkit/auto-animate";
 import { useModule } from "@core/services/module-manager";
-import ArrowIcon from "../assets/icons/arrow.svg?inline";
-import AddIcon from "../assets/icons/add.svg?inline";
+import ArrowIcon from "../assets/icons/arrow.svg?component";
+import AddIcon from "../assets/icons/add.svg?component";
 import AddForm from "./AddForm.vue";
-import CloneIcon from "../assets/icons/clone.svg?inline";
+import CloneIcon from "../assets/icons/clone.svg?component";
 import CloneForm from "./CloneForm.vue";
-import DeleteIcon from "../assets/icons/delete.svg?inline";
+import DeleteIcon from "../assets/icons/delete.svg?component";
 
 export default {
   components: {
@@ -374,6 +328,7 @@ export default {
   user-select: none;
 
   button {
+
     &.scroll-left,
     &.scroll-right {
       font-size: 0.75em;

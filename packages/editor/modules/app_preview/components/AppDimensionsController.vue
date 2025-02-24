@@ -13,29 +13,11 @@
 
 <template>
   <div :class="['app-dimensions-controller', { disabled }]">
-    <number-control
-      v-model="width"
-      v-tooltip
-      :title="$t('width')"
-      class="width"
-      :disabled="disabled"
-      :min="1"
-      :spinners="false"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-    />
+    <number-control v-model="width" v-tooltip :title="$t('width')" class="width" :disabled="disabled" :min="1"
+      :spinners="false" @focus="onInputFocus" @blur="onInputBlur" />
     <span class="separator">x</span>
-    <number-control
-      v-model="height"
-      v-tooltip
-      :title="$t('height')"
-      class="height"
-      :disabled="disabled"
-      :min="1"
-      :spinners="false"
-      @focus="onInputFocus"
-      @blur="onInputBlur"
-    />
+    <number-control v-model="height" v-tooltip :title="$t('height')" class="height" :disabled="disabled" :min="1"
+      :spinners="false" @focus="onInputFocus" @blur="onInputBlur" />
   </div>
 </template>
 

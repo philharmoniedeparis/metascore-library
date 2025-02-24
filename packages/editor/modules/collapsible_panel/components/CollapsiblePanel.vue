@@ -11,13 +11,8 @@
       </h4>
     </header>
 
-    <transition
-      name="expand"
-      @before-enter="onTransitionBeforeEnter"
-      @enter="onTransitionEnter"
-      @before-leave="onTransitionBeforeLeave"
-      @leave="onTransitionLeave"
-    >
+    <transition name="expand" @before-enter="onTransitionBeforeEnter" @enter="onTransitionEnter"
+      @before-leave="onTransitionBeforeLeave" @leave="onTransitionLeave">
       <div v-if="isExpanded" class="body">
         <slot />
       </div>
@@ -26,7 +21,7 @@
 </template>
 
 <script>
-import ExpanderIcon from "../assets/icons/expander.svg?inline";
+import ExpanderIcon from "../assets/icons/expander.svg?component";
 
 export default {
   components: {

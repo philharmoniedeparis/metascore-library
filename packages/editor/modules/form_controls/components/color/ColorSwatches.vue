@@ -1,13 +1,7 @@
 <template>
   <div class="color-swatches">
-    <base-button
-      v-for="color in normalizedSwatches"
-      :key="color"
-      type="button"
-      :class="['swatch', { selected: color === selected }]"
-      :style="`color: ${color}`"
-      @click="onSwatchClick(color)"
-    />
+    <base-button v-for="color in normalizedSwatches" :key="color" type="button"
+      :class="['swatch', { selected: color === selected }]" :style="`color: ${color}`" @click="onSwatchClick(color)" />
   </div>
 </template>
 

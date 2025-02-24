@@ -19,13 +19,8 @@
       <input v-model="filters.terms" :placeholder="$t('terms_placeholder')" />
     </form-group>
 
-    <base-button
-      v-for="(value, key) in tags"
-      :key="key"
-      :class="['tag', { active: isTagActive(key) }]"
-      type="button"
-      @click="toggleTag(key)"
-    >
+    <base-button v-for="(value, key) in tags" :key="key" :class="['tag', { active: isTagActive(key) }]" type="button"
+      @click="toggleTag(key)">
       {{ $t(value.label) }}
     </base-button>
   </div>
@@ -98,6 +93,7 @@ export default {
     margin: 0;
 
     :deep(input) {
+
       // #\9 is used here to increase specificity.
       &:not(#\9) {
         padding: 0.25em 0 0.25em 2em;

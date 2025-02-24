@@ -126,14 +126,6 @@ function getPropertyOptions(component_type) {
     });
 }
 
-const componentOptions = ref([]);
-watchEffect(() => {
-  const { getComponentsByType } = useModule("app_components");
-  componentOptions.value = getComponentOptions(
-    getComponentsByType("Scenario"),
-    true
-  );
-});
 const COMPONENTS_COMPONENT_MUTATOR_MIXIN = {
   /**
    * Returns the state of this block as a JSON serializable object.
@@ -163,9 +155,23 @@ const COMPONENTS_COMPONENT_MUTATOR_MIXIN = {
     this.setOutput(true, check);
   },
 };
+
+const componentOptions = ref([]);
+let componentOptionsWatcher = null;
+
 const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
   const component_input = this.getInput("COMPONENT");
   if (!component_input) return;
+
+  if (!componentOptionsWatcher) {
+    componentOptionsWatcher = watchEffect(() => {
+      const { getComponentsByType } = useModule("app_components");
+      componentOptions.value = getComponentOptions(
+        getComponentsByType("Scenario"),
+        true
+      );
+    });
+  }
 
   const mock = this.type.endsWith("_mock");
   const empty = mock || componentOptions.value.length === 0;
@@ -385,32 +391,36 @@ Extensions.registerMutator(
 );
 
 const triggerOptions = ref([]);
-watchEffect(() => {
-  const { getComponentsByType } = useModule("app_components");
-  const components = getComponentsByType("Content");
-  const parser = new DOMParser();
-  const ids = new Set();
-
-  components.forEach((component) => {
-    const text = component.text;
-
-    if (text && text.includes("data-behavior-trigger")) {
-      const doc = parser.parseFromString(text, "text/html");
-      doc.querySelectorAll("a[data-behavior-trigger]").forEach((el) => {
-        const id = el.dataset.behaviorTrigger;
-        ids.add(id);
-      });
-    }
-  });
-
-  triggerOptions.value = Array.from(ids)
-    .sort()
-    .map((id) => [id, id]);
-});
+let triggerOptionsWatcher = null;
 
 Extensions.register("behavior_triggers_options", function () {
   const trigger_input = this.getInput("TRIGGER");
   if (!trigger_input) return;
+
+  if (!triggerOptionsWatcher) {
+    triggerOptionsWatcher = watchEffect(() => {
+      const { getComponentsByType } = useModule("app_components");
+      const components = getComponentsByType("Content");
+      const parser = new DOMParser();
+      const ids = new Set();
+
+      components.forEach((component) => {
+        const text = component.text;
+
+        if (text && text.includes("data-behavior-trigger")) {
+          const doc = parser.parseFromString(text, "text/html");
+          doc.querySelectorAll("a[data-behavior-trigger]").forEach((el) => {
+            const id = el.dataset.behaviorTrigger;
+            ids.add(id);
+          });
+        }
+      });
+
+      triggerOptions.value = Array.from(ids)
+        .sort()
+        .map((id) => [id, id]);
+    });
+  }
 
   const empty = triggerOptions.value.length === 0;
 

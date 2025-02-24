@@ -1,27 +1,18 @@
 <template>
-  <div
-    v-show="(active || !hideWhenInactive) && !hidden"
-    :id="component.id"
-    :class="[
-      'metaScore-component',
-      kebabCase(component.type),
-      { active, hidden },
-    ]"
-    :data-name="component.name"
-    :style="{
-      ...position,
-      ...size,
-      transform,
-    }"
-  >
-    <div
-      class="metaScore-component--inner"
-      :style="{
-        ...background,
-        ...border,
-        opacity,
-      }"
-    >
+  <div v-show="(active || !hideWhenInactive) && !hidden" :id="component.id" :class="[
+    'metaScore-component',
+    kebabCase(component.type),
+    { active, hidden },
+  ]" :data-name="component.name" :style="{
+    ...position,
+    ...size,
+    transform,
+  }">
+    <div class="metaScore-component--inner" :style="{
+      ...background,
+      ...border,
+      opacity,
+    }">
       <slot />
     </div>
 

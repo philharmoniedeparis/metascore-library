@@ -36,18 +36,9 @@
 </i18n>
 
 <template>
-  <base-modal
-    :show="show"
-    :title="$t('title')"
-    class="hotkey-list"
-    @close="$emit('close')"
-  >
+  <base-modal :show="show" :title="$t('title')" class="hotkey-list" @close="$emit('close')">
     <div class="sections">
-      <section
-        v-for="(combinations, title) in hotkeys"
-        :key="title"
-        class="group"
-      >
+      <section v-for="(combinations, title) in hotkeys" :key="title" class="group">
         <h4>{{ title }}</h4>
         <table>
           <thead>
@@ -57,17 +48,11 @@
             </tr>
           </thead>
           <tbody>
-            <template
-              v-for="(description, keys) in Object.fromEntries(combinations)"
-              :key="keys"
-            >
+            <template v-for="(description, keys) in Object.fromEntries(combinations)" :key="keys">
               <tr v-if="description">
                 <td>
                   <kbd class="combo">
-                    <template
-                      v-for="(key, index) in keys.split('+')"
-                      :key="key"
-                    >
+                    <template v-for="(key, index) in keys.split('+')" :key="key">
                       <span v-if="index !== 0" class="separator">+</span>
                       <kbd class="key">{{ getKeyName(key) }}</kbd>
                     </template>

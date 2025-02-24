@@ -50,47 +50,28 @@
 </i18n>
 
 <template>
-  <default-component-wrapper
-    v-contextmenu="contextmenuItems"
-    :component="component"
-    :class="{
-      selected,
-      locked,
-      preview,
-      frozen,
-      'drag-over': dragOver,
-    }"
-    tabindex="0"
-    @mousedown="onMousedown"
-    @focus="onFocus"
-    @click="onClick"
-    @dragenter="onDragenter"
-    @dragover="onDragover"
-    @dragleave="onDragleave"
-    @drop="onDrop"
-  >
+  <default-component-wrapper v-contextmenu="contextmenuItems" :component="component" :class="{
+    selected,
+    locked,
+    preview,
+    frozen,
+    'drag-over': dragOver,
+  }" tabindex="0" @mousedown="onMousedown" @focus="onFocus" @click="onClick" @dragenter="onDragenter"
+    @dragover="onDragover" @dragleave="onDragleave" @drop="onDrop">
     <slot />
 
     <template v-if="selected" #outer>
-      <div
-        v-for="point in [
-          'top left',
-          'top right',
-          'bottom right',
-          'bottom left',
-        ]"
-        :key="point"
-        ref="controlbox-ref-points"
-        :class="`controlbox-ref-point ${point}`"
-      ></div>
+      <div v-for="point in [
+        'top left',
+        'top right',
+        'bottom right',
+        'bottom left',
+      ]" :key="point" ref="controlbox-ref-points" :class="`controlbox-ref-point ${point}`"></div>
     </template>
 
     <teleport v-if="selected && controlBoxTarget" :to="controlBoxTarget">
-      <div
-        v-show="visibleInViewport"
-        ref="controlbox"
-        :class="['component-wrapper--controlbox', kebabCase(component.type)]"
-      >
+      <div v-show="visibleInViewport" ref="controlbox"
+        :class="['component-wrapper--controlbox', kebabCase(component.type)]">
         <!-- eslint-disable-next-line vue/require-v-for-key, vue/no-unused-vars -->
         <div v-for="n in 4" ref="controlbox-edges" class="edge"></div>
 
@@ -102,21 +83,16 @@
             </div>
           </template>
           <template v-if="resizable">
-            <div
-              v-for="corner in [
-                'top left',
-                'top',
-                'top right',
-                'right',
-                'bottom right',
-                'bottom',
-                'bottom left',
-                'left',
-              ]"
-              :key="corner"
-              ref="controlbox-resize-handles"
-              :class="`resize-handle ${corner}`"
-            ></div>
+            <div v-for="corner in [
+              'top left',
+              'top',
+              'top right',
+              'right',
+              'bottom right',
+              'bottom',
+              'bottom left',
+              'left',
+            ]" :key="corner" ref="controlbox-resize-handles" :class="`resize-handle ${corner}`"></div>
           </template>
         </template>
       </div>
@@ -1083,7 +1059,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@editor/scss/variables";
+@use "@editor/scss/variables" as variables;
 
 .metaScore-component {
   &:not(.preview) {
@@ -1097,14 +1073,14 @@ export default {
     }
 
     &.block {
-      &:hover > :deep(.metaScore-component--inner .pager) {
+      &:hover> :deep(.metaScore-component--inner .pager) {
         display: flex !important;
       }
     }
 
     &.content {
       > :deep(.metaScore-component--inner) {
-        & > .contents {
+        &>.contents {
           a {
             pointer-events: none;
           }
@@ -1120,6 +1096,7 @@ export default {
     }
 
     &.media {
+
       :deep(video),
       :deep(audio) {
         pointer-events: none;
@@ -1144,12 +1121,15 @@ export default {
     &.top {
       top: 0;
     }
+
     &.bottom {
       bottom: 0;
     }
+
     &.left {
       left: 0;
     }
+
     &.right {
       right: 0;
     }
@@ -1162,10 +1142,12 @@ export default {
   left: 0;
   pointer-events: none;
 
-  @each $component, $color in $component-colors {
-    @if $component == default {
+  @each $component, $color in variables.$component-colors {
+    @if $component ==default {
       --color: var(--metascore-color-component-#{$component});
-    } @else {
+    }
+
+    @else {
       &.#{$component} {
         --color: var(--metascore-color-component-#{$component});
       }

@@ -24,13 +24,8 @@
 </i18n>
 
 <template>
-  <div
-    class="assets-library"
-    :class="{ dragover }"
-    @dragover="onDragover"
-    @dragleave="onDragleave"
-    @drop.stop.prevent="onDrop"
-  >
+  <div class="assets-library" :class="{ dragover }" @dragover="onDragover" @dragleave="onDragleave"
+    @drop.stop.prevent="onDrop">
     <div class="assets-library--assets">
       <template v-for="asset in assets" :key="asset.id">
         <assets-item :asset="asset" />
@@ -39,12 +34,8 @@
 
     <div class="assets-library--imports">
       <template v-if="store.canUpload">
-        <file-control
-          :accept="store.configs.uploadAccept"
-          :max-size="store.configs.uploadMaxSize"
-          :multiple="true"
-          @update:model-value="onUploadChange"
-        >
+        <file-control :accept="store.configs.uploadAccept" :max-size="store.configs.uploadMaxSize" :multiple="true"
+          @update:model-value="onUploadChange">
           <template #label>
             <i class="icon"><upload-icon /></i>
             {{ $t("upload_label") }}
@@ -57,12 +48,8 @@
           {{ $t("spectrogram_button") }}
           <template #icon><spectrogram-icon /></template>
         </base-button>
-        <spectrogram-form
-          v-if="showSpectrogramForm"
-          :defaults="spectrogramDefaults"
-          @submit="onSpectrogramFormSubmit"
-          @close="onSpectrogramFormClose"
-        />
+        <spectrogram-form v-if="showSpectrogramForm" :defaults="spectrogramDefaults" @submit="onSpectrogramFormSubmit"
+          @close="onSpectrogramFormClose" />
       </template>
 
       <template v-if="store.canGenerateAudiowaveform">
@@ -70,41 +57,26 @@
           {{ $t("audiowaveform_button") }}
           <template #icon><audiowaveform-icon /></template>
         </base-button>
-        <audiowaveform-form
-          v-if="showAudiowaveformForm"
-          :defaults="audiowaveformDefaults"
-          @submit="onAudiowaveformFormSubmit"
-          @close="onAudiowaveformFormClose"
-        />
+        <audiowaveform-form v-if="showAudiowaveformForm" :defaults="audiowaveformDefaults"
+          @submit="onAudiowaveformFormSubmit" @close="onAudiowaveformFormClose" />
       </template>
     </div>
 
     <div v-if="store.configs.uploadUrl" class="dropzone">
       <p v-dompurify-html="$t('dropzone_text')"></p>
-      <p
-        v-if="store.configs.uploadMaxSize"
-        v-dompurify-html="
-          $t('dropzone_maxsize_description', {
-            maxsize: store.configs.uploadMaxSize,
-          })
-        "
-      ></p>
-      <p
-        v-if="store.configs.uploadAccept"
-        v-dompurify-html="
-          $t('dropzone_types_description', {
-            types: store.configs.uploadAccept,
-          })
-        "
-      ></p>
+      <p v-if="store.configs.uploadMaxSize" v-dompurify-html="$t('dropzone_maxsize_description', {
+        maxsize: store.configs.uploadMaxSize,
+      })
+        "></p>
+      <p v-if="store.configs.uploadAccept" v-dompurify-html="$t('dropzone_types_description', {
+        types: store.configs.uploadAccept,
+      })
+        "></p>
     </div>
 
-    <progress-indicator
-      v-if="uploading || generatingSpectrogram || generatingAudiowaveform"
-      :text="$t('upload_indicator_label')"
-      :value="uploading ? uploadProgress : null"
-      :target="uploading ? false : null"
-    />
+    <progress-indicator v-if="uploading || generatingSpectrogram || generatingAudiowaveform"
+      :text="$t('upload_indicator_label')" :value="uploading ? uploadProgress : null"
+      :target="uploading ? false : null" />
 
     <alert-dialog v-if="error" @close="error = null">
       {{ $t("error") }}
@@ -117,10 +89,10 @@ import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
 import AssetsItem from "./AssetsItem.vue";
-import UploadIcon from "../assets/icons/upload.svg?inline";
-import SpectrogramIcon from "../assets/icons/spectrogram.svg?inline";
+import UploadIcon from "../assets/icons/upload.svg?component";
+import SpectrogramIcon from "../assets/icons/spectrogram.svg?component";
 import SpectrogramForm from "./SpectrogramForm.vue";
-import AudiowaveformIcon from "../assets/icons/audiowaveform.svg?inline";
+import AudiowaveformIcon from "../assets/icons/audiowaveform.svg?component";
 import AudiowaveformForm from "./AudiowaveformForm.vue";
 
 export default {

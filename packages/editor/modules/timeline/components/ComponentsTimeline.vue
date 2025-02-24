@@ -35,10 +35,7 @@
   <div v-hotkey.local.stop="hotkeys" class="timeline" tabindex="0">
     <div class="tracks-container">
       <template v-for="scenario in scenarios" :key="scenario.id">
-        <component-track
-          v-if="scenario.id === activeScenario"
-          :component="scenario"
-        />
+        <component-track v-if="scenario.id === activeScenario" :component="scenario" />
       </template>
 
       <div class="playhead" :style="playheadStyle"></div>
@@ -149,9 +146,8 @@ export default {
       return {
         borderRight: `${this.playheadWidth}px solid ${this.playheadColor}`,
         left: `${this.playheadPosition}%`,
-        marginLeft: `calc(${this.trackTimeOffset} - ${
-          this.playheadWidth / 2
-        }px)`,
+        marginLeft: `calc(${this.trackTimeOffset} - ${this.playheadWidth / 2
+          }px)`,
       };
     },
     hotkeys() {
@@ -364,7 +360,7 @@ export default {
       const overlapHeight = Math.max(
         0,
         Math.min(dropRect.bottom, dragRect.bottom) -
-          Math.max(dropRect.top, dragRect.top)
+        Math.max(dropRect.top, dragRect.top)
       );
 
       const overlapRatio = overlapHeight / dragRect.height;
@@ -438,8 +434,8 @@ export default {
     &.dragging {
       z-index: 20;
 
-      > .handle,
-      > .time-wrapper {
+      >.handle,
+      >.time-wrapper {
         background: var(--metascore-color-bg-tertiary);
       }
 

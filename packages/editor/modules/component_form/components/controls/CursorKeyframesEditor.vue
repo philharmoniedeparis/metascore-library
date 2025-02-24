@@ -1,23 +1,12 @@
 <template>
   <div class="cursor-keyframes-editor" @click.stop="onClick">
-    <div
-      v-for="(keyframe, index) in value"
-      :key="index"
-      :class="['keyframe', { active: activeKeyframe === index }]"
-      :style="{ left: `${keyframe[1]}px` }"
-      :data-index="index"
-      @mouseover="activeKeyframe = index"
-      @mouseleave="activeKeyframe = null"
-      @mousedown.prevent
-    >
+    <div v-for="(keyframe, index) in value" :key="index" :class="['keyframe', { active: activeKeyframe === index }]"
+      :style="{ left: `${keyframe[1]}px` }" :data-index="index" @mouseover="activeKeyframe = index"
+      @mouseleave="activeKeyframe = null" @mousedown.prevent>
       <div class="marker"></div>
 
-      <div
-        v-show="!draggingKeyframe && activeKeyframe === index"
-        class="overlay"
-        :data-placement="overlayPlacement"
-        :style="overlayStyle"
-      >
+      <div v-show="!draggingKeyframe && activeKeyframe === index" class="overlay" :data-placement="overlayPlacement"
+        :style="overlayStyle">
         <div class="time" @click.stop>
           {{ ovelayLabel }}
         </div>
@@ -38,7 +27,7 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { useModule } from "@core/services/module-manager";
-import ClearIcon from "../../assets/icons/clear.svg?inline";
+import ClearIcon from "../../assets/icons/clear.svg?component";
 
 export default {
   components: {

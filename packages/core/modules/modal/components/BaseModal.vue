@@ -23,12 +23,8 @@
                     <slot v-if="$slots.title" name="title" />
                     <template v-else>{{ title }} </template>
                   </h3>
-                  <base-button
-                    class="close no-bg"
-                    :title="$t('close_title')"
-                    :aria-label="$t('close_title')"
-                    @click="$emit('close')"
-                  >
+                  <base-button class="close no-bg" :title="$t('close_title')" :aria-label="$t('close_title')"
+                    @click="$emit('close')">
                     <template #icon><close-icon /></template>
                   </base-button>
                 </div>
@@ -50,7 +46,7 @@
 </template>
 
 <script>
-import CloseIcon from "../assets/icons/close.svg?inline";
+import CloseIcon from "../assets/icons/close.svg?component";
 
 export default {
   components: {
@@ -96,6 +92,7 @@ export default {
 .fade-leave-active {
   transition: opacity 0.15s linear;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -185,7 +182,7 @@ export default {
     }
   }
 
-  .body ~ .footer {
+  .body~.footer {
     padding-top: 0;
   }
 }

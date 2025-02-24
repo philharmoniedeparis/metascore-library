@@ -1,11 +1,6 @@
 <template>
   <li :class="['components-breadcrumb--item', { tail }]">
-    <button
-      v-if="typeof value === 'object'"
-      type="button"
-      :disabled="tail"
-      @click="onComponentClick(value)"
-    >
+    <button v-if="typeof value === 'object'" type="button" :disabled="tail" @click="onComponentClick(value)">
       {{ getComponentLabel(value) }}
     </button>
     <div v-else>

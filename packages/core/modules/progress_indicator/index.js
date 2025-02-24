@@ -1,15 +1,15 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import Modal from "../modal";
-import ProgressIndicator from "./components/ProgressIndicator";
+import AbstractModule from '@core/services/module-manager/AbstractModule'
+import Modal from '../modal'
+import ProgressIndicator from './components/ProgressIndicator.vue'
 
 export default class ProgressIndicatorModule extends AbstractModule {
-  static id = "progress_indicator";
+  static id = 'progress_indicator'
 
-  static dependencies = [Modal];
+  static dependencies = [Modal]
 
   constructor({ app }) {
-    super(arguments);
+    super(arguments)
 
-    app.component("ProgressIndicator", ProgressIndicator);
+    app.component('ProgressIndicator', ProgressIndicator)
   }
 }

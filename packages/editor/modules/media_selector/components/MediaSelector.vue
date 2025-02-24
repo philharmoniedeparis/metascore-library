@@ -27,20 +27,11 @@
 
 <template>
   <div v-if="mediaSource" class="media-selector">
-    <base-button
-      v-tooltip
-      type="button"
-      :title="$t('title')"
-      @click="showForm = true"
-    >
+    <base-button v-tooltip type="button" :title="$t('title')" @click="showForm = true">
       {{ mediaSource.name }}
     </base-button>
 
-    <media-source-form
-      v-if="showForm"
-      @submit="onFormSubmit"
-      @close="showForm = false"
-    />
+    <media-source-form v-if="showForm" @submit="onFormSubmit" @close="showForm = false" />
 
     <progress-indicator v-if="loading" :text="$t('loading_indicator_label')" />
 
@@ -48,11 +39,7 @@
       <p v-dompurify-html="alertMsg"></p>
     </alert-dialog>
 
-    <confirm-dialog
-      v-if="confirmMsg"
-      @submit="onConfirmSubmit"
-      @cancel="confirmMsg = null"
-    >
+    <confirm-dialog v-if="confirmMsg" @submit="onConfirmSubmit" @cancel="confirmMsg = null">
       <p v-dompurify-html="confirmMsg"></p>
     </confirm-dialog>
   </div>
@@ -62,7 +49,7 @@
 import { round } from "lodash";
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { useModule } from "@core/services/module-manager";
-import MediaSourceForm from "./MediaSourceForm";
+import MediaSourceForm from "./MediaSourceForm.vue";
 
 export default {
   components: {

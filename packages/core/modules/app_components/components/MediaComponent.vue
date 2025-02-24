@@ -1,12 +1,6 @@
 <template>
   <component-wrapper :component="component">
-    <component
-      :is="tag"
-      ref="media"
-      :src="src"
-      controls
-      playsinline
-    ></component>
+    <component :is="tag" ref="media" :src="src" controls playsinline></component>
   </component-wrapper>
 </template>
 

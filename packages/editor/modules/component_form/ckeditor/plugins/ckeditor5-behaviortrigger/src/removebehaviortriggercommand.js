@@ -1,7 +1,7 @@
-import { Command } from "@ckeditor/ckeditor5-core";
-import { findAttributeRange } from "@ckeditor/ckeditor5-typing";
+import { Command } from 'ckeditor5'
+import { findAttributeRange } from 'ckeditor5'
 
-import { isTriggerableElement } from "./utils";
+import { isTriggerableElement } from './utils'
 
 /**
  * The unlink command. It is used by the {@link module:link/link~Link link plugin}.
@@ -13,22 +13,16 @@ export default class RemoveBehaviorTriggerCommand extends Command {
    * @inheritDoc
    */
   refresh() {
-    const model = this.editor.model;
-    const selection = model.document.selection;
-    const selectedElement = selection.getSelectedElement();
+    const model = this.editor.model
+    const selection = model.document.selection
+    const selectedElement = selection.getSelectedElement()
 
     // A check for any integration that allows linking elements (e.g. `LinkImage`).
     // Currently the selection reads attributes from text nodes only. See #7429 and #7465.
     if (isTriggerableElement(selectedElement, model.schema)) {
-      this.isEnabled = model.schema.checkAttribute(
-        selectedElement,
-        "behaviorTrigger"
-      );
+      this.isEnabled = model.schema.checkAttribute(selectedElement, 'behaviorTrigger')
     } else {
-      this.isEnabled = model.schema.checkAttributeInSelection(
-        selection,
-        "behaviorTrigger"
-      );
+      this.isEnabled = model.schema.checkAttributeInSelection(selection, 'behaviorTrigger')
     }
   }
 
@@ -46,10 +40,10 @@ export default class RemoveBehaviorTriggerCommand extends Command {
    * @fires execute
    */
   execute() {
-    const editor = this.editor;
-    const model = this.editor.model;
-    const selection = model.document.selection;
-    const addBehaviorTriggerCommand = editor.commands.get("addBehaviorTrigger");
+    const editor = this.editor
+    const model = this.editor.model
+    const selection = model.document.selection
+    const addBehaviorTriggerCommand = editor.commands.get('addBehaviorTrigger')
 
     model.change((writer) => {
       // Get ranges to unlink.
@@ -57,23 +51,23 @@ export default class RemoveBehaviorTriggerCommand extends Command {
         ? [
             findAttributeRange(
               selection.getFirstPosition(),
-              "behaviorTrigger",
-              selection.getAttribute("behaviorTrigger"),
-              model
+              'behaviorTrigger',
+              selection.getAttribute('behaviorTrigger'),
+              model,
             ),
           ]
-        : model.schema.getValidRanges(selection.getRanges(), "behaviorTrigger");
+        : model.schema.getValidRanges(selection.getRanges(), 'behaviorTrigger')
 
       // Remove `behaviorTrigger` attribute from specified ranges.
       for (const range of rangesToUnlink) {
-        writer.removeAttribute("behaviorTrigger", range);
+        writer.removeAttribute('behaviorTrigger', range)
         // If there are registered custom attributes, then remove them during unlink.
         if (addBehaviorTriggerCommand) {
           for (const manualDecorator of addBehaviorTriggerCommand.manualDecorators) {
-            writer.removeAttribute(manualDecorator.id, range);
+            writer.removeAttribute(manualDecorator.id, range)
           }
         }
       }
-    });
+    })
   }
 }

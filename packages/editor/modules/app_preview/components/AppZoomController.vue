@@ -10,13 +10,7 @@
 </i18n>
 
 <template>
-  <select-control
-    v-model="zoom"
-    v-tooltip
-    :options="options"
-    :title="$t('title')"
-    class="app-zoom-controller"
-  />
+  <select-control v-model="zoom" v-tooltip :options="options" :title="$t('title')" class="app-zoom-controller" />
 </template>
 
 <script>

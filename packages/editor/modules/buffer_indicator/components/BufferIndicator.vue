@@ -1,11 +1,6 @@
 <template>
   <div class="buffer-indicator" @mousedown="onMousedown" @click="onClick">
-    <div
-      v-for="range in ranges"
-      :key="range.key"
-      :style="range.style"
-      class="range"
-    />
+    <div v-for="range in ranges" :key="range.key" :style="range.style" class="range" />
     <div class="playback" :style="playbackStyle" />
   </div>
 </template>

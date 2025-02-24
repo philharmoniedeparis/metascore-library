@@ -1,12 +1,12 @@
-import { AutoLink } from "@ckeditor/ckeditor5-link";
+import { AutoLink } from 'ckeditor5'
 
-import CustomLinkEditing from "./linkediting";
+import CustomLinkEditing from './linkediting'
 
 export default class CustomAutoLink extends AutoLink {
   /**
    * @inheritDoc
    */
   static get requires() {
-    return ["Delete", CustomLinkEditing];
+    return ['Delete', CustomLinkEditing]
   }
 }

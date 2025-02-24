@@ -1,17 +1,10 @@
-import {
-  ButtonView,
-  LabelView,
-  View,
-  ViewCollection,
-  FocusCycler,
-} from "@ckeditor/ckeditor5-ui";
-import { FocusTracker, KeystrokeHandler } from "@ckeditor/ckeditor5-utils";
-import { icons } from "@ckeditor/ckeditor5-core";
+import { ButtonView, LabelView, View, ViewCollection, FocusCycler } from 'ckeditor5'
+import { FocusTracker, KeystrokeHandler } from 'ckeditor5'
+import { icons } from 'ckeditor5'
 
-import "@ckeditor/ckeditor5-ui/theme/components/responsive-form/responsiveform.css";
-import "../../theme/behaviortriggeractions.scss";
+import '../../theme/behaviortriggeractions.scss'
 
-import removeBehaviorTriggerIcon from "../../theme/icons/removebehaviortrigger.svg";
+import removeBehaviorTriggerIcon from '../../theme/icons/removebehaviortrigger.svg?raw'
 
 /**
  * The link actions view class. This view displays the link preview, allows
@@ -24,9 +17,9 @@ export default class BehaviorTriggerActionsView extends View {
    * @inheritDoc
    */
   constructor(locale) {
-    super(locale);
+    super(locale)
 
-    const t = locale.t;
+    const t = locale.t
 
     /**
      * Tracks information about DOM focus in the actions.
@@ -34,7 +27,7 @@ export default class BehaviorTriggerActionsView extends View {
      * @readonly
      * @member {module:utils/focustracker~FocusTracker}
      */
-    this.focusTracker = new FocusTracker();
+    this.focusTracker = new FocusTracker()
 
     /**
      * An instance of the {@link module:utils/keystrokehandler~KeystrokeHandler}.
@@ -42,14 +35,14 @@ export default class BehaviorTriggerActionsView extends View {
      * @readonly
      * @member {module:utils/keystrokehandler~KeystrokeHandler}
      */
-    this.keystrokes = new KeystrokeHandler();
+    this.keystrokes = new KeystrokeHandler()
 
     /**
      * The id preview view.
      *
      * @member {module:ui/view~View}
      */
-    this.previewLabelView = this._createPreviewLabel();
+    this.previewLabelView = this._createPreviewLabel()
 
     /**
      * The unlink button view.
@@ -57,17 +50,17 @@ export default class BehaviorTriggerActionsView extends View {
      * @member {module:ui/button/buttonview~ButtonView}
      */
     this.removeTriggerButtonView = this._createButton(
-      t("Remove"),
+      t('Remove'),
       removeBehaviorTriggerIcon,
-      "removeBehaviorTrigger"
-    );
+      'removeBehaviorTrigger',
+    )
 
     /**
      * The edit link button view.
      *
      * @member {module:ui/button/buttonview~ButtonView}
      */
-    this.editButtonView = this._createButton(t("Edit"), icons.pencil, "edit");
+    this.editButtonView = this._createButton(t('Edit'), icons.pencil, 'edit')
 
     /**
      * The value of the trigger "id" attribute of use in the {@link #previewLabelView}.
@@ -75,7 +68,7 @@ export default class BehaviorTriggerActionsView extends View {
      * @observable
      * @member {String}
      */
-    this.set("id");
+    this.set('id')
 
     /**
      * A collection of views that can be focused in the view.
@@ -84,7 +77,7 @@ export default class BehaviorTriggerActionsView extends View {
      * @protected
      * @member {module:ui/viewcollection~ViewCollection}
      */
-    this._focusables = new ViewCollection();
+    this._focusables = new ViewCollection()
 
     /**
      * Helps cycling over {@link #_focusables} in the view.
@@ -99,70 +92,62 @@ export default class BehaviorTriggerActionsView extends View {
       keystrokeHandler: this.keystrokes,
       actions: {
         // Navigate fields backwards using the Shift + Tab keystroke.
-        focusPrevious: "shift + tab",
+        focusPrevious: 'shift + tab',
 
         // Navigate fields forwards using the Tab key.
-        focusNext: "tab",
+        focusNext: 'tab',
       },
-    });
+    })
 
     this.setTemplate({
-      tag: "div",
+      tag: 'div',
 
       attributes: {
-        class: ["ck", "ck-behaviortrigger-actions", "ck-responsive-form"],
+        class: ['ck', 'ck-behaviortrigger-actions', 'ck-responsive-form'],
 
         // https://github.com/ckeditor/ckeditor5-link/issues/90
-        tabindex: "-1",
+        tabindex: '-1',
       },
 
-      children: [
-        this.previewLabelView,
-        this.editButtonView,
-        this.removeTriggerButtonView,
-      ],
-    });
+      children: [this.previewLabelView, this.editButtonView, this.removeTriggerButtonView],
+    })
   }
 
   /**
    * @inheritDoc
    */
   render() {
-    super.render();
+    super.render()
 
-    const childViews = [
-      this.previewLabelView,
-      this.editButtonView,
-      this.removeTriggerButtonView,
-    ];
+    const childViews = [this.previewLabelView, this.editButtonView, this.removeTriggerButtonView]
 
     childViews.forEach((v) => {
       // Register the view as focusable.
-      this._focusables.add(v);
+      this._focusables.add(v)
 
       // Register the view in the focus tracker.
-      this.focusTracker.add(v.element);
-    });
+      this.focusTracker.add(v.element)
+    })
 
     // Start listening for the keystrokes coming from #element.
-    this.keystrokes.listenTo(this.element);
+    this.keystrokes.listenTo(this.element)
   }
 
   /**
    * @inheritDoc
    */
   destroy() {
-    super.destroy();
+    super.destroy()
 
-    this.focusTracker.destroy();
-    this.keystrokes.destroy();
+    this.focusTracker.destroy()
+    this.keystrokes.destroy()
   }
 
   /**
    * Focuses the fist {@link #_focusables} in the actions.
    */
   focus() {
-    this._focusCycler.focusFirst();
+    this._focusCycler.focusFirst()
   }
 
   /**
@@ -175,17 +160,17 @@ export default class BehaviorTriggerActionsView extends View {
    * @returns {module:ui/button/buttonview~ButtonView} The button view instance.
    */
   _createButton(label, icon, eventName) {
-    const button = new ButtonView(this.locale);
+    const button = new ButtonView(this.locale)
 
     button.set({
       label,
       icon,
       tooltip: true,
-    });
+    })
 
-    button.delegate("execute").to(this, eventName);
+    button.delegate('execute').to(this, eventName)
 
-    return button;
+    return button
   }
 
   /**
@@ -195,19 +180,19 @@ export default class BehaviorTriggerActionsView extends View {
    * @returns {module:ui/label/labelview~LabelView} The label view instance.
    */
   _createPreviewLabel() {
-    const label = new LabelView(this.locale);
-    const t = this.t;
+    const label = new LabelView(this.locale)
+    const t = this.t
 
     label.extendTemplate({
       attributes: {
-        class: ["ck", "ck-behaviortrigger-actions__preview"],
+        class: ['ck', 'ck-behaviortrigger-actions__preview'],
       },
-    });
+    })
 
-    label.bind("text").to(this, "id", (id) => {
-      return id || t("This trigger has no ID");
-    });
+    label.bind('text').to(this, 'id', (id) => {
+      return id || t('This trigger has no ID')
+    })
 
-    return label;
+    return label
   }
 }

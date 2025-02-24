@@ -1,30 +1,14 @@
 <template>
-  <form-group
-    :class="['control', 'html', { disabled, editing }]"
-    :description="description"
-    :required="required"
-  >
-    <base-button
-      type="button"
-      :loading="settingUpEditor"
-      @click="onButtonClick"
-    >
+  <form-group :class="['control', 'html', { disabled, editing }]" :description="description" :required="required">
+    <base-button type="button" :loading="settingUpEditor" @click="onButtonClick">
       {{ formattedLabel }}
     </base-button>
 
     <div ref="toolbar-container" class="toolbar-container"></div>
 
-    <element-highlighter
-      v-if="editing"
-      :[scopeAttribute]="''"
-      class="html-control-highlighter"
-      :border-width="0"
-      :rect="highlighterRect"
-      :teleport-target="appRendererEl"
-      :overlay-opacity="0.5"
-      :allow-interaction="true"
-      @click="onHighlighterClick"
-    />
+    <element-highlighter v-if="editing" :[scopeAttribute]="''" class="html-control-highlighter" :border-width="0"
+      :rect="highlighterRect" :teleport-target="appRendererEl" :overlay-opacity="0.5" :allow-interaction="true"
+      @click="onHighlighterClick" />
   </form-group>
 </template>
 
@@ -348,6 +332,7 @@ export default {
 <style lang="scss" scoped>
 .control {
   :deep(.input-wrapper) {
+
     // #\9 is used here to increase specificity.
     &:not(#\9) {
       flex-direction: column;

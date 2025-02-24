@@ -46,42 +46,22 @@
 <template>
   <div v-hotkey.prevent="hotkeys" class="playback-controller">
     <div class="left">
-      <base-button
-        type="button"
-        class="rewind"
-        :aria-label="$t('rewind.label')"
-        @click="onRewindClick"
-      >
+      <base-button type="button" class="rewind" :aria-label="$t('rewind.label')" @click="onRewindClick">
         <template #icon><rewind-icon /></template>
       </base-button>
     </div>
 
     <div class="center">
-      <base-button
-        v-if="mediaPlaying"
-        type="button"
-        class="pause"
-        :aria-label="$t('pause.label')"
-        @click="onPauseClick"
-      >
+      <base-button v-if="mediaPlaying" type="button" class="pause" :aria-label="$t('pause.label')"
+        @click="onPauseClick">
         <template #icon><pause-icon /></template>
       </base-button>
-      <base-button
-        v-else
-        type="button"
-        class="play"
-        :aria-label="$t('play.label')"
-        @click="onPlayClick"
-      >
+      <base-button v-else type="button" class="play" :aria-label="$t('play.label')" @click="onPlayClick">
         <template #icon><play-icon /></template>
       </base-button>
 
-      <dropdown-button-control
-        v-model="playbackRate"
-        :options="playbackRateOptions"
-        :aria-label="$t('playbackrate.label')"
-        class="playback-rate"
-      >
+      <dropdown-button-control v-model="playbackRate" :options="playbackRateOptions"
+        :aria-label="$t('playbackrate.label')" class="playback-rate">
         <template #label>{{ formattedPlaybackRate }}</template>
         <template #dropdownHeading>
           <h2 class="playback-rate--dropdown-heading">
@@ -97,9 +77,9 @@
 
 <script>
 import { useModule } from "@core/services/module-manager";
-import PlayIcon from "../assets/icons/play.svg?inline";
-import PauseIcon from "../assets/icons/pause.svg?inline";
-import RewindIcon from "../assets/icons/rewind.svg?inline";
+import PlayIcon from "../assets/icons/play.svg?component";
+import PauseIcon from "../assets/icons/pause.svg?component";
+import RewindIcon from "../assets/icons/rewind.svg?component";
 
 export default {
   components: {
@@ -200,11 +180,11 @@ export default {
   align-items: center;
   flex: 1 1 auto;
 
-  > .center {
+  >.center {
     position: relative;
   }
 
-  > .right {
+  >.right {
     width: 2em;
   }
 
@@ -261,7 +241,7 @@ export default {
     margin: 0;
 
     :deep(.input-wrapper) {
-      > button {
+      >button {
         width: 3em;
         height: 3em;
         margin-bottom: -1em;

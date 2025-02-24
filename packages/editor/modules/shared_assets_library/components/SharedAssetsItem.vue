@@ -13,10 +13,7 @@
   <div class="assets-item">
     <figure>
       <img v-if="['image', 'svg'].includes(type)" :src="file.url" />
-      <lottie-animation-icon
-        v-else-if="type === 'lottie_animation'"
-        :src="file.url"
-      />
+      <lottie-animation-icon v-else-if="type === 'lottie_animation'" :src="file.url" />
 
       <base-button type="button" @click="onImportClick">
         {{ $t("import_button") }}

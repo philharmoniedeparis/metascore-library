@@ -1,20 +1,11 @@
 <template>
   <component-wrapper :component="component">
     <template v-for="block in sortedBlocks" :key="block.id">
-      <button
-        type="button"
-        :class="{ active: isBlockHidden(block) }"
-        @click="toggleBlock(block)"
-      >
+      <button type="button" :class="{ active: isBlockHidden(block) }" @click="toggleBlock(block)">
         <svg preserveAspectRatio="xMidYMid meet" :viewBox="viewBox">
           <template v-for="block_2 in sortedBlocks" :key="block_2.id">
-            <rect
-              :width="block_2.dimension[0]"
-              :height="block_2.dimension[1]"
-              :x="block_2.position[0]"
-              :y="block_2.position[1]"
-              :class="{ current: block.id === block_2.id }"
-            ></rect>
+            <rect :width="block_2.dimension[0]" :height="block_2.dimension[1]" :x="block_2.position[0]"
+              :y="block_2.position[1]" :class="{ current: block.id === block_2.id }"></rect>
           </template>
         </svg>
       </button>

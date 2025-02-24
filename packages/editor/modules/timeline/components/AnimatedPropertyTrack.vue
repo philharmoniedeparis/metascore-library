@@ -36,28 +36,18 @@
 </i18n>
 
 <template>
-  <div
-    v-hotkey.local.prevent="hotkeys"
-    :class="['animated-property-track', { dragging }]"
-    :data-property="property"
-  >
+  <div v-hotkey.local.prevent="hotkeys" :class="['animated-property-track', { dragging }]" :data-property="property">
     <div ref="handle" class="handle">
       <animated-icon class="icon" />
       <div class="label">{{ $t(property) || property }}</div>
     </div>
 
     <div ref="wrapper" class="keyframes-wrapper" @click="onWrapperClick">
-      <div
-        v-for="(keyframe, index) in value"
-        :key="index"
-        v-tooltip
+      <div v-for="(keyframe, index) in value" :key="index" v-tooltip
         :style="{ left: `${(keyframe[0] / mediaDuration) * 100}%` }"
-        :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`"
-        :class="['keyframe', { selected: selected === index }]"
-        tabindex="0"
-        @click.stop="(evt) => selectKeyframe(evt.shiftKey ? null : index)"
-        @contextmenu="onKeyframeContextmenu(index)"
-      ></div>
+        :title="`${keyframe[1]} @ ${formatTime(keyframe[0])}`" :class="['keyframe', { selected: selected === index }]"
+        tabindex="0" @click.stop="(evt) => selectKeyframe(evt.shiftKey ? null : index)"
+        @contextmenu="onKeyframeContextmenu(index)"></div>
     </div>
   </div>
 </template>
@@ -70,7 +60,7 @@ import "@interactjs/modifiers";
 import interact from "@interactjs/interact";
 import { round } from "lodash";
 import { useModule } from "@core/services/module-manager";
-import AnimatedIcon from "../assets/icons/animated.svg?inline";
+import AnimatedIcon from "../assets/icons/animated.svg?component";
 
 export default {
   components: {

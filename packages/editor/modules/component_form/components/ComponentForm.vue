@@ -222,18 +222,10 @@
 </i18n>
 
 <template>
-  <div
-    v-if="masterComponent"
-    :class="['component-form', kebabCase(masterComponent.type)]"
-  >
+  <div v-if="masterComponent" :class="['component-form', kebabCase(masterComponent.type)]">
     <h2 class="title">{{ title }}</h2>
-    <schema-form
-      :schema="schema"
-      :layout="layout"
-      :values="masterComponent"
-      :validator="validator"
-      @update:model-value="update($event)"
-    />
+    <schema-form :schema="schema" :layout="layout" :values="masterComponent" :validator="validator"
+      @update:model-value="update($event)" />
   </div>
 </template>
 
@@ -731,7 +723,7 @@ export default {
 
       if (
         this.$i18n.messages[this.$i18n.locale]?.[model_type]?.[
-          `${property}-options`
+        `${property}-options`
         ]
       ) {
         // Translate select options.
@@ -755,7 +747,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@editor/scss/variables";
+@use "@editor/scss/variables" as variables;
 
 .component-form {
   display: flex;
@@ -790,12 +782,14 @@ export default {
     }
   }
 
-  @each $component, $color in $component-colors {
-    @if $component == default {
+  @each $component, $color in variables.$component-colors {
+    @if $component ==default {
       h2.title::before {
         background-color: var(--metascore-color-component-#{$component});
       }
-    } @else {
+    }
+
+    @else {
       &.#{$component} {
         h2.title::before {
           background-color: var(--metascore-color-component-#{$component});
@@ -835,22 +829,23 @@ export default {
       align-items: center;
       background: none;
 
-      > .form-group {
+      >.form-group {
         display: contents;
 
-        > .input-wrapper {
+        >.input-wrapper {
           display: contents;
 
-          > label {
+          >label {
             grid-column: 2/2;
           }
-          > .form-group.checkbox {
+
+          >.form-group.checkbox {
             grid-column: 1/1;
           }
         }
 
         &.disabled {
-          > .input-wrapper > label {
+          >.input-wrapper>label {
             opacity: 0.5;
           }
         }
@@ -896,7 +891,7 @@ export default {
 
     &.checkbox {
       .input-wrapper {
-        > .input-container {
+        >.input-container {
           order: 1;
         }
       }
@@ -904,7 +899,7 @@ export default {
 
     &[data-property="name"] {
       label {
-        @include sr-only;
+        @include mixins.sr-only;
       }
     }
   }
