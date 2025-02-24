@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type CSSProperties } from 'vue'
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import useStore from "../store";
 import ContextMenuItem from "./ContextMenuItem.vue";
@@ -42,7 +42,7 @@ export default defineComponent ({
   },
   data() {
     return {
-      style: null,
+      style: null as CSSProperties|null,
     };
   },
   computed: {
@@ -95,7 +95,7 @@ export default defineComponent ({
     onBlur() {
       this.close();
     },
-    onKeyup(evt) {
+    onKeyup(evt: KeyboardEvent) {
       if (evt.key === "Escape") {
         this.close();
       }

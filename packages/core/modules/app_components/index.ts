@@ -27,6 +27,8 @@ import VideoRendererComponent from './components/VideoRendererComponent.vue'
 
 import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from './utils/links'
 
+export type { AbstractComponent } from './models'
+
 export default class AppComponentsModule extends AbstractModule {
   static id = 'app_components'
 

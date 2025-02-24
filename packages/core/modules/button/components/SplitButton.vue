@@ -67,7 +67,7 @@ export default defineComponent ({
     onClick() {
       this.expanded = false;
     },
-    onDocumentMousedown(evt) {
+    onDocumentMousedown(evt: MouseEvent) {
       if (!this.$el.contains(evt.target)) {
         this.expanded = false;
       }

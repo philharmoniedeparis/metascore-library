@@ -3,9 +3,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, markRaw } from "vue";
+import { defineComponent, markRaw, type PropType, type Raw } from "vue";
 import { getRendererForMime } from "../utils/media";
 import useStore from "../store";
+import type { Native as MediaRenderer } from "../renderers";
 
 export default defineComponent ({
   name: "MediaPlayer",
@@ -14,10 +15,7 @@ export default defineComponent ({
      * The media type; audio|video
      */
     type: {
-      type: String,
-      validator(value) {
-        return ["audio", "video"].includes(value);
-      },
+      type: String as PropType<"audio"|"video">,
       default: "audio",
     },
 
@@ -57,11 +55,8 @@ export default defineComponent ({
      * Indicate what data should be preloaded
      */
     preload: {
-      type: String,
-      validator(value) {
-        return ["none", "metadata", "auto"].includes(value);
-      },
-      default: null,
+      type: String as PropType<"none"|"metadata"|"auto">,
+      default: "auto",
     },
   },
   setup() {
@@ -71,7 +66,7 @@ export default defineComponent ({
   data() {
     return {
       playing: false,
-      renderer: null,
+      renderer: null as Raw<MediaRenderer>|null,
       hls: null,
     };
   },
@@ -81,7 +76,7 @@ export default defineComponent ({
     },
   },
   mounted() {
-    this.store.initElement(this.$refs.media);
+    this.store.initElement(this.$refs.media as HTMLMediaElement);
     this.setupRenderer();
   },
   beforeUnmount() {
@@ -100,7 +95,7 @@ export default defineComponent ({
       const Renderer = getRendererForMime(this.source.mime);
       if (Renderer) {
         this.renderer = markRaw(new Renderer());
-        await this.renderer.mount(this.source.url, this.$el);
+        await this.renderer!.mount(this.source.url, this.$el);
       } else {
         // @todo: handle no compatible renderer found.
       }

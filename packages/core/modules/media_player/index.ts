@@ -1,8 +1,8 @@
-import { storeToRefs } from 'pinia'
-import { readonly } from 'vue'
+import { storeToRefs, type StoreOnActionListener, type StateTree } from 'pinia'
+import { readonly, type Ref, type DeepReadonly } from 'vue'
 
 import AbstractModule, { type Context } from '@core/services/module-manager/AbstractModule'
-import useStore from './store'
+import useStore, { type Source } from './store'
 import * as utils from './utils/media'
 import MediaPlayer from './components/MediaPlayer.vue'
 
@@ -16,7 +16,7 @@ export default class MediaPlayerModule extends AbstractModule {
     app.component('MediaPlayer', MediaPlayer)
   }
 
-  get element() {
+  get element(): DeepReadonly<Ref<HTMLAudioElement | null, HTMLAudioElement | null>> {
     const store = useStore()
     const { element } = storeToRefs(store)
     return readonly(element)
@@ -100,7 +100,7 @@ export default class MediaPlayerModule extends AbstractModule {
     return readonly(playbackRate)
   }
 
-  setSource(value) {
+  setSource(value: Source) {
     const store = useStore()
     store.setSource(value)
   }
@@ -120,33 +120,33 @@ export default class MediaPlayerModule extends AbstractModule {
     store.stop()
   }
 
-  seekTo(value) {
+  seekTo(value: number) {
     const store = useStore()
     store.seekTo(value)
   }
 
-  setPlaybackRate(value) {
+  setPlaybackRate(value: number) {
     const store = useStore()
     store.setPlaybackRate(value)
   }
 
-  formatTime(time) {
+  formatTime(time: number) {
     return utils.formatTime(time)
   }
 
-  getMimeTypeFromURL(url) {
+  getMimeTypeFromURL(url: string) {
     return utils.getMimeTypeFromURL(url)
   }
 
-  getRendererForMime(mime) {
+  getRendererForMime(mime: string) {
     return utils.getRendererForMime(mime)
   }
 
-  async getFileDuration(file) {
+  async getFileDuration(file: { mime: string, url: string}) {
     return await utils.getFileDuration(file)
   }
 
-  onStoreAction(callback) {
+  onStoreAction(callback: StoreOnActionListener<"media-player", StateTree, unknown, unknown>) {
     const store = useStore()
     return store.$onAction(callback)
   }

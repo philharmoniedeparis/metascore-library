@@ -1,7 +1,7 @@
-import { type Ajv } from "ajv";
 import urlRegex from "url-regex";
 import validateColor from "validate-color";
-import { type JSONSchema7, type JSONSchema7Definition } from "json-schema";
+import type { Ajv } from "ajv";
+import type { JSONSchema7, JSONSchema7Array, JSONSchema7Definition } from "json-schema";
 
 class AjvRequiredError extends Error {
   constructor() {
@@ -12,9 +12,9 @@ class AjvRequiredError extends Error {
 export const createStringField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
-  minLength = void 0,
-  maxLength = void 0,
+  default: default_value = void 0 as string|undefined,
+  minLength = void 0 as number|undefined,
+  maxLength = void 0 as number|undefined,
   nullable = false,
 } = {}) => {
   const field = {
@@ -33,11 +33,11 @@ export const createStringField = ({
 export const createNumberField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as number|undefined,
   nullable = false,
   multipleOf = 0.01,
-  minimum = void 0,
-  maximum = void 0,
+  minimum = void 0 as number|undefined,
+  maximum = void 0 as number|undefined,
 } = {}) => {
   const field = {
     type: nullable ? ["number", "null"] : "number",
@@ -56,10 +56,10 @@ export const createNumberField = ({
 export const createIntegerField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as number|undefined,
   nullable = false,
-  minimum = void 0,
-  maximum = void 0,
+  minimum = void 0 as number|undefined,
+  maximum = void 0 as number|undefined,
 } = {}) => {
   const field = {
     type: nullable ? ["integer", "null"] : "integer",
@@ -77,7 +77,7 @@ export const createIntegerField = ({
 export const createBooleanField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as boolean|undefined,
   nullable = false,
 } = {}) => {
   const field = {
@@ -94,12 +94,12 @@ export const createBooleanField = ({
 export const createArrayField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as JSONSchema7Array|null|undefined,
   nullable = false,
-  minItems = void 0,
-  maxItems = void 0,
+  minItems = void 0 as number|undefined,
+  maxItems = void 0 as number|undefined,
   items = void 0 as JSONSchema7Definition|JSONSchema7Definition[]|undefined,
-  additionalItems = void 0,
+  additionalItems = void 0 as boolean|undefined,
   uniqueItems = void 0,
 } = {}) => {
   const field = {

@@ -14,12 +14,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 
 export default defineComponent ({
   props: {
     type: {
-      type: String,
+      type: String as PropType<'submit'|'button'|'reset'>,
       default: null,
     },
     disabled: {

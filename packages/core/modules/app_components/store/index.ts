@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { readonly, unref, isReadonly, toRaw } from "vue";
+import { readonly, unref, isReadonly, toRaw, type DeepReadonly } from "vue";
 import { omit } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@core/services/module-manager";
@@ -10,7 +10,7 @@ import type MediaPlayerModule from "../../media_player";
 export default defineStore("app-components", {
   state: () => {
     return {
-      components: {},
+      components: {} as Record<Models.ComponentType, Record<string, Models.Component>>,
       deleted: {},
       sortedScenarios: [],
       activeScenario: null,
@@ -20,28 +20,28 @@ export default defineStore("app-components", {
     };
   },
   getters: {
-    get() {
-      return (type, id) => {
-        const component = this.components?.[type]?.[id];
+    get(state) {
+      return (type: Models.ComponentType, id: string): DeepReadonly<Models.Component>|null => {
+        const component = state.components?.[type]?.[id];
         return component ? readonly(component) : null;
       };
     },
-    all() {
-      return []
-        .concat(...Object.values(this.components).map((v) => Object.values(v)))
+    all(state): DeepReadonly<Models.Component>[] {
+      return ([] as DeepReadonly<Models.Component>[])
+        .concat(...Object.values(state.components).map((v) => Object.values(v)))
         .map((c) => this.get(c.type, c.id))
-        .filter((c) => c);
+        .filter((c) => c !== null);
     },
-    getByType() {
-      return (type) => {
-        return Object.keys(this.components?.[type] || {})
+    getByType(state) {
+      return (type: Models.ComponentType) => {
+        return Object.keys(state.components?.[type] || {})
           .map((id) => this.get(type, id))
-          .filter((c) => c);
+          .filter((c) => c !== null);
       };
     },
     find() {
-      return (callback) => {
-        const findMatch = (components) => {
+      return (callback: (component: Models.Component) => boolean) => {
+        const findMatch = (components: Models.Component[]) => {
           let match = null;
           components.some((c) => {
             if (callback(c)) {
@@ -66,21 +66,21 @@ export default defineStore("app-components", {
           const scenario = scenarios.find((s) => s.id === sortedScenario);
           if (scenario) acc.push(scenario);
           return acc;
-        }, []);
+        }, [] as Models.Component<"Scenario">[]);
       };
     },
     getModelByType() {
-      return (type) => {
+      return (type: Models.ComponentType) => {
         return Models[type];
       };
     },
     getModelByMime() {
-      return (mime) => {
+      return (mime: string) => {
         return Object.values(Models).find((model) => model.mime === mime);
       };
     },
     getLabel() {
-      return (component) => {
+      return (component: Models.Component): string => {
         switch (component.type) {
           case "Page": {
             const block = this.getParent(component);
@@ -96,18 +96,18 @@ export default defineStore("app-components", {
       };
     },
     getChildrenProperty() {
-      return (component) => {
+      return (component: Models.Component): string|undefined => {
         return this.getModelByType(component.type).childrenProperty;
       };
     },
     hasChildren() {
-      return (component) => {
+      return (component: Models.Component): boolean => {
         const property = this.getChildrenProperty(component);
         return property && component[property]?.length > 0;
       };
     },
     getChildren() {
-      return (component) => {
+      return (component: Models.Component) => {
         let children = [];
 
         if (this.hasChildren(component)) {
@@ -119,7 +119,7 @@ export default defineStore("app-components", {
       };
     },
     getParent() {
-      return (component) => {
+      return (component: Models.Component) => {
         const parent =
           this.components?.[component.type]?.[component.id]?.$parent;
         if (parent) {
@@ -129,7 +129,7 @@ export default defineStore("app-components", {
       };
     },
     getIndex() {
-      return (component) => {
+      return (component: Models.Component) => {
         const parent = this.getParent(component);
         if (parent) {
           return this.getChildren(parent).findIndex((c) => {
@@ -140,7 +140,7 @@ export default defineStore("app-components", {
       };
     },
     getSiblings() {
-      return (component) => {
+      return (component: Models.Component) => {
         const parent = this.getParent(component);
         if (parent) {
           return this.getChildren(parent).filter((c) => {
@@ -166,7 +166,7 @@ export default defineStore("app-components", {
       this.sortedScenarios = normalized.result.map(({ id }) => id);
       this.activeScenario = this.sortedScenarios[0];
     },
-    setScenarioIndex(scenario, index) {
+    setScenarioIndex(scenario: Models.Component<"Scenario">, index: number) {
       const old_index = this.sortedScenarios.findIndex(
         (id) => id === scenario.id
       );
@@ -200,7 +200,7 @@ export default defineStore("app-components", {
         return await Models[data.type].create(data, validate);
       }
     },
-    async add(component, parent = null, index = null) {
+    async add(component: Models.Component, parent?: Models.Component, index?: number) {
       this.components[component.type] = this.components[component.type] || {};
       this.components[component.type][component.id] = component;
 
@@ -217,7 +217,7 @@ export default defineStore("app-components", {
         const children_prop = this.getChildrenProperty(parent);
 
         let children = parent[children_prop] || [];
-        if (index !== null) {
+        if (typeof index !== "undefined") {
           children = [
             ...children.slice(0, index),
             { type: component.type, id: component.id },
@@ -240,7 +240,7 @@ export default defineStore("app-components", {
 
       return component;
     },
-    async update(component, data) {
+    async update(component: Models.Component|DeepReadonly<Models.Component>, data) {
       if (isReadonly(component)) {
         component = this.components[component.type][component.id];
       }
@@ -294,7 +294,7 @@ export default defineStore("app-components", {
         console.error(e);
       }
     },
-    async arrange(component, action) {
+    async arrange(component: Models.Component, action: "front"|"back"|"forward"|"backward") {
       const parent = this.getParent(component);
       if (!parent) {
         throw new Error(
@@ -335,7 +335,7 @@ export default defineStore("app-components", {
         }),
       });
     },
-    async delete(component) {
+    async delete(component: Models.Component) {
       const { type, id } = component;
 
       if (!this.components[type]?.[id]) return;
@@ -381,7 +381,7 @@ export default defineStore("app-components", {
 
       delete this.components[type][id];
     },
-    async restore(component) {
+    async restore(component: Models.Component) {
       const { type, id } = component;
 
       if (!this.deleted[type]?.[id]) return;
@@ -416,7 +416,7 @@ export default defineStore("app-components", {
         }
       }
     },
-    async clone(component, data = {}, parent = null) {
+    async clone(component: Models.Component, data = {}, parent = null) {
       const children_prop = this.getChildrenProperty(component);
 
       const clone = await this.create(
@@ -437,7 +437,7 @@ export default defineStore("app-components", {
 
       return clone;
     },
-    setBlockActivePage(block, index) {
+    setBlockActivePage(block: Models.Component<"Block">, index: number) {
       if (block.synched) {
         const { seekTo: seekMediaTo } = useModule("media_player") as MediaPlayerModule;
         const pages = this.getChildren(block);
@@ -463,7 +463,7 @@ export default defineStore("app-components", {
      * @param {object} component The component.
      * @param {[string]} key An overrides' key to check against.
      */
-    hasOverrides(component, key) {
+    hasOverrides(component: Models.Component, key?: string) {
       if (component) {
         const { type, id } = component;
         if (!this.overrides.has(`${type}:${id}`)) {
@@ -486,7 +486,7 @@ export default defineStore("app-components", {
      * @param {object} values The data to override.
      * @param {[number = 0]} priority The overrides' priority, overrides with higher priority will have precedence.
      */
-    setOverrides(component, key, values, priority) {
+    setOverrides(component: Models.Component, key: string, values: unknown, priority?: number) {
       const { type, id } = component;
       if (!this.hasOverrides(`${type}:${id}`)) {
         this.overrides.set(`${type}:${id}`, new Map());
@@ -506,11 +506,11 @@ export default defineStore("app-components", {
     /**
      * Get a set of data overrides.
      *
-     * @param {object} component The component.
-     * @param {string} key A key to identify the overrides.
+     * @param component The component.
+     * @param key A key to identify the overrides.
      * @return {object | Map} The associated data, or a Map of associated data.
      */
-    getOverrides(component, key) {
+    getOverrides(component: Models.Component, key?: string) {
       if (component) {
         const { type, id } = component;
         const overrides = this.overrides.get(`${type}:${id}`);
@@ -528,10 +528,10 @@ export default defineStore("app-components", {
     /**
      * Delete a set of overrides.
      *
-     * @param {object} component The component.
-     * @param {string} key The overrides' key.
+     * @param component The component.
+     * @param key The overrides' key.
      */
-    clearOverrides(component, key) {
+    clearOverrides(component: Models.Component, key?: string) {
       if (component) {
         const { type, id } = component;
         if (this.hasOverrides(component, key)) {

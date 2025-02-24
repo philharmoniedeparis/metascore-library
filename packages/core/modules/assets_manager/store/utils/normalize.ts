@@ -1,7 +1,5 @@
-export function normalize(data) {
-  return data.reduce((acc, item) => acc.set(item.id, item), new Map());
-}
+import type { Item, SharedItem } from "../";
 
-export function denormalize(input) {
-  return Object.values(input);
+export function normalize(data: Array<Item|SharedItem>) {
+  return data.reduce((acc, item) => acc.set(item.id, item), new Map<number, Item|SharedItem>());
 }

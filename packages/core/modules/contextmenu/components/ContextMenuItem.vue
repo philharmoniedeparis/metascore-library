@@ -12,9 +12,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type CSSProperties, type PropType } from 'vue'
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
+
+export interface Item {
+  label: string
+  handler: () => void
+  items: Item[]
+}
 
 export default defineComponent ({
   directives: {
@@ -22,7 +28,7 @@ export default defineComponent ({
   },
   props: {
     item: {
-      type: Object,
+      type: Object as PropType<Item>,
       required: true,
     },
   },
@@ -30,7 +36,7 @@ export default defineComponent ({
   data() {
     return {
       hover: false,
-      submenuStyle: null,
+      submenuStyle: null as CSSProperties|null,
     };
   },
   watch: {
@@ -44,7 +50,7 @@ export default defineComponent ({
   },
   methods: {
     updateSubmenuPosition() {
-      computePosition(this.$el, this.$refs.submenu, {
+      computePosition(this.$el, this.$refs.submenu as HTMLUListElement, {
         placement: "right-start",
         middleware: [offset(-20), flip(), shift()],
       }).then(({ x, y }) => {

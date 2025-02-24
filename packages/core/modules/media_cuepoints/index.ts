@@ -7,10 +7,10 @@ export default class MediaCuepointsModule extends AbstractModule {
 
   static dependencies = [MediaPlayer];
 
+  _globalCuepoint: Manager.CuePoint|null = null
+
   constructor(context: Context) {
     super(context);
-
-    this._globalCuepoint = null;
 
     this.setGlobalCuepoint = this.setGlobalCuepoint.bind(this);
     this.getGlobalCuepoint = this.getGlobalCuepoint.bind(this);
@@ -18,11 +18,11 @@ export default class MediaCuepointsModule extends AbstractModule {
     Manager.init();
   }
 
-  addCuepoint(options) {
+  addCuepoint(options: Manager.CuePointOptions) {
     return Manager.addCuepoint(options);
   }
 
-  removeCuepoint(options) {
+  removeCuepoint(options: Manager.CuePoint) {
     Manager.removeCuepoint(options);
   }
 
@@ -30,7 +30,7 @@ export default class MediaCuepointsModule extends AbstractModule {
     return this._globalCuepoint;
   }
 
-  setGlobalCuepoint(options) {
+  setGlobalCuepoint(options: Manager.CuePointOptions) {
     if (this._globalCuepoint) {
       Manager.removeCuepoint(this._globalCuepoint);
     }

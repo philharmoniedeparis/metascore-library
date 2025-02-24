@@ -1,5 +1,5 @@
 import { version } from '../../package.json'
-import Emitter from 'tiny-emitter'
+import { TinyEmitter } from 'tiny-emitter'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
@@ -57,7 +57,7 @@ export class Editor {
   static async create({ url, el = null, locale = 'fr', ...configs } = {}) {
     const pinia = createPinia()
     const i18n = createI18n({ locale, fallbackLocale: 'fr' })
-    const events = new Emitter()
+    const events = new TinyEmitter()
     const app = createApp(App, { url })
 
     app.use(pinia)

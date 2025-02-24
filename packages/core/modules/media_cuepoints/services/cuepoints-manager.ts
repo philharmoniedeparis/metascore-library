@@ -2,36 +2,36 @@ import { watch, unref } from "vue";
 import { useModule } from "@core/services/module-manager";
 import type MediaPlayerModule from "../../media_player";
 
-let cuepoints = [];
+export interface CuePointOptions {
+  startTime?: number
+  endTime?: number
+  once?: boolean
+  onStart ?: (event: { time: number, cuepoint: CuePoint }) => void
+  onUpdate?: (event: { time: number, cuepoint: CuePoint }) => void
+  onSeekout?: (event: { time: number, cuepoint: CuePoint }) => void
+  onStop?: (event: { time: number, cuepoint: CuePoint }) => void
+  onDestroy?: () => void
+  considerError?: boolean
+}
+
+export interface CuePoint extends CuePointOptions {
+  running: boolean
+}
+
+let cuepoints = [] as CuePoint[];
 const seeking = false;
 let trackErrors = false;
 let maxError = 0;
-let previousTime = null;
+let previousTime = null as number|null;
 
-function addCuepoint({
-  startTime,
-  endTime,
-  onStart = null,
-  onUpdate = null,
-  onSeekout = null,
-  onStop = null,
-  onDestroy = null,
-  considerError = true,
-}) {
+function addCuepoint(options: CuePointOptions) {
   const cuepoint = {
-    startTime,
-    endTime,
-    onStart,
-    onUpdate,
-    onSeekout,
-    onStop,
-    onDestroy,
-    considerError,
-    running: false,
-  };
+    ...options,
+    running: false
+  }
   cuepoints.push(cuepoint);
 
-  trackErrors = trackErrors || considerError;
+  trackErrors = trackErrors || (cuepoint.considerError ?? true);
 
   const { time } = useModule("media_player") as MediaPlayerModule;
   updateCuepoint(cuepoint, unref(time));
@@ -39,7 +39,7 @@ function addCuepoint({
   return cuepoint;
 }
 
-function removeCuepoint(cuepoint) {
+function removeCuepoint(cuepoint: CuePoint) {
   if (cuepoint.onDestroy) {
     try {
       cuepoint.onDestroy();
@@ -55,13 +55,13 @@ function clearCuepoints() {
   cuepoints = [];
 }
 
-function updateCuepoint(cuepoint, time, seeked = false) {
+function updateCuepoint(cuepoint: CuePoint, time: number, seeked = false) {
   if (seeking) return;
 
   if (!cuepoint.running) {
     if (
-      (cuepoint.startTime === null || cuepoint.startTime <= time) &&
-      (cuepoint.endTime === null || cuepoint.endTime > time)
+      (typeof cuepoint.startTime === "undefined" || cuepoint.startTime <= time) &&
+      (typeof cuepoint.endTime === "undefined" || cuepoint.endTime > time)
     ) {
       cuepoint.running = true;
 
@@ -79,8 +79,8 @@ function updateCuepoint(cuepoint, time, seeked = false) {
     }
 
     if (
-      (cuepoint.endTime !== null && cuepoint.endTime < time + maxError) ||
-      (seeked && cuepoint.startTime !== null && cuepoint.startTime > time)
+      (typeof cuepoint.endTime !== "undefined" && cuepoint.endTime < time + maxError) ||
+      (seeked && typeof cuepoint.startTime !== "undefined" && cuepoint.startTime > time)
     ) {
       cuepoint.running = false;
 
@@ -97,7 +97,7 @@ function updateCuepoint(cuepoint, time, seeked = false) {
   }
 }
 
-function updateCuepoints(time, seeked = false) {
+function updateCuepoints(time: number, seeked = false) {
   cuepoints.forEach((cuepoint) => {
     updateCuepoint(cuepoint, time, seeked);
   });

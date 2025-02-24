@@ -3,6 +3,7 @@ import { defineBlocksWithJsonArray, Extensions, Msg, Css, Block } from "blockly/
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@core/services/module-manager";
 import type AppComponentsModule from "@/core/modules/app_components";
+import type { AbstractComponent as Component } from "@/core/modules/app_components";
 
 const BREADCRUMB_SEPARATOR = " › ";
 
@@ -25,7 +26,7 @@ const SUPPORTED_PROPERTIES = [
  * @returns {array} An options array
  */
 function getComponentOptions(
-  components = [],
+  components = [] as Component[],
   recursive = false,
   breadcrumb_ = ""
 ) {
@@ -38,11 +39,11 @@ function getComponentOptions(
   const options = [];
 
   if (components.length > 0) {
-    components.forEach((c) => {
-      const name = getComponentLabel(c);
+    components.forEach((component) => {
+      const name = getComponentLabel(component);
       let label = name;
 
-      const icon_url = getComponentIconURL(c);
+      const icon_url = getComponentIconURL(component);
       if (icon_url) {
         label = document.createElement("div");
         label.classList.add("blocklyMenuItemLabel");
@@ -71,8 +72,8 @@ function getComponentOptions(
 
       let children = null;
       if (recursive) {
-        const sub_components = getComponentChildren(c);
-        if (["Scenario", "Page"].includes(c.type)) {
+        const sub_components = getComponentChildren(component);
+        if (["Scenario", "Page"].includes(component.type)) {
           sub_components.reverse();
         }
 
@@ -88,9 +89,9 @@ function getComponentOptions(
           label,
           text: name,
           children,
-          expanded: c.type === "Scenario" && c.id === unref(activeScenario),
+          expanded: component.type === "Scenario" && component.id === unref(activeScenario),
         },
-        `${c.type}:${c.id}`,
+        `${component.type}:${component.id}`,
       ];
 
       options.push(option);
@@ -102,10 +103,10 @@ function getComponentOptions(
 
 /**
  * Get the options array for the PROPERTY field.
- * @param {string} component_type The component type.
- * @returns {array} The options.
+ * @param component_type The component type.
+ * @returns The options.
  */
-function getPropertyOptions(component_type) {
+function getPropertyOptions(component_type: string) {
   if (!component_type) {
     return [
       ["--", ""],
@@ -152,7 +153,7 @@ const COMPONENTS_COMPONENT_MUTATOR_MIXIN = {
    * @this {Block}
    * @private
    */
-  updateShape_: function (this: ComponentsComponentBlock, component) {
+  updateShape_: function (this: ComponentsComponentBlock, component: string) {
     const check = ["Component"];
     if (component) {
       const [type] = component.split(":");

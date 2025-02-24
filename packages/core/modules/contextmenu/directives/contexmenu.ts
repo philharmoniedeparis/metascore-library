@@ -1,14 +1,16 @@
+import type { Item } from "../components/ContextMenuItem.vue";
 import useStore from "../store";
+import type { Directive } from "vue";
 
 const state = new WeakMap();
 
-function update(el, binding) {
+function update(el: HTMLElement, items: Item[]) {
   if (!state.has(el)) {
     state.set(el, {});
   }
 
   const data = state.get(el);
-  data.items = binding.value;
+  data.items = items;
 
   if (data.items) {
     if (!("listener" in data)) {
@@ -24,7 +26,7 @@ function update(el, binding) {
   }
 }
 
-function remove(el) {
+function remove(el: HTMLElement) {
   if (state.has(el)) {
     const { listener } = state.get(el);
     if (listener) {
@@ -35,14 +37,14 @@ function remove(el) {
   }
 }
 
-export default {
-  mounted(el, binding) {
-    update(el, binding);
+export default <Directive<HTMLElement, Item[]>> {
+  mounted(el: HTMLElement, binding) {
+    update(el, binding.value);
   },
-  updated(el, binding) {
-    update(el, binding);
+  updated(el: HTMLElement, binding) {
+    update(el, binding.value);
   },
-  beforeUnmount(el) {
+  beforeUnmount(el: HTMLElement) {
     remove(el);
   },
 };

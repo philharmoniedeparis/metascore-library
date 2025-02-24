@@ -1,3 +1,4 @@
+import type Hls from "hls.js";
 import NativeRenderer from "./Native";
 
 const SUPPORTED_TYPES = [
@@ -20,17 +21,20 @@ export class UnsupportedError extends Error {
 }
 
 export default class HLS extends NativeRenderer {
+
+  _hls: Hls|null = null
+
   /**
    * Check whether the renderer supports a given mime type
    *
-   * @param {String} mime The mime type
-   * @return {Boolean} Whether the renderer supports the given mime type
+   * @param mime The mime type
+   * @return Whether the renderer supports the given mime type
    */
-  static canPlayType(mime) {
+  static canPlayType(mime: string) {
     return SUPPORTED_TYPES.includes(mime.toLowerCase());
   }
 
-  async mount(url, el) {
+  async mount(url: string, el: HTMLMediaElement) {
     const { default: Hls } = await import("hls.js");
 
     if (!Hls.isSupported()) {
