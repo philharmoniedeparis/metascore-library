@@ -27,7 +27,7 @@ describe("CursorComponent.vue", () => {
         plugins: [
           pinia,
           {
-            install: async (app) => {
+            install: (app) => {
               registerModules([MediaPlayer, MediaCuepoints], {
                 app,
                 pinia,

@@ -42,7 +42,9 @@ import Waveform from './modules/waveform'
 let publicPath = '/';
 try {
   publicPath = new URL('./', document.currentScript?.src ?? import.meta.url).href;
-} catch (e) {/** */}
+} catch (e) {
+  console.error(e)
+}
 
 export class Editor {
   /**

@@ -6,6 +6,7 @@ export function parse(href) {
   try {
     url = new URL(href, window.location.origin);
   } catch (e) {
+    console.error(e)
     return null;
   }
 

@@ -268,7 +268,7 @@ export default class SVG extends EmbeddableComponent {
         this._embedded_data = await this.constructor.getEmbeddedData(data.src);
         this.setEmbeddedDefaults(data);
       } catch (e) {
-        //
+        console.error(e)
       }
     }
 

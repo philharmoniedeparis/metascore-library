@@ -175,7 +175,8 @@ export default {
       if (!this.disabled) this.startEditing();
     },
     onButtonClick() {
-      this.editing ? this.stopEditing() : this.startEditing();
+      if (this.editing) this.stopEditing();
+      else this.startEditing();
     },
     stopEvent(evt) {
       if (!this.disabled) evt.stopPropagation();

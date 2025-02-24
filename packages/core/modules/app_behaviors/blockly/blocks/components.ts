@@ -216,16 +216,6 @@ Extensions.registerMutator(
   COMPONENTS_COMPONENT_MUTATOR_HELPER
 );
 
-
-type PropertyOptionsMixinType = typeof PROPERTY_OPTIONS_MUTATOR_MIXIN;
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface PropertyOptionsMixin extends PropertyOptionsMixinType {}
-type PropertyOptionsBlock = Block & PropertyOptionsMixin;
-type PropertyOptionsState = {
-  hasLinkHighlight: boolean
-  hasThen: boolean
-};
-
 const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
   /**
    * Returns the state of this block as a JSON serializable object.

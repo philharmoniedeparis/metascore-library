@@ -173,7 +173,7 @@ export default {
      * @param {DataTransfer} dataTransfer The DataTransfer object.
      */
     getDraggedFiles(dataTransfer) {
-      let files = [];
+      const files = [];
 
       // Use DataTransfer interface to access the file(s)
       if (dataTransfer.files && dataTransfer.files.length > 0) {

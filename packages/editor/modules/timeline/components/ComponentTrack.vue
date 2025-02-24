@@ -627,7 +627,7 @@ export default {
       const data = {};
 
       const doUpdate = props.every((prop) => {
-        let newValue =
+        const newValue =
           this.component[prop] +
           evt.delta.x * (this.mediaDuration / wrapper_width);
 

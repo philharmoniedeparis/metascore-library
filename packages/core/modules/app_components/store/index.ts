@@ -419,7 +419,7 @@ export default defineStore("app-components", {
     async clone(component, data = {}, parent = null) {
       const children_prop = this.getChildrenProperty(component);
 
-      let clone = await this.create(
+      const clone = await this.create(
         {
           ...omit(structuredClone(toRaw(component.data)), ["id", children_prop]),
           ...data,

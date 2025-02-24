@@ -746,7 +746,7 @@ export default {
     },
     getInteractableSnapTarget(x, y, interaction, relativePoint) {
       let target = null;
-      let min_distance = { x: this.snapRange, y: this.snapRange };
+      const min_distance = { x: this.snapRange, y: this.snapRange };
 
       if (!relativePoint?.index) {
         this.activeSnapTargets = [];
@@ -876,7 +876,8 @@ export default {
       const prev_angle = this._rotate_prev_angle;
 
       const diff = round(angle - prev_angle);
-      let { animated, value } = this.component.rotate;
+      const { animated } = this.component.rotate;
+      let { value } = this.component.rotate;
 
       if (animated) {
         const time = this.roundedMediaTime;

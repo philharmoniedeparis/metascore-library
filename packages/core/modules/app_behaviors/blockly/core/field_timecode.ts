@@ -161,7 +161,7 @@ export default class FieldTimecode extends Field {
     // Class validators might accidentally forget to return, we'll ignore that.
     newValue = this.processValidation_(newValue, validatedValue);
     if (newValue instanceof Error) {
-      doLogging && console.log("invalid class validation, return");
+      if (doLogging) console.log("invalid class validation, return");
       return;
     }
 
@@ -172,18 +172,18 @@ export default class FieldTimecode extends Field {
       // that.
       newValue = this.processValidation_(newValue, validatedValue);
       if (newValue instanceof Error) {
-        doLogging && console.log("invalid local validation, return");
+        if (doLogging) console.log("invalid local validation, return");
         return;
       }
     }
     const source = this.sourceBlock_;
     if (source && source.disposed) {
-      doLogging && console.log("source disposed, return");
+      if (doLogging) console.log("source disposed, return");
       return;
     }
     const oldValue = this.getValue();
     if (oldValue === newValue) {
-      doLogging && console.log("same, doValueUpdate_, return");
+      if (doLogging) console.log("same, doValueUpdate_, return");
       this.doValueUpdate_(newValue);
       return;
     }
@@ -203,7 +203,7 @@ export default class FieldTimecode extends Field {
     if (this.isDirty_) {
       this.forceRerender();
     }
-    doLogging && console.log(this.value_);
+    if (doLogging) console.log(this.value_);
   }
 
   /**

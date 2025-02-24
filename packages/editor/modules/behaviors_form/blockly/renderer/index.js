@@ -9,7 +9,6 @@ export class ConstantsProvider extends zelos.ConstantProvider {
 
   getCSS_(selector) {
     return [
-      /* eslint-disable indent */
       // Text.
       `
       ${selector} .blocklyText,

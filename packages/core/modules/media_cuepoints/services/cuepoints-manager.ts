@@ -3,7 +3,7 @@ import { useModule } from "@core/services/module-manager";
 import type MediaPlayerModule from "../../media_player";
 
 let cuepoints = [];
-let seeking = false;
+const seeking = false;
 let trackErrors = false;
 let maxError = 0;
 let previousTime = null;

@@ -219,7 +219,8 @@ export default {
       const delta_x = evt.delta.x;
       const delta_time = (delta_x / width) * this.mediaDuration;
 
-      let [time, value] = this.value.at(this.selected);
+      let [time] = this.value.at(this.selected);
+      const [, value] = this.value.at(this.selected);
       time = round(time + delta_time, 2);
 
       this.value = this.value.toSpliced(this.selected, 1, [time, value]);
@@ -229,7 +230,7 @@ export default {
     onKeyframeDraggableEnd(evt) {
       this.dragging = false;
 
-      let [time, value] = this.value.at(this.selected);
+      const [time, value] = this.value.at(this.selected);
 
       // Re-sort keyframes.
       const newValue = this.value.toSorted((a, b) => a[0] - b[0]);
