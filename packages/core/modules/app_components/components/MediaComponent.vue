@@ -4,8 +4,10 @@
   </component-wrapper>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -28,7 +30,7 @@ export default {
       if (newValue) this.$refs.media.load();
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

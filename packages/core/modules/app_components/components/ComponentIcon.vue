@@ -2,11 +2,12 @@
   <inline-svg v-if="url" :src="url" class="icon component-icon"></inline-svg>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import InlineSvg from "vue-inline-svg";
 import { getURL } from "../utils/icons";
 
-export default {
+export default defineComponent ({
   components: {
     InlineSvg,
   },
@@ -22,7 +23,7 @@ export default {
       return url ? `${url}#` : null;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

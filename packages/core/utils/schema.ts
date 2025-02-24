@@ -1,0 +1,248 @@
+import { type Ajv } from "ajv";
+import urlRegex from "url-regex";
+import validateColor from "validate-color";
+import { type JSONSchema7, type JSONSchema7Definition } from "json-schema";
+
+class AjvRequiredError extends Error {
+  constructor() {
+    super("An AJV instance is required.");
+  }
+}
+
+export const createStringField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  minLength = void 0,
+  maxLength = void 0,
+  nullable = false,
+} = {}) => {
+  const field = {
+    type: nullable ? ["string", "null"] : "string",
+    title,
+    description,
+  } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+  if (typeof minLength !== "undefined") field.minLength = minLength;
+  if (typeof maxLength !== "undefined") field.maxLength = maxLength;
+
+  return field;
+};
+
+export const createNumberField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+  multipleOf = 0.01,
+  minimum = void 0,
+  maximum = void 0,
+} = {}) => {
+  const field = {
+    type: nullable ? ["number", "null"] : "number",
+    title,
+    description,
+    multipleOf,
+  } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+  if (typeof minimum !== "undefined") field.minimum = minimum;
+  if (typeof maximum !== "undefined") field.maximum = maximum;
+
+  return field;
+};
+
+export const createIntegerField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+  minimum = void 0,
+  maximum = void 0,
+} = {}) => {
+  const field = {
+    type: nullable ? ["integer", "null"] : "integer",
+    title,
+    description,
+  } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+  if (typeof minimum !== "undefined") field.minimum = minimum;
+  if (typeof maximum !== "undefined") field.maximum = maximum;
+
+  return field;
+};
+
+export const createBooleanField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+} = {}) => {
+  const field = {
+    type: nullable ? ["boolean", "null"] : "boolean",
+    title,
+    description,
+  } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+
+  return field;
+};
+
+export const createArrayField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+  minItems = void 0,
+  maxItems = void 0,
+  items = void 0 as JSONSchema7Definition|JSONSchema7Definition[]|undefined,
+  additionalItems = void 0,
+  uniqueItems = void 0,
+} = {}) => {
+  const field = {
+    type: nullable ? ["array", "null"] : "array",
+    title,
+    description,
+  } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+  if (typeof minItems !== "undefined") field.minItems = minItems;
+  if (typeof maxItems !== "undefined") field.maxItems = maxItems;
+  if (typeof items !== "undefined") field.items = items;
+  if (typeof additionalItems !== "undefined") field.additionalItems = additionalItems;
+  if (typeof uniqueItems !== "undefined") field.uniqueItems = uniqueItems;
+
+  return field;
+};
+
+export const createEnumField = ({
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+  enum: allowed_values = [],
+} = {}) => {
+  return {
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
+    enum: allowed_values,
+  } as JSONSchema7;
+};
+
+export const createUrlField = ({
+  ajv = void 0 as Ajv|undefined,
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+} = {}) => {
+  if (!ajv) throw new AjvRequiredError();
+  ajv.addFormat("url", urlRegex());
+
+  return {
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
+    format: "url",
+  } as JSONSchema7;
+};
+
+export const createTimeField = ({
+  ajv = void 0 as Ajv|undefined,
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = false,
+} = {}) => {
+  if (!ajv) throw new AjvRequiredError();
+  ajv.addFormat("time", { validate: () => true });
+
+  return {
+    ...createNumberField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
+    format: "time",
+  } as JSONSchema7;
+};
+
+export const createColorField = ({
+  ajv = void 0 as Ajv|undefined,
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = true,
+}) => {
+  if (!ajv) throw new AjvRequiredError();
+  ajv.addFormat("color", { validate: validateColor });
+
+  return {
+    type: nullable ? ["string", "null"] : "string",
+    format: "color",
+    title,
+    description,
+    default: default_value,
+  } as JSONSchema7;
+};
+
+export const createImageField = ({
+  ajv = void 0 as Ajv|undefined,
+  title = "",
+  description = "",
+  default: default_value = void 0,
+  nullable = true,
+} = {}) => {
+  if (!ajv) throw new AjvRequiredError();
+  ajv.addFormat("image", urlRegex());
+
+  return {
+    ...createStringField({
+      title,
+      description,
+      default: default_value,
+      nullable,
+    }),
+    format: "image",
+  } as JSONSchema7;
+};
+
+export const createFileField = ({
+  ajv = void 0 as Ajv|undefined,
+  title = "",
+  description = "",
+  multiple = false,
+  nullable = true,
+} = {}) => {
+  if (!ajv) throw new AjvRequiredError();
+  ajv.addFormat("file", { validate: () => true });
+
+  const item = {
+    type: nullable ? ["object", "null"] : "object",
+    title,
+    description,
+    properties: {
+      name: { type: "string" },
+      size: { type: "number" },
+      mime: { type: "string" },
+      url: { type: "string" },
+    },
+  } as JSONSchema7Definition;
+
+  return (
+    multiple ?
+    { ...createArrayField({ items: item }), format: "file" } :
+    Object.assign(item, { format: "file" })
+  ) as JSONSchema7;
+};

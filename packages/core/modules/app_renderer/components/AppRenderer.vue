@@ -9,15 +9,17 @@
   </Transition>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { debounce } from "lodash";
 import { useModule } from "@core/services/module-manager";
 import useStore from "../store";
+import type MediaCuepointsModule from '../../media_cuepoints';
 
 const BLOCK_TOGGLE_LINKS_OVERRIDES_KEY = "app_renderer:block_toggle_links";
 const BLOCK_TOGGLE_LINKS_OVERRIDES_PRIORITY = 100;
 
-export default {
+export default defineComponent ({
   setup() {
     const store = useStore();
     const {
@@ -35,7 +37,7 @@ export default {
       stop: stopMedia,
       seekTo: seekMediaTo,
     } = useModule("media_player");
-    const { setGlobalCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    const { setGlobalCuepoint, removeCuepoint } = useModule("media_cuepoints") as MediaCuepointsModule;
     return {
       store,
       mediaSource,
@@ -328,7 +330,7 @@ export default {
       this.ready = true;
     },
   },
-};
+});
 </script>
 
 <style lang="scss">

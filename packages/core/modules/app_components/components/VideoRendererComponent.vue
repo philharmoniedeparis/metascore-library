@@ -4,13 +4,14 @@
   </component-wrapper>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { defineComponent, toRef } from "vue";
 import useStore from "../store";
 import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
+import type MediaPlayerModule from "../../media_player";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -33,7 +34,7 @@ export default {
       width: mediaWidth,
       height: mediaHeight,
       time: mediaTime,
-    } = useModule("media_player");
+    } = useModule("media_player") as MediaPlayerModule;
     return {
       mediaElement,
       mediaType,
@@ -82,7 +83,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

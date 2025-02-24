@@ -4,13 +4,13 @@
   </component-wrapper>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { defineComponent, toRef } from "vue";
 import useStore from "../store";
 import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -172,7 +172,7 @@ export default {
       return this.reversed ? this.totalFrames - frame : frame;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

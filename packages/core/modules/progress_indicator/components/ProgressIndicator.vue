@@ -11,8 +11,10 @@
   </base-modal>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent ({
   props: {
     show: {
       type: Boolean,
@@ -31,7 +33,7 @@ export default {
       default: null,
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

@@ -13,11 +13,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { v4 as uuid } from "uuid";
 import ExpanderIcon from "../assets/icons/expander.svg?component";
 
-export default {
+export default defineComponent ({
   components: {
     ExpanderIcon,
   },
@@ -72,7 +73,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

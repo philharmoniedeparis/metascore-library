@@ -20,8 +20,8 @@
   </div>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { defineComponent, toRef } from "vue";
 import { kebabCase } from "lodash";
 import useStore from "../store";
 import useBackground from "../composables/useBackground";
@@ -33,7 +33,7 @@ import useSize from "../composables/useSize";
 import useTime from "../composables/useTime";
 import useTransform from "../composables/useTransform";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -76,7 +76,7 @@ export default {
   methods: {
     kebabCase,
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
