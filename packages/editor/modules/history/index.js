@@ -8,7 +8,7 @@ import Hotkey from '../hotkey'
 import HistoryController from './components/HistoryController.vue'
 
 export default class HistoryModule extends AbstractModule {
-  static id = 'history'
+  static id = 'editor:history'
 
   static dependencies = [BaseButton, Hotkey]
 

@@ -21,7 +21,7 @@ import HtmlControl from './components/controls/HtmlControl.vue'
 import ComponentForm from './components/ComponentForm.vue'
 
 export default class ComponentFormModule extends AbstractModule {
-  static id = 'component_form'
+  static id = 'editor:component_form'
 
   static dependencies = [
     AppComponents,

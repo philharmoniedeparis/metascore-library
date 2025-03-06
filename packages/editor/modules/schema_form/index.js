@@ -5,7 +5,7 @@ import ControlDispatcher from './components/ControlDispatcher.vue'
 import SchemaForm from './components/SchemaForm.vue'
 
 export default class SchemaFormModule extends AbstractModule {
-  static id = 'schema_form'
+  static id = 'editor:schema_form'
 
   static dependencies = [FormControls]
 

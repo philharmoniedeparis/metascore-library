@@ -30,7 +30,7 @@ import { AUTO_HIGHLIGHT_CLASS, parse as parseLink } from './utils/links'
 export type { AbstractComponent } from './models'
 
 export default class AppComponentsModule extends AbstractModule {
-  static id = 'app_components'
+  static id = 'core:app_components'
 
   static dependencies = [MediaPlayer, MediaCuepoints]
 

@@ -4,7 +4,7 @@ import useStore from './store'
 import AutoSaveIndicator from './components/AutoSaveIndicator.vue'
 
 export default class AutoSaveModule extends AbstractModule {
-  static id = 'auto_save'
+  static id = 'editor:auto_save'
 
   static dependencies = [Ajax]
 

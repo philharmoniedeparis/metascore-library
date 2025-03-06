@@ -3,7 +3,7 @@ import BaseButton from '../button'
 import BaseModal from './components/BaseModal.vue'
 
 export default class ModalModule extends AbstractModule {
-  static id = 'modal'
+  static id = 'core:modal'
 
   static dependencies = [BaseButton]
 

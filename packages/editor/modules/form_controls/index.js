@@ -15,7 +15,7 @@ import TimeControl from './components/TimeControl.vue'
 import UrlControl from './components/UrlControl.vue'
 
 export default class FormControlsModule extends AbstractModule {
-  static id = 'form_controls'
+  static id = 'editor:form_controls'
 
   static dependencies = [AutoFocus, BaseButton, FormGroup, MediaPlayer]
 

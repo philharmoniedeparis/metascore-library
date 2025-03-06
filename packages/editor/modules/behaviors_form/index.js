@@ -6,7 +6,7 @@ import MediaPlayer from '@core/modules/media_player'
 import BehaviorsForm from './components/BehaviorsForm.vue'
 
 export default class BehaviorsFormModule extends AbstractModule {
-  static id = 'behaviors-form'
+  static id = 'editor:behaviors-form'
 
   static dependencies = [AppBehaviors, AppComponents, MediaPlayer]
 

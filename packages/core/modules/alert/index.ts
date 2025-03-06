@@ -4,7 +4,7 @@ import BaseButton from '../button'
 import AlertDialog from './components/AlertDialog.vue'
 
 export default class AlertModule extends AbstractModule {
-  static id = 'alert'
+  static id = 'core:alert'
 
   static dependencies = [Modal, BaseButton]
 

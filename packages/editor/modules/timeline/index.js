@@ -8,7 +8,7 @@ import AppPreview from '../app_preview'
 import ComponentsTimeline from './components/ComponentsTimeline.vue'
 
 export default class TimelineModule extends AbstractModule {
-  static id = 'timeline'
+  static id = 'editor:timeline'
 
   static dependencies = [AppComponents, ContextMenu, History, Hotkey, AppPreview]
 

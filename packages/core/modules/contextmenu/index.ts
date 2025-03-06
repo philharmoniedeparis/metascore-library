@@ -6,7 +6,7 @@ import ContextMenu from './components/ContextMenu.vue'
 import type { Item } from './components/ContextMenuItem.vue'
 
 export default class ContextMenuModule extends AbstractModule {
-  static id = 'contextmenu'
+  static id = 'core:contextmenu'
 
   static dependencies = [BaseButton]
 

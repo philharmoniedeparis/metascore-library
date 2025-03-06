@@ -10,7 +10,7 @@ import SharedAssetsLibrary from './components/SharedAssetsLibrary.vue'
 import SharedAssetsToolbar from './components/SharedAssetsToolbar.vue'
 
 export default class SharedAssetsLibraryModule extends AbstractModule {
-  static id = 'shared_assets_library'
+  static id = 'editor:shared_assets_library'
 
   static dependencies = [Ajax, AseetsLibrary, FormGroup, ProgressIndicator, BaseButton]
 

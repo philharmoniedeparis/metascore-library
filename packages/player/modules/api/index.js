@@ -5,7 +5,7 @@ import MediaCuepoints from "@core/modules//media_cuepoints";
 import AppComponents from "@core/modules/app_components";
 
 export default class ApiModule extends AbstractModule {
-  static id = "api";
+  static id = "player:api";
 
   static dependencies = [MediaPlayer, MediaCuepoints, AppComponents];
 

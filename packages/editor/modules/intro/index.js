@@ -9,7 +9,7 @@ import DotNavigation from "../dot_navigation";
 import IntroTourWrapper from "./components/IntroTourWrapper.vue";
 
 export default class TutorialModule extends AbstractModule {
-  static id = "intro";
+  static id = "editor:intro";
 
   static dependencies = [
     Ajax,
