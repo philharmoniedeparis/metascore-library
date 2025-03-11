@@ -340,19 +340,6 @@ export default {
 };
 </script>
 
-<style lang="scss">
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  overflow: hidden;
-}
-</style>
-
 <style lang="scss" scoped>
 .metaScore-app {
   position: relative;

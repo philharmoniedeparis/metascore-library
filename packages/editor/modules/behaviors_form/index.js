@@ -4,9 +4,10 @@ import AppBehaviors from "@core/modules/app_behaviors";
 import AppComponents from "@core/modules/app_components";
 import MediaPlayer from "@core/modules/media_player";
 import BehaviorsForm from "./components/BehaviorsForm";
+import { getConfig as getBlocklyConfig } from "./blockly";
 
 export default class BehaviorsFormModule extends AbstractModule {
-  static id = "behaviors-form";
+  static id = "behaviors_form";
 
   static dependencies = [AppBehaviors, AppComponents, MediaPlayer];
 
@@ -14,5 +15,9 @@ export default class BehaviorsFormModule extends AbstractModule {
     super(arguments);
 
     app.component("BehaviorsForm", BehaviorsForm);
+  }
+
+  getBlocklyConfig(publicPath) {
+    return getBlocklyConfig(publicPath);
   }
 }

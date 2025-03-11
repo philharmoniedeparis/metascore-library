@@ -48,10 +48,8 @@ export class Editor {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
     const events = new Emitter();
-    const app = createApp(App, { url });
-
-    app.use(pinia);
-    app.use(i18n);
+    // eslint-disable-next-line vue/one-component-per-file
+    const app = createApp(App, { url }).use(pinia).use(i18n);
 
     // Add webpack's public path as a global property.
     // eslint-disable-next-line no-undef
@@ -104,6 +102,28 @@ export class Editor {
     }
 
     return new Editor(app, events, el);
+  }
+
+  static async getBlockly(locale = "fr") {
+    const pinia = createPinia();
+    const i18n = createI18n({ locale, fallbackLocale: "fr" });
+    // eslint-disable-next-line vue/one-component-per-file
+    const app = createApp({}).use(pinia).use(i18n);
+
+    // Add webpack's public path as a global property.
+    // eslint-disable-next-line no-undef
+    app.config.globalProperties.publicPath = __webpack_public_path__;
+
+    app.config.performance = process.env.NODE_ENV === "development";
+
+    await registerModules([AppBehaviors, BehaviorsForm], { app, pinia, i18n });
+
+    const { init: initAppBehavoirs, Blockly } = useModule("app_behaviors");
+    const { getBlocklyConfig } = useModule("behaviors_form");
+    await initAppBehavoirs();
+    const config = getBlocklyConfig(app.config.globalProperties.publicPath);
+
+    return { Blockly, config };
   }
 
   /**

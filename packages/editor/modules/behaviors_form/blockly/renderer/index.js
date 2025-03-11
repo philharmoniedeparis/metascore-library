@@ -10,6 +10,21 @@ export class ConstantsProvider extends zelos.ConstantProvider {
   getCSS_(selector) {
     return [
       /* eslint-disable indent */
+
+      // Background.
+      `
+      ${selector} .blocklyMainBackground {
+        stroke: none;
+      }
+      `,
+
+      // Toolbox.
+      `
+      ${selector} .blocklyToolboxDiv {
+        max-width: 0;
+      }
+      `,
+
       // Text.
       `
       ${selector} .blocklyText,
@@ -38,6 +53,7 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       // Flyout labels.
       `
       ${selector} .blocklyFlyoutLabelText {
+        font-size: 24px;
         fill: #575E75;
       }
       `,

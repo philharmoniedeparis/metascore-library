@@ -1,5 +1,17 @@
 import Msg from "blockly/msg/fr";
 
+Msg.CATEGORIES_ACTIONS = "Actions";
+Msg.CATEGORIES_APP = "Application";
+Msg.CATEGORIES_COLOR = "Couleur";
+Msg.CATEGORIES_COMPONENTS = "Composants";
+Msg.CATEGORIES_LOGIC = "Logique";
+Msg.CATEGORIES_MATH = "Mathématiques";
+Msg.CATEGORIES_MEDIA = "Média";
+Msg.CATEGORIES_PRESETS = "Prédéfinis";
+Msg.CATEGORIES_TEXT = "Texte";
+Msg.CATEGORIES_TRIGGERS = "Déclencheurs";
+Msg.CATEGORIES_VARIABLES = "Variables";
+
 Msg.APP_STARTUP = "au chargement de l’application";
 Msg.APP_STARTUP_THEN = "faire %1";
 Msg.APP_STARTUP_TOOLTIP = "";

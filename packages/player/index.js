@@ -23,11 +23,7 @@ export class Player {
   static async create({ url, el, locale = "fr", ...configs } = {}) {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
-    const app = createApp(App, { url });
-
-    app.use(pinia);
-    app.use(i18n);
-    app.use(hotkey);
+    const app = createApp(App, { url }).use(pinia).use(i18n).use(hotkey);
 
     app.config.performance = process.env.NODE_ENV === "development";
 

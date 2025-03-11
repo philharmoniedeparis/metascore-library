@@ -1,38 +1,3 @@
-<i18n>
-{
-  "fr": {
-    "categories": {
-      "triggers": "Déclencheurs",
-      "logic": "Logique",
-      "math": "Mathématiques",
-      "text": "Texte",
-      "color": "Couleur",
-      "actions": "Actions",
-      "app": "Application",
-      "media": "Media",
-      "components": "Attributs de composants",
-      "variables": "Variables",
-      "presets": "Prédéfinis",
-    }
-  },
-  "en": {
-    "categories": {
-      "triggers": "Triggers",
-      "logic": "Logic",
-      "math": "Math",
-      "text": "Text",
-      "color": "Color",
-      "actions": "Actions",
-      "app": "Application",
-      "media": "Média",
-      "components": "Component attributes",
-      "variables": "Variables",
-      "presets": "Presets",
-    }
-  },
-}
-</i18n>
-
 <template>
   <div class="behaviors-form" @contextmenu="onContextmenu">
     <div ref="blockly" class="blockly"></div>
@@ -40,15 +5,13 @@
 </template>
 
 <script>
-import { unref, markRaw } from "vue";
+import { markRaw } from "vue";
 import { DisableTopBlocks } from "@blockly/disable-top-blocks";
-import "@blockly/block-plus-minus";
 import useStore from "../store";
-import getConfig from "../blockly";
+import { getConfig as getBlocklyConfig } from "../blockly";
 import { useModule } from "@core/services/module-manager";
 
 export default {
-  props: {},
   setup() {
     const store = useStore();
     const {
@@ -86,10 +49,7 @@ export default {
     },
   },
   mounted() {
-    const config = getConfig({
-      $t: this.$t,
-      publicPath: unref(this.publicPath),
-    });
+    const config = getBlocklyConfig(this.publicPath);
 
     this.workspace = markRaw(this.Blockly.inject(this.$refs.blockly, config));
 
@@ -228,17 +188,5 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-
-  :deep(.blocklyToolboxDiv) {
-    max-width: 0;
-  }
-
-  :deep(.blocklyFlyoutLabelText) {
-    font-size: 24px;
-  }
-
-  :deep(.blocklyMainBackground) {
-    stroke: none;
-  }
 }
 </style>

@@ -1,10 +1,12 @@
 import Theme from "../blockly/theme";
+import { Msg } from "blockly/core";
 import "../blockly/renderer";
 import Flyout from "../blockly/plugins/flyout";
 import {
   ContinuousToolbox,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
+import "@blockly/block-plus-minus";
 
 import { default as getTriggerBlocks } from "./toolbox/categories/triggers";
 import { default as getActionBlocks } from "./toolbox/categories/actions";
@@ -17,7 +19,7 @@ import { default as getMediaBlocks } from "./toolbox/categories/media";
 import { default as getComponentBlocks } from "./toolbox/categories/components";
 import { default as getPresetBlocks } from "./toolbox/categories/presets";
 
-export default function getConfig({ $t, publicPath = "" } = {}) {
+export function getConfig(publicPath = "") {
   return {
     theme: Theme,
     renderer: "metascore_renderer",
@@ -55,66 +57,67 @@ export default function getConfig({ $t, publicPath = "" } = {}) {
       contents: [
         {
           kind: "category",
-          name: $t("categories.triggers"),
+          name: Msg.CATEGORIES_TRIGGERS,
           categorystyle: "triggers_category",
           contents: getTriggerBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.actions"),
+          name: Msg.CATEGORIES_ACTIONS,
           categorystyle: "actions_category",
           contents: getActionBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.logic"),
+          name: Msg.CATEGORIES_LOGIC,
           categorystyle: "logic_category",
           contents: getLogicBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.math"),
+          name: Msg.CATEGORIES_MATH,
           categorystyle: "math_category",
           contents: getMathBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.text"),
+          name: Msg.CATEGORIES_TEXT,
           categorystyle: "text_category",
           contents: getTextBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.color"),
+          name: Msg.CATEGORIES_COLOR,
           categorystyle: "color_category",
           contents: getColorBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.app"),
+          name: Msg.CATEGORIES_APP,
           categorystyle: "app_category",
           contents: getAppBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.media"),
+          name: Msg.CATEGORIES_MEDIA,
           categorystyle: "media_category",
           contents: getMediaBlocks(),
         },
         {
           kind: "category",
-          name: $t("categories.components"),
+          name: Msg.CATEGORIES_COMPONENTS,
           categorystyle: "components_category",
           contents: getComponentBlocks(),
         },
         {
           kind: "category",
+          name: Msg.CATEGORIES_VARIABLES,
           categorystyle: "variables_category",
           custom: "VARIABLE",
         },
         {
           kind: "category",
-          name: $t("categories.presets"),
+          name: Msg.CATEGORIES_PRESETS,
           categorystyle: "presets_category",
           contents: getPresetBlocks(),
         },
