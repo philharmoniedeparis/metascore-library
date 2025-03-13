@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.7.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.4...v3.7.0) (2025-03-13)
+
+
+### Features
+
+* add Editor.getBlockly ([e011bcd](https://github.com/philharmoniedeparis/metascore-library/commit/e011bcd1c00fc410827efd8e5823d39f835810fb))
+
 ## [3.6.2](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.0...v3.6.2) (2024-10-25)
 
 
