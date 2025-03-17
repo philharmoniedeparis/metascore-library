@@ -86,3 +86,22 @@ export function getRectWithoutTransforms(el) {
 
   return new DOMRect(offsetLeft, offsetTop, offsetWidth, offsetHeight);
 }
+
+/**
+ * Get an element's absolute transform matrix.
+ *
+ * @param {HTMLElement} element The element
+ * @returns {DOMMatrix} The transformation matrix
+ */
+export function getAbsoluteTransformMatrix(el) {
+  let matrix = new DOMMatrix();
+
+  while (el) {
+    matrix = matrix.multiply(
+      new DOMMatrix(window.getComputedStyle(el).transform)
+    );
+    el = el.offsetParent;
+  }
+
+  return matrix;
+}

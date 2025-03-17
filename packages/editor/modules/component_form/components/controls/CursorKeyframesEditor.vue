@@ -38,6 +38,7 @@ import "@interactjs/modifiers";
 import "@interactjs/pointer-events";
 import interact from "@interactjs/interact";
 import { useModule } from "@core/services/module-manager";
+import { getAbsoluteTransformMatrix } from "@core/utils/dom";
 import ClearIcon from "../../assets/icons/clear.svg?inline";
 
 export default {
@@ -127,7 +128,14 @@ export default {
     onClick(evt) {
       const { x } = this.$el.getBoundingClientRect();
       const { clientX } = evt;
-      this.addKeyframe(this.mediaTime, clientX - x);
+
+      // Take CSS transforms into account.
+      const matrix = getAbsoluteTransformMatrix(this.$el);
+      const transformed = matrix
+        .inverse()
+        .transformPoint(new DOMPoint(clientX - x)).x;
+
+      this.addKeyframe(this.mediaTime, transformed);
     },
     onDraggableStart() {
       this.draggingKeyframe = true;
