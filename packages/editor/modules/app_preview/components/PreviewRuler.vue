@@ -269,8 +269,9 @@ export default {
     },
     onTrackTargetMousemove(evt) {
       const { left, top } = this.$el.getBoundingClientRect();
-      this.trackerPosition =
-        (this.vertical ? evt.clientY - top : evt.clientX - left) * this.zoom;
+      const { clientX, clientY } = evt;
+
+      this.trackerPosition = this.vertical ? clientY - top : clientX - left;
     },
     onTrackTargetMouseout() {
       this.tracking = false;
