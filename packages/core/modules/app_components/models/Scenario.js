@@ -47,6 +47,10 @@ export default class Scenario extends mix(AbstractComponent).with(
           title: "Name",
           description: "The component's name",
         }),
+        slug: createStringField({
+          title: "Slug",
+          description: "The component's slug for use in api links",
+        }),
         [this.childrenProperty]: createCollectionField({
           ajv,
           model: [

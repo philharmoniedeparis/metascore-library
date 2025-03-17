@@ -52,7 +52,7 @@ export function getComponentLabels(type) {
 
   const labels = {};
   getComponentsByType(type).forEach((c) => {
-    labels[c.id] = c.name;
+    labels[type === "Scenario" ? c.slug : c.id] = c.name;
   });
   return labels;
 }

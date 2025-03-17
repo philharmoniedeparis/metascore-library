@@ -539,21 +539,21 @@ export default class CustomLinkFormView extends LinkFormView {
     this.scenarioScenarioInputView.fieldView.buttonView
       .bind("label")
       .to(this, "params", (params) => {
-        return scenarioLabels[params?.id];
+        return scenarioLabels[params?.slug];
       });
     this.scenarioScenarioInputView.fieldView.on("execute", (evt) => {
       this.params = {
         ...this.params,
-        id: evt.source._value,
+        slug: evt.source._value,
       };
     });
     this.scenarioScenarioInputView
       .bind("isEmpty")
-      .to(this, "params", (params) => !params?.id);
+      .to(this, "params", (params) => !params?.slug);
     const idDropdownDefinitions = getDropdownDefinitions(scenarioLabels);
     idDropdownDefinitions.map((definition) => {
       definition.model.bind("isOn").to(this, "params", (value) => {
-        return value?.id === definition.model._value;
+        return value?.slug === definition.model._value;
       });
     });
     addListToDropdown(
@@ -724,7 +724,7 @@ export default class CustomLinkFormView extends LinkFormView {
         break;
 
       case "scenario":
-        value = `#scenario=${params.id}`;
+        value = `#scenario=${params.slug}`;
         break;
 
       case "fullscreen":

@@ -45,12 +45,16 @@ export function processMessage(evt) {
         const { setGlobalCuepoint, removeCuepoint } =
           useModule("media_cuepoints");
         const { play, pause, seekTo } = useModule("media_player");
-        const { getComponent, activeScenario, setActiveScenario } =
+        const { getComponentsByType, activeScenario, setActiveScenario } =
           useModule("app_components");
 
         // @todo: refactor with AppRenderer's onComponentAction
         if ("inTime" in params || "outTime" in params) {
-          const { inTime = null, outTime = null, scenario = null } = params;
+          const {
+            inTime = null,
+            outTime = null,
+            scenario: scenario_slug = null,
+          } = params;
           const cuepoint_config = {
             startTime: inTime,
             endTime: outTime,
@@ -62,17 +66,18 @@ export function processMessage(evt) {
             },
           };
 
-          if (
-            scenario !== null &&
-            getComponent("Scenario", scenario) &&
-            scenario !== unref(activeScenario)
-          ) {
-            const previous_scenario = unref(activeScenario);
-            cuepoint_config.onSeekout = ({ cuepoint }) => {
-              setActiveScenario(previous_scenario);
-              removeCuepoint(cuepoint);
-            };
-            setActiveScenario(scenario);
+          if (scenario_slug !== null) {
+            const scenario = getComponentsByType("Scenario").find(
+              (c) => c.slug === scenario_slug
+            );
+            const current_scenario = unref(activeScenario);
+            if (scenario && scenario.id !== current_scenario) {
+              cuepoint_config.onSeekout = ({ cuepoint }) => {
+                setActiveScenario(current_scenario);
+                removeCuepoint(cuepoint);
+              };
+              setActiveScenario(scenario.id);
+            }
           }
 
           setGlobalCuepoint(cuepoint_config);
@@ -140,8 +145,11 @@ export function processMessage(evt) {
 
     case "scenario":
       if ("value" in params) {
-        const { getComponent, setActiveScenario } = useModule("app_components");
-        const scenario = getComponent("Scenario", params.value);
+        const { getComponentsByType, setActiveScenario } =
+          useModule("app_components");
+        const scenario = getComponentsByType("Scenario").find(
+          (c) => c.slug === params.value
+        );
         if (scenario) setActiveScenario(scenario.id);
       }
       break;

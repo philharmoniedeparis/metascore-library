@@ -181,16 +181,22 @@ export default defineStore("app-components", {
     },
     async create(data, validate = true) {
       if (data.type in Models) {
-        if (!("id" in data)) {
+        if (!("slug" in data)) {
           switch (data.type) {
             case "Scenario":
               {
-                // Generate a user-freindly ID.
-                const next_id = this.getByType("Scenario").reduce((acc, s) => {
-                  const id = parseInt(s.id.replace("scenario-", ""), 10);
-                  return !isNaN(id) ? Math.max(acc, id + 1) : acc;
-                }, 1);
-                data.id = `scenario-${next_id}`;
+                // Generate a user-freindly slug.
+                const next_suffix = this.getByType("Scenario").reduce(
+                  (acc, c) => {
+                    const suffix = parseInt(
+                      c.slug?.replace("scenario-", "") ?? -1,
+                      10
+                    );
+                    return !isNaN(suffix) ? Math.max(acc, suffix + 1) : acc;
+                  },
+                  1
+                );
+                data.slug = `scenario-${next_suffix}`;
               }
               break;
           }

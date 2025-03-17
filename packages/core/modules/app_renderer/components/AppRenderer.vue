@@ -204,7 +204,11 @@ export default {
       switch (type) {
         case "play":
           if ("excerpt" in args && args.excerpt) {
-            const { start = null, end = null, scenario = null } = args;
+            const {
+              start = null,
+              end = null,
+              scenario: scenario_slug = null,
+            } = args;
             const cuepoint_config = {
               startTime: start,
               endTime: end,
@@ -216,17 +220,18 @@ export default {
               },
             };
 
-            if (
-              scenario !== null &&
-              this.getComponent("Scenario", scenario) &&
-              scenario !== this.activeScenario
-            ) {
-              const previous_scenario = this.activeScenario;
-              cuepoint_config.onSeekout = ({ cuepoint }) => {
-                this.setActiveScenario(previous_scenario);
-                this.removeCuepoint(cuepoint);
-              };
-              this.setActiveScenario(scenario);
+            if (scenario_slug !== null) {
+              const scenario = this.getComponentsByType("Scenario").find(
+                (c) => c.slug === scenario_slug
+              );
+              const current_scenario = this.activeScenario;
+              if (scenario && scenario.id !== current_scenario) {
+                cuepoint_config.onSeekout = ({ cuepoint }) => {
+                  this.setActiveScenario(current_scenario);
+                  this.removeCuepoint(cuepoint);
+                };
+                this.setActiveScenario(scenario.id);
+              }
             }
 
             this.setGlobalCuepoint(cuepoint_config);
@@ -311,8 +316,10 @@ export default {
           break;
 
         case "scenario":
-          if ("id" in args) {
-            const scenario = this.getComponent("Scenario", args.id);
+          if ("slug" in args) {
+            const scenario = this.getComponentsByType("Scenario").find(
+              (c) => c.slug === args.slug
+            );
             if (scenario) this.setActiveScenario(scenario.id);
           }
           break;

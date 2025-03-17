@@ -71,7 +71,7 @@ export function parse(href) {
       if ((matches = action.match(/^scenario=(.+)$/))) {
         return {
           type: "scenario",
-          id: decodeURIComponent(matches[1]),
+          slug: decodeURIComponent(matches[1]),
         };
       }
 

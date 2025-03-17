@@ -94,8 +94,7 @@ export default class AppComponentsModule extends AbstractModule {
 
   get sortedScenarios() {
     const store = useStore();
-    const { sortedScenarios } = storeToRefs(store);
-    return readonly(sortedScenarios);
+    return store.getSortedScenarios();
   }
 
   get activeScenario() {
