@@ -10,7 +10,6 @@ Msg.CATEGORIES_MEDIA = "Média";
 Msg.CATEGORIES_PRESETS = "Prédéfinis";
 Msg.CATEGORIES_TEXT = "Texte";
 Msg.CATEGORIES_TRIGGERS = "Déclencheurs";
-Msg.CATEGORIES_LISTS = "Listes";
 Msg.CATEGORIES_VARIABLES = "Variables";
 
 Msg.APP_STARTUP = "au chargement de l’application";

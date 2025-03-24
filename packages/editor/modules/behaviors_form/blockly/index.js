@@ -121,12 +121,6 @@ export function getConfig(publicPath = "") {
         },
         {
           kind: "category",
-          name: Msg.CATEGORIES_LISTS,
-          categorystyle: "lists_category",
-          contents: getListBlocks(),
-        },
-        {
-          kind: "category",
           name: Msg.CATEGORIES_VARIABLES,
           categorystyle: "variables_category",
           custom: Variables.CATEGORY_NAME,
