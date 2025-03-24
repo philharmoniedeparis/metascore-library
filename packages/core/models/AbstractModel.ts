@@ -5,14 +5,14 @@ import { markRaw, reactive, type Reactive } from "vue";
 /**
  * The global Ajv instance.
  */
-const _ajv = new Ajv({
+const AJV = new Ajv({
   allErrors: true,
   verbose: true,
   strict: false,
   useDefaults: true,
   multipleOfPrecision: 2,
 });
-markRaw(_ajv);
+markRaw(AJV);
 
 /**
  * Retreive properties from a JSON schema.
@@ -75,7 +75,7 @@ export default class AbstractModel {
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    return _ajv;
+    return AJV;
   }
 
   /**
@@ -122,7 +122,7 @@ export default class AbstractModel {
    * Get the validation function.
    */
   static get validate() {
-    return _ajv.getSchema(this.schemaId) || _ajv.compile(this.schema);
+    return AJV.getSchema(this.schemaId) || AJV.compile(this.schema);
   }
 
   /**
@@ -130,15 +130,10 @@ export default class AbstractModel {
    * @param data The data to initilize the model with.
    * @param validate Whether to validate the data.
    */
-  static create(data:Data = {}, validate = true) {
+  static async create(data:Data = {}, validate = true) {
     const instance = new this();
-    return instance.update(data, validate);
-  }
 
-  #data: Reactive<Data> = reactive({});
-
-  constructor() {
-    return new Proxy(this, {
+    const proxy = new Proxy(instance, {
       get(target, propertyKey, ...args) {
         if (
           isString(propertyKey) &&
@@ -159,13 +154,19 @@ export default class AbstractModel {
         return Reflect.set(target, propertyKey, value, ...args);
       },
     });
+
+    await proxy.update(data, validate);
+
+    return proxy;
   }
+
+  #data: Reactive<Data> = reactive({});
 
   /**
    * Alias to the static method of the same name
    */
   get ajv() {
-    return _ajv;
+    return AJV;
   }
 
   /**

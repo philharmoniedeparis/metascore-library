@@ -14,7 +14,7 @@ const entries:Record<ENTRY, string> = {
   'metaScore.API': resolve(__dirname, './packages/player/modules/api/entry.js'),
   'metaScore.Editor': resolve(__dirname, './packages/editor/index.js'),
 };
-const entry = process.env.BUILD_ENTRY as ENTRY|undefined
+const entry = process.env.BUILD_ENTRY as ENTRY|undefined ?? 'metaScore.Editor'
 const umd = process.env.BUILD_MODE === "umd" && entry
 
 const config:UserConfig = {
@@ -45,7 +45,7 @@ const config:UserConfig = {
   },
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@": fileURLToPath(new URL("./packages", import.meta.url)),
       "@core": fileURLToPath(new URL("./packages/core", import.meta.url)),
       "@editor": fileURLToPath(new URL("./packages/editor", import.meta.url)),
       "@player": fileURLToPath(new URL("./packages/player", import.meta.url)),
