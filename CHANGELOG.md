@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.1](https://github.com/philharmoniedeparis/metascore-library/compare/v4.0.0...v4.0.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* fix components_set_scenario definition when no scenario is available ([7aa117d](https://github.com/philharmoniedeparis/metascore-library/commit/7aa117dd3865c9fde92c4ae1276f2f49c9790e5f))
+
 ## [4.0.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.7.0...v4.0.0) (2025-03-24)
 
 
