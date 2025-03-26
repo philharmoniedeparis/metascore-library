@@ -127,7 +127,9 @@ export function getBlocks() {
           block: {
             type: "components_component",
             fields: {
-              COMPONENT: `Scenario:${scenario_component.id}`,
+              COMPONENT: scenario_component
+                ? `Scenario:${scenario_component.id}`
+                : null,
             },
           },
         },
