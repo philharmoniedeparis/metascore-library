@@ -2,58 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [4.0.1](https://github.com/philharmoniedeparis/metascore-library/compare/v4.0.0...v4.0.1) (2025-03-26)
-
-
-### Bug Fixes
-
-* fix components_set_scenario definition when no scenario is available ([7aa117d](https://github.com/philharmoniedeparis/metascore-library/commit/7aa117dd3865c9fde92c4ae1276f2f49c9790e5f))
-
-## [4.0.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.7.0...v4.0.0) (2025-03-24)
-
-
-### ⚠ BREAKING CHANGES
-
-* api links use scenario slug instead of id
-* lists_create_with blocks was replaced by lists_set and lists_get
-* components_click and links_click behaviour blocks have been merged into
-links_click
-* links_click behaviour block now uses the new components_component and
-components_behaviour_trigger blocks
-* components behaviour blocks' COMPONENT input now uses the new components_component
-block
-
-### Features
-
-* add list blocks to behaviours ([cfabfe6](https://github.com/philharmoniedeparis/metascore-library/commit/cfabfe6c55d09fa7b850e1a51c3551e5a8048a84)), closes [#684](https://github.com/philharmoniedeparis/metascore-library/issues/684)
-* allow adding CSS classes to img elements via CKEditor ([d57add0](https://github.com/philharmoniedeparis/metascore-library/commit/d57add01cd9509c64b132c345d691c4267067b51))
-* allow importing custom fonts ([241ee21](https://github.com/philharmoniedeparis/metascore-library/commit/241ee214c6683343bde7edf2361420139637e5f7)), closes [#108](https://github.com/philharmoniedeparis/metascore-library/issues/108)
-* allow preserving state changes when quitting preview mode ([c38c244](https://github.com/philharmoniedeparis/metascore-library/commit/c38c244167c089a02ad10e801993eea0d6cecff6)), closes [#680](https://github.com/philharmoniedeparis/metascore-library/issues/680)
-* auto add child block to behavior list block when adding item ([36baba1](https://github.com/philharmoniedeparis/metascore-library/commit/36baba1387f7c95772830c300b8a8adbf34b2ba1))
-* do not inline first input in lists_create_with behavior block ([0fc9433](https://github.com/philharmoniedeparis/metascore-library/commit/0fc94332e3eb0e673174f44dfce836269ea3b2ae))
-* improve behaviour list blocks ([e540435](https://github.com/philharmoniedeparis/metascore-library/commit/e540435c7392ee71cda8fb40f98c993ec41b3403))
-
-
-### Bug Fixes
-
-* allow initializing custom LinkUI plugin by CKEditor on image drop ([f833fc6](https://github.com/philharmoniedeparis/metascore-library/commit/f833fc6528b8d5e0ad166439db1997bb95da0783)), closes [#723](https://github.com/philharmoniedeparis/metascore-library/issues/723)
-* correctly handle empty color values in AudiowaveformForm ([3efe29f](https://github.com/philharmoniedeparis/metascore-library/commit/3efe29fc4c26bcfed03b773e4fb60e2498f9574e)), closes [#724](https://github.com/philharmoniedeparis/metascore-library/issues/724)
-* fix added cursor keyframe position on zoom ([eab9b2c](https://github.com/philharmoniedeparis/metascore-library/commit/eab9b2ced90398c4556742d8616abe32c8c9ec37)), closes [#703](https://github.com/philharmoniedeparis/metascore-library/issues/703)
-* fix asset usage check in assets_library ([c987ee2](https://github.com/philharmoniedeparis/metascore-library/commit/c987ee2494c8eb340fb4e0655a61dc09344b68a3)), closes [#633](https://github.com/philharmoniedeparis/metascore-library/issues/633)
-* fix preview ruler tracker position on zoom ([54e84f6](https://github.com/philharmoniedeparis/metascore-library/commit/54e84f6892fdcd5782362992195cbc7a7f93e4ea))
-* prevent deleting used font assets ([0251427](https://github.com/philharmoniedeparis/metascore-library/commit/0251427b83aa7fef3cb44566ada506788c8772cb))
-* prevent ghost scenarios from appearing in ScenarioManager ([c338f44](https://github.com/philharmoniedeparis/metascore-library/commit/c338f4485412d4c95dabba1d3a1701dc40458eb3)), closes [#712](https://github.com/philharmoniedeparis/metascore-library/issues/712)
-* remove stale _onScenarioChange reference from Components behavior interpreter ([e32f6dc](https://github.com/philharmoniedeparis/metascore-library/commit/e32f6dc93370999e42990bbc6ccba869c4332ef7))
-* remove stale call to getListBlocks ([9f7ee90](https://github.com/philharmoniedeparis/metascore-library/commit/9f7ee90f1ca14b3cd36f9fc32d7d47893c9fd9c3))
-* stop propagation of drag'n'drop events from CKEditor ([28dd07e](https://github.com/philharmoniedeparis/metascore-library/commit/28dd07ed42ee420dc28e10ebed6752fe023fea1c))
-
-## [3.7.0](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.4...v3.7.0) (2025-03-13)
-
-
-### Features
-
-* add Editor.getBlockly ([e011bcd](https://github.com/philharmoniedeparis/metascore-library/commit/e011bcd1c00fc410827efd8e5823d39f835810fb))
-
 ## [3.6.2](https://github.com/philharmoniedeparis/metascore-library/compare/v3.6.0...v3.6.2) (2024-10-25)
 
 
