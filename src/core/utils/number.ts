@@ -1,10 +1,7 @@
 /**
- * Get the number of decimal places
- *
- * @param {number} value The number to check against
- * @returns {number} The number of decimal places
+ * Get the number of decimal places.
  */
-export function countDecimals(value) {
+export function countDecimals(value: number) {
   const match = `${value}`.match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
 
   if (!match) {
@@ -20,11 +17,8 @@ export function countDecimals(value) {
 
 /**
  * Format a file size in bytes to a human-readable format
- *
- * @param {number} bytes The file size in bytes
- * @returns {string} The file size in a human-readable format
  */
-export function formatFileSize(bytes) {
+export function formatFileSize(bytes: number) {
   const mega = 1024;
   const decimals = 2;
   const e = (Math.log(bytes) / Math.log(mega)) | 0;

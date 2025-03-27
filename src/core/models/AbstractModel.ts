@@ -1,41 +1,39 @@
-import Ajv from "ajv";
+import Ajv, { type AnySchemaObject, type AnySchema } from "ajv";
 import { isString } from "lodash";
-import { markRaw, reactive } from "vue";
+import { markRaw, reactive, type Reactive } from "vue";
 
 /**
- * @type {Ajv} The global Ajv instance.
+ * The global Ajv instance.
  */
-const _ajv = new Ajv({
+const AJV = new Ajv({
   allErrors: true,
   verbose: true,
   strict: false,
   useDefaults: true,
   multipleOfPrecision: 2,
 });
-markRaw(_ajv);
+markRaw(AJV);
 
 /**
  * Retreive properties from a JSON schema.
- *
- * @param {Object} schema The schema
- * @param {Ajv?} validator An Ajv instance
- * @returns {Object} The list of properties
  */
-function getProperties(schema, validator = null) {
+function getProperties(schema: AnySchemaObject, _validator?: Ajv) {
+  const root = !_validator;
   let properties = {};
 
-  const root = !validator;
-  if (root) {
+  let validator = _validator;
+  if (!validator) {
     validator = new Ajv();
     validator.addSchema(schema);
   }
+
   if (schema.definitions) {
     Object.entries(schema.definitions).forEach(([k, d]) => {
-      validator.addSchema(d, `#/definitions/${k}`);
+      validator.addSchema(d as AnySchema, `#/definitions/${k}`);
     });
   }
   if (schema.$ref) {
-    schema = validator.getSchema(schema.$ref).schema;
+    schema = validator.getSchema(schema.$ref)!.schema as AnySchemaObject;
   }
 
   if (schema.properties) {
@@ -50,13 +48,16 @@ function getProperties(schema, validator = null) {
 
   const defs = schema["anyOf"] || schema["allOf"] || (root && schema["oneOf"]);
   if (defs) {
-    defs.forEach((def) => {
+    defs.forEach((def: AnySchemaObject) => {
       properties = { ...properties, ...getProperties(def, validator) };
     });
   }
 
   return properties;
 }
+
+type Properties = {[x: string]: unknown}
+type Data = {[x: string]: unknown}
 
 /**
  * An abstract model based {@link http://json-schema.org/|JSON schema}
@@ -66,13 +67,17 @@ function getProperties(schema, validator = null) {
  * @abstract
  */
 export default class AbstractModel {
+  protected static _properties: Properties;
+
+  protected _data: Reactive<Data> = reactive({});
+
   /**
    * Get the AJV instance.
    *
    * @returns {Ajv} The Ajv instance
    */
   static get ajv() {
-    return _ajv;
+    return AJV;
   }
 
   /**
@@ -86,10 +91,8 @@ export default class AbstractModel {
 
   /**
    * Get the JSON Schema definition for this model
-   *
-   * @returns {Object} The schema definition
    */
-  static get schema() {
+  static get schema(): AnySchemaObject {
     return {
       $id: this.schemaId,
       type: "object",
@@ -101,8 +104,6 @@ export default class AbstractModel {
   /**
    * Get all properties from the schema
    * with all definitions merged.
-   *
-   * @returns {Object} The list of properties in JSON schema format
    */
   static get properties() {
     if (!this._properties) {
@@ -114,84 +115,75 @@ export default class AbstractModel {
 
   /**
    * Get the list of required properties from the schema.
-   *
-   * @returns {string[]} The list of required properties
    */
-  static get requiredProperties() {
+  static get requiredProperties(): string[]|undefined {
     return this.schema.required;
   }
 
   /**
    * Get the validation function.
-   *
-   * @returns {Function} The data validation function.
    */
   static get validate() {
-    return _ajv.getSchema(this.schemaId) || _ajv.compile(this.schema);
+    return AJV.getSchema(this.schemaId) || AJV.compile(this.schema);
   }
 
-  static create(data = {}, validate = true) {
+  /**
+   * Create a model instance.
+   * @param data The data to initilize the model with.
+   * @param validate Whether to validate the data.
+   */
+  static async create(data:Data = {}, validate = true) {
     const instance = new this();
-    return instance.update(data, validate);
+    return await instance.update(data, validate);
   }
 
-  constructor() {
-    this._data = reactive({});
-
+  constructor () {
     return new Proxy(this, {
-      get(target, name) {
+      get(target, propertyKey, ...args) {
         if (
-          isString(name) &&
-          Object.prototype.hasOwnProperty.call(target.properties, name)
+          isString(propertyKey) &&
+          Object.prototype.hasOwnProperty.call(target.properties, propertyKey)
         ) {
-          return target.getPropertyValue(name);
+          return target.getPropertyValue(propertyKey);
         }
-        return Reflect.get(...arguments);
+        return Reflect.get(target, propertyKey, ...args);
       },
-      set(target, name, value) {
+      set(target, propertyKey, value, ...args) {
         if (
-          isString(name) &&
-          Object.prototype.hasOwnProperty.call(target.properties, name)
+          isString(propertyKey) &&
+          Object.prototype.hasOwnProperty.call(target.properties, propertyKey)
         ) {
-          target.setPropertyValue(name, value);
+          target.setPropertyValue(propertyKey, value);
           return true;
         }
-        return Reflect.set(...arguments);
+        return Reflect.set(target, propertyKey, value, ...args);
       },
     });
   }
 
   /**
    * Alias to the static method of the same name
-   *
-   * @returns {Ajv} The Ajv instance
    */
   get ajv() {
-    return _ajv;
+    return AJV;
   }
 
   /**
    * Alias to the static method of the same name
-   *
-   * @returns {Object} The schema definition
    */
   get schema() {
-    return this.constructor.schema;
+    return (this.constructor as typeof AbstractModel).schema;
   }
 
   /**
    * Alias to the static method of the same name
-   *
-   * @returns {Object} The list of properties in JSON schema format
    */
   get properties() {
-    return this.constructor.properties;
+    return (this.constructor as typeof AbstractModel).properties;
   }
 
   /**
    * Get the model's data
-   *
-   * @returns {Object} The data
    */
   get data() {
     return this._data;
@@ -199,44 +191,35 @@ export default class AbstractModel {
 
   /**
    * Get the value of a property
-   *
-   * @param {string} name The property name
-   * @returns {*} The assosiated value
    */
-  getPropertyValue(name) {
+  getPropertyValue(name: string) {
     return this._data[name];
   }
 
   /**
    * Set the value of a property
-   *
-   * @param {string} name The property name
-   * @param {*} value The value
    */
-  setPropertyValue(name, value) {
+  setPropertyValue(name: string, value: unknown) {
     this._data[name] = value;
   }
 
   /**
    * Validate data against the schema.
-   *
-   * @param {Object} data The data to validate
-   * @returns {Promise} A promise that resolves with validated data or rejects with errors
    */
-  validate(data) {
-    return new Promise((resolve, reject) => {
-      const result = this.constructor.validate(data);
+  validate(data: Data): Promise<Data> {
+    const staticValidate = (this.constructor as typeof AbstractModel).validate
 
-      if (!!result && typeof result.then === "function") {
+    return new Promise((resolve, reject) => {
+      const result = staticValidate(data) as boolean|Promise<Data>;
+
+      if (typeof result == "boolean") {
+        if (result) resolve(data);
+        else reject(staticValidate.errors);
+      }
+      else {
         result.then(resolve).catch((e) => {
           reject(e.errors);
         });
-      } else {
-        if (result) {
-          resolve(data);
-        } else {
-          reject(this.constructor.validate.errors);
-        }
       }
     });
   }
@@ -244,11 +227,10 @@ export default class AbstractModel {
   /**
    * Update internal data
    *
-   * @param {Object} data The data to update
-   * @param {boolean} [validate=true] Whether to validate the data
-   * @returns {Promise<this, Error>} True if the data is valid, false otherwise
+   * @param data The data to update
+   * @param validate Whether to validate the data
    */
-  update(data, validate = true) {
+  update(data: Data, validate = true): this|Promise<this> {
     if (validate) {
       const updated = {
         ...this._data,
