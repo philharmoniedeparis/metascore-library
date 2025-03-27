@@ -21,18 +21,18 @@ export default class App extends AbstractInterpreter {
           this._resetCallbacks.add(callback);
         },
         toggleFullscreen: (force) => {
-          const { toggleFullscreen } = useModule("app_renderer");
+          const { toggleFullscreen } = useModule("core:app_renderer");
           toggleFullscreen(force);
         },
         getIdleTime: () => {
-          const { idleTime } = useModule("app_renderer");
+          const { idleTime } = useModule("core:app_renderer");
           return unref(idleTime);
         },
         reset: () => {
           if (this._resetting) return;
           this._resetting = true;
 
-          useModule("app_renderer").reset();
+          useModule("core:app_renderer").reset();
 
           this._resetCallbacks.forEach((callback) => callback());
 

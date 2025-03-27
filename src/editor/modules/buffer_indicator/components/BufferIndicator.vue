@@ -32,7 +32,7 @@ export default {
       duration: mediaDuration,
       buffered: mediaBuffered,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return { mediaReady, mediaTime, mediaDuration, mediaBuffered, seekMediaTo };
   },
   data() {

@@ -33,7 +33,7 @@ function getComponentOptions(
     getComponentChildren,
     getComponentLabel,
     getComponentIconURL,
-  } = useModule("app_components");
+  } = useModule("core:app_components");
   let options = [];
 
   if (components.length > 0) {
@@ -116,7 +116,7 @@ function getPropertyOptions(component_type) {
     ];
   }
 
-  const { getModelByType } = useModule("app_components");
+  const { getModelByType } = useModule("core:app_components");
   return Object.keys(getModelByType(component_type).properties)
     .filter((property) => {
       return SUPPORTED_PROPERTIES.includes(property);
@@ -161,7 +161,7 @@ const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
   if (!componentOptions) {
     componentOptions = ref([]);
     watchEffect(() => {
-      const { getComponentsByType } = useModule("app_components");
+      const { getComponentsByType } = useModule("core:app_components");
       componentOptions.value = getComponentOptions(
         getComponentsByType("Scenario"),
         true
@@ -291,7 +291,7 @@ const PROPERTY_OPTIONS_MUTATOR_MIXIN = {
   getPropertyValueTypeCheck_: function (component_type, property_name) {
     if (!component_type) return null;
 
-    const { getModelByType } = useModule("app_components");
+    const { getModelByType } = useModule("core:app_components");
     const property = getModelByType(component_type).properties?.[property_name];
 
     if (property) {
@@ -394,7 +394,7 @@ Extensions.register("behavior_triggers_options", function () {
   if (!triggerOptions) {
     triggerOptions = ref([]);
     watchEffect(() => {
-      const { getComponentsByType } = useModule("app_components");
+      const { getComponentsByType } = useModule("core:app_components");
       const components = getComponentsByType("Content");
       const parser = new DOMParser();
       const ids = new Set();

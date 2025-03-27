@@ -3,7 +3,7 @@ import AppComponents from "@core/modules/app_components";
 import ComponentsLibrary from "./components/ComponentsLibrary.vue";
 
 export default class ComponentsLibraryModule extends AbstractModule {
-  static id = "components_library";
+  static id = "editor:components_library";
 
   static dependencies = [AppComponents];
 

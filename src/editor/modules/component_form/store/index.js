@@ -19,7 +19,7 @@ export default defineStore("component-form", {
       return this.configs.colorSwatches;
     },
     extraFonts() {
-      const { fonts } = useModule("app_renderer");
+      const { fonts } = useModule("core:app_renderer");
       return [
         ...this.configs.extraFonts,
         ...unref(fonts).map((font) => font.family),

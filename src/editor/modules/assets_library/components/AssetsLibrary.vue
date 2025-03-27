@@ -137,8 +137,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    const { assets } = useModule("assets_manager");
-    const { selectedComponents } = useModule("app_preview");
+    const { assets } = useModule("core:assets_manager");
+    const { selectedComponents } = useModule("editor:app_preview");
     return { store, assets, selectedComponents };
   },
   data() {

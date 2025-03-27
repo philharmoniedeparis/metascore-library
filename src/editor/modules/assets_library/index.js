@@ -13,7 +13,7 @@ import BaseButton from "@core/modules/button";
 import AssetsLibrary from "./components/AssetsLibrary.vue";
 
 export default class AssetsLibraryModule extends AbstractModule {
-  static id = "assets_library";
+  static id = "editor:assets_library";
 
   static dependencies = [
     Ajax,

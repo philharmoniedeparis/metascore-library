@@ -9,7 +9,7 @@ import MediaPlayer from "../media_player";
 import Blockly from "./blockly";
 
 export default class AppBehaviorsModule extends AbstractModule {
-  static id = "app_behaviors";
+  static id = "core:app_behaviors";
 
   static dependencies = [
     AppComponents,

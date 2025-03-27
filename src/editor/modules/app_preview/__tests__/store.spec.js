@@ -22,7 +22,7 @@ describe("AppPreview store", () => {
 
     registerModules([AppComponents], { app, pinia });
 
-    const { init: initComponents, getComponent } = useModule("app_components");
+    const { init: initComponents, getComponent } = useModule("core:app_components");
 
     const components = [
       {

@@ -7,7 +7,7 @@ import { useModule } from "@core/services/module-manager";
 
 export default {
   setup() {
-    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("core:media_player");
     return { mediaTime, seekMediaTo };
   },
   computed: {

@@ -3,7 +3,7 @@ import MediaPlayer from "@core/modules/media_player";
 import BufferIndicator from "./components/BufferIndicator.vue";
 
 export default class BufferIndicatorModule extends AbstractModule {
-  static id = "buffer_indicator";
+  static id = "editor:buffer_indicator";
 
   static dependencies = [MediaPlayer];
 

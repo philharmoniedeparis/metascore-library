@@ -36,15 +36,15 @@ export default {
       setActiveScenario,
       setBlockActivePage,
       setOverrides: setComponentOverrides,
-    } = useModule("app_components");
+    } = useModule("core:app_components");
     const {
       source: mediaSource,
       play: playMedia,
       pause: pauseMedia,
       stop: stopMedia,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
-    const { setGlobalCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    } = useModule("core:media_player");
+    const { setGlobalCuepoint, removeCuepoint } = useModule("core:media_cuepoints");
     return {
       store,
       mediaSource,

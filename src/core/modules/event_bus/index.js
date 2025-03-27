@@ -2,7 +2,7 @@ import AbstractModule from "@core/services/module-manager/AbstractModule";
 import Emitter from "tiny-emitter";
 
 export default class EventBusModule extends AbstractModule {
-  static id = "event_bus";
+  static id = "core:event_bus";
 
   constructor() {
     super(arguments);

@@ -32,7 +32,7 @@ function addCuepoint({
 
   trackErrors = trackErrors || considerError;
 
-  const { time } = useModule("media_player");
+  const { time } = useModule("core:media_player");
   updateCuepoint(cuepoint, unref(time));
 
   return cuepoint;
@@ -103,7 +103,7 @@ function updateCuepoints(time, seeked = false) {
 }
 
 function init() {
-  const { time: mediaTime, seeking: mediaSeeking } = useModule("media_player");
+  const { time: mediaTime, seeking: mediaSeeking } = useModule("core:media_player");
   watch(mediaTime, (value) => {
     // Don't update if seeking.
     if (mediaSeeking.value) return;

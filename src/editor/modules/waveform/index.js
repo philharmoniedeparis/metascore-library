@@ -10,7 +10,7 @@ import WaveformZoom from "./components/WaveformZoom.vue";
 import WaveformZoomController from "./components/WaveformZoomController.vue";
 
 export default class WaveformModule extends AbstractModule {
-  static id = "waveform";
+  static id = "editor:waveform";
 
   static dependencies = [Ajax, MediaPlayer, BaseButton];
 

@@ -265,11 +265,11 @@ export default {
       getComponentChildren,
       updateComponent,
       isComponentTimeable,
-    } = useModule("app_components");
+    } = useModule("core:app_components");
     const { selectedComponents, isComponentLocked, preview } =
-      useModule("app_preview");
+      useModule("editor:app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
     return {
       store,
       getModelByType,

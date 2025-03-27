@@ -4,7 +4,7 @@ import BaseButton from "../button";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 
 export default class ConfirmModule extends AbstractModule {
-  static id = "confirm";
+  static id = "core:confirm";
 
   static dependencies = [Modal, BaseButton];
 

@@ -9,7 +9,7 @@ import BaseButton from "@core/modules/button";
 import useStore from "./store";
 
 export default class SharedAssetsLibraryModule extends AbstractModule {
-  static id = "shared_assets_library";
+  static id = "editor:shared_assets_library";
 
   static dependencies = [
     Ajax,

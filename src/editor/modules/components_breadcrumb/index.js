@@ -4,7 +4,7 @@ import AppPreview from "../app_preview";
 import ComponentsBreadcrumb from "./components/ComponentsBreadcrumb.vue";
 
 export default class ComponentsBreadcrumbModule extends AbstractModule {
-  static id = "components_breadcrumb";
+  static id = "editor:components_breadcrumb";
 
   static dependencies = [AppComponents, AppPreview];
 

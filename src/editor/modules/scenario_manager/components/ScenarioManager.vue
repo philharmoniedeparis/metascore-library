@@ -147,8 +147,8 @@ export default {
       setScenarioIndex,
       deleteComponent,
       cloneComponent,
-    } = useModule("app_components");
-    const { addItems: addContextmenuItems } = useModule("contextmenu");
+    } = useModule("core:app_components");
+    const { addItems: addContextmenuItems } = useModule("core:contextmenu");
     return {
       getSortedScenarios,
       activeScenarioId: activeScenario,

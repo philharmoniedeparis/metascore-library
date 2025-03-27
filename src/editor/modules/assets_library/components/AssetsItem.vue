@@ -89,8 +89,8 @@ export default {
   setup() {
     const store = useStore();
     const { getName, getFile, getType, deleteAsset } =
-      useModule("assets_manager");
-    const { getModelByType } = useModule("app_components");
+      useModule("core:assets_manager");
+    const { getModelByType } = useModule("core:app_components");
     return { store, getName, getFile, getType, deleteAsset, getModelByType };
   },
   data() {

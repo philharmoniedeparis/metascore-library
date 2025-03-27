@@ -115,7 +115,7 @@ export default {
       seekTo: seekMediaTo,
       playbackRate: mediaPlaybackRate,
       setPlaybackRate: setMediaPlaybackRate,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return {
       mediaPlaying,
       playMedia,

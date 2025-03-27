@@ -79,9 +79,9 @@ export default {
       getFileDuration,
       duration: mediaDuration,
       formatTime,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     const { getComponentsByType, getComponentChildren } =
-      useModule("app_components");
+      useModule("core:app_components");
     return {
       mediaSource,
       setMediaSource,

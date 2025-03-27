@@ -48,7 +48,7 @@ export function getTypeLabels(t) {
 }
 
 export function getComponentLabels(type) {
-  const { getComponentsByType } = useModule("app_components");
+  const { getComponentsByType } = useModule("core:app_components");
 
   const labels = {};
   getComponentsByType(type).forEach((c) => {

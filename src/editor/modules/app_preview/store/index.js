@@ -40,7 +40,7 @@ export default defineStore("app-preview", {
       };
     },
     getSelectedComponents() {
-      const { getComponent } = useModule("app_components");
+      const { getComponent } = useModule("core:app_components");
       return Object.entries(this.selectedComponents).reduce(
         (acc, [type, ids]) => {
           return [
@@ -57,7 +57,7 @@ export default defineStore("app-preview", {
     },
     componentHasSelectedDescendents() {
       return (component) => {
-        const { getComponentChildren } = useModule("app_components");
+        const { getComponentChildren } = useModule("core:app_components");
         const children = getComponentChildren(component);
         return children.some((child) => {
           if (this.isComponentSelected(child)) {
@@ -74,7 +74,7 @@ export default defineStore("app-preview", {
       };
     },
     getLockedComponents() {
-      const { getComponent } = useModule("app_components");
+      const { getComponent } = useModule("core:app_components");
       return Object.entries(this.lockedComponents).reduce(
         (acc, [type, ids]) => {
           return [
@@ -91,7 +91,7 @@ export default defineStore("app-preview", {
     },
     isComponentFrozen() {
       return (component) => {
-        const { hasOverrides } = useModule("app_components");
+        const { hasOverrides } = useModule("core:app_components");
         return hasOverrides(component, FROZEN_OVERRIDES_KEY);
       };
     },
@@ -103,14 +103,14 @@ export default defineStore("app-preview", {
 
       if (this.preview) {
         // Reset playback rate to 1 in preview.
-        const { playbackRate, setPlaybackRate } = useModule("media_player");
+        const { playbackRate, setPlaybackRate } = useModule("core:media_player");
         this.editingPlaybackRate = unref(playbackRate);
         setPlaybackRate(1);
 
-        useModule("app_behaviors").enable();
+        useModule("core:app_behaviors").enable();
       } else {
         if (this.editingPlaybackRate) {
-          const { setPlaybackRate } = useModule("media_player");
+          const { setPlaybackRate } = useModule("core:media_player");
           setPlaybackRate(this.editingPlaybackRate);
           this.editingPlaybackRate = null;
         }
@@ -118,16 +118,16 @@ export default defineStore("app-preview", {
         if (!this.preservedOverrides) {
           // Reset component overrides and behaviors
           // when exiting preview mode.
-          useModule("app_components").clearOverrides();
+          useModule("core:app_components").clearOverrides();
         }
 
-        useModule("app_behaviors").disable();
+        useModule("core:app_behaviors").disable();
       }
     },
     setPreservedOverrides(value = true) {
       this.preservedOverrides = value;
       if (!this.preview && !value) {
-        useModule("app_components").clearOverrides();
+        useModule("core:app_components").clearOverrides();
       }
     },
     selectComponent(component, append = false) {
@@ -159,7 +159,7 @@ export default defineStore("app-preview", {
       const selected = this.getSelectedComponents;
       if (selected.length > 0) {
         const { getComponentParent, getComponentChildren } =
-          useModule("app_components");
+          useModule("core:app_components");
         const master = selected[0];
         const parent = getComponentParent(master);
         const children = getComponentChildren(parent);
@@ -205,7 +205,7 @@ export default defineStore("app-preview", {
       this.lockedComponents = {};
     },
     freezeComponent(component) {
-      const { setOverrides } = useModule("app_components");
+      const { setOverrides } = useModule("core:app_components");
       if (!this.isComponentFrozen(component)) {
         setOverrides(
           component,
@@ -216,16 +216,16 @@ export default defineStore("app-preview", {
       }
     },
     unfreezeComponent(component) {
-      const { clearOverrides } = useModule("app_components");
+      const { clearOverrides } = useModule("core:app_components");
       clearOverrides(component, FROZEN_OVERRIDES_KEY);
     },
     copyComponents(components) {
-      const { setData: setClipboardData } = useModule("clipboard");
+      const { setData: setClipboardData } = useModule("editor:clipboard");
       const {
         getComponentChildrenProperty,
         getComponentChildren,
         getComponentIndex,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
 
       const recursiveCopy = (component) => {
         const copy = structuredClone(toRaw(component.data));
@@ -249,9 +249,9 @@ export default defineStore("app-preview", {
       );
     },
     async cutComponents(components) {
-      const { deleteComponent } = useModule("app_components");
+      const { deleteComponent } = useModule("core:app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-        useModule("history");
+        useModule("editor:history");
 
       this.copyComponents(components);
 
@@ -262,7 +262,7 @@ export default defineStore("app-preview", {
       endHistoryGroup();
     },
     getClosestPasteTarget(target) {
-      const { getData: getClipboardData } = useModule("clipboard");
+      const { getData: getClipboardData } = useModule("editor:clipboard");
       const components = unref(getClipboardData("metascore/component"));
 
       if (!components) return null;
@@ -271,7 +271,7 @@ export default defineStore("app-preview", {
         getModelByType,
         getComponentChildrenProperty,
         getComponentParent,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
       const model = getModelByType(target.type);
       const property = getComponentChildrenProperty(target);
 
@@ -296,11 +296,11 @@ export default defineStore("app-preview", {
       target = this.getClosestPasteTarget(target);
       if (!target) return;
 
-      const { createComponent, addComponent } = useModule("app_components");
-      const { getData: getClipboardData } = useModule("clipboard");
-      const { getComponentChildrenProperty } = useModule("app_components");
+      const { createComponent, addComponent } = useModule("core:app_components");
+      const { getData: getClipboardData } = useModule("editor:clipboard");
+      const { getComponentChildrenProperty } = useModule("core:app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-        useModule("history");
+        useModule("editor:history");
 
       const components = [];
 
@@ -345,9 +345,9 @@ export default defineStore("app-preview", {
       return components;
     },
     async moveComponents(components, { left, top }) {
-      const { getModelByType, updateComponent } = useModule("app_components");
+      const { getModelByType, updateComponent } = useModule("core:app_components");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-        useModule("history");
+        useModule("editor:history");
 
       startHistoryGroup();
 
@@ -372,11 +372,11 @@ export default defineStore("app-preview", {
         setBlockActivePage,
         getComponentParent,
         getComponentChildren,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
       let { time: mediaTime, duration: mediaDuration } =
-        useModule("media_player");
+        useModule("core:media_player");
       const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-        useModule("history");
+        useModule("editor:history");
 
       mediaTime = round(unref(mediaTime), 2);
       mediaDuration = round(unref(mediaDuration), 2);

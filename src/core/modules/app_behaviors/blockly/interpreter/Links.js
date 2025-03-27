@@ -16,7 +16,7 @@ export default class Links extends AbstractInterpreter {
   }
 
   get context() {
-    const { activeScenario } = useModule("app_components");
+    const { activeScenario } = useModule("core:app_components");
     this._unwatchActiveScenario = watch(
       activeScenario,
       this._onScenarioChange.bind(this)
@@ -67,7 +67,7 @@ export default class Links extends AbstractInterpreter {
    * @returns {[HTMLElement]} The links
    */
   _getLinks(id) {
-    let { el: root } = useModule("app_renderer");
+    let { el: root } = useModule("core:app_renderer");
     root = unref(root);
 
     return root.querySelectorAll(
@@ -110,8 +110,8 @@ export default class Links extends AbstractInterpreter {
         link.addEventListener(event, callback);
       });
     } else {
-      const { getComponent } = useModule("app_components");
-      const { getComponentElement } = useModule("app_renderer");
+      const { getComponent } = useModule("core:app_components");
+      const { getComponentElement } = useModule("core:app_renderer");
 
       const component = getComponent(type, id);
       if (!component) return;
@@ -135,8 +135,8 @@ export default class Links extends AbstractInterpreter {
    * Remove all listeners.
    */
   _removeListeners() {
-    const { getComponent } = useModule("app_components");
-    const { getComponentElement } = useModule("app_renderer");
+    const { getComponent } = useModule("core:app_components");
+    const { getComponentElement } = useModule("core:app_renderer");
 
     this._listenerStates.forEach((ids, type) => {
       ids.forEach((state, id) => {
@@ -185,8 +185,8 @@ export default class Links extends AbstractInterpreter {
 
     if (links.length === 0) return;
 
-    let { linksAutoHighlightClass } = useModule("app_components");
-    const { addCuepoint } = useModule("media_cuepoints");
+    let { linksAutoHighlightClass } = useModule("core:app_components");
+    const { addCuepoint } = useModule("core:media_cuepoints");
 
     const cuepoint = addCuepoint({
       startTime: from,
@@ -214,7 +214,7 @@ export default class Links extends AbstractInterpreter {
    * Remove all auto-highlighting.
    */
   _removeAutoHighlights() {
-    const { removeCuepoint } = useModule("media_cuepoints");
+    const { removeCuepoint } = useModule("core:media_cuepoints");
     this._autoHighlights.forEach(({ cuepoint }) => {
       removeCuepoint(cuepoint);
     });

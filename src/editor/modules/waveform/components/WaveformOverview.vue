@@ -39,7 +39,7 @@ export default {
       duration: mediaDuration,
       time: mediaTime,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return { store, mediaDuration, mediaTime, seekMediaTo };
   },
   data() {

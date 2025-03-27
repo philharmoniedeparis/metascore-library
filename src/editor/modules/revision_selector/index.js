@@ -5,7 +5,7 @@ import BaseButton from "@core/modules/button";
 import RevisionSelector from "./components/RevisionSelector.vue";
 
 export default class RevisionSelectorModule extends AbstractModule {
-  static id = "revision_selector";
+  static id = "editor:revision_selector";
 
   static dependencies = [Confirm, FormControls, BaseButton];
 

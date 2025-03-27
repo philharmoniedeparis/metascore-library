@@ -7,7 +7,7 @@ import Hotkey from "../hotkey";
 import BaseButton from "@core/modules/button";
 
 export default class PlaybackControlsModule extends AbstractModule {
-  static id = "playback_controls";
+  static id = "editor:playback_controls";
 
   static dependencies = [MediaPlayer, FormControls, Hotkey, BaseButton];
 

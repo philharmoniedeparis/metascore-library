@@ -5,7 +5,7 @@ import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 
 export default class AssetsManagerModule extends AbstractModule {
-  static id = "assets_manager";
+  static id = "core:assets_manager";
 
   init(data) {
     const store = useStore();

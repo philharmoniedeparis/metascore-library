@@ -5,7 +5,7 @@ import { format } from "./utils";
 import HotkeyList from "./components/HotkeyList.vue";
 
 export default class HotkeyModule extends AbstractModule {
-  static id = "hotkey";
+  static id = "editor:hotkey";
 
   static dependencies = [Modal];
 

@@ -84,7 +84,7 @@ export default {
       time: mediaTime,
       seekTo: seekMediaTo,
       formatTime,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return { store, mediaDuration, mediaTime, seekMediaTo, formatTime };
   },
   data() {

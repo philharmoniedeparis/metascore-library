@@ -3,7 +3,7 @@ import TabsContainer from "./components/TabsContainer.vue";
 import TabsItem from "./components/TabsItem.vue";
 
 export default class TabsModule extends AbstractModule {
-  static id = "tabs";
+  static id = "editor:tabs";
 
   constructor({ app }) {
     super(arguments);

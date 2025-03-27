@@ -40,7 +40,7 @@ describe("CursorComponent.vue", () => {
       },
     });
 
-    useModule("media_player").seekTo(10);
+    useModule("core:media_player").seekTo(10);
     await wrapper.vm.$nextTick();
 
     expect(wrapper.find("canvas").element.toDataURL("image/png")).toBe(

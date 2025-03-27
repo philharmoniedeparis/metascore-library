@@ -35,8 +35,8 @@ export default {
     ComponentsBreadcrumbItem,
   },
   setup() {
-    const { getComponentParent } = useModule("app_components");
-    const { selectedComponents } = useModule("app_preview");
+    const { getComponentParent } = useModule("core:app_components");
+    const { selectedComponents } = useModule("editor:app_preview");
     return { getComponentParent, selectedComponents };
   },
   computed: {

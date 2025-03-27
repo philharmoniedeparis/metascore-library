@@ -4,7 +4,7 @@ import { useModule } from "@core/services/module-manager";
 import { getAnimatedValueAtTime } from "../utils/animation";
 
 export default function (component, model) {
-  const { time: mediaTime } = useModule("media_player");
+  const { time: mediaTime } = useModule("core:media_player");
 
   if (unref(model).$isOpacitable) {
     const opacity = computed(() => {

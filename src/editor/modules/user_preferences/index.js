@@ -6,7 +6,7 @@ import useStore from "./store";
 import Ajax from "@core/modules/ajax";
 
 export default class UserPreferencesModule extends AbstractModule {
-  static id = "user_preferences";
+  static id = "editor:user_preferences";
 
   static dependencies = [Ajax];
 

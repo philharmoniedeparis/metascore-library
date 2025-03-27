@@ -7,7 +7,7 @@ import BehaviorsForm from "./components/BehaviorsForm.vue";
 import { getConfig as getBlocklyConfig } from "./blockly";
 
 export default class BehaviorsFormModule extends AbstractModule {
-  static id = "behaviors_form";
+  static id = "editor:behaviors_form";
 
   static dependencies = [AppBehaviors, AppComponents, MediaPlayer];
 

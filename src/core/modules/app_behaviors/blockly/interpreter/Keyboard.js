@@ -17,7 +17,7 @@ export default class Keyboard extends AbstractInterpreter {
     return {
       Keyboard: {
         addEventListener: (key, event, callback) => {
-          let { el } = useModule("app_renderer");
+          let { el } = useModule("core:app_renderer");
           el = unref(el);
 
           const wrapper = function (evt) {
