@@ -1,27 +1,19 @@
 /**
  * Check if an element is visible.
- *
- * @param {HTMLElement} [element] The element
- * @returns {Boolean} True if the element is visible, false otherwise
  */
-export function isVisible(element) {
-  return Boolean(
-    element.offsetWidth ||
-      element.offsetHeight ||
-      element.getClientRects().length
-  );
+export function isVisible(element: HTMLElement) {
+  return element.offsetWidth > 0 && element.offsetHeight > 0 && element.getClientRects().length > 0
 }
 
 /**
  * Get keyboard-focusable elements within a specified element.
  *
- * @param {HTMLElement} [root=document] The root element
- * @returns {Array}
+ * @param root The root element
  */
-export function getKeyboardFocusableElements(root = document) {
-  if (!root) return null;
+export function getKeyboardFocusableElements(root: HTMLElement | Document = document): HTMLElement[] | undefined {
+  if (!root) return;
 
-  let selectors = [
+  const selectors = [
     "a[href]:not([inert]):not([inert] *):not([tabindex^='-']):not([aria-hidden])",
     "area[href]:not([inert]):not([inert] *):not([tabindex^='-']):not([aria-hidden])",
     "input:not([type='hidden']):not([type='radio']):not([inert]):not([inert] *):not([tabindex^='-']):not(:disabled):not([aria-hidden])",
@@ -37,51 +29,48 @@ export function getKeyboardFocusableElements(root = document) {
     "[tabindex]:not([inert]):not([inert] *):not([tabindex^='-']):not([aria-hidden])",
   ];
 
-  return Array.from(root.querySelectorAll(selectors.join(","))).filter((el) => {
-    return isVisible(el);
-  });
+  const elements = Array.from(root.querySelectorAll(selectors.join(","))) as HTMLElement[];
+  return elements.filter(isVisible);
 }
 
 /**
  * Trap focus inside an element when tabbing.
  *
- * @param {HTMLElement} element The element to trap focus on
- * @param {KeyboardEvent} evt The keyboard event
+ * @param element The element to trap focus on
+ * @param event The keyboard event
  */
-export function trapTabFocus(element, evt) {
+export function trapTabFocus(element: HTMLElement, event: KeyboardEvent) {
   const focusables = getKeyboardFocusableElements(element);
   if (!focusables || focusables.length === 0) return;
 
-  if (evt.shiftKey) {
+  if (event.shiftKey) {
     const first = focusables.at(0);
-    if (evt.target === first) {
-      evt.preventDefault();
-      focusables.at(-1).focus();
+    if (event.target === first) {
+      event.preventDefault();
+      focusables.at(-1)?.focus();
     }
   } else {
     const last = focusables.at(-1);
-    if (evt.target === last) {
-      evt.preventDefault();
-      focusables.at(0).focus();
+    if (event.target === last) {
+      event.preventDefault();
+      focusables.at(0)?.focus();
     }
   }
 }
 
 /**
  * Get an element's rect without CSS transforms.
- *
- * @param {HTMLElement} element The element
- * @returns {DOMRect} The element's rect
  */
-export function getRectWithoutTransforms(el) {
-  const { offsetWidth, offsetHeight } = el;
+export function getRectWithoutTransforms(element: HTMLElement) {
+  const { offsetWidth, offsetHeight } = element;
   let offsetLeft = 0;
   let offsetTop = 0;
 
+  let el: HTMLElement | null = element;
   while (el) {
     offsetLeft += el.offsetLeft - el.scrollLeft;
     offsetTop += el.offsetTop - el.scrollTop;
-    el = el.offsetParent;
+    el = el.offsetParent as HTMLElement | null;
   }
 
   return new DOMRect(offsetLeft, offsetTop, offsetWidth, offsetHeight);
@@ -89,18 +78,16 @@ export function getRectWithoutTransforms(el) {
 
 /**
  * Get an element's absolute transform matrix.
- *
- * @param {HTMLElement} element The element
- * @returns {DOMMatrix} The transformation matrix
  */
-export function getAbsoluteTransformMatrix(el) {
+export function getAbsoluteTransformMatrix(element: HTMLElement) {
   let matrix = new DOMMatrix();
 
+  let el: HTMLElement | null = element;
   while (el) {
     matrix = matrix.multiply(
       new DOMMatrix(window.getComputedStyle(el).transform)
     );
-    el = el.offsetParent;
+    el = el.offsetParent as HTMLElement | null;
   }
 
   return matrix;

@@ -1,5 +1,10 @@
 import "geometry-polyfill";
 
+declare global {
+  interface Window { convertPointFromPageToNode: (element: HTMLElement, pageX: number, pageY: number) => DOMPoint }
+  interface Window { convertPointFromNodeToPage: (element: HTMLElement, pageX: number, pageY: number) => DOMPoint }
+}
+
 (function () {
   if (
     typeof window.convertPointFromPageToNode === "function" &&
@@ -10,17 +15,17 @@ import "geometry-polyfill";
 
   const I = new window.DOMMatrix();
 
-  function getTransformationMatrix(element) {
+  function getTransformationMatrix(element: HTMLElement) {
     let transformationMatrix = I;
-    let x = element;
+    let x = element as HTMLElement|null;
 
-    while (typeof x !== "undefined" && x !== x.ownerDocument.documentElement) {
+    while (x && x !== x.ownerDocument.documentElement) {
       const computedStyle = window.getComputedStyle(x);
       const transform = computedStyle.transform || "none";
       const c = transform === "none" ? I : new window.DOMMatrix(transform);
 
       transformationMatrix = c.multiply(transformationMatrix);
-      x = x.parentNode;
+      x = x.parentNode as HTMLElement|null;
     }
 
     const w = element.offsetWidth;
@@ -42,8 +47,8 @@ import "geometry-polyfill";
     const rect = element.getBoundingClientRect();
 
     transformationMatrix = I.translate(
-      window.pageXOffset + rect.left - left,
-      window.pageYOffset + rect.top - top,
+      window.scrollX + rect.left - left,
+      window.scrollY + rect.top - top,
       0
     ).multiply(transformationMatrix);
 
@@ -54,14 +59,14 @@ import "geometry-polyfill";
    * Helper function to convert coordinates from the page's coordinate system to an element's local coordinate system
    * (works properly with css transforms without perspective projection)
    *
-   * @param {DOMElement} element The dom element
-   * @param {Number} pageX The x postion in the page's coordinate system
-   * @param {Number} pageY The y postion in the page's coordinate system
-   * @returns {Object} The x and y position in the element's local coordinate system
+   * @param element The HTML element
+   * @param pageX The x postion in the page's coordinate system
+   * @param pageY The y postion in the page's coordinate system
+   * @returns The x and y position in the element's local coordinate system
    */
   window.convertPointFromPageToNode =
     window.convertPointFromPageToNode ||
-    function (element, pageX, pageY) {
+    function (element: HTMLElement, pageX: number, pageY: number) {
       return new window.DOMPoint(pageX, pageY, 0).matrixTransform(
         getTransformationMatrix(element).inverse()
       );
@@ -71,14 +76,14 @@ import "geometry-polyfill";
    * Helper function to convert coordinates from the page's coordinate system to an element's local coordinate system
    * (works properly with css transforms without perspective projection)
    *
-   * @param {DOMElement} element The dom element
-   * @param {Number} offsetX The x postion in the element's local coordinate system
-   * @param {Number} offset> The y postion in the element's local coordinate system
-   * @returns {Object} The x and y position in the page's coordinate system
+   * @param element The HTML element
+   * @param offsetX The x postion in the element's local coordinate system
+   * @param offset> The y postion in the element's local coordinate system
+   * @returns The x and y position in the page's coordinate system
    */
   window.convertPointFromNodeToPage =
     window.convertPointFromNodeToPage ||
-    function (element, offsetX, offsetY) {
+    function (element: HTMLElement, offsetX: number, offsetY: number) {
       return new window.DOMPoint(offsetX, offsetY, 0).matrixTransform(
         getTransformationMatrix(element)
       );
