@@ -191,7 +191,7 @@ export default {
       time: mediaTime,
       duration: mediaDuration,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     const {
       getModelByType,
       getComponentLabel,
@@ -201,7 +201,7 @@ export default {
       isComponentTimeable,
       deleteComponent,
       arrangeComponent,
-    } = useModule("app_components");
+    } = useModule("core:app_components");
     const {
       preview,
       isComponentSelected,
@@ -214,9 +214,9 @@ export default {
       selectedComponents,
       copyComponents,
       cutComponents,
-    } = useModule("app_preview");
+    } = useModule("editor:app_preview");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
     return {
       store,
       mediaTime,

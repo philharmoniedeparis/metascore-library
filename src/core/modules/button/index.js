@@ -3,7 +3,7 @@ import BaseButton from "./components/BaseButton.vue";
 import SplitButton from "./components/SplitButton.vue";
 
 export default class BaseButtonModule extends AbstractModule {
-  static id = "base_button";
+  static id = "core:base_button";
 
   constructor({ app }) {
     super(arguments);

@@ -7,14 +7,14 @@ async function uploadFiles(url, files, progress_callback) {
     data.append(`files[asset][]`, file);
   });
 
-  return await useModule("ajax").post(url, {
+  return await useModule("core:ajax").post(url, {
     data,
     onUploadProgress: progress_callback,
   });
 }
 
 async function generateAsset(url, data) {
-  return await useModule("ajax").post(url, {
+  return await useModule("core:ajax").post(url, {
     headers: {
       "Content-Type": "application/json",
     },

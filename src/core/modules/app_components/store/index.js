@@ -261,7 +261,7 @@ export default defineStore("app-components", {
               );
             }
             if ("end-time" in data && data["end-time"] !== null) {
-              const { duration: mediaDuration } = useModule("media_player");
+              const { duration: mediaDuration } = useModule("core:media_player");
               data["end-time"] = Math.min(
                 data["end-time"],
                 parent["end-time"] ?? unref(mediaDuration)
@@ -444,7 +444,7 @@ export default defineStore("app-components", {
     },
     setBlockActivePage(block, index) {
       if (block.synched) {
-        const { seekTo: seekMediaTo } = useModule("media_player");
+        const { seekTo: seekMediaTo } = useModule("core:media_player");
         const pages = this.getChildren(block);
         const page = pages[index];
         seekMediaTo(page["start-time"] ?? 0);

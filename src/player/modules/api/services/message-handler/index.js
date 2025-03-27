@@ -43,10 +43,10 @@ export function processMessage(evt) {
     case "play":
       {
         const { setGlobalCuepoint, removeCuepoint } =
-          useModule("media_cuepoints");
-        const { play, pause, seekTo } = useModule("media_player");
+          useModule("core:media_cuepoints");
+        const { play, pause, seekTo } = useModule("core:media_player");
         const { getComponentsByType, activeScenario, setActiveScenario } =
-          useModule("app_components");
+          useModule("core:app_components");
 
         // @todo: refactor with AppRenderer's onComponentAction
         if ("inTime" in params || "outTime" in params) {
@@ -92,21 +92,21 @@ export function processMessage(evt) {
 
     case "pause":
       {
-        const { pause } = useModule("media_player");
+        const { pause } = useModule("core:media_player");
         pause();
       }
       break;
 
     case "stop":
       {
-        const { stop } = useModule("media_player");
+        const { stop } = useModule("core:media_player");
         stop();
       }
       break;
 
     case "seek":
       {
-        const { seekTo } = useModule("media_player");
+        const { seekTo } = useModule("core:media_player");
         seekTo(params?.seconds || 0);
       }
       break;
@@ -114,7 +114,7 @@ export function processMessage(evt) {
     case "page":
       if ("block" in params && "index" in params) {
         const { getComponentsByType, setBlockActivePage } =
-          useModule("app_components");
+          useModule("core:app_components");
         const block = getComponentsByType("Block").find(
           (c) => c.name === params.block
         );
@@ -131,7 +131,7 @@ export function processMessage(evt) {
           showComponent,
           hideComponent,
           toggleComponent,
-        } = useModule("app_components");
+        } = useModule("core:app_components");
         const block = getComponentsByType("Block").find(
           (c) => c.name === params.name
         );
@@ -146,7 +146,7 @@ export function processMessage(evt) {
     case "scenario":
       if ("value" in params) {
         const { getComponentsByType, setActiveScenario } =
-          useModule("app_components");
+          useModule("core:app_components");
         const scenario = getComponentsByType("Scenario").find(
           (c) => c.slug === params.value
         );
@@ -157,14 +157,14 @@ export function processMessage(evt) {
     case "responsiveness":
       {
         const { adaptSize, allowUpscaling } = params;
-        const { setResponsiveness } = useModule("app_renderer");
+        const { setResponsiveness } = useModule("core:app_renderer");
         setResponsiveness(adaptSize, allowUpscaling);
       }
       break;
 
     case "playing":
       {
-        const { playing } = useModule("media_player");
+        const { playing } = useModule("core:media_player");
         source.postMessage(
           JSON.stringify({
             callback: params.callback,
@@ -177,7 +177,7 @@ export function processMessage(evt) {
 
     case "time":
       {
-        const { time } = useModule("media_player");
+        const { time } = useModule("core:media_player");
         source.postMessage(
           JSON.stringify({
             callback: params.callback,
@@ -219,7 +219,7 @@ export function processMessage(evt) {
 
         case "timeupdate":
           {
-            const { time } = useModule("media_player");
+            const { time } = useModule("core:media_player");
             watch(time, (value) => {
               source.postMessage(
                 JSON.stringify({
@@ -234,7 +234,7 @@ export function processMessage(evt) {
 
         case "scenariochange":
           {
-            const { activeScenario } = useModule("app_components");
+            const { activeScenario } = useModule("core:app_components");
             watch(activeScenario, (value) => {
               source.postMessage(
                 JSON.stringify({

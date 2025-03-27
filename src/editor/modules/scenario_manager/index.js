@@ -6,7 +6,7 @@ import BaseButton from "@core/modules/button";
 import ScenarioManager from "./components/ScenarioManager.vue";
 
 export default class ScenarioManagerModule extends AbstractModule {
-  static id = "scenario_manager";
+  static id = "editor:scenario_manager";
 
   static dependencies = [AppComponents, Confirm, ContextMenu, BaseButton];
 

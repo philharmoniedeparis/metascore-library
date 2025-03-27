@@ -12,7 +12,7 @@ import ProgressIndicator from "@core/modules/progress_indicator";
 import MediaSelector from "./components/MediaSelector.vue";
 
 export default class MediaSelectorModule extends AbstractModule {
-  static id = "media_selector";
+  static id = "editor:media_selector";
 
   static dependencies = [
     Alert,

@@ -11,23 +11,23 @@ export default defineStore("player", {
   },
   actions: {
     async setData(data) {
-      const { setSource: setMediaSource } = useModule("media_player");
+      const { setSource: setMediaSource } = useModule("core:media_player");
       setMediaSource(data.media);
 
       const {
         init: initComponents,
         enableOverrides: enableComponentsOverrides,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
       await initComponents(data.components);
       enableComponentsOverrides();
 
       const { init: initBehaviors, enable: enableBehaviors } =
-        useModule("app_behaviors");
+        useModule("core:app_behaviors");
       await initBehaviors(data.behaviors);
       enableBehaviors();
 
       const { width, height, css } = data;
-      const { init: initAppRenderer } = useModule("app_renderer");
+      const { init: initAppRenderer } = useModule("core:app_renderer");
       initAppRenderer({ width, height, css });
     },
     async load(url) {

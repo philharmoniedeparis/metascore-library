@@ -29,7 +29,7 @@ export default class LabeledTimecodeFieldView extends LabeledFieldView {
     super(locale, createLabeledInputTimecode);
 
     const t = locale.t;
-    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("core:media_player");
 
     this.toolbarView = null;
 

@@ -9,7 +9,7 @@ import MediaCuepoints from "../media_cuepoints";
 import AppRenderer from "./components/AppRenderer.vue";
 
 export default class AppRendererModule extends AbstractModule {
-  static id = "app_renderer";
+  static id = "core:app_renderer";
 
   static dependencies = [
     AssetsManager,

@@ -33,7 +33,7 @@ export default {
       width: mediaWidth,
       height: mediaHeight,
       time: mediaTime,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return {
       mediaElement,
       mediaType,

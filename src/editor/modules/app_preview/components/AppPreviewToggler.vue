@@ -83,9 +83,9 @@ export default {
   },
   setup() {
     const store = useStore();
-    const { format: formatHotkey } = useModule("hotkey");
+    const { format: formatHotkey } = useModule("editor:hotkey");
     const { hasOverrides: componentsHaveOverrides } =
-      useModule("app_components");
+      useModule("core:app_components");
     return { store, formatHotkey, componentsHaveOverrides };
   },
   computed: {

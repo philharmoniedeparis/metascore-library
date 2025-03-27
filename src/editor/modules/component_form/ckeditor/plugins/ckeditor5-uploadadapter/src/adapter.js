@@ -9,7 +9,7 @@ export default class Adapter {
   // Starts the upload process.
   // @todo: handle uplaod progress
   async upload() {
-    const { uploadFiles } = useModule("assets_library");
+    const { uploadFiles } = useModule("editor:assets_library");
 
     const file = await this.loader.file;
     const assets = await uploadFiles([file]);

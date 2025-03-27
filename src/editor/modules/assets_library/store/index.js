@@ -26,10 +26,10 @@ export default defineStore("assets-library", {
     },
     getUsage() {
       return (asset) => {
-        const { getType, getFontName } = useModule("assets_manager");
+        const { getType, getFontName } = useModule("core:assets_manager");
         const url = asset.url ?? asset.file?.url;
         const { getComponents, getComponentsByType } =
-          useModule("app_components");
+          useModule("core:app_components");
 
         switch (getType(asset)) {
           case "font": {
@@ -84,7 +84,7 @@ export default defineStore("assets-library", {
         this.uploadProgress = null;
       }
 
-      items.map(useModule("assets_manager").addAsset);
+      items.map(useModule("core:assets_manager").addAsset);
 
       return items;
     },
@@ -94,7 +94,7 @@ export default defineStore("assets-library", {
       return api
         .generateAsset(this.configs.spectrogramUrl, data)
         .then((item) => {
-          useModule("assets_manager").addAsset(item);
+          useModule("core:assets_manager").addAsset(item);
           return item;
         })
         .finally(() => {
@@ -107,7 +107,7 @@ export default defineStore("assets-library", {
       return api
         .generateAsset(this.configs.audiowaveformUrl, data)
         .then((item) => {
-          useModule("assets_manager").addAsset(item);
+          useModule("core:assets_manager").addAsset(item);
           return item;
         })
         .finally(() => {

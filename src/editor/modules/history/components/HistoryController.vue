@@ -65,7 +65,7 @@ export default {
   setup() {
     const store = useStore();
 
-    const { format: formatHotkey } = useModule("hotkey");
+    const { format: formatHotkey } = useModule("editor:hotkey");
 
     return { store, formatHotkey };
   },

@@ -84,8 +84,8 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const { time: mediaTime } = useModule("media_player");
-    const { getAnimatedValueAtTime } = useModule("app_components");
+    const { time: mediaTime } = useModule("core:media_player");
+    const { getAnimatedValueAtTime } = useModule("core:app_components");
     return { mediaTime, getAnimatedValueAtTime };
   },
   computed: {

@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import { useModule } from "@core/services/module-manager";
 
 export function getBlocks() {
-  const { findComponent, getModelByType } = useModule("app_components");
+  const { findComponent, getModelByType } = useModule("core:app_components");
 
   // Hide
   const hideable_component = findComponent((c) => {

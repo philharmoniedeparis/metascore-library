@@ -18,9 +18,9 @@ export default {
       Blockly,
       data: behaviors,
       setData: setBehaviors,
-    } = useModule("app_behaviors");
-    const { findComponent, getModelByType } = useModule("app_components");
-    const { time: mediaTime, seekTo: seekMediaTo } = useModule("media_player");
+    } = useModule("core:app_behaviors");
+    const { findComponent, getModelByType } = useModule("core:app_components");
+    const { time: mediaTime, seekTo: seekMediaTo } = useModule("core:media_player");
     return {
       store,
       Blockly,

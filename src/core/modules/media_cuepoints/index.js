@@ -3,7 +3,7 @@ import MediaPlayer from "@core/modules/media_player";
 import * as Manager from "./services/cuepoints-manager";
 
 export default class MediaCuepointsModule extends AbstractModule {
-  static id = "media_cuepoints";
+  static id = "core:media_cuepoints";
 
   static dependencies = [MediaPlayer];
 

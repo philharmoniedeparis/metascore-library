@@ -29,8 +29,8 @@ export default {
     },
   },
   setup() {
-    const { getComponentLabel } = useModule("app_components");
-    const { selectComponent } = useModule("app_preview");
+    const { getComponentLabel } = useModule("core:app_components");
+    const { selectComponent } = useModule("editor:app_preview");
     return { getComponentLabel, selectComponent };
   },
   methods: {

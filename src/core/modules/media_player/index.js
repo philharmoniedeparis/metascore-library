@@ -7,7 +7,7 @@ import * as utils from "./utils/media";
 import MediaPlayer from "./components/MediaPlayer.vue";
 
 export default class MediaPlayerModule extends AbstractModule {
-  static id = "media_player";
+  static id = "core:media_player";
 
   constructor({ app }) {
     super(arguments);

@@ -32,7 +32,7 @@ export default class CustomLinkCommand extends LinkCommand {
       this.params = {};
 
       if (value) {
-        const { getLinkActions } = useModule("app_components");
+        const { getLinkActions } = useModule("core:app_components");
         const actions = getLinkActions(value);
 
         if (actions && actions.length > 0) {

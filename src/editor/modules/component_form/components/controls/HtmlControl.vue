@@ -79,9 +79,9 @@ export default {
   setup() {
     const store = useStore();
     const { el: appRendererEl, getComponentElement } =
-      useModule("app_renderer");
+      useModule("core:app_renderer");
     const { preview, freezeComponent, unfreezeComponent } =
-      useModule("app_preview");
+      useModule("editor:app_preview");
     return {
       store,
       appRendererEl,

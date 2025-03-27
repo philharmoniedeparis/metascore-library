@@ -44,30 +44,30 @@ export default defineStore("editor", {
           data.set("title", this.appTitle);
         }
         if (this.isDirty("width", since)) {
-          const width = unref(useModule("app_renderer").width);
+          const width = unref(useModule("core:app_renderer").width);
           data.set("width", width);
         }
         if (this.isDirty("height", since)) {
-          const height = unref(useModule("app_renderer").height);
+          const height = unref(useModule("core:app_renderer").height);
           data.set("height", height);
         }
         if (this.isDirty("media", since)) {
-          const mediaSource = unref(useModule("media_player").source);
+          const mediaSource = unref(useModule("core:media_player").source);
           if ("file" in mediaSource) {
             data.set("files[media]", mediaSource.file);
           }
           data.set("media", JSON.stringify(omit(mediaSource, ["file"])));
         }
         if (this.isDirty("components", since)) {
-          const { data: components } = useModule("app_components");
+          const { data: components } = useModule("core:app_components");
           data.set("components", JSON.stringify(components));
         }
         if (this.isDirty("behaviors", since)) {
-          const { data: behaviors } = useModule("app_behaviors");
+          const { data: behaviors } = useModule("core:app_behaviors");
           data.set("behaviors", JSON.stringify(unref(behaviors)));
         }
         if (this.isDirty("assets", since)) {
-          const assets = unref(useModule("assets_manager").assets);
+          const assets = unref(useModule("core:assets_manager").assets);
           if (assets.length > 0) {
             assets.forEach((asset) => {
               data.append("assets[]", JSON.stringify(asset));
@@ -86,7 +86,7 @@ export default defineStore("editor", {
       this.latestRevision = data.latest_revision;
       this.activeRevision = data.vid;
 
-      const { init: initUserPreferences } = useModule("user_preferences");
+      const { init: initUserPreferences } = useModule("editor:user_preferences");
       await initUserPreferences();
 
       this.setAppTitle(data.title);
@@ -100,7 +100,7 @@ export default defineStore("editor", {
 
       const { width, height, css } = data;
       const { init: initAppRenderer, onStoreAction: onAppRendererStoreAction } =
-        useModule("app_renderer");
+        useModule("core:app_renderer");
       initAppRenderer({ width, height, css });
       onAppRendererStoreAction(({ name }) => {
         switch (name) {
@@ -114,7 +114,7 @@ export default defineStore("editor", {
       });
 
       const { setSource: setMediaSource, onStoreAction: onMediaStoreAction } =
-        useModule("media_player");
+        useModule("core:media_player");
       setMediaSource(data.media);
       onMediaStoreAction(({ name }) => {
         if (["setSource"].includes(name)) {
@@ -126,7 +126,7 @@ export default defineStore("editor", {
         init: initComponents,
         enableOverrides: enableComponentsOverrides,
         onStoreAction: onComponentsStoreAction,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
 
       let components = data.components;
       if (!Array.isArray(components) || components.length < 1) {
@@ -148,7 +148,7 @@ export default defineStore("editor", {
       });
 
       const { init: initBehaviors, onStoreAction: onBehaviorsStoreAction } =
-        useModule("app_behaviors");
+        useModule("core:app_behaviors");
       await initBehaviors(data.behaviors);
       onBehaviorsStoreAction(({ name }) => {
         if (name === "update") {
@@ -157,7 +157,7 @@ export default defineStore("editor", {
       });
 
       const { init: initAssets, onStoreAction: onAssetsStoreAction } =
-        useModule("assets_manager");
+        useModule("core:assets_manager");
       initAssets(data.assets);
       onAssetsStoreAction(({ name }) => {
         if (["add", "delete"].includes(name)) {
@@ -165,7 +165,7 @@ export default defineStore("editor", {
         }
       });
 
-      const { activate: activateHistory } = useModule("history");
+      const { activate: activateHistory } = useModule("editor:history");
       activateHistory();
     },
     setAppTitle(value) {
@@ -182,7 +182,7 @@ export default defineStore("editor", {
         const data = await api.load(url);
         await this.setData(data);
 
-        const { clear: clearHistory } = useModule("history");
+        const { clear: clearHistory } = useModule("editor:history");
         clearHistory();
         this.dirty.clear();
 
@@ -226,7 +226,7 @@ export default defineStore("editor", {
     async restoreAutoSaveData() {
       this.loading = true;
 
-      const { load: loadAutoSaveData } = useModule("auto_save");
+      const { load: loadAutoSaveData } = useModule("editor:auto_save");
       const data = await loadAutoSaveData();
 
       await this.setData(data);
@@ -234,7 +234,7 @@ export default defineStore("editor", {
       this.loading = false;
     },
     deleteAutoSaveData() {
-      const { delete: deleteAutoSaveData } = useModule("auto_save");
+      const { delete: deleteAutoSaveData } = useModule("editor:auto_save");
       deleteAutoSaveData();
     },
   },

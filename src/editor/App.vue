@@ -315,37 +315,37 @@ export default {
       addComponent,
       deleteComponent,
       cloneComponent,
-    } = useModule("app_components");
+    } = useModule("core:app_components");
 
-    const { assets, addAsset } = useModule("assets_manager");
+    const { assets, addAsset } = useModule("core:assets_manager");
 
-    const { preview, previewPersistant } = useModule("app_preview");
+    const { preview, previewPersistant } = useModule("editor:app_preview");
 
-    const { ready: appRendererReady } = useModule("app_renderer");
+    const { ready: appRendererReady } = useModule("core:app_renderer");
 
     const {
       maxScale: maxWaveformScale,
       scale: waveformScale,
       offset: waveformOffset,
       load: loadWaveform,
-    } = useModule("waveform");
+    } = useModule("editor:waveform");
 
     const { source: mediaSource, duration: mediaDuration } =
-      useModule("media_player");
+      useModule("core:media_player");
 
     const { recordingCursorKeyframes, editingTextContent } =
-      useModule("component_form");
+      useModule("editor:component_form");
     const disableComponentInteractions = computed(
       () => unref(recordingCursorKeyframes) || unref(editingTextContent)
     );
 
-    const { data: userPreferences } = useModule("user_preferences");
+    const { data: userPreferences } = useModule("editor:user_preferences");
 
-    const { isDataAvailable: isAutoSaveDataAvailable } = useModule("auto_save");
+    const { isDataAvailable: isAutoSaveDataAvailable } = useModule("editor:auto_save");
 
-    const { format: formatHotkey } = useModule("hotkey");
+    const { format: formatHotkey } = useModule("editor:hotkey");
 
-    const { install: installTooltip } = useModule("tooltip");
+    const { install: installTooltip } = useModule("editor:tooltip");
 
     return {
       store,

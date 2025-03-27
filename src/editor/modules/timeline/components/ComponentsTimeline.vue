@@ -89,7 +89,7 @@ export default {
       activeScenario,
       updateComponent,
       deleteComponent,
-    } = useModule("app_components");
+    } = useModule("core:app_components");
     const {
       preview,
       isComponentLocked,
@@ -99,11 +99,11 @@ export default {
       copyComponents,
       cutComponents,
       pasteComponents,
-    } = useModule("app_preview");
+    } = useModule("editor:app_preview");
     const { time: mediaTime, duration: mediaDuration } =
-      useModule("media_player");
+      useModule("core:media_player");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
 
     return {
       mediaTime,

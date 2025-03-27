@@ -55,7 +55,7 @@ export default {
   },
   emits: ["update:modelValue"],
   setup() {
-    const { time: mediaTime, formatTime } = useModule("media_player");
+    const { time: mediaTime, formatTime } = useModule("core:media_player");
     return { mediaTime, formatTime };
   },
   data() {

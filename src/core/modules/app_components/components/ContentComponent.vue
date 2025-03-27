@@ -33,7 +33,7 @@ export default {
   },
   emits: ["action"],
   setup() {
-    const { addCuepoint, removeCuepoint } = useModule("media_cuepoints");
+    const { addCuepoint, removeCuepoint } = useModule("core:media_cuepoints");
     return { addCuepoint, removeCuepoint };
   },
   data() {

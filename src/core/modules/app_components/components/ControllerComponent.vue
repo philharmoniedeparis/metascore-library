@@ -74,7 +74,7 @@ export default {
       play: playMedia,
       pause: pauseMedia,
       seekTo: seekMediaTo,
-    } = useModule("media_player");
+    } = useModule("core:media_player");
     return {
       mediaPlaying,
       mediaFormattedTime,

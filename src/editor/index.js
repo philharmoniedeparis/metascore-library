@@ -127,8 +127,8 @@ export class Editor {
 
     await registerModules([AppBehaviors, BehaviorsForm], { app, pinia, i18n });
 
-    const { init: initAppBehavoirs, Blockly } = useModule("app_behaviors");
-    const { getBlocklyConfig } = useModule("behaviors_form");
+    const { init: initAppBehavoirs, Blockly } = useModule("core:app_behaviors");
+    const { getBlocklyConfig } = useModule("editor:behaviors_form");
     await initAppBehavoirs();
     const config = getBlocklyConfig(app.config.globalProperties.publicPath);
 

@@ -92,9 +92,9 @@ export default {
       duration: mediaDuration,
       seekTo: seekMediaTo,
       formatTime,
-    } = useModule("media_player");
-    const { getAnimatedValueAtTime } = useModule("app_components");
-    const { addItem: addContextmenuItem } = useModule("contextmenu");
+    } = useModule("core:media_player");
+    const { getAnimatedValueAtTime } = useModule("core:app_components");
+    const { addItem: addContextmenuItem } = useModule("core:contextmenu");
     return {
       mediaDuration,
       seekMediaTo,

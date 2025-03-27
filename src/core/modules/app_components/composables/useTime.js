@@ -4,7 +4,7 @@ import { isNull, isUndefined } from "lodash";
 
 export default function (component, model) {
   if (unref(model).$isTimeable) {
-    const { time: mediaTime } = useModule("media_player");
+    const { time: mediaTime } = useModule("core:media_player");
 
     const active = computed(() => {
       const time = unref(mediaTime);

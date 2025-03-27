@@ -19,7 +19,7 @@ export default class Components extends AbstractInterpreter {
         getProperty: (component, property) => {
           if (!component) return;
 
-          const { getComponent } = useModule("app_components");
+          const { getComponent } = useModule("core:app_components");
           const [type, id] = component.split(":");
 
           component = getComponent(type, id);
@@ -30,7 +30,7 @@ export default class Components extends AbstractInterpreter {
         setProperty: (components, property, value) => {
           if (!components || !property) return;
 
-          const { getComponent, setOverrides } = useModule("app_components");
+          const { getComponent, setOverrides } = useModule("core:app_components");
 
           (Array.isArray(components) ? components : [components])
             .filter((component) => !!component)
@@ -56,7 +56,7 @@ export default class Components extends AbstractInterpreter {
           const [type, id] = component.split(":");
           if (type !== "Scenario") return;
 
-          const { setActiveScenario } = useModule("app_components");
+          const { setActiveScenario } = useModule("core:app_components");
           setActiveScenario(id);
         },
         getBlockPage: (component) => {
@@ -66,7 +66,7 @@ export default class Components extends AbstractInterpreter {
           if (type !== "Block") return;
 
           const { getComponent, getBlockActivePage } =
-            useModule("app_components");
+            useModule("core:app_components");
 
           const block = getComponent("Block", id);
           if (block) return getBlockActivePage(block) + 1;
@@ -78,7 +78,7 @@ export default class Components extends AbstractInterpreter {
           if (type !== "Block") return;
 
           const { getComponent, setBlockActivePage } =
-            useModule("app_components");
+            useModule("core:app_components");
 
           const block = getComponent("Block", id);
           if (block) setBlockActivePage(block, index - 1);

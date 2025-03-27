@@ -55,9 +55,9 @@ export default {
       setWidth: setAppWidth,
       height: appHeight,
       setHeight: setAppHeight,
-    } = useModule("app_renderer");
+    } = useModule("core:app_renderer");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
     return {
       appWidth,
       setAppWidth,

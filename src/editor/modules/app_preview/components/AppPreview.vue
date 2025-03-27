@@ -149,12 +149,12 @@ export default {
       height: appHeight,
       startIdleTimeTracking,
       stopIdleTimeTracking,
-    } = useModule("app_renderer");
+    } = useModule("core:app_renderer");
 
-    const { activeScenario, deleteComponent } = useModule("app_components");
+    const { activeScenario, deleteComponent } = useModule("core:app_components");
 
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
 
     return {
       store,

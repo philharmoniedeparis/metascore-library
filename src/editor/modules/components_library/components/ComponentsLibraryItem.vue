@@ -26,7 +26,7 @@ export default {
     },
   },
   setup() {
-    const { getModelByType } = useModule("app_components");
+    const { getModelByType } = useModule("core:app_components");
     return { getModelByType };
   },
   data() {

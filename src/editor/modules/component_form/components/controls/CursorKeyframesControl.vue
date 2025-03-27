@@ -96,7 +96,7 @@ export default {
   setup() {
     const store = useStore();
     const { el: appRendererEl, getComponentElement } =
-      useModule("app_renderer");
+      useModule("core:app_renderer");
     return { store, appRendererEl, getComponentElement };
   },
   data() {

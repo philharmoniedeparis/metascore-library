@@ -20,7 +20,7 @@ import AppPreviewToggler from "./components/AppPreviewToggler.vue";
 import ComponentWrapper from "./components/ComponentWrapper.vue";
 
 export default class AppPreviewModule extends AbstractModule {
-  static id = "app_preview";
+  static id = "editor:app_preview";
 
   static dependencies = [
     Button,

@@ -44,7 +44,7 @@ export default defineStore("app-renderer", {
       };
     },
     fontAssets() {
-      const { assets, getType } = useModule("assets_manager");
+      const { assets, getType } = useModule("core:assets_manager");
       return unref(assets).filter((asset) => getType(asset) === "font");
     },
   },
@@ -62,7 +62,7 @@ export default defineStore("app-renderer", {
 
       this.unloadFonts();
 
-      const { getFontName } = useModule("assets_manager");
+      const { getFontName } = useModule("core:assets_manager");
       const fonts = [];
       for (const asset of this.fontAssets) {
         const { url } = asset;
@@ -156,7 +156,7 @@ export default defineStore("app-renderer", {
     startIdleTimeTracking() {
       this.idleTimeTracking = true;
 
-      const { playing } = useModule("media_player");
+      const { playing } = useModule("core:media_player");
       const unwatch = watch(
         playing,
         (value) => {
@@ -226,13 +226,13 @@ export default defineStore("app-renderer", {
       this.idleTimeTrackStart = Date.now();
     },
     reset() {
-      const { stop: stopMedia } = useModule("media_player");
+      const { stop: stopMedia } = useModule("core:media_player");
       const {
         clearOverrides: clearComponentsOverrides,
         resetBlocksActivePage,
         getSortedScenarios,
         setActiveScenario,
-      } = useModule("app_components");
+      } = useModule("core:app_components");
 
       stopMedia();
       clearComponentsOverrides();

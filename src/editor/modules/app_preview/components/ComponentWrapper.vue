@@ -184,8 +184,8 @@ export default {
   setup() {
     const store = useStore();
     const { getData: getClipboardData, setData: setClipboardData } =
-      useModule("clipboard");
-    const { time: mediaTime } = useModule("media_player");
+      useModule("editor:clipboard");
+    const { time: mediaTime } = useModule("core:media_player");
     const {
       getModelByType,
       getModelByMime,
@@ -202,10 +202,10 @@ export default {
       getBlockActivePage,
       setBlockActivePage,
       getAnimatedValueAtTime,
-    } = useModule("app_components");
-    const { getComponentElement } = useModule("app_renderer");
+    } = useModule("core:app_components");
+    const { getComponentElement } = useModule("core:app_renderer");
     const { startGroup: startHistoryGroup, endGroup: endHistoryGroup } =
-      useModule("history");
+      useModule("editor:history");
     return {
       store,
       getClipboardData,

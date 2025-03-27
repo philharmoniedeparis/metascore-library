@@ -80,8 +80,8 @@ export default {
   },
   setup() {
     const store = useStore();
-    const { ready: appRendererReady } = useModule("app_renderer");
-    const { playing: mediaPlaying } = useModule("media_player");
+    const { ready: appRendererReady } = useModule("core:app_renderer");
+    const { playing: mediaPlaying } = useModule("core:media_player");
     return { store, appRendererReady, mediaPlaying };
   },
   data() {

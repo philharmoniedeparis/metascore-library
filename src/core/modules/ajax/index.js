@@ -2,7 +2,7 @@ import AbstractModule from "@core/services/module-manager/AbstractModule";
 import useStore from "./store";
 
 export default class AjaxModule extends AbstractModule {
-  static id = "ajax";
+  static id = "core:ajax";
 
   configure(configs) {
     useStore().configure(configs);

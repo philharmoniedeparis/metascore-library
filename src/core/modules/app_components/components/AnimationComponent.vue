@@ -32,7 +32,7 @@ export default {
     const component = toRef(props, "component");
     const model = store.getModelByType(component.value.type);
 
-    const { ready: mediaReady, time: mediaTime } = useModule("media_player");
+    const { ready: mediaReady, time: mediaTime } = useModule("core:media_player");
     return {
       mediaReady,
       mediaTime,
