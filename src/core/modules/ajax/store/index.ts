@@ -1,6 +1,13 @@
 import { merge, omit } from "lodash";
 import { defineStore } from "pinia";
 
+export interface Options extends RequestInit {
+  baseURL: string
+  responseType: string
+  data?: BodyInit | null
+  params?: {[key: string]: string}
+}
+
 export default defineStore("ajax", {
   state: () => {
     return {
@@ -8,14 +15,14 @@ export default defineStore("ajax", {
         baseURL: document.location.origin,
         credentials: "same-origin",
         responseType: "json",
-      },
+      } as Options,
     };
   },
   actions: {
-    configure(configs) {
+    configure(configs: Partial<Options>) {
       this.defaults = merge({}, this.defaults, configs);
     },
-    async decodeResponse(response, type = "json") {
+    async decodeResponse(response: Response, type = "json") {
       if (response.status === 204) return null;
 
       switch (type) {
@@ -29,19 +36,21 @@ export default defineStore("ajax", {
       }
     },
     async load(
-      url,
-      { method = "GET", params = {}, data = null, ...config } = {}
+      url: string,
+      { method = "GET", params = {}, data = null, ...config }: Partial<Options> = {}
     ) {
       const options = merge({}, this.defaults, {
         method: method.toUpperCase(),
         ...config,
       });
       const responseType = options.responseType;
-
       const _url = new URL(url, options.baseURL);
-      Object.entries(params).forEach(([key, value]) => {
-        _url.searchParams.append(key, value);
-      });
+
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          _url.searchParams.append(key, value);
+        });
+      }
 
       if (data) {
         options.body = data;
@@ -52,15 +61,11 @@ export default defineStore("ajax", {
         omit(options, ["baseURL", "data", "responseType"])
       );
 
-      if (!response.ok) {
-        let data = await this.decodeResponse(response, responseType);
-        response.data = data;
-        throw new Error(response, response.statusText);
+      if (!response?.ok) {
+        throw new Error(response.statusText);
       }
 
-      if (options.method === "HEAD") return true;
-
-      return await this.decodeResponse(response, responseType);
+      return (options.method === "HEAD") ? true : await this.decodeResponse(response, responseType);
     },
   },
 });
