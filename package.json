@@ -87,6 +87,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/json-schema": "^7.0.15",
     "@types/lodash": "^4.17.13",
+    "@types/metascore-module-manager": "file:src/core/services/module-manager/ts-plugin",
     "@types/node": "^22.10.2",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vitest/eslint-plugin": "^1.1.16",

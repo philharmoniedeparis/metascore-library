@@ -1,7 +1,7 @@
-import type AbstractModule from './AbstractModule'
 import { type Context } from './AbstractModule'
+import type { ModulesMap, ModuleId } from 'metascore-module-manager'
 
-const modules = new Map<string, AbstractModule|null>()
+const modules = new Map<ModuleId, InstanceType<ModulesMap[ModuleId]>|null>()
 
 export class ModuleNotFoundError extends Error {
   constructor(id: string) {
@@ -9,20 +9,22 @@ export class ModuleNotFoundError extends Error {
   }
 }
 
-export function registerModules(modules: (typeof AbstractModule)[], context: Context) {
-  modules.forEach((module) => {
-    registerModule(module, context)
+export function registerModules(Modules: ModulesMap[ModuleId][], context: Context) {
+  Modules.forEach((Module) => {
+    registerModule(Module, context)
   })
 }
 
-export function registerModule(Module: typeof AbstractModule, context: Context) {
-  if (modules.has(Module.id)) {
+export function registerModule(Module: ModulesMap[ModuleId], context: Context) {
+  const id = Module.id as ModuleId
+
+  if (modules.has(id)) {
     // Skip if already registerd.
     return
   }
 
   // Add to list of registered modules.
-  modules.set(Module.id, null)
+  modules.set(id, null)
 
   // Register dependencies.
   Module.dependencies.forEach((dependency) => {
@@ -31,19 +33,19 @@ export function registerModule(Module: typeof AbstractModule, context: Context) 
 
   // Install.
   const module = new Module(context)
-  modules.set(Module.id, module)
+  modules.set(id, module)
 
   if (import.meta.env.DEV) {
     console.info(`Module manager: "${Module.id}" module registerd.`)
   }
 }
 
-export function useModule(id: string) {
+export function useModule<K extends ModuleId>(id: K) {
   const module = modules.get(id)
 
   if (!module) {
     throw new ModuleNotFoundError(id)
   }
 
-  return module
+  return module as InstanceType<ModulesMap[K]>
 }
