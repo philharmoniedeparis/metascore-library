@@ -1,0 +1,14 @@
+{
+  "name": "@types/metascore-module-manager",
+  "version": "0.0.1",
+  "description": "A TypeScript plugin that auto-generates the modules registery",
+  "main": "dist/index.js",
+  "types": "types.d.ts",
+  "scripts": {
+    "postinstall": "tsc -p ./",
+    "watch": "tsc -w -p ./"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
