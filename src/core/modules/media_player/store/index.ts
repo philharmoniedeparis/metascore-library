@@ -1,45 +1,54 @@
 import { defineStore } from "pinia";
 import { formatTime } from "../utils/media";
 
-export default defineStore("media_player", {
-  state: () => {
-    return {
-      ready: false,
-      dataLoaded: false,
-      useRequestAnimationFrame: true,
-      source: null,
-      element: null,
-      time: 0,
-      duration: 0,
-      playing: false,
-      seeking: false,
-      playbackRate: 1,
-      type: null,
-      width: null,
-      height: null,
-      buffered: [],
-    };
-  },
+export interface Source {
+  id: number
+  name: string
+  mime: string
+  source: 'upload'|'url'
+  url: string
+  type: 'audio'|'video'
+  size: number
+  audiowaveform?: string
+}
+
+export default defineStore("media-player", {
+  state: () => ({
+    ready: false,
+    dataLoaded: false,
+    useRequestAnimationFrame: true,
+    source: null as Source|null,
+    element: null as HTMLAudioElement|HTMLVideoElement|null,
+    time: 0,
+    duration: 0,
+    playing: false,
+    seeking: false,
+    playbackRate: 1,
+    type: null as "audio"|"video"|null,
+    width: null as number|null,
+    height: null as number|null,
+    buffered: [] as number[][],
+  }),
   getters: {
-    formattedTime() {
-      return formatTime(this.time);
+    formattedTime(state): string {
+      return formatTime(state.time);
     },
   },
   actions: {
-    initElement(element) {
+    initElement(element: HTMLMediaElement|null) {
       this.element = element;
 
       if (element) {
         this.type =
-          element instanceof element.ownerDocument.defaultView.HTMLVideoElement
+          element instanceof element.ownerDocument.defaultView!.HTMLVideoElement
             ? "video"
             : "audio";
 
         element.addEventListener("loadedmetadata", (evt) => {
           this.ready = true;
-          this.width = this.type === "video" ? element.videoWidth : null;
-          this.height = this.type === "video" ? element.videoHeight : null;
-          this.duration = evt.target.duration;
+          this.width = this.type === "video" ? (element as HTMLVideoElement).videoWidth : null;
+          this.height = this.type === "video" ? (element as HTMLVideoElement).videoHeight : null;
+          this.duration = (evt.target as HTMLMediaElement).duration;
         });
         element.addEventListener("loadeddata", () => {
           this.dataLoaded = true;
@@ -58,14 +67,14 @@ export default defineStore("media_player", {
         });
         element.addEventListener("timeupdate", (evt) => {
           if (!this.useRequestAnimationFrame) {
-            this.time = evt.target.currentTime;
+            this.time = (evt.target as HTMLMediaElement).currentTime;
           }
         });
         element.addEventListener("seeking", () => {
           this.seeking = true;
         });
         element.addEventListener("ratechange", (evt) => {
-          this.playbackRate = evt.target.playbackRate;
+          this.playbackRate = (evt.target as HTMLMediaElement).playbackRate;
         });
         element.addEventListener("seeked", () => {
           this.seeking = false;
@@ -75,10 +84,11 @@ export default defineStore("media_player", {
         });
         element.addEventListener("progress", (evt) => {
           const buffered = [];
+          const target = (evt.target as HTMLMediaElement)
 
-          for (let i = 0; i < evt.target.buffered.length; i++) {
-            const start_x = evt.target.buffered.start(i);
-            const end_x = evt.target.buffered.end(i);
+          for (let i = 0; i < target.buffered.length; i++) {
+            const start_x = target.buffered.start(i);
+            const end_x = target.buffered.end(i);
 
             buffered.push([start_x, end_x]);
           }
@@ -91,7 +101,7 @@ export default defineStore("media_player", {
         this.height = null;
       }
     },
-    setSource(source) {
+    setSource(source: Source|null) {
       this.ready = false;
       this.source = source;
       this.time = 0;
@@ -116,17 +126,18 @@ export default defineStore("media_player", {
       }
     },
     pause() {
-      if (this.element) {
-        this.element.pause();
-      }
+      if (!this.element) return;
+      this.element.pause();
     },
     stop() {
-      if (this.element) {
-        this.pause();
-        this.seekTo(0);
-      }
+      if (!this.element) return;
+
+      this.pause();
+      this.seekTo(0);
     },
-    seekTo(time) {
+    seekTo(time: number) {
+      if (!this.element) return;
+
       // Set the "seeking" flag to true,
       // as the "seeking" event is sometimes triggered too late.
       this.seeking = true;
@@ -134,10 +145,13 @@ export default defineStore("media_player", {
       // Force a time update in case media not playing.
       this.updateTime();
     },
-    setPlaybackRate(rate) {
+    setPlaybackRate(rate: number) {
+      if (!this.element) return;
       this.element.playbackRate = rate;
     },
     updateTime(repeat = false) {
+      if (!this.element) return;
+
       this.time = this.element.currentTime;
 
       if (this.useRequestAnimationFrame && repeat && this.playing) {
@@ -157,16 +171,16 @@ export default defineStore("media_player", {
     switch (name) {
       case "setSource":
         {
-          const key = name.slice(3, 4).toLowerCase() + name.slice(4);
+          const key = "source";
           const oldValue = this[key];
           after(() => {
             const newValue = this[key];
             push({
               undo: () => {
-                this[name](oldValue);
+                this.setSource(oldValue);
               },
               redo: () => {
-                this[name](newValue);
+                this.setSource(newValue);
               },
             });
           });
