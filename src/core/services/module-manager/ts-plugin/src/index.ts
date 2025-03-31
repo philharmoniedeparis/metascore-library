@@ -27,7 +27,7 @@ function updateRegistry(typescript: typeof ts, info: ts.server.PluginCreateInfo)
                 if (typescript.isPropertyDeclaration(class_child) && typescript.getNameOfDeclaration(class_child)?.getText(sourceFile) === "id") {
                   return class_child.forEachChild((property_child) => {
                     if (typescript.isStringLiteral(property_child)) {
-                      return property_child.getText(sourceFile);
+                      return property_child.text;
                     }
                   });
                 }
@@ -45,10 +45,10 @@ function updateRegistry(typescript: typeof ts, info: ts.server.PluginCreateInfo)
 
   let imports = "";
   let map = "export type ModulesMap = {\n";
-  modules.forEach((module, id) => {
+  new Map([...modules.entries()].sort()).forEach((module, id) => {
     const module_path = path.relative(path.dirname(REGISTRY_FILE_PATH), module.path);
     imports += `import type ${module.name} from "${module_path}";\n`;
-    map += `  ${id}: typeof ${module.name}\n`;
+    map += `  "${id}": typeof ${module.name}\n`;
   });
   map += "}\n\n";
   map += "export type ModuleId = keyof ModulesMap;\n"
