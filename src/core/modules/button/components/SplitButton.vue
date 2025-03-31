@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { v4 as uuid } from "uuid";
 import ExpanderIcon from "../assets/icons/expander.svg?component";
 
@@ -69,7 +69,7 @@ export default {
     onClick() {
       this.expanded = false;
     },
-    onDocumentMousedown(evt) {
+    onDocumentMousedown(evt: MouseEvent) {
       if (!this.$el.contains(evt.target)) {
         this.expanded = false;
       }
