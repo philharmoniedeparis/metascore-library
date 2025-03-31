@@ -12,6 +12,7 @@ function updateRegistry(typescript: typeof ts, info: ts.server.PluginCreateInfo)
 
   for (const sourceFile of program.getSourceFiles()) {
     if (!sourceFile.fileName.endsWith(".ts")) continue;
+    if (sourceFile.fileName.includes("/__mocks__/")) continue;
 
     typescript.forEachChild(sourceFile, (node) => {
       // Check if this is a class declaration.
