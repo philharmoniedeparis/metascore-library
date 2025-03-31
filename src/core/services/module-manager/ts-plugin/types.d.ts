@@ -2,10 +2,12 @@
 
 import type AjaxModule from "../../../modules/ajax/index.ts";
 import type AlertModule from "../../../modules/alert/index.ts";
+import type ProgressIndicatorModule from "../../../modules/progress_indicator/index.ts";
 
 export type ModulesMap = {
   'core:ajax': typeof AjaxModule
   "core:alert": typeof AlertModule
+  "core:progress_indicator": typeof ProgressIndicatorModule
 }
 
 export type ModuleId = keyof ModulesMap;
