@@ -2,6 +2,7 @@
 
 import type AjaxModule from "../../../modules/ajax/index.ts";
 import type AlertModule from "../../../modules/alert/index.ts";
+import type AssetsManagerModule from "../../../modules/assets_manager/index.ts";
 import type AutoFocusModule from "../../../modules/auto_focus/index.ts";
 import type BaseButtonModule from "../../../modules/button/index.ts";
 import type ConfirmModule from "../../../modules/confirm/index.ts";
@@ -13,6 +14,7 @@ import type ProgressIndicatorModule from "../../../modules/progress_indicator/in
 export type ModulesMap = {
   "core:ajax": typeof AjaxModule
   "core:alert": typeof AlertModule
+  "core:assets_manager": typeof AssetsManagerModule
   "core:auto_focus": typeof AutoFocusModule
   "core:base_button": typeof BaseButtonModule
   "core:confirm": typeof ConfirmModule
