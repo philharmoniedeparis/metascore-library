@@ -2,11 +2,13 @@
 
 import type AjaxModule from "../../../modules/ajax/index.ts";
 import type AlertModule from "../../../modules/alert/index.ts";
+import type BaseButtonModule from "../../../modules/button/index.ts";
 import type ProgressIndicatorModule from "../../../modules/progress_indicator/index.ts";
 
 export type ModulesMap = {
   'core:ajax': typeof AjaxModule
   "core:alert": typeof AlertModule
+  "core:base_button": typeof BaseButtonModule
   "core:progress_indicator": typeof ProgressIndicatorModule
 }
 
