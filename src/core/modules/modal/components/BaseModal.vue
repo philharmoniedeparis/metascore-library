@@ -49,7 +49,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import CloseIcon from "../assets/icons/close.svg?component";
 
 export default {
