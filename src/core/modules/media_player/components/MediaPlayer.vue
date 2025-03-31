@@ -9,7 +9,7 @@
   />
 </template>
 
-<script>
+<script lang="ts">
 import { markRaw } from "vue";
 import { getRendererForMime } from "../utils/media";
 import useStore from "../store";

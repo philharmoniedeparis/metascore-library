@@ -4,38 +4,34 @@ import AbstractModule from "@core/services/module-manager/AbstractModule";
 export default class MediaPlayerModule extends AbstractModule {
   static id = "core:media_player";
 
-  constructor() {
-    super();
-
-    this._state = reactive({
-      ready: true,
-      duration: 100,
-      time: 0,
-      seeking: false,
-    });
-  }
+  #state = reactive({
+    ready: true,
+    duration: 100,
+    time: 0,
+    seeking: false,
+  });
 
   get ready() {
-    const { ready } = toRefs(this._state);
+    const { ready } = toRefs(this.#state);
     return readonly(ready);
   }
 
   get duration() {
-    const { duration } = toRefs(this._state);
+    const { duration } = toRefs(this.#state);
     return readonly(duration);
   }
 
   get time() {
-    const { time } = toRefs(this._state);
+    const { time } = toRefs(this.#state);
     return readonly(time);
   }
 
   get seeking() {
-    const { seeking } = toRefs(this._state);
+    const { seeking } = toRefs(this.#state);
     return readonly(seeking);
   }
 
-  seekTo(value) {
-    this._state.time = value;
+  seekTo(value: number) {
+    this.#state.time = value;
   }
 }

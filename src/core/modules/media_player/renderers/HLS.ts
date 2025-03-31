@@ -1,3 +1,4 @@
+import type Hls from "hls.js";
 import NativeRenderer from "./Native";
 
 const SUPPORTED_TYPES = [
@@ -20,26 +21,26 @@ export class UnsupportedError extends Error {
 }
 
 export default class HLS extends NativeRenderer {
+
+  #hls?:Hls
+
   /**
    * Check whether the renderer supports a given mime type
-   *
-   * @param {String} mime The mime type
-   * @return {Boolean} Whether the renderer supports the given mime type
    */
-  static canPlayType(mime) {
+  static canPlayType(mime: string) {
     return SUPPORTED_TYPES.includes(mime.toLowerCase());
   }
 
-  async mount(url, el) {
+  async mount(url: string, el: HTMLMediaElement) {
     const { default: Hls } = await import("hls.js");
 
     if (!Hls.isSupported()) {
       throw new UnsupportedError();
     }
 
-    this._hls = new Hls();
+    this.#hls = new Hls();
 
-    this._hls.on(Hls.Events.ERROR, (type, evt) => {
+    this.#hls.on(Hls.Events.ERROR, (type, evt) => {
       console.error(evt);
 
       if (evt.fatal) {
@@ -50,14 +51,14 @@ export default class HLS extends NativeRenderer {
       }
     });
 
-    this._hls.loadSource(url);
-    this._hls.attachMedia(el);
+    this.#hls.loadSource(url);
+    this.#hls.attachMedia(el);
   }
 
   unmount() {
-    if (this._hls) {
-      this._hls.detachMedia();
-      this._hls = null;
+    if (this.#hls) {
+      this.#hls.detachMedia();
+      this.#hls = void 0
     }
   }
 }
