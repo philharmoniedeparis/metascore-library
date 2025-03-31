@@ -1,19 +1,19 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./node_modules"
+  ],
   "compilerOptions": {
-    "lib": ["es2021"],
-    "target": "es2021",
-    "moduleResolution": "node",
-    "module": "CommonJS",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "outDir": "dist",
     "rootDir": "src",
-    "esModuleInterop": true,
-    "strict": true,
-    "declaration": true,
-    "sourceMap": true,
-    "composite": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["./src/**/*"],
-  "exclude": ["./node_modules"]
+    "declaration": false,
+    "types": [
+      "node"
+    ]
+  }
 }
