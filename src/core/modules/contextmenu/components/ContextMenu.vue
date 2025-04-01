@@ -27,7 +27,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { type PropType, type CSSProperties } from "vue"
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import useStore from "../store";
 import ContextMenuItem from "./ContextMenuItem.vue";
@@ -42,7 +43,7 @@ export default {
       default: false,
     },
     position: {
-      type: Object,
+      type: Object as PropType<{x: number, y: number}>,
       required: true,
     },
   },
@@ -53,7 +54,7 @@ export default {
   },
   data() {
     return {
-      style: null,
+      style: {} as CSSProperties,
     };
   },
   computed: {
@@ -106,7 +107,7 @@ export default {
     onBlur() {
       this.close();
     },
-    onKeyup(evt) {
+    onKeyup(evt: KeyboardEvent) {
       if (evt.key === "Escape") {
         this.close();
       }

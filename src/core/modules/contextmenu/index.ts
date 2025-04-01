@@ -1,5 +1,5 @@
-import AbstractModule from "@core/services/module-manager/AbstractModule";
-import useStore from "./store";
+import AbstractModule, { type Context } from "@core/services/module-manager/AbstractModule";
+import useStore, { type Item } from "./store";
 import BaseButton from "../button";
 import directive from "./directives/contexmenu";
 import ContextMenu from "./components/ContextMenu.vue";
@@ -8,20 +8,21 @@ export default class ContextMenuModule extends AbstractModule {
   static id = "core:contextmenu";
 
   static dependencies = [BaseButton];
+  
+  constructor(context: Context) {
+    super(context);
 
-  constructor({ app }) {
-    super(arguments);
-
+    const { app } = context;
     app.directive("contextmenu", directive);
     app.component("ContextMenu", ContextMenu);
   }
 
-  addItem(item) {
+  addItem(item: Item) {
     const store = useStore();
     store.addItem(item);
   }
 
-  addItems(items) {
+  addItems(items: Item[]) {
     const store = useStore();
     store.addItems(items);
   }

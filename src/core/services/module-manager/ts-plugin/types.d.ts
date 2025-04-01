@@ -6,6 +6,7 @@ import type AssetsManagerModule from "../../../modules/assets_manager/index.ts";
 import type AutoFocusModule from "../../../modules/auto_focus/index.ts";
 import type BaseButtonModule from "../../../modules/button/index.ts";
 import type ConfirmModule from "../../../modules/confirm/index.ts";
+import type ContextMenuModule from "../../../modules/contextmenu/index.ts";
 import type MediaCuepointsModule from "../../../modules/media_cuepoints/index.ts";
 import type MediaPlayerModule from "../../../modules/media_player/index.ts";
 import type ModalModule from "../../../modules/modal/index.ts";
@@ -18,6 +19,7 @@ export type ModulesMap = {
   "core:auto_focus": typeof AutoFocusModule
   "core:base_button": typeof BaseButtonModule
   "core:confirm": typeof ConfirmModule
+  "core:contextmenu": typeof ContextMenuModule
   "core:media_cuepoints": typeof MediaCuepointsModule
   "core:media_player": typeof MediaPlayerModule
   "core:modal": typeof ModalModule
