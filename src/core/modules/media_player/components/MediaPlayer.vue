@@ -10,9 +10,10 @@
 </template>
 
 <script lang="ts">
-import { markRaw } from "vue";
+import { markRaw, type PropType, type Raw } from "vue";
 import { getRendererForMime } from "../utils/media";
-import useStore from "../store";
+import useStore, { type Source } from "../store";
+import type { Native as MediaRenderer } from "../renderers";
 
 export default {
   name: "MediaPlayer",
@@ -21,10 +22,7 @@ export default {
      * The media type; audio|video
      */
     type: {
-      type: String,
-      validator(value) {
-        return ["audio", "video"].includes(value);
-      },
+      type: String as PropType<"audio"|"video">,
       default: "audio",
     },
 
@@ -32,7 +30,7 @@ export default {
      * The media source
      */
     source: {
-      type: Object,
+      type: Object as PropType<Source>,
       required: true,
     },
 
@@ -64,10 +62,7 @@ export default {
      * Indicate what data should be preloaded
      */
     preload: {
-      type: String,
-      validator(value) {
-        return ["none", "metadata", "auto"].includes(value);
-      },
+      type: String as PropType<"none"|"metadata"|"auto"|null>,
       default: null,
     },
   },
@@ -77,19 +72,17 @@ export default {
   },
   data() {
     return {
-      playing: false,
-      renderer: null,
-      hls: null,
+      renderer: null as Raw<MediaRenderer>|null,
     };
   },
   watch: {
-    source() {
-      this.setupRenderer();
+    async source() {
+      await this.setupRenderer();
     },
   },
-  mounted() {
-    this.store.initElement(this.$refs.media);
-    this.setupRenderer();
+  async mounted() {
+    this.store.initElement(this.$refs.media as HTMLMediaElement);
+    await this.setupRenderer();
   },
   beforeUnmount() {
     this.store.initElement(null);

@@ -25,7 +25,9 @@
   </li>
 </template>
 
-<script>
+<script lang="ts">
+import { type PropType, type CSSProperties } from "vue"
+import { type Item } from "../store"
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 
@@ -35,7 +37,7 @@ export default {
   },
   props: {
     item: {
-      type: Object,
+      type: Object as PropType<Item>,
       required: true,
     },
   },
@@ -43,7 +45,7 @@ export default {
   data() {
     return {
       hover: false,
-      submenuStyle: null,
+      submenuStyle: {} as CSSProperties,
     };
   },
   watch: {
@@ -57,7 +59,7 @@ export default {
   },
   methods: {
     updateSubmenuPosition() {
-      computePosition(this.$el, this.$refs.submenu, {
+      computePosition(this.$el, this.$refs.submenu as HTMLUListElement, {
         placement: "right-start",
         middleware: [offset(-20), flip(), shift()],
       }).then(({ x, y }) => {
