@@ -4,6 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import svgLoader from 'vite-svg-loader'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import vueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import generateTypesPlugin from './vite/plugins/generate-types'
 import { type UserConfig } from 'vite'
 
 type ENTRY = 'metaScore.Player' | 'metaScore.API' | 'metaScore.Editor'
@@ -26,6 +27,7 @@ const config:UserConfig = {
       compositionOnly: false,
     }),
     vueDevTools(),
+    generateTypesPlugin(),
   ],
   define: {
     PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
