@@ -39,6 +39,13 @@ export default [
           caughtErrors: 'all',
         },
       ],
+      'vue/no-unused-properties': [
+        'error',
+        {
+          groups: [ 'props', 'data', 'computed', 'methods' ],
+          ignorePublicMembers: true
+        }
+      ]
     },
   },
 ]
