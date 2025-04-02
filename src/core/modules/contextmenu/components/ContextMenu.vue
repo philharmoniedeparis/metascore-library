@@ -78,6 +78,7 @@ export default defineComponent ({
     close() {
       this.$emit("update:show", false);
     },
+    // eslint-disable-next-line vue/no-unused-properties
     getBoundingClientRect() {
       return {
         width: 0,
