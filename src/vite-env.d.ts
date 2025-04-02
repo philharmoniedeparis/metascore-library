@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-svg-loader" />
 
+import '../.types/generated.d.ts'
+
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }

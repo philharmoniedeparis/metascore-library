@@ -1,5 +1,9 @@
 import { type Context } from './AbstractModule'
-import type { ModulesMap, ModuleId } from 'metascore-module-manager'
+
+// The modules map is augmented by the generate-types vite plugin.
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ModulesMap {};
+export type ModuleId = keyof ModulesMap;
 
 const modules = new Map<ModuleId, InstanceType<ModulesMap[ModuleId]>|null>()
 
