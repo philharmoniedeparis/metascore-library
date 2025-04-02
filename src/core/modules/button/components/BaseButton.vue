@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts">
-import { type PropType } from "vue"
+import { defineComponent, type PropType } from "vue"
 
-export default {
+export default defineComponent ({
   props: {
     type: {
       type: String as PropType<"button"|"reset"|"submit">,
@@ -39,7 +39,7 @@ export default {
       default: false,
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

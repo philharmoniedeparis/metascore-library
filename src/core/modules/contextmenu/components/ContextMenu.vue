@@ -28,12 +28,12 @@
 </template>
 
 <script lang="ts">
-import { type PropType, type CSSProperties } from "vue"
+import { defineComponent, type PropType, type CSSProperties } from "vue"
 import { computePosition, flip, shift } from "@floating-ui/dom";
 import useStore from "../store";
 import ContextMenuItem from "./ContextMenuItem.vue";
 
-export default {
+export default defineComponent ({
   components: {
     ContextMenuItem,
   },
@@ -113,7 +113,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

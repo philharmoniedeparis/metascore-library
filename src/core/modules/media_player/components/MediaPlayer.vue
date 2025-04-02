@@ -10,13 +10,12 @@
 </template>
 
 <script lang="ts">
-import { markRaw, type PropType, type Raw } from "vue";
+import { defineComponent, markRaw, type PropType, type Raw } from "vue";
 import { getRendererForMime } from "../utils/media";
 import useStore, { type Source } from "../store";
 import type { Native as MediaRenderer } from "../renderers";
 
-export default {
-  name: "MediaPlayer",
+export default defineComponent ({
   props: {
     /**
      * The media type; audio|video
@@ -106,5 +105,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

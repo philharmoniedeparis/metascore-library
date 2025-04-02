@@ -26,12 +26,12 @@
 </template>
 
 <script lang="ts">
-import { type PropType, type CSSProperties } from "vue"
+import { defineComponent, type PropType, type CSSProperties } from "vue"
 import { type Item } from "../store"
 import { buildVueDompurifyHTMLDirective } from "vue-dompurify-html";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 
-export default {
+export default defineComponent ({
   directives: {
     dompurifyHtml: buildVueDompurifyHTMLDirective(),
   },
@@ -89,7 +89,7 @@ export default {
       this.$emit("click");
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

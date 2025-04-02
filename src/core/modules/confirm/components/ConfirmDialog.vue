@@ -31,7 +31,9 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent ({
   props: {
     show: {
       type: Boolean,
@@ -59,7 +61,7 @@ export default {
       return this.cancelLabel ?? this.$t("cancel_button");
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
