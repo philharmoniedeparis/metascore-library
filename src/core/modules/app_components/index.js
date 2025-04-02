@@ -6,7 +6,7 @@ import useStore from "./store";
 import * as IconManager from "./utils/icons";
 
 import MediaPlayer from "../media_player";
-import MediaCuepoints from "@core/modules/media_cuepoints";
+import MediaCuepoints from "../media_cuepoints";
 
 import { getAnimatedValueAtTime } from "./utils/animation";
 
