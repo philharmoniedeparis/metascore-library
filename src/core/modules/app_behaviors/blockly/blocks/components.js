@@ -1,4 +1,4 @@
-import { ref, unref, watchEffect } from "vue";
+import { computed, unref } from "vue";
 import { defineBlocksWithJsonArray, Extensions, Msg, Css } from "blockly/core";
 import FieldDropdown from "../core/field_dropdown";
 import { useModule } from "@core/services/module-manager";
@@ -159,10 +159,9 @@ const COMPONENTS_COMPONENT_MUTATOR_MIXIN = {
 let componentOptions = null;
 const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
   if (!componentOptions) {
-    componentOptions = ref([]);
-    watchEffect(() => {
-      const { getComponentsByType } = useModule("core:app_components");
-      componentOptions.value = getComponentOptions(
+    const { getComponentsByType } = useModule("core:app_components");
+    componentOptions = computed(() => {
+      return getComponentOptions(
         getComponentsByType("Scenario"),
         true
       );
@@ -392,9 +391,8 @@ Extensions.registerMutator(
 let triggerOptions = null;
 Extensions.register("behavior_triggers_options", function () {
   if (!triggerOptions) {
-    triggerOptions = ref([]);
-    watchEffect(() => {
-      const { getComponentsByType } = useModule("core:app_components");
+    const { getComponentsByType } = useModule("core:app_components");
+    triggerOptions = computed(() => {
       const components = getComponentsByType("Content");
       const parser = new DOMParser();
       const ids = new Set();
@@ -411,7 +409,7 @@ Extensions.register("behavior_triggers_options", function () {
         }
       });
 
-      triggerOptions.value = Array.from(ids)
+      return Array.from(ids)
         .sort()
         .map((id) => [id, id]);
     });
