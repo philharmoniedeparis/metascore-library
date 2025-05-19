@@ -34,6 +34,16 @@ Generator.forBlock["media_play"] = function () {
   return code;
 };
 
+Generator.forBlock["media_pause"] = function () {
+  const code = "Media.pause();\n";
+  return code;
+};
+
+Generator.forBlock["media_stop"] = function () {
+  const code = "Media.stop();\n";
+  return code;
+};
+
 Generator.forBlock["media_play_excerpt"] = function (block) {
   const from = Generator.valueToCode(block, "FROM", Order.ASSIGNMENT);
   const to = Generator.valueToCode(block, "TO", Order.ASSIGNMENT);
@@ -52,12 +62,7 @@ Generator.forBlock["media_play_excerpt"] = function (block) {
   return `Media.play(${from}, ${to});`;
 };
 
-Generator.forBlock["media_pause"] = function () {
-  const code = "Media.pause();\n";
-  return code;
-};
-
-Generator.forBlock["media_stop"] = function () {
-  const code = "Media.stop();\n";
+Generator.forBlock["media_exit_excerpt"] = function () {
+  const code = "Media.exitExcerpt();\n";
   return code;
 };

@@ -73,6 +73,13 @@ export default class Media extends AbstractInterpreter {
 
           play();
         },
+        exitExcerpt: () => {
+          const { getGlobalCuepoint, removeCuepoint } =
+            useModule("core:media_cuepoints");
+
+          const cuepoint = getGlobalCuepoint();
+          if (cuepoint) removeCuepoint(cuepoint);
+        },
         pause: () => {
           const { pause } = useModule("core:media_player");
           pause();

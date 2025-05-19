@@ -94,6 +94,16 @@ export function getBlocks() {
     },
     {
       kind: "block",
+      type: "media_pause",
+      gap: 5,
+    },
+    {
+      kind: "block",
+      type: "media_stop",
+      gap: 5,
+    },
+    {
+      kind: "block",
       type: "media_play_excerpt",
       inputs: {
         FROM: { block: { type: "media_timecode" } },
@@ -103,12 +113,7 @@ export function getBlocks() {
     },
     {
       kind: "block",
-      type: "media_pause",
-      gap: 5,
-    },
-    {
-      kind: "block",
-      type: "media_stop",
+      type: "media_exit_excerpt",
       gap: 5,
     },
     {

@@ -138,6 +138,14 @@ Msg.MEDIA_PLAY = "lancer la lecture";
 Msg.MEDIA_PLAY_TOOLTIP = "";
 Msg.MEDIA_PLAY_HELPURL = "";
 
+Msg.MEDIA_PAUSE = "suspendre la lecture";
+Msg.MEDIA_PAUSE_TOOLTIP = "";
+Msg.MEDIA_PAUSE_HELPURL = "";
+
+Msg.MEDIA_STOP = "arrêter la lecture";
+Msg.MEDIA_STOP_TOOLTIP = "";
+Msg.MEDIA_STOP_HELPURL = "";
+
 Msg.MEDIA_PLAY_EXCERPT = "%1 lire l’extrait de %2 à %3 %4";
 Msg.MEDIA_PLAY_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_HELPURL = "";
@@ -150,13 +158,9 @@ Msg.MEDIA_PLAY_EXCERPT_THEN = "puis faire";
 Msg.MEDIA_PLAY_EXCERPT_THEN_TOOLTIP = "";
 Msg.MEDIA_PLAY_EXCERPT_THEN_HELPURL = "";
 
-Msg.MEDIA_PAUSE = "suspendre la lecture";
-Msg.MEDIA_PAUSE_TOOLTIP = "";
-Msg.MEDIA_PAUSE_HELPURL = "";
-
-Msg.MEDIA_STOP = "arrêter la lecture";
-Msg.MEDIA_STOP_TOOLTIP = "";
-Msg.MEDIA_STOP_HELPURL = "";
+Msg.MEDIA_EXIT_EXCERPT = "sortir de l'extrait en cours";
+Msg.MEDIA_EXIT_EXCERPT_TOOLTIP = "";
+Msg.MEDIA_EXIT_EXCERPT_HELPURL = "";
 
 Msg.REACTIVITY_WHEN = " %1 lorsque %2";
 Msg.REACTIVITY_WHEN_THEN = "faire %1";
