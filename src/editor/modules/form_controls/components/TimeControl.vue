@@ -30,7 +30,6 @@
       @focusin="onInputFocus"
       @focusout="onInputBlur"
     >
-      <!-- eslint-disable vue/no-deprecated-html-element-is -->
       <timecode-input
         :id="inputId"
         v-model="value"
@@ -42,7 +41,6 @@
         :max="max"
         @change="onInputChange"
       ></timecode-input>
-      <!-- eslint-enable vue/no-deprecated-html-element-is -->
       <div
         v-if="!disabled && (inButton || outButton || clearButton)"
         class="buttons"
