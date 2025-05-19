@@ -20,7 +20,13 @@ const umd = process.env.BUILD_MODE === "umd" && entry
 
 const config:UserConfig = {
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => ['timecode-input'].includes(tag)
+        }
+      }
+    }),
     svgLoader(),
     vueI18nPlugin({
       strictMessage: false,
