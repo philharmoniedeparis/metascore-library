@@ -1,12 +1,7 @@
 import { EmbeddableComponent } from ".";
-
 import { merge } from "lodash";
 
 export default class Controller extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc

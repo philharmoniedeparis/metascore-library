@@ -3,10 +3,6 @@ import { EmbeddableComponent } from ".";
 import { createEnumField, createUrlField } from "@core/utils/schema";
 
 export default class Media extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -17,8 +13,6 @@ export default class Media extends EmbeddableComponent {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         tag: createEnumField({
@@ -27,7 +21,7 @@ export default class Media extends EmbeddableComponent {
           default: "audio",
         }),
         src: createUrlField({
-          ajv,
+          ajv: this.ajv,
           title: "Source",
         }),
       },

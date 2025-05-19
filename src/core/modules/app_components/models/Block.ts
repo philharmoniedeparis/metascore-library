@@ -2,12 +2,9 @@ import { merge } from "lodash";
 import { EmbeddableComponent, Page } from ".";
 import { createBooleanField, createEnumField } from "@core/utils/schema";
 import { createCollectionField } from "../utils/schema";
+import type { AnySchemaObject } from "ajv";
 
 export default class Block extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -22,9 +19,7 @@ export default class Block extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  static get schema() {
-    const ajv = this.ajv;
-
+  static get schema(): AnySchemaObject {
     return merge(super.schema, {
       properties: {
         "background-color": {
@@ -51,8 +46,8 @@ export default class Block extends EmbeddableComponent {
           default: "auto",
         }),
         [this.childrenProperty]: createCollectionField({
-          ajv,
-          model: Page,
+          ajv: this.ajv,
+          models: [Page],
         }),
       },
     });

@@ -10,11 +10,12 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { isFunction } from "lodash";
 import { SVG_PROPERTIES, SVG_ELEMENTS } from "../models/SVG";
 
-export default {
+export default defineComponent({
   props: {
     /**
      * The associated component
@@ -147,7 +148,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

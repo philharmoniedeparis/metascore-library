@@ -1,21 +1,24 @@
 import { v4 as uuid } from "uuid";
+import type { Ajv } from "ajv";
 import {
   createStringField,
   createArrayField,
   createIntegerField,
   createBooleanField,
   createTimeField,
+  AjvRequiredError,
 } from "@core/utils/schema";
+import type { JSONSchema7Definition } from "json-schema";
+import type { AbstractComponent } from "../models";
 
 export function createCollectionField({
-  ajv,
+  ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  model = [],
+  models = [] as typeof AbstractComponent[],
 } = {}) {
+  if (!ajv) throw new AjvRequiredError();
   ajv.addFormat("collection", { validate: () => true });
-
-  const types = Array.isArray(model) ? model.map((m) => m.type) : [model.type];
 
   return {
     ...createArrayField({
@@ -25,7 +28,7 @@ export function createCollectionField({
         type: "object",
         properties: {
           id: { type: "string" },
-          type: { enum: types },
+          type: { enum: models.map((m) => m.type) },
         },
       },
       uniqueItems: true,
@@ -35,12 +38,13 @@ export function createCollectionField({
 }
 
 export function createHtmlField({
-  ajv,
+  ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = null,
+  default: default_value = void 0 as string|undefined,
   nullable = true,
 } = {}) {
+  if (!ajv) throw new AjvRequiredError();
   ajv.addFormat("html", { validate: () => true });
   return {
     ...createStringField({
@@ -54,12 +58,13 @@ export function createHtmlField({
 }
 
 export function createAngleField({
-  ajv,
+  ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
   default: default_value = 0,
   nullable = true,
 } = {}) {
+  if (!ajv) throw new AjvRequiredError();
   ajv.addFormat("angle", { validate: () => true });
   return {
     ...createIntegerField({
@@ -75,12 +80,13 @@ export function createAngleField({
 }
 
 export function createBorderRadiusField({
-  ajv,
+  ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = 0,
+  default: default_value = 0 as string|number|null|undefined,
   nullable = false,
 } = {}) {
+  if (!ajv) throw new AjvRequiredError();
   ajv.addFormat("border-radius", { validate: () => true });
   return {
     type: nullable ? ["string", "integer", "null"] : ["string", "integer"],
@@ -92,13 +98,14 @@ export function createBorderRadiusField({
 }
 
 export function createAnimatedField({
-  ajv,
+  ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = { animated: false, value: null },
+  default: default_value = { animated: false, value: null } as { animated: boolean, value: unknown },
   nullable = false,
-  items,
+  items = [] as JSONSchema7Definition,
 } = {}) {
+  if (!ajv) throw new AjvRequiredError();
   ajv.addFormat("animated", { validate: () => true });
   return {
     type: nullable ? ["object", "null"] : ["object"],

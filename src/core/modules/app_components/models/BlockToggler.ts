@@ -3,10 +3,6 @@ import { EmbeddableComponent } from ".";
 import { createArrayField } from "@core/utils/schema";
 
 export default class BlockToggler extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc

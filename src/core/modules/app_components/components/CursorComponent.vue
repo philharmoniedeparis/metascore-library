@@ -8,15 +8,15 @@
   </component-wrapper>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { toRef, defineComponent } from "vue";
 import useStore from "../store";
 import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
 import "../../../polyfills/GeomertyUtils";
 import { map, radians } from "@core/utils/math";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -428,7 +428,7 @@ export default {
       return map(pos, startPosition, endPosition, startTime, endTime);
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

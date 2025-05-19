@@ -2,6 +2,7 @@
 
 import type AjaxModule from "../src/core/modules/ajax/index.ts";
 import type AlertModule from "../src/core/modules/alert/index.ts";
+import type AppComponentsModule from "../src/core/modules/app_components/index.ts";
 import type AssetsManagerModule from "../src/core/modules/assets_manager/index.ts";
 import type AutoFocusModule from "../src/core/modules/auto_focus/index.ts";
 import type BaseButtonModule from "../src/core/modules/button/index.ts";
@@ -16,6 +17,7 @@ declare module '../src/core/services/module-manager' {
   export interface ModulesMap {
     "core:ajax": typeof AjaxModule
     "core:alert": typeof AlertModule
+    "core:app_components": typeof AppComponentsModule
     "core:assets_manager": typeof AssetsManagerModule
     "core:auto_focus": typeof AutoFocusModule
     "core:base_button": typeof BaseButtonModule

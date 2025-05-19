@@ -44,14 +44,15 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { useModule } from "@core/services/module-manager";
 import RewindIcon from "../assets/icons/controller/rewind.svg?component";
 import PlayIcon from "../assets/icons/controller/play.svg?component";
 import PauseIcon from "../assets/icons/controller/pause.svg?component";
 import LogoIcon from "../assets/icons/logo-metascore.svg?component";
 
-export default {
+export default defineComponent ({
   components: {
     RewindIcon,
     PlayIcon,
@@ -94,7 +95,7 @@ export default {
       this.pauseMedia();
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

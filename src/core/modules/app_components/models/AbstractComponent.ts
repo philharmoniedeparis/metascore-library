@@ -1,15 +1,15 @@
 import { merge, kebabCase } from "lodash";
 import { computed, unref } from "vue";
 import { v4 as uuid } from "uuid";
-import AbstractModel from "@core/models/AbstractModel";
+import AbstractModel, { type Data } from "@core/models/AbstractModel";
 import { createStringField, createBooleanField } from "@core/utils/schema";
 import useStore from "../store";
+import type { AnySchemaObject } from "ajv";
 
+/**
+ * @abstract
+ */
 export default class AbstractComponent extends AbstractModel {
-  /**
-   * The model's base class
-   */
-  static baseModel = AbstractModel;
 
   /**
    * The component's type
@@ -26,7 +26,7 @@ export default class AbstractComponent extends AbstractModel {
   /**
    * The component's children property
    */
-  static childrenProperty = null;
+  static childrenProperty = null as string|null;
 
   /**
    * The component's mime type.
@@ -42,10 +42,12 @@ export default class AbstractComponent extends AbstractModel {
    * @returns {Class[]} The list of Model classes in the inheritance chain
    */
   static get modelChain() {
-    let classes = [this];
+    const classes = [this];
 
-    if (this.baseModel?.modelChain) {
-      classes = classes.concat(this.baseModel.modelChain);
+    let baseModel = Object.getPrototypeOf(this);
+    while (baseModel && baseModel !== AbstractModel) {
+      classes.push(baseModel);
+      baseModel = Object.getPrototypeOf(baseModel);
     }
 
     return classes;
@@ -54,7 +56,7 @@ export default class AbstractComponent extends AbstractModel {
   /**
    * @inheritdoc
    */
-  static get schema() {
+  static get schema(): AnySchemaObject {
     return merge(super.schema, {
       properties: {
         type: {
@@ -88,43 +90,30 @@ export default class AbstractComponent extends AbstractModel {
   /**
    * @inheritdoc
    */
-  static create(data = {}, ...rest) {
-    return super.create({ id: `component-${uuid()}`, ...data }, ...rest);
+  static override async create<C extends AbstractModel>(data:Data = {}, validate = true): Promise<C> {
+    return await super.create<C>({ id: `component-${uuid()}`, ...data }, validate);
   }
 
-  /**
-   * @inheritdoc
-   */
-  constructor() {
-    const proxy = super();
-
-    /**
-     * @var {Array} _sorted_overrides
-     * @private
-     * */
-    this._sorted_overrides = computed(() => {
-      const { overridesEnabled, getOverrides } = useStore();
-      if (overridesEnabled) {
-        const overrides = getOverrides(this);
-        if (overrides) {
-          return Array.from(overrides.values())
-            .sort((o1, o2) => o1.priority > o2.priority)
-            .map((o) => o.values);
-        }
+  #sorted_overrides = computed(() => {
+    const { overridesEnabled, getOverrides } = useStore();
+    if (overridesEnabled) {
+      const overrides = getOverrides(this);
+      if (overrides) {
+        return Array.from(overrides.values())
+          .sort((o1, o2) => o1.priority > o2.priority)
+          .map((o) => o.values);
       }
+    }
 
-      return [];
-    });
-
-    return proxy;
-  }
+    return [];
+  });
 
   /**
    * @inheritdoc
    */
-  getPropertyValue(name) {
+  getPropertyValue(name: string) {
     if (!["type", "id"].includes(name)) {
-      for (const overrides of unref(this._sorted_overrides)) {
+      for (const overrides of unref(this.#sorted_overrides)) {
         if (Object.prototype.hasOwnProperty.call(overrides, name)) {
           return overrides[name];
         }
@@ -140,6 +129,6 @@ export default class AbstractComponent extends AbstractModel {
    * @returns {Class[]} The list of Model classes in the inheritance chain
    */
   get $modelChain() {
-    return this.constructor.modelChain;
+    return (this.constructor as typeof AbstractComponent).modelChain;
   }
 }

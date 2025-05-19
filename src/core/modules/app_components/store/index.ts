@@ -6,40 +6,45 @@ import { useModule } from "@core/services/module-manager";
 import { t as $t } from "@core/services/i18n";
 import * as Models from "../models";
 
+export type ComponentModels = typeof Models;
+export type ComponentType = keyof ComponentModels;
+export type ComponentList = { [T in ComponentType]?: Record<string, ComponentModels[T]> };
+export type Component = ComponentModels[keyof ComponentModels];
+
 export default defineStore("app-components", {
   state: () => {
     return {
-      components: {},
-      deleted: {},
-      sortedScenarios: [],
-      activeScenario: null,
-      blocksActivePage: new Map(),
+      components: {} as ComponentList,
+      deleted: {} as ComponentList,
+      sortedScenarios: [] as Models.Scenario[],
+      activeScenario: null as Models.Scenario|null,
+      blocksActivePage: new Map<string, number>(),
       overrides: new Map(),
       overridesEnabled: false,
     };
   },
   getters: {
     get() {
-      return (type, id) => {
+      return (type: ComponentType, id: string) => {
         const component = this.components?.[type]?.[id];
         return component ? readonly(component) : null;
       };
     },
     all() {
-      return []
-        .concat(...Object.values(this.components).map((v) => Object.values(v)))
+      return Object.values(this.components).map((v) => Object.values(v))
+        .flat()
         .map((c) => this.get(c.type, c.id))
-        .filter((c) => c);
+        .filter((c) => c !== null);
     },
     getByType() {
-      return (type) => {
+      return (type: ComponentType) => {
         return Object.keys(this.components?.[type] || {})
           .map((id) => this.get(type, id))
-          .filter((c) => c);
+          .filter((c) => c !== null);
       };
     },
     find() {
-      return (callback) => {
+      return (callback: (component: Component) => boolean) => {
         const findMatch = (components) => {
           let match = null;
           components.some((c) => {
@@ -79,7 +84,7 @@ export default defineStore("app-components", {
       };
     },
     getLabel() {
-      return (component) => {
+      return (component: Component) => {
         switch (component.type) {
           case "Page": {
             const block = this.getParent(component);
@@ -424,7 +429,7 @@ export default defineStore("app-components", {
     async clone(component, data = {}, parent = null) {
       const children_prop = this.getChildrenProperty(component);
 
-      let clone = await this.create(
+      const clone = await this.create(
         {
           ...omit(structuredClone(toRaw(component.data)), ["id", children_prop]),
           ...data,

@@ -22,14 +22,15 @@
   </component-wrapper>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import useStore from "../store";
 import { sortBy } from "lodash";
 
 const BLOCK_TOGGLER_OVERRIDES_KEY = "app_components:block_toggler";
 const BLOCK_TOGGLER_OVERRIDES_PRIORITY = 100;
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -88,7 +89,7 @@ export default {
       );
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

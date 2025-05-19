@@ -1,14 +1,15 @@
 import { computed, unref } from "vue";
-import { isArray } from "lodash";
 import { map } from "@core/utils/math";
+
+export type AnimatedValue = number|[number, number];
 
 /**
  * Get an animated value at the specified media time
- * @param {mixed[]} values The list of values
- * @param {number} time The media time
- * @returns {mixed} The correspondiung value
+ * @param values The list of values
+ * @param time The media time
+ * @returns The correspondiung value
  */
-export function getAnimatedValueAtTime(values, time) {
+export function getAnimatedValueAtTime<T extends AnimatedValue>(values: [number, T][], time: number): T {
   // Only one value available, return it.
   if (values.length === 1) {
     return values[0][1];
@@ -43,8 +44,7 @@ export function getAnimatedValueAtTime(values, time) {
   // Claculate the intermediate.
   const start = values[index - 1];
   const end = values[index];
-
-  if (isArray(start[1])) {
+  if (Array.isArray(start[1])) {
     return start[1].map((v, index) => {
       return map(time, start[0], end[0], start[1][index], end[1][index]);
     });
@@ -55,11 +55,11 @@ export function getAnimatedValueAtTime(values, time) {
 
 /**
  * Get a ref of a property's sorted keyframes.
- * @param {*} component The component
- * @param {*} prop The keyframes' property
- * @returns {ComputedRef} The sorted keyframes
+ * @param component The component
+ * @param prop The keyframes' property
+ * @returns The sorted keyframes
  */
-export function getSortedKeyframes(component, prop) {
+export function getSortedKeyframes(component, prop: string) {
   return computed(() => {
     return unref(component)[prop].value.toSorted((a, b) => {
       return a[0] - b[0];

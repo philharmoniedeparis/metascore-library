@@ -1,9 +1,9 @@
 import validateColor from "validate-color";
 import type { Ajv } from "ajv";
 import addFormats from "ajv-formats"
-import type { JSONSchema7, JSONSchema7Array, JSONSchema7Definition } from "json-schema";
+import type { JSONSchema7, JSONSchema7Array, JSONSchema7Definition, JSONSchema7Type } from "json-schema";
 
-class AjvRequiredError extends Error {
+export class AjvRequiredError extends Error {
   constructor() {
     super("An AJV instance is required.");
   }
@@ -12,7 +12,7 @@ class AjvRequiredError extends Error {
 export const createStringField = ({
   title = "",
   description = "",
-  default: default_value = void 0 as string|undefined,
+  default: default_value = void 0 as string|null|undefined,
   minLength = void 0 as number|undefined,
   maxLength = void 0 as number|undefined,
   nullable = false,
@@ -33,7 +33,7 @@ export const createStringField = ({
 export const createNumberField = ({
   title = "",
   description = "",
-  default: default_value = void 0 as number|undefined,
+  default: default_value = void 0 as number|null|undefined,
   nullable = false,
   multipleOf = 0.01,
   minimum = void 0 as number|undefined,
@@ -56,7 +56,7 @@ export const createNumberField = ({
 export const createIntegerField = ({
   title = "",
   description = "",
-  default: default_value = void 0 as number|undefined,
+  default: default_value = void 0 as number|null|undefined,
   nullable = false,
   minimum = void 0 as number|undefined,
   maximum = void 0 as number|undefined,
@@ -77,7 +77,7 @@ export const createIntegerField = ({
 export const createBooleanField = ({
   title = "",
   description = "",
-  default: default_value = void 0 as boolean|undefined,
+  default: default_value = void 0 as boolean|null|undefined,
   nullable = false,
 } = {}) => {
   const field = {
@@ -100,7 +100,7 @@ export const createArrayField = ({
   maxItems = void 0 as number|undefined,
   items = void 0 as JSONSchema7Definition|JSONSchema7Definition[]|undefined,
   additionalItems = void 0 as boolean|undefined,
-  uniqueItems = void 0,
+  uniqueItems = void 0 as boolean|undefined,
 } = {}) => {
   const field = {
     type: nullable ? ["array", "null"] : "array",
@@ -121,26 +121,25 @@ export const createArrayField = ({
 export const createEnumField = ({
   title = "",
   description = "",
-  default: default_value = void 0,
-  nullable = false,
-  enum: allowed_values = [],
+  enum: allowed_values = [] as JSONSchema7Type[],
+  default: default_value = void 0 as JSONSchema7Type|undefined,
 } = {}) => {
-  return {
-    ...createStringField({
-      title,
-      description,
-      default: default_value,
-      nullable,
-    }),
+  const field = {
+    title,
+    description,
     enum: allowed_values,
   } as JSONSchema7;
+
+  if (typeof default_value !== "undefined") field.default = default_value;
+
+  return field;
 };
 
 export const createUrlField = ({
   ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as string|null|undefined,
   nullable = false,
 } = {}) => {
   if (!ajv) throw new AjvRequiredError();
@@ -161,7 +160,7 @@ export const createTimeField = ({
   ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as number|null|undefined,
   nullable = false,
 } = {}) => {
   if (!ajv) throw new AjvRequiredError();
@@ -182,7 +181,7 @@ export const createColorField = ({
   ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as string|null|undefined,
   nullable = true,
 }) => {
   if (!ajv) throw new AjvRequiredError();
@@ -201,7 +200,7 @@ export const createImageField = ({
   ajv = void 0 as Ajv|undefined,
   title = "",
   description = "",
-  default: default_value = void 0,
+  default: default_value = void 0 as string|null|undefined,
   nullable = true,
 } = {}) => {
   if (!ajv) throw new AjvRequiredError();

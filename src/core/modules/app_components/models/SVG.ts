@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { EmbeddableComponent } from ".";
+import EmbeddableComponent from "./EmbeddableComponent";
 import {
   createUrlField,
   createNumberField,
@@ -17,7 +17,7 @@ export const SVG_PROPERTIES = [
   "marker-start",
   "marker-mid",
   "marker-end",
-];
+] as const;
 
 export const SVG_ELEMENTS = [
   "circle",
@@ -27,13 +27,13 @@ export const SVG_ELEMENTS = [
   "polygon",
   "polyline",
   "rect",
-];
+] as const;
+
+export type EmbeddedData = { colors?: string[],  markers?: string[]} & {
+ [key in typeof SVG_PROPERTIES[number]]: number|string|null
+}
 
 export default class SVG extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -44,12 +44,10 @@ export default class SVG extends EmbeddableComponent {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         src: createUrlField({
-          ajv,
+          ajv: this.ajv,
           title: "Source",
         }),
       },
@@ -57,7 +55,7 @@ export default class SVG extends EmbeddableComponent {
         $id: `${this.schemaId}:colors-if`, // Used for Ajv caching.
         properties: {
           colors: createArrayField({
-            items: createColorField({ ajv, nullable: false }),
+            items: createColorField({ ajv: this.ajv, nullable: false }),
             minItems: 2,
             maxItems: 2,
           }),
@@ -69,8 +67,8 @@ export default class SVG extends EmbeddableComponent {
           colors: createArrayField({
             title: "Colors",
             items: [
-              createColorField({ ajv, nullable: false }),
-              createColorField({ ajv, nullable: false }),
+              createColorField({ ajv: this.ajv, nullable: false }),
+              createColorField({ ajv: this.ajv, nullable: false }),
             ],
           }),
         },
@@ -80,7 +78,7 @@ export default class SVG extends EmbeddableComponent {
           $id: `${this.schemaId}:colors-else-if`, // Used for Ajv caching.
           properties: {
             colors: createArrayField({
-              items: createColorField({ ajv, nullable: false }),
+              items: createColorField({ ajv: this.ajv, nullable: false }),
               minItems: 1,
               maxItems: 1,
             }),
@@ -91,20 +89,19 @@ export default class SVG extends EmbeddableComponent {
           properties: {
             colors: createArrayField({
               title: "Colors",
-              items: [createColorField({ ajv, nullable: false })],
+              items: [createColorField({ ajv: this.ajv, nullable: false })],
             }),
           },
         },
         else: {
           properties: {
             stroke: createColorField({
-              ajv,
+              ajv: this.ajv,
               title: "Stroke",
               nullable: true,
               default: null,
             }),
             "stroke-width": createNumberField({
-              ajv,
               title: "Stroke width",
               multipleOf: 1,
               minimum: 0,
@@ -114,11 +111,10 @@ export default class SVG extends EmbeddableComponent {
             "stroke-dasharray": createEnumField({
               title: "Stroke dasharray",
               enum: [null, "2,2", "5,5", "5,2,2,2", "5,2,2,2,2,2"],
-              nullable: true,
               default: null,
             }),
             fill: createColorField({
-              ajv,
+              ajv: this.ajv,
               title: "Fill",
               nullable: true,
               default: null,
@@ -144,12 +140,9 @@ export default class SVG extends EmbeddableComponent {
 
   /**
    * Get defaults embedded in the SVG content
-   *
-   * @param {string} url The SVG's Url
-   * @returns {Promise<object>} A promise that resolves with the defaults
    */
-  static getEmbeddedData(url) {
-    const data = {};
+  #getEmbeddedData(url: string) : Promise<EmbeddedData> {
+    const data = {} as EmbeddedData;
 
     return new Promise((resolve, reject) => {
       const obj = document.createElement("object");
@@ -157,14 +150,14 @@ export default class SVG extends EmbeddableComponent {
       obj.style.visibility = "hidden";
       obj.style.pointerEvents = "none";
 
-      let onLoad = null;
-      let onError = null;
+      let onLoad = null as ((this: HTMLObjectElement, ev: Event) => unknown)|null;
+      let onError = null as ((this: HTMLObjectElement, ev: Event) => undefined)|null;
 
       onLoad = (evt) => {
-        obj.removeEventListener("load", onLoad);
-        obj.removeEventListener("error", onError);
+        obj.removeEventListener("load", onLoad!);
+        obj.removeEventListener("error", onError!);
 
-        const svg = evt.target.contentDocument?.querySelector("svg");
+        const svg = (evt.target as HTMLObjectElement).contentDocument?.querySelector("svg");
 
         if (!svg) {
           reject(data);
@@ -177,14 +170,15 @@ export default class SVG extends EmbeddableComponent {
           const el = svg.querySelector(c);
           if (el) {
             const style = getComputedStyle(el);
-            data.colors.push(style.fill);
+            data.colors!.push(style.fill);
           }
         });
         if (data.colors.length === 0) {
           // Set markers
           data.markers = [];
           svg.querySelectorAll("defs marker").forEach((marker) => {
-            data.markers.push(marker.getAttribute("id"));
+            const id = marker.getAttribute("id")
+            if (id) data.markers!.push(id);
           });
 
           // Fill other props.
@@ -200,8 +194,8 @@ export default class SVG extends EmbeddableComponent {
       };
 
       onError = (evt) => {
-        obj.removeEventListener("load", onLoad);
-        obj.removeEventListener("error", onError);
+        obj.removeEventListener("load", onLoad!);
+        obj.removeEventListener("error", onError!);
 
         evt.target.remove();
         reject(data);
@@ -215,14 +209,7 @@ export default class SVG extends EmbeddableComponent {
     });
   }
 
-  /**
-   * @inheritdoc
-   */
-  constructor() {
-    super();
-
-    this._embedded_data = {};
-  }
+  #embedded_data = {} as EmbeddedData;
 
   /**
    * Get embedded SVG markers.
@@ -230,7 +217,7 @@ export default class SVG extends EmbeddableComponent {
    * @return {array} A list of available markers.
    */
   get markers() {
-    return this._embedded_data.markers ?? [];
+    return this.#embedded_data.markers ?? [];
   }
 
   /**
@@ -238,8 +225,8 @@ export default class SVG extends EmbeddableComponent {
    *
    * @param {Object} data The data to set defaults on.
    */
-  setEmbeddedDefaults(data) {
-    const { colors = [] } = this._embedded_data;
+  #setEmbeddedDefaults(data) {
+    const { colors = [] } = this.#embedded_data;
 
     // Set colors.
     data.colors = colors.map((color, index) => {
@@ -265,8 +252,8 @@ export default class SVG extends EmbeddableComponent {
   async validate(data) {
     if ("src" in data && data.src && this.src !== data.src) {
       try {
-        this._embedded_data = await this.constructor.getEmbeddedData(data.src);
-        this.setEmbeddedDefaults(data);
+        this.#embedded_data = await this.#getEmbeddedData(data.src);
+        this.#setEmbeddedDefaults(data);
       } catch (e) {
         //
       }

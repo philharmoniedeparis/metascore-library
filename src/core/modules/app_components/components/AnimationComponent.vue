@@ -4,13 +4,14 @@
   </component-wrapper>
 </template>
 
-<script>
-import { toRef } from "vue";
+<script lang="ts">
+import { toRef, defineComponent, type PropType, type CSSProperties } from "vue";
 import useStore from "../store";
 import { useModule } from "@core/services/module-manager";
 import useTime from "../composables/useTime";
+import type { AnimationItem } from "lottie-web";
 
-export default {
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -20,9 +21,9 @@ export default {
       required: true,
     },
     renderer: {
-      type: String,
+      type: String as PropType<"svg"|"canvas"|"html">,
       default: "svg",
-      validator(value) {
+      validator(value: string) {
         return ["svg", "canvas", "html"].includes(value);
       },
     },
@@ -42,7 +43,7 @@ export default {
   data() {
     return {
       loaded: false,
-      animation: null,
+      animation: null as AnimationItem|null,
       duration: 0,
       totalFrames: 0,
     };
@@ -72,7 +73,7 @@ export default {
       return this.component.colors;
     },
     style() {
-      return this.colors?.reduce((acc, color, index) => {
+      return this.colors?.reduce((acc: CSSProperties, color, index) => {
         return {
           ...acc,
           [`--color${index + 1}`]: color,
@@ -131,7 +132,7 @@ export default {
     update() {
       if (!this.loaded || !this.active) return;
 
-      this.animation.goToAndStop(this.getCurrentFrame(), true);
+      this.animation!.goToAndStop(this.getCurrentFrame()!, true);
     },
     async setupAdnimation() {
       this.loaded = false;
@@ -141,7 +142,7 @@ export default {
       const { default: Lottie } = await import("lottie-web");
 
       this.animation = Lottie.loadAnimation({
-        container: this.$refs["animation-wrapper"],
+        container: this.$refs["animation-wrapper"] as HTMLDivElement,
         path: this.src,
         renderer: this.renderer,
         loop: true,
@@ -152,18 +153,18 @@ export default {
     },
     onAnimationLoaded() {
       this.loaded = true;
-      this.duration = this.animation.getDuration();
-      this.totalFrames = this.animation.getDuration(true);
+      this.duration = this.animation!.getDuration();
+      this.totalFrames = this.animation!.getDuration(true);
 
       this.updateSpeed();
     },
     updateSpeed() {
       if (!this.loaded) return;
 
-      this.animation.setSpeed(this.duration / this.loopDuration);
+      this.animation!.setSpeed(this.duration / this.loopDuration);
     },
     getCurrentFrame() {
-      if (!this.loaded) return null;
+      if (!this.loaded) return;
 
       const time = this.mediaTime - this.startTime;
       const fps = this.totalFrames / this.loopDuration;
@@ -172,7 +173,7 @@ export default {
       return this.reversed ? this.totalFrames - frame : frame;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

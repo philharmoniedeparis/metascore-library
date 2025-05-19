@@ -4,8 +4,10 @@
   </component-wrapper>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent ({
   props: {
     /**
      * The associated component
@@ -20,7 +22,7 @@ export default {
       return this.component.src;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,12 +1,8 @@
 import { merge } from "lodash";
-import { EmbeddableComponent } from ".";
+import EmbeddableComponent from "./EmbeddableComponent";
 import { createUrlField } from "@core/utils/schema";
 
 export default class Image extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -17,12 +13,10 @@ export default class Image extends EmbeddableComponent {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         src: createUrlField({
-          ajv,
+          ajv: this.ajv,
           title: "Source",
         }),
       },

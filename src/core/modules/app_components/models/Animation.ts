@@ -8,12 +8,14 @@ import {
   createArrayField,
   createColorField,
 } from "@core/utils/schema";
+import type { Data } from "@/core/models/AbstractModel";
+
+export type EmbeddedData = {
+  "loop-duration"?: number
+  colors?: string[]
+}
 
 export default class Animation extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -24,12 +26,10 @@ export default class Animation extends EmbeddableComponent {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         src: createUrlField({
-          ajv,
+          ajv: this.ajv,
           title: "Source",
         }),
         "start-frame": createIntegerField({
@@ -38,7 +38,7 @@ export default class Animation extends EmbeddableComponent {
           minimum: 1,
         }),
         "loop-duration": createTimeField({
-          ajv,
+          ajv: this.ajv,
           title: "Loop duration",
         }),
         reversed: createBooleanField({
@@ -49,7 +49,7 @@ export default class Animation extends EmbeddableComponent {
         $id: `${this.schemaId}:colors-if`, // Used for Ajv caching.
         properties: {
           colors: createArrayField({
-            items: createColorField({ ajv, nullable: false }),
+            items: createColorField({ ajv: this.ajv, nullable: false }),
             minItems: 2,
             maxItems: 2,
           }),
@@ -61,8 +61,8 @@ export default class Animation extends EmbeddableComponent {
           colors: createArrayField({
             title: "Colors",
             items: [
-              createColorField({ ajv, nullable: false }),
-              createColorField({ ajv, nullable: false }),
+              createColorField({ ajv: this.ajv, nullable: false }),
+              createColorField({ ajv: this.ajv, nullable: false }),
             ],
           }),
         },
@@ -72,7 +72,7 @@ export default class Animation extends EmbeddableComponent {
           $id: `${this.schemaId}:colors-else-if`, // Used for Ajv caching.
           properties: {
             colors: createArrayField({
-              items: createColorField({ ajv, nullable: false }),
+              items: createColorField({ ajv: this.ajv, nullable: false }),
               minItems: 1,
               maxItems: 1,
             }),
@@ -83,7 +83,7 @@ export default class Animation extends EmbeddableComponent {
           properties: {
             colors: createArrayField({
               title: "Colors",
-              items: [createColorField({ ajv, nullable: false })],
+              items: [createColorField({ ajv: this.ajv, nullable: false })],
             }),
           },
         },
@@ -91,15 +91,17 @@ export default class Animation extends EmbeddableComponent {
     });
   }
 
+  #embedded_data = {} as EmbeddedData;
+
   /**
    * Get defaults embedded in the SVG content
    *
    * @param {string} url The SVG's Url
    * @returns {Promise<object>} A promise that resolves with the defaults
    */
-  static async getEmbeddedData(url) {
+  async #getEmbeddedData(url: string): Promise<EmbeddedData> {
     const { default: Lottie } = await import("lottie-web");
-    const data = {};
+    const data = {} as EmbeddedData;
 
     return new Promise((resolve) => {
       const container = document.createElement("div");
@@ -123,7 +125,7 @@ export default class Animation extends EmbeddableComponent {
           const path = container.querySelector(`.${name} path`);
           if (path) {
             const style = getComputedStyle(path);
-            data.colors.push(style.fill);
+            data.colors!.push(style.fill);
           }
         });
 
@@ -141,22 +143,13 @@ export default class Animation extends EmbeddableComponent {
   }
 
   /**
-   * @inheritdoc
-   */
-  constructor() {
-    super();
-
-    this._embedded_data = {};
-  }
-
-  /**
    * Set defaults from embedded data.
    *
    * @param {Object} data The data to set defaults on.
    */
-  setEmbeddedDefaults(data) {
+  #setEmbeddedDefaults(data: Data) {
     const { "loop-duration": loop_duration = null, colors = [] } =
-      this._embedded_data;
+      this.#embedded_data;
 
     // Set loop duration.
     if (!("loop-duration" in data) || data["loop-duration"] === null) {
@@ -172,10 +165,10 @@ export default class Animation extends EmbeddableComponent {
   /**
    * @inheritdoc
    */
-  async validate(data) {
+  async validate(data: Data) {
     if ("src" in data && data.src && this.src !== data.src) {
-      this._embedded_data = await this.constructor.getEmbeddedData(data.src);
-      this.setEmbeddedDefaults(data);
+      this.#embedded_data = await this.#getEmbeddedData(data.src);
+      this.#setEmbeddedDefaults(data);
     }
 
     return await super.validate(data);

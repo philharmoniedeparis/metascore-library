@@ -1,29 +1,21 @@
-import { mix } from "mixwith";
+import { mix } from "mixwith.ts";
 import { merge } from "lodash";
 import { createStringField } from "@core/utils/schema";
 import { createCollectionField } from "../utils/schema";
-import {
-  AbstractComponent,
-  Animation,
-  Block,
-  BlockToggler,
-  Content,
-  Controller,
-  Cursor,
-  Image,
-  Media,
-  SVG,
-  VideoRenderer,
-} from ".";
+import AbstractComponent from "./AbstractComponent";
+import Animation from "./Animation";
+import Block from "./Block";
+import BlockToggler from "./BlockToggler";
+import Content from "./Content";
+import Controller from "./Controller";
+import Cursor from "./Cursor";
+import Image from "./Image";
+import Media from "./Media";
+import SVG from "./SVG";
+import VideoRenderer from "./VideoRenderer";
 import Backgroundable from "./mixins/Backgroundable";
 
-export default class Scenario extends mix(AbstractComponent).with(
-  Backgroundable
-) {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = AbstractComponent;
+export default class Scenario extends mix(AbstractComponent).with(Backgroundable) {
 
   /**
    * @inheritdoc
@@ -39,8 +31,6 @@ export default class Scenario extends mix(AbstractComponent).with(
    * @inheritdoc
    */
   static get schema() {
-    const ajv = super.ajv;
-
     return merge(super.schema, {
       properties: {
         name: createStringField({
@@ -52,8 +42,8 @@ export default class Scenario extends mix(AbstractComponent).with(
           description: "The component's slug for use in api links",
         }),
         [this.childrenProperty]: createCollectionField({
-          ajv,
-          model: [
+          ajv: this.ajv,
+          models: [
             Animation,
             Block,
             BlockToggler,
@@ -70,3 +60,4 @@ export default class Scenario extends mix(AbstractComponent).with(
     });
   }
 }
+

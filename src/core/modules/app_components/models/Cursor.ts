@@ -11,10 +11,6 @@ import {
 import { createAngleField } from "../utils/schema";
 
 export default class Cursor extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
@@ -25,8 +21,6 @@ export default class Cursor extends EmbeddableComponent {
    * @inheritdoc
    */
   static get schema() {
-    const ajv = this.ajv;
-
     return merge(super.schema, {
       properties: {
         form: createEnumField({
@@ -46,7 +40,7 @@ export default class Cursor extends EmbeddableComponent {
           default: 1,
         }),
         "cursor-color": createColorField({
-          ajv,
+          ajv: this.ajv,
           title: "Cursor color",
           default: "#000",
         }),
@@ -86,11 +80,11 @@ export default class Cursor extends EmbeddableComponent {
             default: "cw",
           }),
           "start-angle": createAngleField({
-            ajv,
+            ajv: this.ajv,
             title: "Start angle",
           }),
           "loop-duration": createTimeField({
-            ajv,
+            ajv: this.ajv,
             title: "Loop duration",
           }),
         },

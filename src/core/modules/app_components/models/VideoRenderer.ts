@@ -1,11 +1,7 @@
 import { merge } from "lodash";
-import { EmbeddableComponent } from ".";
+import EmbeddableComponent from "./EmbeddableComponent";
 
 export default class VideoRenderer extends EmbeddableComponent {
-  /**
-   * @inheritdoc
-   */
-  static baseModel = EmbeddableComponent;
 
   /**
    * @inheritdoc
