@@ -56,11 +56,9 @@ export class Editor {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
     const events = new Emitter();
-    // eslint-disable-next-line vue/one-component-per-file
     const app = createApp(App, { url }).use(pinia).use(i18n);
 
     // Add webpack's public path as a global property.
-    // eslint-disable-next-line no-undef
     app.config.globalProperties.publicPath = PUBLIC_PATH;
 
     app.config.performance = process.env.NODE_ENV === "development";
@@ -116,11 +114,9 @@ export class Editor {
   static async getBlockly(locale = "fr") {
     const pinia = createPinia();
     const i18n = createI18n({ locale, fallbackLocale: "fr" });
-    // eslint-disable-next-line vue/one-component-per-file
     const app = createApp({}).use(pinia).use(i18n);
 
     // Add webpack's public path as a global property.
-    // eslint-disable-next-line no-undef
     app.config.globalProperties.publicPath = PUBLIC_PATH;
 
     app.config.performance = process.env.NODE_ENV === "development";
