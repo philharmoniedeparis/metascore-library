@@ -75,6 +75,24 @@ defineBlocksWithJsonArray([
     helpUrl: "%{BKY_MEDIA_PLAY_HELPURL}",
   },
   {
+    type: "media_pause",
+    message0: "%{BKY_MEDIA_PAUSE}",
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_MEDIA_PAUSE_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_PAUSE_HELPURL}",
+  },
+  {
+    type: "media_stop",
+    message0: "%{BKY_MEDIA_STOP}",
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_MEDIA_STOP_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_STOP_HELPURL}",
+  },
+  {
     type: "media_play_excerpt",
     message0: "%{BKY_MEDIA_PLAY_EXCERPT}",
     args0: [
@@ -138,22 +156,13 @@ defineBlocksWithJsonArray([
     helpUrl: "%{BKY_MEDIA_PLAY_EXCERPT_THEN_HELPURL}",
   },
   {
-    type: "media_pause",
-    message0: "%{BKY_MEDIA_PAUSE}",
+    type: "media_exit_excerpt",
+    message0: "%{BKY_MEDIA_EXIT_EXCERPT}",
     previousStatement: null,
     nextStatement: null,
     style: "actions_blocks",
-    tooltip: "%{BKY_MEDIA_PAUSE_TOOLTIP}",
-    helpUrl: "%{BKY_MEDIA_PAUSE_HELPURL}",
-  },
-  {
-    type: "media_stop",
-    message0: "%{BKY_MEDIA_STOP}",
-    previousStatement: null,
-    nextStatement: null,
-    style: "actions_blocks",
-    tooltip: "%{BKY_MEDIA_STOP_TOOLTIP}",
-    helpUrl: "%{BKY_MEDIA_STOP_HELPURL}",
+    tooltip: "%{BKY_MEDIA_EXIT_EXCERPT_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_EXIT_EXCERPT_HELPURL}",
   },
 ]);
 
