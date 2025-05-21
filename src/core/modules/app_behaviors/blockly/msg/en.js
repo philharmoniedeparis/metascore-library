@@ -123,7 +123,7 @@ Msg.MEDIA_GET_TIME = "media time";
 Msg.MEDIA_GET_TIME_TOOLTIP = "Returns the current media time in seconds.";
 Msg.MEDIA_GET_TIME_HELPURL = "";
 
-Msg.MEDIA_SET_TIME = "set the media time to %1";
+Msg.MEDIA_SET_TIME = "set media time to %1";
 Msg.MEDIA_SET_TIME_TOOLTIP = "Sets the media time to be equal to the input.";
 Msg.MEDIA_SET_TIME_HELPURL = "";
 
@@ -159,6 +159,14 @@ Msg.MEDIA_PLAY_EXCERPT_THEN_HELPURL = "";
 Msg.MEDIA_EXIT_EXCERPT = "exit current excerpt";
 Msg.MEDIA_EXIT_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_EXIT_EXCERPT_HELPURL = "";
+
+Msg.MEDIA_GET_PLAYBACKRATE = "playback rate";
+Msg.MEDIA_GET_PLAYBACKRATE_TOOLTIP = "Returns the media's playback rate.";
+Msg.MEDIA_GET_PLAYBACKRATE_HELPURL = "";
+
+Msg.MEDIA_SET_PLAYBACKRATE = "set playback rate to %1";
+Msg.MEDIA_SET_PLAYBACKRATE_TOOLTIP = "Sets the media's playback rate to be equal to the input.";
+Msg.MEDIA_SET_PLAYBACKRATE_HELPURL = "";
 
 Msg.REACTIVITY_WHEN = " %1 when %2";
 Msg.REACTIVITY_WHEN_THEN = "do %1";

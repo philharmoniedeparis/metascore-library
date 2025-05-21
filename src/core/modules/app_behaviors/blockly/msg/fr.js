@@ -162,6 +162,15 @@ Msg.MEDIA_EXIT_EXCERPT = "sortir de l'extrait en cours";
 Msg.MEDIA_EXIT_EXCERPT_TOOLTIP = "";
 Msg.MEDIA_EXIT_EXCERPT_HELPURL = "";
 
+Msg.MEDIA_GET_PLAYBACKRATE = "vitesse de lecture";
+Msg.MEDIA_GET_PLAYBACKRATE_TOOLTIP = "Retourne la vitesse de lecture du média.";
+Msg.MEDIA_GET_PLAYBACKRATE_HELPURL = "";
+
+Msg.MEDIA_SET_PLAYBACKRATE = "définir la vitesse de lecture à %1";
+Msg.MEDIA_SET_PLAYBACKRATE_TOOLTIP =
+  "Définit la vitesse de lecture du média pour qu’elle soit égale à la valeur de l’entrée.";
+Msg.MEDIA_SET_PLAYBACKRATE_HELPURL = "";
+
 Msg.REACTIVITY_WHEN = " %1 lorsque %2";
 Msg.REACTIVITY_WHEN_THEN = "faire %1";
 Msg.REACTIVITY_WHEN_TOOLTIP = "";

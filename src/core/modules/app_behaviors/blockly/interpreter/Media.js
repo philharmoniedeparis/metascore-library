@@ -88,6 +88,14 @@ export default class Media extends AbstractInterpreter {
           const { stop } = useModule("core:media_player");
           stop();
         },
+        getPlaybackRate: () => {
+          const { playbackRate } = useModule("core:media_player");
+          return unref(playbackRate);
+        },
+        setPlaybackRate: (value) => {
+          const { setPlaybackRate } = useModule("core:media_player");
+          setPlaybackRate(value);
+        },
       },
     };
   }
@@ -99,7 +107,8 @@ export default class Media extends AbstractInterpreter {
       removeCuepoint(this._cuepoint);
     }
 
-    const { pause } = useModule("core:media_player");
+    const { pause, setPlaybackRate } = useModule("core:media_player");
     pause();
+    setPlaybackRate(1);
   }
 }

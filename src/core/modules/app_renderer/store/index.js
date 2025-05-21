@@ -226,7 +226,7 @@ export default defineStore("app-renderer", {
       this.idleTimeTrackStart = Date.now();
     },
     reset() {
-      const { stop: stopMedia } = useModule("core:media_player");
+      const { stop: stopMedia, setPlaybackRate } = useModule("core:media_player");
       const {
         clearOverrides: clearComponentsOverrides,
         resetBlocksActivePage,
@@ -235,6 +235,7 @@ export default defineStore("app-renderer", {
       } = useModule("core:app_components");
 
       stopMedia();
+      setPlaybackRate(1);
       clearComponentsOverrides();
       resetBlocksActivePage();
       setActiveScenario(getSortedScenarios()[0].id);
