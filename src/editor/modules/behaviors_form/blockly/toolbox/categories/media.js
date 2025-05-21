@@ -16,5 +16,9 @@ export function getBlocks() {
       kind: "block",
       type: "media_playing",
     },
+    {
+      kind: "block",
+      type: "media_get_playbackrate",
+    },
   ];
 }

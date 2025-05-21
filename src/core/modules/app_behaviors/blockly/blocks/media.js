@@ -164,6 +164,30 @@ defineBlocksWithJsonArray([
     tooltip: "%{BKY_MEDIA_EXIT_EXCERPT_TOOLTIP}",
     helpUrl: "%{BKY_MEDIA_EXIT_EXCERPT_HELPURL}",
   },
+  {
+    type: "media_get_playbackrate",
+    message0: "%{BKY_MEDIA_GET_PLAYBACKRATE}",
+    output: "Number",
+    style: "media_blocks",
+    tooltip: "%{BKY_MEDIA_GET_PLAYBACKRATE_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_GET_PLAYBACKRATE_HELPURL}",
+  },
+  {
+    type: "media_set_playbackrate",
+    message0: "%{BKY_MEDIA_SET_PLAYBACKRATE}",
+    args0: [
+      {
+        type: "input_value",
+        name: "VALUE",
+        check: "Number",
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "actions_blocks",
+    tooltip: "%{BKY_MEDIA_SET_PLAYBACKRATE_TOOLTIP}",
+    helpUrl: "%{BKY_MEDIA_SET_PLAYBACKRATE_HELPURL}",
+  },
 ]);
 
 /**

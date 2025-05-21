@@ -66,3 +66,14 @@ Generator.forBlock["media_exit_excerpt"] = function () {
   const code = "Media.exitExcerpt();\n";
   return code;
 };
+
+Generator.forBlock["media_get_playbackrate"] = function () {
+  const code = "Media.getPlaybackRate()";
+  return [code, Order.FUNCTION_CALL];
+};
+
+Generator.forBlock["media_set_playbackrate"] = function (block) {
+  const value = Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "1";
+  const code = `Media.setPlaybackRate(${value});\n`;
+  return code;
+};

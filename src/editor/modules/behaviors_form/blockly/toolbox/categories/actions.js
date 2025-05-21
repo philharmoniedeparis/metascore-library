@@ -126,6 +126,21 @@ export function getBlocks() {
     },
     {
       kind: "block",
+      type: "media_set_playbackrate",
+      inputs: {
+        VALUE: {
+          block: {
+            type: "math_number",
+            fields: {
+              NUM: 1
+            },
+          },
+        },
+      },
+      gap: 5,
+    },
+    {
+      kind: "block",
       type: "components_set_scenario",
       inputs: {
         COMPONENT: {
