@@ -67,7 +67,6 @@ type Data = {[x: string]: unknown}
  * @abstract
  */
 export default class AbstractModel {
-  protected static _instantiating: boolean = false;
   protected static _properties: Properties;
 
   /**
@@ -132,11 +131,15 @@ export default class AbstractModel {
    * @param validate Whether to validate the data.
    */
   static async create(data:Data = {}, validate = true) {
-    this._instantiating = true;
     const instance = new this();
-    this._instantiating = false;
+    await instance.update(data, validate);
+    return instance;
+  }
 
-    const proxy = new Proxy(instance, {
+  protected _data: Reactive<Data> = reactive({});
+
+  constructor() {
+    return new Proxy(this, {
       get(target, propertyKey, ...args) {
         if (
           isString(propertyKey) &&
@@ -157,16 +160,6 @@ export default class AbstractModel {
         return Reflect.set(target, propertyKey, value, ...args);
       },
     });
-
-    return await proxy.update(data, validate);
-  }
-
-  protected _data: Reactive<Data> = reactive({});
-
-  constructor() {
-    if (!(this.constructor as typeof AbstractModel)._instantiating) {
-      throw new Error('You must use the create static method to construct an instance.')
-    }
   }
 
   /**
