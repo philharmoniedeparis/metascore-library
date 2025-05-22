@@ -1,4 +1,3 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { useModule } from "@core/services/module-manager";
 import { unref } from "vue";
 import AbstractInterpreter from "./AbstractInterpreter";
@@ -7,38 +6,33 @@ export default class Keyboard extends AbstractInterpreter {
   constructor() {
     super();
 
-    // Ensure context name does not conflict with variable names.
-    JavaScript.addReservedWords("Keyboard");
-
     this._listeners = [];
   }
 
   get context() {
     return {
-      Keyboard: {
-        addEventListener: (key, event, callback) => {
-          let { el } = useModule("core:app_renderer");
-          el = unref(el);
+      addEventListener: (key, event, callback) => {
+        let { el } = useModule("core:app_renderer");
+        el = unref(el);
 
-          const wrapper = function (evt) {
-            if (key === "any" || evt.key === key) {
-              evt.preventDefault();
-              callback();
-            }
-          };
+        const wrapper = function (evt) {
+          if (key === "any" || evt.key === key) {
+            evt.preventDefault();
+            callback();
+          }
+        };
 
-          // Add the event listener.
-          el.addEventListener(event, wrapper);
+        // Add the event listener.
+        el.addEventListener(event, wrapper);
 
-          // Add to list of listeners.
-          this._listeners.push({
-            el,
-            type: event,
-            callback: wrapper,
-          });
+        // Add to list of listeners.
+        this._listeners.push({
+          el,
+          type: event,
+          callback: wrapper,
+        });
 
-          return true;
-        },
+        return true;
       },
     };
   }

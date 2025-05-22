@@ -1,4 +1,3 @@
-import { javascriptGenerator as JavaScript } from "blockly/javascript";
 import { useModule } from "@core/services/module-manager";
 import { unref, watch, nextTick } from "vue";
 import AbstractInterpreter from "./AbstractInterpreter";
@@ -6,9 +5,6 @@ import AbstractInterpreter from "./AbstractInterpreter";
 export default class Links extends AbstractInterpreter {
   constructor() {
     super();
-
-    // Ensure context name does not conflict with variable names.
-    JavaScript.addReservedWords("Links");
 
     this._unwatchActiveScenario = null;
     this._listenerStates = new Map();
@@ -23,20 +19,18 @@ export default class Links extends AbstractInterpreter {
     );
 
     return {
-      Links: {
-        addEventListener: (trigger, event, callback) => {
-          (Array.isArray(trigger) ? trigger : [trigger])
-            .filter((trigger) => !!trigger)
-            .forEach((trigger) => {
-              this._addEventListener(trigger, event, callback);
-            });
-        },
-        openUrl: (url) => {
-          window.open(url, "_blank");
-        },
-        autoHighlight: (...args) => {
-          this._setupAutoHighlight(...args);
-        },
+      addEventListener: (trigger, event, callback) => {
+        (Array.isArray(trigger) ? trigger : [trigger])
+          .filter((trigger) => !!trigger)
+          .forEach((trigger) => {
+            this._addEventListener(trigger, event, callback);
+          });
+      },
+      openUrl: (url) => {
+        window.open(url, "_blank");
+      },
+      autoHighlight: (...args) => {
+        this._setupAutoHighlight(...args);
       },
     };
   }

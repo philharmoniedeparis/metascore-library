@@ -15,7 +15,7 @@ Generator.init = function (workspace) {
       devVarList[i],
       Names.NameType.DEVELOPER_VARIABLE
     );
-    this.definitions_["variables"] += `var ${name};\n`;
+    this.definitions_["variables"] += `Variables.store.value.set('${name}', null);\n`;
   }
   // Add user variables as reactive variables, but only ones that are being used.
   const variables = Variables.allUsedVarModels(workspace);
@@ -24,7 +24,7 @@ Generator.init = function (workspace) {
       variables[i].getId(),
       Names.NameType.VARIABLE
     );
-    this.definitions_["variables"] += `var ${name} = Reactivity.ref();\n`;
+    this.definitions_["variables"] += `Variables.store.value.set('${name}', null);\n`;
   }
 };
 
@@ -34,7 +34,7 @@ Generator.forBlock["variables_get"] = function (block) {
     block.getFieldValue("VAR"),
     Names.NameType.VARIABLE
   );
-  const code = `Reactivity.unref(${varName})`;
+  const code = `Variables.store.value.get('${varName}')`;
   return [code, Order.ATOMIC];
 };
 
@@ -48,7 +48,7 @@ Generator.forBlock["variables_set"] = function (block) {
   );
 
   let code = "";
-  code += `if (Reactivity.isRef(${varName})) ${varName}.value = ${argument0};\n`;
+  code += `if (Variables.store.value.has('${varName}')) Variables.store.value.set('${varName}', ${argument0});\n`;
   code += `else ${varName} = ${argument0};\n`;
 
   return code;

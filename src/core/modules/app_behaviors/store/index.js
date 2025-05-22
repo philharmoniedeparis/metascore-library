@@ -43,6 +43,12 @@ export default defineStore("app-behaviors", {
       const code = JavaScript.workspaceToCode(workspace);
       interpreter.exec(code);
     },
+    getVariable(name) {
+      return interpreter.getContext()?.Variables?.store.value.get(name);
+    },
+    setVariable(name, value) {
+      interpreter.getContext()?.Variables?.store.value.set(name, value);
+    },
     enable() {
       this.enabled = true;
       this.run();

@@ -38,6 +38,16 @@ export default class AppBehaviorsModule extends AbstractModule {
     store.update(value);
   }
 
+  getVariable(name) {
+    const store = useStore();
+    return store.getVariable(name);
+  }
+
+  setVariable(name, value) {
+    const store = useStore();
+    store.setVariable(name, value);
+  }
+
   enable() {
     const store = useStore();
     store.enable();

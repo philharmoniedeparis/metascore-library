@@ -164,11 +164,11 @@ export function processMessage(evt) {
 
     case "playing":
       {
-        const { playing } = useModule("core:media_player");
+        const { playing, callback } = useModule("core:media_player");
         source.postMessage(
           JSON.stringify({
-            callback: params.callback,
             params: unref(playing),
+            callback,
           }),
           origin
         );
@@ -177,14 +177,36 @@ export function processMessage(evt) {
 
     case "time":
       {
-        const { time } = useModule("core:media_player");
+        const { time, callback } = useModule("core:media_player");
         source.postMessage(
           JSON.stringify({
-            callback: params.callback,
             params: unref(time),
+            callback,
           }),
           origin
         );
+      }
+      break;
+
+    case "getVariable":
+      {
+        const { getVariable } = useModule("core:app_behaviors");
+        const { name, callback } = params;
+        source.postMessage(
+          JSON.stringify({
+            params: unref(getVariable(name)),
+            callback,
+          }),
+          origin
+        );
+      }
+      break;
+
+    case "setVariable":
+      {
+        const { setVariable } = useModule("core:app_behaviors");
+        const { name, value } = params;
+        setVariable(name, value);
       }
       break;
 
@@ -194,6 +216,7 @@ export function processMessage(evt) {
           {
             const store = useStore();
             const { ready } = storeToRefs(store);
+            const { callback } = params;
 
             let unwatch = watch(
               ready,
@@ -207,7 +230,7 @@ export function processMessage(evt) {
 
                 source.postMessage(
                   JSON.stringify({
-                    callback: params.callback,
+                    callback,
                   }),
                   origin
                 );
@@ -220,11 +243,12 @@ export function processMessage(evt) {
         case "timeupdate":
           {
             const { time } = useModule("core:media_player");
+            const { callback } = params;
             watch(time, (value) => {
               source.postMessage(
                 JSON.stringify({
-                  callback: params.callback,
                   params: value,
+                  callback,
                 }),
                 origin
               );
@@ -235,11 +259,12 @@ export function processMessage(evt) {
         case "scenariochange":
           {
             const { activeScenario } = useModule("core:app_components");
+            const { callback } = params;
             watch(activeScenario, (value) => {
               source.postMessage(
                 JSON.stringify({
-                  callback: params.callback,
                   params: value,
+                  callback,
                 }),
                 origin
               );

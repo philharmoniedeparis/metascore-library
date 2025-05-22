@@ -384,6 +384,34 @@ export class API {
     this.postMessage("time", { callback: callback_id });
     return this;
   }
+
+  /**
+   * Sends a 'getVariable' message to the player
+   * Used to get a behavior variable's value
+   *
+   * @param {Function} callback The callback called when the response is received
+   * @param {Number} callback.value The variable's value
+   * @return {this}
+   */
+  getVariable(name, callback) {
+    const callback_id = uuid();
+    this.callbacks[callback_id] = callback;
+    this.postMessage("getVariable", { name, callback: callback_id });
+    return this;
+  }
+
+  /**
+   * Sends a 'setVariable' message to the player
+   * Used to set the value of a behavior variable
+   *
+   * @param {String} name The name of the variable
+   * @param {Mixed} value The value to set
+   * @return {this}
+   */
+  setVariable(name, value) {
+    this.postMessage("setVariable", { name, value });
+    return this;
+  }
 }
 
 /**
