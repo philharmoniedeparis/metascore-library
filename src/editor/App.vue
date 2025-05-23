@@ -862,9 +862,9 @@ export default {
     }
   }
 
-  &.libraries-expanded {
+  &.libraries-expanded:not(.preview) {
     grid-template-columns: auto;
-    grid-template-rows: min-content auto;
+    grid-template-rows: min-content 1fr;
     grid-template-areas: "top" "left";
 
     > .left {
