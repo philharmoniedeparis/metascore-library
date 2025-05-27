@@ -14,7 +14,7 @@
             v-tooltip
             :title="!isActieveTab(index) ? tab.title : null"
             role="tab"
-            @click="internalValue = index"
+            @click="activeTabValue = index"
           >
             {{ tab.title }}
           </a>
@@ -48,14 +48,14 @@ export default {
   data() {
     return {
       tabs: [],
-      internalValue: null,
+      activeTabValue: null,
     };
   },
   watch: {
     activeTab(value) {
-      this.internalValue = value;
+      this.activeTabValue = value;
     },
-    internalValue(value) {
+    activeTabValue(value) {
       this.tabs.forEach((tab, i) => {
         if (i === value) tab.activate();
         else tab.deactivate();
@@ -64,11 +64,11 @@ export default {
     },
   },
   mounted() {
-    this.internalValue = this.activeTab;
+    this.activeTabValue = this.activeTab;
   },
   methods: {
     isActieveTab(index) {
-      return index === this.internalValue;
+      return index === this.activeTabValue;
     },
   },
 };

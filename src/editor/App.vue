@@ -35,7 +35,9 @@
       "mod+p": "Modifier les préférences",
       "mod+h": "Afficher les raccourcis clavier"
     },
-    "unload_dirty": "Les données non sauvegardées seront perdues."
+    "unload_dirty": "Les données non sauvegardées seront perdues.",
+    "expand": "Élargir",
+    "shrink": "Rétrécir"
   },
   "en": {
     "save": "Save",
@@ -72,7 +74,9 @@
       "mod+p": "Edit preferences",
       "mod+h": "Show keyboard shortcuts"
     },
-    "unload_dirty": "Any unsaved data will be lost."
+    "unload_dirty": "Any unsaved data will be lost.",
+    "expand": "Expand",
+    "shrink": "Shrink"
   }
 }
 </i18n>
@@ -89,6 +93,7 @@
         'app-title-focused': appTitleFocused,
         'libraries-expanded': librariesExpanded,
         'behaviors-open': behaviorsOpen,
+        'behaviors-expanded': behaviorsExpanded,
         'latest-revision': isLatestRevision,
       },
     ]"
@@ -195,7 +200,19 @@
           ></component-form>
         </tabs-item>
         <tabs-item :title="$t('behaviors_form_title')">
-          <behaviors-form></behaviors-form>
+          <behaviors-form v-model:expanded="behaviorsExpanded"></behaviors-form>
+          <base-button
+            v-tooltip
+            :title="behaviorsExpanded ? $t('shrink') : $t('expand')"
+            type="button"
+            :class="['expander', { toggled: behaviorsExpanded }]"
+            @click="onBehaviorsFormExpanderClick"
+          >
+            <template #icon>
+              <shrink-icon v-if="behaviorsExpanded"/>
+              <expand-icon v-else/>
+            </template>
+          </base-button>
         </tabs-item>
       </tabs-container>
     </resizable-pane>
@@ -286,12 +303,16 @@ import packageInfo from "../../package.json";
 import SaveIcon from "./assets/icons/save.svg?component";
 import RevertIcon from "./assets/icons/revert.svg?component";
 import UserPreferencesIcon from "./assets/icons/user-preferences.svg?component";
+import ExpandIcon from "./assets/icons/expand.svg?component";
+import ShrinkIcon from "./assets/icons/shrink.svg?component";
 
 export default {
   components: {
     SaveIcon,
     RevertIcon,
     UserPreferencesIcon,
+    ExpandIcon,
+    ShrinkIcon,
   },
   provide() {
     return {
@@ -384,6 +405,7 @@ export default {
       librariesExpanded: false,
       activeFormsTab: 0,
       behaviorsOpen: false,
+      behaviorsExpanded: false,
       showRevertConfirm: false,
       showLoadRevisionConfirm: false,
       showAutoSaveRestoreConfirm: false,
@@ -576,6 +598,9 @@ export default {
     onPreferencesClose() {
       this.showPreferencesForm = false;
     },
+    onBehaviorsFormExpanderClick() {
+      this.behaviorsExpanded = !this.behaviorsExpanded;
+    },
     onContextmenu(evt) {
       // Show the native menu if the shift key is down.
       if (evt.shiftKey) {
@@ -740,6 +765,22 @@ export default {
     width: 20em;
     min-width: 20em;
     max-width: 50vw;
+
+    button.expander {
+      position: absolute;
+      top: 1em;
+      right: 1em;
+      width: 2em;
+      height: 2em;
+      color: var(--metascore-color-black);
+      background: var(--metascore-color-white);
+      border-radius: 1.5em;
+
+      :deep(.icon) {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 
   > .bottom {
@@ -859,6 +900,23 @@ export default {
     > .right {
       min-width: 60em;
       max-width: 80vw;
+    }
+
+    &.behaviors-expanded:not(.preview) {
+      grid-template-columns: auto;
+      grid-template-rows: min-content 1fr;
+      grid-template-areas: "top" "right";
+
+      > .right {
+        width: auto !important;
+        max-width: none;
+      }
+
+      > .left,
+      > .center,
+      > .bottom {
+        display: none;
+      }
     }
   }
 
