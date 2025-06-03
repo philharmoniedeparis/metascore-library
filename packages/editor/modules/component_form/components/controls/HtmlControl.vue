@@ -324,6 +324,14 @@ export default {
       if (!this.editing) return;
 
       if (this.editor) {
+        // Exit source editing mode.
+        if (this.editor.plugins.has("SourceEditing")) {
+          const sourceediting = this.editor.plugins.get("SourceEditing");
+          if (sourceediting.isSourceEditingMode) {
+            sourceediting.fire("change:isSourceEditingMode", false);
+          }
+        }
+
         this.editor.ui.view.toolbar.element.remove();
         await this.editor.destroy();
         this.editor = null;
