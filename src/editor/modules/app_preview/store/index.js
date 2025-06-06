@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import { unref, toRaw } from "vue";
+import { unref } from "vue";
 import { round } from "lodash";
 import { useModule } from "@core/services/module-manager";
+import { toRawDeep } from "@core/utils/object";
 
 const FROZEN_OVERRIDES_KEY = "app_preview:frozen";
 const FROZEN_OVERRIDES_PRIORITY = 1000;
@@ -210,7 +211,7 @@ export default defineStore("app-preview", {
         setOverrides(
           component,
           FROZEN_OVERRIDES_KEY,
-          structuredClone(toRaw(component.data)),
+          structuredClone(toRawDeep(component.data)),
           FROZEN_OVERRIDES_PRIORITY
         );
       }
@@ -228,7 +229,7 @@ export default defineStore("app-preview", {
       } = useModule("core:app_components");
 
       const recursiveCopy = (component) => {
-        const copy = structuredClone(toRaw(component.data));
+        const copy = structuredClone(toRawDeep(component.data));
         delete copy.id;
 
         const property = getComponentChildrenProperty(component);
@@ -324,7 +325,7 @@ export default defineStore("app-preview", {
 
       let data = getClipboardData("metascore/component");
       if (data) {
-        data = structuredClone(unref(data));
+        data = structuredClone(toRawDeep(data));
         startHistoryGroup();
 
         let i = 0;

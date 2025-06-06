@@ -1,4 +1,4 @@
-import { toRaw } from "vue";
+import { toRawDeep } from "@core/utils/object";
 import * as Models from "../../models";
 
 // Get collection properties.
@@ -71,7 +71,7 @@ function denormalizeItem(item, all) {
     return null;
   }
 
-  const data = structuredClone(toRaw(all[item.type][item.id].data));
+  const data = structuredClone(toRawDeep(all[item.type][item.id].data));
 
   if (data.type in collections) {
     collections[data.type].forEach((key) => {

@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import { readonly, unref, isReadonly, toRaw } from "vue";
+import { readonly, unref, isReadonly } from "vue";
 import { omit } from "lodash";
 import { normalize, denormalize } from "./utils/normalize";
 import { useModule } from "@core/services/module-manager";
 import { t as $t } from "@core/services/i18n";
 import * as Models from "../models";
+import { toRawDeep } from "@core/utils/object";
 
 export default defineStore("app-components", {
   state: () => {
@@ -426,7 +427,7 @@ export default defineStore("app-components", {
 
       let clone = await this.create(
         {
-          ...omit(structuredClone(toRaw(component.data)), ["id", children_prop]),
+          ...omit(structuredClone(toRawDeep(component.data)), ["id", children_prop]),
           ...data,
         },
         false
@@ -606,7 +607,7 @@ export default defineStore("app-components", {
           const [component, data] = args;
           const old_value = structuredClone(
             Object.keys(data).reduce(
-              (acc, key) => ({ ...acc, [key]: toRaw(component[key]) }),
+              (acc, key) => ({ ...acc, [key]: toRawDeep(component[key]) }),
               {}
             )
           );
