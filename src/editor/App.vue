@@ -679,6 +679,12 @@ export default {
     @include mixins.sr-only;
   }
 
+  .tabs-container {
+    .tab-item {
+      position: relative;
+    }
+  }
+
   > .top {
     grid-area: top;
     background: var(--metascore-color-bg-tertiary);
@@ -910,6 +916,11 @@ export default {
       > .right {
         width: auto !important;
         max-width: none;
+        padding-left: 0 !important;
+
+        > :deep(.resize-handle) {
+          display: none;
+        }
       }
 
       > .left,
