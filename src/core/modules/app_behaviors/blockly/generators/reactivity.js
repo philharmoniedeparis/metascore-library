@@ -11,30 +11,21 @@ Generator.init = function (workspace) {
   // Add developer variables (not created or named by the user).
   const devVarList = Variables.allDeveloperVariables(workspace);
   for (let i = 0; i < devVarList.length; i++) {
-    const name = this.nameDB_.getName(
-      devVarList[i],
-      Names.NameType.DEVELOPER_VARIABLE
-    );
-    this.definitions_["variables"] += `Variables.store.value.set('${name}', null);\n`;
+    const varId = devVarList[i];
+    this.definitions_["variables"] += `Variables.store.value.set('${varId}', null);\n`;
   }
   // Add user variables as reactive variables, but only ones that are being used.
   const variables = Variables.allUsedVarModels(workspace);
   for (let i = 0; i < variables.length; i++) {
-    const name = this.nameDB_.getName(
-      variables[i].getId(),
-      Names.NameType.VARIABLE
-    );
-    this.definitions_["variables"] += `Variables.store.value.set('${name}', null);\n`;
+    const varId = variables[i].getId();
+    this.definitions_["variables"] += `Variables.store.value.set('${varId}', null);\n`;
   }
 };
 
 Generator.forBlock["variables_get"] = function (block) {
   // Variable getter.
-  const varName = Generator.nameDB_.getName(
-    block.getFieldValue("VAR"),
-    Names.NameType.VARIABLE
-  );
-  const code = `Variables.store.value.get('${varName}')`;
+  const varId = block.getFieldValue("VAR")
+  const code = `Variables.store.value.get('${varId}')`;
   return [code, Order.ATOMIC];
 };
 
@@ -42,13 +33,11 @@ Generator.forBlock["variables_set"] = function (block) {
   // Variable setter.
   const argument0 =
     Generator.valueToCode(block, "VALUE", Order.ASSIGNMENT) || "0";
-  const varName = Generator.nameDB_.getName(
-    block.getFieldValue("VAR"),
-    Names.NameType.VARIABLE
-  );
+  const varId = block.getFieldValue("VAR")
+  const varName = Generator.nameDB_.getName(varId,  Names.NameType.VARIABLE);
 
   let code = "";
-  code += `if (Variables.store.value.has('${varName}')) Variables.store.value.set('${varName}', ${argument0});\n`;
+  code += `if (Variables.store.value.has('${varId}')) Variables.store.value.set('${varId}', ${argument0});\n`;
   code += `else ${varName} = ${argument0};\n`;
 
   return code;

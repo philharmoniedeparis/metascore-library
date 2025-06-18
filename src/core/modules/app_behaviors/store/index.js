@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { markRaw } from "vue";
 import { getLocale } from "@core/services/i18n";
 import Blockly from "../blockly";
 import "../blockly/generators";
@@ -10,6 +11,7 @@ export default defineStore("app-behaviors", {
   state: () => {
     return {
       behaviors: {},
+      workspace: null,
       enabled: false,
     };
   },
@@ -37,17 +39,19 @@ export default defineStore("app-behaviors", {
       }
     },
     run() {
-      const workspace = new Blockly.Workspace();
-      Blockly.serialization.workspaces.load(this.behaviors, workspace);
+      this.workspace = markRaw(new Blockly.Workspace());
+      Blockly.serialization.workspaces.load(this.behaviors, this.workspace);
 
-      const code = JavaScript.workspaceToCode(workspace);
+      const code = JavaScript.workspaceToCode(this.workspace);
       interpreter.exec(code);
     },
     getVariable(name) {
-      return interpreter.getContext()?.Variables?.store.value.get(name);
+      const variable = this.workspace.getVariableMap().getVariable(name);
+      return interpreter.getContext()?.Variables?.store.value.get(variable.getId());
     },
     setVariable(name, value) {
-      interpreter.getContext()?.Variables?.store.value.set(name, value);
+      const variable = this.workspace.getVariableMap().getVariable(name);
+      interpreter.getContext()?.Variables?.store.value.set(variable.getId(), value);
     },
     enable() {
       this.enabled = true;
@@ -55,6 +59,7 @@ export default defineStore("app-behaviors", {
     },
     disable() {
       this.enabled = false;
+      this.workspace = null;
       interpreter.reset();
     },
   },
