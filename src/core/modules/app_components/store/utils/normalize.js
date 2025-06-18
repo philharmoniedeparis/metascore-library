@@ -54,13 +54,15 @@ export async function normalize(data) {
   const entities = {};
   const result = [];
 
-  for (const item of data) {
-    const normalized_item = await normalizeItem(item, entities);
+  if (data) {
+    for (const item of data) {
+      const normalized_item = await normalizeItem(item, entities);
 
-    result.push({
-      id: normalized_item.id,
-      type: normalized_item.type,
-    });
+      result.push({
+        id: normalized_item.id,
+        type: normalized_item.type,
+      });
+    }
   }
 
   return { entities, result };

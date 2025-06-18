@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import { unref } from "vue";
 import { omit } from "lodash";
 import { useModule } from "@core/services/module-manager";
-import { t } from "@core/services/i18n";
 import * as api from "../api";
 
 export default defineStore("editor", {
@@ -129,16 +128,6 @@ export default defineStore("editor", {
       } = useModule("core:app_components");
 
       let components = data.components;
-      if (!Array.isArray(components) || components.length < 1) {
-        // Create an empty scenario.
-        components = [
-          {
-            id: "scenario-1",
-            type: "Scenario",
-            name: t("scenario_default_title"),
-          },
-        ];
-      }
       await initComponents(components);
       enableComponentsOverrides();
       onComponentsStoreAction(({ name }) => {
