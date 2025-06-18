@@ -13,7 +13,10 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "dev": "run type-check & npm run clean & cross-env NODE_ENV=development BUILD_MODE=umd BUILD_ENTRY=metaScore.Editor vite build --watch --mode development",
+    "dev:player": "cross-env NODE_ENV=development BUILD_MODE=umd BUILD_ENTRY=metaScore.Player vite build --watch --mode development",
+    "dev:api": "cross-env NODE_ENV=development BUILD_MODE=umd BUILD_ENTRY=metaScore.API vite build --watch --mode development",
+    "dev:editor": "cross-env NODE_ENV=development BUILD_MODE=umd BUILD_ENTRY=metaScore.Editor vite build --watch --mode development",
+    "dev": "npm run clean & run-p dev:player dev:api dev:editor",
     "clean": "rimraf dist",
     "build-blockly-media": "copyfiles -u 1 \"node_modules/blockly/media/*\" dist/",
     "build-umd:player": "cross-env BUILD_MODE=umd BUILD_ENTRY=metaScore.Player vite build",
