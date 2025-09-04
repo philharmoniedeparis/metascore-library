@@ -129,8 +129,8 @@ export default defineComponent ({
     display: flex;
     max-width: calc(100% - 1em);
     max-height: calc(100% - 1em);
-    background: var(--metascore-color-bg-primary, #777);
-    border: 2px solid var(--metascore-color-bg-primary, #777);
+    background: var(--metascore-color-bg-primary, #535353);
+    border: 2px solid var(--metascore-color-bg-primary, #535353);
     border-radius: 0.25em;
     box-shadow: 0 0 0.5em 0 rgb(0, 0, 0);
     box-sizing: border-box;
@@ -148,7 +148,7 @@ export default defineComponent ({
     padding: 0.5em;
     justify-content: space-between;
     align-items: center;
-    background: var(--metascore-color-bg-tertiary, #3f3f3f);
+    background: var(--metascore-color-bg-tertiary, #151515);
     color: var(--metascore-color-text-tertiary, white);
 
     .title {
@@ -178,10 +178,10 @@ export default defineComponent ({
     gap: 0.5em;
 
     :deep(.base-button) {
-      background: var(--metascore-color-bg-secondary, #606060);
+      background: var(--metascore-color-bg-secondary, #373737);
 
       &.primary {
-        background: var(--metascore-color-bg-tertiary, #3f3f3f);
+        background: var(--metascore-color-bg-tertiary, #151515);
       }
     }
   }

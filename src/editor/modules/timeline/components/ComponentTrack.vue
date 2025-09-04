@@ -1,6 +1,10 @@
 <i18n>
 {
   "fr": {
+    "expand": "Déplier",
+    "collapse": "Plier",
+    "lock": "Verrouiller",
+    "unlock": "Déverrouiller",
     "contextmenu": {
       "page_before": "Ajouter une page avant",
       "page_after": "Ajouter une page après",
@@ -20,6 +24,10 @@
     }
   },
   "en": {
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "lock": "Lock",
+    "unlock": "Unlock",
     "contextmenu": {
       "page_before": "Add a page before",
       "page_after": "Add a page after",
@@ -80,7 +88,7 @@
         <label
           v-tooltip
           :for="`handle--expand--${component.id}`"
-          title="Verrouiller/Déverrouiller"
+          :title="$t(expanded ? 'collapse' : 'expand')"
         >
           <expander-icon class="icon" />
         </label>
@@ -98,7 +106,7 @@
           <label
             v-tooltip
             :for="`handle--lock--${component.id}`"
-            title="Verrouiller/Déverrouiller"
+            :title="$t(locked ? 'unlock' : 'lock')"
           >
             <lock-icon class="icon" />
           </label>

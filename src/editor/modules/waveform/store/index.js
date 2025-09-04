@@ -20,9 +20,9 @@ export default defineStore("waveform", {
         start: 0,
         end: 0,
       },
-      minScale: 0,
-      maxScale: 0,
-      scale: 0,
+      minScale: 1,
+      maxScale: 1,
+      scale: 1,
     };
   },
   actions: {

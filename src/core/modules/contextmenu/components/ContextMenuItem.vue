@@ -118,7 +118,7 @@ export default defineComponent ({
   &.has-handler,
   &.has-subitems {
     &:hover {
-      background: var(--metascore-color-bg-secondary, #606060);
+      background: var(--metascore-color-bg-primary, #535353);
     }
   }
 

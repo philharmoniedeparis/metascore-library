@@ -99,8 +99,8 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       }
       ${selector}.blocklyDropDownDiv {
         padding: 0;
-        background-color: #3f3f3f;
-        border-color: #777;
+        background-color: #535353;
+        border-color: #535353;
       }
       ${selector}.blocklyDropDownDiv .blocklyDropDownContent {
         scrollbar-width: thin;
@@ -108,13 +108,13 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       }
       ${selector}.blocklyWidgetDiv .blocklyMenu,
       ${selector}.blocklyDropDownDiv .blocklyMenu {
-        background-color: #3f3f3f;
+        background-color: #535353;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenu {
         font-size: 0.975em;
         padding: 0.25em;
         box-sizing: content-box;
-        border: 1px solid #777;
+        border: 1px solid #535353;
         box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItem,
@@ -132,7 +132,7 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemHighlight > .blocklyMenuItemContent,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemHighlight > .blocklyMenuItemContent {
-        background-color: #606060;
+        background-color: #373737;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemDisabled,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemDisabled {
@@ -148,7 +148,7 @@ export class ConstantsProvider extends zelos.ConstantProvider {
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemSelected > .blocklyMenuItemContent,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemSelected > .blocklyMenuItemContent {
-        background: #606060;
+        background: #373737;
       }
       ${selector}.blocklyWidgetDiv .blocklyMenuItemCheckbox,
       ${selector}.blocklyDropDownDiv .blocklyMenuItemCheckbox {

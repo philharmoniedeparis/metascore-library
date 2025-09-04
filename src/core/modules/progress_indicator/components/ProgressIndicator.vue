@@ -64,17 +64,17 @@ export default defineComponent ({
     inline-size: 100%;
     width: 10em;
     height: 0.5em;
-    background-color: var(--metascore-color-bg-secondary, #606060);
+    background-color: var(--metascore-color-bg-secondary, #373737);
     border: none;
     border-radius: 1em;
     overflow: hidden;
 
     &::-moz-progress-bar,
     &::-webkit-progress-value {
-      background-color: var(--metascore-color-bg-tertiary, #3f3f3f);
+      background-color: var(--metascore-color-bg-tertiary, #151515);
     }
     &::-webkit-progress-bar {
-      background-color: var(--metascore-color-bg-secondary, #606060);
+      background-color: var(--metascore-color-bg-secondary, #373737);
     }
 
     &:indeterminate {
@@ -83,10 +83,10 @@ export default defineComponent ({
       &::after {
         background: linear-gradient(
           to right,
-          var(--metascore-color-bg-secondary, #606060) 45%,
-          var(--metascore-color-bg-tertiary, #3f3f3f) 0%,
-          var(--metascore-color-bg-tertiary, #3f3f3f) 55%,
-          var(--metascore-color-bg-secondary, #606060) 0%
+          var(--metascore-color-bg-secondary, #373737) 45%,
+          var(--metascore-color-bg-tertiary, #151515) 0%,
+          var(--metascore-color-bg-tertiary, #151515) 55%,
+          var(--metascore-color-bg-secondary, #373737) 0%
         );
         background-size: 225% 100%;
         background-position: right;

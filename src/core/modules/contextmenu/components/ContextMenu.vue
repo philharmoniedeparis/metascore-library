@@ -129,8 +129,8 @@ export default defineComponent ({
     list-style: none;
     margin: 0;
     padding: 0.25em;
-    border: 1px solid var(--metascore-color-bg-primary, #777);
-    background: var(--metascore-color-bg-tertiary, #3f3f3f);
+    background: var(--metascore-color-bg-secondary, #373737);
+    border: 1px solid var(--metascore-color-bg-primary, #535353);
     box-shadow: 0.25em 0.25em 0.5em 0 rgba(0, 0, 0, 0.5);
 
     li {

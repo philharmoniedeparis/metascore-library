@@ -17,13 +17,13 @@ const category_colors = {
 export default Theme.defineTheme("metaScore", {
   base: Themes.Classic,
   componentStyles: {
-    workspaceBackgroundColour: "#3f3f3f",
-    flyoutBackgroundColour: "#777",
+    workspaceBackgroundColour: "#151515",
+    flyoutBackgroundColour: "#535353",
     flyoutForegroundColour: "#fff",
     flyoutOpacity: 1,
     insertionMarkerColour: "#fff",
     insertionMarkerOpacity: 0.3,
-    scrollbarColour: "#606060",
+    scrollbarColour: "#373737",
     scrollbarOpacity: 0.75,
     cursorColour: "#d0d0d0",
   },

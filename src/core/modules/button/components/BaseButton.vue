@@ -82,17 +82,17 @@ export default defineComponent ({
     &:hover,
     &:active {
       color: var(--metascore-color-white, white);
-      background-color: var(--metascore-color-bg-primary, #777);
+      background-color: var(--metascore-color-bg-primary, #535353);
     }
   }
 
   &.secondary {
-    background-color: var(--metascore-color-bg-tertiary, #3f3f3f);
+    background-color: var(--metascore-color-bg-tertiary, #151515);
 
     &:hover,
     &:active {
       color: var(--metascore-color-white, white);
-      background-color: var(--metascore-color-bg-primary, #777);
+      background-color: var(--metascore-color-bg-primary, #535353);
     }
   }
 

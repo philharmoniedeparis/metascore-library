@@ -437,9 +437,6 @@ export default {
     timelineOffset() {
       return this.waveformOffset.start / this.mediaDuration;
     },
-    scenarios() {
-      return this.getComponentsByType("Scenario");
-    },
     firstLevelComponents() {
       const scenario = this.activeScenario
         ? this.getComponent("Scenario", this.activeScenario)
@@ -757,7 +754,7 @@ export default {
     grid-area: center;
     flex-direction: column;
     overflow: hidden;
-    background: #777;
+    background: #282828;
 
     .components-breadcrumb {
       border-top: 1px solid var(--metascore-color-bg-tertiary);

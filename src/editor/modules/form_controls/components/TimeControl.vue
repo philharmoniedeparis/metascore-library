@@ -228,7 +228,7 @@ export default {
     bottom: 100%;
     display: flex;
     flex-direction: row;
-    background-color: #3f3f3f;
+    background-color: var(--metascore-color-bg-tertiary, #151515);
 
     button {
       padding: 0.25em;

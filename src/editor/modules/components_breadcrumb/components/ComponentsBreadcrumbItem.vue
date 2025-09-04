@@ -79,6 +79,11 @@ export default {
     color: inherit;
     background: none;
     border: none;
+    cursor: pointer;
+
+    &:disabled {
+      pointer-events: none;
+    }
 
     &:hover {
       color: var(--metascore-color-text-secondary);
