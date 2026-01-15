@@ -190,7 +190,7 @@ const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
   if (empty) {
     component_field.setEnabled(false);
 
-    this.setEnabled(false);
+    this.setDisabledReason(true, 'empty-options');
 
     if (mock) {
       this.setTooltip(() => {
@@ -200,6 +200,9 @@ const COMPONENTS_COMPONENT_MUTATOR_HELPER = function () {
         );
       });
     }
+  } else {
+    component_field.setEnabled(true);
+    this.setDisabledReason(false, 'empty-options');
   }
 };
 Extensions.registerMutator(
