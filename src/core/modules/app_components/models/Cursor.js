@@ -92,6 +92,8 @@ export default class Cursor extends EmbeddableComponent {
           "loop-duration": createTimeField({
             ajv,
             title: "Loop duration",
+            default: null,
+            nullable: true,
           }),
         },
       },

@@ -480,11 +480,15 @@ export default {
             "cursor-width",
             "cursor-color",
             "start-angle",
-            "loop-duration",
           ].forEach((property) => {
             layout.items[0].items.push(
               this.getControlProps(property, this.commonModel.type)
             );
+          });
+          layout.items[0].items.push({
+            min: 0.01,
+            clearButton: true,
+            ...this.getControlProps("loop-duration", this.commonModel.type),
           });
           if (this.selectedComponentsCount === 1) {
             layout.items[0].items.push({
